@@ -1,2 +1,8 @@
+**/__pycache__
+
 api/.idea
 api/database.sqlite
+
+# TODO: add migrations to version control when development has
+#       settled down somewhat
+api/migrations

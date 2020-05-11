@@ -1,3 +1,3 @@
-API_CONFIG_FILE=config.py
-FLASK_APP=main.py
+FLASK_APP=autoapp
 FLASK_ENV=development
+FLASK_DEBUG=1
