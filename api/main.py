@@ -1,10 +1,10 @@
-import os
-
 from flask import Flask
+from flask.cli import AppGroup
 from flask_sqlalchemy import SQLAlchemy
 from flask_graphql import GraphQLView
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
+import click
 
 # ------------------  app setup ------------------
 
@@ -12,14 +12,36 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 app = Flask(__name__)
 
 # config
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config.from_envvar('API_CONFIG_FILE')
 
 # init db
 db = SQLAlchemy(app)
 
+# ------------------  custom cli methods ------------------
+
+juno_cli = AppGroup('juno')
+
+@juno_cli.command('load')
+def load():
+    # create tables
+    print('Creating tables...')
+    db.create_all()
+    print('Done.')
+
+    # create some mock data
+    print('Creating sample users...')
+    gp16 = UserModel(first_name="Gareth", last_name="Peat", email="gp16@sanger.ac.uk")
+    cp15 = UserModel(first_name="Christoph", last_name="Puethe", email="cp15@sanger.ac.uk")
+    os7 = UserModel(first_name="Oli", last_name="Seret", email="os7@sanger.ac.uk")
+    db.session.add(gp16)
+    db.session.add(cp15)
+    db.session.add(os7)
+    db.session.commit()
+    print('Done.')
+
+    print(UserModel.query.all())
+
+app.cli.add_command(juno_cli)
 
 # ------------------  database models ------------------
 
@@ -80,23 +102,3 @@ app.add_url_rule('/', view_func=GraphQLView.as_view(
     schema=schema,
     graphiql=True
 ))
-
-# ------------------  startup ------------------
-
-if __name__ == '__main__':
-    # create tables
-    db.create_all()
-
-    # create some mock data
-    gp16 = UserModel(first_name="Gareth", last_name="Peat", email="gp16@sanger.ac.uk")
-    cp15 = UserModel(first_name="Christoph", last_name="Puethe", email="cp15@sanger.ac.uk")
-    os7 = UserModel(first_name="Oli", last_name="Seret", email="os7@sanger.ac.uk")
-    db.session.add(gp16)
-    db.session.add(cp15)
-    db.session.add(os7)
-    db.session.commit()
-
-    print(UserModel.query.all())
-
-    # run application
-    app.run()

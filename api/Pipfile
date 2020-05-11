@@ -12,6 +12,8 @@ flask-migrate = "*"
 flask-sqlalchemy = "*"
 graphene = "*"
 graphene-sqlalchemy = "*"
+python-dotenv = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"
