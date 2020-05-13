@@ -7,12 +7,19 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
+import Institutions from "./Institutions";
 
 // Offset all anchors by -60 to account for a fixed header
 // and scroll more quickly than the default 400ms
 configureAnchors({ offset: -60, scrollDuration: 200 });
 
 const sections = [
+  {
+    label: "Institutions",
+    title: "Institutions",
+    url: "institutions",
+    ContentComponent: Institutions,
+  },
   {
     label: "Samples",
     title: "Samples",
