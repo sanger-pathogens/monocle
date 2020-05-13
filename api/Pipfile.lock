@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5c3909300f4fd1586bb0c0365b091d852a38f0c65c2a8c36d3b7a2853d273e3b"
+            "sha256": "0137135c2a60af4c51488970caabb8d6e7ad41c0900fa702e63fd1bcf450118c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -108,6 +108,14 @@
             "index": "pypi",
             "version": "==0.7.1"
         },
+        "flask-fixtures": {
+            "hashes": [
+                "sha256:2b8191f995896c0dee384b18b0ee236ab636b921856636c9ff1429c1ad10cb8b",
+                "sha256:d4c5896cf0e463d8a21a56cb2cab86feea016e171a2706f38701fdb15edf6935"
+            ],
+            "index": "pypi",
+            "version": "==0.3.8"
+        },
         "flask-graphql": {
             "hashes": [
                 "sha256:825578c044df436cd74503a38bbd31c919a90acda5e9b6e0e45736964bc5235d"
@@ -149,10 +157,10 @@
         },
         "graphql-core": {
             "hashes": [
-                "sha256:74a8f509ae8c4a58271f5d6b46d5c75b4aed116821ab62dea252d8041bfe057a",
-                "sha256:c06e59153246dd48ddbf86ca94a8f045c1b71daf8154b4635e1a0e2e11d9b60b"
+                "sha256:44c9bac4514e5e30c5a595fac8e3c76c1975cae14db215e8174c7fe995825bad",
+                "sha256:aac46a9ac524c9855910c14c48fc5d60474def7f99fd10245e76608eba7af746"
             ],
-            "version": "==2.3.1"
+            "version": "==2.3.2"
         },
         "graphql-relay": {
             "hashes": [

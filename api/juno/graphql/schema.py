@@ -4,18 +4,25 @@ import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from juno.database import db
-from juno.graphql.models import UserModel
+from juno.graphql.models import UserModel, SampleModel
 
 class User(SQLAlchemyObjectType):
     class Meta:
         model = UserModel
 
+class Sample(SQLAlchemyObjectType):
+    class Meta:
+        model = SampleModel
 
 class Query(graphene.ObjectType):
     users = graphene.List(User)
+    samples = graphene.List(Sample)
 
     def resolve_users(self, info, **kwargs):
         return UserModel.query.all()
+    
+    def resolve_samples(self, info, **kwargs):
+        return SampleModel.query.all()
 
 
 class CreateUser(graphene.Mutation):

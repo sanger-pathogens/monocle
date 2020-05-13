@@ -15,6 +15,7 @@ graphene-sqlalchemy = "*"
 python-dotenv = "*"
 click = "*"
 flask-bcrypt = "*"
+flask-fixtures = "*"
 
 [requires]
 python_version = "3.7"
