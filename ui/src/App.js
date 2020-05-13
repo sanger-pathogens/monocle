@@ -1,5 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { ApolloProvider } from "@apollo/react-hooks";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
 import { CssBaseline } from "@material-ui/core";
 import {
   ThemeProvider,
@@ -12,10 +16,18 @@ import "typeface-inter";
 import theme from "./theme";
 import PageHome from "./components/PageHome";
 
+const client = new ApolloClient({
+  link: new HttpLink({
+    // uri: `${graphqlApiUrl}/graphql`,
+    uri: "http://localhost:5000/",
+  }),
+  cache: new InMemoryCache(),
+});
+
 const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
 const App = () => (
-  <React.Fragment>
+  <ApolloProvider client={client}>
     <CssBaseline />
     <ThemeProvider theme={generatedTheme}>
       <Router>
@@ -25,7 +37,7 @@ const App = () => (
         </Switch>
       </Router>
     </ThemeProvider>
-  </React.Fragment>
+  </ApolloProvider>
 );
 
 export default App;

@@ -1,4 +1,6 @@
 import React from "react";
+import { useQuery } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 import {
   Paper,
   TableContainer,
@@ -9,8 +11,6 @@ import {
   TableCell,
 } from "@material-ui/core";
 
-import { samples } from "../mocks";
-
 const columns = [
   { key: "laneId", label: "Lane ID" },
   { key: "publicName", label: "Public Name" },
@@ -18,27 +18,48 @@ const columns = [
   { key: "country", label: "Country" },
 ];
 
-const Samples = () => (
-  <TableContainer component={Paper}>
-    <Table size="small" aria-label="a dense table">
-      <TableHead>
-        <TableRow>
-          {columns.map((column) => (
-            <TableCell key={column.key}>{column.label}</TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {samples.map((row, i) => (
-          <TableRow key={i}>
+const SAMPLES_QUERY = gql`
+  {
+    samples {
+      id
+      laneId
+      sampleId
+      publicName
+      submittingInstitution
+    }
+  }
+`;
+
+const Samples = () => {
+  const { loading, error, data } = useQuery(SAMPLES_QUERY);
+
+  let rows = [];
+  if (data && !(loading || error)) {
+    // TODO: Handle loading/error cases
+    rows = data.samples;
+  }
+  return (
+    <TableContainer component={Paper}>
+      <Table size="small" aria-label="a dense table">
+        <TableHead>
+          <TableRow>
             {columns.map((column) => (
-              <TableCell key={column.key}>{row[column.key]}</TableCell>
+              <TableCell key={column.key}>{column.label}</TableCell>
             ))}
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
-);
+        </TableHead>
+        <TableBody>
+          {rows.map((row, i) => (
+            <TableRow key={i}>
+              {columns.map((column) => (
+                <TableCell key={column.key}>{row[column.key]}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 export default Samples;
