@@ -16,6 +16,7 @@ python-dotenv = "*"
 click = "*"
 flask-bcrypt = "*"
 flask-fixtures = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

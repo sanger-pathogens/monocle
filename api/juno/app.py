@@ -1,5 +1,5 @@
 from flask import Flask
-from juno.extensions import bcrypt, db, migrate
+from juno.extensions import bcrypt, db, migrate, cors
 
 from juno import commands, graphql
 from juno.settings import ProdConfig
@@ -22,6 +22,9 @@ def register_extensions(app):
 
 def register_blueprints(app):
     """Register Flask blueprints."""
+    origins = app.config.get('CORS_ORIGIN_WHITELIST', '*')
+    cors.init_app(graphql.views.blueprint, origins=origins)
+
     app.register_blueprint(graphql.views.blueprint)
 
 def register_commands(app):
