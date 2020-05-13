@@ -10,6 +10,17 @@ class UserModel(db.Model):
     def __repr__(self):
         return '<User %r>' % self.email
 
+
+class InstitutionModel(db.Model):
+    __tablename__ = 'institution'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), unique=True, nullable=False)
+    country = db.Column(db.String(256), unique=True, nullable=False)
+
+    def __repr__(self):
+        return '<Institution %r>' % self.name
+
+
 class SampleModel(db.Model):
     __tablename__ = 'sample'
     id = db.Column(db.Integer, primary_key=True)
@@ -20,3 +31,4 @@ class SampleModel(db.Model):
 
     def __repr__(self):
         return '<Sample %r>' % self.lane_id
+

@@ -4,23 +4,31 @@ import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
 
 from juno.database import db
-from juno.graphql.models import UserModel, SampleModel
+from juno.graphql.models import UserModel, InstitutionModel, SampleModel
 
 class User(SQLAlchemyObjectType):
     class Meta:
         model = UserModel
+
+class Institution(SQLAlchemyObjectType):
+    class Meta:
+        model = InstitutionModel
 
 class Sample(SQLAlchemyObjectType):
     class Meta:
         model = SampleModel
 
 class Query(graphene.ObjectType):
-    users = graphene.List(User)
+    users = graphene.List(User) # TODO: eventually remove users query for privacy
+    institutions = graphene.List(Institution)
     samples = graphene.List(Sample)
 
     def resolve_users(self, info, **kwargs):
         return UserModel.query.all()
     
+    def resolve_institutions(self, info, **kwargs):
+        return InstitutionModel.query.all()
+
     def resolve_samples(self, info, **kwargs):
         return SampleModel.query.all()
 

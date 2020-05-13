@@ -10,6 +10,19 @@
         ]
     },
     {
+        "model": "juno.graphql.models.InstitutionModel",
+        "records": [
+            {
+                "name": "National Reference Laboratories",
+                "country": "Israel"
+            },
+            {
+                "name": "The Chinese University of Hong Kong",
+                "country": "China"
+            }
+        ]
+    },
+    {
         "model": "juno.graphql.models.SampleModel",
         "records": [
             {
