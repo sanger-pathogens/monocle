@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_graphql import GraphQLView
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphene_sqlalchemy.types import ORMField
 
 from juno.database import db
 from juno.graphql.models import UserModel, InstitutionModel, SampleModel
@@ -10,13 +11,30 @@ class User(SQLAlchemyObjectType):
     class Meta:
         model = UserModel
 
+    # affiliated_institutions = graphene.List(Institution)
+
+    # def resolve_affiliated_institutions(self, info, **kwargs):
+    #     # TODO: work this out
+    #     pass
+
 class Institution(SQLAlchemyObjectType):
     class Meta:
         model = InstitutionModel
+        
 
 class Sample(SQLAlchemyObjectType):
     class Meta:
         model = SampleModel
+        exclude_fields = (
+            'submitting_institution',
+            'submitting_institution_object'
+        )
+
+    submitting_institution = ORMField(
+        model_attr='submitting_institution_object',
+        required=True
+    )
+
 
 class Query(graphene.ObjectType):
     users = graphene.List(User) # TODO: eventually remove users query for privacy

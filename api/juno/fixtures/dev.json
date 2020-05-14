@@ -1,17 +1,39 @@
 [
     {
+        "model": "juno.graphql.models.AffiliationModel",
+        "records": [
+            {
+                "user_email": "gp16@sanger.ac.uk",
+                "institution_name": "Wellcome Sanger Institute"
+            },
+            {
+                "user_email": "albus@nrl.israel",
+                "institution_name": "National Reference Laboratories"
+            }
+        ]
+    },
+    {
         "model": "juno.graphql.models.UserModel",
         "records": [
             {
                 "first_name": "Gareth",
                 "last_name": "Peat",
                 "email": "gp16@sanger.ac.uk"
+            },
+            {
+                "first_name": "Albus",
+                "last_name": "Dumbledore",
+                "email": "albus@nrl.israel"
             }
         ]
     },
     {
         "model": "juno.graphql.models.InstitutionModel",
         "records": [
+            {
+                "name": "Wellcome Sanger Institute",
+                "country": "United Kingdom"
+            },
             {
                 "name": "National Reference Laboratories",
                 "country": "Israel"
