@@ -25,15 +25,6 @@ class Institution(SQLAlchemyObjectType):
 class Sample(SQLAlchemyObjectType):
     class Meta:
         model = SampleModel
-        exclude_fields = (
-            'submitting_institution',
-            'submitting_institution_object'
-        )
-
-    submitting_institution = ORMField(
-        model_attr='submitting_institution_object',
-        required=True
-    )
 
 
 class Query(graphene.ObjectType):

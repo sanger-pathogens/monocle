@@ -46,9 +46,8 @@ class SampleModel(db.Model):
     lane_id = db.Column(db.String(256), unique=True, nullable=False)
     sample_id = db.Column(db.String(256), unique=True, nullable=False)
     public_name = db.Column(db.String(256), nullable=True)
-    # submitting_institution = db.Column(db.String(256), nullable=False)
-    submitting_institution = db.Column(db.String(256), db.ForeignKey('institution.name'))
-    submitting_institution_object = db.relationship("InstitutionModel", back_populates="submitted_samples")
+    submitting_institution_name = db.Column(db.String(256), db.ForeignKey('institution.name'))
+    submitting_institution = db.relationship("InstitutionModel", back_populates="submitted_samples")
 
     def __repr__(self):
         return '<Sample %r>' % self.lane_id

@@ -14,7 +14,7 @@ import {
 const columns = [
   { key: "laneId", label: "Lane ID" },
   { key: "publicName", label: "Public Name" },
-  { key: "submittingInstitution", label: "Submitting Institution" },
+  { key: "submittingInstitutionName", label: "Submitting Institution" },
   { key: "country", label: "Country" },
 ];
 
@@ -25,7 +25,7 @@ const SAMPLES_QUERY = gql`
       laneId
       sampleId
       publicName
-      submittingInstitution
+      submittingInstitutionName
     }
   }
 `;
