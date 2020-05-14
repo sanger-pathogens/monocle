@@ -2,7 +2,7 @@
 
 import pytest
 
-from juno.graphql.models import UserModel, InstitutionModel
+from juno.graphql.models import UserModel, InstitutionModel, SampleModel
 
 
 @pytest.mark.usefixtures('db')
@@ -34,3 +34,22 @@ class TestInstitutionModel:
         retrieved = InstitutionModel.query.filter_by(name=institution.name).first()
         assert retrieved == institution
         
+
+@pytest.mark.usefixtures('db')
+class TestSampleModel:
+    """SampleModel tests."""
+
+    def test_can_get_by_lane_id(self, db):
+        """Get institution by name."""
+        sample = SampleModel(
+            lane_id="31663_7#113",
+            sample_id="5903STDY8059170",
+            public_name="CUHK_GBS177WT_16",
+            submitting_institution_name="National Reference Laboratories"
+        )
+        
+        db.session.add(sample)
+        db.session.commit()
+
+        retrieved = SampleModel.query.filter_by(lane_id=sample.lane_id).first()
+        assert retrieved == sample
