@@ -17,6 +17,8 @@ click = "*"
 flask-bcrypt = "*"
 flask-fixtures = "*"
 flask-cors = "*"
+pytest = "*"
+webtest = "*"
 
 [requires]
 python_version = "3.7"
