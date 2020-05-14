@@ -2,13 +2,13 @@
 
 import pytest
 from webtest import TestApp
+from graphene.test import Client
 
 from juno.app import create_app
 from juno.database import db as _db
 from juno.settings import TestConfig
 from juno.graphql.models import UserModel
-
-from graphene.test import Client
+from juno.graphql.schema import schema
 
 @pytest.yield_fixture(scope='function')
 def app():
@@ -44,3 +44,10 @@ def db(app):
     # Explicitly close DB connection
     _db.session.close()
     _db.drop_all()
+
+
+@pytest.yield_fixture(scope='function')
+def client():
+    """A GraphQL API client."""
+    _client = Client(schema)
+    yield _client
