@@ -10,6 +10,7 @@ django = "*"
 graphene = "*"
 graphene-django = "*"
 django-cors-headers = "*"
+django-graphql-jwt = "*"
 
 [requires]
 python_version = "3.7"
