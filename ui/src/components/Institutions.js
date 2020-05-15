@@ -19,7 +19,6 @@ const columns = [
 const INSTITUTIONS_QUERY = gql`
   {
     institutions {
-      id
       name
       country
     }

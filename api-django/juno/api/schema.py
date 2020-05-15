@@ -22,6 +22,13 @@ class Sample(DjangoObjectType):
 
 class Query(object):
     samples = graphene.List(Sample)
+    institutions = graphene.List(Institution)
 
     def resolve_samples(self, info, **kwargs):
+        # TODO: add pagination
+        # TODO: add filtering/sorting for columns
         return models.Sample.objects.all()
+
+    def resolve_institutions(self, info, **kwargs):
+        # TODO: remove this (just for debug)
+        return models.Institution.objects.all()
