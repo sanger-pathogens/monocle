@@ -5,8 +5,8 @@ from datetime import timedelta
 
 class Config(object):
     """Base configuration."""
-    SECRET_KEY = os.environ.get('JUNO_SECRET_KEY', 'secret-key')  # TODO: Change me
-    APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
+    SECRET_KEY = os.environ.get('JUNO_SECRET_KEY', 'secret-key')  # TODO: change
+    APP_DIR = os.path.abspath(os.path.dirname(__file__))
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
     BCRYPT_LOG_ROUNDS = 13
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -16,18 +16,23 @@ class Config(object):
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+    JWT_SECRET_KEY = "something"  # TODO: change
+    REFRESH_EXP_LENGTH = 30
+    ACCESS_EXP_LENGTH = 10
+
 
 class ProdConfig(Config):
     """Production configuration."""
     ENV = 'prod'
     DEBUG = False
-    # TODO: Use MySQL and auth
+    # TODO: Set up MySQL for SQLAlchemy
     
 
 class DevConfig(Config):
     """Development configuration."""
     ENV = 'dev'
     DEBUG = True
+    CORS_ORIGIN_WHITELIST = 'http://localhost:3000'
 
 
 class TestConfig(Config):

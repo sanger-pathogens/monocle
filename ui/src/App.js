@@ -15,11 +15,12 @@ import "typeface-inter";
 
 import theme from "./theme";
 import PageHome from "./components/PageHome";
+import PageLogin from "./components/PageLogin";
 
 const client = new ApolloClient({
   link: new HttpLink({
-    // uri: `${graphqlApiUrl}/graphql`,
-    uri: "http://localhost:5000/",
+    uri: "http://localhost:5000/", // TODO: Move to config
+    credentials: "include",
   }),
   cache: new InMemoryCache(),
 });
@@ -33,6 +34,7 @@ const App = () => (
       <Router>
         <Switch>
           <Route exact path="/" component={PageHome} />
+          <Route exact path="/login" component={PageLogin} />
           {/* <Route path="*" component={Page404} /> */}
         </Switch>
       </Router>
