@@ -1,9 +1,8 @@
 **/__pycache__
 
-api/.idea
-api/database.sqlite
-api/.pytest_cache
+database.sqlite
+.pytest_cache
 
 # TODO: add migrations to version control when development has
 #       settled down somewhat
-api/migrations
+migrations
