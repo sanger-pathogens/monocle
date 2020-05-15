@@ -1,0 +1,18 @@
+[
+    {
+        "model": "api.User",
+        "fields": {
+            "first_name": "Gareth",
+            "last_name": "Peat",
+            "email": "gp16@sanger.ac.uk"
+        }
+    },
+    {
+        "model": "api.User",
+        "fields": {
+            "first_name": "Albus",
+            "last_name": "Dumbledore",
+            "email": "albus@nrl.israel"
+        }
+    }
+]

@@ -1,0 +1,23 @@
+[
+    {
+        "model": "api.Institution",
+        "fields": {
+            "name": "Wellcome Sanger Institute",
+            "country": "United Kingdom"
+        }
+    },
+    {
+        "model": "api.Institution",
+        "fields": {
+            "name": "National Reference Laboratories",
+            "country": "Israel"
+        }
+    },
+    {
+        "model": "api.Institution",
+        "fields": {
+            "name": "The Chinese University of Hong Kong",
+            "country": "China"
+        }
+    }
+]
