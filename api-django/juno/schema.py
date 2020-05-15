@@ -8,4 +8,9 @@ class Query(juno.api.schema.Query, graphene.ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(juno.api.schema.Mutation, graphene.ObjectType):
+    # using a mixin allows schema division across apps
+    pass
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

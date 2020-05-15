@@ -123,10 +123,17 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-GRAPHENE = {"SCHEMA": "juno.schema.schema"}
+GRAPHENE = {
+    "SCHEMA": "juno.schema.schema",
+    "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware"],
+}
 
 CORS_ORIGIN_ALLOW_ALL = True  # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
 CORS_ALLOW_CREDENTIALS = True
 # CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
 
 AUTH_USER_MODEL = "api.User"
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
