@@ -1,0 +1,16 @@
+[
+    {
+        "model": "api.Affiliation",
+        "fields": {
+            "user": "gp16@sanger.ac.uk",
+            "institution": "Wellcome Sanger Institute"
+        }
+    },
+    {
+        "model": "api.Affiliation",
+        "fields": {
+            "user": "albus@nrl.israel",
+            "institution": "National Reference Laboratories"
+        }
+    }
+]

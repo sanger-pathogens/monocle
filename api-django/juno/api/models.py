@@ -11,8 +11,13 @@ class User(models.Model):
     first_name = models.CharField(max_length=256)
     last_name = models.CharField(max_length=256)
     affiliations = models.ManyToManyField(
-        Institution, related_name="affiliated_members"
+        Institution, through="Affiliation", related_name="affiliated_members"
     )
+
+
+class Affiliation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
 
 
 class Sample(models.Model):
