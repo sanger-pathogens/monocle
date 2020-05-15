@@ -12,20 +12,34 @@ import {
 } from "@material-ui/core";
 
 const columns = [
-  { key: "laneId", label: "Lane ID" },
-  { key: "publicName", label: "Public Name" },
-  { key: "submittingInstitutionName", label: "Submitting Institution" },
-  { key: "country", label: "Country" },
+  { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
+  {
+    key: "publicName",
+    label: "Public Name",
+    valueAccessor: (d) => d.publicName,
+  },
+  {
+    key: "submittingInstitution.name",
+    label: "Submitting Institution",
+    valueAccessor: (d) => d.submittingInstitution.name,
+  },
+  {
+    key: "submittingInstitution.country",
+    label: "Country",
+    valueAccessor: (d) => d.submittingInstitution.country,
+  },
 ];
 
 const SAMPLES_QUERY = gql`
   {
     samples {
-      id
       laneId
       sampleId
       publicName
-      submittingInstitutionName
+      submittingInstitution {
+        name
+        country # TODO: replace submittingInstitution.country with samples.country
+      }
     }
   }
 `;
@@ -52,7 +66,9 @@ const Samples = () => {
           {rows.map((row, i) => (
             <TableRow key={i}>
               {columns.map((column) => (
-                <TableCell key={column.key}>{row[column.key]}</TableCell>
+                <TableCell key={column.key}>
+                  {column.valueAccessor(row)}
+                </TableCell>
               ))}
             </TableRow>
           ))}
