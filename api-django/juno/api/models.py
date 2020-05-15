@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.db import models
 
 
@@ -6,13 +7,18 @@ class Institution(models.Model):
     country = models.CharField(max_length=256)
 
 
-class User(models.Model):
+class User(AbstractBaseUser):
     email = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=256)
     last_name = models.CharField(max_length=256)
     affiliations = models.ManyToManyField(
         Institution, through="Affiliation", related_name="affiliated_members"
     )
+
+    # customise django user model
+    USERNAME_FIELD = "email"
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = []
 
 
 class Affiliation(models.Model):
