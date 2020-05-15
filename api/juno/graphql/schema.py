@@ -46,7 +46,9 @@ class ProtectedUnion(graphene.Union):
 
 
 class Query(graphene.ObjectType):
-    users = graphene.List(User)  # TODO: eventually remove users query for privacy
+    users = graphene.List(
+        User
+    )  # TODO: eventually remove users query for privacy
     institutions = graphene.List(Institution)
     samples = graphene.List(Sample)
     protected = graphene.Field(type=ProtectedUnion, token=graphene.String())
@@ -77,7 +79,9 @@ class CreateUser(graphene.Mutation):
         user = UserModel.query.filter_by(email=email).first()
         if user is not None:
             print("Already exists!")
-        user = UserModel(email=email, first_name=first_name, last_name=last_name)
+        user = UserModel(
+            email=email, first_name=first_name, last_name=last_name
+        )
         db.session.add(user)
         db.session.commit()
         return CreateUser(user=user)
@@ -101,7 +105,8 @@ class LoginMutation(graphene.Mutation):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "affiliated_institutions": [
-                institution.name for institution in user.affiliated_institutions
+                institution.name
+                for institution in user.affiliated_institutions
             ],
         }
 

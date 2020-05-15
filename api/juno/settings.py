@@ -5,7 +5,8 @@ import os
 class Config(object):
     """Base configuration."""
 
-    SECRET_KEY = os.environ.get("JUNO_SECRET_KEY", "secret-key")  # TODO: change
+    # TODO: change SECRET_KEY for production
+    SECRET_KEY = os.environ.get("JUNO_SECRET_KEY", "secret-key")
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
     BCRYPT_LOG_ROUNDS = 13

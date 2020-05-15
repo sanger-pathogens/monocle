@@ -26,7 +26,9 @@ def register_extensions(app):
 def register_blueprints(app):
     """Register Flask blueprints."""
     origins = app.config.get("CORS_ORIGIN_WHITELIST", "*")
-    cors.init_app(graphql.views.blueprint, origins=origins, supports_credentials=True)
+    cors.init_app(
+        graphql.views.blueprint, origins=origins, supports_credentials=True
+    )
 
     app.register_blueprint(graphql.views.blueprint)
 

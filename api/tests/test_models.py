@@ -12,7 +12,9 @@ class TestUserModel:
     def test_can_get_by_email(self, db):
         """Get user by email."""
         user = UserModel(
-            email="gollum@misty-mountains.com", first_name="Smeagol", last_name="Deagol"
+            email="gollum@misty-mountains.com",
+            first_name="Smeagol",
+            last_name="Deagol",
         )
 
         db.session.add(user)
@@ -35,7 +37,9 @@ class TestInstitutionModel:
         db.session.add(institution)
         db.session.commit()
 
-        retrieved = InstitutionModel.query.filter_by(name=institution.name).first()
+        retrieved = InstitutionModel.query.filter_by(
+            name=institution.name
+        ).first()
         assert retrieved == institution
 
 

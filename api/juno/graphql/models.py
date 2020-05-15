@@ -5,10 +5,13 @@ class AffiliationModel(db.Model):
     __tablename__ = "affiliation"
     id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(256), db.ForeignKey("user.email"))
-    institution_name = db.Column(db.String(256), db.ForeignKey("institution.name"))
+    institution_name = db.Column(
+        db.String(256), db.ForeignKey("institution.name")
+    )
 
     user = db.relationship(
-        "UserModel", backref=db.backref("affiliation", cascade="all, delete-orphan")
+        "UserModel",
+        backref=db.backref("affiliation", cascade="all, delete-orphan"),
     )
     institution = db.relationship(
         "InstitutionModel",
