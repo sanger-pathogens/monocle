@@ -7,10 +7,10 @@ from graphene.test import Client
 from juno.app import create_app
 from juno.database import db as _db
 from juno.settings import TestConfig
-from juno.graphql.models import UserModel
 from juno.graphql.schema import schema
 
-@pytest.yield_fixture(scope='function')
+
+@pytest.yield_fixture(scope="function")
 def app():
     """An application for the tests."""
     _app = create_app(TestConfig)
@@ -26,13 +26,13 @@ def app():
     ctx.pop()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def testapp(app):
     """A Webtest app."""
     return TestApp(app)
 
 
-@pytest.yield_fixture(scope='function')
+@pytest.yield_fixture(scope="function")
 def db(app):
     """A database for the tests."""
     _db.app = app
@@ -46,7 +46,7 @@ def db(app):
     _db.drop_all()
 
 
-@pytest.yield_fixture(scope='function')
+@pytest.yield_fixture(scope="function")
 def client():
     """A GraphQL API client."""
     _client = Client(schema)

@@ -1,8 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_graphql import GraphQLView
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphene_sqlalchemy.types import ORMField
 from flask_graphql_auth import (
     AuthInfoField,
     create_access_token,
@@ -12,6 +9,7 @@ from flask_graphql_auth import (
 
 from juno.database import db
 from juno.graphql.models import UserModel, InstitutionModel, SampleModel
+
 
 class User(SQLAlchemyObjectType):
     class Meta:
@@ -23,10 +21,11 @@ class User(SQLAlchemyObjectType):
     #     # TODO: work this out
     #     pass
 
+
 class Institution(SQLAlchemyObjectType):
     class Meta:
         model = InstitutionModel
-        
+
 
 class Sample(SQLAlchemyObjectType):
     class Meta:
@@ -47,14 +46,14 @@ class ProtectedUnion(graphene.Union):
 
 
 class Query(graphene.ObjectType):
-    users = graphene.List(User) # TODO: eventually remove users query for privacy
+    users = graphene.List(User)  # TODO: eventually remove users query for privacy
     institutions = graphene.List(Institution)
     samples = graphene.List(Sample)
     protected = graphene.Field(type=ProtectedUnion, token=graphene.String())
 
     def resolve_users(self, info, **kwargs):
         return UserModel.query.all()
-    
+
     def resolve_institutions(self, info, **kwargs):
         return InstitutionModel.query.all()
 
@@ -98,10 +97,12 @@ class LoginMutation(graphene.Mutation):
 
         user = UserModel.query.filter_by(email=email).first()
         user_claims = {
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'affiliated_institutions': [institution.name for institution in user.affiliated_institutions]
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "affiliated_institutions": [
+                institution.name for institution in user.affiliated_institutions
+            ],
         }
 
         # TODO: Remove refresh_token from graphql and set cookie
@@ -128,13 +129,11 @@ class LoginMutation(graphene.Mutation):
 #             )
 #         )
 
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     login = LoginMutation.Field()
     # refresh = RefreshMutation.Field()
 
 
-schema = graphene.Schema(
-    query=Query,
-    mutation=Mutation
-)
+schema = graphene.Schema(query=Query, mutation=Mutation)
