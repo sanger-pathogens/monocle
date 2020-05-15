@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db import models
 
 
@@ -19,6 +19,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
+    objects = UserManager()
 
 
 class Affiliation(models.Model):
