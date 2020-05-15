@@ -2,6 +2,7 @@
 
 api/.idea
 api/database.sqlite
+api/.pytest_cache
 
 # TODO: add migrations to version control when development has
 #       settled down somewhat
