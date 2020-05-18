@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pygraphviz = "*"
 
 [packages]
 django = "*"
@@ -12,7 +13,8 @@ graphene-django = "*"
 django-cors-headers = "*"
 django-graphql-jwt = "*"
 django-extensions = "*"
-pygraphviz = "*"
+gunicorn = "*"
+uvicorn = "*"
 
 [requires]
 python_version = "3.7"
