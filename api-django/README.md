@@ -34,10 +34,18 @@ You should be able to view the `graphiql` interactive schema at `localhost:5000`
 
 ### Migrations
 
-### Schema diagram
-You can regenerate the schema diagram with:
+### Schemas
+
+#### Database
+You can regenerate the database schema diagram with:
 ```
 python manage.py graph_models -a -g -X Permission,ContentType,Group -o schema-db.png
 ```
 
 Note: You might need to `brew install graphviz`. Also, `Permission,ContentType,Group` are Django built-in classes, excluded for clarity.
+
+#### GraphQL API
+You can regenerate the GraphQL API schema file with:
+```
+python manage.py generateschemagraphql
+```

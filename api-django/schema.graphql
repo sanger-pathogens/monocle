@@ -1,0 +1,59 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+scalar DateTime
+
+scalar GenericScalar
+
+type Institution {
+  name: String!
+  country: String!
+  affiliatedMembers: [User!]!
+  samples: [Sample!]!
+}
+
+type Mutation {
+  tokenAuth(email: String!, password: String!): ObtainJSONWebToken
+  verifyToken(token: String): Verify
+  refreshToken(token: String): Refresh
+}
+
+type ObtainJSONWebToken {
+  payload: GenericScalar!
+  refreshExpiresIn: Int!
+  token: String!
+}
+
+type Query {
+  me: User
+  samples: [Sample]
+  institutions: [Institution]
+}
+
+type Refresh {
+  payload: GenericScalar!
+  refreshExpiresIn: Int!
+  token: String!
+}
+
+type Sample {
+  laneId: String!
+  sampleId: String!
+  publicName: String!
+  submittingInstitution: Institution!
+}
+
+type User {
+  password: String!
+  lastLogin: DateTime
+  email: String!
+  firstName: String!
+  lastName: String!
+  affiliations: [Institution!]!
+}
+
+type Verify {
+  payload: GenericScalar!
+}
