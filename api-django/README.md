@@ -32,7 +32,24 @@ python manage.py runserver
 
 You should be able to view the `graphiql` interactive schema at `localhost:5000`.
 
+### Testing
+You can run the tests with:
+```
+python manage.py test
+```
+
 ### Migrations
+You can create any necessary migrations with:
+```
+python manage.py makemigrations api
+```
+
+Note: The above takes account of the existing `migrations` in the `juno/api/migrations` directory. Early on, while the database can be easily destroyed, it may easier to remove the directory entirely before running, to *squash* them.
+
+To apply the migrations, run:
+```
+python manage.py migrate
+```
 
 ### Schemas
 
