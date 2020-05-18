@@ -12,8 +12,12 @@ If you've not used Django and/or GraphQL before, it would be worth running throu
 
 ## Development
 
+This API was bootstrapped with [Django](https://www.djangoproject.com/). See their documentation for options.
+
 ### Quickstart
-Load the environment defined by the `Pipfile` and `Pipfile.lock`:
+Ensure you have `python3` installed.
+
+Load the environment defined by the `Pipfile` and `Pipfile.lock` (note: you should not need to update these files manually):
 ```
 pipenv install
 pipenv shell
