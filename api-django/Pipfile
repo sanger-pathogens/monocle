@@ -11,6 +11,8 @@ graphene = "*"
 graphene-django = "*"
 django-cors-headers = "*"
 django-graphql-jwt = "*"
+django-extensions = "*"
+pygraphviz = "*"
 
 [requires]
 python_version = "3.7"

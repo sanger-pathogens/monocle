@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "280385a5824d61a427d318a90bd97b1740cf893522ca00cfae6eccbc31d3c525"
+            "sha256": "faa71fa5e8fb3ddc9c3b414dd17ebcbdc04bd2312ed504c643d3dedefd4ab43d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -46,6 +46,14 @@
             "index": "pypi",
             "version": "==3.2.1"
         },
+        "django-extensions": {
+            "hashes": [
+                "sha256:2f81b618ba4d1b0e58603e25012e5c74f88a4b706e0022a3b21f24f0322a6ce6",
+                "sha256:b19182d101a441fe001c5753553a901e2ef3ff60e8fbbe38881eb4a61fdd17c4"
+            ],
+            "index": "pypi",
+            "version": "==2.2.9"
+        },
         "django-graphql-jwt": {
             "hashes": [
                 "sha256:2189f6d1a13b827d486780fa74a631a15e4f7f0235a3a87a487736b5b0dc4690",
@@ -89,6 +97,13 @@
                 "sha256:dfd18337c523ba4b6a58801c164c1904a9d4d1b1747c7d5dbf45b693a49d93d0"
             ],
             "version": "==2.3"
+        },
+        "pygraphviz": {
+            "hashes": [
+                "sha256:50a829a305dc5a0fd1f9590748b19fece756093b581ac91e00c2c27c651d319d"
+            ],
+            "index": "pypi",
+            "version": "==1.5"
         },
         "pyjwt": {
             "hashes": [
