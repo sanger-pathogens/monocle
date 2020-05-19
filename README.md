@@ -1,5 +1,5 @@
-# Junocle
-Juno + Monocle: A tool to view the data from the Juno project (likely to be renamed)
+# Monocle
+Monocle: A tool to view the data from the Juno project (likely to be renamed)
 
 ## Usage
 This tool is still experimental and likely to change, but currently consists of two deployable components:
