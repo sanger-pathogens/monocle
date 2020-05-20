@@ -45,7 +45,9 @@ function validate_branch {
 
 function validate_staging_empty {
     # check no staged changes
-    if git diff-index --quiet HEAD --; then
+    git diff-index --quiet HEAD --
+    STAGING_STATUS=$?
+    if [ "$STAGING_STATUS" != "0" ]; then
         echo "Staged changes found. Please commit them separately first."
         exit 1
     fi
