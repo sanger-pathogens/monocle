@@ -19,6 +19,10 @@ function validate_version {
         echo 'Invalid version. Please follow semver (https://semver.org/).'
         exit 1
     fi
+}
+
+function validate_new_version {
+    local VERSION=${1}
 
     # get the latest tags
     git fetch --tags

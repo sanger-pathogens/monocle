@@ -13,6 +13,7 @@ fi
 
 VERSION=$1
 validate_version "${VERSION}"
+validate_new_version "${VERSION}"
 validate_branch
 validate_staging_empty
 
