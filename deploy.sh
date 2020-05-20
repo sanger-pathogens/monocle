@@ -2,7 +2,18 @@
 
 # Deploy a release of Monocle.
 
+SCRIPT_DIR="$(dirname "$0")"
+source "$SCRIPT_DIR/utils/common.sh"
+
+# check args count
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
 VERSION=$1
+validate_version "${VERSION}"
+
 REMOTE_USER=pathpipe
 REMOTE_HOST=172.27.82.31
 
