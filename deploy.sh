@@ -24,6 +24,10 @@ scp -o ControlMaster=yes \
     -o ControlPath=%C \
     docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
+# copy production settings file
+# (may want to remove from git long term)
+scp -o ControlPath=%C ui/settings.prod.js $REMOTE_USER@$REMOTE_HOST:~/settings.js
+
 # replace the running version
 # using existing connection
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF

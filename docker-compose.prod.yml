@@ -4,6 +4,8 @@ services:
     image: "sangerpathogens/monocle-app:VERSION"
     ports:
         - "80:80"
+    volumes:
+        - ${PWD}/settings.js:/usr/share/nginx/html/
     depends_on:
         - api
   api:
