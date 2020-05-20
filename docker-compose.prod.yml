@@ -1,0 +1,12 @@
+version: '3'
+services:
+  ui:
+    image: "sangerpathogens/monocle-app:VERSION"
+    ports:
+        - "3000:80"
+    depends_on:
+        - api
+  api:
+    image: "sangerpathogens/monocle-api:VERSION"
+    ports:
+        - "8000:80"
