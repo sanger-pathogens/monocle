@@ -1,12 +1,23 @@
 version: '3'
 services:
   ui:
-    image: "sangerpathogens/monocle-app:0.1.0-rc1"
+    build:
+      context: ./ui
+      dockerfile: Dockerfile.dev
+    command: yarn start
     ports:
-        - "3000:80"
+        - "3000:3000"
+    volumes:
+        - ./ui:/app
+    stdin_open: true
     depends_on:
         - api
   api:
-    image: "sangerpathogens/monocle-api:0.1.0-rc1"
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
-        - "8000:80"
+        - "8000:8000"
+    volumes:
+        - ./api:/app

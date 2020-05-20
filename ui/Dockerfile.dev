@@ -1,0 +1,9 @@
+FROM node:latest
+
+ARG VERSION='VERSION'
+ENV VERSION=$VERSION
+
+WORKDIR /app
+RUN yarn install --silent
+
+EXPOSE 3000
