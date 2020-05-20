@@ -1,0 +1,4 @@
+static/
+db.sqlite3
+schema-db.png
+schema.graphql
