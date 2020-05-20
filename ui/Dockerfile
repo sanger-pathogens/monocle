@@ -12,7 +12,7 @@ ENV VERSION=$VERSION
 # install (separation of COPY to help cache node_modules)
 WORKDIR /app
 COPY package.json yarn.lock /app/
-RUN yarn install --silent
+RUN yarn install --silent --network-timeout 1000000
 ENV PATH /app/node_modules/.bin:$PATH
 
 # build the static files
