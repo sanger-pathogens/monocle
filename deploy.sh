@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
 
-set -x
-set -e
+# Deploy a release of Monocle.
 
 VERSION=$1
+REMOTE_USER=pathpipe
+REMOTE_HOST=172.27.82.31
 
 # copy production compose file (template)
 # keep connection to avoid multiple password entries
 scp -o ControlMaster=yes \
     -o ControlPersist=yes \
     -o ControlPath=%C \
-    docker-compose.prod.yml pathpipe@172.27.82.31:~/docker-compose.yml
+    docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
 # replace the running version
 # using existing connection
-ssh -o ControlPath=%C pathpipe@172.27.82.31 << EOF
+ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
 
@@ -28,4 +29,4 @@ ssh -o ControlPath=%C pathpipe@172.27.82.31 << EOF
 EOF
 
 # close the connection
-ssh -o ControlPath=%C -O exit pathpipe@172.27.82.31
+ssh -o ControlPath=%C -O exit $REMOTE_USER@$REMOTE_HOST
