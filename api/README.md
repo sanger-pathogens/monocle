@@ -27,6 +27,7 @@ Create a `sqlite3` database and load some sample data:
 ```
 python manage.py migrate
 python manage.py loaddev
+python manage.py collectstatic
 ```
 
 Run the development server:
