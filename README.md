@@ -16,7 +16,7 @@ Currently, to make a release, make sure you are on the `master` branch with noth
 ```
 ./release.sh <version>
 ```
-Note: `<version>` should confirm to [semver](https://semver.org/).
+Note: `<version>` should conform to [semver](https://semver.org/).
 
 ### Deploying a release
 Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built the images for the release. These are named:
