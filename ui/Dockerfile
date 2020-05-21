@@ -1,5 +1,5 @@
 # ---------- build step ----------
-FROM node:latest as builder
+FROM node:alpine as builder
 
 # label, so that intermediate images can easily be removed with
 # `docker image prune --filter label=stage=builder`
