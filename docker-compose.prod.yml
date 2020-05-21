@@ -5,7 +5,8 @@ services:
     ports:
         - "80:80"
     volumes:
-        - ${PWD}/settings.js:/usr/share/nginx/html/
+        - ./settings.js:/usr/share/nginx/html/settings.js
+        - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
         - api
   api:

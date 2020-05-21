@@ -24,9 +24,10 @@ scp -o ControlMaster=yes \
     -o ControlPath=%C \
     docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
-# copy production settings file
+# copy production settings file, nginx config
 # (may want to remove from git long term)
 scp -o ControlPath=%C ui/settings.prod.js $REMOTE_USER@$REMOTE_HOST:~/settings.js
+scp -o ControlPath=%C ui/nginx.prod.conf $REMOTE_USER@$REMOTE_HOST:~/nginx.conf
 
 # replace the running version
 # using existing connection
