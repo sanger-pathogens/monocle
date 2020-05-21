@@ -35,7 +35,7 @@ Run the development server:
 python manage.py runserver
 ```
 
-You should be able to view the `graphiql` interactive schema at `localhost:5000`.
+You should be able to view the `graphiql` interactive schema at `localhost:8000`.
 
 ### Testing
 You can run the tests with:
