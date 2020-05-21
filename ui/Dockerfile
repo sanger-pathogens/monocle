@@ -23,5 +23,7 @@ RUN yarn build
 # ---------- production runtime ----------
 FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html/*
+RUN chmod -R 0755 /usr/share/nginx/html/*
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
