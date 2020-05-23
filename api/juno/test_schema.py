@@ -198,3 +198,36 @@ class SamplesQueryTestCase(APITestCase):
             "name",
             expected_value=self.institution.name,
         )
+
+
+class InstitutionsQueryTestCase(APITestCase):
+    def setUp(self):
+        # put something in the db
+        self.institution = Institution.objects.create(
+            name="Wellcome Sanger Institute", country="United Kingdom"
+        )
+
+    def make_and_validate_institutions_query(self, subquery):
+        # call api
+        institutions = self.make_and_validate_query("institutions", subquery)
+
+        # check non-empty
+        self.validate_non_empty_list(institutions)
+
+        # return samples
+        return institutions
+
+    def test_has_field_name(self):
+        institutions = self.make_and_validate_institutions_query("name")
+        self.validate_field(
+            institutions[0], "name", expected_value=self.institution.name,
+        )
+
+    def test_has_field_country(self):
+        institutions = self.make_and_validate_institutions_query("country")
+        self.validate_field(
+            institutions[0],
+            "country",
+            expected_value=self.institution.country,
+        )
+
