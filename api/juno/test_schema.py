@@ -153,41 +153,45 @@ class SamplesQueryTestCase(APITestCase):
             submitting_institution=self.institution,
         )
 
+    def make_and_validate_samples_query(self, subquery):
+        # call api
+        samples = self.make_and_validate_query("samples", subquery)
+
+        # check non-empty
+        self.validate_non_empty_list(samples)
+
+        # return samples
+        return samples
+
     def test_has_field_lane_id(self):
-        query_value = self.make_and_validate_query("samples", "laneId")
-        self.validate_non_empty_list(query_value)
+        samples = self.make_and_validate_samples_query("laneId")
         self.validate_field(
-            query_value[0], "laneId", expected_value=self.sample.lane_id
+            samples[0], "laneId", expected_value=self.sample.lane_id,
         )
 
     def test_has_field_sample_id(self):
-        query_value = self.make_and_validate_query("samples", "sampleId")
-        self.validate_non_empty_list(query_value)
+        samples = self.make_and_validate_samples_query("sampleId")
         self.validate_field(
-            query_value[0], "sampleId", expected_value=self.sample.sample_id
+            samples[0], "sampleId", expected_value=self.sample.sample_id,
         )
 
     def test_has_field_public_name(self):
-        query_value = self.make_and_validate_query("samples", "publicName")
-        self.validate_non_empty_list(query_value)
+        samples = self.make_and_validate_samples_query("publicName")
         self.validate_field(
-            query_value[0],
-            "publicName",
-            expected_value=self.sample.public_name,
+            samples[0], "publicName", expected_value=self.sample.public_name,
         )
 
     def test_has_field_submitting_institution(self):
-        query_value = self.make_and_validate_query(
-            "samples",
+        samples = self.make_and_validate_samples_query(
             """
             submittingInstitution {
                 name
             }
             """,
         )
-        self.validate_non_empty_list(query_value)
+        self.validate_non_empty_list(samples)
         submitting_institution = self.validate_field(
-            query_value[0], "submittingInstitution"
+            samples[0], "submittingInstitution"
         )
         self.validate_field(
             submitting_institution,
