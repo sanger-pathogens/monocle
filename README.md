@@ -40,12 +40,13 @@ There are two supported ways to set up a development environment:
 ### Development with `docker-compose`
 If you have `docker` installed, run:
 ```
-docker-compose up
+docker-compose -f docker-compose.dev.yml build
+docker-compose -f docker-compose.dev.yml up
 ```
 
 It should then be possible to run commands on subcomponents with:
 ```
-docker-compose run <subcomponent> <command>
+docker-compose -f docker-compose.dev.yml run <subcomponent> <command>
 ```
 
 ### Development directly on your development machine
@@ -55,5 +56,10 @@ This requires a bit more setup, but may be easier to debug. Also, editor integra
 There are currently:
 - integration tests in the `e2e` directory
 - unit tests in the `api` directory
+
+To run the integration tests:
+```
+./e2e.sh
+```
 
 Further information on each can be found in the relevant directory.

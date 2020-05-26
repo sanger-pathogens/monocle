@@ -4,7 +4,8 @@ This directory contains end-to-end tests written using [cypress](https://www.cyp
 ## Usage
 To run the tests:
 ```
-docker-compose up --exit-code-from cypress
+cd ..
+./e2e.sh
 ```
 
 The output will be generated in the `cypress` directory and contains a video of the tests and screenshots of error cases, if any exist.
