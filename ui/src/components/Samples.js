@@ -33,6 +33,11 @@ const columns = [
     label: "Host Status",
     valueAccessor: (d) => d.hostStatus,
   },
+  {
+    key: "serotype",
+    label: "Serotype",
+    valueAccessor: (d) => d.serotype,
+  },
 ];
 
 const SAMPLES_QUERY = gql`
@@ -42,6 +47,7 @@ const SAMPLES_QUERY = gql`
       sampleId
       publicName
       hostStatus
+      serotype
       submittingInstitution {
         name
         country # TODO: replace submittingInstitution.country with samples.country
