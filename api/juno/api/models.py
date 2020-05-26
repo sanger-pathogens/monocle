@@ -28,8 +28,23 @@ class Affiliation(models.Model):
 
 
 class Sample(models.Model):
-    
 
+
+    class Serotype(models.TextChoices): 
+        IA = 'Ia' 
+        IB = 'Ib'
+        II = 'II'
+        III = 'III'
+        IV = 'IV'
+        V = 'V'
+        VI = 'VI'
+        VII = 'VII'
+        VIII = 'VIII'
+        IX = 'IX'
+        NT = 'NT'
+        UNKNOWN = 'unknown'
+
+ 
     class HostStatus(models.TextChoices):
         CARRIAGE = 'carriage'
         SEPSIS = 'sepsis'
@@ -55,6 +70,7 @@ class Sample(models.Model):
     sample_id = models.CharField(max_length=256, unique=True)
     public_name = models.CharField(max_length=256, unique=True)
     host_status = models.CharField(max_length=256, choices=HostStatus.choices)
+    serotype = models.CharField(max_length=7, choices=Serotype.choices)
     submitting_institution = models.ForeignKey(
         Institution, on_delete=models.CASCADE, related_name="samples"
     )
