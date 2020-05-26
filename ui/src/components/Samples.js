@@ -28,6 +28,11 @@ const columns = [
     label: "Country",
     valueAccessor: (d) => d.submittingInstitution.country,
   },
+  {
+    key: "hostStatus",
+    label: "Host Status",
+    valueAccessor: (d) => d.hostStatus,
+  },
 ];
 
 const SAMPLES_QUERY = gql`
@@ -36,6 +41,7 @@ const SAMPLES_QUERY = gql`
       laneId
       sampleId
       publicName
+      hostStatus
       submittingInstitution {
         name
         country # TODO: replace submittingInstitution.country with samples.country

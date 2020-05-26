@@ -86,6 +86,7 @@ class SamplesQueryTestCase(APITestCase):
             sample_id="5903STDY8059170",
             public_name="CUHK_GBS177WT_16",
             serotype="Ia",
+            host_status="skin and soft-tissue infection",
             submitting_institution=self.institution,
         )
 
@@ -121,6 +122,12 @@ class SamplesQueryTestCase(APITestCase):
         samples = self.make_and_validate_samples_query("serotype")
         self.validate_field(
             samples[0], "serotype", expected_value="IA",
+        )
+
+    def test_has_field_host_status(self):
+        samples = self.make_and_validate_samples_query("hostStatus")
+        self.validate_field(
+            samples[0], "hostStatus", expected_value="SKIN_AND_SOFT_TISSUE_INFECTION",
         )
 
     def test_has_field_submitting_institution(self):
