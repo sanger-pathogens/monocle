@@ -85,6 +85,7 @@ class SamplesQueryTestCase(APITestCase):
             lane_id="31663_7#113",
             sample_id="5903STDY8059170",
             public_name="CUHK_GBS177WT_16",
+            serotype="Ia",
             submitting_institution=self.institution,
         )
 
@@ -114,6 +115,12 @@ class SamplesQueryTestCase(APITestCase):
         samples = self.make_and_validate_samples_query("publicName")
         self.validate_field(
             samples[0], "publicName", expected_value=self.sample.public_name,
+        )
+
+    def test_has_field_serotype(self):
+        samples = self.make_and_validate_samples_query("serotype")
+        self.validate_field(
+            samples[0], "serotype", expected_value="IA",
         )
 
     def test_has_field_submitting_institution(self):

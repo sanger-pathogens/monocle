@@ -5,6 +5,7 @@
             "lane_id": "31663_7#113",
             "sample_id": "5903STDY8059170",
             "public_name": "CUHK_GBS177WT_16",
+            "serotype": "Ia",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -14,6 +15,7 @@
             "lane_id": "31663_7#115",
             "sample_id": "5903STDY8059071",
             "public_name": "NA",
+            "serotype": "Ib",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -23,6 +25,7 @@
             "lane_id": "31663_7#116",
             "sample_id": "5903STDY8059274",
             "public_name": "CUHK_GBS508A_17",
+            "serotype": "II",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -32,6 +35,7 @@
             "lane_id": "31663_7#119",
             "sample_id": "5903STDY8059072",
             "public_name": "CUHK_GBS26WT_05",
+            "serotype": "III",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -41,6 +45,7 @@
             "lane_id": "31663_7#158",
             "sample_id": "5903STDY8059083",
             "public_name": "CUHK_GBS38WT_07",
+            "serotype": "IV",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -50,6 +55,7 @@
             "lane_id": "31663_7#159",
             "sample_id": "5903STDY8059285",
             "public_name": "CUHK_GBS532A_17",
+            "serotype": "V",
             "submitting_institution": "National Reference Laboratories"
         }
     },
@@ -59,6 +65,7 @@
             "lane_id": "32820_2#367",
             "sample_id": "5903STDY8113194",
             "public_name": "JN_IL_ST31578",
+            "serotype": "VI",
             "submitting_institution": "The Chinese University of Hong Kong"
         }
     },
@@ -68,6 +75,7 @@
             "lane_id": "32820_2#371",
             "sample_id": "5903STDY8113195",
             "public_name": "JN_IL_ST31632",
+            "serotype": "VII",
             "submitting_institution": "The Chinese University of Hong Kong"
         }
     },
@@ -77,6 +85,7 @@
             "lane_id": "32820_2#375",
             "sample_id": "5903STDY8113196",
             "public_name": "JN_IL_ST31640",
+            "serotype": "IX",
             "submitting_institution": "The Chinese University of Hong Kong"
         }
     },
@@ -86,6 +95,7 @@
             "lane_id": "32820_2#379",
             "sample_id": "5903STDY8113197",
             "public_name": "JN_IL_ST31656",
+            "serotype": "NT",
             "submitting_institution": "The Chinese University of Hong Kong"
         }
     },
@@ -95,6 +105,7 @@
             "lane_id": "32820_2#383",
             "sample_id": "5903STDY8113198",
             "public_name": "JN_IL_ST31662",
+            "serotype": "unknown",
             "submitting_institution": "The Chinese University of Hong Kong"
         }
     }
