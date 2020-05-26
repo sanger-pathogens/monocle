@@ -50,3 +50,10 @@ docker-compose run <subcomponent> <command>
 
 ### Development directly on your development machine
 This requires a bit more setup, but may be easier to debug. Also, editor integration such as python linting/autocomplete may be easier to set up. Read about setting up the [ui](ui/README.md) and [api](api/README.md) separately.
+
+## Testing
+There are currently:
+- integration tests in the `e2e` directory
+- unit tests in the `api` directory
+
+Further information on each can be found in the relevant directory.
