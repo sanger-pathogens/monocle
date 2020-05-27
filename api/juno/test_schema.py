@@ -194,7 +194,10 @@ class SamplesQueryTestCase(APITestCase):
     def setUp(self):
         # put something in the db
         self.institution = Institution.objects.create(
-            name="Wellcome Sanger Institute", country="United Kingdom"
+            name="Wellcome Sanger Institute",
+            country="United Kingdom",
+            latitude=52.083333,
+            longitude=0.183333,
         )
         self.sample = Sample.objects.create(
             lane_id="31663_7#113",
@@ -270,8 +273,10 @@ class InstitutionsQueryTestCase(APITestCase):
     def setUp(self):
         # put something in the db
         self.institution = Institution.objects.create(
-            name="Wellcome Sanger Institute", country="United Kingdom",
-            latitude=52.083333, longitude= 0.183333
+            name="Wellcome Sanger Institute",
+            country="United Kingdom",
+            latitude=52.083333,
+            longitude=0.183333,
         )
 
     def make_and_validate_institutions_query(self, subquery):
@@ -293,13 +298,17 @@ class InstitutionsQueryTestCase(APITestCase):
     def test_has_latitude(self):
         institutions = self.make_and_validate_institutions_query("latitude")
         self.validate_field(
-            institutions[0], "latitude", expected_value=self.institution.latitude,
+            institutions[0],
+            "latitude",
+            expected_value=self.institution.latitude,
         )
 
     def test_has_longitude(self):
         institutions = self.make_and_validate_institutions_query("longitude")
         self.validate_field(
-            institutions[0], "longitude", expected_value=self.institution.longitude,
+            institutions[0],
+            "longitude",
+            expected_value=self.institution.longitude,
         )
 
     def test_has_field_country(self):
