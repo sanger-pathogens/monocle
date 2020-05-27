@@ -166,12 +166,14 @@ class APITestCase(GraphQLTestCase):
     def login(self, email, password):
         self.query(
             """
-            mutation {
-                tokenAuth(email:"bob@bob.com", password: "bobsicle") {
+            mutation Login($email: String!, $password: String!) {
+                tokenAuth(email: $email, password: $password) {
                     token
                 }
             }
             """,
+            op_name="Login",
+            variables={"email": email, "password": password},
         )
         # TODO: return token
 
