@@ -34,6 +34,8 @@ class Migration(migrations.Migration):
             name='Institution',
             fields=[
                 ('name', models.CharField(max_length=256, primary_key=True, serialize=False)),
+                ('latitude',models.FloatField()),
+                ('longitude',models.FloatField()),
                 ('country', models.CharField(max_length=256)),
             ],
         ),

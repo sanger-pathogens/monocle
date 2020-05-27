@@ -10,6 +10,8 @@ scalar GenericScalar
 type Institution {
   name: String!
   country: String!
+  latitude: Float,
+  longitude: Float,
   affiliatedMembers: [User!]!
   samples: [Sample!]!
 }

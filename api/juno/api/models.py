@@ -5,6 +5,8 @@ from django.db import models
 class Institution(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
     country = models.CharField(max_length=256)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
 
 class User(AbstractBaseUser):
