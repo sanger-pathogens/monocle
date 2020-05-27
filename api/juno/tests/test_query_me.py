@@ -36,7 +36,20 @@ class MeQueryTestCase(APITestCase):
         me = self.validate_field(data, "me")
         self.validate_field(me, "email", expected_value=self.user.email)
 
-    def test_has_field_email_when_not_logged_in(self):
+    def test_has_no_field_email_when_not_logged_in(self):
+        # query
+        response = self.make_me_query("email")
+
+        # check
+        content = self.validate_unsuccessful(response)
+        if "data" in content.keys() and "me" in content["data"].keys():
+            self.assertEqual(content["data"]["me"], None)
+
+    def test_has_no_field_email_when_logged_out(self):
+        # auth
+        self.login(self.user.email, self.user.password)
+        self.logout()
+
         # query
         response = self.make_me_query("email")
 
