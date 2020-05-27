@@ -1,6 +1,11 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from graphql_jwt import ObtainJSONWebToken, Verify, Refresh
+from graphql_jwt import (
+    ObtainJSONWebToken,
+    Verify,
+    Refresh,
+    DeleteJSONWebTokenCookie,
+)
 from graphql_jwt.decorators import login_required
 
 
@@ -26,6 +31,7 @@ class Mutation(object):
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
     refresh_token = Refresh.Field()
+    delete_token_cookie = DeleteJSONWebTokenCookie.Field()
 
 
 class Query(object):
