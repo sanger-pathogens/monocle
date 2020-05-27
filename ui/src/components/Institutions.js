@@ -13,6 +13,8 @@ import {
 
 const columns = [
   { key: "name", label: "Institution" },
+  { key: "latitude", label: "Latitude" },
+  { key: "longitude", label: "Longitude" },
   { key: "country", label: "Country" },
 ];
 
@@ -20,6 +22,8 @@ const INSTITUTIONS_QUERY = gql`
   {
     institutions {
       name
+      latitude
+      longitude
       country
     }
   }
