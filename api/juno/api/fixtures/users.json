@@ -4,7 +4,23 @@
         "fields": {
             "first_name": "Gareth",
             "last_name": "Peat",
-            "email": "gp16@sanger.ac.uk"
+            "email": "gareth@juno.com"
+        }
+    },
+    {
+        "model": "api.User",
+        "fields": {
+            "first_name": "Magnus",
+            "last_name": "Manske",
+            "email": "magnus@juno.com"
+        }
+    },
+    {
+        "model": "api.User",
+        "fields": {
+            "first_name": "Kathryn",
+            "last_name": "Murie",
+            "email": "kathryn@juno.com"
         }
     },
     {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
 import {
   Grid,
@@ -21,24 +22,21 @@ const useStyles = makeStyles({
 });
 
 const LOGIN_MUTATION = gql`
-  mutation {
-    login(email: "gp16@sanger.ac.uk", password: "gp16") {
-      accessToken
-      refreshToken
+  mutation Login($email: String!, $password: String!) {
+    tokenAuth(email: $email, password: $password) {
+      token
     }
   }
 `;
 const Login = () => {
   const classes = useStyles();
+  let history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
-    onCompleted({ login }) {
-      console.log("onCompleted!");
-      console.log(login);
-      // document.cookie.token =
-      // localStorage.setItem('token', login);
-      // client.writeData({ data: { isLoggedIn: true } });
+  const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
+    onCompleted(data) {
+      // change page
+      history.push("/me");
     },
   });
   const handleSubmit = (event) => {
@@ -81,14 +79,16 @@ const Login = () => {
                   value={password}
                   onInput={(e) => setPassword(e.target.value)}
                 />
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  color="primary"
-                  style={{ textTransform: "none" }}
-                >
-                  Login
-                </Button>
+                <Box pt={4}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disableElevation
+                    style={{ textTransform: "none" }}
+                  >
+                    Login
+                  </Button>
+                </Box>
               </Box>
             </form>
           </Paper>

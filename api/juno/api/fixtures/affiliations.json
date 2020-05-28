@@ -2,7 +2,7 @@
     {
         "model": "api.Affiliation",
         "fields": {
-            "user": "gp16@sanger.ac.uk",
+            "user": "gareth@juno.com",
             "institution": "Wellcome Sanger Institute"
         }
     },
