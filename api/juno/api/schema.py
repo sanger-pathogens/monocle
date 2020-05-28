@@ -20,6 +20,10 @@ class Institution(DjangoObjectType):
 class User(DjangoObjectType):
     class Meta:
         model = models.User
+        exclude_fields = (
+            "password",
+            "last_login",
+        )
 
 
 class Sample(DjangoObjectType):
