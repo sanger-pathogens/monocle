@@ -180,7 +180,7 @@ class APITestCase(GraphQLTestCase):
     def logout(self):
         self.query(
             """
-            mutation {
+            mutation Logout {
                 deleteTokenCookie {
                     deleted
                 }
