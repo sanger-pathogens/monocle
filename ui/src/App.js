@@ -16,6 +16,7 @@ import "typeface-inter";
 import theme from "./theme";
 import PageHome from "./components/PageHome";
 import PageLogin from "./components/PageLogin";
+import PageMe from "./components/PageMe";
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -35,6 +36,7 @@ const App = () => (
         <Switch>
           <Route exact path="/" component={PageHome} />
           <Route exact path="/login" component={PageLogin} />
+          <Route exact path="/me" component={PageMe} />
           {/* <Route path="*" component={Page404} /> */}
         </Switch>
       </Router>
