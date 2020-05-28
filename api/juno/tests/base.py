@@ -73,6 +73,22 @@ class GraphQLTestCase(TestCase):
             )
         return resp
 
+    def make_query(self, queryname, subquery):
+        # make query
+        response = self.post(
+            """
+            query {
+                %s {
+                    %s
+                }
+            }
+            """
+            % (queryname, subquery,),
+        )
+
+        # return response for further checks
+        return response
+
     def validate_response_has_no_errors(self, response):
         # http errors?
         self.assertEqual(
@@ -120,22 +136,6 @@ class GraphQLTestCase(TestCase):
 
         # return content for further checks
         return content
-
-    def make_query(self, queryname, subquery):
-        # make query
-        response = self.post(
-            """
-            query {
-                %s {
-                    %s
-                }
-            }
-            """
-            % (queryname, subquery,),
-        )
-
-        # return response for further checks
-        return response
 
     def validate_field(self, parent, fieldname, expected_value=None):
         # parent in response an object?
