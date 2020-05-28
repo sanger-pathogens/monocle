@@ -137,20 +137,6 @@ class GraphQLTestCase(TestCase):
         # return response for further checks
         return response
 
-    def make_and_validate_query(self, queryname, subquery):
-        # valid response?
-        response = self.make_query(queryname, subquery)
-        data = self.validate_successful(response)
-
-        # has the query?
-        self.assertIn(
-            queryname, data, msg=self.MSG_FIELD_MISSING,
-        )
-        value = data[queryname]
-
-        # return for further checks
-        return value
-
     def validate_field(self, parent, fieldname, expected_value=None):
         # parent in response an object?
         self.assertIsInstance(

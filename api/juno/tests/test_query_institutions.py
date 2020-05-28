@@ -14,7 +14,9 @@ class InstitutionsQueryTestCase(GraphQLTestCase):
 
     def make_and_validate_institutions_query(self, subquery):
         # call api
-        institutions = self.make_and_validate_query("institutions", subquery)
+        response = self.make_query("institutions", subquery)
+        data = self.validate_successful(response)
+        institutions = self.validate_field(data, "institutions")
 
         # check non-empty
         self.validate_non_empty_list(institutions)

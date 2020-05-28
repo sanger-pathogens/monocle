@@ -22,7 +22,9 @@ class SamplesQueryTestCase(GraphQLTestCase):
 
     def make_and_validate_samples_query(self, subquery):
         # call api
-        samples = self.make_and_validate_query("samples", subquery)
+        response = self.make_query("samples", subquery)
+        data = self.validate_successful(response)
+        samples = self.validate_field(data, "samples")
 
         # check non-empty
         self.validate_non_empty_list(samples)
