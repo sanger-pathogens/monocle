@@ -1,34 +1,25 @@
 from juno.api.models import User
-from juno.tests.base import APITestCase
-
-PASSWORD = "bobsicles"
+from juno.tests.base import AuthenticatableGraphQLTestCase
 
 
-class MeQueryTestCase(APITestCase):
+class MeQueryTestCase(AuthenticatableGraphQLTestCase):
+    PASSWORD = "bobsicles"
+
     def setUp(self):
         # put something in the db
         self.user = User.objects.create(
             email="bob@bob.com", first_name="Bob", last_name="Bobbity",
         )
-        self.user.set_password(PASSWORD)
+        self.user.set_password(self.PASSWORD)
         self.user.save()
 
     def make_me_query(self, subquery):
         # call api
-        return self.query(
-            """
-            query {
-                me {
-                    %s
-                }
-            }
-            """
-            % subquery,
-        )
+        return self.make_query("me", subquery)
 
     def test_has_field_email_when_logged_in(self):
         # auth
-        self.login(self.user.email, PASSWORD)
+        self.login(self.user.email, self.PASSWORD)
 
         # query
         response = self.make_me_query("email")
@@ -49,7 +40,7 @@ class MeQueryTestCase(APITestCase):
 
     def test_has_no_field_email_when_logged_out(self):
         # auth
-        self.login(self.user.email, PASSWORD)
+        self.login(self.user.email, self.PASSWORD)
         self.logout()
 
         # query

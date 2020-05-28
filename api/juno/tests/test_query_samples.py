@@ -1,8 +1,8 @@
-from juno.tests.base import APITestCase
+from juno.tests.base import GraphQLTestCase
 from juno.api.models import Sample, Institution
 
 
-class SamplesQueryTestCase(APITestCase):
+class SamplesQueryTestCase(GraphQLTestCase):
     def setUp(self):
         # put something in the db
         self.institution = Institution.objects.create(

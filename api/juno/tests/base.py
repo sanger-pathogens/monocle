@@ -3,14 +3,27 @@ from django.test import TestCase
 
 
 class GraphQLTestCase(TestCase):
-    """
-    Adapted from `graphene_django.utils.testing.GraphQLTestCase`
-    """
+    # adapted from `graphene_django.utils.testing.GraphQLTestCase`
 
     # URL to graphql endpoint
     GRAPHQL_URL = "/graphql/"
 
-    def query(
+    # common messages
+    MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
+    MSG_NO_DATA = "API response missing an expected data field"
+    MSG_NO_GQL_ERROR = "API response missing an expected error field"
+    MSG_GQL_ERROR = "API response has an unexpected error field"
+    MSG_FIELD_MISSING = "API response missing an expected field"
+    MSG_VALUE_MISMATCH = "Value in API response differs from value in database"
+    MSG_VALUE_EXPECTED_LIST = "Value in API response should be a list type"
+    MSG_VALUE_EXPECTED_NONPRIMITIVE_TYPE = (
+        "Value in API response should be a non-primitive type (dict)"
+    )
+    MSG_VALUE_EXPECTED_STRING_TYPE = "Value in API response should be a string"
+    MSG_EXPECTED_NONEMPTY_LIST = "Expected non-empty list"
+    MSG_EXPECTED_STATUS_200 = "Expected API response to have status code 200"
+
+    def post(
         self,
         query,
         op_name=None,
@@ -60,41 +73,33 @@ class GraphQLTestCase(TestCase):
             )
         return resp
 
-    def assertResponseNoErrors(self, resp):
-        """
-        Assert that the call went through correctly. 200 means the syntax is ok, if there are no `errors`,
-        the call was fine.
-        :resp HttpResponse: Response
-        """
-        self.assertEqual(resp.status_code, 200)
-        content = json.loads(resp.content)
-        self.assertNotIn("errors", list(content.keys()))
+    def validate_response_has_no_errors(self, response):
+        # http errors?
+        self.assertEqual(
+            response.status_code, 200, msg=self.MSG_EXPECTED_STATUS_200
+        )
 
-    def assertResponseHasErrors(self, resp):
-        """
-        Assert that the call was failing. Take care: Even with errors, GraphQL returns status 200!
-        :resp HttpResponse: Response
-        """
-        content = json.loads(resp.content)
-        self.assertIn("errors", list(content.keys()))
+        # json body?
+        content = json.loads(response.content)
 
+        # return content for further checks
+        return content
 
-class APITestCase(GraphQLTestCase):
-    # common messages
-    MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
-    MSG_NO_DATA = "API response has no root data field"
-    MSG_FIELD_MISSING = "API response should contain field"
-    MSG_VALUE_MISMATCH = "Value in API response differs from value in database"
-    MSG_VALUE_EXPECTED_LIST = "Value in API response should be a list type"
-    MSG_VALUE_EXPECTED_NONPRIMITIVE_TYPE = (
-        "Value in API response should be a non-primitive type (dict)"
-    )
-    MSG_VALUE_EXPECTED_STRING_TYPE = "Value in API response should be a string"
-    MSG_EXPECTED_NONEMPTY_LIST = "Expected non-empty list"
+    def validate_has_no_graphql_errors(self, content):
+        # GraphQL errors?
+        self.assertNotIn("errors", content.keys(), msg=self.MSG_GQL_ERROR)
+
+    def validate_has_graphql_errors(self, content):
+        # GraphQL errors?
+        self.assertIn("errors", content.keys(), msg=self.MSG_NO_GQL_ERROR)
+
+        # return errors for further checks
+        return content["errors"]
 
     def validate_successful(self, response):
         # query ok?
-        self.assertResponseNoErrors(response)
+        content = self.validate_response_has_no_errors(response)
+        self.validate_has_no_graphql_errors(content)
 
         # expected content?
         content = json.loads(response.content)
@@ -106,7 +111,8 @@ class APITestCase(GraphQLTestCase):
 
     def validate_unsuccessful(self, response):
         # query ok?
-        self.assertResponseHasErrors(response)
+        content = self.validate_response_has_no_errors(response)
+        self.validate_has_graphql_errors(content)
 
         # expected content?
         content = json.loads(response.content)
@@ -115,9 +121,9 @@ class APITestCase(GraphQLTestCase):
         # return content for further checks
         return content
 
-    def make_and_validate_query(self, queryname, subquery):
+    def make_query(self, queryname, subquery):
         # make query
-        response = self.query(
+        response = self.post(
             """
             query {
                 %s {
@@ -128,6 +134,12 @@ class APITestCase(GraphQLTestCase):
             % (queryname, subquery,),
         )
 
+        # return response for further checks
+        return response
+
+    def make_and_validate_query(self, queryname, subquery):
+        # valid response?
+        response = self.make_query(queryname, subquery)
         data = self.validate_successful(response)
 
         # has the query?
@@ -163,8 +175,10 @@ class APITestCase(GraphQLTestCase):
             len(expected_list), 0, msg=self.MSG_EXPECTED_NONEMPTY_LIST
         )
 
+
+class AuthenticatableGraphQLTestCase(GraphQLTestCase):
     def login(self, email, password):
-        self.query(
+        response = self.post(
             """
             mutation Login($email: String!, $password: String!) {
                 tokenAuth(email: $email, password: $password) {
@@ -175,10 +189,15 @@ class APITestCase(GraphQLTestCase):
             op_name="Login",
             variables={"email": email, "password": password},
         )
-        # TODO: return token
+
+        data = self.validate_successful(response)
+        token_auth = self.validate_field(data, "tokenAuth")
+        token = self.validate_field(token_auth, "token")
+
+        return token
 
     def logout(self):
-        self.query(
+        self.post(
             """
             mutation Logout {
                 deleteTokenCookie {
