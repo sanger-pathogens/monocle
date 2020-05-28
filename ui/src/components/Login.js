@@ -79,14 +79,16 @@ const Login = () => {
                   value={password}
                   onInput={(e) => setPassword(e.target.value)}
                 />
-                <Button
-                  type="submit"
-                  variant="outlined"
-                  color="primary"
-                  style={{ textTransform: "none" }}
-                >
-                  Login
-                </Button>
+                <Box pt={4}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disableElevation
+                    style={{ textTransform: "none" }}
+                  >
+                    Login
+                  </Button>
+                </Box>
               </Box>
             </form>
           </Paper>

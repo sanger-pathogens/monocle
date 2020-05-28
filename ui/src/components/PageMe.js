@@ -6,6 +6,7 @@ import Page from "./Page";
 import Header from "./Header";
 import Footer from "./Footer";
 import Me from "./Me";
+import Logout from "./Logout";
 
 // Offset all anchors by -60 to account for a fixed header
 // and scroll more quickly than the default 400ms
@@ -39,6 +40,7 @@ const PageMe = () => (
   >
     <Box>
       <Me />
+      <Logout />
     </Box>
   </Page>
 );

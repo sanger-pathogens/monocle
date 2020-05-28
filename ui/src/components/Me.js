@@ -26,7 +26,6 @@ const ME_QUERY = gql`
 const Me = () => {
   const classes = useStyles();
   const { loading, error, data } = useQuery(ME_QUERY);
-  console.log(data);
 
   let me = null;
   if (data && !(loading || error)) {
