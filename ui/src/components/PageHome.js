@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
+import DownloadFile from "./DownloadFile";
 
 // Offset all anchors by -60 to account for a fixed header
 // and scroll more quickly than the default 400ms
@@ -25,6 +26,12 @@ const sections = [
     title: "Samples",
     url: "samples",
     ContentComponent: Samples,
+  },
+  {
+    label: "DownloadFile",
+    title: "DownloadFile",
+    url: "downloadfile",
+    ContentComponent: DownloadFile,
   },
 ];
 

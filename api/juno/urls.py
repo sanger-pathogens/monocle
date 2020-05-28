@@ -18,11 +18,14 @@ from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path
+from juno.api import views 
 
 from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 urlpatterns = [
+    path('data/', views.download_file),
     # url(r"^admin/", admin.site.urls),
     url(
         r"^graphql/",

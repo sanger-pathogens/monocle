@@ -10,6 +10,7 @@ import {
   TableRow,
   TableCell,
 } from "@material-ui/core";
+import DownloadFile_button from "./DownloadFile" 
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -29,15 +30,16 @@ const columns = [
     valueAccessor: (d) => d.submittingInstitution.country,
   },
   {
-    key: "hostStatus",
-    label: "Host Status",
-    valueAccessor: (d) => d.hostStatus,
-  },
-  {
     key: "serotype",
     label: "Serotype",
     valueAccessor: (d) => d.serotype,
   },
+  {
+    key: "download",
+    label: "Download",
+    valueAccessor: ({value}) => (<button onClick={DownloadFile_button.downloadEmployeeData}>Download</button>),
+    Cell: ({value}) => (<button onClick={DownloadFile_button.downloadEmployeeData}>Download</button>)
+  }, 
 ];
 
 const SAMPLES_QUERY = gql`
