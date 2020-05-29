@@ -77,7 +77,7 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         self.assertIn("JWT", self.client.cookies.keys())
         self.assertEqual(self.client.cookies["JWT"].value, token)
 
-        # ...time passes, but the token has not expired...
+        # ...time passes, and the token has expired...
         sleep(
             TEST_GRAPHQL_JWT["JWT_EXPIRATION_DELTA"].total_seconds() + DELTA_S
         )
