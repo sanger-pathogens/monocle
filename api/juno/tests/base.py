@@ -9,6 +9,8 @@ class GraphQLTestCase(TestCase):
     GRAPHQL_URL = "/graphql/"
 
     # common messages
+    GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED = "Signature has expired"
+
     MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
     MSG_NO_DATA = "API response missing an expected data field"
     MSG_NO_GQL_ERROR = "API response missing an expected error field"
@@ -229,3 +231,14 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
         )
 
         return (payload, token, refresh_expires_in)
+
+    def validate_refresh_token_signature_expired(self, response):
+        content = self.validate_unsuccessful(response)
+        errors = self.validate_field(content, "errors")
+        self.assertTrue(
+            any(
+                "message" in e.keys()
+                and e["message"] == self.GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED
+                for e in errors
+            )
+        )

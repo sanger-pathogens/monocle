@@ -1,9 +1,21 @@
 from time import sleep
+from datetime import timedelta
+from django.test import override_settings
 
 from juno.api.models import User
 from juno.tests.base import AuthenticatableGraphQLTestCase
 
+DELTA_MS = 1000
+DELTA_S = DELTA_MS / 1000
 
+TEST_GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(milliseconds=2 * DELTA_MS),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(milliseconds=5 * DELTA_MS),
+}
+
+
+@override_settings(GRAPHQL_JWT=TEST_GRAPHQL_JWT)
 class AuthTestCase(AuthenticatableGraphQLTestCase):
     PASSWORD = "bobsicles"
 
@@ -15,7 +27,7 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         self.user.set_password(self.PASSWORD)
         self.user.save()
 
-    def test_refresh_token(self):
+    def test_refresh_token_before_expiry(self):
         # login
         response = self.login(self.user.email, self.PASSWORD)
         (payload, token, refresh_expires_in) = self.validate_login_successful(
@@ -27,7 +39,7 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         self.assertEqual(self.client.cookies["JWT"].value, token)
 
         # ...time passes, but the token has not expired...
-        sleep(1)
+        sleep(DELTA_S)
 
         # refresh to get a new access token:
         # clients (such as the ui) can repeatedly request a
@@ -53,3 +65,23 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         # new access token added to client cookies?
         self.assertIn("JWT", self.client.cookies.keys())
         self.assertEqual(self.client.cookies["JWT"].value, new_token)
+
+    def test_refresh_token_after_expiry(self):
+        # login
+        response = self.login(self.user.email, self.PASSWORD)
+        (payload, token, refresh_expires_in) = self.validate_login_successful(
+            response
+        )
+
+        # access token added to client cookies?
+        self.assertIn("JWT", self.client.cookies.keys())
+        self.assertEqual(self.client.cookies["JWT"].value, token)
+
+        # ...time passes, but the token has not expired...
+        sleep(
+            TEST_GRAPHQL_JWT["JWT_EXPIRATION_DELTA"].total_seconds() + DELTA_S
+        )
+
+        # refresh to get a new access token fails?
+        response = self.refresh_token(token)
+        self.validate_refresh_token_signature_expired(response)
