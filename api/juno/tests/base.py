@@ -183,7 +183,7 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
         return response
 
     def logout(self):
-        self.post(
+        response = self.post(
             """
             mutation Logout {
                 deleteTokenCookie {
@@ -191,7 +191,10 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
                 }
             }
             """,
+            op_name="Logout",
         )
+
+        return response
 
     def refresh_token(self, token):
         response = self.post(
