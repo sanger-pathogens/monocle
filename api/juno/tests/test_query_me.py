@@ -19,7 +19,8 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
 
     def test_has_field_email_when_logged_in(self):
         # auth
-        self.login(self.user.email, self.PASSWORD)
+        response = self.login(self.user.email, self.PASSWORD)
+        self.validate_login_successful(response)
 
         # query
         response = self.make_me_query("email")
@@ -40,7 +41,8 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
 
     def test_has_no_field_email_when_logged_out(self):
         # auth
-        self.login(self.user.email, self.PASSWORD)
+        response = self.login(self.user.email, self.PASSWORD)
+        self.validate_login_successful(response)
         self.logout()
 
         # query
