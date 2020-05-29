@@ -176,11 +176,7 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             variables={"email": email, "password": password},
         )
 
-        data = self.validate_successful(response)
-        token_auth = self.validate_field(data, "tokenAuth")
-        token = self.validate_field(token_auth, "token")
-
-        return token
+        return response
 
     def logout(self):
         self.post(
@@ -192,3 +188,10 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             }
             """,
         )
+
+    def validate_login_successful(self, response):
+        data = self.validate_successful(response)
+        token_auth = self.validate_field(data, "tokenAuth")
+        token = self.validate_field(token_auth, "token")
+
+        return token
