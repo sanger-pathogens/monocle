@@ -168,7 +168,9 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             """
             mutation Login($email: String!, $password: String!) {
                 tokenAuth(email: $email, password: $password) {
+                    payload
                     token
+                    refreshExpiresIn
                 }
             }
             """,
@@ -189,9 +191,41 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             """,
         )
 
+    def refresh_token(self, token):
+        response = self.post(
+            """
+            mutation RefreshToken($token: String!) {
+                refreshToken(token: $token) {
+                    payload
+                    token
+                    refreshExpiresIn
+                }
+            }
+            """,
+            op_name="RefreshToken",
+            variables={"token": token},
+        )
+
+        return response
+
     def validate_login_successful(self, response):
         data = self.validate_successful(response)
         token_auth = self.validate_field(data, "tokenAuth")
+        payload = self.validate_field(token_auth, "payload")
         token = self.validate_field(token_auth, "token")
+        refresh_expires_in = self.validate_field(
+            token_auth, "refreshExpiresIn"
+        )
 
-        return token
+        return (payload, token, refresh_expires_in)
+
+    def validate_refresh_token_successful(self, response):
+        data = self.validate_successful(response)
+        refresh_token = self.validate_field(data, "refreshToken")
+        payload = self.validate_field(refresh_token, "payload")
+        token = self.validate_field(refresh_token, "token")
+        refresh_expires_in = self.validate_field(
+            refresh_token, "refreshExpiresIn"
+        )
+
+        return (payload, token, refresh_expires_in)
