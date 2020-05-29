@@ -29,7 +29,11 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         # ...time passes, but the token has not expired...
         sleep(1)
 
-        # refresh to get a new access token
+        # refresh to get a new access token:
+        # clients (such as the ui) can repeatedly request a
+        # new access token in this way, provided the current
+        # one has not expired
+        # see django-graphql-jwt: https://django-graphql-jwt.domake.io/en/latest/refresh_token.html#single-token-refresh
         response = self.refresh_token(token)
         (
             new_payload,
