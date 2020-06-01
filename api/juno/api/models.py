@@ -30,43 +30,39 @@ class Affiliation(models.Model):
 
 
 class Sample(models.Model):
+    class Serotype(models.TextChoices):
+        IA = "Ia"
+        IB = "Ib"
+        II = "II"
+        III = "III"
+        IV = "IV"
+        V = "V"
+        VI = "VI"
+        VII = "VII"
+        VIII = "VIII"
+        IX = "IX"
+        NT = "NT"
+        UNKNOWN = "unknown"
 
-
-    class Serotype(models.TextChoices): 
-        IA = 'Ia' 
-        IB = 'Ib'
-        II = 'II'
-        III = 'III'
-        IV = 'IV'
-        V = 'V'
-        VI = 'VI'
-        VII = 'VII'
-        VIII = 'VIII'
-        IX = 'IX'
-        NT = 'NT'
-        UNKNOWN = 'unknown'
-
- 
     class HostStatus(models.TextChoices):
-        CARRIAGE = 'carriage'
-        SEPSIS = 'sepsis'
-        BACTERAEMIA = 'bacteraemia'
-        MENINGITIS = 'meningitis'
-        PNEUMONIA = 'pneumonia'
-        URINARY_TRACT_INFECTION = 'urinary tract infection'
-        INFECTION_AND_SOFT_TISSUE_INFECTION = 'skin and soft-tissue infection'
-        OSTEOMYELITIS = 'osteomyelitis'
-        ENDOCARDITIS = 'endocarditis'
-        SEPTIC_ARTHRITIS = 'septic arthritis'
-        CHORIOAMNIONITIS = 'chorioamnionitis'
-        PERITONITIS = 'peritonitis'
-        EMPYEMA = 'empyema'
-        SURGICAL_SITE_INFECTION = 'surgical site infection'
-        UROSEPSIS = 'urosepsis'
-        ENDOMETRITIS = 'endometritis'
-        MASTITIS = 'mastitis'
-        DISEASE_OTHER = 'disease other'
-
+        CARRIAGE = "carriage"
+        SEPSIS = "sepsis"
+        BACTERAEMIA = "bacteraemia"
+        MENINGITIS = "meningitis"
+        PNEUMONIA = "pneumonia"
+        URINARY_TRACT_INFECTION = "urinary tract infection"
+        INFECTION_AND_SOFT_TISSUE_INFECTION = "skin and soft-tissue infection"
+        OSTEOMYELITIS = "osteomyelitis"
+        ENDOCARDITIS = "endocarditis"
+        SEPTIC_ARTHRITIS = "septic arthritis"
+        CHORIOAMNIONITIS = "chorioamnionitis"
+        PERITONITIS = "peritonitis"
+        EMPYEMA = "empyema"
+        SURGICAL_SITE_INFECTION = "surgical site infection"
+        UROSEPSIS = "urosepsis"
+        ENDOMETRITIS = "endometritis"
+        MASTITIS = "mastitis"
+        DISEASE_OTHER = "disease other"
 
     lane_id = models.CharField(max_length=256, primary_key=True)
     sample_id = models.CharField(max_length=256, unique=True)
