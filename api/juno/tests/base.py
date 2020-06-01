@@ -10,6 +10,7 @@ class GraphQLTestCase(TestCase):
 
     # common messages
     GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED = "Signature has expired"
+    GRAPHQL_JWT_MSG_REFRESH_TOKEN_EXPIRED = "Refresh token is expired"
 
     MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
     MSG_NO_DATA = "API response missing an expected data field"
@@ -196,11 +197,11 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
 
         return response
 
-    def refresh_token(self, token):
+    def refresh_token(self):
         response = self.post(
             """
-            mutation RefreshToken($token: String!) {
-                refreshToken(token: $token) {
+            mutation RefreshToken {
+                refreshToken {
                     payload
                     token
                     refreshExpiresIn
@@ -208,7 +209,6 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             }
             """,
             op_name="RefreshToken",
-            variables={"token": token},
         )
 
         return response
@@ -241,7 +241,7 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
         self.assertTrue(
             any(
                 "message" in e.keys()
-                and e["message"] == self.GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED
+                and e["message"] == self.GRAPHQL_JWT_MSG_REFRESH_TOKEN_EXPIRED
                 for e in errors
             )
         )

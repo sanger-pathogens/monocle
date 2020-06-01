@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "graphene_django",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "juno.api",
 ]
 
@@ -145,4 +146,5 @@ GRAPHQL_JWT = {
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_EXPIRATION_DELTA": timedelta(minutes=10),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }
