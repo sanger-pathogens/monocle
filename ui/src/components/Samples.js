@@ -10,7 +10,7 @@ import {
   TableRow,
   TableCell,
 } from "@material-ui/core";
-import downloadData from "./SampleDownloadButton"
+import handlerGenerator from "./SampleDownloadButton"
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -37,7 +37,7 @@ const columns = [
   {
     key: "download",
     label: "Download",
-    valueAccessor: ({value}) => (<button onClick={downloadData}>Download</button>),
+    valueAccessor: (d) => (<button onClick={handlerGenerator(d.laneId)}>{d.laneId}</button>),
   }, 
 ];
 

@@ -20,12 +20,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from juno.api import views 
+import urllib 
 
 from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 urlpatterns = [
-    path('data/', views.download_file),
+    path('31663_7#113/', views.download_file),
+    path('31663_7#115/', views.download_file),
     # url(r"^admin/", admin.site.urls),
     url(
         r"^graphql/",
