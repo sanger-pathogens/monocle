@@ -7,7 +7,7 @@ const downloadLaneData = (laneId, laneId_encoded) =>
       let url = window.URL.createObjectURL(blob);
       let a = document.createElement("a");
       a.href = url;
-      a.download = `${laneId}.csv`;
+      a.download = `${laneId}.tar.gz`;
       a.click();
     }); //window.location.href = response.url;
   });
