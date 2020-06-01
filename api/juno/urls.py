@@ -26,13 +26,12 @@ from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 urlpatterns = [
-    path('31663_7#113/', views.download_file),
-    path('31663_7#115/', views.download_file),
     # url(r"^admin/", admin.site.urls),
     url(
         r"^graphql/",
         jwt_cookie(csrf_exempt(GraphQLView.as_view(graphiql=True))),
     ),
+    path('<str:laneId>/', views.download_file),
 ]
 
 # TODO: serve static files with nginx not gunicorn
