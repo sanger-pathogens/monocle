@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
-import { Paper, Grid, Box, Button } from "@material-ui/core";
+import { Grid, Box, Button } from "@material-ui/core";
 import gql from "graphql-tag";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -24,9 +24,14 @@ const LOGOUT_MUTATION = gql`
 const Logout = () => {
   const classes = useStyles();
   let history = useHistory();
-  const [logout, { loading, error, data }] = useMutation(LOGOUT_MUTATION, {
-    onCompleted(data) {
-      // change page
+  const [logout] = useMutation(LOGOUT_MUTATION, {
+    onCompleted() {
+      // logged out...
+
+      // update state
+      localStorage.removeItem("isLoggedIn");
+
+      // request credentials
       history.push("/login");
     },
   });

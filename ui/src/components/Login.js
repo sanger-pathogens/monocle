@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/react-hooks";
 import {
   Grid,
@@ -34,7 +33,7 @@ const Login = () => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
+  const [login] = useMutation(LOGIN_MUTATION, {
     onCompleted(data) {
       // login succeeded...
 
