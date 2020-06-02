@@ -5,11 +5,11 @@ import {
 	Button,
   } from "@material-ui/core";
 
-const downloadButton = ({url, filename, children}) => {
+const DownloadButton = ({url, filename, children}) => {
 	const handler = () => { FileSaver.saveAs(url,filename); };
 	return (
 	  <Button onClick={handler} startIcon={<CloudDownloadIcon/>} >{children}</Button>
 	);
   };
 
-export default downloadButton;
+export default DownloadButton;
