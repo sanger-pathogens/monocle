@@ -25,7 +25,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
         // request credentials
         history.push("/login");
-      } else if (message === "Refresh token is expired") {
+      } else if (message === "Refresh token is required") {
         // refresh token has expired...
 
         // update state
