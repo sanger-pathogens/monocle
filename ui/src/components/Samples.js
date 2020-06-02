@@ -10,6 +10,8 @@ import {
   TableRow,
   TableCell,
 } from "@material-ui/core";
+import getLaneUrl from "./SampleDownload"
+import DownloadButton from "./DownloadButton"
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -37,6 +39,11 @@ const columns = [
     key: "serotype",
     label: "Serotype",
     valueAccessor: (d) => d.serotype,
+  },
+  {
+    key: "download",
+    label: "Download",
+    valueAccessor: (d) => <DownloadButton url={getLaneUrl(d.laneId)} filename={d.laneId+'.tar.gz'}>{d.laneId}</DownloadButton>
   },
 ];
 
