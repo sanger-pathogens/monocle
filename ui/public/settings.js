@@ -14,4 +14,6 @@
  */
 window.env = {
   GRAPHQL_API_URL: "http://localhost:8000/graphql/",
+  DOWNLOAD_ROOT_URL:"http://localhost:8000/",
 };
+
