@@ -9,7 +9,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Button,
 } from "@material-ui/core";
 import getLaneUrl from "./SampleDownload"
 import DownloadButton from "./DownloadButton"
