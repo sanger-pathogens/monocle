@@ -12,6 +12,8 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import gql from "graphql-tag";
 
+import history from "../history";
+
 const useStyles = makeStyles({
   gridContainer: {
     margin: 0,
@@ -30,18 +32,30 @@ const LOGIN_MUTATION = gql`
 `;
 const Login = () => {
   const classes = useStyles();
-  let history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
     onCompleted(data) {
-      // change page
+      // login succeeded...
+
+      // update state
+      localStorage.setItem("isLoggedIn", "yes");
+
+      // go to private page
       history.push("/me");
+    },
+    onError(error) {
+      // login failed...
+
+      // update state
+      localStorage.removeItem("isLoggedIn");
+
+      // request credentials
+      history.push("/login");
     },
   });
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(email, password);
     login({ variables: { email, password } });
   };
 
