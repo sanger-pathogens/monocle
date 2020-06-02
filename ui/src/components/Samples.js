@@ -32,6 +32,11 @@ const columns = [
     valueAccessor: (d) => d.submittingInstitution.country,
   },
   {
+    key: "hostStatus",
+    label: "Host Status",
+    valueAccessor: (d) => d.hostStatus,
+  },
+  {
     key: "serotype",
     label: "Serotype",
     valueAccessor: (d) => d.serotype,
