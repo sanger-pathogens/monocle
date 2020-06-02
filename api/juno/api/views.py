@@ -11,7 +11,7 @@ def download_file(request, laneId):
         os.path.join(
             os.path.join(getattr(settings, "BASE_DIR", None),os.pardir
             ),
-            "mock-data/" + laneId + ".tar.gz",
+            "mock-data/" + "31663_7#113" + ".tar.gz",
         )
     )
     filename = os.path.basename(the_file)
