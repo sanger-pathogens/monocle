@@ -1,16 +1,9 @@
 import React from "react";
-
+import FileSaver from "file-saver";
       
-const downloadLaneData = (laneId, laneId_encoded) =>
-    fetch(`http://127.0.0.1:8000/${laneId_encoded}`).then((response) => {
-    response.blob().then((blob) => {
-      let url = window.URL.createObjectURL(blob);
-      let a = document.createElement("a");
-      a.href = url;
-      a.download = `${laneId}.tar.gz`;
-      a.click();
-    }); //window.location.href = response.url;
-  });
+const downloadLaneData = (laneId, laneId_encoded) => {
+    FileSaver.saveAs(`http://127.0.0.1:8000/${laneId_encoded}`,`${laneId}.tar.gz`);
+};
 
 const handlerGenerator = (laneId) => {
     let laneId_encoded =`${encodeURIComponent(`${laneId}`)}`
