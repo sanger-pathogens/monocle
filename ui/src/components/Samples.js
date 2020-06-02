@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import {
   Paper,
   TableContainer,
@@ -12,7 +11,8 @@ import {
   TableCell,
   Button,
 } from "@material-ui/core";
-import handlerGenerator from "./SampleDownloadButton"
+import getLaneUrl from "./SampleDownload"
+import DownloadButton from "./DownloadButton"
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -39,15 +39,8 @@ const columns = [
   {
     key: "download",
     label: "Download",
-    valueAccessor: (d) => (
-    <Button 
-      onClick={handlerGenerator(d.laneId)} 
-      startIcon={<CloudDownloadIcon/>} 
-    >
-      {d.laneId}
-    </Button>
-    ),
-  }, 
+    valueAccessor: (d) => <DownloadButton url={getLaneUrl(d.laneId)} filename={d.laneId+'.tar.gz'}>{d.laneId}</DownloadButton>
+  },
 ];
 
 const SAMPLES_QUERY = gql`
