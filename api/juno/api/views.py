@@ -3,10 +3,17 @@ from django.http import StreamingHttpResponse, HttpResponse
 from wsgiref.util import FileWrapper
 import os 
 import mimetypes
+from django.conf import settings
 
 
 def download_file(request, laneId):
-    the_file = '/Users/km22/Documents/git_projects/monocle/mock-data/%s.tar.gz' % laneId
+    the_file = os.path.abspath(
+        os.path.join(
+            os.path.join(getattr(settings, "BASE_DIR", None),os.pardir
+            ),
+            "mock-data/" + laneId + ".tar.gz",
+        )
+    )
     filename = os.path.basename(the_file)
     chunk_size = 8192
     response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size), 
