@@ -15,7 +15,7 @@ const httpLink = new HttpLink({
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   // TODO: handle network errors globally?
   if (graphQLErrors) {
-    graphQLErrors.map(({ message, locations, path }) => {
+    graphQLErrors.forEach(({ message, locations, path }) => {
       if (message === "Signature has expired") {
         // access token has expired...
         // TODO: attempt to get a new access token (once only)
