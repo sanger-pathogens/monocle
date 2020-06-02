@@ -1,4 +1,6 @@
-window.env = {
-  GRAPHQL_API_URL: "http://api:80/graphql/",
-  DOWNLOAD_ROOT_URL: "http://api:80/",
+const baseUrl = "http://api:80/"
+
+ window.env = {
+  GRAPHQL_API_URL: `${baseUrl}graphql/`,
+  DOWNLOAD_ROOT_URL: `${baseUrl}SampleDownload/`,
 };

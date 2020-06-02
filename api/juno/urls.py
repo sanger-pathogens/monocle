@@ -31,7 +31,7 @@ urlpatterns = [
         r"^graphql/",
         jwt_cookie(csrf_exempt(GraphQLView.as_view(graphiql=True))),
     ),
-    path('<str:laneId>/', views.download_file),
+    path("SampleDownload/<str:laneId>", views.download_file),
 ]
 
 # TODO: serve static files with nginx not gunicorn
