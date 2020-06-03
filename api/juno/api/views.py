@@ -6,14 +6,15 @@ import mimetypes
 import tarfile
 from django.conf import settings
 
+# TODO: replace fixed mock file with actual file for lane
+DATA_DIR = os.path.join(
+    os.path.join(getattr(settings, "BASE_DIR", None), os.pardir),
+    "mock-data/" + "31663_7#113",
+)
+
 
 def download_file(request, laneId):
-    lane_dir = os.path.abspath(
-        os.path.join(
-            os.path.join(getattr(settings, "BASE_DIR", None), os.pardir),
-            "mock-data/" + "31663_7#113",
-        )
-    )
+    lane_dir = os.path.abspath(DATA_DIR)
     archive_file = lane_dir + "tar.gz"
     make_tarfile(archive_file, lane_dir)
     response = stream_file(archive_file)
