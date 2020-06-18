@@ -3,6 +3,7 @@ Monocle is an exploration tool for data from the [Juno project](https://www.gbsg
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
 [![Build Status](https://travis-ci.org/sanger-pathogens/monocle.svg?branch=master)](https://travis-ci.org/sanger-pathogens/monocle)  
+[![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle) 
 
 UI
 
