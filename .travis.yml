@@ -25,3 +25,8 @@ jobs:
         - yarn test:ci
       after_success:
         - bash <(curl -s https://codecov.io/bash) -cF ui
+    - name: integration
+      services:
+        - docker
+      script:
+        - ./e2e.sh
