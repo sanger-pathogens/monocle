@@ -13,6 +13,7 @@ import {
 
 import "typeface-inter";
 
+import env from './env'
 import theme from "./theme";
 import PageHome from "./components/PageHome";
 import PageLogin from "./components/PageLogin";
@@ -20,7 +21,7 @@ import PageMe from "./components/PageMe";
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: window.env.GRAPHQL_API_URL,
+    uri: env.GRAPHQL_API_URL,
     credentials: "include",
   }),
   cache: new InMemoryCache(),
