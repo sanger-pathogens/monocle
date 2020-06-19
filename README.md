@@ -1,6 +1,20 @@
 # Monocle
 Monocle is an exploration tool for data from the [Juno project](https://www.gbsgen.net/). It is early in development, so may be renamed and **should currently be considered unstable**.
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
+[![Build Status](https://travis-ci.org/sanger-pathogens/monocle.svg?branch=master)](https://travis-ci.org/sanger-pathogens/monocle)  
+[![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle) 
+
+UI
+
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-app.svg)](https://hub.docker.com/sangerpathogens/monocle-app)  
+[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-app.svg)](https://hub.docker.com/r/sangerpathogens/monocle-app)
+
+API
+
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)  
+[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)
+
 ## Components
 There are currently two components:
 - User Interface (`ui` directory; a React application)
@@ -62,7 +76,7 @@ scp -r <you>@pcs6:/lustre/scratch118/infgen/pathogen/pathpipe/prokaryotes/seq-pi
 
 For the OpenStack instance, transfer this from your machine to the instance. This should only need to be done once after the instance is created.
 ```
-scp -r ./mock-data pathpipe@172.27.82.31:~/mock-data
+scp -r ./mock-data pathpipe@monocle.dev.pam.sanger.ac.uk:~/mock-data
 ```
 
 ## Testing

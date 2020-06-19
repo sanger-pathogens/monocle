@@ -15,7 +15,7 @@ VERSION=$1
 validate_version "${VERSION}"
 
 REMOTE_USER=pathpipe
-REMOTE_HOST=172.27.82.31
+REMOTE_HOST=monocle.dev.pam.sanger.ac.uk
 
 # copy production compose file (template)
 # keep connection to avoid multiple password entries

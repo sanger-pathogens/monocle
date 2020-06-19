@@ -1,0 +1,32 @@
+language: python
+jobs:
+  include:
+    - name: api unit tests
+      language: python
+      python: "3.7"
+      before_install:
+        - cd api
+      install:
+        - pip install pipenv
+        - pipenv install
+        - pipenv install codecov
+      script:
+        - coverage run ./manage.py test
+      after_success:
+        - codecov -F api
+    - name: ui unit tests
+      language: node_js
+      node_js: 12
+      before_install:
+        - cd ui
+      install:
+        - yarn install
+      script:
+        - yarn test:ci
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -cF ui
+    - name: integration
+      services:
+        - docker
+      script:
+        - ./e2e.sh
