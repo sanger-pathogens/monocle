@@ -62,7 +62,7 @@ scp -r <you>@pcs6:/lustre/scratch118/infgen/pathogen/pathpipe/prokaryotes/seq-pi
 
 For the OpenStack instance, transfer this from your machine to the instance. This should only need to be done once after the instance is created.
 ```
-scp -r ./mock-data pathpipe@172.27.82.31:~/mock-data
+scp -r ./mock-data pathpipe@monocle.dev.pam.sanger.ac.uk:~/mock-data
 ```
 
 ## Testing
