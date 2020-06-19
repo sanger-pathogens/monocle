@@ -26,3 +26,13 @@ it("loads the samples table", () => {
   // body should contain data from the `samples.json` fixture
   cy.get("body").should("contain", "31663_7#113");
 });
+
+it("is possible to connect to api", () => {
+  // run remote command
+  cy.exec("ssh api '( ls -l /app )' > app-folder-on-api-container.txt");
+
+  cy.visit("/");
+
+  // title is hard-coded in index.html (no dependence on react)
+  cy.title().should("eq", "Monocle");
+});

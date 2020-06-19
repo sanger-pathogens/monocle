@@ -2,11 +2,16 @@ version: '3'
 services:
     cypress:
         image: "cypress/included:4.6.0"
+        links:
+            - ui
+            - api
+        privileged: true
         environment:
             - CYPRESS_BASE_URL=http://ui:80/
         working_dir: /e2e
         volumes:
             - ./e2e:/e2e
+            - ./e2e/ssh/id_rsa:/root/.ssh/id_rsa
         depends_on:
             - ui
     ui:
@@ -22,7 +27,11 @@ services:
     api:
         build:
             context: ./api
+            dockerfile: Dockerfile.e2e
         ports:
             - "8001:80"
+            - "2222:22"
+        volumes:
+            - ./e2e/ssh/id_rsa.pub:/root/.ssh/authorized_keys
         # tty: true
         # stdin_open: true
