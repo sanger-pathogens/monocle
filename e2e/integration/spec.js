@@ -28,8 +28,9 @@ it("loads the samples table", () => {
 });
 
 it("is possible to connect to api", () => {
-  // run remote command
-  cy.exec("ssh api '( ls -l /app )' > app-folder-on-api-container.txt");
+  // run remote command via script
+  // (eventually for db seeding)
+  cy.exec("./seed-database.sh");
 
   cy.visit("/");
 

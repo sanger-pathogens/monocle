@@ -2,6 +2,7 @@ version: '3'
 services:
     cypress:
         image: "cypress/included:4.6.0"
+        user: root
         links:
             - ui
             - api
@@ -12,6 +13,7 @@ services:
         volumes:
             - ./e2e:/e2e
             - ./e2e/ssh/id_rsa:/root/.ssh/id_rsa
+            - ./e2e/ssh/config:/root/.ssh/config
         depends_on:
             - ui
     ui:
