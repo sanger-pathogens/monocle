@@ -16,7 +16,7 @@ cp e2e-ssh/id_rsa.pub e2e-ssh/cypress/id_rsa.pub
 mv e2e-ssh/id_rsa.pub e2e-ssh/api/authorized_keys
 
 # Set permissions
-chmod 600 e2e-ssh/cypress/config
+chmod 400 e2e-ssh/cypress/config
 chmod 600 e2e-ssh/cypress/id_rsa
 chmod 600 e2e-ssh/cypress/id_rsa.pub
 chmod 600 e2e-ssh/api/authorized_keys
