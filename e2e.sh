@@ -24,4 +24,22 @@ chmod 700 e2e-ssh/api
 
 # Run the end-to-end tests.
 docker-compose -f docker-compose.e2e.yml build
-docker-compose -f docker-compose.e2e.yml up --exit-code-from cypress
+# docker-compose -f docker-compose.e2e.yml up --exit-code-from cypress
+
+# debug travis
+docker-compose -f docker-compose.e2e.yml up -d
+printf "\n\n\n docker ps \n\n\n"
+docker ps
+printf "\n\n\n docker images \n\n\n"
+docker images
+printf "\n\n\n docker network ls \n\n\n"
+docker network ls
+printf "\n\n\n docker inspect monocle_default \n\n\n"
+docker inspect monocle_default
+printf "\n\n\n docker inspect monocle_cypress_1 \n\n\n"
+docker inspect monocle_cypress_1
+printf "\n\n\n docker inspect monocle_api_1 \n\n\n"
+docker inspect monocle_api_1
+printf "\n\n\n docker inspect monocle_ui_1 \n\n\n"
+docker inspect monocle_ui_1
+docker-compose -f docker-compose.e2e.yml down
