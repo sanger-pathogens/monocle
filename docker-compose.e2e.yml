@@ -5,7 +5,6 @@ services:
         links:
             - ui
             - api
-        privileged: true
         environment:
             - CYPRESS_BASE_URL=http://ui:80/
         working_dir: /e2e
