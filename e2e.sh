@@ -12,10 +12,12 @@ mkdir e2e-ssh/api
 # Move and rename keys
 mv e2e/cypress-ssh-config e2e-ssh/cypress/config
 mv e2e-ssh/id_rsa e2e-ssh/cypress/id_rsa
+cp e2e-ssh/id_rsa.pub e2e-ssh/cypress/id_rsa.pub
 mv e2e-ssh/id_rsa.pub e2e-ssh/api/authorized_keys
 
 # Set permissions
 chmod 600 e2e-ssh/cypress/id_rsa
+chmod 600 e2e-ssh/cypress/id_rsa.pub
 chmod 600 e2e-ssh/api/authorized_keys
 chmod 700 e2e-ssh/cypress
 chmod 700 e2e-ssh/api
