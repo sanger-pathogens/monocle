@@ -1,7 +1,6 @@
 version: '3'
 services:
     cypress:
-        image: "cypress/included:4.8.0"
         build:
             context: ./e2e
         links:
