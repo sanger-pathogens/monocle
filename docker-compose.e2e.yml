@@ -1,8 +1,7 @@
 version: '3'
 services:
     cypress:
-        build:
-            context: ./e2e
+        image: "cypress/included:4.8.0"
         links:
             - ui
             - api
@@ -12,6 +11,7 @@ services:
         working_dir: /e2e
         volumes:
             - ./e2e-ssh/cypress:/root/.ssh
+            - ./e2e:/e2e
         depends_on:
             - ui
     ui:
