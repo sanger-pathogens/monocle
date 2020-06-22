@@ -2,5 +2,6 @@
 **/.DS_Store
 TODOs.md
 mock-data
-e2e/ssh
+e2e-ssh/api/id_rsa*
+e2e-ssh/cypress/id_rsa*
 app-folder-on-api-container.txt

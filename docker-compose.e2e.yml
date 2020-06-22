@@ -12,8 +12,7 @@ services:
         working_dir: /e2e
         volumes:
             - ./e2e:/e2e
-            - ./e2e/ssh/id_rsa:/root/.ssh/id_rsa
-            - ./e2e/ssh/config:/root/.ssh/config
+            - ./e2e-ssh/cypress:/root/.ssh:ro
         depends_on:
             - ui
     ui:
@@ -34,6 +33,6 @@ services:
             - "8001:80"
             - "2222:22"
         volumes:
-            - ./e2e/ssh/id_rsa.pub:/root/.ssh/authorized_keys
+            - ./e2e-ssh/api:/root/.ssh:ro
         # tty: true
         # stdin_open: true
