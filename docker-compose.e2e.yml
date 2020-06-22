@@ -2,7 +2,6 @@ version: '3'
 services:
     cypress:
         image: "cypress/included:4.6.0"
-        user: root
         links:
             - ui
             - api
