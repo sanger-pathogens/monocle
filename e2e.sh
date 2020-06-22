@@ -17,8 +17,8 @@ mv e2e-ssh/id_rsa.pub e2e-ssh/api/authorized_keys
 # Set permissions
 chmod 600 e2e-ssh/cypress/id_rsa
 chmod 600 e2e-ssh/api/authorized_keys
-chmod 600 e2e-ssh/cypress
-chmod 600 e2e-ssh/api
+chmod 700 e2e-ssh/cypress
+chmod 700 e2e-ssh/api
 
 # Run the end-to-end tests.
 docker-compose -f docker-compose.e2e.yml build
