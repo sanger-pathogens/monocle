@@ -15,5 +15,3 @@ services:
             context: ./api
         ports:
             - "8001:80"
-        volumes:
-            - ./e2e-ssh/api:/root/.ssh
