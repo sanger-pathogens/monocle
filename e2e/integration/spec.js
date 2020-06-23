@@ -30,11 +30,24 @@ it("loads the samples table", () => {
 it("is possible to connect to api", () => {
   // run remote command via script
   // (eventually for db seeding)
-  // cy.exec("./run-on-api.sh 'ls -l /app'");
-  cy.exec("./run-on-api.sh");
+  cy.exec("./run-on-api.sh ls -l /app");
 
   cy.visit("/");
 
   // title is hard-coded in index.html (no dependence on react)
   cy.title().should("eq", "Monocle");
+});
+
+it("is possible clear the database", () => {
+  // run remote command via script
+  // (eventually for db seeding)
+  cy.exec("./run-on-api.sh python manage.py e2e empty");
+
+  cy.visit("/");
+
+  // title is hard-coded in index.html (no dependence on react)
+  cy.title().should("eq", "Monocle");
+
+  // body should NOT contain data from the `samples.json` fixture
+  cy.get("body").should("not.contain", "31663_7#113");
 });
