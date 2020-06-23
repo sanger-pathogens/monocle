@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Permissions (https://github.com/travis-ci/travis-ci/issues/7995)
-if [[ -z "${TRAVIS}" ]]; then
+if [[ -n "${TRAVIS}" ]]; then
     echo "$PWD"
     sudo chown -R travis:travis /home/travis/
 fi
