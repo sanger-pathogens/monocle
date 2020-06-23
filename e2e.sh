@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Permissions (https://github.com/travis-ci/travis-ci/issues/7995)
+if [[ -z "${TRAVIS}" ]]; then
+    echo "$PWD"
+    sudo chown -R travis:travis /home/travis/
+fi
+
 # Create a key pair for communication between cypress and api,
 # needed for seeding the database between tests.
 mkdir e2e-ssh
