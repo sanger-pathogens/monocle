@@ -17,6 +17,7 @@ jobs:
     - name: ui unit tests
       language: node_js
       node_js: 12
+      cache: yarn
       before_install:
         - cd ui
       install:
@@ -28,6 +29,7 @@ jobs:
     - name: integration tests
       language: node_js
       node_js: 12
+      cache: yarn
       services:
         - docker
       install:
