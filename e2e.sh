@@ -16,13 +16,14 @@ cp e2e-ssh/id_rsa.pub e2e-ssh/cypress/id_rsa.pub
 mv e2e-ssh/id_rsa.pub e2e-ssh/api/authorized_keys
 
 # Set permissions
-chmod 644 e2e-ssh/cypress/config
+chmod 600 e2e-ssh/cypress/config
 chmod 600 e2e-ssh/cypress/id_rsa
 chmod 644 e2e-ssh/cypress/id_rsa.pub
 chmod 600 e2e-ssh/api/authorized_keys
 chmod 700 e2e-ssh/cypress
 chmod 700 e2e-ssh/api
 # chown -R root:root e2e-ssh
+chown -R "$USER" e2e-ssh
 
 # debug
 whoami
