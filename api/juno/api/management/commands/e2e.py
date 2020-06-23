@@ -1,9 +1,7 @@
-from django.core.management import BaseCommand, call_command
+import json
+from django.core.management import BaseCommand
 
 from juno.api.models import User, Institution, Affiliation, Sample
-
-# TODO: work out the best way to manage e2e fixtures
-#       (more flexibility in cypress is probably good)
 
 
 class Command(BaseCommand):
@@ -15,67 +13,100 @@ class Command(BaseCommand):
         parser.add_argument("profile", choices=self.PROFILES)
 
     def handle(self, *args, **options):
+        # validate profile
         profile = options["profile"]
         if profile not in self.PROFILES:
             raise ValueError(
                 "Invalid profile argument. Supported: {}".format(self.PROFILES)
             )
 
-        # switch profile
+        # switch profile and set db content
         if profile == "empty":
-            self.clear_all()
+            self.empty()
         elif profile == "small":
-            self.clear_all()
-            self.add_users_small()
-            self.add_institutions_small()
-            self.add_affiliations_small()
-            self.add_samples_small()
-            self.set_default_passwords()
+            self.small()
 
-    def clear_all(self):
+        # return json-serialised db content for test assertions
+        data = {
+            "user": list(User.objects.values()),
+            "institution": list(Institution.objects.values()),
+            "affiliation": list(Affiliation.objects.values()),
+            "sample": list(Sample.objects.values()),
+        }
+        return json.dumps(data)
+
+    def empty(self):
         User.objects.all().delete()
         Institution.objects.all().delete()
         Affiliation.objects.all().delete()
         Sample.objects.all().delete()
 
-    def add_users_small(self):
-        User.objects.create(
+    def small(self):
+        # clear
+        self.empty()
+
+        # users
+        admin = User.objects.create(
             email="admin@sanger.ac.uk", first_name="Alice", last_name="Jones"
         )
-        User.objects.create(
+        collaborator = User.objects.create(
             email="collaborator@nrl.israel",
             first_name="Bob",
             last_name="Smith",
         )
 
-    def add_institutions_small(self):
-        Institution.objects.create(
+        # institutions
+        sanger = Institution.objects.create(
             name="Wellcome Sanger Institute",
             country="United Kingdom",
             latitude=52.083333,
             longitude=0.183333,
         )
-        Institution.objects.create(
+        nrl = Institution.objects.create(
             name="National Reference Laboratories",
             country="Israel",
             latitude=32.083333,
             longitude=34.8,
         )
-
-    def add_affiliations_small(self):
-        Affiliation.objects.create(
-            user="admin@sanger.ac.uk", institution="Wellcome Sanger Institute"
-        )
-        Affiliation.objects.create(
-            user="collaborator@nrl.israel",
-            institution="National Reference Laboratories",
+        cuhk = Institution.objects.create(
+            name="The Chinese University of Hong Kong",
+            country="China",
+            latitude=22.419722,
+            longitude=114.206792,
         )
 
-    def add_samples_small(self):
-        # TODO: Use ORM instead of fixtures
-        call_command("loaddata", "samples")
+        # affiliations
+        Affiliation.objects.create(user=admin, institution=sanger)
+        Affiliation.objects.create(
+            user=collaborator, institution=nrl,
+        )
 
-    def set_default_passwords(self):
+        # samples
+        Sample.objects.create(
+            lane_id="31663_7#113",
+            sample_id="5903STDY8059170",
+            public_name="CUHK_GBS177WT_16",
+            serotype="Ia",
+            host_status="skin and soft-tissue infection",
+            submitting_institution=nrl,
+        )
+        Sample.objects.create(
+            lane_id="31663_7#115",
+            sample_id="5903STDY8059071",
+            public_name="NA",
+            serotype="Ib",
+            host_status="meningitis",
+            submitting_institution=nrl,
+        )
+        Sample.objects.create(
+            lane_id="32820_2#367",
+            sample_id="5903STDY8113194",
+            public_name="JN_IL_ST31578",
+            serotype="VI",
+            host_status="pneumonia",
+            submitting_institution=cuhk,
+        )
+
         # fix the passwords of fixtures to be email prefix
         for user in User.objects.all():
             user.set_password(user.email.split("@")[0])
