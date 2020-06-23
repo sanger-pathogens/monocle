@@ -30,7 +30,8 @@ it("loads the samples table", () => {
 it("is possible to connect to api", () => {
   // run remote command via script
   // (eventually for db seeding)
-  cy.exec("./seed-database.sh");
+  // cy.exec("./run-on-api.sh 'ls -l /app'");
+  cy.exec("./run-on-api.sh");
 
   cy.visit("/");
 

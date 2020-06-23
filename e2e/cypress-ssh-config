@@ -1,7 +1,0 @@
-Host apiroot
-  HostName api
-  Port 22
-  User root
-  IdentityFile ~/.ssh/id_rsa
-  StrictHostKeyChecking no
-  ConnectTimeout 10
