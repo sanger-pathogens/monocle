@@ -38,3 +38,5 @@ jobs:
         - cd e2e
       script:
         - cypress run
+      after_script:
+        - docker-compose -f docker-compose.e2e.yml down
