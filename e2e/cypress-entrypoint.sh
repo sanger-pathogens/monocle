@@ -5,6 +5,7 @@ echo "---------- cypress-entrypoint start ----------"
 whoami
 ls -l /root/.ssh
 chown -R root:root /root/.ssh
+apt install -y ssh-askpass
 cypress run
 
 echo "---------- cypress-entrypoint end ----------"
