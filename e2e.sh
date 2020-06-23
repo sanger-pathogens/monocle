@@ -22,6 +22,7 @@ chmod 644 e2e-ssh/cypress/id_rsa.pub
 chmod 600 e2e-ssh/api/authorized_keys
 chmod 700 e2e-ssh/cypress
 chmod 700 e2e-ssh/api
+# chown -R root:root e2e-ssh
 
 # debug
 whoami
@@ -32,4 +33,4 @@ docker-compose -f docker-compose.e2e.yml build
 docker-compose -f docker-compose.e2e.yml up --exit-code-from cypress
 
 # clean up (for local usage)
-# rm -rf e2e-ssh
+rm -rf e2e-ssh

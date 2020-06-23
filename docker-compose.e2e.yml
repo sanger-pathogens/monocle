@@ -2,12 +2,14 @@ version: '3'
 services:
     cypress:
         image: "cypress/included:4.8.0"
+        user: root
         links:
             - ui
             - api
         environment:
             - CYPRESS_BASE_URL=http://ui:80/
         working_dir: /e2e
+        entrypoint: /e2e/cypress-entrypoint.sh
         volumes:
             - ./e2e-ssh/cypress:/root/.ssh
             - ./e2e:/e2e
