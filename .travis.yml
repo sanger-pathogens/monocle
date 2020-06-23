@@ -31,7 +31,7 @@ jobs:
       services:
         - docker
       install:
-        - yarn global install cypress
+        - yarn global add cypress
       before_script:
         - docker-compose -f docker-compose.e2e.yml build
         - docker-compose -f docker-compose.e2e.yml up
