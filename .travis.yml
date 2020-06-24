@@ -1,0 +1,44 @@
+language: python
+jobs:
+  include:
+    - name: api unit tests
+      language: python
+      python: "3.7"
+      before_install:
+        - cd api
+      install:
+        - pip install pipenv
+        - pipenv install
+        - pipenv install codecov
+      script:
+        - coverage run ./manage.py test
+      after_success:
+        - codecov -F api
+    - name: ui unit tests
+      language: node_js
+      node_js: 12
+      cache: yarn
+      before_install:
+        - cd ui
+      install:
+        - yarn install
+      script:
+        - yarn test:ci
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -cF ui
+    - name: integration tests
+      language: node_js
+      node_js: 12
+      cache: yarn
+      services:
+        - docker
+      install:
+        - yarn global add cypress
+      before_script:
+        - docker-compose -f docker-compose.e2e.yml build
+        - docker-compose -f docker-compose.e2e.yml up -d
+        - cd e2e
+      script:
+        - cypress run
+      after_script:
+        - docker-compose -f docker-compose.e2e.yml down

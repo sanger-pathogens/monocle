@@ -1,21 +1,12 @@
 version: '3'
 services:
-    cypress:
-        image: "cypress/included:4.6.0"
-        environment:
-            - CYPRESS_BASE_URL=http://ui:80/
-        working_dir: /e2e
-        volumes:
-            - ./e2e:/e2e
-        depends_on:
-            - ui
     ui:
         build:
             context: ./ui
         ports:
             - "3001:80"
         volumes:
-            - ./ui/settings.test.js:/usr/share/nginx/html/settings.js
+            - ./ui/settings.e2e.js:/usr/share/nginx/html/settings.js
             - ./ui/nginx.prod.conf:/etc/nginx/conf.d/default.conf
         depends_on:
             - api
@@ -24,5 +15,3 @@ services:
             context: ./api
         ports:
             - "8001:80"
-        # tty: true
-        # stdin_open: true

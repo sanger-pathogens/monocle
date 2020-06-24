@@ -5,11 +5,12 @@ import { HttpLink } from "apollo-link-http";
 import { onError } from "apollo-link-error";
 
 import history from "./history";
+import env from "./env";
 
 const appCache = new InMemoryCache();
 
 const httpLink = new HttpLink({
-  uri: window.env.GRAPHQL_API_URL,
+  uri: env.GRAPHQL_API_URL,
   credentials: "include",
 });
 const errorLink = onError(({ graphQLErrors, networkError }) => {

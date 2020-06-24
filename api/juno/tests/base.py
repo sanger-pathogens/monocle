@@ -1,5 +1,17 @@
 import json
+import logging
 from django.test import TestCase
+
+# Note: There's an usual bug with graphql-core which prints
+#       tracebacks for errors thrown and caught in third
+#       party code. This just pollutes the test output, so
+#       logging level upped. It's likely to be fixed in
+#       graphql-core v3, but django-graphql-jwt doesn't
+#       support this yet.
+# TODO: monitor this and upgrade when possible
+#
+# https://github.com/graphql-python/graphql-core-legacy/issues/142
+logging.getLogger("graphql").setLevel(logging.CRITICAL)
 
 
 class GraphQLTestCase(TestCase):

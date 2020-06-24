@@ -16,7 +16,6 @@ from datetime import timedelta
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -26,7 +25,12 @@ SECRET_KEY = "@7ad3g19au9^xhh3r&o^g!_g8h=%1di2&!ns&h*xy@tcqk#e9+"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "api", "127.0.0.1", "172.27.82.31"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "api",
+    "127.0.0.1",
+    "monocle.dev.pam.sanger.ac.uk",
+]
 
 
 # Application definition
