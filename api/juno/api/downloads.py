@@ -17,16 +17,16 @@ def make_tarfile(source_dir):
         for file in filenames:
             file_path = source_dir + "/" + file
             tar.add(file_path, arcname=filenames[file])
-    return out_file.getvalue()
+    return out_file
 
 
 def stream_sample(archived_file, file_path):
     filename = os.path.basename(file_path)
     chunk_size = 8192
-    archived_file = io.BytesIO(archived_file)
     response = StreamingHttpResponse(
-        FileWrapper(archived_file, chunk_size), content_type=bytes,
+        FileWrapper(io.BytesIO(archived_file.getvalue()), chunk_size),
+        content_type=bytes,
     )
-    # response["Content-Length"] = os.path.getsize(archived_file.getvalue())
+    response["Content-Length"] = archived_file.getbuffer().nbytes
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
