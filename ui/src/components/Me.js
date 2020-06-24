@@ -1,8 +1,7 @@
 import React from "react";
-import { useQuery } from "@apollo/react-hooks";
-import gql from "graphql-tag";
 import { Paper, Grid, Box, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useUser } from "../user";
 
 const useStyles = makeStyles({
   gridContainer: {
@@ -13,25 +12,10 @@ const useStyles = makeStyles({
   },
 });
 
-const ME_QUERY = gql`
-  {
-    me {
-      email
-      firstName
-      lastName
-    }
-  }
-`;
-
 const Me = () => {
   const classes = useStyles();
-  const { loading, error, data } = useQuery(ME_QUERY);
 
-  let me = null;
-  if (data && !(loading || error)) {
-    // TODO: Handle loading/error cases
-    me = data.me ? data.me : null;
-  }
+  const me = useUser();
   return (
     <Grid
       container
