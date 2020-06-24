@@ -17,9 +17,7 @@ describe("sample table", () => {
       cy.wait(API_WAIT_MS);
 
       // table empty?
-      db.sample.forEach(({ lane_id }) => {
-        cy.get(`table#sampleTable tr`).should("not.exist");
-      });
+      cy.get(`table#sampleTable tbody tr`).should("not.exist");
     });
   });
 
