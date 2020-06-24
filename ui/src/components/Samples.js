@@ -10,8 +10,8 @@ import {
   TableRow,
   TableCell,
 } from "@material-ui/core";
-import getLaneUrl from "./SampleDownload"
-import DownloadButton from "./DownloadButton"
+import getLaneUrl from "./SampleDownload";
+import DownloadButton from "./DownloadButton";
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -43,7 +43,14 @@ const columns = [
   {
     key: "download",
     label: "Download",
-    valueAccessor: (d) => <DownloadButton url={getLaneUrl(d.laneId)} filename={d.laneId+'.tar.gz'}>{d.laneId}</DownloadButton>
+    valueAccessor: (d) => (
+      <DownloadButton
+        url={getLaneUrl(d.laneId)}
+        filename={d.laneId + ".tar.gz"}
+      >
+        {d.laneId}
+      </DownloadButton>
+    ),
   },
 ];
 
@@ -73,7 +80,7 @@ const Samples = () => {
   }
   return (
     <TableContainer component={Paper}>
-      <Table size="small" aria-label="a dense table">
+      <Table size="small" aria-label="a dense table" id="sampleTable">
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -85,7 +92,7 @@ const Samples = () => {
           {rows.map((row, i) => (
             <TableRow key={i}>
               {columns.map((column) => (
-                <TableCell key={column.key}>
+                <TableCell key={column.key} className={column.key}>
                   {column.valueAccessor(row)}
                 </TableCell>
               ))}

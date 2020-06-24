@@ -84,9 +84,14 @@ There are currently:
 - integration tests in the `e2e` directory
 - unit tests in the `api` directory
 
-To run the integration tests:
+To run the integration tests, add [cypress](https://www.cypress.io/) with `yarn global add cypress` (first time only), then run:
 ```
-./e2e.sh
+# build images
+docker-compose -f docker-compose.e2e.yml up --build -d
+
+# run (in e2e dir as cypress root)
+cd e2e
+cypress run
 ```
 
 Further information on each can be found in the relevant directory.
