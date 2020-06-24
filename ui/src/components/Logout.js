@@ -1,9 +1,8 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
-import { useMutation } from "@apollo/react-hooks";
 import { Grid, Box, Button } from "@material-ui/core";
-import gql from "graphql-tag";
 import { makeStyles } from "@material-ui/core/styles";
+
+import { useAuth } from "../auth";
 
 const useStyles = makeStyles({
   gridContainer: {
@@ -14,27 +13,12 @@ const useStyles = makeStyles({
   },
 });
 
-const LOGOUT_MUTATION = gql`
-  mutation Logout {
-    deleteTokenCookie {
-      deleted
-    }
-  }
-`;
 const Logout = () => {
   const classes = useStyles();
-  let history = useHistory();
-  const [logout] = useMutation(LOGOUT_MUTATION, {
-    onCompleted() {
-      // logged out...
 
-      // update state
-      localStorage.removeItem("isLoggedIn");
+  // global auth actions
+  const { logout } = useAuth();
 
-      // request credentials
-      history.push("/login");
-    },
-  });
   const handleSubmit = (event) => {
     event.preventDefault();
     logout();

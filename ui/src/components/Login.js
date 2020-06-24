@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useMutation } from "@apollo/react-hooks";
 import {
   Grid,
   Box,
@@ -9,9 +8,8 @@ import {
   Button,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import gql from "graphql-tag";
 
-import history from "../history";
+import { useAuth } from "../auth";
 
 const useStyles = makeStyles({
   gridContainer: {
@@ -22,40 +20,19 @@ const useStyles = makeStyles({
   },
 });
 
-const LOGIN_MUTATION = gql`
-  mutation Login($email: String!, $password: String!) {
-    tokenAuth(email: $email, password: $password) {
-      token
-    }
-  }
-`;
 const Login = () => {
   const classes = useStyles();
+
+  // global auth actions
+  const { login } = useAuth();
+
+  // user credentials for form
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login] = useMutation(LOGIN_MUTATION, {
-    onCompleted(data) {
-      // login succeeded...
 
-      // update state
-      localStorage.setItem("isLoggedIn", "yes");
-
-      // go to private page
-      history.push("/me");
-    },
-    onError(error) {
-      // login failed...
-
-      // update state
-      localStorage.removeItem("isLoggedIn");
-
-      // request credentials
-      history.push("/login");
-    },
-  });
   const handleSubmit = (event) => {
     event.preventDefault();
-    login({ variables: { email, password } });
+    login({ email, password });
   };
 
   return (
