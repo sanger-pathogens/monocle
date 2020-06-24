@@ -4,16 +4,13 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-import ThirdPartyProviders from "./ThirdPartyProviders";
 import AppProviders from "./AppProviders";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThirdPartyProviders>
-      <AppProviders>
-        <App />
-      </AppProviders>
-    </ThirdPartyProviders>
+    <AppProviders>
+      <App />
+    </AppProviders>
   </React.StrictMode>,
   document.getElementById("root")
 );

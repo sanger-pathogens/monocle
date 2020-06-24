@@ -1,6 +1,27 @@
 import React from "react";
+import { ApolloProvider } from "@apollo/react-hooks";
+import { CssBaseline } from "@material-ui/core";
+import {
+  ThemeProvider,
+  createMuiTheme,
+  responsiveFontSizes,
+} from "@material-ui/core/styles";
+
+import "typeface-inter";
+
 import { AuthProvider } from "./auth";
+import client from "./client";
+import theme from "./theme";
 
-const AppProviders = ({ children }) => <AuthProvider>{children}</AuthProvider>;
+const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
-export default AppProviders;
+const ThirdPartyProviders = ({ children }) => (
+  <ApolloProvider client={client}>
+    <CssBaseline />
+    <ThemeProvider theme={generatedTheme}>
+      <AuthProvider>{children}</AuthProvider>
+    </ThemeProvider>
+  </ApolloProvider>
+);
+
+export default ThirdPartyProviders;
