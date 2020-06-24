@@ -3,9 +3,17 @@ from django.http import StreamingHttpResponse, HttpResponse, Http404
 from wsgiref.util import FileWrapper
 import mimetypes
 import time
+from django.conf import settings
+
+# TODO: replace fixed mock file with actual file for lane
+DATA_DIR = os.path.join(
+    os.path.join(getattr(settings, "BASE_DIR", None), os.pardir),
+    "mock-data/" + "31663_7#113",
+)
 
 
-def make_tarfile(source_dir):
+def make_tarfile(lane_id):
+    lane_dir = os.path.abspath(DATA_DIR)
     filenames = {
         "31663_7#113_1.fastq.gz": "31663_7#113_1.fastq.gz",
         "31663_7#113_2.fastq.gz": "31663_7#113_2.fastq.gz",
@@ -15,18 +23,6 @@ def make_tarfile(source_dir):
     out_file = io.BytesIO()
     with tarfile.open(fileobj=out_file, mode="w:gz") as tar:
         for file in filenames:
-            file_path = source_dir + "/" + file
+            file_path = lane_dir + "/" + file
             tar.add(file_path, arcname=filenames[file])
     return out_file
-
-
-def stream_sample(archived_file, file_path):
-    filename = os.path.basename(file_path)
-    chunk_size = 8192
-    response = StreamingHttpResponse(
-        FileWrapper(io.BytesIO(archived_file.getvalue()), chunk_size),
-        content_type=bytes,
-    )
-    response["Content-Length"] = archived_file.getbuffer().nbytes
-    response["Content-Disposition"] = "attachment; filename=%s" % filename
-    return response

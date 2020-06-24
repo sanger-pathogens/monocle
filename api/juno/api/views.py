@@ -2,23 +2,20 @@ from django.shortcuts import render
 from django.http import StreamingHttpResponse, HttpResponse, Http404
 from wsgiref.util import FileWrapper
 import tarfile
-import os
-from django.conf import settings
-from juno.api.downloads import make_tarfile, stream_sample
-
-# TODO: replace fixed mock file with actual file for lane
-DATA_DIR = os.path.join(
-    os.path.join(getattr(settings, "BASE_DIR", None), os.pardir),
-    "mock-data/" + "31663_7#113",
-)
+import os, io
+from juno.api.downloads import make_tarfile
 
 
 def download_sample(request, laneId):
-    lane_dir = os.path.abspath(DATA_DIR)
     try:
-        file_in_mem = make_tarfile(lane_dir)
+        file_in_mem = make_tarfile(laneId)
     except FileNotFoundError:
         raise Http404
-    filename = lane_dir + ".tar.gz"
-    response = stream_sample(file_in_mem, filename)
+    filename = laneId + ".tar.gz"
+    chunk_size = 8192
+    response = StreamingHttpResponse(
+        FileWrapper(io.BytesIO(file_in_mem.getvalue()), chunk_size), content_type=bytes,
+    )
+    response["Content-Length"] = file_in_mem.getbuffer().nbytes
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
