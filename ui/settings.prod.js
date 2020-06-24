@@ -1,4 +1,4 @@
-const baseUrl = "http://172.27.82.31:8000/"
+const baseUrl = "http://monocle.dev.pam.sanger.ac.uk:8000/";
 
 window.env = {
   GRAPHQL_API_URL: `${baseUrl}graphql/`,
