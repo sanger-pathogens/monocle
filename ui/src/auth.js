@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 
-import history from "./history";
-
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     tokenAuth(email: $email, password: $password) {
@@ -22,8 +20,9 @@ const LOGOUT_MUTATION = gql`
 const AuthContext = React.createContext();
 
 const AuthProvider = (props) => {
-  // exposed boolean login state to avoid reading
-  // from local storage in app
+  // use `isLoggedIn` within app code, but load
+  // initial value from local storage to persist
+  // between refreshes
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") !== null
   );
@@ -32,15 +31,11 @@ const AuthProvider = (props) => {
   const [loginMutation] = useMutation(LOGIN_MUTATION, {
     onCompleted() {
       // login succeeded...
-
-      // update state
       localStorage.setItem("isLoggedIn", "yes");
       setIsLoggedIn(true);
     },
     onError() {
       // login failed...
-
-      // update state
       localStorage.removeItem("isLoggedIn");
       setIsLoggedIn(false);
     },
@@ -48,14 +43,19 @@ const AuthProvider = (props) => {
   const [logoutMutation] = useMutation(LOGOUT_MUTATION, {
     onCompleted() {
       // logout succeeded...
-
-      // update state
+      localStorage.removeItem("isLoggedIn");
+      setIsLoggedIn(false);
+    },
+    onError() {
+      // logout failed...
+      // (could happen if API not reachable,
+      //  but cookies will still time out)
       localStorage.removeItem("isLoggedIn");
       setIsLoggedIn(false);
     },
   });
 
-  // exposed handlers
+  // use following exposed handlers in app code
   const login = ({ email, password }) =>
     loginMutation({ variables: { email, password } });
   const logout = () => logoutMutation();
