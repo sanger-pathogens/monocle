@@ -1,12 +1,8 @@
 import React from "react";
 
+import { useAuth } from "../auth";
 import { UserContext } from "../user";
-
-const mockUser = {
-  email: "admin@juno.com",
-  firstName: "Luke",
-  lastName: "Skywalker",
-};
+import { mockUser } from "./apiMocks";
 
 const MockUserProvider = (props) => {
   const { isLoggedIn } = useAuth();

@@ -10,6 +10,7 @@ import {
 import "typeface-inter";
 
 import AuthProvider from "./MockAuthProvider";
+import UserProvider from "./MockUserProvider";
 import theme from "../theme";
 import { generateApiMocks } from "./apiMocks";
 
@@ -25,7 +26,7 @@ const AppProviders = ({
       <CssBaseline />
       <ThemeProvider theme={generatedTheme}>
         <AuthProvider isInitiallyLoggedIn={isInitiallyLoggedIn}>
-          {children}
+          <UserProvider>{children}</UserProvider>
         </AuthProvider>
       </ThemeProvider>
     </>
