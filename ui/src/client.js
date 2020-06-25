@@ -14,41 +14,41 @@ const httpLink = new HttpLink({
   credentials: "include",
 });
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  // // TODO: handle network errors globally?
-  // if (graphQLErrors) {
-  //   graphQLErrors.forEach(({ message, locations, path }) => {
-  //     if (message === "Signature has expired") {
-  //       // access token has expired...
-  //       // TODO: attempt to get a new access token (once only)
+  // TODO: handle network errors globally?
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message, locations, path }) => {
+      if (message === "Signature has expired") {
+        // access token has expired...
+        // TODO: attempt to get a new access token (once only)
 
-  //       // update state
-  //       localStorage.removeItem("isLoggedIn");
+        // update state
+        localStorage.removeItem("isLoggedIn");
 
-  //       // request credentials
-  //       history.push("/");
-  //     } else if (message === "Refresh token is required") {
-  //       // refresh token has expired...
+        // request credentials
+        history.push("/");
+      } else if (message === "Refresh token is required") {
+        // refresh token has expired...
 
-  //       // update state
-  //       localStorage.removeItem("isLoggedIn");
+        // update state
+        localStorage.removeItem("isLoggedIn");
 
-  //       // request credentials
-  //       history.push("/");
-  //     } else if (
-  //       message === "You do not have permission to perform this action"
-  //     ) {
-  //       // attempted to access a private query,
-  //       // (shouldn't happen, unless user manually
-  //       // visits eg. /me whilst logged out)
+        // request credentials
+        history.push("/");
+      } else if (
+        message === "You do not have permission to perform this action"
+      ) {
+        // attempted to access a private query,
+        // (shouldn't happen, unless user manually
+        // visits eg. /me whilst logged out)
 
-  //       // update state
-  //       localStorage.removeItem("isLoggedIn");
+        // update state
+        localStorage.removeItem("isLoggedIn");
 
-  //       // request credentials
-  //       history.push("/login");
-  //     }
-  //   });
-  // }
+        // request credentials
+        history.push("/");
+      }
+    });
+  }
   console.log("global error link", graphQLErrors, networkError);
 });
 
