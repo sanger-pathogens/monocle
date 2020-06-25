@@ -2,100 +2,52 @@ import React from "react";
 import {
   AppBar,
   Toolbar,
-  Grid,
   Button,
   Link,
-  Menu,
-  MenuItem,
-  IconButton,
-  Hidden,
   useScrollTrigger,
+  Typography,
 } from "@material-ui/core";
+import { AccountCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu as MenuIcon } from "@material-ui/icons";
+
+import { useAuth } from "../auth";
+import { useUser } from "../user";
 
 const useStyles = makeStyles((theme) => ({
-  headerLink: {
-    color: "white",
+  grow: {
+    flexGrow: 1,
   },
-  headerLinkMenu: {
-    color: "white",
-    background: theme.palette.primary.dark,
+  accountIcon: {
+    paddingRight: 4,
+  },
+  user: {
+    display: "flex",
+    position: "relative",
+    marginRight: 4,
+    paddingRight: 12,
+    borderRight: "2px solid white",
+  },
+  toolbarIcon: {
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 }));
 
-const NavigationFlat = ({ navigation }) => {
+const Header = () => {
   const classes = useStyles();
-  return (
-    <React.Fragment>
-      {navigation.map((item, i) => (
-        <Button
-          key={i}
-          className={classes.headerLink}
-          href={item.url}
-          component={Link}
-        >
-          {item.label}
-        </Button>
-      ))}
-    </React.Fragment>
-  );
-};
-
-const NavigationMenu = ({ navigation }) => {
-  const classes = useStyles();
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <div>
-      <IconButton
-        edge="end"
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-        color="inherit"
-        aria-label="menu"
-      >
-        <MenuIcon />
-      </IconButton>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        elevation={0}
-      >
-        {navigation.map((item) => (
-          <MenuItem
-            key={item.url}
-            dense
-            component={Link}
-            href={item.url}
-            onClick={handleClose}
-            className={classes.headerLinkMenu}
-          >
-            {item.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  );
-};
-
-const Header = ({ navigation }) => {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
     target: window,
   });
+  const { logout } = useAuth();
+  const user = useUser();
+  console.log("user", user);
   return (
     <AppBar
       position="fixed"
@@ -104,26 +56,21 @@ const Header = ({ navigation }) => {
       elevation={0}
     >
       <Toolbar variant="dense">
-        <Grid
-          container
-          alignItems="center"
-          justify="space-between"
-          style={{ minHeight: "69px" }}
-        >
-          <Grid item>
-            <Button color="inherit" href="/" component={Link}>
-              <img src="JunoLogo.svg" height="57px" alt="Juno logo" />
-            </Button>
-          </Grid>
-          <Grid item>
-            <Hidden smDown>
-              <NavigationFlat navigation={navigation} />
-            </Hidden>
-            <Hidden mdUp>
-              <NavigationMenu navigation={navigation} />
-            </Hidden>
-          </Grid>
-        </Grid>
+        <Button id="buttonHome" color="inherit" href="/" component={Link}>
+          Monocle
+        </Button>
+        <div className={classes.grow} />
+        {user ? (
+          <div className={classes.user}>
+            <AccountCircle className={classes.accountIcon} />
+            <Typography variant="button">
+              {user.firstName} {user.lastName}
+            </Typography>
+          </div>
+        ) : null}
+        <Button id="buttonLogout" color="inherit" onClick={() => logout()}>
+          Logout
+        </Button>
       </Toolbar>
     </AppBar>
   );

@@ -29,19 +29,7 @@ const sections = [
 ];
 
 const PageHome = () => (
-  <Page
-    header={
-      <Header
-        navigation={[
-          ...sections.map(({ label, url }) => ({
-            label,
-            url: `#${url}`,
-          })),
-        ]}
-      />
-    }
-    footer={<Footer />}
-  >
+  <Page header={null} footer={<Footer />}>
     <Box>
       <Login />
     </Box>

@@ -30,25 +30,19 @@ const AuthProvider = (props) => {
 
   // graphql mutations for login, logout
   const [loginMutation] = useMutation(LOGIN_MUTATION, {
-    onCompleted(data) {
+    onCompleted() {
       // login succeeded...
 
       // update state
       localStorage.setItem("isLoggedIn", "yes");
       setIsLoggedIn(true);
-
-      // go to private page
-      history.push("/me");
     },
-    onError(error) {
+    onError() {
       // login failed...
 
       // update state
       localStorage.removeItem("isLoggedIn");
       setIsLoggedIn(false);
-
-      // redirect to request credentials
-      history.push("/login");
     },
   });
   const [logoutMutation] = useMutation(LOGOUT_MUTATION, {
@@ -57,9 +51,7 @@ const AuthProvider = (props) => {
 
       // update state
       localStorage.removeItem("isLoggedIn");
-
-      // redirect to request credentials
-      history.push("/login");
+      setIsLoggedIn(false);
     },
   });
 
