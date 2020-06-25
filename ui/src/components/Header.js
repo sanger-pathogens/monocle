@@ -47,7 +47,7 @@ const Header = () => {
   });
   const { logout } = useAuth();
   const user = useUser();
-  console.log("user", user);
+
   return (
     <AppBar
       position="fixed"
