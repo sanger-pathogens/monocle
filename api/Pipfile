@@ -15,6 +15,7 @@ django-graphql-jwt = "*"
 django-extensions = "*"
 gunicorn = "*"
 uvicorn = "*"
+testfixtures = "*"
 
 [requires]
 python_version = "3.7"
