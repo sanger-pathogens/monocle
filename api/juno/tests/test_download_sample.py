@@ -8,6 +8,7 @@ class TestDownload(unittest.TestCase):
     def setUp(self):
         self.tempdir = TempDirectory()
         self.tempdir_path = self.tempdir.path
+        downloads.DATA_DIR = self.tempdir_path
 
     def tearDown(self):
         self.tempdir.cleanup()

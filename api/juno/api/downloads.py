@@ -1,8 +1,4 @@
 import tarfile, io, os
-from django.http import StreamingHttpResponse, HttpResponse, Http404
-from wsgiref.util import FileWrapper
-import mimetypes
-import time
 from django.conf import settings
 
 # TODO: replace fixed mock file with actual file for lane
@@ -14,6 +10,7 @@ DATA_DIR = os.path.join(
 
 def make_tarfile(lane_id):
     lane_dir = os.path.abspath(DATA_DIR)
+    # TODO: change this list to take in lane id
     filenames = {
         "31663_7#113_1.fastq.gz": "31663_7#113_1.fastq.gz",
         "31663_7#113_2.fastq.gz": "31663_7#113_2.fastq.gz",

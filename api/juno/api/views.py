@@ -1,8 +1,6 @@
-from django.shortcuts import render
-from django.http import StreamingHttpResponse, HttpResponse, Http404
+from django.http import StreamingHttpResponse, Http404
 from wsgiref.util import FileWrapper
-import tarfile
-import os, io
+import io
 from juno.api.downloads import make_tarfile
 
 
