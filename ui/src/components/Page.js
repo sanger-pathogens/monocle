@@ -6,17 +6,12 @@ const useStyles = makeStyles((theme) => ({
   page: {
     margin: 0,
     padding: 0,
+    maxWidth: "100%",
     minHeight: "100vh",
     display: "flex",
     alignItems: "stretch",
     flexDirection: "column",
     background: theme.palette.primary.dark,
-  },
-  content: {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
   },
 }));
 
@@ -25,7 +20,7 @@ const Page = ({ header, footer, children }) => {
   return (
     <Paper className={classes.page}>
       {header ? header : null}
-      {children ? <div className={classes.content}>{children}</div> : null}
+      {children ? children : null}
       {footer ? footer : null}
     </Paper>
   );
