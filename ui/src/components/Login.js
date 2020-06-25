@@ -7,7 +7,7 @@ import { useAuth } from "../auth";
 const useStyles = makeStyles({
   login: {
     maxWidth: "400px",
-    margin: "0 8px",
+    margin: "8px",
   },
 });
 
