@@ -42,7 +42,7 @@ const Login = () => {
       spacing={1}
       className={classes.gridContainer}
     >
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} sm={8} md={6} lg={4}>
         <Box pt={8}>
           <Paper>
             <form onSubmit={handleSubmit}>

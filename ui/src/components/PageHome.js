@@ -1,6 +1,5 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import { configureAnchors } from "react-scrollable-anchor";
 
 import Page from "./Page";
 import Header from "./Header";
@@ -9,43 +8,15 @@ import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
 
-// Offset all anchors by -60 to account for a fixed header
-// and scroll more quickly than the default 400ms
-configureAnchors({ offset: -60, scrollDuration: 200 });
-
-const sections = [
-  {
-    label: "Institutions",
-    title: "Institutions",
-    url: "institutions",
-    ContentComponent: Institutions,
-  },
-  {
-    label: "Samples",
-    title: "Samples",
-    url: "samples",
-    ContentComponent: Samples,
-  },
-];
-
 const PageHome = () => (
-  <Page
-    header={
-      <Header
-        navigation={[
-          ...sections.map(({ label, url }) => ({
-            label,
-            url: `#${url}`,
-          })),
-        ]}
-      />
-    }
-    footer={<Footer />}
-  >
+  <Page header={<Header />} footer={<Footer />}>
     <Box>
-      {sections.map((section, i) => (
-        <Section key={i} anchorId={section.url} {...section} />
-      ))}
+      <Section title="Institutions">
+        <Institutions />
+      </Section>
+      <Section title="Samples">
+        <Samples />
+      </Section>
     </Box>
   </Page>
 );
