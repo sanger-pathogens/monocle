@@ -1,5 +1,5 @@
 import React from "react";
-import { render, waitForElement } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 
 import MockProviders from "./test-utils/MockProviders";
 import App from "./App";
@@ -13,9 +13,11 @@ test("renders text institutions", async () => {
       <App />
     </MockProviders>
   );
-  // const maybeElement = getByText(/institutions/i);
-  // expect(maybeElement).toBeInTheDocument();
-  await waitForElement(() => getByText(/institutions/i));
+
+  await waitFor(() => {
+    const maybeElement = getByText(/institutions/i);
+    expect(maybeElement).toBeInTheDocument();
+  });
 });
 
 test("renders text samples", async () => {
@@ -24,8 +26,9 @@ test("renders text samples", async () => {
       <App />
     </MockProviders>
   );
-  // await wait(0);
-  // const maybeElement = getByText(/samples/i);
-  // expect(maybeElement).toBeInTheDocument();
-  await waitForElement(() => getByText(/samples/i));
+
+  await waitFor(() => {
+    const maybeElement = getByText(/samples/i);
+    expect(maybeElement).toBeInTheDocument();
+  });
 });
