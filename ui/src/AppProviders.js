@@ -10,18 +10,21 @@ import {
 import "typeface-inter";
 
 import { AuthProvider } from "./auth";
+import { UserProvider } from "./user";
 import client from "./client";
 import theme from "./theme";
 
 const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
-const ThirdPartyProviders = ({ children }) => (
+const AppProviders = ({ children }) => (
   <ApolloProvider client={client}>
     <CssBaseline />
     <ThemeProvider theme={generatedTheme}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <UserProvider>{children}</UserProvider>
+      </AuthProvider>
     </ThemeProvider>
   </ApolloProvider>
 );
 
-export default ThirdPartyProviders;
+export default AppProviders;
