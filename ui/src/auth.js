@@ -17,7 +17,7 @@ const LOGOUT_MUTATION = gql`
   }
 `;
 
-const AuthContext = React.createContext();
+export const AuthContext = React.createContext();
 
 const AuthProvider = (props) => {
   // use `isLoggedIn` within app code, but load
