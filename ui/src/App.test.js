@@ -1,6 +1,7 @@
 import React from "react";
 import { render, waitFor } from "@testing-library/react";
 
+import { mockUser, mockInstitutions, mockSamples } from "./test-utils/apiMocks";
 import MockProviders from "./test-utils/MockProviders";
 import App from "./App";
 
@@ -29,6 +30,21 @@ test("renders text samples", async () => {
 
   await waitFor(() => {
     const maybeElement = getByText(/samples/i);
+    expect(maybeElement).toBeInTheDocument();
+  });
+});
+
+test("renders user's name", async () => {
+  const { getByText } = render(
+    <MockProviders isInitiallyLoggedIn={true}>
+      <App />
+    </MockProviders>
+  );
+
+  await waitFor(() => {
+    const maybeElement = getByText(
+      `${mockUser.firstName} ${mockUser.lastName}`
+    );
     expect(maybeElement).toBeInTheDocument();
   });
 });
