@@ -30,6 +30,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // on form submit
   const handleSubmit = (event) => {
     event.preventDefault();
     login({ email, password });
@@ -47,8 +48,8 @@ const Login = () => {
           <Paper>
             <form onSubmit={handleSubmit}>
               <Box p={4}>
-                <Typography variant="h2" gutterBottom>
-                  Login
+                <Typography variant="h4" align="center" gutterBottom>
+                  Monocle
                 </Typography>
                 <TextField
                   id="Email"
@@ -69,14 +70,14 @@ const Login = () => {
                   value={password}
                   onInput={(e) => setPassword(e.target.value)}
                 />
-                <Box pt={4}>
+                <Box pt={4} align="right">
                   <Button
                     type="submit"
                     variant="contained"
                     disableElevation
                     style={{ textTransform: "none" }}
                   >
-                    Login
+                    Log In
                   </Button>
                 </Box>
               </Box>
