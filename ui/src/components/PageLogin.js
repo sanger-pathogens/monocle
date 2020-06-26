@@ -20,9 +20,9 @@ const PageLogin = () => {
   const classes = useStyles();
   return (
     <Page header={null} footer={<Footer />}>
-      <div className={classes.container}>
+      <Box className={classes.container}>
         <Login />
-      </div>
+      </Box>
     </Page>
   );
 };
