@@ -5,28 +5,24 @@ import { mockUser } from "./test-utils/apiMocks";
 import MockProviders from "./test-utils/MockProviders";
 import App from "./App";
 
-test("renders login button when not logged in", async () => {
+test("renders login button when not logged in", () => {
   const { getByText } = render(
     <MockProviders isInitiallyLoggedIn={false}>
       <App />
     </MockProviders>
   );
 
-  await waitFor(() => {
-    expect(getByText(/login/i)).toBeInTheDocument();
-  });
+  expect(getByText(/login/i)).toBeInTheDocument();
 });
 
-test("renders logout button when logged in", async () => {
+test("renders logout button when logged in", () => {
   const { getByText } = render(
     <MockProviders isInitiallyLoggedIn={true}>
       <App />
     </MockProviders>
   );
 
-  await waitFor(() => {
-    expect(getByText(/logout/i)).toBeInTheDocument();
-  });
+  expect(getByText(/logout/i)).toBeInTheDocument();
 });
 
 test("redirects to home page (with data) after logging in", async () => {
