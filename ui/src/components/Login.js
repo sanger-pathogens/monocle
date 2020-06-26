@@ -46,7 +46,7 @@ const Login = () => {
           />
           <TextField
             id="password"
-            label="Password"
+            label="password"
             type="password"
             fullWidth
             required
