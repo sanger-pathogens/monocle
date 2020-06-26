@@ -61,36 +61,55 @@ export const mockDefaults = {
 };
 export const generateApiMocks = (mocks = mockDefaults) => {
   const { user, samples, institutions } = mocks;
-  return [
-    {
-      request: {
-        query: USER_QUERY,
-      },
-      result: {
-        data: {
-          me: user,
+
+  // call counts for test assertions
+  let called = {
+    userQuery: 0,
+    samplesQuery: 0,
+    institutionsQuery: 0,
+  };
+  return {
+    called,
+    mocks: [
+      {
+        request: {
+          query: USER_QUERY,
+        },
+        result: () => {
+          called.userQuery += 1;
+          return {
+            data: {
+              me: user,
+            },
+          };
         },
       },
-    },
-    {
-      request: {
-        query: SAMPLES_QUERY,
-      },
-      result: {
-        data: {
-          samples,
+      {
+        request: {
+          query: SAMPLES_QUERY,
+        },
+        result: () => {
+          called.samplesQuery += 1;
+          return {
+            data: {
+              samples,
+            },
+          };
         },
       },
-    },
-    {
-      request: {
-        query: INSTITUTIONS_QUERY,
-      },
-      result: {
-        data: {
-          institutions,
+      {
+        request: {
+          query: INSTITUTIONS_QUERY,
+        },
+        result: () => {
+          called.institutionsQuery += 1;
+          return {
+            data: {
+              institutions,
+            },
+          };
         },
       },
-    },
-  ];
+    ],
+  };
 };

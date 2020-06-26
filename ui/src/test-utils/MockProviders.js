@@ -18,7 +18,7 @@ const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
 const AppProviders = ({
   isInitiallyLoggedIn = false,
-  apiMocks = generateApiMocks(),
+  apiMocks = generateApiMocks().mocks,
   children,
 }) => (
   <ApolloProvider mocks={apiMocks} addTypename={false}>
