@@ -1,5 +1,17 @@
 import json
+import logging
 from django.test import TestCase
+
+# Note: There's an usual bug with graphql-core which prints
+#       tracebacks for errors thrown and caught in third
+#       party code. This just pollutes the test output, so
+#       logging level upped. It's likely to be fixed in
+#       graphql-core v3, but django-graphql-jwt doesn't
+#       support this yet.
+# TODO: monitor this and upgrade when possible
+#
+# https://github.com/graphql-python/graphql-core-legacy/issues/142
+logging.getLogger("graphql").setLevel(logging.CRITICAL)
 
 
 class GraphQLTestCase(TestCase):
@@ -9,6 +21,8 @@ class GraphQLTestCase(TestCase):
     GRAPHQL_URL = "/graphql/"
 
     # common messages
+    GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED = "Signature has expired"
+
     MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
     MSG_NO_DATA = "API response missing an expected data field"
     MSG_NO_GQL_ERROR = "API response missing an expected error field"
@@ -168,7 +182,9 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             """
             mutation Login($email: String!, $password: String!) {
                 tokenAuth(email: $email, password: $password) {
+                    payload
                     token
+                    refreshExpiresIn
                 }
             }
             """,
@@ -176,14 +192,10 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
             variables={"email": email, "password": password},
         )
 
-        data = self.validate_successful(response)
-        token_auth = self.validate_field(data, "tokenAuth")
-        token = self.validate_field(token_auth, "token")
-
-        return token
+        return response
 
     def logout(self):
-        self.post(
+        response = self.post(
             """
             mutation Logout {
                 deleteTokenCookie {
@@ -191,4 +203,57 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
                 }
             }
             """,
+            op_name="Logout",
+        )
+
+        return response
+
+    def refresh_token(self, token):
+        response = self.post(
+            """
+            mutation RefreshToken($token: String!) {
+                refreshToken(token: $token) {
+                    payload
+                    token
+                    refreshExpiresIn
+                }
+            }
+            """,
+            op_name="RefreshToken",
+            variables={"token": token},
+        )
+
+        return response
+
+    def validate_login_successful(self, response):
+        data = self.validate_successful(response)
+        token_auth = self.validate_field(data, "tokenAuth")
+        payload = self.validate_field(token_auth, "payload")
+        token = self.validate_field(token_auth, "token")
+        refresh_expires_in = self.validate_field(
+            token_auth, "refreshExpiresIn"
+        )
+
+        return (payload, token, refresh_expires_in)
+
+    def validate_refresh_token_successful(self, response):
+        data = self.validate_successful(response)
+        refresh_token = self.validate_field(data, "refreshToken")
+        payload = self.validate_field(refresh_token, "payload")
+        token = self.validate_field(refresh_token, "token")
+        refresh_expires_in = self.validate_field(
+            refresh_token, "refreshExpiresIn"
+        )
+
+        return (payload, token, refresh_expires_in)
+
+    def validate_refresh_token_signature_expired(self, response):
+        content = self.validate_unsuccessful(response)
+        errors = self.validate_field(content, "errors")
+        self.assertTrue(
+            any(
+                "message" in e.keys()
+                and e["message"] == self.GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED
+                for e in errors
+            )
         )
