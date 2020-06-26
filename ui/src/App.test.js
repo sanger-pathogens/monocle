@@ -1,27 +1,22 @@
 import React from "react";
 import { render, waitFor } from "@testing-library/react";
 
-import { mockUser, mockInstitutions, mockSamples } from "./test-utils/apiMocks";
 import MockProviders from "./test-utils/MockProviders";
 import App from "./App";
 
-// TODO: write some more meaningful front-end only tests;
-//       the following are just to get ci set up
-
-test("renders text institutions", async () => {
+test("renders login button when not logged in", async () => {
   const { getByText } = render(
-    <MockProviders isInitiallyLoggedIn={true}>
+    <MockProviders isInitiallyLoggedIn={false}>
       <App />
     </MockProviders>
   );
 
   await waitFor(() => {
-    const maybeElement = getByText(/institutions/i);
-    expect(maybeElement).toBeInTheDocument();
+    expect(getByText("Login")).toBeInTheDocument();
   });
 });
 
-test("renders text samples", async () => {
+test("renders logout button when logged in", async () => {
   const { getByText } = render(
     <MockProviders isInitiallyLoggedIn={true}>
       <App />
@@ -29,22 +24,6 @@ test("renders text samples", async () => {
   );
 
   await waitFor(() => {
-    const maybeElement = getByText(/samples/i);
-    expect(maybeElement).toBeInTheDocument();
-  });
-});
-
-test("renders user's name", async () => {
-  const { getByText } = render(
-    <MockProviders isInitiallyLoggedIn={true}>
-      <App />
-    </MockProviders>
-  );
-
-  await waitFor(() => {
-    const maybeElement = getByText(
-      `${mockUser.firstName} ${mockUser.lastName}`
-    );
-    expect(maybeElement).toBeInTheDocument();
+    expect(getByText("Logout")).toBeInTheDocument();
   });
 });

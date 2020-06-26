@@ -60,7 +60,7 @@ const Login = () => {
               disableElevation
               style={{ textTransform: "none" }}
             >
-              Log In
+              Login
             </Button>
           </Box>
         </Box>
