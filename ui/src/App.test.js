@@ -25,7 +25,7 @@ test("renders logout button when logged in", () => {
   expect(getByText(/logout/i)).toBeInTheDocument();
 });
 
-test("redirects to home page (with data) after logging in", async () => {
+test("redirects to home page after logging in", async () => {
   const { getByText, getByLabelText } = render(
     <MockProviders isInitiallyLoggedIn={false}>
       <App />
@@ -47,5 +47,24 @@ test("redirects to home page (with data) after logging in", async () => {
     expect(
       getByText(`${mockUser.firstName} ${mockUser.lastName}`)
     ).toBeInTheDocument();
+  });
+});
+
+test("redirects to login page after logging out", async () => {
+  const { getByText, queryByText } = render(
+    <MockProviders isInitiallyLoggedIn={true}>
+      <App />
+    </MockProviders>
+  );
+
+  // submit
+  fireEvent.click(getByText(/logout/i));
+
+  await waitFor(() => {
+    // can see login button but not user's name?
+    expect(getByText(/login/i)).toBeInTheDocument();
+    expect(
+      queryByText(`${mockUser.firstName} ${mockUser.lastName}`)
+    ).not.toBeInTheDocument();
   });
 });
