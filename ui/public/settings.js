@@ -12,10 +12,10 @@
  * To overwrite the settings at container runtime, simply mount
  * a new settings.js file to eg. /usr/share/nginx/html
  */
-const baseUrl = "http://localhost:8000/"
+const baseUrl = "http://localhost:8000/";
 
- window.env = {
+window.env = {
   GRAPHQL_API_URL: `${baseUrl}graphql/`,
   DOWNLOAD_ROOT_URL: `${baseUrl}SampleDownload/`,
+  USE_AUTHENTICATION: false,
 };
-

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 
+import env from "./env";
 import { useAuth } from "./auth";
 
 export const USER_QUERY = gql`
@@ -16,7 +17,7 @@ export const USER_QUERY = gql`
 
 export const UserContext = React.createContext();
 
-const UserProvider = (props) => {
+const RealUserProvider = (props) => {
   const { isLoggedIn } = useAuth();
 
   // exposed user state
@@ -47,6 +48,21 @@ const UserProvider = (props) => {
 
   return <UserContext.Provider value={user} {...props} />;
 };
+
+const AlwaysLoggedInUserProvider = (props) => {
+  // exposed user state
+  const [user] = useState({
+    email: "admin@sanger.ac.uk",
+    firstName: "Fake",
+    lastName: "User",
+  });
+
+  return <UserContext.Provider value={user} {...props} />;
+};
+
+const UserProvider = env.USE_AUTHENTICATION
+  ? RealUserProvider
+  : AlwaysLoggedInUserProvider;
 
 const useUser = () => React.useContext(UserContext);
 

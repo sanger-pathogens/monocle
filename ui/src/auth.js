@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 
+import env from "./env";
+
 const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     tokenAuth(email: $email, password: $password) {
@@ -19,7 +21,7 @@ const LOGOUT_MUTATION = gql`
 
 export const AuthContext = React.createContext();
 
-const AuthProvider = (props) => {
+const RealAuthProvider = (props) => {
   // use `isLoggedIn` within app code, but load
   // initial value from local storage to persist
   // between refreshes
@@ -64,6 +66,23 @@ const AuthProvider = (props) => {
     <AuthContext.Provider value={{ login, logout, isLoggedIn }} {...props} />
   );
 };
+
+const AlwaysLoggedInAuthProvider = (props) => {
+  // state (always logged in; will require api setting too in future)
+  const [isLoggedIn] = useState(true);
+
+  // use following exposed handlers in app code
+  const login = () => {};
+  const logout = () => {};
+
+  return (
+    <AuthContext.Provider value={{ login, logout, isLoggedIn }} {...props} />
+  );
+};
+
+const AuthProvider = env.USE_AUTHENTICATION
+  ? RealAuthProvider
+  : AlwaysLoggedInAuthProvider;
 
 const useAuth = () => React.useContext(AuthContext);
 
