@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Paper, Button } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { useAuth } from "../auth";
@@ -15,7 +16,7 @@ const Login = () => {
   const classes = useStyles();
 
   // global auth actions
-  const { login } = useAuth();
+  const { login, loginError } = useAuth();
 
   // user credentials for form
   const [email, setEmail] = useState("");
@@ -34,6 +35,11 @@ const Login = () => {
           <Typography variant="h4" align="center" gutterBottom>
             Monocle
           </Typography>
+          {loginError ? (
+            <Alert severity="error" elevation={0} variant="filled">
+              {loginError}
+            </Alert>
+          ) : null}
           <TextField
             id="Email"
             label="email"
