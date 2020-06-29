@@ -1,10 +1,22 @@
-import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile } from "../utils";
+import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile, login } from "../utils";
 
 describe("sample table", () => {
+  beforeEach(() => {
+    // clean auth state
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  });
+
   it("exists", () => {
-    cy.visit("/");
-    cy.get("body").should("contain", "Samples");
-    cy.get(`table#sampleTable`).should("exist");
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // table exists?
+      cy.get(`table#sampleTable`).should("exist");
+    });
   });
 
   it("is empty when the database is empty", () => {
@@ -12,11 +24,13 @@ describe("sample table", () => {
       // empty samples table?
       expect(db.sample.length).to.equal(0);
 
-      // load page
+      // login
       cy.visit("/");
-      cy.wait(API_WAIT_MS);
+      const user = db.user[0];
+      login(user.email);
 
       // table empty?
+      cy.get(`table#sampleTable`).should("exist");
       cy.get(`table#sampleTable tbody tr`).should("not.exist");
     });
   });
@@ -26,9 +40,10 @@ describe("sample table", () => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
 
-      // load page
+      // login
       cy.visit("/");
-      cy.wait(API_WAIT_MS);
+      const user = db.user[0];
+      login(user.email);
 
       // table contains database entries?
       db.sample.forEach(({ lane_id }) => {
