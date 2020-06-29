@@ -1,7 +1,7 @@
 // it is possible that tests fail due to an slow API request,
 // but we wait for the following amount of time, to hopefully
 // mitigate this
-export const API_WAIT_MS = 1000;
+export const API_WAIT_MS = 5000;
 
 // object to make allowed database profiles more obvious
 export const DB_PROFILES = {
