@@ -28,6 +28,8 @@ const RealAuthProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") !== null
   );
+  const [loginError, setLoginError] = useState(null);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // graphql mutations for login, logout
   const [loginMutation] = useMutation(LOGIN_MUTATION, {
@@ -35,11 +37,14 @@ const RealAuthProvider = (props) => {
       // login succeeded...
       localStorage.setItem("isLoggedIn", "yes");
       setIsLoggedIn(true);
+      setLoginLoading(false);
     },
-    onError() {
+    onError(error) {
       // login failed...
       localStorage.removeItem("isLoggedIn");
       setIsLoggedIn(false);
+      setLoginLoading(false);
+      setLoginError(error.message);
     },
   });
   const [logoutMutation] = useMutation(LOGOUT_MUTATION, {
@@ -58,12 +63,19 @@ const RealAuthProvider = (props) => {
   });
 
   // use following exposed handlers in app code
-  const login = ({ email, password }) =>
+  const login = ({ email, password }) => {
+    setLoginError(null);
+    setLoginLoading(true);
     loginMutation({ variables: { email, password } });
+  };
+
   const logout = () => logoutMutation();
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoggedIn }} {...props} />
+    <AuthContext.Provider
+      value={{ login, logout, isLoggedIn, loginError, loginLoading }}
+      {...props}
+    />
   );
 };
 
