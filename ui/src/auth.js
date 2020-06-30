@@ -111,7 +111,7 @@ const RealAuthProvider = (props) => {
       setState({ isLoggedIn, initialising: false });
       verifyMutation();
     }
-  }, [initialising]);
+  }, [initialising, isLoggedIn, verifyMutation]);
   return (
     <AuthContext.Provider
       value={{
