@@ -46,7 +46,7 @@ const Header = () => {
     target: window,
   });
   const { logout } = useAuth();
-  const user = useUser();
+  const { user, getUser } = useUser();
 
   return (
     <AppBar
@@ -60,6 +60,9 @@ const Header = () => {
           Monocle
         </Button>
         <div className={classes.grow} />
+        <Button color="inherit" onClick={getUser}>
+          Fetch User
+        </Button>
         {user ? (
           <div className={classes.user}>
             <AccountCircle className={classes.accountIcon} />

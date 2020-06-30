@@ -25,7 +25,7 @@ const RealUserProvider = (props) => {
 
   // graphql query
   const skip = !isLoggedIn;
-  useQuery(USER_QUERY, {
+  const { refetch } = useQuery(USER_QUERY, {
     onCompleted(data) {
       // user query succeeded...
 
@@ -46,7 +46,12 @@ const RealUserProvider = (props) => {
     skip: !isLoggedIn,
   });
 
-  return <UserContext.Provider value={user} {...props} />;
+  return (
+    <UserContext.Provider
+      value={{ user, getUser: () => refetch() }}
+      {...props}
+    />
+  );
 };
 
 const AlwaysLoggedInUserProvider = (props) => {
@@ -57,7 +62,9 @@ const AlwaysLoggedInUserProvider = (props) => {
     lastName: "User",
   });
 
-  return <UserContext.Provider value={user} {...props} />;
+  return (
+    <UserContext.Provider value={{ user, getUser: () => {} }} {...props} />
+  );
 };
 
 const UserProvider = env.USE_AUTHENTICATION
