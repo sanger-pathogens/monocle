@@ -8,7 +8,10 @@ const MockUserProvider = (props) => {
   const { isLoggedIn } = useAuth();
 
   return (
-    <UserContext.Provider value={isLoggedIn ? mockUser : null} {...props} />
+    <UserContext.Provider
+      value={{ user: isLoggedIn ? mockUser : null, getUser: () => {} }}
+      {...props}
+    />
   );
 };
 
