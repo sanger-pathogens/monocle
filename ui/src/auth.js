@@ -51,7 +51,7 @@ const RealAuthProvider = (props) => {
       // set auth and refresh tokens
       setState({ isLoggedIn: true });
     },
-    onError(error) {
+    onError() {
       // likely bad credentials
       setState({ isLoggedIn: false });
     },
@@ -76,7 +76,7 @@ const RealAuthProvider = (props) => {
         // verified that there's a valid auth token
         setState({ isLoggedIn: true });
       },
-      onError(error) {
+      onError() {
         // no valid auth token, try refreshing
         refreshMutation();
       },
@@ -89,7 +89,7 @@ const RealAuthProvider = (props) => {
         // successfully refreshed auth token
         setState({ isLoggedIn: true });
       },
-      onError(error) {
+      onError() {
         // no valid refresh token, need credentials
         setState({ isLoggedIn: false });
       },
