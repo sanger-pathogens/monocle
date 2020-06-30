@@ -41,9 +41,9 @@ const RealAuthProvider = (props) => {
   // set initial state (logged out and loading)
   const [state, setState] = useState({
     isLoggedIn: false,
-    isInit: true,
+    initialising: true,
   });
-  const { isLoggedIn, isInit } = state;
+  const { isLoggedIn, initialising } = state;
 
   // graphql mutations for login, logout, verify, refresh
   const [loginMutation, { loading: loggingIn }] = useMutation(LOGIN_MUTATION, {
@@ -107,11 +107,11 @@ const RealAuthProvider = (props) => {
   useEffect(() => {
     // note: it's important `verifyMutation` is only called
     //       once on load, or there'd be an infinite loop
-    if (isInit) {
-      setState({ isLoggedIn, isInit: false });
+    if (initialising) {
+      setState({ isLoggedIn, initialising: false });
       verifyMutation();
     }
-  }, [isInit]);
+  }, [initialising]);
   return (
     <AuthContext.Provider
       value={{
