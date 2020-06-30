@@ -5,8 +5,8 @@ import PageHome from "./components/PageHome";
 import PageLogin from "./components/PageLogin";
 
 const App = () => {
-  const { isLoggedIn } = useAuth();
-  return isLoggedIn ? <PageHome /> : <PageLogin />;
+  const { isLoggedIn, isLoading } = useAuth();
+  return isLoading ? null : isLoggedIn ? <PageHome /> : <PageLogin />;
 };
 
 export default App;

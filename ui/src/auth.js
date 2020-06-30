@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 
@@ -18,62 +18,108 @@ const LOGOUT_MUTATION = gql`
     }
   }
 `;
+const REFRESH_MUTATION = gql`
+  mutation RefreshToken {
+    refreshToken {
+      payload
+      token
+      refreshExpiresIn
+    }
+  }
+`;
+const VERIFY_MUTATION = gql`
+  mutation VerifyToken {
+    verifyToken {
+      payload
+    }
+  }
+`;
 
 export const AuthContext = React.createContext();
 
 const RealAuthProvider = (props) => {
-  // use `isLoggedIn` within app code, but load
-  // initial value from local storage to persist
-  // between refreshes
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") !== null
-  );
-  const [loginError, setLoginError] = useState(null);
-  const [loginLoading, setLoginLoading] = useState(false);
+  // set initial state (logged out and loading)
+  const [state, setState] = useState({
+    isLoggedIn: false,
+    isInit: true,
+  });
+  const { isLoggedIn, isInit } = state;
 
-  // graphql mutations for login, logout
-  const [loginMutation] = useMutation(LOGIN_MUTATION, {
+  // graphql mutations for login, logout, verify, refresh
+  const [loginMutation, { loading: loggingIn }] = useMutation(LOGIN_MUTATION, {
     onCompleted() {
-      // login succeeded...
-      localStorage.setItem("isLoggedIn", "yes");
-      setIsLoggedIn(true);
-      setLoginLoading(false);
+      // set auth and refresh tokens
+      setState({ isLoggedIn: false });
     },
     onError(error) {
-      // login failed...
-      localStorage.removeItem("isLoggedIn");
-      setIsLoggedIn(false);
-      setLoginLoading(false);
-      setLoginError(error.message);
+      // likely bad credentials
+      setState({ isLoggedIn: false });
     },
   });
-  const [logoutMutation] = useMutation(LOGOUT_MUTATION, {
-    onCompleted() {
-      // logout succeeded...
-      localStorage.removeItem("isLoggedIn");
-      setIsLoggedIn(false);
-    },
-    onError() {
-      // logout failed...
-      // (could happen if API not reachable,
-      //  but cookies will still time out)
-      localStorage.removeItem("isLoggedIn");
-      setIsLoggedIn(false);
-    },
-  });
+  const [logoutMutation, { loading: loggingOut }] = useMutation(
+    LOGOUT_MUTATION,
+    {
+      onCompleted() {
+        // removing tokens succeeded
+        setState({ isLoggedIn: false });
+      },
+      onError() {
+        // removing tokens failed, but can still re-request credentials
+        setState({ isLoggedIn: false });
+      },
+    }
+  );
+  const [verifyMutation, { loading: verifying }] = useMutation(
+    VERIFY_MUTATION,
+    {
+      onCompleted() {
+        // verified that there's a valid auth token
+        setState({ isLoggedIn: true });
+      },
+      onError(error) {
+        // no valid auth token, try refreshing
+        refreshMutation();
+      },
+    }
+  );
+  const [refreshMutation, { loading: refreshing }] = useMutation(
+    REFRESH_MUTATION,
+    {
+      onCompleted() {
+        // successfully refreshed auth token
+        setState({ isLoggedIn: true });
+      },
+      onError(error) {
+        // no valid refresh token, need credentials
+        setState({ isLoggedIn: false });
+      },
+    }
+  );
 
-  // use following exposed handlers in app code
+  // create exposed handlers
   const login = ({ email, password }) => {
-    setLoginError(null);
-    setLoginLoading(true);
     loginMutation({ variables: { email, password } });
   };
+  const logout = () => {
+    logoutMutation();
+  };
 
-  const logout = () => logoutMutation();
-
+  useEffect(() => {
+    // note: it's important `verifyMutation` is only called
+    //       once on load, or there'd be an infinite loop
+    if (isInit) {
+      setState({ isLoggedIn, isInit: false });
+      verifyMutation();
+    }
+  }, [isInit]);
   return (
     <AuthContext.Provider
-      value={{ login, logout, isLoggedIn, loginError, loginLoading }}
+      value={{
+        login,
+        logout,
+        isLoggedIn,
+        isLoading: verifying || refreshing || loggingIn || loggingOut,
+      }}
       {...props}
     />
   );
@@ -81,14 +127,18 @@ const RealAuthProvider = (props) => {
 
 const AlwaysLoggedInAuthProvider = (props) => {
   // state (always logged in; will require api setting too in future)
-  const [isLoggedIn] = useState(true);
+  const isLoggedIn = true;
+  const isLoading = false;
 
   // use following exposed handlers in app code
   const login = () => {};
   const logout = () => {};
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoggedIn }} {...props} />
+    <AuthContext.Provider
+      value={{ login, logout, isLoggedIn, isLoading }}
+      {...props}
+    />
   );
 };
 
