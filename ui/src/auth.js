@@ -49,7 +49,7 @@ const RealAuthProvider = (props) => {
   const [loginMutation, { loading: loggingIn }] = useMutation(LOGIN_MUTATION, {
     onCompleted() {
       // set auth and refresh tokens
-      setState({ isLoggedIn: false });
+      setState({ isLoggedIn: true });
     },
     onError(error) {
       // likely bad credentials
