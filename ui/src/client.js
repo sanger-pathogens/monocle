@@ -6,6 +6,9 @@ import { onError } from "apollo-link-error";
 
 import history from "./history";
 import env from "./env";
+import verifyToken from "./verifyToken";
+import refreshToken from "./refreshToken";
+import promiseToObservable from "./promiseToObservable";
 
 const appCache = new InMemoryCache();
 
@@ -13,43 +16,52 @@ const httpLink = new HttpLink({
   uri: env.GRAPHQL_API_URL,
   credentials: "include",
 });
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  // TODO: handle network errors globally?
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => {
-      if (message === "Signature has expired") {
-        // access token has expired...
-        // TODO: attempt to get a new access token (once only)
 
-        // update state
-        localStorage.removeItem("isLoggedIn");
-
-        // request credentials
-        history.push("/");
-      } else if (message === "Refresh token is required") {
-        // refresh token has expired...
-
-        // update state
-        localStorage.removeItem("isLoggedIn");
-
-        // request credentials
-        history.push("/");
-      } else if (
-        message === "You do not have permission to perform this action"
+const ERROR_BAD_PERMISSIONS =
+  "You do not have permission to perform this action";
+const ERROR_NO_AUTH_TOKEN = "Token is required";
+const ERROR_NO_REFRESH_TOKEN = "Refresh token is required";
+const handleBadPermissions = () =>
+  verifyToken()
+    .then((response) => response.json())
+    .then(({ errors }) => {
+      if (
+        errors &&
+        errors.length > 0 &&
+        errors[0].message === ERROR_NO_AUTH_TOKEN
       ) {
-        // attempted to access a private query,
-        // (shouldn't happen, unless user manually
-        // visits eg. /me whilst logged out)
-
-        // update state
-        localStorage.removeItem("isLoggedIn");
-
-        // request credentials
-        history.push("/");
+        return refreshToken()
+          .then((response) => response.json())
+          .then(({ errors }) => {
+            if (
+              errors &&
+              errors.length > 0 &&
+              errors[0].message === ERROR_NO_REFRESH_TOKEN
+            ) {
+              // bomb out and request credentials
+              history.push("/");
+            }
+          });
       }
+    })
+    .catch((error) => {
+      console.error("Failed to handle bad permissions.", error);
     });
+
+const errorLink = onError(({ graphQLErrors, forward, operation }) => {
+  if (
+    graphQLErrors &&
+    graphQLErrors.some(({ message }) => message === ERROR_BAD_PERMISSIONS)
+  ) {
+    // client getting bad auth likely means that the auth
+    // token or refresh token expired, so check with call to
+    // verifyToken:
+    // - if expired, then refreshToken and retry query
+    // - if not expired, then genuine bad auth, allow propagation
+    return promiseToObservable(handleBadPermissions()).flatMap(() =>
+      forward(operation)
+    );
   }
-  console.log("global error link", graphQLErrors, networkError);
 });
 
 const client = new ApolloClient({
