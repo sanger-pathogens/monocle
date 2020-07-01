@@ -1,8 +1,7 @@
 // Check no button when empty database - DONE
 // Check existence of button - DONE
-// Click on button
-// Check file has downloaded
-// Check downloaded file contains correct data
+// Click on button - DONE
+// Check new button opens
 import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile } from "../utils";
 
 describe("download button", () => {
@@ -16,7 +15,6 @@ describe("download button", () => {
       cy.wait(API_WAIT_MS);
 
       // button does not exist
-      //   cy.get("td button").should("not.exist");
       cy.get(`table#sampleTable`)
         .contains("td button", "31663_7#113")
         .should("not.exist");
@@ -37,7 +35,7 @@ describe("download button", () => {
     });
   });
 
-  it("File downloaded when button clicked", () => {
+  it("Button clicked", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
@@ -45,8 +43,30 @@ describe("download button", () => {
       // load page
       cy.visit("/");
       cy.wait(API_WAIT_MS);
-
-      cy.get(`table#sampleTable`).contains("td button", "31663_7#113").click();
+      //   cy.get(`table#sampleTable`).contains("td button", "31663_7#113").click();
+      const stub = cy.stub();
+      cy.on("window:alert", stub);
+      cy.get(`table#sampleTable`)
+        .contains("td button", "31663_7#113")
+        .click()
+        .then(() => {
+          expect(stub.getCall(0)).to.be.calledWith(
+            "http://localhost:8001/SampleDownload/31663_7%23113,31663_7#113.tar.gz"
+          );
+        });
+      cy.wait(API_WAIT_MS);
     });
+  });
+
+  it("Download file link contains correct attachment", () => {
+    cy.request("http://localhost:8001/SampleDownload/31663_7%23113").then(
+      (response) => {
+        expect(response.headers).to.have.property(
+          "content-disposition",
+          "attachment; filename=31663_7#113.tar.gz"
+        );
+        expect(response.status).to.eq(200);
+      }
+    );
   });
 });

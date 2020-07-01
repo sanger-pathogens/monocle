@@ -5,6 +5,10 @@ import { Button } from "@material-ui/core";
 
 const DownloadButton = ({ url, filename, children }) => {
   const handler = () => {
+    if (window.Cypress) {
+      alert(url.concat("," + filename));
+      return;
+    }
     FileSaver.saveAs(url, filename);
   };
   return (

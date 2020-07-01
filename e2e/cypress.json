@@ -3,5 +3,6 @@
   "pluginsFile": "plugins/index.js",
   "supportFile": false,
   "integrationFolder": "integration",
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "experimentalSourceRewriting": true
 }
