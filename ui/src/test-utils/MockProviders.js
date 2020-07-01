@@ -16,12 +16,21 @@ import { generateApiMocks } from "./apiMocks";
 
 const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
+export const MockApolloProvider = ({
+  apiMocks = generateApiMocks().mocks,
+  children,
+}) => (
+  <ApolloProvider mocks={apiMocks} addTypename={false}>
+    {children}
+  </ApolloProvider>
+);
+
 const MockProviders = ({
   isInitiallyLoggedIn = false,
   apiMocks = generateApiMocks().mocks,
   children,
 }) => (
-  <ApolloProvider mocks={apiMocks} addTypename={false}>
+  <MockApolloProvider apiMocks={apiMocks}>
     <>
       <CssBaseline />
       <ThemeProvider theme={generatedTheme}>
@@ -30,7 +39,7 @@ const MockProviders = ({
         </AuthProvider>
       </ThemeProvider>
     </>
-  </ApolloProvider>
+  </MockApolloProvider>
 );
 
 export default MockProviders;
