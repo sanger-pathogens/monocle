@@ -17,7 +17,7 @@ export const USER_QUERY = gql`
 
 export const UserContext = React.createContext();
 
-const RealUserProvider = (props) => {
+export const RealUserProvider = (props) => {
   const { isLoggedIn } = useAuth();
 
   // exposed user state
@@ -54,7 +54,7 @@ const RealUserProvider = (props) => {
   );
 };
 
-const AlwaysLoggedInUserProvider = (props) => {
+export const AlwaysLoggedInUserProvider = (props) => {
   // exposed user state
   const [user] = useState({
     email: "admin@sanger.ac.uk",
