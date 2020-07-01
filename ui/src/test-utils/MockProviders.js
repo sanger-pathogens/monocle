@@ -16,7 +16,7 @@ import { generateApiMocks } from "./apiMocks";
 
 const generatedTheme = responsiveFontSizes(createMuiTheme(theme));
 
-const AppProviders = ({
+const MockProviders = ({
   isInitiallyLoggedIn = false,
   apiMocks = generateApiMocks().mocks,
   children,
@@ -33,4 +33,4 @@ const AppProviders = ({
   </ApolloProvider>
 );
 
-export default AppProviders;
+export default MockProviders;
