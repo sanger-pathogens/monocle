@@ -4,21 +4,21 @@ import { useMutation } from "@apollo/react-hooks";
 
 import env from "./env";
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
     tokenAuth(email: $email, password: $password) {
       token
     }
   }
 `;
-const LOGOUT_MUTATION = gql`
+export const LOGOUT_MUTATION = gql`
   mutation Logout {
     deleteTokenCookie {
       deleted
     }
   }
 `;
-const REFRESH_MUTATION = gql`
+export const REFRESH_MUTATION = gql`
   mutation RefreshToken {
     refreshToken {
       payload
@@ -27,7 +27,7 @@ const REFRESH_MUTATION = gql`
     }
   }
 `;
-const VERIFY_MUTATION = gql`
+export const VERIFY_MUTATION = gql`
   mutation VerifyToken {
     verifyToken {
       payload

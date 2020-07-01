@@ -1,6 +1,7 @@
 import { USER_QUERY } from "../user";
 import { SAMPLES_QUERY } from "../components/Samples";
 import { INSTITUTIONS_QUERY } from "../components/Institutions";
+import { LOGIN_MUTATION } from "../auth";
 
 export const mockUser = {
   email: "admin@juno.com",
@@ -108,6 +109,30 @@ export const generateApiMocks = (mocks = mockDefaults) => {
               institutions,
             },
           };
+        },
+      },
+      {
+        request: {
+          query: LOGIN_MUTATION,
+          variables: {
+            email: mockUser.email,
+            password: mockUser.email.split("@")[0],
+          },
+        },
+        result: {
+          data: {
+            tokenAuth: {
+              token:
+                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImdhcmV0aEBqdW5vLmNvbSIsImV4cCI6MTU5MzYyMjI2MSwib3JpZ0lhdCI6MTU5MzYyMTY2MX0.bBjI3XHMvgLiKZ96nQ16sU0d27nP_rUE5iKPQxfWl6o",
+              refreshToken: "bc197db0c2faea54f118270c3412ab8218c6bada",
+              payload: {
+                email: mockUser.email,
+                exp: 1593622261,
+                origIat: 1593621661,
+              },
+              refreshExpiresIn: 1594226461,
+            },
+          },
         },
       },
     ],

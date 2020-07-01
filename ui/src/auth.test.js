@@ -3,6 +3,7 @@ import { render, waitFor, fireEvent } from "@testing-library/react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
+import { mockUser } from "./test-utils/apiMocks";
 import { MockApolloProvider } from "./test-utils/MockProviders";
 
 describe("AlwaysLoggedInAuthProvider", () => {
@@ -56,5 +57,21 @@ describe("RealAuthProvider", () => {
     await waitForNextUpdate();
 
     expect(result.current.isLoggedIn).toBe(false);
+  });
+
+  it("should be logged in after calling login", async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      result.current.login({
+        email: mockUser.email,
+        password: mockUser.email.split("@")[0],
+      });
+      await waitForNextUpdate();
+    });
+
+    expect(result.current.isLoggedIn).toBe(true);
   });
 });
