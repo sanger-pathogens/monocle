@@ -74,4 +74,21 @@ describe("RealAuthProvider", () => {
 
     expect(result.current.isLoggedIn).toBe(true);
   });
+
+  it("should be logged out after calling login then logout", async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      result.current.login({
+        email: mockUser.email,
+        password: mockUser.email.split("@")[0],
+      });
+      result.current.logout();
+      await waitForNextUpdate();
+    });
+
+    expect(result.current.isLoggedIn).toBe(false);
+  });
 });

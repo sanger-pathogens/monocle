@@ -1,7 +1,7 @@
 import { USER_QUERY } from "../user";
 import { SAMPLES_QUERY } from "../components/Samples";
 import { INSTITUTIONS_QUERY } from "../components/Institutions";
-import { LOGIN_MUTATION } from "../auth";
+import { LOGIN_MUTATION, LOGOUT_MUTATION } from "../auth";
 
 export const mockUser = {
   email: "admin@juno.com",
@@ -55,19 +55,39 @@ export const mockInstitutions = [
   },
 ];
 
+export const mockLoginSuccess = {
+  token:
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImdhcmV0aEBqdW5vLmNvbSIsImV4cCI6MTU5MzYyMjI2MSwib3JpZ0lhdCI6MTU5MzYyMTY2MX0.bBjI3XHMvgLiKZ96nQ16sU0d27nP_rUE5iKPQxfWl6o",
+  refreshToken: "bc197db0c2faea54f118270c3412ab8218c6bada",
+  payload: {
+    email: mockUser.email,
+    exp: 1593622261,
+    origIat: 1593621661,
+  },
+  refreshExpiresIn: 1594226461,
+};
+
+export const mockLogoutSuccess = {
+  deleted: true,
+};
+
 export const mockDefaults = {
   user: mockUser,
   samples: mockSamples,
   institutions: mockInstitutions,
+  login: mockLoginSuccess,
+  logout: mockLogoutSuccess,
 };
 export const generateApiMocks = (mocks = mockDefaults) => {
-  const { user, samples, institutions } = mocks;
+  const { user, samples, institutions, login, logout } = mocks;
 
   // call counts for test assertions
   let called = {
     userQuery: 0,
     samplesQuery: 0,
     institutionsQuery: 0,
+    loginMutation: 0,
+    logoutMutation: 0,
   };
   return {
     called,
@@ -119,20 +139,26 @@ export const generateApiMocks = (mocks = mockDefaults) => {
             password: mockUser.email.split("@")[0],
           },
         },
-        result: {
-          data: {
-            tokenAuth: {
-              token:
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImdhcmV0aEBqdW5vLmNvbSIsImV4cCI6MTU5MzYyMjI2MSwib3JpZ0lhdCI6MTU5MzYyMTY2MX0.bBjI3XHMvgLiKZ96nQ16sU0d27nP_rUE5iKPQxfWl6o",
-              refreshToken: "bc197db0c2faea54f118270c3412ab8218c6bada",
-              payload: {
-                email: mockUser.email,
-                exp: 1593622261,
-                origIat: 1593621661,
-              },
-              refreshExpiresIn: 1594226461,
+        result: () => {
+          called.loginMutation += 1;
+          return {
+            data: {
+              tokenAuth: login,
             },
-          },
+          };
+        },
+      },
+      {
+        request: {
+          query: LOGOUT_MUTATION,
+        },
+        result: () => {
+          called.logoutMutation += 1;
+          return {
+            data: {
+              deleteTokenCookie: logout,
+            },
+          };
         },
       },
     ],
