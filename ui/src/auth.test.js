@@ -3,7 +3,7 @@ import { render, waitFor, fireEvent } from "@testing-library/react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
-import { mockUser } from "./test-utils/apiMocks";
+import { mockUser, generateApiMocks } from "./test-utils/apiMocks";
 import { MockApolloProvider } from "./test-utils/MockProviders";
 
 describe("AlwaysLoggedInAuthProvider", () => {
@@ -43,15 +43,17 @@ describe("AlwaysLoggedInAuthProvider", () => {
 
 describe("RealAuthProvider", () => {
   // helper
-  const wrapper = ({ children }) => (
-    <MockApolloProvider>
+  const wrapper = ({ apiMocks, children }) => (
+    <MockApolloProvider apiMocks={apiMocks}>
       <RealAuthProvider>{children}</RealAuthProvider>
     </MockApolloProvider>
   );
 
   it("should not be logged in initially", async () => {
+    const { mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
+      initialProps: { apiMocks },
     });
 
     await waitForNextUpdate();
@@ -60,8 +62,10 @@ describe("RealAuthProvider", () => {
   });
 
   it("should be logged in after calling login", async () => {
+    const { called, mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
+      initialProps: { apiMocks },
     });
 
     await act(async () => {
@@ -72,12 +76,18 @@ describe("RealAuthProvider", () => {
       await waitForNextUpdate();
     });
 
+    // query made?
+    expect(called.loginMutation).toBeGreaterThan(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(true);
   });
 
   it("should be logged out after calling login then logout", async () => {
+    const { called, mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
+      initialProps: { apiMocks },
     });
 
     await act(async () => {
@@ -89,6 +99,10 @@ describe("RealAuthProvider", () => {
       await waitForNextUpdate();
     });
 
+    // query made?
+    expect(called.logoutMutation).toBeGreaterThan(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(false);
   });
 });
