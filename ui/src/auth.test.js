@@ -1,7 +1,9 @@
 import React from "react";
+import { render, waitFor, fireEvent } from "@testing-library/react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
-import { AlwaysLoggedInAuthProvider, useAuth } from "./auth";
+import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
+import { MockApolloProvider } from "./test-utils/MockProviders";
 
 describe("AlwaysLoggedInAuthProvider", () => {
   // helper
@@ -10,7 +12,9 @@ describe("AlwaysLoggedInAuthProvider", () => {
   );
 
   it("should be logged in initially", () => {
-    const { result } = renderHook(() => useAuth(), { wrapper });
+    const { result } = renderHook(() => useAuth(), {
+      wrapper,
+    });
 
     expect(result.current.isLoggedIn).toBe(true);
   });
@@ -33,5 +37,24 @@ describe("AlwaysLoggedInAuthProvider", () => {
     });
 
     expect(result.current.isLoggedIn).toBe(true);
+  });
+});
+
+describe("RealAuthProvider", () => {
+  // helper
+  const wrapper = ({ children }) => (
+    <MockApolloProvider>
+      <RealAuthProvider>{children}</RealAuthProvider>
+    </MockApolloProvider>
+  );
+
+  it("should not be logged in initially", async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+    });
+
+    await waitForNextUpdate();
+
+    expect(result.current.isLoggedIn).toBe(false);
   });
 });
