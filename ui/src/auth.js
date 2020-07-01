@@ -37,7 +37,7 @@ const VERIFY_MUTATION = gql`
 
 export const AuthContext = React.createContext();
 
-const RealAuthProvider = (props) => {
+export const RealAuthProvider = (props) => {
   // set initial state (logged out and loading)
   const [state, setState] = useState({
     isLoggedIn: false,
@@ -125,7 +125,7 @@ const RealAuthProvider = (props) => {
   );
 };
 
-const AlwaysLoggedInAuthProvider = (props) => {
+export const AlwaysLoggedInAuthProvider = (props) => {
   // state (always logged in; will require api setting too in future)
   const isLoggedIn = true;
   const isLoading = false;
