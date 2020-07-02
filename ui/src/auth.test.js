@@ -1,5 +1,4 @@
 import React from "react";
-import { render, waitFor, fireEvent } from "@testing-library/react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
