@@ -1,6 +1,8 @@
 {
-    "baseUrl": "http://localhost:3001/",
-    "pluginsFile": "plugins/index.js",
-    "supportFile": false,
-    "integrationFolder": "integration"
+  "baseUrl": "http://localhost:3001/",
+  "pluginsFile": "plugins/index.js",
+  "supportFile": false,
+  "integrationFolder": "integration",
+  "chromeWebSecurity": false,
+  "experimentalSourceRewriting": true
 }

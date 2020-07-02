@@ -21,3 +21,4 @@ services:
         - "8000:8000"
     volumes:
         - ./api:/app
+        - ./mock-data/:/mock-data/
