@@ -4,11 +4,10 @@ from graphql_jwt import (
     ObtainJSONWebToken,
     Verify,
     Refresh,
-    DeleteJSONWebTokenCookie,
 )
 from graphql_jwt.decorators import login_required
 
-
+from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
 
 
@@ -35,7 +34,7 @@ class Mutation(object):
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
     refresh_token = Refresh.Field()
-    delete_token_cookie = DeleteJSONWebTokenCookie.Field()
+    delete_token_cookie = DeleteTokens.Field()
 
 
 class Query(object):
