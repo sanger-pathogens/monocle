@@ -1,4 +1,4 @@
-import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile } from "../utils";
+import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile, login } from "../utils";
 
 describe("download button", () => {
   it("Button does not exist when the database is empty", () => {
@@ -6,9 +6,10 @@ describe("download button", () => {
       // empty samples table?
       expect(db.sample.length).to.equal(0);
 
-      // load page
+      // load and login
       cy.visit("/");
-      cy.wait(API_WAIT_MS);
+      const user = db.user[0];
+      login(user.email);
 
       // button does not exist
       cy.get(`table#sampleTable`)
@@ -22,9 +23,10 @@ describe("download button", () => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
 
-      // load page
+      // load and login
       cy.visit("/");
-      cy.wait(API_WAIT_MS);
+      const user = db.user[0];
+      login(user.email);
 
       // button exists
       cy.get(`table#sampleTable`).contains("td button", "31663_7#113");
@@ -38,9 +40,11 @@ describe("download button", () => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
 
-      // load page
+      // load and login
       cy.visit("/");
-      cy.wait(API_WAIT_MS);
+      const user = db.user[0];
+      login(user.email);
+
       const stub = cy.stub();
       cy.on("window:alert", stub);
       cy.get(`table#sampleTable`)
