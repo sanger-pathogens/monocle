@@ -62,9 +62,7 @@ class Command(BaseCommand):
             email="admin@sanger.ac.uk", first_name="Alice", last_name="Jones"
         )
         collaborator = User.objects.create(
-            email="collaborator@nrl.israel",
-            first_name="Bob",
-            last_name="Smith",
+            email="collaborator@nrl.israel", first_name="Bob", last_name="Smith",
         )
 
         # institutions

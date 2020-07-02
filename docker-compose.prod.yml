@@ -13,3 +13,5 @@ services:
     image: "sangerpathogens/monocle-api:VERSION"
     ports:
         - "8000:80"
+    volumes:
+        - ./mock-data/:/mock-data/

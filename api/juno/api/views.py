@@ -1,23 +1,19 @@
-from django.shortcuts import render
-from django.http import StreamingHttpResponse, HttpResponse 
+from django.http import StreamingHttpResponse, Http404
 from wsgiref.util import FileWrapper
-import os 
-import mimetypes
-from django.conf import settings
+import io
+from juno.api.downloads import make_tarfile
 
 
-def download_file(request, laneId):
-    the_file = os.path.abspath(
-        os.path.join(
-            os.path.join(getattr(settings, "BASE_DIR", None),os.pardir
-            ),
-            "mock-data/" + "31663_7#113" + ".tar.gz",
-        )
-    )
-    filename = os.path.basename(the_file)
+def download_sample(request, laneId):
+    try:
+        file_in_mem = make_tarfile(laneId)
+    except FileNotFoundError:
+        raise Http404
+    filename = laneId + ".tar.gz"
     chunk_size = 8192
-    response = StreamingHttpResponse(FileWrapper(open(the_file, 'rb'), chunk_size), 
-                                     content_type=mimetypes.guess_type(the_file)[0])
-    response['Content-Length'] = os.path.getsize(the_file)
-    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    response = StreamingHttpResponse(
+        FileWrapper(io.BytesIO(file_in_mem.getvalue()), chunk_size), content_type=bytes,
+    )
+    response["Content-Length"] = file_in_mem.getbuffer().nbytes
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
