@@ -1,11 +1,7 @@
-// Check no button when empty database - DONE
-// Check existence of button - DONE
-// Click on button - DONE
-// Check new button opens
 import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile } from "../utils";
 
 describe("download button", () => {
-  it("button does not exist when the database is empty", () => {
+  it("Button does not exist when the database is empty", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // empty samples table?
       expect(db.sample.length).to.equal(0);
@@ -21,7 +17,7 @@ describe("download button", () => {
     });
   });
 
-  it("button exists when database contains samples", () => {
+  it("Button exists when database contains samples", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
@@ -35,7 +31,9 @@ describe("download button", () => {
     });
   });
 
-  it("Button clicked", () => {
+  // TODO: DownloadButton.onClick handler is using alert only within these tests to check filesaver is
+  // handed the correct url and filename. This is why it is stubbed
+  it("Button clicked passes correct url and filename", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
@@ -43,7 +41,6 @@ describe("download button", () => {
       // load page
       cy.visit("/");
       cy.wait(API_WAIT_MS);
-      //   cy.get(`table#sampleTable`).contains("td button", "31663_7#113").click();
       const stub = cy.stub();
       cy.on("window:alert", stub);
       cy.get(`table#sampleTable`)
@@ -54,7 +51,6 @@ describe("download button", () => {
             "http://localhost:8001/SampleDownload/31663_7%23113,31663_7#113.tar.gz"
           );
         });
-      cy.wait(API_WAIT_MS);
     });
   });
 
