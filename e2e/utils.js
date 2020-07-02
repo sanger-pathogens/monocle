@@ -1,7 +1,7 @@
 // it is possible that tests fail due to an slow API request,
 // but we wait for the following amount of time, to hopefully
 // mitigate this
-export const API_WAIT_MS = 1000;
+export const API_WAIT_MS = 5000;
 
 // object to make allowed database profiles more obvious
 export const DB_PROFILES = {
@@ -27,3 +27,24 @@ export const loadDatabaseProfile = (profileName) =>
       // return database data for test
       return data;
     });
+
+// authentication utils
+export const login = (email) => {
+  // password is email prefix (for tests only)
+  const password = email.split("@")[0];
+
+  // fill in credentials
+  cy.get("input[type=email]").type(email);
+  cy.get("input[type=password]").type(password);
+  cy.get("button[type=submit]").click();
+
+  // await page change
+  cy.wait(API_WAIT_MS);
+};
+export const logout = () => {
+  // find and click logout button
+  cy.contains("Logout").click();
+
+  // await page change
+  cy.wait(API_WAIT_MS);
+};

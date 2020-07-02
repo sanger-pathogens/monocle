@@ -54,7 +54,7 @@ const columns = [
   },
 ];
 
-const SAMPLES_QUERY = gql`
+export const SAMPLES_QUERY = gql`
   {
     samples {
       laneId

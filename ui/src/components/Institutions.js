@@ -18,7 +18,7 @@ const columns = [
   { key: "country", label: "Country" },
 ];
 
-const INSTITUTIONS_QUERY = gql`
+export const INSTITUTIONS_QUERY = gql`
   {
     institutions {
       name

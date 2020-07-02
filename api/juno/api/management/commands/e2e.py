@@ -35,15 +35,27 @@ class Command(BaseCommand):
         }
         return json.dumps(data)
 
-    def empty(self):
+    def clear(self):
         User.objects.all().delete()
         Institution.objects.all().delete()
         Affiliation.objects.all().delete()
         Sample.objects.all().delete()
 
+    def empty(self):
+        self.clear()
+
+        # users (need to be able to log in)
+        User.objects.create(
+            email="admin@sanger.ac.uk", first_name="Alice", last_name="Jones"
+        )
+
+        # fix the passwords of users to be email prefix
+        for user in User.objects.all():
+            user.set_password(user.email.split("@")[0])
+            user.save()
+
     def small(self):
-        # clear
-        self.empty()
+        self.clear()
 
         # users
         admin = User.objects.create(
@@ -105,7 +117,7 @@ class Command(BaseCommand):
             submitting_institution=cuhk,
         )
 
-        # fix the passwords of fixtures to be email prefix
+        # fix the passwords of users to be email prefix
         for user in User.objects.all():
             user.set_password(user.email.split("@")[0])
             user.save()

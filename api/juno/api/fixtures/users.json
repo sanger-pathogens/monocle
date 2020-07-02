@@ -26,6 +26,14 @@
     {
         "model": "api.User",
         "fields": {
+            "first_name": "Lex",
+            "last_name": "Luther",
+            "email": "admin@sanger.ac.uk"
+        }
+    },
+    {
+        "model": "api.User",
+        "fields": {
             "first_name": "Albus",
             "last_name": "Dumbledore",
             "email": "albus@nrl.israel"
