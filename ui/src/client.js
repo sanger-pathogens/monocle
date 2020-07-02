@@ -6,8 +6,7 @@ import { onError } from "apollo-link-error";
 
 import history from "./history";
 import env from "./env";
-import verifyToken from "./verifyToken";
-import refreshToken from "./refreshToken";
+import authFetchers from "./authFetchers";
 import promiseToObservable from "./promiseToObservable";
 
 const appCache = new InMemoryCache();
@@ -17,12 +16,13 @@ const httpLink = new HttpLink({
   credentials: "include",
 });
 
-const ERROR_BAD_PERMISSIONS =
+export const ERROR_BAD_PERMISSIONS =
   "You do not have permission to perform this action";
-const ERROR_NO_AUTH_TOKEN = "Token is required";
-const ERROR_NO_REFRESH_TOKEN = "Refresh token is required";
-const handleBadPermissions = () =>
-  verifyToken()
+export const ERROR_NO_AUTH_TOKEN = "Token is required";
+export const ERROR_NO_REFRESH_TOKEN = "Refresh token is required";
+export const handleBadPermissions = () =>
+  authFetchers
+    .verifyToken()
     .then((response) => response.json())
     .then(({ errors }) => {
       if (
@@ -30,7 +30,8 @@ const handleBadPermissions = () =>
         errors.length > 0 &&
         errors[0].message === ERROR_NO_AUTH_TOKEN
       ) {
-        return refreshToken()
+        return authFetchers
+          .refreshToken()
           .then((response) => response.json())
           .then(({ errors }) => {
             if (
