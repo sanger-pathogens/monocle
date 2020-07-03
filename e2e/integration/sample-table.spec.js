@@ -63,7 +63,7 @@ describe("sample table", () => {
       login(user.email);
 
       // allowed institutions
-      const affiliations = db.affiliations.filter((d) => d.user === user.email);
+      const affiliations = db.affiliation.filter((d) => d.user === user.email);
       const institutionsAllowed = affiliations.map((d) => d.institution);
       const samplesAllowed = db.sample.filter(
         (d) => institutionsAllowed.indexOf(d.submitting_institution) >= 0
