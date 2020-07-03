@@ -1,16 +1,32 @@
-from juno.tests.base import GraphQLTestCase
-from juno.api.models import Sample, Institution
+from juno.tests.base import AuthenticatableGraphQLTestCase
+from juno.api.models import Sample, Institution, User, Affiliation
 
 
-class SamplesQueryTestCase(GraphQLTestCase):
+class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
+    PASSWORD = "bobsicles"
+
     def setUp(self):
-        # put something in the db
+        # put an institution in the db
         self.institution = Institution.objects.create(
             name="Wellcome Sanger Institute",
             country="United Kingdom",
             latitude=52.083333,
             longitude=0.183333,
         )
+
+        # put user in the db
+        self.user = User.objects.create(
+            email="bob@bob.com", first_name="Bob", last_name="Bobbity",
+        )
+        self.user.set_password(self.PASSWORD)
+        self.user.save()
+
+        # associate the user with the institution
+        Affiliation.objects.create(
+            user=self.user, institution=self.institution
+        )
+
+        # put a sample in the db, submitted by the institution
         self.sample = Sample.objects.create(
             lane_id="31663_7#113",
             sample_id="5903STDY8059170",
@@ -18,6 +34,12 @@ class SamplesQueryTestCase(GraphQLTestCase):
             serotype="Ia",
             host_status="skin and soft-tissue infection",
             submitting_institution=self.institution,
+        )
+
+        # login (institutions is an auth restricted resource)
+        response = self.login(self.user.email, self.PASSWORD)
+        (payload, token, refresh_expires_in) = self.validate_login_successful(
+            response
         )
 
     def make_and_validate_samples_query(self, subquery):
