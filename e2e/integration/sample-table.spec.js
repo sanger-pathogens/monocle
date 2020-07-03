@@ -1,4 +1,4 @@
-import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile, login } from "../utils";
+import { DB_PROFILES, loadDatabaseProfile, login, logout } from "../utils";
 
 describe("sample table", () => {
   beforeEach(() => {
@@ -49,6 +49,9 @@ describe("sample table", () => {
       db.sample.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id);
       });
+
+      // logout
+      logout();
     });
   });
 
@@ -85,6 +88,9 @@ describe("sample table", () => {
       samplesDisallowed.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id).should("not.exist");
       });
+
+      // logout
+      logout();
     });
   });
 });
