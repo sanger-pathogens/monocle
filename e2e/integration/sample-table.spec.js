@@ -49,9 +49,6 @@ describe("sample table", () => {
       db.sample.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id);
       });
-
-      // logout
-      logout();
     });
   });
 
@@ -65,14 +62,16 @@ describe("sample table", () => {
       const user = db.user[1];
       login(user.email);
 
-      // allowed institutions
-      const affiliations = db.affiliation.filter((d) => d.user === user.email);
-      const institutionsAllowed = affiliations.map((d) => d.institution);
+      // calculate allowed
+      const affiliations = db.affiliation.filter(
+        (d) => d.user_id === user.email
+      );
+      const institutionsAllowed = affiliations.map((d) => d.institution_id);
       const samplesAllowed = db.sample.filter(
-        (d) => institutionsAllowed.indexOf(d.submitting_institution) >= 0
+        (d) => institutionsAllowed.indexOf(d.submitting_institution_id) >= 0
       );
       const samplesDisallowed = db.sample.filter(
-        (d) => institutionsAllowed.indexOf(d.submitting_institution) < 0
+        (d) => institutionsAllowed.indexOf(d.submitting_institution_id) < 0
       );
 
       // some samples should be visible, some not?
@@ -88,9 +87,6 @@ describe("sample table", () => {
       samplesDisallowed.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id).should("not.exist");
       });
-
-      // logout
-      logout();
     });
   });
 });
