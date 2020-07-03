@@ -30,9 +30,7 @@ export const INSTITUTIONS_QUERY = gql`
 `;
 
 const Institutions = () => {
-  const { loading, error, data } = useQuery(INSTITUTIONS_QUERY, {
-    fetchPolicy: "network-only",
-  });
+  const { loading, error, data } = useQuery(INSTITUTIONS_QUERY);
 
   let rows = [];
   if (data && !(loading || error)) {
