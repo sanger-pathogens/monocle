@@ -73,8 +73,8 @@ describe("sample table", () => {
       );
 
       // some samples should be visible, some not?
-      expect(samplesAllowed).to.be.greaterThan(0);
-      expect(samplesDisallowed).to.be.greaterThan(0);
+      expect(samplesAllowed.length).to.be.greaterThan(0);
+      expect(samplesDisallowed.length).to.be.greaterThan(0);
 
       // table contains allowed database entries?
       samplesAllowed.forEach(({ lane_id }) => {
