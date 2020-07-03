@@ -83,7 +83,7 @@ describe("sample table", () => {
         cy.get(`table#sampleTable`).contains("td", lane_id);
       });
 
-      // table contains allowed database entries?
+      // table does not contain disallowed database entries?
       samplesDisallowed.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id).should("not.exist");
       });
