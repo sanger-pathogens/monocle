@@ -1,4 +1,4 @@
-import { DB_PROFILES, loadDatabaseProfile, login, logout } from "../utils";
+import { DB_PROFILES, loadDatabaseProfile, login } from "../utils";
 
 describe("sample table", () => {
   beforeEach(() => {
@@ -57,9 +57,10 @@ describe("sample table", () => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
 
-      // login as collaborating user (can view subset of samples only)
+      // login as collaborating user (multiple affiliations)
+      // (can view subset of samples only)
       cy.visit("/");
-      const user = db.user[1];
+      const user = db.user[2];
       login(user.email);
 
       // calculate allowed
@@ -73,6 +74,10 @@ describe("sample table", () => {
       const samplesDisallowed = db.sample.filter(
         (d) => institutionsAllowed.indexOf(d.submitting_institution_id) < 0
       );
+
+      // some affiliations, but not all?
+      expect(institutionsAllowed.length).to.be.greaterThan(0);
+      expect(institutionsAllowed.length).to.be.lessThan(db.institution.length);
 
       // some samples should be visible, some not?
       expect(samplesAllowed.length).to.be.greaterThan(0);
