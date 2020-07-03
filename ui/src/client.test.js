@@ -1,6 +1,6 @@
-import { server } from "./test-utils/server";
 import { graphql } from "msw";
 
+import { server } from "./test-utils/server";
 import {
   ERROR_NO_AUTH_TOKEN,
   ERROR_NO_REFRESH_TOKEN,
