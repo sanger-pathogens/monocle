@@ -77,9 +77,19 @@ export const mockDefaults = {
   institutions: mockInstitutions,
   login: mockLoginSuccess,
   logout: mockLogoutSuccess,
+  loginErrors: null,
+  logoutErrors: null,
 };
 export const generateApiMocks = (mocks = mockDefaults) => {
-  const { user, samples, institutions, login, logout } = mocks;
+  const {
+    user,
+    samples,
+    institutions,
+    login,
+    logout,
+    loginErrors,
+    logoutErrors,
+  } = mocks;
 
   // call counts for test assertions
   let called = {
@@ -89,6 +99,21 @@ export const generateApiMocks = (mocks = mockDefaults) => {
     loginMutation: 0,
     logoutMutation: 0,
   };
+
+  // combine data and errors
+  const combine = (dataFieldName, dataFieldValue, errors) => {
+    let result = {};
+    if (dataFieldValue) {
+      result.data = {
+        [dataFieldName]: dataFieldValue,
+      };
+    }
+    if (errors) {
+      result.errors = errors;
+    }
+    return result;
+  };
+
   return {
     called,
     mocks: [
@@ -141,11 +166,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
         },
         result: () => {
           called.loginMutation += 1;
-          return {
-            data: {
-              tokenAuth: login,
-            },
-          };
+          return combine("tokenAuth", login, loginErrors);
         },
       },
       {
@@ -154,11 +175,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
         },
         result: () => {
           called.logoutMutation += 1;
-          return {
-            data: {
-              deleteTokenCookie: logout,
-            },
-          };
+          return combine("deleteTokenCookie", logout, logoutErrors);
         },
       },
     ],

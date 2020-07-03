@@ -2,7 +2,12 @@ import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
-import { mockUser, generateApiMocks } from "./test-utils/apiMocks";
+import { ERROR_BAD_CREDENTIALS } from "./client";
+import {
+  mockUser,
+  generateApiMocks,
+  mockDefaults,
+} from "./test-utils/apiMocks";
 import { MockApolloProvider } from "./test-utils/MockProviders";
 
 describe("AlwaysLoggedInAuthProvider", () => {
@@ -80,6 +85,33 @@ describe("RealAuthProvider", () => {
 
     // authenticated?
     expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it("should not be logged in after calling login unsuccessfully", async () => {
+    const mocks = {
+      ...mockDefaults,
+      login: null,
+      loginErrors: [ERROR_BAD_CREDENTIALS],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      result.current.login({
+        email: mockUser.email,
+        password: mockUser.email.split("@")[0],
+      });
+      await waitForNextUpdate();
+    });
+
+    // query made?
+    expect(called.loginMutation).toBeGreaterThan(0);
+
+    // authenticated?
+    expect(result.current.isLoggedIn).toBe(false);
   });
 
   it("should be logged out after calling login then logout", async () => {
