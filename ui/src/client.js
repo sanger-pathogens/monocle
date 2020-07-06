@@ -45,9 +45,6 @@ export const handleBadPermissions = () =>
             }
           });
       }
-    })
-    .catch((error) => {
-      console.error("Failed to handle bad permissions.", error);
     });
 
 const errorLink = onError(({ graphQLErrors, forward, operation }) => {
