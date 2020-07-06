@@ -72,7 +72,10 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
+
+      // refresh
       await waitForNextUpdate();
     });
 
@@ -87,6 +90,7 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
     });
 
@@ -106,7 +110,10 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
+
+      // refresh
       await waitForNextUpdate();
     });
 
@@ -114,14 +121,27 @@ describe("RealAuthProvider", () => {
   });
 
   it("should be logged in after calling login", async () => {
-    const { called, mocks: apiMocks } = generateApiMocks();
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
@@ -139,6 +159,10 @@ describe("RealAuthProvider", () => {
   it("should not be logged in after calling login unsuccessfully", async () => {
     const mocks = {
       ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
       login: null,
       loginErrors: [ERROR_BAD_CREDENTIALS],
     };
@@ -149,7 +173,13 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
@@ -165,19 +195,34 @@ describe("RealAuthProvider", () => {
   });
 
   it("should be logged out after calling login then logout", async () => {
-    const { called, mocks: apiMocks } = generateApiMocks();
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
     });
 
     await act(async () => {
+      // verify
       await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
       });
       await waitForNextUpdate();
+
+      // logout
       result.current.logout();
       await waitForNextUpdate();
     });
