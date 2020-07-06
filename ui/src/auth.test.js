@@ -2,7 +2,11 @@ import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
-import { ERROR_BAD_CREDENTIALS } from "./client";
+import {
+  ERROR_BAD_CREDENTIALS,
+  ERROR_NO_AUTH_TOKEN,
+  ERROR_NO_REFRESH_TOKEN,
+} from "./client";
 import {
   mockUser,
   generateApiMocks,
@@ -53,16 +57,60 @@ describe("RealAuthProvider", () => {
     </MockApolloProvider>
   );
 
-  it("should not be logged in initially", async () => {
+  it("should not be logged in initially if no tokens", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      await waitForNextUpdate();
+      await waitForNextUpdate();
+    });
+
+    expect(result.current.isLoggedIn).toBe(false);
+  });
+
+  it("should be logged in initially if auth token", async () => {
     const { mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
     });
 
-    await waitForNextUpdate();
+    await act(async () => {
+      await waitForNextUpdate();
+    });
 
-    expect(result.current.isLoggedIn).toBe(false);
+    expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it("should be logged in initially if no auth token but refresh token", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      await waitForNextUpdate();
+      await waitForNextUpdate();
+    });
+
+    expect(result.current.isLoggedIn).toBe(true);
   });
 
   it("should be logged in after calling login", async () => {
@@ -73,6 +121,7 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      await waitForNextUpdate();
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
@@ -100,6 +149,7 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      await waitForNextUpdate();
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
@@ -122,10 +172,12 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      await waitForNextUpdate();
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
       });
+      await waitForNextUpdate();
       result.current.logout();
       await waitForNextUpdate();
     });

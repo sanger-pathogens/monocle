@@ -1,7 +1,12 @@
 import { USER_QUERY } from "../user";
 import { SAMPLES_QUERY } from "../components/Samples";
 import { INSTITUTIONS_QUERY } from "../components/Institutions";
-import { LOGIN_MUTATION, LOGOUT_MUTATION } from "../auth";
+import {
+  LOGIN_MUTATION,
+  LOGOUT_MUTATION,
+  VERIFY_MUTATION,
+  REFRESH_MUTATION,
+} from "../auth";
 
 export const mockUser = {
   email: "admin@juno.com",
@@ -98,8 +103,12 @@ export const mockDefaults = {
   institutions: mockInstitutions,
   login: mockLoginSuccess,
   logout: mockLogoutSuccess,
+  verify: mockVerifyTokenSuccess,
+  refresh: mockRefreshTokenSuccess,
   loginErrors: null,
   logoutErrors: null,
+  verifyErrors: null,
+  refreshErrors: null,
 };
 export const generateApiMocks = (mocks = mockDefaults) => {
   const {
@@ -108,8 +117,12 @@ export const generateApiMocks = (mocks = mockDefaults) => {
     institutions,
     login,
     logout,
+    verify,
+    refresh,
     loginErrors,
     logoutErrors,
+    verifyErrors,
+    refreshErrors,
   } = mocks;
 
   // call counts for test assertions
@@ -119,6 +132,8 @@ export const generateApiMocks = (mocks = mockDefaults) => {
     institutionsQuery: 0,
     loginMutation: 0,
     logoutMutation: 0,
+    verifyMutation: 0,
+    refreshMutation: 0,
   };
 
   // combine data and errors
@@ -197,6 +212,24 @@ export const generateApiMocks = (mocks = mockDefaults) => {
         result: () => {
           called.logoutMutation += 1;
           return combine("deleteTokenCookie", logout, logoutErrors);
+        },
+      },
+      {
+        request: {
+          query: VERIFY_MUTATION,
+        },
+        result: () => {
+          called.verifyMutation += 1;
+          return combine("verifyToken", verify, verifyErrors);
+        },
+      },
+      {
+        request: {
+          query: REFRESH_MUTATION,
+        },
+        result: () => {
+          called.refreshMutation += 1;
+          return combine("refreshToken", refresh, refreshErrors);
         },
       },
     ],
