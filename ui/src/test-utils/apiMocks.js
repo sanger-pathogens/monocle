@@ -7,6 +7,7 @@ export const mockUser = {
   email: "admin@juno.com",
   firstName: "Han",
   lastName: "Solo",
+  __typename: "User",
 };
 
 export const mockSamples = [
@@ -69,6 +70,16 @@ export const mockLoginSuccess = {
 
 export const mockLogoutSuccess = {
   deleted: true,
+};
+
+export const mockVerifyTokenSuccess = {
+  payload: {
+    email: "gareth@juno.com",
+    exp: 1593794546,
+    origIat: 1593793946,
+    __typename: "GenericScalar",
+  },
+  __typename: "Verify",
 };
 
 export const mockDefaults = {
