@@ -1,4 +1,4 @@
-import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile, login } from "../utils";
+import { DB_PROFILES, loadDatabaseProfile, login } from "../utils";
 
 describe("sample table", () => {
   beforeEach(() => {
@@ -35,12 +35,12 @@ describe("sample table", () => {
     });
   });
 
-  it("is populated when the database is non-empty", () => {
+  it("is populated when the database is non-empty as sanger user", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // non-empty samples table?
       expect(db.sample.length).to.be.greaterThan(0);
 
-      // login
+      // login as sanger user (can view all samples)
       cy.visit("/");
       const user = db.user[0];
       login(user.email);
@@ -48,6 +48,49 @@ describe("sample table", () => {
       // table contains database entries?
       db.sample.forEach(({ lane_id }) => {
         cy.get(`table#sampleTable`).contains("td", lane_id);
+      });
+    });
+  });
+
+  it("is populated when the database is non-empty as collaborator", () => {
+    loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
+      // non-empty samples table?
+      expect(db.sample.length).to.be.greaterThan(0);
+
+      // login as collaborating user (multiple affiliations)
+      // (can view subset of samples only)
+      cy.visit("/");
+      const user = db.user[2];
+      login(user.email);
+
+      // calculate allowed
+      const affiliations = db.affiliation.filter(
+        (d) => d.user_id === user.email
+      );
+      const institutionsAllowed = affiliations.map((d) => d.institution_id);
+      const samplesAllowed = db.sample.filter(
+        (d) => institutionsAllowed.indexOf(d.submitting_institution_id) >= 0
+      );
+      const samplesDisallowed = db.sample.filter(
+        (d) => institutionsAllowed.indexOf(d.submitting_institution_id) < 0
+      );
+
+      // some affiliations, but not all?
+      expect(institutionsAllowed.length).to.be.greaterThan(0);
+      expect(institutionsAllowed.length).to.be.lessThan(db.institution.length);
+
+      // some samples should be visible, some not?
+      expect(samplesAllowed.length).to.be.greaterThan(0);
+      expect(samplesDisallowed.length).to.be.greaterThan(0);
+
+      // table contains allowed database entries?
+      samplesAllowed.forEach(({ lane_id }) => {
+        cy.get(`table#sampleTable`).contains("td", lane_id);
+      });
+
+      // table does not contain disallowed database entries?
+      samplesDisallowed.forEach(({ lane_id }) => {
+        cy.get(`table#sampleTable`).contains("td", lane_id).should("not.exist");
       });
     });
   });

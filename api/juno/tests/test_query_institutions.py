@@ -1,15 +1,35 @@
-from juno.tests.base import GraphQLTestCase
-from juno.api.models import Institution
+from juno.tests.base import AuthenticatableGraphQLTestCase
+from juno.api.models import Institution, User, Affiliation
 
 
-class InstitutionsQueryTestCase(GraphQLTestCase):
+class InstitutionsQueryTestCase(AuthenticatableGraphQLTestCase):
+    PASSWORD = "bobsicles"
+
     def setUp(self):
-        # put something in the db
+        # put an institution in the db
         self.institution = Institution.objects.create(
             name="Wellcome Sanger Institute",
             country="United Kingdom",
             latitude=52.083333,
             longitude=0.183333,
+        )
+
+        # put user in the db
+        self.user = User.objects.create(
+            email="bob@bob.com", first_name="Bob", last_name="Bobbity",
+        )
+        self.user.set_password(self.PASSWORD)
+        self.user.save()
+
+        # associate the user with the institution
+        Affiliation.objects.create(
+            user=self.user, institution=self.institution
+        )
+
+        # login (institutions is an auth restricted resource)
+        response = self.login(self.user.email, self.PASSWORD)
+        (payload, token, refresh_expires_in) = self.validate_login_successful(
+            response
         )
 
     def make_and_validate_institutions_query(self, subquery):

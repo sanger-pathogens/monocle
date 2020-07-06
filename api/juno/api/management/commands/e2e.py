@@ -62,7 +62,14 @@ class Command(BaseCommand):
             email="admin@sanger.ac.uk", first_name="Alice", last_name="Jones"
         )
         collaborator = User.objects.create(
-            email="collaborator@nrl.israel", first_name="Bob", last_name="Smith",
+            email="collaborator@nrl.israel",
+            first_name="Bob",
+            last_name="Smith",
+        )
+        collaborator_multiple = User.objects.create(
+            email="collaborator@multiple.com",
+            first_name="Howard",
+            last_name="Jenkins",
         )
 
         # institutions
@@ -90,6 +97,12 @@ class Command(BaseCommand):
         Affiliation.objects.create(
             user=collaborator, institution=nrl,
         )
+        Affiliation.objects.create(
+            user=collaborator_multiple, institution=nrl,
+        )
+        Affiliation.objects.create(
+            user=collaborator_multiple, institution=cuhk,
+        )
 
         # samples
         Sample.objects.create(
@@ -115,6 +128,14 @@ class Command(BaseCommand):
             serotype="VI",
             host_status="pneumonia",
             submitting_institution=cuhk,
+        )
+        Sample.objects.create(
+            lane_id="32820_2#368",
+            sample_id="5903STDY8113195",
+            public_name="JN_IL_ST31579",
+            serotype="V",
+            host_status="pneumonia",
+            submitting_institution=sanger,
         )
 
         # fix the passwords of users to be email prefix

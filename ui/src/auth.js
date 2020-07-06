@@ -22,8 +22,6 @@ export const REFRESH_MUTATION = gql`
   mutation RefreshToken {
     refreshToken {
       payload
-      token
-      refreshExpiresIn
     }
   }
 `;

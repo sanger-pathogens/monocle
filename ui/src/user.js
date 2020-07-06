@@ -6,7 +6,7 @@ import env from "./env";
 import { useAuth } from "./auth";
 
 export const USER_QUERY = gql`
-  {
+  query User {
     me {
       email
       firstName

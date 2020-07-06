@@ -23,6 +23,9 @@ class GraphQLTestCase(TestCase):
     # common messages
     GRAPHQL_JWT_MSG_SIGNATURE_EXPIRED = "Signature has expired"
     GRAPHQL_JWT_MSG_REFRESH_TOKEN_EXPIRED = "Refresh token is expired"
+    GRAPHQL_JWT_MSG_BAD_PERMISSIONS = (
+        "You do not have permission to perform this action"
+    )
 
     MSG_ROOT_NOT_AN_OBJECT = "API response should be a JSON object"
     MSG_NO_DATA = "API response missing an expected data field"

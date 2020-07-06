@@ -16,6 +16,7 @@ const httpLink = new HttpLink({
   credentials: "include",
 });
 
+export const ERROR_BAD_CREDENTIALS = "Please enter valid credentials";
 export const ERROR_BAD_PERMISSIONS =
   "You do not have permission to perform this action";
 export const ERROR_NO_AUTH_TOKEN = "Token is required";
@@ -44,9 +45,6 @@ export const handleBadPermissions = () =>
             }
           });
       }
-    })
-    .catch((error) => {
-      console.error("Failed to handle bad permissions.", error);
     });
 
 const errorLink = onError(({ graphQLErrors, forward, operation }) => {

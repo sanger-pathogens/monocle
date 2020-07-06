@@ -2,7 +2,16 @@ import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
 
 import { RealAuthProvider, AlwaysLoggedInAuthProvider, useAuth } from "./auth";
-import { mockUser, generateApiMocks } from "./test-utils/apiMocks";
+import {
+  ERROR_BAD_CREDENTIALS,
+  ERROR_NO_AUTH_TOKEN,
+  ERROR_NO_REFRESH_TOKEN,
+} from "./client";
+import {
+  mockUser,
+  generateApiMocks,
+  mockDefaults,
+} from "./test-utils/apiMocks";
 import { MockApolloProvider } from "./test-utils/MockProviders";
 
 describe("AlwaysLoggedInAuthProvider", () => {
@@ -48,19 +57,37 @@ describe("RealAuthProvider", () => {
     </MockApolloProvider>
   );
 
-  it("should not be logged in initially", async () => {
-    const { mocks: apiMocks } = generateApiMocks();
+  it("should not be logged in initially if no tokens", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
     });
 
-    await waitForNextUpdate();
+    await act(async () => {
+      // verify
+      await waitForNextUpdate();
 
+      // refresh
+      await waitForNextUpdate();
+    });
+
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(false);
   });
 
-  it("should be logged in after calling login", async () => {
+  it("should be logged in initially if auth token", async () => {
     const { called, mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
@@ -68,6 +95,68 @@ describe("RealAuthProvider", () => {
     });
 
     await act(async () => {
+      // verify
+      await waitForNextUpdate();
+    });
+
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBe(0);
+
+    // authenticated?
+    expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it("should be logged in initially if no auth token but refresh token", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      // verify
+      await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+    });
+
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+
+    // authenticated?
+    expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it("should be logged in after calling login", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      // verify
+      await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
@@ -76,29 +165,91 @@ describe("RealAuthProvider", () => {
     });
 
     // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
     expect(called.loginMutation).toBeGreaterThan(0);
 
     // authenticated?
     expect(result.current.isLoggedIn).toBe(true);
   });
 
-  it("should be logged out after calling login then logout", async () => {
-    const { called, mocks: apiMocks } = generateApiMocks();
+  it("should not be logged in after calling login unsuccessfully", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+      login: null,
+      loginErrors: [ERROR_BAD_CREDENTIALS],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
     });
 
     await act(async () => {
+      // verify
+      await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
       result.current.login({
         email: mockUser.email,
         password: mockUser.email.split("@")[0],
       });
+      await waitForNextUpdate();
+    });
+
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+    expect(called.loginMutation).toBeGreaterThan(0);
+
+    // authenticated?
+    expect(result.current.isLoggedIn).toBe(false);
+  });
+
+  it("should be logged out after calling login then logout", async () => {
+    const mocks = {
+      ...mockDefaults,
+      verify: null,
+      verifyErrors: [ERROR_NO_AUTH_TOKEN],
+      refresh: null,
+      refreshErrors: [ERROR_NO_REFRESH_TOKEN],
+    };
+    const { called, mocks: apiMocks } = generateApiMocks(mocks);
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper,
+      initialProps: { apiMocks },
+    });
+
+    await act(async () => {
+      // verify
+      await waitForNextUpdate();
+
+      // refresh
+      await waitForNextUpdate();
+
+      // login
+      result.current.login({
+        email: mockUser.email,
+        password: mockUser.email.split("@")[0],
+      });
+      await waitForNextUpdate();
+
+      // logout
       result.current.logout();
       await waitForNextUpdate();
     });
 
     // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+    expect(called.loginMutation).toBeGreaterThan(0);
     expect(called.logoutMutation).toBeGreaterThan(0);
 
     // authenticated?

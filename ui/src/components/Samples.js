@@ -71,7 +71,9 @@ export const SAMPLES_QUERY = gql`
 `;
 
 const Samples = () => {
-  const { loading, error, data } = useQuery(SAMPLES_QUERY);
+  const { loading, error, data } = useQuery(SAMPLES_QUERY, {
+    fetchPolicy: "network-only",
+  });
 
   let rows = [];
   if (data && !(loading || error)) {
