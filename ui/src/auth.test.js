@@ -79,11 +79,16 @@ describe("RealAuthProvider", () => {
       await waitForNextUpdate();
     });
 
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(false);
   });
 
   it("should be logged in initially if auth token", async () => {
-    const { mocks: apiMocks } = generateApiMocks();
+    const { called, mocks: apiMocks } = generateApiMocks();
     const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
       wrapper,
       initialProps: { apiMocks },
@@ -94,6 +99,11 @@ describe("RealAuthProvider", () => {
       await waitForNextUpdate();
     });
 
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBe(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(true);
   });
 
@@ -117,6 +127,11 @@ describe("RealAuthProvider", () => {
       await waitForNextUpdate();
     });
 
+    // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+
+    // authenticated?
     expect(result.current.isLoggedIn).toBe(true);
   });
 
@@ -150,6 +165,8 @@ describe("RealAuthProvider", () => {
     });
 
     // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
     expect(called.loginMutation).toBeGreaterThan(0);
 
     // authenticated?
@@ -188,6 +205,8 @@ describe("RealAuthProvider", () => {
     });
 
     // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
     expect(called.loginMutation).toBeGreaterThan(0);
 
     // authenticated?
@@ -228,6 +247,9 @@ describe("RealAuthProvider", () => {
     });
 
     // query made?
+    expect(called.verifyMutation).toBeGreaterThan(0);
+    expect(called.refreshMutation).toBeGreaterThan(0);
+    expect(called.loginMutation).toBeGreaterThan(0);
     expect(called.logoutMutation).toBeGreaterThan(0);
 
     // authenticated?
