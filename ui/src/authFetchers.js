@@ -20,8 +20,6 @@ const REFRESH_TOKEN_MUTATION = `
   mutation RefreshToken {
     refreshToken {
       payload
-      token
-      refreshExpiresIn
     }
   }
 `;
