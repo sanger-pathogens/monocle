@@ -82,6 +82,16 @@ export const mockVerifyTokenSuccess = {
   __typename: "Verify",
 };
 
+export const mockRefreshTokenSuccess = {
+  payload: {
+    email: "gareth@juno.com",
+    exp: 1593794546,
+    origIat: 1593793946,
+    __typename: "GenericScalar",
+  },
+  __typename: "Refresh",
+};
+
 export const mockDefaults = {
   user: mockUser,
   samples: mockSamples,
