@@ -18,11 +18,13 @@ The following steps are needed on a fresh OpenStack instance. Ideally, they shou
 ### Mount
 Given a Ceph S3 origin (named `remote` from `rclone.conf`), mount the bucket `<bucket-name>` with:
 ```
-rclone mount remote:<bucket-name> <local-dir> --read-only --allow-other --allow-root --vfs-cache-mode writes --daemon
+# rclone mount remote:<bucket-name> <local-dir> --read-only --allow-other --allow-root --vfs-cache-mode writes --daemon
+rclone mount remote:monocle_juno_test /home/pathpipe/monocle_juno_test --read-only --allow-other --allow-root --vfs-cache-mode writes --daemon
 ```
 
 ### Unmount
 Run:
 ```
-fusermount -u <local-dir>
+# fusermount -u <local-dir>
+fusermount -u /home/pathpipe/monocle_juno_test
 ```
