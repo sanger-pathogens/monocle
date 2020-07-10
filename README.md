@@ -79,6 +79,9 @@ For the OpenStack instance, transfer this from your machine to the instance. Thi
 scp -r ./mock-data pathpipe@monocle.dev.pam.sanger.ac.uk:~/mock-data
 ```
 
+## Real data
+The real data files can be loaded from an S3 bucket, which is synced from farm5. If you have Sanger credentials, see the companion gitlab repo [monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
+
 ## Testing
 There are currently:
 - integration tests in the `e2e` directory
