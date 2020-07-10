@@ -14,4 +14,11 @@ services:
     ports:
         - "8000:80"
     volumes:
-        - ./mock-data/:/mock-data/
+        - data:/mock-data
+volumes:
+    data:
+        driver: local
+        driver_opts:
+            o: bind
+            type: none
+            device: /home/pathpipe/monocle_juno_test
