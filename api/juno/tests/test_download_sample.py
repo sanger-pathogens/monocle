@@ -8,7 +8,7 @@ from testfixtures import TempDirectory
 from juno.api import downloads
 
 
-class TestMakeTarfile(unittest.TestCase):
+class TestMakeTarfileReal(unittest.TestCase):
     def setUp(self):
         # create DATA_DIR
         self.data_dir = TempDirectory()
@@ -58,3 +58,65 @@ class TestMakeTarfile(unittest.TestCase):
     def test_raises_filenotfound_for_invalid_lane(self):
         with self.assertRaises(FileNotFoundError):
             downloads.make_tarfile("invalid_lane_id")
+
+
+class TestMakeTarfileMock(unittest.TestCase):
+    def setUp(self):
+        # create extraction directory
+        self.extract_dir = TempDirectory()
+
+        # create single lane directory
+        self.lane_id = "31663_7#113"
+        self.other_lane_id = "31663_7#115"
+
+        # expected filenames
+        self.files = [
+            self.lane_id + "_1.fastq.gz",
+            self.lane_id + "_2.fastq.gz",
+            "spades_assembly/contigs.fa",
+            "spades_assembly/annotation/" + self.lane_id + ".gff",
+        ]
+
+    def tearDown(self):
+        self.extract_dir.cleanup()
+
+    def get_file_count(self, dir):
+        return len(
+            [
+                name
+                for name in os.listdir(dir)
+                if os.path.isfile(os.path.join(dir, name))
+            ]
+        )
+
+    def test_returns_bytes_for_actual_lane(self):
+        tar_file = downloads.make_tarfile(self.lane_id)
+
+        # file?
+        self.assertIsInstance(tar_file.getvalue(), bytes)
+
+        # tarfile?
+        file_in = io.BytesIO(tar_file.getvalue())
+        tar = tarfile.open(mode="r:gz", fileobj=file_in)
+
+        tar.extractall(self.extract_dir.path + "/extract/")
+
+        # contains individual data files?
+        for filename in self.files:
+            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+
+    def test_returns_bytes_for_other_lane(self):
+        tar_file = downloads.make_tarfile(self.other_lane_id)
+
+        # file?
+        self.assertIsInstance(tar_file.getvalue(), bytes)
+
+        # tarfile?
+        file_in = io.BytesIO(tar_file.getvalue())
+        tar = tarfile.open(mode="r:gz", fileobj=file_in)
+
+        tar.extractall(self.extract_dir.path + "/extract/")
+
+        # contains individual data files?
+        for filename in self.files:
+            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
