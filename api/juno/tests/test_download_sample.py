@@ -15,9 +15,11 @@ class TestMakeTarfile(unittest.TestCase):
         # create DATA_DIR
         self.data_dir = TempDirectory()
 
+        # create extraction directory
+        self.extract_dir = TempDirectory()
+
         # create single lane directory
         self.lane_id = "31663_7#113"
-        # self.lane_dir = self.data_dir.makedir(self.lane_id)
 
         # create mock files for single lane
         self.files = [
@@ -37,6 +39,7 @@ class TestMakeTarfile(unittest.TestCase):
 
     def tearDown(self):
         self.data_dir.cleanup()
+        self.extract_dir.cleanup()
 
     def test_returns_bytes_for_valid_lane(self):
         tar_file = downloads.make_tarfile(self.lane_id)
@@ -47,11 +50,12 @@ class TestMakeTarfile(unittest.TestCase):
         # tarfile?
         file_in = io.BytesIO(tar_file.getvalue())
         tar = tarfile.open(mode="r:gz", fileobj=file_in)
-        tar.extractall(self.lane_id + "/extract/")
+
+        tar.extractall(self.extract_dir.path + "/extract/")
 
         # contains individual data files?
-        for file in self.files:
-            os.path.isfile(self.lane_id + "/extract/" + file)
+        for filename in self.files:
+            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
 
     def test_raises_filenotfound_for_invalid_lane(self):
         with self.assertRaises(FileNotFoundError):
