@@ -2,8 +2,6 @@ import io
 import os
 import tarfile
 import unittest
-
-# from django.test import override_settings
 from django.conf import settings
 from testfixtures import TempDirectory
 
