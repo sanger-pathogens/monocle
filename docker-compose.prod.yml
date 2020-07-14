@@ -14,7 +14,9 @@ services:
     ports:
         - "8000:80"
     volumes:
-        - data:/mock-data
+        - data:/data
+    environment:
+        - DJANGO_SETTINGS_MODULE=juno.settings.production
 volumes:
     data:
         driver: local

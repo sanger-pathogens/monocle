@@ -16,4 +16,6 @@ services:
     ports:
       - "8001:80"
     volumes:
-      - ./mock-data/:/mock-data/
+      - ./mock-data:/data
+    environment:
+      - DJANGO_SETTINGS_MODULE=juno.settings.e2e
