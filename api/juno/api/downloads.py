@@ -1,22 +1,32 @@
-import tarfile, io, os
+import io
+import os
+import tarfile
 from django.conf import settings
 
-# TODO: replace fixed mock file with actual file for lane
-DATA_DIR = os.path.join(
-    os.path.join(getattr(settings, "BASE_DIR", None), os.pardir),
-    "mock-data/" + "31663_7#113",
-)
+
+def get_renamings(lane_id):
+    read1 = lane_id + "_1.fastq.gz"
+    read2 = lane_id + "_2.fastq.gz"
+    annotation = "spades_assembly/annotation/" + lane_id + ".gff"
+    return {
+        read1: read1,
+        read2: read2,
+        "spades_assembly/contigs.fa": "spades_contigs.fa",
+        annotation: "spades_annotation.gff",
+    }
 
 
 def make_tarfile(lane_id):
-    lane_dir = os.path.abspath(DATA_DIR)
-    # TODO: change this list to take in lane id
-    filenames = {
-        "31663_7#113_1.fastq.gz": "31663_7#113_1.fastq.gz",
-        "31663_7#113_2.fastq.gz": "31663_7#113_2.fastq.gz",
-        "spades_assembly/contigs.fa": "spades_contigs.fa",
-        "spades_assembly/annotation/31663_7#113.gff": "spades_annotation.gff",
-    }
+    if settings.USE_MOCK_LANE_DATA:
+        mock_lane_id = "31663_7#113"
+        lane_dir = os.path.abspath(
+            os.path.join(settings.DATA_DIR, mock_lane_id)
+        )
+        filenames = get_renamings(mock_lane_id)
+    else:
+        lane_dir = os.path.abspath(os.path.join(settings.DATA_DIR, lane_id))
+        filenames = get_renamings(lane_id)
+
     out_file = io.BytesIO()
     with tarfile.open(fileobj=out_file, mode="w:gz") as tar:
         for file in filenames:

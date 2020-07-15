@@ -66,18 +66,10 @@ docker-compose -f docker-compose.dev.yml run <subcomponent> <command>
 ### Development directly on your development machine
 This requires a bit more setup, but may be easier to debug. Also, editor integration such as python linting/autocomplete may be easier to set up. Read about setting up the [ui](ui/README.md) and [api](api/README.md) separately.
 
-## Mock data
-**Note: This section is temporary and is intended to be removed.**
+## Data
+In production, the real data files are loaded from an S3 bucket, which is synced from farm5. If you have Sanger credentials, see the companion gitlab repo [monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
 
-For development of the download functionality, please load the following sample lane.
-```
-scp -r <you>@pcs6:/lustre/scratch118/infgen/pathogen/pathpipe/prokaryotes/seq-pipelines/Streptococcus/agalactiae/TRACKING/5903/5903STDY8059170/SLX/23800977/31663_7#113 ./mock-data/
-```
-
-For the OpenStack instance, transfer this from your machine to the instance. This should only need to be done once after the instance is created.
-```
-scp -r ./mock-data pathpipe@monocle.dev.pam.sanger.ac.uk:~/mock-data
-```
+For development and testing, lightweight mock data for a single lane is used. See the `mock-data` directory within the repo.
 
 ## Testing
 There are currently:

@@ -14,4 +14,13 @@ services:
     ports:
         - "8000:80"
     volumes:
-        - ./mock-data/:/mock-data/
+        - data:/data
+    environment:
+        - DJANGO_SETTINGS_MODULE=juno.settings.production
+volumes:
+    data:
+        driver: local
+        driver_opts:
+            o: bind
+            type: none
+            device: /home/pathpipe/monocle_juno_test
