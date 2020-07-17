@@ -2,14 +2,14 @@
     {
         "model": "api.Affiliation",
         "fields": {
-            "user": "gareth@juno.com",
+            "user": "admin@sanger.ac.uk",
             "institution": "Wellcome Sanger Institute"
         }
     },
     {
         "model": "api.Affiliation",
         "fields": {
-            "user": "albus@nrl.israel",
+            "user": "collaborator@globe.com",
             "institution": "National Reference Laboratories"
         }
     }
