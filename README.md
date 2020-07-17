@@ -23,7 +23,15 @@ There are currently two components:
 There is a further README in each directory with more detailed information.
 
 ## Production
-This is early in development, so subject to change, but the current process is described below.
+Monocle is available internally to Sanger at the following addresses:
+- `prod`: [http://monocle.pam.sanger.ac.uk/](http://monocle.pam.sanger.ac.uk/)
+- `dev`: [http://monocle.dev.pam.sanger.ac.uk/](http://monocle.dev.pam.sanger.ac.uk/) (likely to be broken)
+
+User accounts for testing functionaly are set up (with very strong passwords!) for:
+- admin@sanger.ac.uk
+- collaborator@globe.com
+
+This project is early in development, so subject to change, but the current release and deploy process is described below.
 
 ### Making a release
 Currently, to make a release, make sure you are on the `master` branch with nothing to commit, then run:

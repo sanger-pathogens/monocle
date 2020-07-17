@@ -2,30 +2,6 @@
     {
         "model": "api.User",
         "fields": {
-            "first_name": "Gareth",
-            "last_name": "Peat",
-            "email": "gareth@juno.com"
-        }
-    },
-    {
-        "model": "api.User",
-        "fields": {
-            "first_name": "Magnus",
-            "last_name": "Manske",
-            "email": "magnus@juno.com"
-        }
-    },
-    {
-        "model": "api.User",
-        "fields": {
-            "first_name": "Kathryn",
-            "last_name": "Murie",
-            "email": "kathryn@juno.com"
-        }
-    },
-    {
-        "model": "api.User",
-        "fields": {
             "first_name": "Lex",
             "last_name": "Luther",
             "email": "admin@sanger.ac.uk"
@@ -34,9 +10,9 @@
     {
         "model": "api.User",
         "fields": {
-            "first_name": "Albus",
-            "last_name": "Dumbledore",
-            "email": "albus@nrl.israel"
+            "first_name": "Lois",
+            "last_name": "Lane",
+            "email": "collaborator@globe.com"
         }
     }
 ]
