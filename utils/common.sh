@@ -34,6 +34,16 @@ function validate_new_version {
     fi
 }
 
+function validate_environment {
+    local ENVIRONMENT=${1}
+    if [[ "$ENVIRONMENT" == "prod" || "$ENVIRONMENT" == "dev" ]]; then
+        echo "Environment: $ENVIRONMENT"
+    else
+        echo 'Environment can only be `prod` or `dev`.'
+        exit 1
+    fi
+}
+
 function validate_branch {
     # check branch is master
     BRANCH=$(git rev-parse --abbrev-ref HEAD)

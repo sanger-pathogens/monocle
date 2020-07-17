@@ -6,16 +6,23 @@ SCRIPT_DIR="$(dirname "$0")"
 source "$SCRIPT_DIR/utils/common.sh"
 
 # check args count
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <version>"
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <version> <prod|dev>"
   exit 1
 fi
 
 VERSION=$1
 validate_version "${VERSION}"
 
+ENVIRONMENT=$2
+validate_environment "${ENVIRONMENT}"
+
 REMOTE_USER=pathpipe
-REMOTE_HOST=monocle.dev.pam.sanger.ac.uk
+if [[ "$ENVIRONMENT" == "prod" ]]; then
+  REMOTE_HOST=monocle.pam.sanger.ac.uk
+elif [[ "$ENVIRONMENT" == "dev" ]]; then
+  REMOTE_HOST=monocle.dev.pam.sanger.ac.uk
+fi
 
 # copy production compose file (template)
 # keep connection to avoid multiple password entries
@@ -35,9 +42,17 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
 
-    echo "Setting version in docker-compose.yml..."
-    sed -i -e "s/VERSION/${VERSION}/g" docker-compose.yml
+    # load secrets from host
+    source ~/.monocle-secrets
+
+    echo "Setting configuration in docker-compose.yml..."
+    sed -i -e "s/<VERSION>/${VERSION}/g" docker-compose.yml
+    sed -i -e "s/<HOSTNAME>/${REMOTE_HOST}/g" docker-compose.yml
+    sed -i -e "s/<SECRET_KEY>/${API_SECRET_KEY}/g" docker-compose.yml
     
+    echo "Setting configuration in UI's settings.js..."
+    sed -i -e "s/<HOSTNAME>/${REMOTE_HOST}/g" settings.js
+
     echo "Starting new containers..."
     docker-compose up -d
 

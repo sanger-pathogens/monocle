@@ -1,7 +1,7 @@
 version: '3'
 services:
   ui:
-    image: "sangerpathogens/monocle-app:VERSION"
+    image: "sangerpathogens/monocle-app:<VERSION>"
     ports:
         - "80:80"
     volumes:
@@ -10,12 +10,14 @@ services:
     depends_on:
         - api
   api:
-    image: "sangerpathogens/monocle-api:VERSION"
+    image: "sangerpathogens/monocle-api:<VERSION>"
     ports:
         - "8000:80"
     volumes:
         - data:/data
     environment:
+        - HOSTNAME=<HOSTNAME>
+        - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.production
 volumes:
     data:
