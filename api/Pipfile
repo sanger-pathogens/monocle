@@ -16,6 +16,7 @@ django-extensions = "*"
 gunicorn = "*"
 uvicorn = "*"
 testfixtures = "*"
+django-environ = "*"
 
 [requires]
 python_version = "3.7"
