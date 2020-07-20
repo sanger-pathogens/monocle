@@ -46,7 +46,7 @@ const Header = () => {
     target: window,
   });
   const { logout } = useAuth();
-  const { user, getUser } = useUser();
+  const { user } = useUser();
 
   return (
     <AppBar
