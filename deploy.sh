@@ -38,6 +38,9 @@ scp -o ControlPath=%C ui/nginx.prod.conf $REMOTE_USER@$REMOTE_HOST:~/nginx.conf
 
 # replace the running version
 # using existing connection
+# note: local variables are substituted as normal,
+#       remote variables need escaping
+#       (eg. VERSION vs API_SECRET_KEY)
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
