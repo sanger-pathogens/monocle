@@ -1,7 +1,7 @@
 import os
 
-from juno.settings.common import *
-from juno.settings import common
+from .common import *
+from . import common
 
 DEBUG = True
 SECRET_KEY = "@7ad3g19au9^xhh3r&o^g!_g8h=%1di2&!ns&h*xy@tcqk#e9+"

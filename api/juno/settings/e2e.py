@@ -1,4 +1,4 @@
-from juno.settings.common import *
+from .common import *
 
 DEBUG = False
 SECRET_KEY = "@7ad3g19au9^xhh3r&o^g!_g8h=%1di2&!ns&h*xy@tcqk#e9+"

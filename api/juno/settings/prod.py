@@ -1,5 +1,5 @@
 import environ
-from juno.settings.common import *
+from .common import *
 
 # TODO: Set production CORS_ORIGIN_WHITELIST
 
