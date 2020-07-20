@@ -30,7 +30,9 @@
     "react-scripts": "3.4.0",
     "react-scrollable-anchor": "^0.6.1",
     "react-test-renderer": "^16.13.1",
-    "typeface-inter": "^3.12.0"
+    "streamsaver": "^2.0.4",
+    "typeface-inter": "^3.12.0",
+    "web-streams-polyfill": "^2.1.1"
   },
   "scripts": {
     "start": "REACT_APP_VERSION=$VERSION react-scripts start",
