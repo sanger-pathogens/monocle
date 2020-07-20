@@ -42,13 +42,10 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
 
-    # load secrets from host
-    source ~/.monocle-secrets
-
     echo "Setting configuration in docker-compose.yml..."
     sed -i -e "s/<VERSION>/${VERSION}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME>/${REMOTE_HOST}/g" docker-compose.yml
-    sed -i -e "s/<SECRET_KEY>/${API_SECRET_KEY}/g" docker-compose.yml
+    sed -i -e "s/<SECRET_KEY>/\${API_SECRET_KEY}/g" docker-compose.yml
     
     echo "Setting configuration in UI's settings.js..."
     sed -i -e "s/<HOSTNAME>/${REMOTE_HOST}/g" settings.js
