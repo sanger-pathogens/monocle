@@ -15,6 +15,7 @@ def get_renamings(lane_id):
         annotation: "spades_annotation.gff",
     }
 
+def stream_file
 
 def make_tarfile(lane_id):
     if settings.USE_MOCK_LANE_DATA:
@@ -28,7 +29,7 @@ def make_tarfile(lane_id):
         filenames = get_renamings(lane_id)
 
     out_file = io.BytesIO()
-    with tarfile.open(fileobj=out_file, mode="w:gz") as tar:
+    with tarfile.open(fileobj=out_file, mode="w|gz") as tar:
         for file in filenames:
             file_path = lane_dir + "/" + file
             tar.add(file_path, arcname=filenames[file])

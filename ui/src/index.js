@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "web-streams-polyfill/ponyfill";
+// import "web-streams-polyfill/ponyfill";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 

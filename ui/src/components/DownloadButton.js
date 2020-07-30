@@ -22,31 +22,49 @@ const DownloadButton = ({ url, filename, children }) => {
 
     // use web streams and pipe to file
     // see https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/fetch.html
-    fetch(url).then((res) => {
-      const size = res.headers.get("content-length");
-      const readableStream = res.body;
+    const response = await fetch(url);
+    const size = response.headers.get("content-length");
+    const readableStream = response.body;
+    const reader = readableStream.getReader();
 
-      // specifying size indicates download is occurring
-      const fileStream = streamSaver.createWriteStream(filename, { size });
+    // specifying size indicates download is occurring
+    const fileStream = streamSaver.createWriteStream(filename, { size });
 
-      // more optimized
-      if (window.WritableStream && readableStream.pipeTo) {
-        return readableStream
-          .pipeTo(fileStream)
-          .then(() => console.log("done writing"));
-      }
+    const writer = fileStream.getWriter();
+    const pump = () =>
+      reader
+        .read()
+        .then((res) =>
+          res.done ? writer.close() : writer.write(res.value).then(pump)
+        );
 
-      const writer = fileStream.getWriter();
-      const reader = res.body.getReader();
-      const pump = () =>
-        reader
-          .read()
-          .then((res) =>
-            res.done ? writer.close() : writer.write(res.value).then(pump)
-          );
+    pump();
 
-      pump();
-    });
+    // .then((res) => {
+    //   const size = res.headers.get("content-length");
+    //   const readableStream = res.body;
+
+    //   // specifying size indicates download is occurring
+    //   const fileStream = streamSaver.createWriteStream(filename, { size });
+
+    //   // more optimized
+    //   if (window.WritableStream && readableStream.pipeTo) {
+    //     return readableStream
+    //       .pipeTo(fileStream)
+    //       .then(() => console.log("done writing"));
+    //   }
+
+    //   const writer = fileStream.getWriter();
+    //   const reader = res.body.getReader();
+    //   const pump = () =>
+    //     reader
+    //       .read()
+    //       .then((res) =>
+    //         res.done ? writer.close() : writer.write(res.value).then(pump)
+    //       );
+
+    //   pump();
+    // });
   };
   return (
     <Button onClick={handler} startIcon={<CloudDownloadIcon />}>
