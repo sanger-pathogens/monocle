@@ -17,6 +17,7 @@ gunicorn = "*"
 uvicorn = "*"
 testfixtures = "*"
 django-environ = "*"
+graphene-django-extras = "*"
 
 [requires]
 python_version = "3.7"
