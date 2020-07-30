@@ -6,6 +6,7 @@ from graphql_jwt import (
     Refresh,
 )
 from graphql_jwt.decorators import login_required
+from graphene_django_extras import DjangoInputObjectType
 
 from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
@@ -30,11 +31,30 @@ class Sample(DjangoObjectType):
         model = models.Sample
 
 
+class SampleInput(DjangoInputObjectType):
+    class Meta:
+        model = models.Sample
+
+
+class UpdateSamplesMutation(graphene.Mutation):
+    class Arguments:
+        samples = graphene.NonNull(graphene.List(SampleInput))
+
+    ok = graphene.Boolean()
+
+    @classmethod
+    def mutate(cls, root, info, samples, *args, **kwargs):
+        # TODO: validate and save samples in transaction
+        return UpdateSamplesMutation(ok=True)
+
+
 class Mutation(object):
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
     refresh_token = Refresh.Field()
     delete_token_cookie = DeleteTokens.Field()
+
+    update_samples = UpdateSamplesMutation.Field()
 
 
 class Query(object):
