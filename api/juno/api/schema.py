@@ -1,3 +1,4 @@
+from django.db import DatabaseError, transaction
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
@@ -39,17 +40,25 @@ class SampleInput(DjangoInputObjectType):
 class UpdateSamplesMutation(graphene.Mutation):
     class Arguments:
         samples = graphene.NonNull(graphene.List(SampleInput))
+        commit = graphene.Boolean()
 
-    ok = graphene.Boolean()
+    committed = graphene.Boolean()
+    removed = graphene.List(Sample)
+    added = graphene.List(Sample)
+    changed = graphene.List(Sample)
 
     @classmethod
-    def mutate(cls, root, info, samples, *args, **kwargs):
+    def mutate(cls, root, info, samples, commit, *args, **kwargs):
+        # TODO: consider that lane_id is not really metadata
+        # (metadata should be indexed by public name, since
+        # lane_id is sequencing related and may not be known)
+        committed = False
         try:
             with transaction.atomic():
                 # retrieve samples from db
                 samples_in_db = models.Sample.objects.all()
 
-                # diff and validate (with renamed field fk field)
+                # validate (with renamed field fk field)
                 samples_prepared = [
                     models.Sample(
                         **{
@@ -64,17 +73,54 @@ class UpdateSamplesMutation(graphene.Mutation):
                     for sample in samples
                 ]
 
-                # clear samples table in db
-                samples_in_db.delete()
+                # diff
+                # (return db versions, since client has prepared,
+                # so it can then potentially show diff)
+                sample_ids_in_db = set(
+                    sample.lane_id for sample in samples_in_db
+                )
+                sample_ids_in_prepared = set(
+                    sample.lane_id for sample in samples_prepared
+                )
+                samples_added = [
+                    sample
+                    for sample in samples_prepared
+                    if sample.lane_id not in sample_ids_in_db
+                ]
+                samples_removed = [
+                    sample
+                    for sample in samples_in_db
+                    if sample.lane_id not in sample_ids_in_prepared
+                ]
+                samples_changed = [
+                    sample
+                    for sample in samples_in_db
+                    if sample.lane_id in sample_ids_in_prepared
+                ]
 
-                # insert new entries
-                models.Sample.objects.bulk_create(samples_prepared)
+                # only make the change if requested
+                # (so diff can be computed without commit)
+                if commit:
+                    # clear samples table in db
+                    samples_in_db.delete()
+
+                    # insert new entries
+                    models.Sample.objects.bulk_create(samples_prepared)
+
+                    committed = True
         # except DatabaseError:
         #     return UpdateSamplesMutation(ok=False)
         except Exception:
-            return UpdateSamplesMutation(ok=False)
+            return UpdateSamplesMutation(
+                committed=committed, removed=[], added=[], changed=[]
+            )
 
-        return UpdateSamplesMutation(ok=True)
+        return UpdateSamplesMutation(
+            committed=committed,
+            removed=samples_removed,
+            added=samples_added,
+            changed=samples_changed,
+        )
 
 
 class Mutation(object):
