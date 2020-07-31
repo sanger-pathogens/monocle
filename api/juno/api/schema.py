@@ -57,9 +57,9 @@ class UpdateSamplesMutation(graphene.Mutation):
         try:
             with transaction.atomic():
                 # retrieve samples from db
+                samples_in_db_list = models.Sample.objects.all()
                 samples_in_db = {
-                    sample.lane_id: sample
-                    for sample in models.Sample.objects.all()
+                    sample.lane_id: sample for sample in samples_in_db_list
                 }
 
                 # validate (with renamed field fk field)
@@ -124,10 +124,10 @@ class UpdateSamplesMutation(graphene.Mutation):
                 # (so diff can be computed without commit)
                 if commit:
                     # clear samples table in db
-                    samples_in_db.delete()
+                    samples_in_db_list.delete()
 
                     # insert new entries
-                    models.Sample.objects.bulk_create(samples_prepared)
+                    models.Sample.objects.bulk_create(samples_prepared_list)
 
                     committed = True
         # except DatabaseError:
