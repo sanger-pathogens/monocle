@@ -46,6 +46,7 @@ class UpdateSamplesMutation(graphene.Mutation):
     removed = graphene.NonNull(graphene.List(Sample))
     added = graphene.NonNull(graphene.List(Sample))
     changed = graphene.NonNull(graphene.List(Sample))
+    same = graphene.NonNull(graphene.List(Sample))
 
     @classmethod
     def mutate(cls, root, info, samples, commit, *args, **kwargs):
@@ -56,10 +57,13 @@ class UpdateSamplesMutation(graphene.Mutation):
         try:
             with transaction.atomic():
                 # retrieve samples from db
-                samples_in_db = models.Sample.objects.all()
+                samples_in_db = {
+                    sample.lane_id: sample
+                    for sample in models.Sample.objects.all()
+                }
 
                 # validate (with renamed field fk field)
-                samples_prepared = [
+                samples_prepared_list = [
                     models.Sample(
                         **{
                             key: value
@@ -72,30 +76,48 @@ class UpdateSamplesMutation(graphene.Mutation):
                     )
                     for sample in samples
                 ]
+                samples_prepared = {
+                    sample.lane_id: sample for sample in samples_prepared_list
+                }
+                sample_ids_in_db = set(samples_in_db.keys())
+                sample_ids_in_prepared = set(samples_prepared.keys())
 
-                # diff
-                # (return db versions, since client has prepared,
-                # so it can then potentially show diff)
-                sample_ids_in_db = set(
-                    sample.lane_id for sample in samples_in_db
+                # helper to compare each field for a submitted sample
+                # against the db version
+                def deep_compare(sample_id):
+                    return all(
+                        samples_prepared[sample_id].__dict__[field]
+                        == samples_in_db[sample_id].__dict__[field]
+                        for field in samples_prepared[sample_id].__dict__
+                        if field != "_state"
+                    )
+
+                # diff on just ids
+                sample_ids_common = sample_ids_in_prepared & sample_ids_in_db
+                sample_ids_added = sample_ids_in_prepared - sample_ids_in_db
+                sample_ids_removed = sample_ids_in_db - sample_ids_in_prepared
+                sample_ids_same = set(
+                    sample_id
+                    for sample_id in sample_ids_common
+                    if deep_compare(sample_id)
                 )
-                sample_ids_in_prepared = set(
-                    sample.lane_id for sample in samples_prepared
-                )
+                sample_ids_changed = sample_ids_common - sample_ids_same
+
+                # diff as lists of samples
                 samples_added = [
-                    sample
-                    for sample in samples_prepared
-                    if sample.lane_id not in sample_ids_in_db
+                    samples_prepared[sample_id]
+                    for sample_id in sample_ids_added
                 ]
                 samples_removed = [
-                    sample
-                    for sample in samples_in_db
-                    if sample.lane_id not in sample_ids_in_prepared
+                    samples_in_db[sample_id]
+                    for sample_id in sample_ids_removed
                 ]
                 samples_changed = [
-                    sample
-                    for sample in samples_in_db
-                    if sample.lane_id in sample_ids_in_prepared
+                    samples_in_db[sample_id]
+                    for sample_id in sample_ids_changed
+                ]
+                samples_same = [
+                    samples_in_db[sample_id] for sample_id in sample_ids_same
                 ]
 
                 # only make the change if requested
@@ -112,7 +134,11 @@ class UpdateSamplesMutation(graphene.Mutation):
         #     return UpdateSamplesMutation(ok=False)
         except Exception:
             return UpdateSamplesMutation(
-                committed=committed, removed=[], added=[], changed=[]
+                committed=committed,
+                removed=[],
+                added=[],
+                changed=[],
+                same=samples_in_db,
             )
 
         return UpdateSamplesMutation(
@@ -120,6 +146,7 @@ class UpdateSamplesMutation(graphene.Mutation):
             removed=samples_removed,
             added=samples_added,
             changed=samples_changed,
+            same=samples_same,
         )
 
 
