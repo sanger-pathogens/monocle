@@ -44,7 +44,36 @@ class UpdateSamplesMutation(graphene.Mutation):
 
     @classmethod
     def mutate(cls, root, info, samples, *args, **kwargs):
-        # TODO: validate and save samples in transaction
+        try:
+            with transaction.atomic():
+                # retrieve samples from db
+                samples_in_db = models.Sample.objects.all()
+
+                # diff and validate (with renamed field fk field)
+                samples_prepared = [
+                    models.Sample(
+                        **{
+                            key: value
+                            for key, value in sample.items()
+                            if key != "submitting_institution"
+                        },
+                        **{
+                            "submitting_institution_id": sample.submitting_institution
+                        }
+                    )
+                    for sample in samples
+                ]
+
+                # clear samples table in db
+                samples_in_db.delete()
+
+                # insert new entries
+                models.Sample.objects.bulk_create(samples_prepared)
+        # except DatabaseError:
+        #     return UpdateSamplesMutation(ok=False)
+        except Exception:
+            return UpdateSamplesMutation(ok=False)
+
         return UpdateSamplesMutation(ok=True)
 
 
