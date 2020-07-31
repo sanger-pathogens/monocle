@@ -40,12 +40,12 @@ class SampleInput(DjangoInputObjectType):
 class UpdateSamplesMutation(graphene.Mutation):
     class Arguments:
         samples = graphene.NonNull(graphene.List(SampleInput))
-        commit = graphene.Boolean()
+        commit = graphene.NonNull(graphene.Boolean)
 
-    committed = graphene.Boolean()
-    removed = graphene.List(Sample)
-    added = graphene.List(Sample)
-    changed = graphene.List(Sample)
+    committed = graphene.NonNull(graphene.Boolean)
+    removed = graphene.NonNull(graphene.List(Sample))
+    added = graphene.NonNull(graphene.List(Sample))
+    changed = graphene.NonNull(graphene.List(Sample))
 
     @classmethod
     def mutate(cls, root, info, samples, commit, *args, **kwargs):
