@@ -1,4 +1,4 @@
-from django.db import DatabaseError, transaction
+from django.db import transaction
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
