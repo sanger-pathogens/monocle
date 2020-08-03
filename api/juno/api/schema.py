@@ -93,6 +93,21 @@ def diff_samples(samples_db, samples_to_compare):
     }
 
 
+def deserialise_samples(samples):
+    # handle foreign key
+    return [
+        models.Sample(
+            submitting_institution_id=sample.submitting_institution,
+            **{
+                key: value
+                for key, value in sample.items()
+                if key != "submitting_institution"
+            },
+        )
+        for sample in samples
+    ]
+
+
 class UpdateSamplesMutation(graphene.Mutation):
     class Arguments:
         samples = graphene.NonNull(graphene.List(SampleInput))
@@ -113,17 +128,7 @@ class UpdateSamplesMutation(graphene.Mutation):
                 samples_db = models.Sample.objects.all()
 
                 # validate (with renamed fk field)
-                samples_to_compare = [
-                    models.Sample(
-                        submitting_institution_id=sample.submitting_institution,
-                        **{
-                            key: value
-                            for key, value in sample.items()
-                            if key != "submitting_institution"
-                        },
-                    )
-                    for sample in samples
-                ]
+                samples_to_compare = deserialise_samples(samples)
 
                 # compute diff
                 diff = diff_samples(samples_db, samples_to_compare)
@@ -165,6 +170,7 @@ class Query(object):
     me = graphene.Field(User)
     samples = graphene.List(Sample)
     institutions = graphene.List(Institution)
+    compare_samples = graphene.NonNull(SamplesDiff)
 
     @login_required
     def resolve_me(self, info, **kwargs):
@@ -208,3 +214,24 @@ class Query(object):
             return models.Institution.objects.all()
         else:
             return affiliations.all()
+
+    @login_required
+    def resolve_compare_samples(self, info, samples):
+        try:
+            # retrieve samples from db
+            samples_db = models.Sample.objects.all()
+
+            # validate (with renamed fk field)
+            samples_to_compare = deserialise_samples(samples)
+
+            # compute diff
+            diff = diff_samples(samples_db, samples_to_compare)
+        except Exception:
+            return {
+                "added": [],
+                "removed": [],
+                "changed": [],
+                "same": samples_db,
+            }
+
+        return diff
