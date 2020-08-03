@@ -42,6 +42,7 @@ class SamplesDiff(graphene.ObjectType):
     added = graphene.NonNull(graphene.List(Sample))
     changed = graphene.NonNull(graphene.List(Sample))
     same = graphene.NonNull(graphene.List(Sample))
+    missing_institutions = graphene.NonNull(graphene.List(graphene.String))
 
 
 def deep_compare(sample1, sample2):
@@ -86,12 +87,26 @@ def diff_samples(samples_db, samples_to_compare):
     changed = [samples_db_lut[sample_id] for sample_id in sample_ids_changed]
     same = [samples_db_lut[sample_id] for sample_id in sample_ids_same]
 
+    # missing institutions?
+    institutions_db = set(
+        institution.name for institution in models.Institution.objects.all()
+    )
+    institutions_to_compare = set(
+        sample.submitting_institution_id for sample in samples_to_compare
+    )
+    missing_institutions = [
+        institution
+        for institution in institutions_to_compare
+        if institution not in institutions_db
+    ]
+
     # return diff
     return {
         "added": added,
         "removed": removed,
         "changed": changed,
         "same": same,
+        "missing_institutions": missing_institutions,
     }
 
 
@@ -113,48 +128,35 @@ def deserialise_samples(samples):
 class UpdateSamplesMutation(graphene.Mutation):
     class Arguments:
         samples = graphene.NonNull(graphene.List(SampleInput))
-        commit = graphene.NonNull(graphene.Boolean)
 
     committed = graphene.NonNull(graphene.Boolean)
     diff = graphene.NonNull(SamplesDiff)
 
     @classmethod
-    def mutate(cls, root, info, samples, commit, *args, **kwargs):
+    def mutate(cls, root, info, samples, *args, **kwargs):
         # TODO: consider that lane_id is not really metadata
         # (metadata should be indexed by public name, since
         # lane_id is sequencing related and may not be known)
         committed = False
-        try:
-            with transaction.atomic():
-                # retrieve samples from db
-                samples_db = models.Sample.objects.all()
+        with transaction.atomic():
+            # retrieve samples from db
+            samples_db = models.Sample.objects.all()
 
-                # validate (with renamed fk field)
-                samples_to_compare = deserialise_samples(samples)
+            # validate (with renamed fk field)
+            samples_to_compare = deserialise_samples(samples)
 
-                # compute diff
-                diff = diff_samples(samples_db, samples_to_compare)
+            # compute diff
+            diff = diff_samples(samples_db, samples_to_compare)
 
-                # only make the change if requested
-                # (so diff can be computed without commit)
-                if commit:
-                    # clear samples table in db
-                    samples_db.delete()
+            # only make there are no missing institutions
+            if len(diff["missing_institutions"]) == 0:
+                # clear samples table in db
+                samples_db.delete()
 
-                    # insert new entries
-                    models.Sample.objects.bulk_create(samples_to_compare)
+                # insert new entries
+                models.Sample.objects.bulk_create(samples_to_compare)
 
-                    committed = True
-        # except DatabaseError:
-        #     return UpdateSamplesMutation(ok=False)
-        except Exception:
-            diff = {
-                "added": [],
-                "removed": [],
-                "changed": [],
-                "same": samples_db,
-            }
-            return UpdateSamplesMutation(committed=committed, diff=diff)
+                committed = True
 
         return UpdateSamplesMutation(committed=committed, diff=diff)
 
@@ -221,21 +223,13 @@ class Query(object):
 
     @login_required
     def resolve_compare_samples(self, info, samples):
-        try:
-            # retrieve samples from db
-            samples_db = models.Sample.objects.all()
+        # retrieve samples from db
+        samples_db = models.Sample.objects.all()
 
-            # validate (with renamed fk field)
-            samples_to_compare = deserialise_samples(samples)
+        # validate (with renamed fk field)
+        samples_to_compare = deserialise_samples(samples)
 
-            # compute diff
-            diff = diff_samples(samples_db, samples_to_compare)
-        except Exception:
-            return {
-                "added": [],
-                "removed": [],
-                "changed": [],
-                "same": samples_db,
-            }
+        # compute diff
+        diff = diff_samples(samples_db, samples_to_compare)
 
         return diff
