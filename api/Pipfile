@@ -18,6 +18,7 @@ uvicorn = "*"
 testfixtures = "*"
 django-environ = "*"
 graphene-django-extras = "*"
+hypothesis = "*"
 
 [requires]
 python_version = "3.7"
