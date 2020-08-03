@@ -37,16 +37,69 @@ class SampleInput(DjangoInputObjectType):
         model = models.Sample
 
 
+class SamplesDiff(graphene.ObjectType):
+    removed = graphene.NonNull(graphene.List(Sample))
+    added = graphene.NonNull(graphene.List(Sample))
+    changed = graphene.NonNull(graphene.List(Sample))
+    same = graphene.NonNull(graphene.List(Sample))
+
+
+def deep_compare(sample1, sample2):
+    # helper to compare each field for a submitted sample
+    # against the db version
+    return all(
+        sample1.__dict__[field] == sample2.__dict__[field]
+        for field in sample1.__dict__
+        if field != "_state"
+    )
+
+
+def diff_samples(samples_db, samples_to_compare):
+    # build look up tables
+    samples_db_lut = {sample.lane_id: sample for sample in samples_db}
+    samples_to_compare_lut = {
+        sample.lane_id: sample for sample in samples_to_compare
+    }
+
+    # get id sets
+    samples_db_ids = set(samples_db_lut.keys())
+    samples_to_compare_ids = set(samples_to_compare_lut.keys())
+
+    # diff on id sets
+    sample_ids_common = samples_to_compare_ids & samples_db_ids
+    sample_ids_added = samples_to_compare_ids - samples_db_ids
+    sample_ids_removed = samples_db_ids - samples_to_compare_ids
+    sample_ids_same = set(
+        sample_id
+        for sample_id in sample_ids_common
+        if deep_compare(
+            samples_to_compare_lut[sample_id], samples_db_lut[sample_id]
+        )
+    )
+    sample_ids_changed = sample_ids_common - sample_ids_same
+
+    # diff on full samples
+    added = [samples_to_compare[sample_id] for sample_id in sample_ids_added]
+    removed = [samples_db[sample_id] for sample_id in sample_ids_removed]
+    changed = [samples_db[sample_id] for sample_id in sample_ids_changed]
+    same = [samples_db[sample_id] for sample_id in sample_ids_same]
+
+    # return diff
+    return {
+        "added": added,
+        "removed": removed,
+        "changed": changed,
+        "same": same,
+    }
+
+
 class UpdateSamplesMutation(graphene.Mutation):
     class Arguments:
         samples = graphene.NonNull(graphene.List(SampleInput))
         commit = graphene.NonNull(graphene.Boolean)
 
     committed = graphene.NonNull(graphene.Boolean)
-    removed = graphene.NonNull(graphene.List(Sample))
-    added = graphene.NonNull(graphene.List(Sample))
-    changed = graphene.NonNull(graphene.List(Sample))
-    same = graphene.NonNull(graphene.List(Sample))
+    diff = graphene.NonNull(SamplesDiff)
 
     @classmethod
     def mutate(cls, root, info, samples, commit, *args, **kwargs):
@@ -57,97 +110,46 @@ class UpdateSamplesMutation(graphene.Mutation):
         try:
             with transaction.atomic():
                 # retrieve samples from db
-                samples_in_db_list = models.Sample.objects.all()
-                samples_in_db = {
-                    sample.lane_id: sample for sample in samples_in_db_list
-                }
+                samples_db = models.Sample.objects.all()
 
-                # validate (with renamed field fk field)
-                samples_prepared_list = [
+                # validate (with renamed fk field)
+                samples_to_compare = [
                     models.Sample(
+                        submitting_institution_id=sample.submitting_institution,
                         **{
                             key: value
                             for key, value in sample.items()
                             if key != "submitting_institution"
                         },
-                        **{
-                            "submitting_institution_id": sample.submitting_institution
-                        }
                     )
                     for sample in samples
                 ]
-                samples_prepared = {
-                    sample.lane_id: sample for sample in samples_prepared_list
-                }
-                sample_ids_in_db = set(samples_in_db.keys())
-                sample_ids_in_prepared = set(samples_prepared.keys())
 
-                # helper to compare each field for a submitted sample
-                # against the db version
-                def deep_compare(sample_id):
-                    return all(
-                        samples_prepared[sample_id].__dict__[field]
-                        == samples_in_db[sample_id].__dict__[field]
-                        for field in samples_prepared[sample_id].__dict__
-                        if field != "_state"
-                    )
-
-                # diff on just ids
-                sample_ids_common = sample_ids_in_prepared & sample_ids_in_db
-                sample_ids_added = sample_ids_in_prepared - sample_ids_in_db
-                sample_ids_removed = sample_ids_in_db - sample_ids_in_prepared
-                sample_ids_same = set(
-                    sample_id
-                    for sample_id in sample_ids_common
-                    if deep_compare(sample_id)
-                )
-                sample_ids_changed = sample_ids_common - sample_ids_same
-
-                # diff as lists of samples
-                samples_added = [
-                    samples_prepared[sample_id]
-                    for sample_id in sample_ids_added
-                ]
-                samples_removed = [
-                    samples_in_db[sample_id]
-                    for sample_id in sample_ids_removed
-                ]
-                samples_changed = [
-                    samples_in_db[sample_id]
-                    for sample_id in sample_ids_changed
-                ]
-                samples_same = [
-                    samples_in_db[sample_id] for sample_id in sample_ids_same
-                ]
+                # compute diff
+                diff = diff_samples(samples_db, samples_to_compare)
 
                 # only make the change if requested
                 # (so diff can be computed without commit)
                 if commit:
                     # clear samples table in db
-                    samples_in_db_list.delete()
+                    samples_db.delete()
 
                     # insert new entries
-                    models.Sample.objects.bulk_create(samples_prepared_list)
+                    models.Sample.objects.bulk_create(samples_to_compare)
 
                     committed = True
         # except DatabaseError:
         #     return UpdateSamplesMutation(ok=False)
         except Exception:
-            return UpdateSamplesMutation(
-                committed=committed,
-                removed=[],
-                added=[],
-                changed=[],
-                same=samples_in_db,
-            )
+            diff = {
+                "added": [],
+                "removed": [],
+                "changed": [],
+                "same": samples_db,
+            }
+            return UpdateSamplesMutation(committed=committed, diff=diff)
 
-        return UpdateSamplesMutation(
-            committed=committed,
-            removed=samples_removed,
-            added=samples_added,
-            changed=samples_changed,
-            same=samples_same,
-        )
+        return UpdateSamplesMutation(committed=committed, diff=diff)
 
 
 class Mutation(object):
