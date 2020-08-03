@@ -1,4 +1,4 @@
-from hypothesis import strategies as st
+from hypothesis.strategies import composite, lists, sampled_from
 from hypothesis.extra.django import from_model
 
 from juno.api.models import Sample, Institution, User, Affiliation
@@ -10,19 +10,19 @@ samples = from_model(Sample, submitting_institution=institutions)
 affiliations = from_model(Affiliation, institution=institutions, user=users)
 
 
-@st.composite
+@composite
 def db(
     draw,
     min_users=0,
-    max_users=5,
+    max_users=3,
     min_institutions=0,
-    max_institutions=5,
+    max_institutions=3,
     min_samples=0,
-    max_samples=30,
+    max_samples=10,
 ):
     # draw independent tables
     drawn_users = draw(
-        st.lists(
+        lists(
             users,
             min_size=min_users,
             max_size=max_users,
@@ -30,7 +30,7 @@ def db(
         )
     )
     drawn_institutions = draw(
-        st.lists(
+        lists(
             institutions,
             min_size=min_institutions,
             max_size=max_institutions,
@@ -45,11 +45,11 @@ def db(
     # draw dependent tables (with foreign keys)
     drawn_affiliations = (
         draw(
-            st.lists(
+            lists(
                 from_model(
                     Affiliation,
-                    user=st.sampled_from(drawn_users),
-                    institution=st.sampled_from(drawn_institutions),
+                    user=sampled_from(drawn_users),
+                    institution=sampled_from(drawn_institutions),
                 ),
                 min_size=min_users * min_institutions
                 if can_draw_affiliation
@@ -64,10 +64,10 @@ def db(
     )
     drawn_samples = (
         draw(
-            st.lists(
+            lists(
                 from_model(
                     Sample,
-                    submitting_institution=st.sampled_from(drawn_institutions),
+                    submitting_institution=sampled_from(drawn_institutions),
                 ),
                 min_size=min_samples if can_draw_sample else 0,
                 max_size=max_samples if can_draw_sample else 0,
