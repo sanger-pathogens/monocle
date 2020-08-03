@@ -170,7 +170,9 @@ class Query(object):
     me = graphene.Field(User)
     samples = graphene.List(Sample)
     institutions = graphene.List(Institution)
-    compare_samples = graphene.NonNull(SamplesDiff)
+    compare_samples = graphene.NonNull(
+        SamplesDiff, samples=graphene.NonNull(graphene.List(SampleInput))
+    )
 
     @login_required
     def resolve_me(self, info, **kwargs):
