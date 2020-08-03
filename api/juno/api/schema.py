@@ -79,10 +79,12 @@ def diff_samples(samples_db, samples_to_compare):
     sample_ids_changed = sample_ids_common - sample_ids_same
 
     # diff on full samples
-    added = [samples_to_compare[sample_id] for sample_id in sample_ids_added]
-    removed = [samples_db[sample_id] for sample_id in sample_ids_removed]
-    changed = [samples_db[sample_id] for sample_id in sample_ids_changed]
-    same = [samples_db[sample_id] for sample_id in sample_ids_same]
+    added = [
+        samples_to_compare_lut[sample_id] for sample_id in sample_ids_added
+    ]
+    removed = [samples_db_lut[sample_id] for sample_id in sample_ids_removed]
+    changed = [samples_db_lut[sample_id] for sample_id in sample_ids_changed]
+    same = [samples_db_lut[sample_id] for sample_id in sample_ids_same]
 
     # return diff
     return {
