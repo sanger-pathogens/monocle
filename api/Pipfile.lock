@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4a86784eae61166a772b208fca8c6d133050c202016d8c86edbe110989943c50"
+            "sha256": "78b55c8f6c8ecefa4b8647de3618ac2d24b0f947dab8db4089c1cb1cdbd851fd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,13 +30,6 @@
             ],
             "version": "==3.2.10"
         },
-        "attrs": {
-            "hashes": [
-                "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c",
-                "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"
-            ],
-            "version": "==19.3.0"
-        },
         "click": {
             "hashes": [
                 "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a",
@@ -46,11 +39,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:96fbe04e8ba0df289171e7f6970e0ff8b472bf4f909ed9e0e5beccbac7e1dbbe",
-                "sha256:c22b4cd8e388f8219dc121f091e53a8701f9f5bca9aa132b5254263cab516215"
+                "sha256:1a63f5bb6ff4d7c42f62a519edc2adbb37f9b78068a5a862beff858b68e3dc8b",
+                "sha256:2d390268a13c655c97e0e2ede9d117007996db692c1bb93eabebd4fb7ea7012b"
             ],
             "index": "pypi",
-            "version": "==3.0.9"
+            "version": "==3.1"
         },
         "django-cors-headers": {
             "hashes": [
@@ -169,14 +162,6 @@
             "markers": "sys_platform != 'win32' and sys_platform != 'cygwin' and platform_python_implementation != 'PyPy'",
             "version": "==0.1.1"
         },
-        "hypothesis": {
-            "hashes": [
-                "sha256:0400b95556216ae3e345f760726c89f8fb6ae47a22f41600868f692a2298773d",
-                "sha256:1dc52986324802b1c5b2fe3edc96d22f58a0fb20aacfdb0ebe9d1038ca397485"
-            ],
-            "index": "pypi",
-            "version": "==5.23.9"
-        },
         "promise": {
             "hashes": [
                 "sha256:dfd18337c523ba4b6a58801c164c1904a9d4d1b1747c7d5dbf45b693a49d93d0"
@@ -224,13 +209,6 @@
                 "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
             "version": "==1.15.0"
-        },
-        "sortedcontainers": {
-            "hashes": [
-                "sha256:4e73a757831fc3ca4de2859c422564239a31d8213d09a2a666e375807034d2ba",
-                "sha256:c633ebde8580f241f274c1f8994a665c0e54a17724fecd0cae2f079e09c36d3f"
-            ],
-            "version": "==2.2.2"
         },
         "sqlparse": {
             "hashes": [
