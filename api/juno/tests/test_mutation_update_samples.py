@@ -72,18 +72,23 @@ class UpdateSamplesMutationTestCase(AuthenticatableGraphQLTestCase):
         )
 
         data = self.validate_successful(response)
+        update_samples = self.validate_field(data, "updateSamples")
 
-        # return data for further checks
-        return data
+        # return for further checks
+        return update_samples
 
     def test_can_empty(self):
-        data = self.make_and_validate_update_samples_mutation([],)
-        update_samples = self.validate_field(data, "updateSamples",)
-        self.validate_field(update_samples, "committed", expected_value=True)
-        diff = self.validate_field(update_samples, "diff",)
+        # act
+        update_samples = self.make_and_validate_update_samples_mutation([],)
+
+        # assert (diff)
+        diff = self.validate_field(update_samples, "diff")
         self.validate_field(diff, "added", expected_value=[])
         self.validate_field(
             diff, "removed", expected_value=[{"laneId": "31663_7#113"}]
         )
         self.validate_field(diff, "changed", expected_value=[])
         self.validate_field(diff, "same", expected_value=[])
+
+        # assert (db changed)
+        self.validate_field(update_samples, "committed", expected_value=True)
