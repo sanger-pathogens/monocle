@@ -74,9 +74,12 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
         # return for further checks
         return compare_samples
 
-    def test_subset(self):
+    def test_removed(self):
+        # prepare
+        samples = []
+
         # act
-        compare_samples = self.make_and_validate_compare_samples_query([])
+        compare_samples = self.make_and_validate_compare_samples_query(samples)
 
         # assert
         self.validate_field(compare_samples, "added", expected_value=[])
@@ -87,3 +90,152 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
         )
         self.validate_field(compare_samples, "changed", expected_value=[])
         self.validate_field(compare_samples, "same", expected_value=[])
+        self.validate_field(
+            compare_samples, "missingInstitutions", expected_value=[],
+        )
+
+    def test_same(self):
+        # prepare
+        samples = [
+            {
+                "laneId": "31663_7#113",
+                "sampleId": "5903STDY8059170",
+                "publicName": "CUHK_GBS177WT_16",
+                "serotype": "IA",
+                "hostStatus": "CARRIAGE",
+                "submittingInstitution": "Wellcome Sanger Institute",
+            }
+        ]
+
+        # act
+        compare_samples = self.make_and_validate_compare_samples_query(samples)
+
+        # assert
+        self.validate_field(compare_samples, "added", expected_value=[])
+        self.validate_field(
+            compare_samples, "removed", expected_value=[],
+        )
+        self.validate_field(compare_samples, "changed", expected_value=[])
+        self.validate_field(
+            compare_samples,
+            "same",
+            expected_value=[{"laneId": "31663_7#113"}],
+        )
+        self.validate_field(
+            compare_samples, "missingInstitutions", expected_value=[],
+        )
+
+    def test_changed(self):
+        # prepare
+        samples = [
+            {
+                "laneId": "31663_7#113",
+                "sampleId": "5903STDY8059170",
+                "publicName": "CUHK_GBS177WT_16",
+                "serotype": "IB",
+                "hostStatus": "CARRIAGE",
+                "submittingInstitution": "Wellcome Sanger Institute",
+            }
+        ]
+
+        # act
+        compare_samples = self.make_and_validate_compare_samples_query(samples)
+
+        # assert
+        self.validate_field(compare_samples, "added", expected_value=[])
+        self.validate_field(
+            compare_samples, "removed", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples,
+            "changed",
+            expected_value=[{"laneId": "31663_7#113"}],
+        )
+        self.validate_field(
+            compare_samples, "same", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples, "missingInstitutions", expected_value=[],
+        )
+
+    def test_added(self):
+        # prepare
+        samples = [
+            {
+                "laneId": "31663_7#113",
+                "sampleId": "5903STDY8059170",
+                "publicName": "CUHK_GBS177WT_16",
+                "serotype": "IA",
+                "hostStatus": "CARRIAGE",
+                "submittingInstitution": "Wellcome Sanger Institute",
+            },
+            {
+                "laneId": "31663_7#115",
+                "sampleId": "5903STDY8059171",
+                "publicName": "CUHK_GBS177WT_17",
+                "serotype": "IB",
+                "hostStatus": "CARRIAGE",
+                "submittingInstitution": "Wellcome Sanger Institute",
+            },
+        ]
+
+        # act
+        compare_samples = self.make_and_validate_compare_samples_query(samples)
+
+        # assert
+        self.validate_field(
+            compare_samples,
+            "added",
+            expected_value=[{"laneId": "31663_7#115"}],
+        )
+        self.validate_field(
+            compare_samples, "removed", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples, "changed", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples,
+            "same",
+            expected_value=[{"laneId": "31663_7#113"}],
+        )
+        self.validate_field(
+            compare_samples, "missingInstitutions", expected_value=[],
+        )
+
+    def test_missing_institution(self):
+        # prepare
+        missing_institution = "UNKNOWN INSTITUTION"
+        samples = [
+            {
+                "laneId": "31663_7#113",
+                "sampleId": "5903STDY8059170",
+                "publicName": "CUHK_GBS177WT_16",
+                "serotype": "IB",
+                "hostStatus": "CARRIAGE",
+                "submittingInstitution": missing_institution,
+            }
+        ]
+
+        # act
+        compare_samples = self.make_and_validate_compare_samples_query(samples)
+
+        # assert
+        self.validate_field(compare_samples, "added", expected_value=[])
+        self.validate_field(
+            compare_samples, "removed", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples,
+            "changed",
+            expected_value=[{"laneId": "31663_7#113"}],
+        )
+        self.validate_field(
+            compare_samples, "same", expected_value=[],
+        )
+        self.validate_field(
+            compare_samples,
+            "missingInstitutions",
+            expected_value=[missing_institution],
+        )
+
