@@ -46,7 +46,7 @@ class UpdateSamplesMutationTestCase(AuthenticatableGraphQLTestCase):
         # call api
         response = self.post(
             """
-            mutation UpdateSamples($samples: [SampleInput]!){
+            mutation UpdateSamples($samples: [SampleInput!]!){
                 updateSamples(samples: $samples) {
                     committed
                     diff {

@@ -73,6 +73,7 @@ class InstitutionsQueryTestCase(AuthenticatableGraphQLTestCase):
         )
         if (
             "data" in content.keys()
+            and content["data"]
             and "institutions" in content["data"].keys()
         ):
             self.assertEqual(content["data"]["institutions"], None)

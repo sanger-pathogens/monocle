@@ -46,11 +46,11 @@ class SampleInput(DjangoInputObjectType):
 
 
 class SamplesDiff(ObjectType):
-    removed = NonNull(List(Sample))
-    added = NonNull(List(Sample))
-    changed = NonNull(List(Sample))
-    same = NonNull(List(Sample))
-    missing_institutions = NonNull(List(String))
+    removed = NonNull(List(NonNull(Sample)))
+    added = NonNull(List(NonNull(Sample)))
+    changed = NonNull(List(NonNull(Sample)))
+    same = NonNull(List(NonNull(Sample)))
+    missing_institutions = NonNull(List(NonNull(String)))
 
 
 def deep_compare(sample1, sample2):
@@ -180,9 +180,11 @@ class Mutation(object):
 
 class Query(object):
     me = Field(User)
-    samples = List(Sample)
-    institutions = List(Institution)
-    compare_samples = NonNull(SamplesDiff, samples=NonNull(List(SampleInput)))
+    samples = NonNull(List(NonNull(Sample)))
+    institutions = NonNull(List(NonNull(Institution)))
+    compare_samples = NonNull(
+        SamplesDiff, samples=NonNull(List(NonNull(SampleInput)))
+    )
 
     @login_required
     def resolve_me(self, info, **kwargs):

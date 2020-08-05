@@ -46,7 +46,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
         # call api
         response = self.post(
             """
-            query CompareSamples($samples: [SampleInput]!){
+            query CompareSamples($samples: [SampleInput!]!){
                 compareSamples(samples: $samples) {
                     added {
                         laneId
