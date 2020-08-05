@@ -7,6 +7,7 @@ import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
+import UploadButton from "./UploadButton";
 
 const PageHome = () => (
   <Page header={<Header />} footer={<Footer />}>
@@ -15,6 +16,7 @@ const PageHome = () => (
         <Institutions />
       </Section>
       <Section title="Samples">
+        <UploadButton />
         <Samples />
       </Section>
     </Box>
