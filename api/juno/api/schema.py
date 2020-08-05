@@ -134,7 +134,7 @@ def deserialise_samples(samples):
 
 class UpdateSamplesMutation(Mutation):
     class Arguments:
-        samples = NonNull(List(SampleInput))
+        samples = NonNull(List(NonNull(SampleInput)))
 
     committed = NonNull(Boolean)
     diff = NonNull(SamplesDiff)
