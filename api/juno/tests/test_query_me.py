@@ -36,7 +36,11 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
 
         # check
         content = self.validate_unsuccessful(response)
-        if "data" in content.keys() and "me" in content["data"].keys():
+        if (
+            "data" in content.keys()
+            and content["data"]
+            and "me" in content["data"].keys()
+        ):
             self.assertEqual(content["data"]["me"], None)
 
     def test_has_no_field_email_when_logged_out(self):
@@ -50,5 +54,9 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
 
         # check
         content = self.validate_unsuccessful(response)
-        if "data" in content.keys() and "me" in content["data"].keys():
+        if (
+            "data" in content.keys()
+            and content["data"]
+            and "me" in content["data"].keys()
+        ):
             self.assertEqual(content["data"]["me"], None)

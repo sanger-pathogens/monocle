@@ -1,7 +1,6 @@
 from django.db import transaction
 from graphene import (
     ObjectType,
-    Field,
     NonNull,
     Mutation,
     List,
@@ -179,7 +178,7 @@ class Mutation(object):
 
 
 class Query(object):
-    me = Field(User)
+    me = NonNull(User)
     samples = NonNull(List(NonNull(Sample)))
     institutions = NonNull(List(NonNull(Institution)))
     compare_samples = NonNull(
