@@ -1,5 +1,12 @@
 from django.db import transaction
-import graphene
+from graphene import (
+    ObjectType,
+    NonNull,
+    Mutation,
+    List,
+    Boolean,
+    String,
+)
 from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
     ObtainJSONWebToken,
@@ -37,12 +44,12 @@ class SampleInput(DjangoInputObjectType):
         model = models.Sample
 
 
-class SamplesDiff(graphene.ObjectType):
-    removed = graphene.NonNull(graphene.List(Sample))
-    added = graphene.NonNull(graphene.List(Sample))
-    changed = graphene.NonNull(graphene.List(Sample))
-    same = graphene.NonNull(graphene.List(Sample))
-    missing_institutions = graphene.NonNull(graphene.List(graphene.String))
+class SamplesDiff(ObjectType):
+    removed = NonNull(List(NonNull(Sample)))
+    added = NonNull(List(NonNull(Sample)))
+    changed = NonNull(List(NonNull(Sample)))
+    same = NonNull(List(NonNull(Sample)))
+    missing_institutions = NonNull(List(NonNull(String)))
 
 
 def deep_compare(sample1, sample2):
@@ -125,12 +132,12 @@ def deserialise_samples(samples):
     ]
 
 
-class UpdateSamplesMutation(graphene.Mutation):
+class UpdateSamplesMutation(Mutation):
     class Arguments:
-        samples = graphene.NonNull(graphene.List(SampleInput))
+        samples = NonNull(List(NonNull(SampleInput)))
 
-    committed = graphene.NonNull(graphene.Boolean)
-    diff = graphene.NonNull(SamplesDiff)
+    committed = NonNull(Boolean)
+    diff = NonNull(SamplesDiff)
 
     @classmethod
     def mutate(cls, root, info, samples, *args, **kwargs):
@@ -171,11 +178,11 @@ class Mutation(object):
 
 
 class Query(object):
-    me = graphene.Field(User)
-    samples = graphene.List(Sample)
-    institutions = graphene.List(Institution)
-    compare_samples = graphene.NonNull(
-        SamplesDiff, samples=graphene.NonNull(graphene.List(SampleInput))
+    me = NonNull(User)
+    samples = NonNull(List(NonNull(Sample)))
+    institutions = NonNull(List(NonNull(Institution)))
+    compare_samples = NonNull(
+        SamplesDiff, samples=NonNull(List(NonNull(SampleInput)))
     )
 
     @login_required
