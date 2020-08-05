@@ -15,7 +15,6 @@ def get_renamings(lane_id):
         annotation: "spades_annotation.gff",
     }
 
-def stream_file
 
 def make_tarfile(lane_id):
     if settings.USE_MOCK_LANE_DATA:
