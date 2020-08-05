@@ -145,3 +145,9 @@ GRAPHQL_JWT = {
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }
+
+GRAPHENE_DJANGO_EXTRAS = {
+    "DEFAULT_PAGINATION_CLASS": "graphene_django_extras.paginations.LimitOffsetGraphqlPagination",
+    "DEFAULT_PAGE_SIZE": 10,
+    "MAX_PAGE_SIZE": 10,
+}

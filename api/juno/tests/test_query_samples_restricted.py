@@ -89,8 +89,8 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 for e in errors
             )
         )
-        if "data" in content.keys() and "samples" in content["data"].keys():
-            self.assertEqual(content["data"]["samples"], None)
+        if "data" in content.keys():
+            self.assertEqual(content["data"], None)
 
     def test_non_sanger_user_can_view_restricted_samples(self):
         # login as non-sanger user
