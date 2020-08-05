@@ -1,3 +1,4 @@
+from django.db import transaction
 import graphene
 from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
@@ -6,6 +7,7 @@ from graphql_jwt import (
     Refresh,
 )
 from graphql_jwt.decorators import login_required
+from graphene_django_extras import DjangoInputObjectType
 
 from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
@@ -30,17 +32,151 @@ class Sample(DjangoObjectType):
         model = models.Sample
 
 
+class SampleInput(DjangoInputObjectType):
+    class Meta:
+        model = models.Sample
+
+
+class SamplesDiff(graphene.ObjectType):
+    removed = graphene.NonNull(graphene.List(Sample))
+    added = graphene.NonNull(graphene.List(Sample))
+    changed = graphene.NonNull(graphene.List(Sample))
+    same = graphene.NonNull(graphene.List(Sample))
+    missing_institutions = graphene.NonNull(graphene.List(graphene.String))
+
+
+def deep_compare(sample1, sample2):
+    # helper to compare each field for a submitted sample
+    # against the db version
+    return all(
+        sample1.__dict__[field] == sample2.__dict__[field]
+        for field in sample1.__dict__
+        if field != "_state"
+    )
+
+
+def diff_samples(samples_db, samples_to_compare):
+    # build look up tables
+    samples_db_lut = {sample.lane_id: sample for sample in samples_db}
+    samples_to_compare_lut = {
+        sample.lane_id: sample for sample in samples_to_compare
+    }
+
+    # get id sets
+    samples_db_ids = set(samples_db_lut.keys())
+    samples_to_compare_ids = set(samples_to_compare_lut.keys())
+
+    # diff on id sets
+    sample_ids_common = samples_to_compare_ids & samples_db_ids
+    sample_ids_added = samples_to_compare_ids - samples_db_ids
+    sample_ids_removed = samples_db_ids - samples_to_compare_ids
+    sample_ids_same = set(
+        sample_id
+        for sample_id in sample_ids_common
+        if deep_compare(
+            samples_to_compare_lut[sample_id], samples_db_lut[sample_id]
+        )
+    )
+    sample_ids_changed = sample_ids_common - sample_ids_same
+
+    # diff on full samples
+    added = [
+        samples_to_compare_lut[sample_id] for sample_id in sample_ids_added
+    ]
+    removed = [samples_db_lut[sample_id] for sample_id in sample_ids_removed]
+    changed = [samples_db_lut[sample_id] for sample_id in sample_ids_changed]
+    same = [samples_db_lut[sample_id] for sample_id in sample_ids_same]
+
+    # missing institutions?
+    institutions_db = set(
+        institution.name for institution in models.Institution.objects.all()
+    )
+    institutions_to_compare = set(
+        sample.submitting_institution_id for sample in samples_to_compare
+    )
+    missing_institutions = [
+        institution
+        for institution in institutions_to_compare
+        if institution not in institutions_db
+    ]
+
+    # return diff
+    return {
+        "added": added,
+        "removed": removed,
+        "changed": changed,
+        "same": same,
+        "missing_institutions": missing_institutions,
+    }
+
+
+def deserialise_samples(samples):
+    # handle foreign key
+    return [
+        models.Sample(
+            submitting_institution_id=sample.submitting_institution,
+            **{
+                key: value
+                for key, value in sample.items()
+                if key != "submitting_institution"
+            },
+        )
+        for sample in samples
+    ]
+
+
+class UpdateSamplesMutation(graphene.Mutation):
+    class Arguments:
+        samples = graphene.NonNull(graphene.List(SampleInput))
+
+    committed = graphene.NonNull(graphene.Boolean)
+    diff = graphene.NonNull(SamplesDiff)
+
+    @classmethod
+    def mutate(cls, root, info, samples, *args, **kwargs):
+        # TODO: consider that lane_id is not really metadata
+        # (metadata should be indexed by public name, since
+        # lane_id is sequencing related and may not be known)
+        committed = False
+        with transaction.atomic():
+            # retrieve samples from db
+            samples_db = models.Sample.objects.all()
+
+            # validate (with renamed fk field)
+            samples_to_compare = deserialise_samples(samples)
+
+            # compute diff
+            diff = diff_samples(samples_db, samples_to_compare)
+
+            # only make there are no missing institutions
+            if len(diff["missing_institutions"]) == 0:
+                # clear samples table in db
+                samples_db.delete()
+
+                # insert new entries
+                models.Sample.objects.bulk_create(samples_to_compare)
+
+                committed = True
+
+        return UpdateSamplesMutation(committed=committed, diff=diff)
+
+
 class Mutation(object):
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
     refresh_token = Refresh.Field()
     delete_token_cookie = DeleteTokens.Field()
 
+    update_samples = UpdateSamplesMutation.Field()
+
 
 class Query(object):
     me = graphene.Field(User)
     samples = graphene.List(Sample)
     institutions = graphene.List(Institution)
+    compare_samples = graphene.NonNull(
+        SamplesDiff, samples=graphene.NonNull(graphene.List(SampleInput))
+    )
 
     @login_required
     def resolve_me(self, info, **kwargs):
@@ -84,3 +220,16 @@ class Query(object):
             return models.Institution.objects.all()
         else:
             return affiliations.all()
+
+    @login_required
+    def resolve_compare_samples(self, info, samples):
+        # retrieve samples from db
+        samples_db = models.Sample.objects.all()
+
+        # validate (with renamed fk field)
+        samples_to_compare = deserialise_samples(samples)
+
+        # compute diff
+        diff = diff_samples(samples_db, samples_to_compare)
+
+        return diff
