@@ -1,5 +1,13 @@
 from django.db import transaction
-import graphene
+from graphene import (
+    ObjectType,
+    Field,
+    NonNull,
+    Mutation,
+    List,
+    Boolean,
+    String,
+)
 from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
     ObtainJSONWebToken,
@@ -37,12 +45,12 @@ class SampleInput(DjangoInputObjectType):
         model = models.Sample
 
 
-class SamplesDiff(graphene.ObjectType):
-    removed = graphene.NonNull(graphene.List(Sample))
-    added = graphene.NonNull(graphene.List(Sample))
-    changed = graphene.NonNull(graphene.List(Sample))
-    same = graphene.NonNull(graphene.List(Sample))
-    missing_institutions = graphene.NonNull(graphene.List(graphene.String))
+class SamplesDiff(ObjectType):
+    removed = NonNull(List(Sample))
+    added = NonNull(List(Sample))
+    changed = NonNull(List(Sample))
+    same = NonNull(List(Sample))
+    missing_institutions = NonNull(List(String))
 
 
 def deep_compare(sample1, sample2):
@@ -125,12 +133,12 @@ def deserialise_samples(samples):
     ]
 
 
-class UpdateSamplesMutation(graphene.Mutation):
+class UpdateSamplesMutation(Mutation):
     class Arguments:
-        samples = graphene.NonNull(graphene.List(SampleInput))
+        samples = NonNull(List(SampleInput))
 
-    committed = graphene.NonNull(graphene.Boolean)
-    diff = graphene.NonNull(SamplesDiff)
+    committed = NonNull(Boolean)
+    diff = NonNull(SamplesDiff)
 
     @classmethod
     def mutate(cls, root, info, samples, *args, **kwargs):
@@ -171,12 +179,10 @@ class Mutation(object):
 
 
 class Query(object):
-    me = graphene.Field(User)
-    samples = graphene.List(Sample)
-    institutions = graphene.List(Institution)
-    compare_samples = graphene.NonNull(
-        SamplesDiff, samples=graphene.NonNull(graphene.List(SampleInput))
-    )
+    me = Field(User)
+    samples = List(Sample)
+    institutions = List(Institution)
+    compare_samples = NonNull(SamplesDiff, samples=NonNull(List(SampleInput)))
 
     @login_required
     def resolve_me(self, info, **kwargs):
