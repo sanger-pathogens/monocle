@@ -47,12 +47,13 @@ Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built t
 
 Now run:
 ```
-./deploy.sh <version>
+./deploy.sh <version> <dev|prod>
 ```
 
 Notes:
 - Although separate containers are built for UI and API components, they are currently deployed to the same OpenStack VM, running with `docker-compose`. This may change.
-- There is currently only an OpenStack VM in the `pathogen-dev` tenant. A similar one will be set up in `pathogen-prod` when things are more stable.
+- There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
+- It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
 
 ## Development
 There are two supported ways to set up a development environment:
