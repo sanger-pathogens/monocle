@@ -30,20 +30,16 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
         me = self.validate_field(data, "me")
         self.validate_field(me, "email", expected_value=self.user.email)
 
-    def test_has_no_field_email_when_not_logged_in(self):
+    def test_has_no_field_me_when_not_logged_in(self):
         # query
         response = self.make_me_query("email")
 
         # check
         content = self.validate_unsuccessful(response)
-        if (
-            "data" in content.keys()
-            and content["data"]
-            and "me" in content["data"].keys()
-        ):
-            self.assertEqual(content["data"]["me"], None)
+        if "data" in content.keys():
+            self.assertEqual(content["data"], None)
 
-    def test_has_no_field_email_when_logged_out(self):
+    def test_has_no_field_me_when_logged_out(self):
         # auth
         response = self.login(self.user.email, self.PASSWORD)
         self.validate_login_successful(response)
@@ -54,9 +50,5 @@ class MeQueryTestCase(AuthenticatableGraphQLTestCase):
 
         # check
         content = self.validate_unsuccessful(response)
-        if (
-            "data" in content.keys()
-            and content["data"]
-            and "me" in content["data"].keys()
-        ):
-            self.assertEqual(content["data"]["me"], None)
+        if "data" in content.keys():
+            self.assertEqual(content["data"], None)
