@@ -1,28 +1,30 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import "XLSX";
+import XLSX from "xlsx";
 
 const UploadButton = () => {
   const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach((file) => {
-      // const reader = new FileReader();
-
-      // reader.onabort = () => console.log("file reading was aborted");
-      // reader.onerror = () => console.log("file reading has failed");
-      // reader.onload = () => {
-      //   // Do whatever you want with the file contents
-      //   const binaryStr = reader.result;
-      //   console.log(binaryStr);
-      // };
-      // reader.readAsArrayBuffer(file);
-      XLSX.utils.sheet_to_json(file);
+    acceptedFiles.forEach((f) => {
+      var name = f.name;
+      const reader = new FileReader();
+      reader.onload = (f) => {
+        console.log(f);
+        /* Parse data */
+        const bstr = f.target.result;
+        console.log("bin", bstr);
+        const wb = XLSX.read(bstr, { type: "binary" });
+        console.log("data>>>", wb);
+        /* Get first worksheet */
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        /* Convert array of arrays */
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        /* Update state */
+        console.log("Data>>>", data);
+      };
+      reader.readAsBinaryString(f);
     });
   });
-
-  // Convert to json
-  // Query
-  // Load new page
-  // }, []);
 
   const {
     isDragActive,
@@ -32,7 +34,7 @@ const UploadButton = () => {
   } = useDropzone({
     onDrop,
     accept:
-      "application/vnd.ms-excel, text/tab-separated-values, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel, application/json, text/tab-separated-values, application/csv, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 
   return (
