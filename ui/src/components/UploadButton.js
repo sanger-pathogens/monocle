@@ -1,32 +1,34 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import "XLSX";
 
 const UploadButton = () => {
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {
-      const reader = new FileReader();
+      // const reader = new FileReader();
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-      reader.onload = () => {
-        // Do whatever you want with the file contents
-        const binaryStr = reader.result;
-        console.log(binaryStr);
-      };
-      reader.readAsArrayBuffer(file);
+      // reader.onabort = () => console.log("file reading was aborted");
+      // reader.onerror = () => console.log("file reading has failed");
+      // reader.onload = () => {
+      //   // Do whatever you want with the file contents
+      //   const binaryStr = reader.result;
+      //   console.log(binaryStr);
+      // };
+      // reader.readAsArrayBuffer(file);
+      XLSX.utils.sheet_to_json(file);
     });
+  });
 
-    // Convert to json
-    // Query
-    // Load new page
-  }, []);
+  // Convert to json
+  // Query
+  // Load new page
+  // }, []);
 
   const {
     isDragActive,
     getRootProps,
     getInputProps,
     isDragReject,
-    maxFiles = 1,
   } = useDropzone({
     onDrop,
     accept:

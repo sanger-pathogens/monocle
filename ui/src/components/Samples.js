@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import getLaneUrl from "./SampleDownload";
 import DownloadButton from "./DownloadButton";
-import UploadButton from "./UploadButton";
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -51,15 +50,6 @@ const columns = [
       >
         {d.laneId}
       </DownloadButton>
-    ),
-  },
-  {
-    key: "upload",
-    label: "Upload",
-    valueAccessor: (d) => (
-      <UploadButton url={getLaneUrl(d.laneId)} filename={d.laneId + ".tar.gz"}>
-        {d.laneId}
-      </UploadButton>
     ),
   },
 ];
