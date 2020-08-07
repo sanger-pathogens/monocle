@@ -5,10 +5,11 @@ import { Button } from "@material-ui/core";
 
 import env from "../env";
 import ZIP from "../zipstream";
+import { useDownloading } from "../downloading";
 
 // see https://github.com/jimmywarting/StreamSaver.js/blob/master/examples/saving-multiple-files.html
 
-const handlerGenerator = (laneId) => {
+const handlerGenerator = (laneId, setIsDownloading) => {
   const encodedLaneId = encodeURIComponent(laneId);
   const archiveName = `${laneId}.zip`;
   const downloads = [
@@ -40,6 +41,9 @@ const handlerGenerator = (laneId) => {
       return;
     }
 
+    // disable other downloads
+    setIsDownloading(true);
+
     const fileStream = streamSaver.createWriteStream(archiveName);
     const readableZipStream = new ZIP({
       start(ctrl) {},
@@ -65,7 +69,10 @@ const handlerGenerator = (laneId) => {
 
     // more optimized
     if (window.WritableStream && readableZipStream.pipeTo) {
-      return readableZipStream.pipeTo(fileStream);
+      return readableZipStream.pipeTo(fileStream).then(() => {
+        // allow further downloads
+        setIsDownloading(false);
+      });
     }
 
     // less optimized
@@ -79,16 +86,21 @@ const handlerGenerator = (laneId) => {
         );
 
     pump();
+
+    // allow further downloads
+    setIsDownloading(false);
   };
 
   return handler;
 };
 
 const SampleDownloadButton = ({ laneId }) => {
+  const { isDownloading, setIsDownloading } = useDownloading();
   return (
     <Button
-      onClick={handlerGenerator(laneId)}
+      onClick={handlerGenerator(laneId, setIsDownloading)}
       startIcon={<CloudDownloadIcon />}
+      disabled={isDownloading}
     >
       {laneId}
     </Button>

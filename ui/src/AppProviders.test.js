@@ -4,6 +4,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import AppProviders from "./AppProviders";
 import { useAuth } from "./auth";
 import { useUser } from "./user";
+import { useDownloading } from "./downloading";
 
 describe("AppProviders", () => {
   // helper
@@ -26,5 +27,14 @@ describe("AppProviders", () => {
     });
 
     expect(result.current).toHaveProperty("user");
+  });
+
+  it("should provide DownloadingContext", () => {
+    const { result } = renderHook(() => useDownloading(), {
+      wrapper,
+    });
+
+    expect(result.current).toHaveProperty("isDownloading");
+    expect(result.current).toHaveProperty("setIsDownloading");
   });
 });
