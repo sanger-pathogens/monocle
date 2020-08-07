@@ -55,9 +55,7 @@ const handlerGenerator = (laneId) => {
 
     // more optimized
     if (window.WritableStream && readableZipStream.pipeTo) {
-      return readableZipStream
-        .pipeTo(fileStream)
-        .then(() => console.log("done writing"));
+      return readableZipStream.pipeTo(fileStream);
     }
 
     // less optimized
