@@ -116,14 +116,27 @@ const Diff = ({ sheet, setIsCommitable }) => {
   if (loading || error || !data) {
     return null;
   }
+  // Get data from diff
+  const { compareSamples } = data;
+  const { missingInstitutions, added, removed } = compareSamples;
+
   // check if can commit
-  const { missingInstitutions } = data;
-  const checksOk = true;
-  if (missingInstitutions) {
-    return null;
+  const checksOk = false;
+  if ((missingInstitutions.length = 0)) {
+    const checksOk = true;
   }
-  setIsCommitable(true);
-  return setIsCommitable;
+
+  if (checksOk) {
+    setIsCommitable(true);
+  }
+  // return results
+  return (
+    <div>
+      {added.length}
+      {missingInstitutions.length}
+      {removed.length}
+    </div>
+  );
 };
 
 export default StatefulSpreadsheetLoader;
