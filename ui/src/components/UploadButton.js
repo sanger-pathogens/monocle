@@ -18,7 +18,7 @@ const UploadButton = () => {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         /* Convert array of arrays */
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const data = XLSX.utils.sheet_to_json(ws, { header: "A" });
         /* Update state */
         console.log("Data>>>", data);
       };

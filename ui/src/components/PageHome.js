@@ -7,7 +7,7 @@ import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
-import UploadButton from "./UploadButton";
+import StatefulSpreadsheetLoader from "./compare";
 
 const PageHome = () => (
   <Page header={<Header />} footer={<Footer />}>
@@ -16,7 +16,7 @@ const PageHome = () => (
         <Institutions />
       </Section>
       <Section title="Samples">
-        <UploadButton />
+        <StatefulSpreadsheetLoader />
         <Samples />
       </Section>
     </Box>
