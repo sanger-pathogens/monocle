@@ -23,6 +23,7 @@ from graphene_django.views import GraphQLView
 from graphql_jwt.decorators import jwt_cookie
 
 from juno.api.views import (
+    download_sample,
     download_read_1,
     download_read_2,
     download_assembly,
@@ -35,6 +36,7 @@ urlpatterns = [
         r"^graphql/",
         jwt_cookie(csrf_exempt(GraphQLView.as_view(graphiql=True))),
     ),
+    path("SampleDownload/<str:laneId>", download_sample),
     path("read1/<str:lane_id>", download_read_1, name="read1"),
     path("read2/<str:lane_id>", download_read_2, name="read2"),
     path("assembly/<str:lane_id>", download_assembly, name="assembly"),
