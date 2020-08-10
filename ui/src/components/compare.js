@@ -1,36 +1,13 @@
-// Button with drag and drop functionality
-// If sheet is set then do a diff
-// Check if can commit
-// If can commit set is commitable
-// If is commitable have mutate button which runs mutation
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import XLSX from "xlsx";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@apollo/react-hooks";
+import { Button } from "@material-ui/core";
 
 const DIFF_QUERY = gql`
-  {
-    compareSamples(
-      samples: [
-        {
-          hostStatus: CARRIAGE
-          laneId: "32820_2#379"
-          sampleId: "sdshg"
-          publicName: "sdfasdf"
-          serotype: IB
-          submittingInstitution: "saldjs"
-        }
-        {
-          hostStatus: CARRIAGE
-          laneId: "31663_7#159"
-          sampleId: "sdshggdfg"
-          publicName: "sdfasdfg"
-          serotype: IX
-          submittingInstitution: "saldjs"
-        }
-      ]
-    ) {
+  query CompareSamples($samples: [SampleInput!]!) {
+    compareSamples(samples: $samples) {
       added {
         laneId
       }
@@ -51,6 +28,29 @@ const DIFF_QUERY = gql`
         laneId
       }
       missingInstitutions
+    }
+  }
+`;
+
+const UPDATE_MUTATION = gql`
+  mutation UpdateSamples($samples: [SampleInput!]!) {
+    updateSamples(samples: $samples) {
+      committed
+      diff {
+        added {
+          laneId
+        }
+        removed {
+          laneId
+        }
+        changed {
+          laneId
+        }
+        same {
+          laneId
+        }
+        missingInstitutions
+      }
     }
   }
 `;
@@ -81,7 +81,15 @@ const StatefulSpreadsheetLoader = () => {
       reader.readAsBinaryString(f);
     });
   });
-
+  const [updateMutation] = useMutation(UPDATE_MUTATION, {
+    variables: { samples: sheet },
+    onCompleted() {
+      alert.show("Update completed!");
+    },
+    onError() {
+      alert.show("Something went wrong with the update!");
+    },
+  });
   const {
     isDragActive,
     getRootProps,
@@ -104,7 +112,10 @@ const StatefulSpreadsheetLoader = () => {
         </div>
       </div>
       {sheet ? <Diff sheet={sheet} setIsCommitable={setIsCommitable} /> : null}
+      {isCommittable ? <Button onClick={updateMutation}>Commit</Button> : null}
     </React.Fragment>
+    // cancel button
+    // show missing Institutions alert
   );
 };
 
@@ -118,12 +129,12 @@ const Diff = ({ sheet, setIsCommitable }) => {
   }
   // Get data from diff
   const { compareSamples } = data;
-  const { missingInstitutions, added, removed } = compareSamples;
+  const { missingInstitutions, added, removed, changed } = compareSamples;
 
+  let checksOk = true;
   // check if can commit
-  const checksOk = false;
-  if ((missingInstitutions.length = 0)) {
-    const checksOk = true;
+  if (missingInstitutions.length !== 0) {
+    let checksOk = false;
   }
 
   if (checksOk) {
@@ -132,9 +143,9 @@ const Diff = ({ sheet, setIsCommitable }) => {
   // return results
   return (
     <div>
-      {added.length}
-      {missingInstitutions.length}
-      {removed.length}
+      <div>Changed: {changed.length}</div>
+      <div>Added: {added.length}</div>
+      <div>removed: {removed.length}</div>
     </div>
   );
 };
