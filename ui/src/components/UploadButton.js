@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import XLSX from "xlsx";
 
+// TODO: Authenticate user has permission to upload and only show button then
 const UploadButton = () => {
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((f) => {

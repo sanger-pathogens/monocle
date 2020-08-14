@@ -57,7 +57,7 @@ const UPDATE_MUTATION = gql`
 
 const StatefulSpreadsheetLoader = () => {
   const [sheet, setSheet] = useState(null);
-  const [isCommittable, setIsCommitable] = useState(false);
+  const [isCommittable, setIsCommittable] = useState(false);
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((f) => {
       var name = f.name;
@@ -84,10 +84,10 @@ const StatefulSpreadsheetLoader = () => {
   const [updateMutation] = useMutation(UPDATE_MUTATION, {
     variables: { samples: sheet },
     onCompleted() {
-      alert.show("Update completed!");
+      return reloadPage;
     },
     onError() {
-      alert.show("Something went wrong with the update!");
+      return <div> Something went wrong!</div>;
     },
   });
   const {
@@ -100,10 +100,12 @@ const StatefulSpreadsheetLoader = () => {
     accept:
       "application/vnd.ms-excel, application/json, text/tab-separated-values, application/csv, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-
+  const reloadPage = () => {
+    window.location.reload(false);
+  };
   return (
     <React.Fragment>
-      <div className="container text-center mt-5">
+      <div className="container text-center mt-5" id="uploadButton">
         <div {...getRootProps()}>
           <input {...getInputProps()} />
           {!isDragActive && "Click here or drop a file to upload!"}
@@ -111,15 +113,17 @@ const StatefulSpreadsheetLoader = () => {
           {isDragReject && "File type not accepted, sorry!"}
         </div>
       </div>
-      {sheet ? <Diff sheet={sheet} setIsCommitable={setIsCommitable} /> : null}
+      {sheet ? (
+        <Diff sheet={sheet} setIsCommittable={setIsCommittable} />
+      ) : null}
+      <div></div>
       {isCommittable ? <Button onClick={updateMutation}>Commit</Button> : null}
+      {isCommittable ? <Button onClick={reloadPage}>Cancel</Button> : null}
     </React.Fragment>
-    // cancel button
-    // show missing Institutions alert
   );
 };
 
-const Diff = ({ sheet, setIsCommitable }) => {
+const Diff = ({ sheet, setIsCommittable }) => {
   const { loading, error, data } = useQuery(DIFF_QUERY, {
     variables: { samples: sheet },
   });
@@ -131,21 +135,22 @@ const Diff = ({ sheet, setIsCommitable }) => {
   const { compareSamples } = data;
   const { missingInstitutions, added, removed, changed } = compareSamples;
 
-  let checksOk = true;
   // check if can commit
-  if (missingInstitutions.length !== 0) {
-    let checksOk = false;
+  //   var checksOk = missingInstitutions.length === 0;
+  var checksOk = missingInstitutions.length === 0 ? "true" : "false";
+
+  console.log(checksOk);
+  if ((checksOk = "true")) {
+    setIsCommittable(true);
   }
 
-  if (checksOk) {
-    setIsCommitable(true);
-  }
   // return results
   return (
     <div>
       <div>Changed: {changed.length}</div>
       <div>Added: {added.length}</div>
       <div>removed: {removed.length}</div>
+      <div>Missing Institutions: {missingInstitutions.length} </div>
     </div>
   );
 };
