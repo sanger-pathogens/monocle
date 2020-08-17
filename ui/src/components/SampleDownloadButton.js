@@ -1,7 +1,7 @@
 import React from "react";
 import streamSaver from "streamsaver";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { Button } from "@material-ui/core";
+import { CloudDownload } from "@material-ui/icons";
 
 import env from "../env";
 import ZIP from "../zipstream";
@@ -46,7 +46,7 @@ const handlerGenerator = (laneId, setIsDownloading) => {
 
     const fileStream = streamSaver.createWriteStream(archiveName);
     const readableZipStream = new ZIP({
-      start(ctrl) {},
+      start() {},
       async pull(ctrl) {
         // asynchronously fetch all files
         // (browser should parallelise requests in batches)
@@ -99,7 +99,7 @@ const SampleDownloadButton = ({ laneId }) => {
   return (
     <Button
       onClick={handlerGenerator(laneId, setIsDownloading)}
-      startIcon={<CloudDownloadIcon />}
+      startIcon={<CloudDownload />}
       disabled={isDownloading}
     >
       {laneId}
