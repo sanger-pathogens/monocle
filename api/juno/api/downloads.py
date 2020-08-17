@@ -28,7 +28,7 @@ def make_tarfile(lane_id):
         filenames = get_renamings(lane_id)
 
     out_file = io.BytesIO()
-    with tarfile.open(fileobj=out_file, mode="w|gz") as tar:
+    with tarfile.open(fileobj=out_file, mode="w:gz") as tar:
         for file in filenames:
             file_path = lane_dir + "/" + file
             tar.add(file_path, arcname=filenames[file])
