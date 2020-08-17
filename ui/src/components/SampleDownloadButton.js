@@ -1,4 +1,5 @@
 import React from "react";
+import fetchStream from "fetch-readablestream";
 import streamSaver from "streamsaver";
 import { Button } from "@material-ui/core";
 import { CloudDownload } from "@material-ui/icons";
@@ -53,7 +54,7 @@ const handlerGenerator = (laneId, setIsDownloading) => {
         await Promise.all(
           downloads.map(async (d) => {
             // run the download
-            const response = await fetch(d.url);
+            const response = await fetchStream(d.url);
 
             // add to archive
             const name = d.filename;
