@@ -1,20 +1,10 @@
-import "./polyfills";
-import React from "react";
 import fetchStream from "fetch-readablestream";
-import streamSaver from "streamsaver";
-import { rest } from "msw";
-import { renderHook, act } from "@testing-library/react-hooks";
 
 import {
   streamDownload,
   streamDownloads,
   downloadsForSample,
-  DownloadingProvider,
-  useDownloading,
 } from "./downloading";
-import "../public/settings";
-import env from "./env";
-import { server } from "./test-utils/server";
 
 jest.mock("streamsaver");
 jest.mock("fetch-readablestream");
@@ -111,43 +101,5 @@ describe("downloadsForSample", () => {
     expect(
       downloads.map((d) => d.filename).filter((d) => d.endsWith(".gff")).length
     ).toBe(1);
-  });
-});
-
-describe("streamDownloadsToArchive", () => {
-  const laneId = "31663_7#113";
-  const encodedLaneId = encodeURIComponent(laneId);
-  const wrapper = ({ children }) => (
-    <DownloadingProvider>{children}</DownloadingProvider>
-  );
-
-  it("calls ctrl.enqueue for each", async () => {
-    // specify api responses
-    server.use(
-      rest.get(`${env.API_ROOT_URL}read1/${encodedLaneId}`, (req, res, ctx) => {
-        return res(ctx.json({ content: "fake read 1 file" }));
-      }),
-      rest.get(`${env.API_ROOT_URL}read2/${encodedLaneId}`, (req, res, ctx) => {
-        return res(ctx.json({ content: "fake read 2 file" }));
-      }),
-      rest.get(
-        `${env.API_ROOT_URL}assembly/${encodedLaneId}`,
-        (req, res, ctx) => {
-          return res(ctx.json({ content: "fake assembly file" }));
-        }
-      ),
-      rest.get(
-        `${env.API_ROOT_URL}annotation/${encodedLaneId}`,
-        (req, res, ctx) => {
-          return res(ctx.json({ content: "fake annotation file" }));
-        }
-      )
-    );
-
-    const { result, waitForNextUpdate } = renderHook(() => useDownloading(), {
-      wrapper,
-    });
-
-    expect(result.current.downloadSample).not.toBeNull();
   });
 });
