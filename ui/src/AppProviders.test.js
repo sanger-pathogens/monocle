@@ -35,6 +35,6 @@ describe("AppProviders", () => {
     });
 
     expect(result.current).toHaveProperty("isDownloading");
-    expect(result.current).toHaveProperty("setIsDownloading");
+    expect(result.current).toHaveProperty("downloadSample");
   });
 });
