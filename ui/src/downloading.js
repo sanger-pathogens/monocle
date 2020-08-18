@@ -7,7 +7,7 @@ import ZIP from "./zipstream";
 
 export const DownloadingContext = React.createContext();
 
-const filenamesForLane = (laneId) => {
+export const downloadsForSample = (laneId) => {
   const encodedLaneId = encodeURIComponent(laneId);
   return [
     {
@@ -35,7 +35,7 @@ export const DownloadingProvider = (props) => {
 
   const downloadSample = (laneId) => {
     const archiveName = `${laneId}.zip`;
-    const downloads = filenamesForLane(laneId);
+    const downloads = downloadsForSample(laneId);
 
     // TODO: The alert was put in as a work around for cypress tests. Using filesaver creates a pop up asking where to save the file.
     // This can not be blocked for the headless browser that we are using to run tests, may change in the future.
