@@ -29,14 +29,32 @@ export const downloadsForSample = (laneId) => {
   ];
 };
 
+const streamDownload = (ctrl, { filename, url }) =>
+  fetchStream(url).then((response) =>
+    ctrl.enqueue({ name: filename, stream: () => response.body })
+  );
+
+const streamDownloads = (ctrl, downloads) =>
+  Promise.all(downloads.map((d) => streamDownload(ctrl, d)));
+
+const streamDownloadsToArchive = (archiveName, downloads) => {
+  const fileStream = streamSaver.createWriteStream(archiveName);
+  const readableZipStream = new ZIP({
+    start() {},
+    pull(ctrl) {
+      return streamDownloads(ctrl, downloads).then(() => {
+        ctrl.close();
+      });
+    },
+  });
+  return readableZipStream.pipeTo(fileStream);
+};
+
 export const DownloadingProvider = (props) => {
   // exposed state
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const downloadSample = (laneId) => {
-    const archiveName = `${laneId}.zip`;
-    const downloads = downloadsForSample(laneId);
-
+  const manageDownload = async (archiveName, downloads) => {
     // TODO: The alert was put in as a work around for cypress tests. Using filesaver creates a pop up asking where to save the file.
     // This can not be blocked for the headless browser that we are using to run tests, may change in the future.
     // If download testing becomes extensive may change to non-headless browser, then will need to remove the if statement here.
@@ -47,34 +65,15 @@ export const DownloadingProvider = (props) => {
       return;
     }
 
-    // disable other downloads
     setIsDownloading(true);
+    await streamDownloadsToArchive(archiveName, downloads);
+    setIsDownloading(false);
+  };
 
-    const fileStream = streamSaver.createWriteStream(archiveName);
-    const readableZipStream = new ZIP({
-      start() {},
-      async pull(ctrl) {
-        // asynchronously fetch all files
-        // (browser should parallelise requests in batches)
-        await Promise.all(
-          downloads.map(async ({ filename, url }) => {
-            // run the download
-            const response = await fetchStream(url);
-
-            // add to archive
-            ctrl.enqueue({ name: filename, stream: () => response.body });
-          })
-        );
-
-        // done adding all files
-        ctrl.close();
-      },
-    });
-
-    return readableZipStream.pipeTo(fileStream).then(() => {
-      // allow further downloads
-      setIsDownloading(false);
-    });
+  const downloadSample = async (laneId) => {
+    const archiveName = `${laneId}.zip`;
+    const downloads = downloadsForSample(laneId);
+    await manageDownload(archiveName, downloads);
   };
 
   return (
