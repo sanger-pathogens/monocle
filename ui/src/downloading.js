@@ -57,14 +57,12 @@ export const DownloadingProvider = (props) => {
         // asynchronously fetch all files
         // (browser should parallelise requests in batches)
         await Promise.all(
-          downloads.map(async (d) => {
+          downloads.map(async ({ filename, url }) => {
             // run the download
-            const response = await fetchStream(d.url);
+            const response = await fetchStream(url);
 
             // add to archive
-            const name = d.filename;
-            const stream = () => response.body;
-            ctrl.enqueue({ name, stream });
+            ctrl.enqueue({ name: filename, stream: () => response.body });
           })
         );
 
