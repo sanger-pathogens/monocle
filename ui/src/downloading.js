@@ -73,28 +73,10 @@ export const DownloadingProvider = (props) => {
       },
     });
 
-    // more optimized
-    if (window.WritableStream && readableZipStream.pipeTo) {
-      return readableZipStream.pipeTo(fileStream).then(() => {
-        // allow further downloads
-        setIsDownloading(false);
-      });
-    }
-
-    // less optimized
-    const writer = fileStream.getWriter();
-    const reader = readableZipStream.getReader();
-    const pump = () =>
-      reader
-        .read()
-        .then((res) =>
-          res.done ? writer.close() : writer.write(res.value).then(pump)
-        );
-
-    pump();
-
-    // allow further downloads
-    setIsDownloading(false);
+    return readableZipStream.pipeTo(fileStream).then(() => {
+      // allow further downloads
+      setIsDownloading(false);
+    });
   };
 
   return (
