@@ -29,12 +29,12 @@ export const downloadsForSample = (laneId) => {
   ];
 };
 
-const streamDownload = (ctrl, { filename, url }) =>
+export const streamDownload = (ctrl, { filename, url }) =>
   fetchStream(url).then((response) =>
     ctrl.enqueue({ name: filename, stream: () => response.body })
   );
 
-const streamDownloads = (ctrl, downloads) =>
+export const streamDownloads = (ctrl, downloads) =>
   Promise.all(downloads.map((d) => streamDownload(ctrl, d)));
 
 const streamDownloadsToArchive = (archiveName, downloads) => {

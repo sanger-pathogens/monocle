@@ -1,6 +1,44 @@
-const { isTerminating } = require("apollo-link/lib/linkUtils");
+import fetchStream from "fetch-readablestream";
+import streamSaver from "streamsaver";
 
-import { downloadsForSample } from "./downloading";
+import { downloadsForSample, streamDownload } from "./downloading";
+
+jest.mock("streamsaver");
+jest.mock("fetch-readablestream");
+
+describe("streamDownload", () => {
+  it("calls fetchStream with the given url", async () => {
+    // setup
+    const filename = "filename.zip";
+    const url = "/location";
+    const ctrl = jest.mock();
+    ctrl.enqueue = jest.fn();
+    fetchStream.mockResolvedValue({ body: "some content" });
+
+    // act
+    await streamDownload(ctrl, { filename, url });
+
+    // assert
+    expect(fetchStream).toHaveBeenCalledWith(url);
+  });
+
+  it("calls ctrl.enqueue with the response", async () => {
+    // setup
+    const filename = "filename.zip";
+    const url = "/location";
+    const ctrl = jest.mock();
+    ctrl.enqueue = jest.fn().mockImplementation((d) => d);
+    fetchStream.mockResolvedValue({ body: "some content" });
+
+    // act
+    const queued = await streamDownload(ctrl, { filename, url });
+
+    // assert
+    expect(ctrl.enqueue).toHaveBeenCalled();
+    expect(queued.name).toBe(filename);
+    expect(queued.stream()).toBe("some content");
+  });
+});
 
 describe("downloadsForSample", () => {
   const laneId = "31663_7#113";
