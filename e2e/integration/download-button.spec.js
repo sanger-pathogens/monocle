@@ -45,20 +45,27 @@ describe("download button", () => {
       const user = db.user[0];
       login(user.email);
 
+      const laneId = "31663_7#113";
+      const expectedDownloads = [
+        `${laneId}_1.fastq.gz`,
+        `${laneId}_2.fastq.gz`,
+        `${laneId}.fa`,
+        `${laneId}.gff`,
+      ];
+
       const stub = cy.stub();
       cy.on("window:alert", stub);
       cy.get(`table#sampleTable`)
-        .contains("td button", "31663_7#113")
+        .contains("td button", laneId)
         .click()
         .then(() => {
-          expect(stub.getCall(0)).to.be.calledWith(
-            "http://localhost:8001/SampleDownload/31663_7%23113,31663_7#113.tar.gz"
-          );
+          expect(stub.getCall(0)).to.be.calledWith(expectedDownloads.join(";"));
         });
     });
   });
 
   it("Download file link contains correct attachment", () => {
+    // note: SampleDownload endpoint not currently used
     cy.request("http://localhost:8001/SampleDownload/31663_7%23113").then(
       (response) => {
         expect(response.headers).to.have.property(

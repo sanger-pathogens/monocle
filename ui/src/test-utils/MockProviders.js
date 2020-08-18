@@ -9,6 +9,7 @@ import {
 
 import "typeface-inter";
 
+import { DownloadingProvider } from "../downloading";
 import AuthProvider from "./MockAuthProvider";
 import UserProvider from "./MockUserProvider";
 import theme from "../theme";
@@ -35,7 +36,9 @@ const MockProviders = ({
       <CssBaseline />
       <ThemeProvider theme={generatedTheme}>
         <AuthProvider isInitiallyLoggedIn={isInitiallyLoggedIn}>
-          <UserProvider>{children}</UserProvider>
+          <UserProvider>
+            <DownloadingProvider>{children}</DownloadingProvider>
+          </UserProvider>
         </AuthProvider>
       </ThemeProvider>
     </>

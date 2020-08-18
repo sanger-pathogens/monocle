@@ -10,6 +10,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 DATA_DIR = os.path.join(
+    os.path.join(getattr(common, "BASE_DIR", None), os.pardir), "real-data/",
+)
+MOCK_DATA_DIR = os.path.join(
     os.path.join(getattr(common, "BASE_DIR", None), os.pardir), "mock-data/",
 )
 USE_MOCK_LANE_DATA = True

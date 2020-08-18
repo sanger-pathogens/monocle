@@ -9,9 +9,11 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  LinearProgress,
 } from "@material-ui/core";
-import getLaneUrl from "./SampleDownload";
-import DownloadButton from "./DownloadButton";
+
+import { useDownloading } from "../downloading";
+import SampleDownloadButton from "./SampleDownloadButton";
 
 const columns = [
   { key: "laneId", label: "Lane ID", valueAccessor: (d) => d.laneId },
@@ -43,14 +45,7 @@ const columns = [
   {
     key: "download",
     label: "Download",
-    valueAccessor: (d) => (
-      <DownloadButton
-        url={getLaneUrl(d.laneId)}
-        filename={d.laneId + ".tar.gz"}
-      >
-        {d.laneId}
-      </DownloadButton>
-    ),
+    valueAccessor: (d) => <SampleDownloadButton laneId={d.laneId} />,
   },
 ];
 
@@ -71,6 +66,7 @@ export const SAMPLES_QUERY = gql`
 `;
 
 const Samples = () => {
+  const { isDownloading } = useDownloading();
   const { loading, error, data } = useQuery(SAMPLES_QUERY, {
     fetchPolicy: "network-only",
   });
@@ -81,28 +77,31 @@ const Samples = () => {
     rows = data.samples;
   }
   return (
-    <TableContainer component={Paper}>
-      <Table size="small" aria-label="a dense table" id="sampleTable">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell key={column.key}>{column.label}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, i) => (
-            <TableRow key={i}>
+    <>
+      {isDownloading ? <LinearProgress color="secondary" /> : null}
+      <TableContainer component={Paper}>
+        <Table size="small" aria-label="a dense table" id="sampleTable">
+          <TableHead>
+            <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.key} className={column.key}>
-                  {column.valueAccessor(row)}
-                </TableCell>
+                <TableCell key={column.key}>{column.label}</TableCell>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, i) => (
+              <TableRow key={i}>
+                {columns.map((column) => (
+                  <TableCell key={column.key} className={column.key}>
+                    {column.valueAccessor(row)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

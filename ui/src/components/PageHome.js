@@ -7,10 +7,12 @@ import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
+import DownloadingErrorDialog from "./DownloadingErrorDialog";
 
 const PageHome = () => (
   <Page header={<Header />} footer={<Footer />}>
     <Box>
+      <DownloadingErrorDialog />
       <Section title="Institutions">
         <Institutions />
       </Section>
