@@ -1,7 +1,11 @@
 import fetchStream from "fetch-readablestream";
 import streamSaver from "streamsaver";
 
-import { downloadsForSample, streamDownload } from "./downloading";
+import {
+  streamDownload,
+  streamDownloads,
+  downloadsForSample,
+} from "./downloading";
 
 jest.mock("streamsaver");
 jest.mock("fetch-readablestream");
@@ -37,6 +41,28 @@ describe("streamDownload", () => {
     expect(ctrl.enqueue).toHaveBeenCalled();
     expect(queued.name).toBe(filename);
     expect(queued.stream()).toBe("some content");
+  });
+});
+
+describe("streamDownloads", () => {
+  it("calls ctrl.enqueue for each", async () => {
+    // setup
+    const downloads = [
+      { filename: "f1", url: "url1" },
+      { filename: "f2", url: "url2" },
+    ];
+    const ctrl = jest.mock();
+    ctrl.enqueue = jest.fn().mockImplementation((d) => d);
+    fetchStream.mockResolvedValue({ body: "some content" });
+
+    // act
+    const queued = await streamDownloads(ctrl, downloads);
+    const names = queued.map((d) => d.name);
+
+    // assert
+    expect(ctrl.enqueue).toHaveBeenCalledTimes(2);
+    expect(names.includes("f1")).toBeTruthy();
+    expect(names.includes("f2")).toBeTruthy();
   });
 });
 
