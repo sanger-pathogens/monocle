@@ -4,6 +4,7 @@ import XLSX from "xlsx";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Button } from "@material-ui/core";
+import { useUser, USER_QUERY } from "../user";
 
 const DIFF_QUERY = gql`
   query CompareSamples($samples: [SampleInput!]!) {
@@ -55,7 +56,18 @@ const UPDATE_MUTATION = gql`
   }
 `;
 
+const INSTITUTION_QUERY = gql`
+  query User {
+    me {
+      affiliations {
+        name
+      }
+    }
+  }
+`;
+
 const StatefulSpreadsheetLoader = () => {
+  const [adminUser, setAdminUser] = useState(false);
   const [sheet, setSheet] = useState(null);
   const [isCommittable, setIsCommittable] = useState(false);
   const onDrop = useCallback((acceptedFiles) => {
@@ -105,20 +117,26 @@ const StatefulSpreadsheetLoader = () => {
   };
   return (
     <React.Fragment>
-      <div className="container text-center mt-5" id="uploadButton">
-        <div {...getRootProps()}>
-          <input {...getInputProps()} />
-          {!isDragActive && "Click here or drop a file to upload!"}
-          {isDragActive && !isDragReject && "Drop it like it's hot!"}
-          {isDragReject && "File type not accepted, sorry!"}
+      <AdminUser sheet={sheet} setAdminUser={setAdminUser} />
+      {!sheet && adminUser ? (
+        <div className="container text-center mt-5" id="uploadButton">
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            {!isDragActive && "Click here or drop a file to upload!"}
+            {isDragActive && !isDragReject && "Drop it like it's hot!"}
+            {isDragReject && "File type not accepted, sorry!"}
+          </div>
         </div>
-      </div>
+      ) : null}
       {sheet ? (
         <Diff sheet={sheet} setIsCommittable={setIsCommittable} />
       ) : null}
-      <div></div>
-      {isCommittable ? <Button onClick={updateMutation}>Commit</Button> : null}
-      {isCommittable ? <Button onClick={reloadPage}>Cancel</Button> : null}
+      {sheet && adminUser ? (
+        <Button onClick={updateMutation} disabled={!isCommittable}>
+          Commit
+        </Button>
+      ) : null}
+      {sheet ? <Button onClick={reloadPage}>Cancel</Button> : null}
     </React.Fragment>
   );
 };
@@ -136,13 +154,9 @@ const Diff = ({ sheet, setIsCommittable }) => {
   const { missingInstitutions, added, removed, changed } = compareSamples;
 
   // check if can commit
-  //   var checksOk = missingInstitutions.length === 0;
-  var checksOk = missingInstitutions.length === 0 ? "true" : "false";
-
-  console.log(checksOk);
-  if ((checksOk = "true")) {
-    setIsCommittable(true);
-  }
+  var checksOk = missingInstitutions.length === 0;
+  console.log(compareSamples, checksOk);
+  setIsCommittable(checksOk);
 
   // return results
   return (
@@ -153,6 +167,20 @@ const Diff = ({ sheet, setIsCommittable }) => {
       <div>Missing Institutions: {missingInstitutions.length} </div>
     </div>
   );
+};
+
+const AdminUser = ({ sheet, setAdminUser }) => {
+  const { loading, error, data } = useQuery(INSTITUTION_QUERY);
+  // render nothing
+  if (loading || error || !data) {
+    return null;
+  }
+  var adminApproved =
+    data.me.affiliations[0].name === "Wellcome Sanger Institute";
+  console.log("OUTCOME>>>", adminApproved);
+  setAdminUser(adminApproved);
+  // return results
+  return null;
 };
 
 export default StatefulSpreadsheetLoader;
