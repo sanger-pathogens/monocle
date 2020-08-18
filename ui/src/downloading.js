@@ -53,6 +53,7 @@ const streamDownloadsToArchive = (archiveName, downloads) => {
 export const DownloadingProvider = (props) => {
   // exposed state
   const [isDownloading, setIsDownloading] = useState(false);
+  const [error, setError] = useState(null);
 
   const manageDownload = async (archiveName, downloads) => {
     // TODO: The alert was put in as a work around for cypress tests. Using filesaver creates a pop up asking where to save the file.
@@ -66,7 +67,13 @@ export const DownloadingProvider = (props) => {
     }
 
     setIsDownloading(true);
-    await streamDownloadsToArchive(archiveName, downloads);
+    try {
+      await streamDownloadsToArchive(archiveName, downloads);
+    } catch (err) {
+      console.error("Error downloading.", err);
+      setError(err);
+    }
+
     setIsDownloading(false);
   };
 
@@ -78,7 +85,7 @@ export const DownloadingProvider = (props) => {
 
   return (
     <DownloadingContext.Provider
-      value={{ isDownloading, downloadSample }}
+      value={{ isDownloading, downloadSample, error }}
       {...props}
     />
   );
