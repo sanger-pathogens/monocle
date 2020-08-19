@@ -35,6 +35,7 @@ export const SAMPLES_LIST_QUERY = gql`
   }
 `;
 
+// see https://github.com/tannerlinsley/react-table/discussions/2296
 function OrderTable({
   columns,
   data,
