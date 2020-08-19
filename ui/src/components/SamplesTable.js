@@ -2,7 +2,7 @@ import React from "react";
 import { useLazyQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
-import DataTable from "./Table";
+import DataTable from "./DataTable";
 import { useDownloading } from "../downloading";
 import SampleDownloadButton from "./SampleDownloadButton";
 
