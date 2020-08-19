@@ -7,14 +7,19 @@ from graphene import (
     Boolean,
     String,
 )
-from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
     ObtainJSONWebToken,
     Verify,
     Refresh,
 )
 from graphql_jwt.decorators import login_required
-from graphene_django_extras import DjangoInputObjectType
+from graphene_django_extras import (
+    DjangoObjectType,
+    DjangoListObjectType,
+    DjangoInputObjectType,
+    DjangoListObjectField,
+    LimitOffsetGraphqlPagination,
+)
 
 from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
@@ -37,6 +42,15 @@ class User(DjangoObjectType):
 class Sample(DjangoObjectType):
     class Meta:
         model = models.Sample
+
+
+class SampleList(DjangoListObjectType):
+    class Meta:
+        description = " Type definition for user list "
+        model = models.Sample
+        pagination = LimitOffsetGraphqlPagination(
+            default_limit=10, ordering="lane_id"
+        )
 
 
 class SampleInput(DjangoInputObjectType):
@@ -180,6 +194,7 @@ class Mutation(object):
 class Query(object):
     me = NonNull(User)
     samples = NonNull(List(NonNull(Sample)))
+    samples_list = DjangoListObjectField(SampleList)
     institutions = NonNull(List(NonNull(Institution)))
     compare_samples = NonNull(
         SamplesDiff, samples=NonNull(List(NonNull(SampleInput)))
