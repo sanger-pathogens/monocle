@@ -55,6 +55,12 @@ const Samples = () => {
             Header: "Serotype",
             accessor: "serotype",
           },
+          {
+            Header: "Actions",
+            Cell: ({ row }) => (
+              <SampleDownloadButton laneId={row.original.laneId} />
+            ),
+          },
         ],
       },
     ],
