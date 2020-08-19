@@ -77,33 +77,39 @@ function OrderTable({
 
   // Render the UI for your table
   return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows
-          ? rows.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })
-          : null}
-      </tbody>
-    </table>
+    <TableContainer component={Paper}>
+      <Table {...getTableProps()} size="small">
+        <TableHead>
+          {headerGroups.map((headerGroup) => (
+            <TableRow {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <TableCell {...column.getHeaderProps()}>
+                  {column.render("Header")}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {rows
+            ? rows.map((row, i) => {
+                prepareRow(row);
+                return (
+                  <TableRow {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <TableCell {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
+            : null}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
