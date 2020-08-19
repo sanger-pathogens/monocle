@@ -34,7 +34,26 @@ const Samples = () => {
           {
             Header: "Lane ID",
             accessor: "laneId",
-            // canSort: true
+          },
+          {
+            Header: "Sample ID",
+            accessor: "sampleId",
+          },
+          {
+            Header: "Public Name",
+            accessor: "publicName",
+          },
+          {
+            Header: "Submitter",
+            accessor: "submittingInstitution.name",
+          },
+          {
+            Header: "Host Status",
+            accessor: "hostStatus",
+          },
+          {
+            Header: "Serotype",
+            accessor: "serotype",
           },
         ],
       },
