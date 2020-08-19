@@ -27,6 +27,7 @@ const DataTable = ({
   fetchData,
   loading,
   pageCount: controlledPageCount,
+  pageSize: controlledPageSize,
 }) => {
   const {
     rows,
@@ -42,14 +43,13 @@ const DataTable = ({
     gotoPage,
     nextPage,
     previousPage,
-    setPageSize,
     state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0 }, // Pass our hoisted table state
-      manualPagination: true, // Tell the usePagination
+      initialState: { pageIndex: 0, pageSize: controlledPageSize },
+      manualPagination: true,
       pageCount: controlledPageCount,
     },
     usePagination
@@ -100,6 +100,7 @@ const DataTable = ({
                   onClick={() => gotoPage(0)}
                   disabled={!canPreviousPage}
                   aria-label="first page"
+                  size="small"
                 >
                   <FirstPage />
                 </IconButton>
@@ -107,6 +108,7 @@ const DataTable = ({
                   onClick={previousPage}
                   disabled={!canPreviousPage}
                   aria-label="previous page"
+                  size="small"
                 >
                   <KeyboardArrowLeft />
                 </IconButton>
@@ -114,6 +116,7 @@ const DataTable = ({
                   onClick={nextPage}
                   disabled={!canNextPage}
                   aria-label="next page"
+                  size="small"
                 >
                   <KeyboardArrowRight />
                 </IconButton>
@@ -121,6 +124,7 @@ const DataTable = ({
                   onClick={() => gotoPage(pageCount - 1)}
                   disabled={!canNextPage}
                   aria-label="last page"
+                  size="small"
                 >
                   <LastPage />
                 </IconButton>
