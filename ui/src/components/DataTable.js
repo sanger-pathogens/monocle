@@ -1,13 +1,22 @@
 import React from "react";
 import {
   Paper,
+  Box,
   TableContainer,
   Table,
   TableHead,
   TableBody,
+  TableFooter,
   TableRow,
   TableCell,
+  IconButton,
 } from "@material-ui/core";
+import {
+  FirstPage,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage,
+} from "@material-ui/icons";
 import { useTable, usePagination } from "react-table";
 
 // see https://github.com/tannerlinsley/react-table/discussions/2296
@@ -83,6 +92,42 @@ const DataTable = ({
               })
             : null}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell>
+              <Box textAlign="right">
+                <IconButton
+                  onClick={() => gotoPage(0)}
+                  disabled={!canPreviousPage}
+                  aria-label="first page"
+                >
+                  <FirstPage />
+                </IconButton>
+                <IconButton
+                  onClick={previousPage}
+                  disabled={!canPreviousPage}
+                  aria-label="previous page"
+                >
+                  <KeyboardArrowLeft />
+                </IconButton>
+                <IconButton
+                  onClick={nextPage}
+                  disabled={!canNextPage}
+                  aria-label="next page"
+                >
+                  <KeyboardArrowRight />
+                </IconButton>
+                <IconButton
+                  onClick={() => gotoPage(pageCount - 1)}
+                  disabled={!canNextPage}
+                  aria-label="last page"
+                >
+                  <LastPage />
+                </IconButton>
+              </Box>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   );
