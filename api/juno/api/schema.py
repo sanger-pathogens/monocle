@@ -53,6 +53,17 @@ class SampleList(DjangoListObjectType):
         )
 
 
+# see https://github.com/eamigo86/graphene-django-extras/issues/41
+class SampleListField(DjangoListObjectField):
+    @login_required
+    def list_resolver(
+        self, manager, filterset_class, filtering_args, root, info, **kwargs
+    ):
+        return super(SampleListField, self).list_resolver(
+            manager, filterset_class, filtering_args, root, info, **kwargs
+        )
+
+
 class SampleInput(DjangoInputObjectType):
     class Meta:
         model = models.Sample
@@ -194,7 +205,7 @@ class Mutation(object):
 class Query(object):
     me = NonNull(User)
     samples = NonNull(List(NonNull(Sample)))
-    samples_list = DjangoListObjectField(SampleList)
+    samples_list = SampleListField(SampleList)
     institutions = NonNull(List(NonNull(Institution)))
     compare_samples = NonNull(
         SamplesDiff, samples=NonNull(List(NonNull(SampleInput)))
