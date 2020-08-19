@@ -61,79 +61,78 @@ const DataTable = ({
 
   // Render the UI for your table
   return (
-    <TableContainer component={Paper}>
-      <Table {...getTableProps()} size="small">
-        <TableHead>
-          {headerGroups.map((headerGroup) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <TableCell {...column.getHeaderProps()}>
-                  {column.render("Header")}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody {...getTableBodyProps()}>
-          {rows
-            ? rows.map((row, i) => {
-                prepareRow(row);
-                return (
-                  <TableRow {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                        <TableCell {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })
-            : null}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell>
-              <Box textAlign="right">
-                <IconButton
-                  onClick={() => gotoPage(0)}
-                  disabled={!canPreviousPage}
-                  aria-label="first page"
-                  size="small"
-                >
-                  <FirstPage />
-                </IconButton>
-                <IconButton
-                  onClick={previousPage}
-                  disabled={!canPreviousPage}
-                  aria-label="previous page"
-                  size="small"
-                >
-                  <KeyboardArrowLeft />
-                </IconButton>
-                <IconButton
-                  onClick={nextPage}
-                  disabled={!canNextPage}
-                  aria-label="next page"
-                  size="small"
-                >
-                  <KeyboardArrowRight />
-                </IconButton>
-                <IconButton
-                  onClick={() => gotoPage(pageCount - 1)}
-                  disabled={!canNextPage}
-                  aria-label="last page"
-                  size="small"
-                >
-                  <LastPage />
-                </IconButton>
-              </Box>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+    <Paper>
+      <TableContainer>
+        <Table {...getTableProps()} size="small">
+          <TableHead>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableCell {...column.getHeaderProps()}>
+                    {column.render("Header")}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody {...getTableBodyProps()}>
+            {rows
+              ? rows.map((row, i) => {
+                  prepareRow(row);
+                  return (
+                    <TableRow {...row.getRowProps()}>
+                      {row.cells.map((cell) => {
+                        return (
+                          <TableCell {...cell.getCellProps()}>
+                            {cell.render("Cell")}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })
+              : null}
+          </TableBody>
+          <TableFooter>
+            <TableRow></TableRow>
+          </TableFooter>
+        </Table>
+      </TableContainer>
+      <Box textAlign="right" flexShrink={0} p={1}>
+        <IconButton
+          onClick={() => gotoPage(0)}
+          disabled={!canPreviousPage}
+          aria-label="first page"
+          size="small"
+        >
+          <FirstPage />
+        </IconButton>
+        <IconButton
+          onClick={previousPage}
+          disabled={!canPreviousPage}
+          aria-label="previous page"
+          size="small"
+        >
+          <KeyboardArrowLeft />
+        </IconButton>
+        <IconButton
+          onClick={nextPage}
+          disabled={!canNextPage}
+          aria-label="next page"
+          size="small"
+        >
+          <KeyboardArrowRight />
+        </IconButton>
+        <IconButton
+          onClick={() => gotoPage(pageCount - 1)}
+          disabled={!canNextPage}
+          aria-label="last page"
+          size="small"
+        >
+          <LastPage />
+        </IconButton>
+      </Box>
+    </Paper>
   );
 };
 
