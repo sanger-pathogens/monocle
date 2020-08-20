@@ -42,11 +42,31 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
             response
         )
 
+    def make_paginated_samples_query(self, subquery):
+        # make query
+        response = self.post(
+            """
+            query {
+                samplesList {
+                    results(limit: 10, offset: 0) {
+                        %s
+                    }
+                    totalCount
+                }
+            }
+            """
+            % (subquery,),
+        )
+
+        # return response for further checks
+        return response
+
     def make_and_validate_samples_query(self, subquery):
         # call api
-        response = self.make_query("samples", subquery)
+        response = self.make_paginated_samples_query(subquery)
         data = self.validate_successful(response)
-        samples = self.validate_field(data, "samples")
+        samples_list = self.validate_field(data, "samplesList")
+        samples = self.validate_field(samples_list, "results")
 
         # check non-empty
         self.validate_non_empty_list(samples)

@@ -228,7 +228,6 @@ class Mutation(object):
 
 class Query(object):
     me = NonNull(User)
-    samples = NonNull(List(NonNull(Sample)))
     samples_list = SampleListField(SampleList)
     institutions = NonNull(List(NonNull(Institution)))
     compare_samples = NonNull(
@@ -238,29 +237,6 @@ class Query(object):
     @login_required
     def resolve_me(self, info, **kwargs):
         return info.context.user
-
-    @login_required
-    def resolve_samples(self, info, **kwargs):
-        # TODO: add pagination
-        # TODO: add filtering/sorting for columns
-
-        # get user's affiliations
-        affiliations = info.context.user.affiliations
-
-        # sanger user's can see everything
-        if (
-            affiliations.filter(
-                name__exact="Wellcome Sanger Institute"
-            ).count()
-            > 0
-        ):
-            return models.Sample.objects.all()
-        else:
-            return models.Sample.objects.filter(
-                submitting_institution__affiliated_members__in=[
-                    info.context.user
-                ]
-            ).all()
 
     @login_required
     def resolve_institutions(self, info, **kwargs):
