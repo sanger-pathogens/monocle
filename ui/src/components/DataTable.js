@@ -76,22 +76,20 @@ const DataTable = ({
             ))}
           </TableHead>
           <TableBody {...getTableBodyProps()}>
-            {rows
-              ? rows.map((row, i) => {
-                  prepareRow(row);
-                  return (
-                    <TableRow {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <TableCell {...cell.getCellProps()}>
-                            {cell.render("Cell")}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })
-              : null}
+            {rows.map((row, i) => {
+              prepareRow(row);
+              return (
+                <TableRow {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <TableCell {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
           <TableFooter>
             <TableRow></TableRow>
