@@ -101,7 +101,7 @@ const Samples = () => {
 
   return (
     <React.Fragment>
-      {isDownloading ? <LinearProgress color="secondary" /> : null}
+      {isDownloading || loading ? <LinearProgress color="secondary" /> : null}
       <DataTable
         tableId="sampleTable"
         columns={columns}
