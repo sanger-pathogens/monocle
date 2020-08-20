@@ -92,11 +92,13 @@ const Samples = () => {
     ? Math.ceil(data.samplesList.totalCount / pageSize)
     : 0;
   const allData = data ? data.samplesList.results : [];
+  const totalCount = data ? data.samplesList.totalCount : 0;
 
   return (
     <DataTable
       columns={columns}
       data={allData}
+      totalCount={totalCount}
       fetchData={fetchData}
       loading={loading}
       pageCount={pageCount}

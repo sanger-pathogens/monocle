@@ -10,6 +10,7 @@ import {
   TableRow,
   TableCell,
   IconButton,
+  Typography,
 } from "@material-ui/core";
 import {
   FirstPage,
@@ -24,6 +25,7 @@ import { useTable, usePagination } from "react-table";
 const DataTable = ({
   columns,
   data,
+  totalCount,
   fetchData,
   loading,
   pageCount: controlledPageCount,
@@ -99,6 +101,12 @@ const DataTable = ({
         </Table>
       </TableContainer>
       <Box textAlign="right" flexShrink={0} p={1}>
+        <Box display="inline" pr={2}>
+          <Typography variant="caption">
+            {pageIndex * pageSize + 1}-{pageIndex * pageSize + rows.length} of{" "}
+            {totalCount}
+          </Typography>
+        </Box>
         <IconButton
           onClick={() => gotoPage(0)}
           disabled={!canPreviousPage}
