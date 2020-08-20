@@ -25,7 +25,7 @@ test("queries and renders empty table content when logged in", async () => {
     expect(called.samplesListQuery).toBeGreaterThan(0);
 
     // empty table?
-    // expect(container.getElementsByTagName("tbody")[0]).toBeEmptyDOMElement();
+    expect(container.getElementsByTagName("tbody")[0]).toBeEmptyDOMElement();
   });
 });
 
@@ -46,7 +46,6 @@ test("queries and renders non-empty table content when logged in", async () => {
   // non-empty default mock data?
   expect(mockSamplesList.results.length).toBeGreaterThan(0);
 
-  //   await waitFor(() => {
   // query made?
   expect(called.samplesListQuery).toBeGreaterThan(0);
 
@@ -61,5 +60,4 @@ test("queries and renders non-empty table content when logged in", async () => {
       expect(within(row).getByText(serotype)).toBeInTheDocument();
     }
   );
-  //   });
 });
