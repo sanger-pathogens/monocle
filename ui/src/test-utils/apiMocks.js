@@ -1,5 +1,6 @@
 import { USER_QUERY } from "../user";
 import { SAMPLES_QUERY } from "../components/Samples";
+import { SAMPLES_LIST_QUERY } from "../components/SamplesTable";
 import { INSTITUTIONS_QUERY } from "../components/Institutions";
 import {
   LOGIN_MUTATION,
@@ -39,6 +40,11 @@ export const mockSamples = [
     },
   },
 ];
+
+export const mockSamplesList = {
+  results: mockSamples,
+  totalCount: 2,
+};
 
 export const mockInstitutions = [
   {
@@ -100,6 +106,7 @@ export const mockRefreshTokenSuccess = {
 export const mockDefaults = {
   user: mockUser,
   samples: mockSamples,
+  samplesList: mockSamplesList,
   institutions: mockInstitutions,
   login: mockLoginSuccess,
   logout: mockLogoutSuccess,
@@ -114,6 +121,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
   const {
     user,
     samples,
+    samplesList,
     institutions,
     login,
     logout,
@@ -129,6 +137,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
   let called = {
     userQuery: 0,
     samplesQuery: 0,
+    samplesListQuery: 0,
     institutionsQuery: 0,
     loginMutation: 0,
     logoutMutation: 0,
@@ -175,6 +184,20 @@ export const generateApiMocks = (mocks = mockDefaults) => {
           return {
             data: {
               samples,
+            },
+          };
+        },
+      },
+      {
+        request: {
+          query: SAMPLES_LIST_QUERY,
+          variables: { offset: 0, limit: 10 },
+        },
+        result: () => {
+          called.samplesListQuery += 1;
+          return {
+            data: {
+              samplesList,
             },
           };
         },
