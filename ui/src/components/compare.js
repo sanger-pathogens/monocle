@@ -110,7 +110,7 @@ const StatefulSpreadsheetLoader = () => {
   } = useDropzone({
     onDrop,
     accept:
-      "application/vnd.ms-excel, application/json, text/tab-separated-values, application/csv, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
   const reloadPage = () => {
     window.location.reload(false);
