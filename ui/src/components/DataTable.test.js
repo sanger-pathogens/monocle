@@ -15,13 +15,16 @@ describe("DataTable.pagination", () => {
   const pageCount = 4;
   const allData = new Array(totalCount).fill({ numericField: 0 });
 
+  let data;
+  let fetchData;
+  beforeEach(() => {
+    data = allData.slice(0, 10);
+    fetchData = jest.fn().mockImplementation(({ pageSize, pageIndex }) => {
+      data = allData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+    });
+  });
+
   it("can visit next page", async () => {
-    let data = allData.slice(0, 10);
-    const fetchData = jest
-      .fn()
-      .mockImplementation(({ pageSize, pageIndex }) => {
-        data = allData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-      });
     const { getByLabelText, getByText } = render(
       <DataTable
         tableId="testTable"
@@ -45,12 +48,6 @@ describe("DataTable.pagination", () => {
   });
 
   it("can visit last page", async () => {
-    let data = allData.slice(0, 10);
-    const fetchData = jest
-      .fn()
-      .mockImplementation(({ pageSize, pageIndex }) => {
-        data = allData.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
-      });
     const { getByLabelText, getByText } = render(
       <DataTable
         tableId="testTable"
