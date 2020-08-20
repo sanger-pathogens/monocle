@@ -1,6 +1,7 @@
 import React from "react";
 import { useLazyQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { LinearProgress } from "@material-ui/core";
 
 import DataTable from "./DataTable";
 import { useDownloading } from "../downloading";
@@ -26,6 +27,7 @@ export const SAMPLES_LIST_QUERY = gql`
 `;
 
 const Samples = () => {
+  const { isDownloading } = useDownloading();
   const columns = React.useMemo(
     () => [
       {
@@ -98,16 +100,20 @@ const Samples = () => {
   const totalCount = data ? data.samplesList.totalCount : 0;
 
   return (
-    <DataTable
-      tableId="sampleTable"
-      columns={columns}
-      data={allData}
-      totalCount={totalCount}
-      fetchData={fetchData}
-      loading={loading}
-      pageCount={pageCount}
-      pageSize={pageSize}
-    />
+    <React.Fragment>
+      {isDownloading ? <LinearProgress color="secondary" /> : null}
+      <DataTable
+        tableId="sampleTable"
+        columns={columns}
+        data={allData}
+        totalCount={totalCount}
+        fetchData={fetchData}
+        loading={loading}
+        error={error}
+        pageCount={pageCount}
+        pageSize={pageSize}
+      />
+    </React.Fragment>
   );
 };
 
