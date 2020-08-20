@@ -96,6 +96,7 @@ const Samples = () => {
 
   return (
     <DataTable
+      tableId="sampleTable"
       columns={columns}
       data={allData}
       totalCount={totalCount}

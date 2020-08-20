@@ -23,6 +23,7 @@ import { useTable, usePagination } from "react-table";
 // see https://github.com/tannerlinsley/react-table/discussions/2296
 
 const DataTable = ({
+  tableId,
   columns,
   data,
   totalCount,
@@ -65,7 +66,7 @@ const DataTable = ({
   return (
     <Paper>
       <TableContainer>
-        <Table {...getTableProps()} size="small">
+        <Table {...getTableProps()} id={tableId} size="small">
           <TableHead>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
