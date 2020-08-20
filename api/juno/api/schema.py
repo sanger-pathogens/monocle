@@ -59,8 +59,32 @@ class SampleListField(DjangoListObjectField):
     def list_resolver(
         self, manager, filterset_class, filtering_args, root, info, **kwargs
     ):
+        # get user's affiliations
+        affiliations = info.context.user.affiliations
+
+        # sanger user's can see everything
+        if (
+            affiliations.filter(
+                name__exact="Wellcome Sanger Institute"
+            ).count()
+            > 0
+        ):
+            adjusted_manager = models.Sample.objects
+        else:
+            adjusted_manager = models.Sample.objects.filter(
+                submitting_institution__affiliated_members__in=[
+                    info.context.user
+                ]
+            )
+
+        # apply pagination etc
         return super(SampleListField, self).list_resolver(
-            manager, filterset_class, filtering_args, root, info, **kwargs
+            adjusted_manager,
+            filterset_class,
+            filtering_args,
+            root,
+            info,
+            **kwargs,
         )
 
 
