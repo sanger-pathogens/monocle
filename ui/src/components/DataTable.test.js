@@ -24,6 +24,34 @@ describe("DataTable.pagination", () => {
     });
   });
 
+  it("can visit previous page", async () => {
+    const { getByLabelText, getByText } = render(
+      <DataTable
+        tableId="testTable"
+        columns={columns}
+        data={data}
+        totalCount={totalCount}
+        fetchData={fetchData}
+        pageCount={pageCount}
+        pageSize={pageSize}
+      />
+    );
+
+    expect(getByLabelText("next page")).toBeInTheDocument();
+    expect(getByText("1-10 of 40")).toBeInTheDocument();
+    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+
+    fireEvent.click(getByLabelText("next page"));
+
+    expect(getByText("11-20 of 40")).toBeInTheDocument();
+    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 1 });
+
+    fireEvent.click(getByLabelText("previous page"));
+
+    expect(getByText("1-10 of 40")).toBeInTheDocument();
+    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+  });
+
   it("can visit next page", async () => {
     const { getByLabelText, getByText } = render(
       <DataTable
