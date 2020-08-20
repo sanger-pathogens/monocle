@@ -67,25 +67,28 @@ const Samples = () => {
     []
   );
 
-  //   https://github.com/tannerlinsley/react-table/discussions/2296
+  // see https://github.com/tannerlinsley/react-table/discussions/2296
   let [loadData, { loading, error, data }] = useLazyQuery(SAMPLES_LIST_QUERY);
 
   const fetchIdRef = React.useRef(0);
 
-  const fetchData = React.useCallback(({ pageSize, pageIndex }) => {
-    // sortBy
-    const fetchId = ++fetchIdRef.current;
-    if (fetchId === fetchIdRef.current) {
-      const offset = pageSize * pageIndex;
-      const limit = pageSize;
-      loadData({
-        variables: {
-          offset,
-          limit,
-        },
-      });
-    }
-  }, []);
+  const fetchData = React.useCallback(
+    ({ pageSize, pageIndex }) => {
+      // sortBy
+      const fetchId = ++fetchIdRef.current;
+      if (fetchId === fetchIdRef.current) {
+        const offset = pageSize * pageIndex;
+        const limit = pageSize;
+        loadData({
+          variables: {
+            offset,
+            limit,
+          },
+        });
+      }
+    },
+    [loadData]
+  );
 
   const pageSize = 10;
   const pageCount = data
