@@ -38,10 +38,8 @@ const DataTable = ({
     getTableBodyProps,
     headerGroups,
     prepareRow,
-    page,
     canPreviousPage,
     canNextPage,
-    pageOptions,
     pageCount,
     gotoPage,
     nextPage,
@@ -62,7 +60,6 @@ const DataTable = ({
     fetchData({ pageIndex, pageSize });
   }, [fetchData, pageIndex, pageSize]);
 
-  // Render the UI for your table
   return (
     <Paper>
       <TableContainer>
