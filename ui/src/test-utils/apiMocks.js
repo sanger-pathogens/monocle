@@ -1,5 +1,4 @@
 import { USER_QUERY } from "../user";
-import { SAMPLES_QUERY } from "../components/Samples";
 import { SAMPLES_LIST_QUERY } from "../components/SamplesTable";
 import { INSTITUTIONS_QUERY } from "../components/Institutions";
 import {
@@ -120,7 +119,6 @@ export const mockDefaults = {
 export const generateApiMocks = (mocks = mockDefaults) => {
   const {
     user,
-    samples,
     samplesList,
     institutions,
     login,
@@ -136,7 +134,6 @@ export const generateApiMocks = (mocks = mockDefaults) => {
   // call counts for test assertions
   let called = {
     userQuery: 0,
-    samplesQuery: 0,
     samplesListQuery: 0,
     institutionsQuery: 0,
     loginMutation: 0,
@@ -175,19 +172,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
           };
         },
       },
-      {
-        request: {
-          query: SAMPLES_QUERY,
-        },
-        result: () => {
-          called.samplesQuery += 1;
-          return {
-            data: {
-              samples,
-            },
-          };
-        },
-      },
+
       {
         request: {
           query: SAMPLES_LIST_QUERY,
