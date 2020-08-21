@@ -48,18 +48,17 @@ const UpdateSamplesManager = () => {
     window.location.reload(false);
   };
   return isAdmin ? (
-    <React.Fragment>
-      <UpdateSamplesDropZone setSheet={setSheet} />
-      {sheet ? (
+    sheet ? (
+      <React.Fragment>
         <UpdateSamplesDiff sheet={sheet} setIsCommittable={setIsCommittable} />
-      ) : null}
-      {sheet ? (
         <Button onClick={updateMutation} disabled={!isCommittable}>
           Commit
         </Button>
-      ) : null}
-      {sheet ? <Button onClick={reloadPage}>Cancel</Button> : null}
-    </React.Fragment>
+        <Button onClick={reloadPage}>Cancel</Button>
+      </React.Fragment>
+    ) : (
+      <UpdateSamplesDropZone setSheet={setSheet} />
+    )
   ) : (
     <Typography>
       You must be an administrator to make updates to sample metadata
