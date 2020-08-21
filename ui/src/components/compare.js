@@ -4,7 +4,7 @@ import XLSX from "xlsx";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Button } from "@material-ui/core";
-import { useUser, USER_QUERY } from "../user";
+import { useUser } from "../user";
 
 const DIFF_QUERY = gql`
   query CompareSamples($samples: [SampleInput!]!) {
@@ -56,23 +56,15 @@ const UPDATE_MUTATION = gql`
   }
 `;
 
-const INSTITUTION_QUERY = gql`
-  query User {
-    me {
-      affiliations {
-        name
-      }
-    }
-  }
-`;
-
 const StatefulSpreadsheetLoader = () => {
-  const [adminUser, setAdminUser] = useState(false);
+  const { user } = useUser();
+  const isAdmin =
+    user &&
+    user.affiliations.some((d) => d.name === "Wellcome Sanger Institute");
   const [sheet, setSheet] = useState(null);
   const [isCommittable, setIsCommittable] = useState(false);
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((f) => {
-      var name = f.name;
       const reader = new FileReader();
       reader.onload = (f) => {
         console.log(f);
@@ -117,8 +109,7 @@ const StatefulSpreadsheetLoader = () => {
   };
   return (
     <React.Fragment>
-      <AdminUser sheet={sheet} setAdminUser={setAdminUser} />
-      {!sheet && adminUser ? (
+      {!sheet && isAdmin ? (
         <div className="container text-center mt-5" id="uploadButton">
           <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -131,7 +122,7 @@ const StatefulSpreadsheetLoader = () => {
       {sheet ? (
         <Diff sheet={sheet} setIsCommittable={setIsCommittable} />
       ) : null}
-      {sheet && adminUser ? (
+      {sheet && isAdmin ? (
         <Button onClick={updateMutation} disabled={!isCommittable}>
           Commit
         </Button>
@@ -167,20 +158,6 @@ const Diff = ({ sheet, setIsCommittable }) => {
       <div>Missing Institutions: {missingInstitutions.length} </div>
     </div>
   );
-};
-
-const AdminUser = ({ sheet, setAdminUser }) => {
-  const { loading, error, data } = useQuery(INSTITUTION_QUERY);
-  // render nothing
-  if (loading || error || !data) {
-    return null;
-  }
-  var adminApproved =
-    data.me.affiliations[0].name === "Wellcome Sanger Institute";
-  console.log("OUTCOME>>>", adminApproved);
-  setAdminUser(adminApproved);
-  // return results
-  return null;
 };
 
 export default StatefulSpreadsheetLoader;

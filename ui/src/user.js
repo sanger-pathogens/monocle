@@ -11,6 +11,9 @@ export const USER_QUERY = gql`
       email
       firstName
       lastName
+      affiliations {
+        name
+      }
     }
   }
 `;
