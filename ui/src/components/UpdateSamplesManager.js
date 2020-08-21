@@ -56,7 +56,7 @@ const UpdateSamplesManager = () => {
       };
       reader.readAsBinaryString(f);
     });
-  });
+  }, []);
   const [updateMutation] = useMutation(UPDATE_MUTATION, {
     variables: { samples: sheet },
     onCompleted() {
@@ -81,7 +81,7 @@ const UpdateSamplesManager = () => {
   };
   return isAdmin ? (
     <React.Fragment>
-      {!sheet && isAdmin ? (
+      {!sheet ? (
         <div className="container text-center mt-5" id="uploadButton">
           <div {...getRootProps()}>
             <input {...getInputProps()} />
@@ -94,7 +94,7 @@ const UpdateSamplesManager = () => {
       {sheet ? (
         <UpdateSamplesDiff sheet={sheet} setIsCommittable={setIsCommittable} />
       ) : null}
-      {sheet && isAdmin ? (
+      {sheet ? (
         <Button onClick={updateMutation} disabled={!isCommittable}>
           Commit
         </Button>
