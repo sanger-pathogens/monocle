@@ -5,13 +5,13 @@ import Page from "./Page";
 import Header from "./Header";
 import Footer from "./Footer";
 import Section from "./Section";
-import StatefulSpreadsheetLoader from "./compare";
+import UpdateSamplesManager from "./UpdateSamplesManager";
 
 const PageHome = () => (
   <Page header={<Header />} footer={<Footer />}>
     <Box>
       <Section title="Update Sample Metadata">
-        <StatefulSpreadsheetLoader />
+        <UpdateSamplesManager />
       </Section>
     </Box>
   </Page>
