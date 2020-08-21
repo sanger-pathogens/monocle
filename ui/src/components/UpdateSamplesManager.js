@@ -38,21 +38,17 @@ const UpdateSamplesManager = () => {
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((f) => {
       const reader = new FileReader();
-      reader.onload = (f) => {
-        console.log(f);
-        /* Parse data */
-        const bstr = f.target.result;
-        console.log("bin", bstr);
-        const wb = XLSX.read(bstr, { type: "binary" });
-        console.log("data>>>", wb);
-        /* Get first worksheet */
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        /* Convert array of arrays */
-        const data = XLSX.utils.sheet_to_json(ws);
-        /* Update state */
-        console.log("Data>>>", data);
-        setSheet(data);
+      reader.onload = (file) => {
+        // TODO: handle xls file parse failures
+        const workbook = XLSX.read(file.target.result, { type: "binary" });
+
+        // TODO: expect worksheet name to be specific?
+        const worksheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[worksheetName];
+
+        // TODO: handle spreadsheet->JSON array parse failures
+        const json = XLSX.utils.sheet_to_json(worksheet);
+        setSheet(json);
       };
       reader.readAsBinaryString(f);
     });
