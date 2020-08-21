@@ -8,23 +8,29 @@ import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./Samples";
 import Institutions from "./Institutions";
+import { useUser } from "../user";
 
-const PageHome = () => (
-  <Page header={<Header />} footer={<Footer />}>
-    <Box>
-      <Section title="Institutions">
-        <Institutions />
-      </Section>
-      <Section title="Samples">
-        <Box pb={1}>
-          <Button component={RouterLink} to="/update">
-            Update metadata from spreadsheet
-          </Button>
-        </Box>
-        <Samples />
-      </Section>
-    </Box>
-  </Page>
-);
+const PageHome = () => {
+  const { isAdmin } = useUser();
+  return (
+    <Page header={<Header />} footer={<Footer />}>
+      <Box>
+        <Section title="Institutions">
+          <Institutions />
+        </Section>
+        <Section title="Samples">
+          {isAdmin ? (
+            <Box pb={1}>
+              <Button component={RouterLink} to="/update">
+                Update metadata from spreadsheet
+              </Button>
+            </Box>
+          ) : null}
+          <Samples />
+        </Section>
+      </Box>
+    </Page>
+  );
+};
 
 export default PageHome;

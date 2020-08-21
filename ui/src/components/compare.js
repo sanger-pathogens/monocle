@@ -4,6 +4,7 @@ import XLSX from "xlsx";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Button } from "@material-ui/core";
+
 import { useUser } from "../user";
 
 const DIFF_QUERY = gql`
@@ -57,10 +58,7 @@ const UPDATE_MUTATION = gql`
 `;
 
 const StatefulSpreadsheetLoader = () => {
-  const { user } = useUser();
-  const isAdmin =
-    user &&
-    user.affiliations.some((d) => d.name === "Wellcome Sanger Institute");
+  const { isAdmin } = useUser();
   const [sheet, setSheet] = useState(null);
   const [isCommittable, setIsCommittable] = useState(false);
   const onDrop = useCallback((acceptedFiles) => {
