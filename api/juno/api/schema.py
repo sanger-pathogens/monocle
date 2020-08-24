@@ -7,14 +7,19 @@ from graphene import (
     Boolean,
     String,
 )
-from graphene_django.types import DjangoObjectType
 from graphql_jwt import (
     ObtainJSONWebToken,
     Verify,
     Refresh,
 )
 from graphql_jwt.decorators import login_required
-from graphene_django_extras import DjangoInputObjectType
+from graphene_django_extras import (
+    DjangoObjectType,
+    DjangoListObjectType,
+    DjangoInputObjectType,
+    DjangoListObjectField,
+    LimitOffsetGraphqlPagination,
+)
 
 from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
@@ -37,6 +42,50 @@ class User(DjangoObjectType):
 class Sample(DjangoObjectType):
     class Meta:
         model = models.Sample
+
+
+class SampleList(DjangoListObjectType):
+    class Meta:
+        description = " Type definition for user list "
+        model = models.Sample
+        pagination = LimitOffsetGraphqlPagination(
+            default_limit=10, ordering="lane_id"
+        )
+
+
+# see https://github.com/eamigo86/graphene-django-extras/issues/41
+class SampleListField(DjangoListObjectField):
+    @login_required
+    def list_resolver(
+        self, manager, filterset_class, filtering_args, root, info, **kwargs
+    ):
+        # get user's affiliations
+        affiliations = info.context.user.affiliations
+
+        # sanger user's can see everything
+        if (
+            affiliations.filter(
+                name__exact="Wellcome Sanger Institute"
+            ).count()
+            > 0
+        ):
+            adjusted_manager = models.Sample.objects
+        else:
+            adjusted_manager = models.Sample.objects.filter(
+                submitting_institution__affiliated_members__in=[
+                    info.context.user
+                ]
+            )
+
+        # apply pagination etc
+        return super(SampleListField, self).list_resolver(
+            adjusted_manager,
+            filterset_class,
+            filtering_args,
+            root,
+            info,
+            **kwargs,
+        )
 
 
 class SampleInput(DjangoInputObjectType):
@@ -179,7 +228,7 @@ class Mutation(object):
 
 class Query(object):
     me = NonNull(User)
-    samples = NonNull(List(NonNull(Sample)))
+    samples_list = SampleListField(SampleList)
     institutions = NonNull(List(NonNull(Institution)))
     compare_samples = NonNull(
         SamplesDiff, samples=NonNull(List(NonNull(SampleInput)))
@@ -188,29 +237,6 @@ class Query(object):
     @login_required
     def resolve_me(self, info, **kwargs):
         return info.context.user
-
-    @login_required
-    def resolve_samples(self, info, **kwargs):
-        # TODO: add pagination
-        # TODO: add filtering/sorting for columns
-
-        # get user's affiliations
-        affiliations = info.context.user.affiliations
-
-        # sanger user's can see everything
-        if (
-            affiliations.filter(
-                name__exact="Wellcome Sanger Institute"
-            ).count()
-            > 0
-        ):
-            return models.Sample.objects.all()
-        else:
-            return models.Sample.objects.filter(
-                submitting_institution__affiliated_members__in=[
-                    info.context.user
-                ]
-            ).all()
 
     @login_required
     def resolve_institutions(self, info, **kwargs):
