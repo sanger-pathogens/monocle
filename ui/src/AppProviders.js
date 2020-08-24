@@ -11,6 +11,7 @@ import "typeface-inter";
 
 import { AuthProvider } from "./auth";
 import { UserProvider } from "./user";
+import { DownloadingProvider } from "./downloading";
 import client from "./client";
 import theme from "./theme";
 
@@ -21,7 +22,9 @@ const AppProviders = ({ children }) => (
     <CssBaseline />
     <ThemeProvider theme={generatedTheme}>
       <AuthProvider>
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <DownloadingProvider>{children}</DownloadingProvider>
+        </UserProvider>
       </AuthProvider>
     </ThemeProvider>
   </ApolloProvider>

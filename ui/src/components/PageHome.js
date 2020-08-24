@@ -6,7 +6,7 @@ import Page from "./Page";
 import Header from "./Header";
 import Footer from "./Footer";
 import Section from "./Section";
-import Samples from "./Samples";
+import Samples from "./SamplesTable";
 import Institutions from "./Institutions";
 import { useUser } from "../user";
 
