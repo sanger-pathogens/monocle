@@ -73,6 +73,42 @@ describe("upload button", () => {
     });
   });
 
+  it("shows a summary of added samples when database is empty", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the fixture as drag and drop and await processing
+      const fileName = "test.xlsx";
+      cy.fixture(fileName, "binary")
+        .then(Cypress.Blob.binaryStringToBlob)
+        .then((fileContent) => {
+          cy.get('input[type="file"]').attachFile(
+            {
+              fileContent,
+              fileName,
+              // mimeType: "image/png",
+              mimeType: "application/vnd.ms-excel",
+            },
+            { subjectType: "drag-n-drop" }
+          );
+        });
+      cy.wait(API_WAIT_MS);
+
+      // changes recongised?
+      cy.contains("Added: 3").should("exist");
+    });
+  });
+
   // it("dropzone exists", () => {
   //   loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
   //     // empty samples table?
