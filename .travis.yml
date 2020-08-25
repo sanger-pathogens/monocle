@@ -42,7 +42,7 @@ jobs:
         - docker-compose -f docker-compose.e2e.yml up -d
         - cd e2e
       script:
-        - yarn test
+        - yarn test:ci
       after_script:
         - cd ..
         - docker-compose -f docker-compose.e2e.yml down

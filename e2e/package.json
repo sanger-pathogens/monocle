@@ -5,7 +5,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "cypress run"
+    "test": "cypress run",
+    "test:ci": "cypress run --config video=false"
   },
   "dependencies": {
     "cypress": "^5.0.0",
