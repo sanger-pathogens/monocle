@@ -9,7 +9,7 @@
     "test:ci": "cypress run --config video=false"
   },
   "dependencies": {
-    "cypress": "^5.0.0",
+    "cypress": "^4.8.0",
     "cypress-file-upload": "^4.0.7"
   }
 }
