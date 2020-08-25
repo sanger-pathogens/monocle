@@ -21,7 +21,19 @@ describe("upload button", () => {
   //   };
   // });
 
-  it("shows update button above samples table as Sanger user", () => {
+  it("shows update button above empty samples table as Sanger user", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // has button?
+      cy.contains("Update metadata from spreadsheet").should("exist");
+    });
+  });
+
+  it("shows update button above non-empty samples table as Sanger user", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // load and login
       cy.visit("/");
