@@ -10,7 +10,24 @@ import "cypress-file-upload";
 // Test commit disabled when missing institution
 // Test commit changes the database
 
-describe("upload button", () => {
+const MIMETYPE_EXCEL = "application/vnd.ms-excel";
+const dragAndDropFile = (fileName) => {
+  cy.fixture(fileName, "binary")
+    .then(Cypress.Blob.binaryStringToBlob)
+    .then((fileContent) => {
+      cy.get('input[type="file"]').attachFile(
+        {
+          fileContent,
+          fileName,
+          mimeType: MIMETYPE_EXCEL,
+        },
+        { subjectType: "drag-n-drop" }
+      );
+    });
+  cy.wait(API_WAIT_MS);
+};
+
+describe("sample table update", () => {
   it("shows update button above empty samples table as Sanger user", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
@@ -77,21 +94,8 @@ describe("upload button", () => {
       // new page?
       cy.url().should("include", "/update");
 
-      // load the fixture as drag and drop and await processing
-      const fileName = "test.xlsx";
-      cy.fixture(fileName, "binary")
-        .then(Cypress.Blob.binaryStringToBlob)
-        .then((fileContent) => {
-          cy.get('input[type="file"]').attachFile(
-            {
-              fileContent,
-              fileName,
-              mimeType: "application/vnd.ms-excel",
-            },
-            { subjectType: "drag-n-drop" }
-          );
-        });
-      cy.wait(API_WAIT_MS);
+      // load the new file
+      dragAndDropFile("test.xlsx");
 
       // changes recongised?
       cy.contains("Added: 3").should("exist");
