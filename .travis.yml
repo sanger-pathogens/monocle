@@ -32,13 +32,17 @@ jobs:
       cache: yarn
       services:
         - docker
+      before_install:
+        - cd e2e
       install:
-        - yarn global add cypress
+        - yarn install
       before_script:
+        - cd ..
         - docker-compose -f docker-compose.e2e.yml build
         - docker-compose -f docker-compose.e2e.yml up -d
         - cd e2e
       script:
-        - cypress run
+        - yarn test
       after_script:
+        - cd ..
         - docker-compose -f docker-compose.e2e.yml down

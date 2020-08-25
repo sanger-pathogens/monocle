@@ -1,0 +1,14 @@
+{
+  "name": "e2e",
+  "version": "0.1.0",
+  "description": "End-to-end tests for Monocle",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "cypress run"
+  },
+  "dependencies": {
+    "cypress": "^5.0.0",
+    "cypress-file-upload": "^4.0.7"
+  }
+}
