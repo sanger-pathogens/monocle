@@ -57,6 +57,22 @@ describe("upload button", () => {
     });
   });
 
+  it("leads to update page", () => {
+    loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+    });
+  });
+
   // it("dropzone exists", () => {
   //   loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
   //     // empty samples table?
