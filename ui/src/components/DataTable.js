@@ -9,6 +9,7 @@ import {
   TableFooter,
   TableRow,
   TableCell,
+  TableSortLabel,
   IconButton,
   Typography,
 } from "@material-ui/core";
@@ -62,7 +63,6 @@ const DataTable = ({
       manualSortBy: true,
       pageCount: controlledPageCount,
     },
-
     useSortBy,
     usePagination
   );
@@ -82,14 +82,12 @@ const DataTable = ({
                   <TableCell
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
-                    {column.render("Header")}
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? " 🔽"
-                          : " 🔼"
-                        : ""}
-                    </span>
+                    <TableSortLabel
+                      active={column.isSorted}
+                      direction={column.isSortedDesc ? "desc" : "asc"}
+                    >
+                      {column.render("Header")}
+                    </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
