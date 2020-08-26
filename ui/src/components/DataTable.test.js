@@ -34,17 +34,26 @@ describe("DataTable.pagination", () => {
         fetchData={fetchData}
         pageCount={pageCount}
         pageSize={pageSize}
+        sortBy={[]}
       />
     );
 
     expect(getByLabelText("next page")).toBeInTheDocument();
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("next page"));
 
     expect(getByText("11-20 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 1 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 1,
+      sortBy: [],
+    });
   });
 
   it("can visit last page", async () => {
@@ -57,17 +66,26 @@ describe("DataTable.pagination", () => {
         fetchData={fetchData}
         pageCount={pageCount}
         pageSize={pageSize}
+        sortBy={[]}
       />
     );
 
     expect(getByLabelText("last page")).toBeInTheDocument();
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("last page"));
 
     expect(getByText("31-40 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 3 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 3,
+      sortBy: [],
+    });
   });
 
   it("can visit previous page", async () => {
@@ -80,22 +98,35 @@ describe("DataTable.pagination", () => {
         fetchData={fetchData}
         pageCount={pageCount}
         pageSize={pageSize}
+        sortBy={[]}
       />
     );
 
     expect(getByLabelText("next page")).toBeInTheDocument();
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("next page"));
 
     expect(getByText("11-20 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 1 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 1,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("previous page"));
 
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
   });
 
   it("can visit first page", async () => {
@@ -108,21 +139,34 @@ describe("DataTable.pagination", () => {
         fetchData={fetchData}
         pageCount={pageCount}
         pageSize={pageSize}
+        sortBy={[]}
       />
     );
 
     expect(getByLabelText("last page")).toBeInTheDocument();
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("last page"));
 
     expect(getByText("31-40 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 3 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 3,
+      sortBy: [],
+    });
 
     fireEvent.click(getByLabelText("first page"));
 
     expect(getByText("1-10 of 40")).toBeInTheDocument();
-    expect(fetchData).toHaveBeenCalledWith({ pageSize: 10, pageIndex: 0 });
+    expect(fetchData).toHaveBeenCalledWith({
+      pageSize: 10,
+      pageIndex: 0,
+      sortBy: [],
+    });
   });
 });
