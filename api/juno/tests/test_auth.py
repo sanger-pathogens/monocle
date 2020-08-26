@@ -125,5 +125,4 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
 
         # refresh to get a new access token fails?
         response = self.refresh_token()
-        print(response.content)
         self.validate_refresh_token_signature_expired(response)

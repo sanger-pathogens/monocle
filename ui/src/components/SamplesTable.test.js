@@ -1,18 +1,18 @@
 import React from "react";
-import { render, waitFor, within } from "@testing-library/react";
+import { render, waitFor, within, act } from "@testing-library/react";
 
 import {
-  mockSamples,
+  mockSamplesList,
   mockDefaults,
   generateApiMocks,
 } from "../test-utils/apiMocks";
 import MockProviders from "../test-utils/MockProviders";
-import Samples from "./Samples";
+import Samples from "./SamplesTable";
 
 test("queries and renders empty table content when logged in", async () => {
   const { called, mocks: apiMocks } = generateApiMocks({
     ...mockDefaults,
-    samples: [],
+    samplesList: { results: [], totalCount: 0 },
   });
   const { container } = render(
     <MockProviders isInitiallyLoggedIn={true} apiMocks={apiMocks}>
@@ -22,7 +22,7 @@ test("queries and renders empty table content when logged in", async () => {
 
   await waitFor(() => {
     // query made?
-    expect(called.samplesQuery).toBeGreaterThan(0);
+    expect(called.samplesListQuery).toBeGreaterThan(0);
 
     // empty table?
     expect(container.getElementsByTagName("tbody")[0]).toBeEmptyDOMElement();
@@ -31,27 +31,33 @@ test("queries and renders empty table content when logged in", async () => {
 
 test("queries and renders non-empty table content when logged in", async () => {
   const { called, mocks: apiMocks } = generateApiMocks();
-  const { getAllByText } = render(
-    <MockProviders isInitiallyLoggedIn={true} apiMocks={apiMocks}>
-      <Samples />
-    </MockProviders>
-  );
+
+  let getAllByText;
+
+  await act(async () => {
+    const el = render(
+      <MockProviders isInitiallyLoggedIn={true} apiMocks={apiMocks}>
+        <Samples />
+      </MockProviders>
+    );
+    getAllByText = el.getAllByText;
+  });
 
   // non-empty default mock data?
-  expect(mockSamples.length).toBeGreaterThan(0);
+  expect(mockSamplesList.results.length).toBeGreaterThan(0);
 
-  await waitFor(() => {
-    // query made?
-    expect(called.samplesQuery).toBeGreaterThan(0);
+  // query made?
+  expect(called.samplesListQuery).toBeGreaterThan(0);
 
-    // mock data present in table?
-    mockSamples.forEach(({ laneId, publicName, hostStatus, serotype }) => {
+  // mock data present in table?
+  mockSamplesList.results.forEach(
+    ({ laneId, publicName, hostStatus, serotype }) => {
       const row = getAllByText(laneId)[0].closest("tr");
 
       // per column field checks
       expect(within(row).getByText(publicName)).toBeInTheDocument();
       expect(within(row).getByText(hostStatus)).toBeInTheDocument();
       expect(within(row).getByText(serotype)).toBeInTheDocument();
-    });
-  });
+    }
+  );
 });

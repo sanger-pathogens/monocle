@@ -7,6 +7,7 @@ export const API_WAIT_MS = 5000;
 export const DB_PROFILES = {
   EMPTY: "empty",
   SMALL: "small",
+  LARGE: "large",
 };
 
 // use custom django management command `e2e` to change

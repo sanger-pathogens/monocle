@@ -2,7 +2,7 @@ from juno.tests.base import AuthenticatableGraphQLTestCase
 from juno.api.models import Sample, Institution, User, Affiliation
 
 
-class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
+class SamplesQueryRestrictedTestCase(AuthenticatableGraphQLTestCase):
     def setUp(self):
         # put several institutions in the db
         self.institution_sanger = Institution.objects.create(
@@ -64,11 +64,31 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
             submitting_institution=self.institution_another,
         )
 
+    def make_paginated_samples_query(self, subquery):
+        # make query
+        response = self.post(
+            """
+            query {
+                samplesList {
+                    results(limit: 10, offset: 0) {
+                        %s
+                    }
+                    totalCount
+                }
+            }
+            """
+            % (subquery,),
+        )
+
+        # return response for further checks
+        return response
+
     def make_and_validate_samples_query(self, subquery):
         # call api
-        response = self.make_query("samples", subquery)
+        response = self.make_paginated_samples_query(subquery)
         data = self.validate_successful(response)
-        samples = self.validate_field(data, "samples")
+        samples_list = self.validate_field(data, "samplesList")
+        samples = self.validate_field(samples_list, "results")
 
         # check non-empty
         self.validate_non_empty_list(samples)
@@ -78,7 +98,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
 
     def test_non_authenticated_user_cannot_view_samples(self):
         # call api
-        response = self.make_query("samples", "laneId")
+        response = self.make_paginated_samples_query("laneId")
 
         # checks
         content = self.validate_unsuccessful(response)
@@ -89,8 +109,8 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 for e in errors
             )
         )
-        if "data" in content.keys() and "samples" in content["data"].keys():
-            self.assertEqual(content["data"]["samples"], None)
+        if "data" in content.keys():
+            self.assertEqual(content["data"]["samplesList"], None)
 
     def test_non_sanger_user_can_view_restricted_samples(self):
         # login as non-sanger user
