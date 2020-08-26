@@ -82,12 +82,16 @@ const DataTable = ({
                   <TableCell
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
-                    <TableSortLabel
-                      active={column.isSorted}
-                      direction={column.isSortedDesc ? "desc" : "asc"}
-                    >
-                      {column.render("Header")}
-                    </TableSortLabel>
+                    {column.canSort ? (
+                      <TableSortLabel
+                        active={column.isSorted}
+                        direction={column.isSortedDesc ? "desc" : "asc"}
+                      >
+                        {column.render("Header")}
+                      </TableSortLabel>
+                    ) : (
+                      column.render("Header")
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

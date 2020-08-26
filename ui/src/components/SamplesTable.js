@@ -59,6 +59,7 @@ const Samples = () => {
           },
           {
             Header: "Actions",
+            canSort: false,
             Cell: ({ row }) => (
               <SampleDownloadButton laneId={row.original.laneId} />
             ),
