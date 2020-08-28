@@ -6,6 +6,7 @@ import { Button, Typography } from "@material-ui/core";
 import { useUser } from "../user";
 import UpdateSamplesDiff from "./UpdateSamplesDiff";
 import UpdateSamplesDropZone from "./UpdateSamplesDropZone";
+import CommitModal from "./CommitMetadataModal";
 
 const UPDATE_MUTATION = gql`
   mutation UpdateSamples($samples: [SampleInput!]!) {
@@ -34,30 +35,59 @@ const UpdateSamplesManager = () => {
   const { isAdmin } = useUser();
   const [sheet, setSheet] = useState(null);
   const [isCommittable, setIsCommittable] = useState(false);
+  const [isCommitted, setIsCommitted] = useState(null);
+
   const [updateMutation] = useMutation(UPDATE_MUTATION, {
     variables: { samples: sheet },
     onCompleted() {
-      return reloadPage;
+      setIsCommitted(true);
+      return;
     },
     onError() {
-      return <div> Something went wrong!</div>;
+      setSheet(null);
+      setIsCommitted(false);
+      return;
     },
   });
 
   const reloadPage = () => {
     window.location.reload(false);
   };
+
   return isAdmin ? (
     sheet ? (
       <React.Fragment>
-        <UpdateSamplesDiff sheet={sheet} setIsCommittable={setIsCommittable} />
-        <Button onClick={updateMutation} disabled={!isCommittable}>
-          Commit
-        </Button>
-        <Button onClick={reloadPage}>Cancel</Button>
+        {/* Sheet has been dropped, but not committed. */}
+        {isCommitted == null ? (
+          [
+            <UpdateSamplesDiff
+              sheet={sheet}
+              setIsCommittable={setIsCommittable}
+            />,
+            <Button onClick={updateMutation} disabled={!isCommittable}>
+              Commit
+            </Button>,
+            <Button onClick={reloadPage}>Cancel</Button>,
+          ]
+        ) : (
+          <CommitModal
+            showModal={isCommitted}
+            setIsCommitted={setIsCommitted}
+            isCommitted={isCommitted}
+          />
+        )}
       </React.Fragment>
     ) : (
-      <UpdateSamplesDropZone setSheet={setSheet} />
+      <React.Fragment>
+        <UpdateSamplesDropZone setSheet={setSheet} />
+        {isCommitted == false ? (
+          <CommitModal
+            showModal={!isCommitted}
+            setIsCommitted={setIsCommitted}
+            isCommitted={isCommitted}
+          />
+        ) : null}
+      </React.Fragment>
     )
   ) : (
     <Typography>
