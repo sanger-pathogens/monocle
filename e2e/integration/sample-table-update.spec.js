@@ -1,14 +1,6 @@
 import { API_WAIT_MS, DB_PROFILES, loadDatabaseProfile, login } from "../utils";
 import "cypress-file-upload";
 
-// Test button exists with data in database (admin user) - DONE
-// Test button exists without data in database (admin user) - DONE
-// Test no button when logged in as non admin - DONE
-// Test drag over with wrong file type shows error - DONE
-// Test dropping file shows results, commit and cancel button - DONE
-// Test commit disabled when missing institution - DONE
-// Test commit changes the database
-
 const MIMETYPE_EXCEL = "application/vnd.ms-excel";
 const MIMETYPE_TEXT = "text/plain";
 const dragAndDropFile = (fileName, mimeType) => {
@@ -64,7 +56,7 @@ describe("sample table update", () => {
     });
   });
 
-  it("leads to update page", () => {
+  it("update button leads to update page", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // load and login
       cy.visit("/");
@@ -102,7 +94,7 @@ describe("sample table update", () => {
     });
   });
 
-  it("does not accept file with bad extension file when database is empty", () => {
+  it("does not accept file with bad extension file", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
       cy.visit("/");
@@ -124,7 +116,7 @@ describe("sample table update", () => {
     });
   });
 
-  it("Commit button is active when spreadsheet is okay", () => {
+  it("Commit button is active when spreadsheet passes tests", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
       cy.visit("/");
@@ -168,7 +160,7 @@ describe("sample table update", () => {
     });
   });
 
-  it("Table updated when commit button clicked", () => {
+  it("Commit modal pops up", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
       cy.visit("/");
@@ -188,10 +180,15 @@ describe("sample table update", () => {
       // commit button should not be diasbled
       cy.contains("Commit").click();
       cy.wait(API_WAIT_MS);
+
+      // Modal pops up
+      cy.contains(
+        "Your commit was successful! Click okay to return to the home page or cancel to upload another spreadsheet."
+      ).should("exist");
     });
   });
 
-  it.only("Table updated when commit button clicked", () => {
+  it("Clicking okay on modal takes you back to home page", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
       cy.visit("/");
@@ -208,17 +205,144 @@ describe("sample table update", () => {
       // load the new file
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
-      cy.contains("Added: 3").should("exist");
+      // commit button should not be diasbled
+      cy.contains("Commit").click();
+      cy.wait(API_WAIT_MS);
+
+      // Modal pops up
+      cy.contains("Okay").click();
+      cy.url().should("include", "/");
+    });
+  });
+
+  it("Clicking cancel on modal takes you back to update page", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the new file
+      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
       // commit button should not be diasbled
+      cy.contains("Commit").click();
+      cy.wait(API_WAIT_MS);
+      cy.contains("Cancel").click();
+      cy.url().should("include", "/update");
+      cy.contains("Click here or drop a file to upload!").should("exist");
+    });
+  });
+
+  it("Clicking cancel instead of commit reloads page", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the new file
+      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
+
+      // cancel button reloads page and removes stats
+      cy.contains("Added: 3").should("exist");
       cy.contains("Cancel").click();
       cy.wait(API_WAIT_MS);
-      // Drag and drop should exist
+      cy.url().should("include", "/update");
+      cy.contains("Added: 3").should("not.exist");
+      cy.contains("Click here or drop a file to upload!").should("exist");
+    });
+  });
 
-      //
-      cy.contains("Added: 3").should.not("exist");
+  it("Commiting spreadsheet adds samples to the table correctly", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the new file
+      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
+
+      // commit button should not be diasbled
+      cy.contains("Commit").click();
+      cy.wait(API_WAIT_MS);
+
+      // Modal pops up
+      cy.contains("Okay").click();
+      cy.url().should("include", "/");
+
+      // Table has 3 samples added
+      cy.get("table#sampleTable tbody").find("tr").should("have.length", 3);
+      cy.get("table#sampleTable tbody")
+        .contains("31663_7#1000")
+        .should("exist");
+      cy.get("table#sampleTable tbody").contains("31663_7#113").should("exist");
+      cy.get("table#sampleTable tbody").contains("31663_7#115").should("exist");
+    });
+  });
+
+  it("Commiting spreadsheet removes samples correctly", () => {
+    loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the new file
+      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
+
+      // commit button should not be diasbled
+      cy.contains("Commit").click();
+      cy.wait(API_WAIT_MS);
+
+      // Modal pops up
+      cy.contains("Okay").click();
+      cy.url().should("include", "/");
+
+      // Check samples removed from table
+      cy.get("table#sampleTable tbody")
+        .contains("32820_2#367")
+        .should("not.exist");
+      cy.get("table#sampleTable tbody")
+        .contains("32820_2#368")
+        .should("not.exist");
+
+      // Check samples changed
+      cy.get("table#sampleTable tbody")
+        .contains("Wellcome Sanger Institute")
+        .should("exist");
+      cy.get("table#sampleTable tbody")
+        .contains("National Reference Laboratories")
+        .should("not.exist");
     });
   });
 });
-
-// cy.get(`table#sampleTable`).contains("td button", laneId);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Link, Typography } from "@material-ui/core";
 
 import { useUser } from "../user";
 import UpdateSamplesDiff from "./UpdateSamplesDiff";
@@ -50,10 +50,6 @@ const UpdateSamplesManager = () => {
     },
   });
 
-  const reloadPage = () => {
-    window.location.reload(false);
-  };
-
   return isAdmin ? (
     sheet ? (
       <React.Fragment>
@@ -61,17 +57,24 @@ const UpdateSamplesManager = () => {
         {isCommitted == null ? (
           [
             <UpdateSamplesDiff
+              key={"Diff"}
               sheet={sheet}
               setIsCommittable={setIsCommittable}
             />,
-            <Button onClick={updateMutation} disabled={!isCommittable}>
+            <Button
+              key={"Commit"}
+              onClick={updateMutation}
+              disabled={!isCommittable}
+            >
               Commit
             </Button>,
-            <Button onClick={reloadPage}>Cancel</Button>,
+            <Button key={"Cancel"} href="/update" component={Link}>
+              Cancel
+            </Button>,
           ]
         ) : (
           <CommitModal
-            showModal={isCommitted}
+            showModal={true}
             setIsCommitted={setIsCommitted}
             isCommitted={isCommitted}
           />
@@ -80,9 +83,9 @@ const UpdateSamplesManager = () => {
     ) : (
       <React.Fragment>
         <UpdateSamplesDropZone setSheet={setSheet} />
-        {isCommitted == false ? (
+        {isCommitted === false ? (
           <CommitModal
-            showModal={!isCommitted}
+            showModal={true}
             setIsCommitted={setIsCommitted}
             isCommitted={isCommitted}
           />

@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import FailedDiffModal from "./FailedDiffModal";
+import { Button } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
@@ -54,9 +54,18 @@ const DIFF_QUERY = gql`
 
 const UpdateSamplesDiff = ({ sheet, setIsCommittable }) => {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
+  const [diffPass, setDiffPass] = useState(null);
+
   const { loading, error, data } = useQuery(DIFF_QUERY, {
     variables: { samples: sheet },
+    onCompleted() {
+      setDiffPass(true);
+      return;
+    },
+    onError() {
+      setDiffPass(false);
+      return;
+    },
   });
 
   useEffect(() => {
@@ -69,7 +78,7 @@ const UpdateSamplesDiff = ({ sheet, setIsCommittable }) => {
   }, [data, setIsCommittable]);
 
   if (loading || error || !data) {
-    return null;
+    return <FailedDiffModal showModal={true} />;
   }
 
   const { missingInstitutions, added, removed, changed } = data.compareSamples;

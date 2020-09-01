@@ -30,46 +30,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CommitModal({ showModal, setIsCommitted, isCommitted }) {
+function FailedDiffModal({ showModal }) {
   const classes = useStyles();
   const [modalStyle] = useState(getModalStyle);
 
   const handleClose = () => {
     const showModal = false;
-    setIsCommitted(null);
   };
 
-  const bodyCommitSuccess = (
+  const body = (
     <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">Updated</h2>
+      <h2 id="simple-modal-title">Error</h2>
       <p id="simple-modal-description">
-        Your commit was successful! Click okay to return to the home page or
-        cancel to upload another spreadsheet.
-      </p>
-      <Button onClick={handleClose} href="/" component={Link}>
-        Okay
-      </Button>
-      <Button onClick={handleClose} href="/update" component={Link}>
-        Cancel
-      </Button>
-      <CommitModal />
-    </div>
-  );
-
-  const bodyCommitFail = (
-    <div style={modalStyle} className={classes.paper}>
-      <h2 id="simple-modal-title">Updated</h2>
-      <p id="simple-modal-description">
-        Something went wrong and your commit failed! Click okay to try again
-        with a new spreadsheet or cancel return to the home page.
+        Something went wrong! Please check the format of your spreadsheet and
+        try again.
       </p>
       <Button onClick={handleClose} href="/update" component={Link}>
         Okay
       </Button>
-      <Button onClick={handleClose} href="/" component={Link}>
-        Cancel
-      </Button>
-      <CommitModal />
+      <FailedDiffModal />
     </div>
   );
 
@@ -81,10 +60,10 @@ function CommitModal({ showModal, setIsCommitted, isCommitted }) {
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        {isCommitted === true ? bodyCommitSuccess : bodyCommitFail}
+        {body}
       </Modal>
     </div>
   );
 }
 
-export default CommitModal;
+export default FailedDiffModal;
