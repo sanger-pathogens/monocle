@@ -70,7 +70,9 @@ const Samples = () => {
   );
 
   // see https://github.com/tannerlinsley/react-table/discussions/2296
-  let [loadData, { loading, error, data }] = useLazyQuery(SAMPLES_LIST_QUERY);
+  let [loadData, { loading, error, data }] = useLazyQuery(SAMPLES_LIST_QUERY, {
+    fetchPolicy: "network-only",
+  });
 
   const fetchIdRef = React.useRef(0);
 

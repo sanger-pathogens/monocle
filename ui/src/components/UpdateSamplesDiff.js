@@ -57,6 +57,7 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
 
   const { loading, error, data } = useQuery(DIFF_QUERY, {
     variables: { samples: sheet },
+    fetchPolicy: "network-only",
   });
 
   useEffect(() => {

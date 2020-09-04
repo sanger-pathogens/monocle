@@ -59,10 +59,6 @@ const UpdateSamplesManager = () => {
     setIsCommitted(false);
   };
 
-  function refreshPage() {
-    window.location.reload(false);
-  }
-
   const history = useHistory();
   const routeHome = () => {
     let path = "/";
@@ -101,13 +97,8 @@ const UpdateSamplesManager = () => {
         text={
           "Your commit was successful! Click okay to return to the home page or cancel to upload another spreadsheet."
         }
-        onOk={() => {
-          routeHome();
-          refreshPage();
-        }}
-        onCancel={() => {
-          refreshPage();
-        }}
+        onOk={routeHome}
+        onCancel={handleClose}
       />
       <GenericDialog
         showModal={commitFailed}
