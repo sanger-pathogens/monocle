@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
 import { Button, Link, Typography } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 import { useUser } from "../user";
 import UpdateSamplesDiff from "./UpdateSamplesDiff";
 import UpdateSamplesDropZone from "./UpdateSamplesDropZone";
-import CommitModal from "./CommitMetadataModal";
+import GenericDialog from "./genericDialog";
 
 const UPDATE_MUTATION = gql`
   mutation UpdateSamples($samples: [SampleInput!]!) {
@@ -35,7 +36,8 @@ const UpdateSamplesManager = () => {
   const { isAdmin } = useUser();
   const [sheet, setSheet] = useState(null);
   const [isCommittable, setIsCommittable] = useState(false);
-  const [isCommitted, setIsCommitted] = useState(null);
+  const [isCommitted, setIsCommitted] = useState(false);
+  const [commitFailed, setCommitFailed] = useState(false);
 
   const [updateMutation] = useMutation(UPDATE_MUTATION, {
     variables: { samples: sheet },
@@ -45,53 +47,81 @@ const UpdateSamplesManager = () => {
     },
     onError() {
       setSheet(null);
-      setIsCommitted(false);
+      setCommitFailed(true);
       return;
     },
   });
 
+  const handleClose = () => {
+    setSheet(null);
+    setIsCommittable(false);
+    setCommitFailed(false);
+    setIsCommitted(false);
+  };
+
+  function refreshPage() {
+    window.location.reload(false);
+  }
+
+  const history = useHistory();
+
+  const routeChange = () => {
+    let path = "/";
+    history.push(path);
+  };
+
   return isAdmin ? (
-    sheet ? (
-      <React.Fragment>
-        {/* Sheet has been dropped, but not committed. */}
-        {isCommitted == null ? (
-          [
-            <UpdateSamplesDiff
-              key={"Diff"}
-              sheet={sheet}
-              setIsCommittable={setIsCommittable}
-            />,
-            <Button
-              key={"Commit"}
-              onClick={updateMutation}
-              disabled={!isCommittable}
-            >
-              Commit
-            </Button>,
-            <Button key={"Cancel"} href="/update" component={Link}>
-              Cancel
-            </Button>,
-          ]
-        ) : (
-          <CommitModal
-            showModal={true}
-            setIsCommitted={setIsCommitted}
-            isCommitted={isCommitted}
-          />
-        )}
-      </React.Fragment>
-    ) : (
-      <React.Fragment>
+    <React.Fragment>
+      {/* Run diff if sheet dropped in dropzone */}
+      {sheet ? (
+        <UpdateSamplesDiff
+          key={"Diff"}
+          sheet={sheet}
+          setSheet={setSheet}
+          setIsCommittable={setIsCommittable}
+        />
+      ) : (
         <UpdateSamplesDropZone setSheet={setSheet} />
-        {isCommitted === false ? (
-          <CommitModal
-            showModal={true}
-            setIsCommitted={setIsCommitted}
-            isCommitted={isCommitted}
-          />
-        ) : null}
-      </React.Fragment>
-    )
+      )}
+      {/* BUTTONS */}
+      <Button key={"Commit"} onClick={updateMutation} disabled={!isCommittable}>
+        Commit
+      </Button>
+      <Button
+        key={"Cancel"}
+        href="/update"
+        component={Link}
+        disabled={sheet ? false : true}
+      >
+        Cancel
+      </Button>
+      {/* MODALS */}
+      <GenericDialog
+        showModal={isCommitted}
+        title={"Updated"}
+        text={
+          "Your commit was successful! Click okay to return to the home page or cancel to upload another spreadsheet."
+        }
+        onOk={() => {
+          routeChange();
+          refreshPage();
+          handleClose();
+        }}
+        onCancel={() => {
+          refreshPage();
+          handleClose();
+        }}
+      />
+      <GenericDialog
+        showModal={commitFailed}
+        title={"Error"}
+        text={
+          "Something went wrong and your commit failed! Click okay to try again with a new spreadsheet or cancel return to the home page."
+        }
+        onOk={handleClose}
+        onCancel={routeChange}
+      />
+    </React.Fragment>
   ) : (
     <Typography>
       You must be an administrator to make updates to sample metadata

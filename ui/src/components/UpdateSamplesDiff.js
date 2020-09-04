@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import FailedDiffModal from "./FailedDiffModal";
-import { Button } from "@material-ui/core";
+import GenericDialog from "./genericDialog";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -52,20 +52,11 @@ const DIFF_QUERY = gql`
   }
 `;
 
-const UpdateSamplesDiff = ({ sheet, setIsCommittable }) => {
+const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
   const classes = useStyles();
-  const [diffPass, setDiffPass] = useState(null);
 
   const { loading, error, data } = useQuery(DIFF_QUERY, {
     variables: { samples: sheet },
-    onCompleted() {
-      setDiffPass(true);
-      return;
-    },
-    onError() {
-      setDiffPass(false);
-      return;
-    },
   });
 
   useEffect(() => {
@@ -77,8 +68,29 @@ const UpdateSamplesDiff = ({ sheet, setIsCommittable }) => {
     }
   }, [data, setIsCommittable]);
 
+  const handleClose = () => {
+    setSheet(null);
+  };
+
+  const history = useHistory();
+
+  const routeChange = () => {
+    let path = "/";
+    history.push(path);
+  };
+
   if (loading || error || !data) {
-    return <FailedDiffModal showModal={true} />;
+    return (
+      <GenericDialog
+        showModal={true}
+        title={"Error"}
+        text={
+          "Something went wrong! Please check the format of your spreadsheet and click ok to try again. Click cancel to go back to the homepage."
+        }
+        onOk={handleClose}
+        onCancel={routeChange}
+      />
+    );
   }
 
   const { missingInstitutions, added, removed, changed } = data.compareSamples;
