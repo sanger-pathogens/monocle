@@ -87,12 +87,12 @@ const UpdateSamplesManager = () => {
         Commit
       </Button>
       <Button
-        key={"Cancel"}
+        key={"Clear"}
         href="/update"
         component={Link}
         disabled={sheet ? false : true}
       >
-        Cancel
+        Clear
       </Button>
       {/* MODALS */}
       <GenericDialog

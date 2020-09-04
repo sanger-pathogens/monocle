@@ -188,6 +188,33 @@ describe("sample table update", () => {
     });
   });
 
+  it("Clicking clear instead of commit reloads page", () => {
+    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
+      // load and login
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the button and await change
+      cy.contains("Update metadata from spreadsheet").closest("a").click();
+      cy.wait(API_WAIT_MS);
+
+      // new page?
+      cy.url().should("include", "/update");
+
+      // load the new file
+      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
+
+      // clear button reloads page and removes stats
+      cy.contains("Added: 3").should("exist");
+      cy.contains("Clear").click();
+      cy.wait(API_WAIT_MS);
+      cy.url().should("include", "/update");
+      cy.contains("Added: 3").should("not.exist");
+      cy.contains("Click here or drop a file to upload!").should("exist");
+    });
+  });
+
   it("Clicking okay on modal takes you back to home page", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
@@ -237,33 +264,6 @@ describe("sample table update", () => {
       cy.wait(API_WAIT_MS);
       cy.contains("Cancel").click();
       cy.url().should("include", "/update");
-      cy.contains("Click here or drop a file to upload!").should("exist");
-    });
-  });
-
-  it("Clicking cancel instead of commit reloads page", () => {
-    loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
-      // load and login
-      cy.visit("/");
-      const user = db.user[0];
-      login(user.email);
-
-      // click the button and await change
-      cy.contains("Update metadata from spreadsheet").closest("a").click();
-      cy.wait(API_WAIT_MS);
-
-      // new page?
-      cy.url().should("include", "/update");
-
-      // load the new file
-      dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
-
-      // cancel button reloads page and removes stats
-      cy.contains("Added: 3").should("exist");
-      cy.contains("Cancel").click();
-      cy.wait(API_WAIT_MS);
-      cy.url().should("include", "/update");
-      cy.contains("Added: 3").should("not.exist");
       cy.contains("Click here or drop a file to upload!").should("exist");
     });
   });

@@ -85,7 +85,7 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
         showModal={true}
         title={"Error"}
         text={
-          "Something went wrong! Please check the format of your spreadsheet and click ok to try again. Click cancel to go back to the homepage."
+          "Something went wrong! Please check the format of your spreadsheet and click okay to try again. Click cancel to go back to the homepage."
         }
         onOk={handleClose}
         onCancel={routeHome}

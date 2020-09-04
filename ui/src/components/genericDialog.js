@@ -26,7 +26,7 @@ function GenericDialog({ showModal, title, text, onOk, onCancel }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onOk} color="primary" autoFocus>
-          Ok
+          Okay
         </Button>
         <Button onClick={onCancel} color="primary" autoFocus>
           Cancel
