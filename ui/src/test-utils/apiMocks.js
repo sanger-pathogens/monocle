@@ -176,7 +176,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
       {
         request: {
           query: SAMPLES_LIST_QUERY,
-          variables: { offset: 0, limit: 10 },
+          variables: { offset: 0, limit: 10, ordering: "lane_id" },
         },
         result: () => {
           called.samplesListQuery += 1;

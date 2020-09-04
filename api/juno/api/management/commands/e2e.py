@@ -207,7 +207,7 @@ class Command(BaseCommand):
             host_status = random.choice(
                 ["carriage", "bacteraemia", "urinary tract infection"]
             )
-            submitting_institution = random.choice([sanger, nrl, cuhk,])
+            submitting_institution = random.choice([sanger, nrl, cuhk])
 
             Sample.objects.create(
                 lane_id=lane_id,
@@ -217,4 +217,3 @@ class Command(BaseCommand):
                 host_status=host_status,
                 submitting_institution=submitting_institution,
             )
-
