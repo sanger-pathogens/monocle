@@ -74,7 +74,7 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
 
   const history = useHistory();
 
-  const routeChange = () => {
+  const routeHome = () => {
     let path = "/";
     history.push(path);
   };
@@ -88,7 +88,7 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
           "Something went wrong! Please check the format of your spreadsheet and click ok to try again. Click cancel to go back to the homepage."
         }
         onOk={handleClose}
-        onCancel={routeChange}
+        onCancel={routeHome}
       />
     );
   }

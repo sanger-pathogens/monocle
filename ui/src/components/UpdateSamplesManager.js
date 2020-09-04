@@ -64,8 +64,7 @@ const UpdateSamplesManager = () => {
   }
 
   const history = useHistory();
-
-  const routeChange = () => {
+  const routeHome = () => {
     let path = "/";
     history.push(path);
   };
@@ -103,13 +102,11 @@ const UpdateSamplesManager = () => {
           "Your commit was successful! Click okay to return to the home page or cancel to upload another spreadsheet."
         }
         onOk={() => {
-          routeChange();
+          routeHome();
           refreshPage();
-          handleClose();
         }}
         onCancel={() => {
           refreshPage();
-          handleClose();
         }}
       />
       <GenericDialog
@@ -119,7 +116,7 @@ const UpdateSamplesManager = () => {
           "Something went wrong and your commit failed! Click okay to try again with a new spreadsheet or cancel return to the home page."
         }
         onOk={handleClose}
-        onCancel={routeChange}
+        onCancel={routeHome}
       />
     </React.Fragment>
   ) : (
