@@ -15,6 +15,7 @@ services:
         - "8000:80"
     volumes:
         - data:/data
+        - ./my.cnf:/etc/mysql/my.cnf
     environment:
         - HOSTNAME=<HOSTNAME>
         - SECRET_KEY=<SECRET_KEY>
