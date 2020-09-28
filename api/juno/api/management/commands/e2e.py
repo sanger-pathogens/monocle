@@ -55,10 +55,21 @@ class Command(BaseCommand):
         self.clear()
 
         # users (need to be able to log in)
-        User.objects.create(
+        admin = User.objects.create(
             email="admin@sanger.ac.uk", first_name="Alice", last_name="Jones"
         )
         self.set_passwords_as_email_prefix()
+
+        # institutions
+        sanger = Institution.objects.create(
+            name="Wellcome Sanger Institute",
+            country="United Kingdom",
+            latitude=52.083333,
+            longitude=0.183333,
+        )
+
+        # affiliations
+        Affiliation.objects.create(user=admin, institution=sanger)
 
     def small(self):
         self.clear()

@@ -7,6 +7,7 @@ from graphene import (
     Boolean,
     String,
 )
+
 from graphql_jwt import (
     ObtainJSONWebToken,
     Verify,
@@ -15,6 +16,7 @@ from graphql_jwt import (
 from graphql_jwt.decorators import login_required
 from graphene_django_extras import (
     DjangoObjectType,
+    DjangoObjectField,
     DjangoListObjectType,
     DjangoInputObjectType,
     DjangoListObjectField,
@@ -28,6 +30,14 @@ from juno.api import models
 class Institution(DjangoObjectType):
     class Meta:
         model = models.Institution
+
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        # note: `get_queryset` needs to be added to types
+        #       at the moment. Can potentially remove when
+        #       graphene-django-extras makes a new release,
+        #       (see https://github.com/eamigo86/graphene-django-extras/commit/be073a1b0527d9f149f71864b9beb0120e0ef404)
+        return queryset
 
 
 class User(DjangoObjectType):

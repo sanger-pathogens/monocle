@@ -12,6 +12,12 @@ export const mockUser = {
   email: "admin@juno.com",
   firstName: "Han",
   lastName: "Solo",
+  affiliations: [
+    {
+      name: "Wellcome Sanger Institute",
+      __typename: "Institution",
+    },
+  ],
   __typename: "User",
 };
 
