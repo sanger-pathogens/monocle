@@ -1,6 +1,5 @@
 import { USER_QUERY } from "../user";
 import { SAMPLES_LIST_QUERY } from "../components/SamplesTable";
-import { INSTITUTIONS_QUERY } from "../components/Institutions";
 import {
   LOGIN_MUTATION,
   LOGOUT_MUTATION,
@@ -51,27 +50,6 @@ export const mockSamplesList = {
   totalCount: 2,
 };
 
-export const mockInstitutions = [
-  {
-    name: "Wellcome Sanger Institute",
-    country: "United Kingdom",
-    latitude: 52.083333,
-    longitude: 0.183333,
-  },
-  {
-    name: "National Reference Laboratories",
-    country: "Israel",
-    latitude: 32.083333,
-    longitude: 34.8,
-  },
-  {
-    name: "The Chinese University of Hong Kong",
-    country: "China",
-    latitude: 22.419722,
-    longitude: 114.206792,
-  },
-];
-
 export const mockLoginSuccess = {
   token:
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImdhcmV0aEBqdW5vLmNvbSIsImV4cCI6MTU5MzYyMjI2MSwib3JpZ0lhdCI6MTU5MzYyMTY2MX0.bBjI3XHMvgLiKZ96nQ16sU0d27nP_rUE5iKPQxfWl6o",
@@ -112,7 +90,6 @@ export const mockDefaults = {
   user: mockUser,
   samples: mockSamples,
   samplesList: mockSamplesList,
-  institutions: mockInstitutions,
   login: mockLoginSuccess,
   logout: mockLogoutSuccess,
   verify: mockVerifyTokenSuccess,
@@ -126,7 +103,6 @@ export const generateApiMocks = (mocks = mockDefaults) => {
   const {
     user,
     samplesList,
-    institutions,
     login,
     logout,
     verify,
@@ -141,7 +117,6 @@ export const generateApiMocks = (mocks = mockDefaults) => {
   let called = {
     userQuery: 0,
     samplesListQuery: 0,
-    institutionsQuery: 0,
     loginMutation: 0,
     logoutMutation: 0,
     verifyMutation: 0,
@@ -189,19 +164,6 @@ export const generateApiMocks = (mocks = mockDefaults) => {
           return {
             data: {
               samplesList,
-            },
-          };
-        },
-      },
-      {
-        request: {
-          query: INSTITUTIONS_QUERY,
-        },
-        result: () => {
-          called.institutionsQuery += 1;
-          return {
-            data: {
-              institutions,
             },
           };
         },
