@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom";
 import { useUser } from "../user";
 import UpdateSamplesDiff from "./UpdateSamplesDiff";
 import UpdateSamplesDropZone from "./UpdateSamplesDropZone";
-import GenericDialog from "./genericDialog";
+import GenericDialog from "./GenericDialog";
 
 const UPDATE_MUTATION = gql`
   mutation UpdateSamples($samples: [SampleInput!]!) {
