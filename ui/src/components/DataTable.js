@@ -9,6 +9,7 @@ import {
   TableFooter,
   TableRow,
   TableCell,
+  TableSortLabel,
   IconButton,
   Typography,
 } from "@material-ui/core";
@@ -18,9 +19,12 @@ import {
   KeyboardArrowRight,
   LastPage,
 } from "@material-ui/icons";
-import { useTable, usePagination } from "react-table";
+import { useTable, usePagination, useSortBy } from "react-table";
 
 // see https://github.com/tannerlinsley/react-table/discussions/2296
+
+export const camelCaseToSnakeCase = (str) =>
+  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
 const DataTable = ({
   tableId,
@@ -31,6 +35,7 @@ const DataTable = ({
   loading,
   pageCount: controlledPageCount,
   pageSize: controlledPageSize,
+  sortBy: controlledSortBy,
 }) => {
   const {
     rows,
@@ -44,21 +49,27 @@ const DataTable = ({
     gotoPage,
     nextPage,
     previousPage,
-    state: { pageIndex, pageSize },
+    state: { pageIndex, pageSize, sortBy },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: controlledPageSize },
+      initialState: {
+        pageIndex: 0,
+        pageSize: controlledPageSize,
+        sortBy: controlledSortBy,
+      },
       manualPagination: true,
+      manualSortBy: true,
       pageCount: controlledPageCount,
     },
+    useSortBy,
     usePagination
   );
 
   React.useEffect(() => {
-    fetchData({ pageIndex, pageSize });
-  }, [fetchData, pageIndex, pageSize]);
+    fetchData({ pageIndex, pageSize, sortBy });
+  }, [fetchData, pageIndex, pageSize, sortBy]);
 
   return (
     <Paper>
@@ -68,8 +79,19 @@ const DataTable = ({
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <TableCell {...column.getHeaderProps()}>
-                    {column.render("Header")}
+                  <TableCell
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    {column.canSort ? (
+                      <TableSortLabel
+                        active={column.isSorted}
+                        direction={column.isSortedDesc ? "desc" : "asc"}
+                      >
+                        {column.render("Header")}
+                      </TableSortLabel>
+                    ) : (
+                      column.render("Header")
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

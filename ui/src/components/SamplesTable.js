@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useLazyQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { LinearProgress } from "@material-ui/core";
 
-import DataTable from "./DataTable";
+import DataTable, { camelCaseToSnakeCase } from "./DataTable";
 import { useDownloading } from "../downloading";
 import SampleDownloadButton from "./SampleDownloadButton";
 
 export const SAMPLES_LIST_QUERY = gql`
-  query SamplesList($offset: Int, $limit: Int) {
+  query SamplesList($offset: Int, $limit: Int, $ordering: String) {
     samplesList {
-      results(limit: $limit, offset: $offset) {
+      results(limit: $limit, offset: $offset, ordering: $ordering) {
         laneId
         sampleId
         publicName
@@ -28,7 +28,7 @@ export const SAMPLES_LIST_QUERY = gql`
 
 const Samples = () => {
   const { isDownloading } = useDownloading();
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         Header: "Metadata",
@@ -59,6 +59,7 @@ const Samples = () => {
           },
           {
             Header: "Actions",
+            canSort: false,
             Cell: ({ row }) => (
               <SampleDownloadButton laneId={row.original.laneId} />
             ),
@@ -68,6 +69,7 @@ const Samples = () => {
     ],
     []
   );
+  const sortBy = useMemo(() => [{ id: "laneId", desc: false }], []);
 
   // see https://github.com/tannerlinsley/react-table/discussions/2296
   let [loadData, { loading, error, data }] = useLazyQuery(SAMPLES_LIST_QUERY, {
@@ -77,16 +79,25 @@ const Samples = () => {
   const fetchIdRef = React.useRef(0);
 
   const fetchData = React.useCallback(
-    ({ pageSize, pageIndex }) => {
-      // sortBy
+    ({ pageSize, pageIndex, sortBy }) => {
       const fetchId = ++fetchIdRef.current;
       if (fetchId === fetchIdRef.current) {
+        // map react-table state to api arguments
         const offset = pageSize * pageIndex;
         const limit = pageSize;
+        const ordering =
+          sortBy && sortBy.length === 1
+            ? `${sortBy[0].desc ? "-" : ""}${camelCaseToSnakeCase(
+                sortBy[0].id
+              )}`
+            : "lane_id";
+
+        // call api
         loadData({
           variables: {
             offset,
             limit,
+            ordering,
           },
         });
       }
@@ -114,6 +125,7 @@ const Samples = () => {
         error={error}
         pageCount={pageCount}
         pageSize={pageSize}
+        sortBy={sortBy}
       />
     </React.Fragment>
   );
