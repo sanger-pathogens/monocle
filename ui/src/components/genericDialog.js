@@ -8,9 +8,8 @@ import {
   DialogContentText,
 } from "@material-ui/core";
 
-function GenericDialog({ showModal, title, text, onOk, onCancel }) {
+const GenericDialog = ({ showModal, title, text, onOk, onCancel }) => {
   const handleClose = () => {};
-
   return (
     <Dialog
       open={showModal}
@@ -34,6 +33,6 @@ function GenericDialog({ showModal, title, text, onOk, onCancel }) {
       </DialogActions>
     </Dialog>
   );
-}
+};
 
 export default GenericDialog;
