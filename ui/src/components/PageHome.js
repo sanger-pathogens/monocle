@@ -7,7 +7,6 @@ import Header from "./Header";
 import Footer from "./Footer";
 import Section from "./Section";
 import Samples from "./SamplesTable";
-import Institutions from "./Institutions";
 import { useUser } from "../user";
 
 const PageHome = () => {
@@ -15,9 +14,6 @@ const PageHome = () => {
   return (
     <Page header={<Header />} footer={<Footer />}>
       <Box>
-        <Section title="Institutions">
-          <Institutions />
-        </Section>
         <Section title="Samples">
           {isAdmin ? (
             <Box pb={1}>
