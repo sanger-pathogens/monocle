@@ -17,13 +17,15 @@ MOCK_DATA_DIR = os.path.join(
 )
 USE_MOCK_LANE_DATA = True
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "monocle_local",
-        "USER": "root",
-        "PASSWORD": "",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
-    }
-}
+# uncomment the following to use mysql instead of sqlite3 during development
+# (you will need to install and run mysql-server locally)
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "monocle_local",
+#         "USER": "root",
+#         "PASSWORD": "",
+#         "HOST": "127.0.0.1",
+#         "PORT": "3306",
+#     }
+# }
