@@ -13,9 +13,21 @@ services:
   api:
     build:
       context: ./api
+    entrypoint: /app/entrypoint.e2e.sh
     ports:
       - "8001:80"
     volumes:
       - ./mock-data:/data
     environment:
-      - DJANGO_SETTINGS_MODULE=juno.settings.e2e
+      DJANGO_SETTINGS_MODULE: juno.settings.e2e
+    depends_on:
+      - db
+  db:
+    image: mysql:5
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_DATABASE: docker
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+    ports:
+      - "9001:3306"
