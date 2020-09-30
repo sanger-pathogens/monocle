@@ -18,9 +18,6 @@ RUN pip install pipenv \
 # add rest of code
 COPY . /app
 
-# collect static files (mainly for graphiql)
-RUN python manage.py collectstatic
-
 CMD ["gunicorn", "-w 3", "-b :80", "juno.wsgi"]
 
 # TODO: Consider switching from wsgi to asgi as follows:
