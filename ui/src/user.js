@@ -11,6 +11,9 @@ export const USER_QUERY = gql`
       email
       firstName
       lastName
+      affiliations {
+        name
+      }
     }
   }
 `;
@@ -22,6 +25,7 @@ export const RealUserProvider = (props) => {
 
   // exposed user state
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // graphql query
   const skip = !isLoggedIn;
@@ -36,19 +40,26 @@ export const RealUserProvider = (props) => {
 
       // update state
       setUser(data.me);
+      setIsAdmin(
+        data.me &&
+          data.me.affiliations.some(
+            (d) => d.name === "Wellcome Sanger Institute"
+          )
+      );
     },
     onError() {
       // user query failed...
 
       // update state
       setUser(null);
+      setIsAdmin(false);
     },
     skip: !isLoggedIn,
   });
 
   return (
     <UserContext.Provider
-      value={{ user, getUser: () => refetch() }}
+      value={{ user, isAdmin, getUser: () => refetch() }}
       {...props}
     />
   );
@@ -61,9 +72,13 @@ export const AlwaysLoggedInUserProvider = (props) => {
     firstName: "Fake",
     lastName: "User",
   });
+  const [isAdmin] = useState(false);
 
   return (
-    <UserContext.Provider value={{ user, getUser: () => {} }} {...props} />
+    <UserContext.Provider
+      value={{ user, isAdmin, getUser: () => {} }}
+      {...props}
+    />
   );
 };
 

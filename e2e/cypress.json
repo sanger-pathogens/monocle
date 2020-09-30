@@ -3,6 +3,7 @@
   "pluginsFile": "plugins/index.js",
   "supportFile": false,
   "integrationFolder": "integration",
+  "fixturesFolder": "fixtures",
   "chromeWebSecurity": false,
-  "experimentalSourceRewriting": true
+  "experimentalSourceRewriting": false
 }

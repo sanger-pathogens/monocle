@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper } from "@material-ui/core";
+import { Paper, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +20,7 @@ const Page = ({ header, footer, children }) => {
   return (
     <Paper className={classes.page}>
       {header ? header : null}
-      {children ? children : null}
+      {children ? <Box flexGrow={1}>{children}</Box> : null}
       {footer ? footer : null}
     </Paper>
   );

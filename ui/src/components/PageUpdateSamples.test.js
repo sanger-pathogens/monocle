@@ -3,11 +3,9 @@ import { render, waitFor } from "@testing-library/react";
 
 import { mockUser } from "../test-utils/apiMocks";
 import MockProviders from "../test-utils/MockProviders";
-import PageHome from "./PageHome";
+import PageHome from "./PageUpdateSamples";
 
-// Note: PageHome is only rendered when logged in
-
-test("renders samples section header", async () => {
+test("renders update samples metadata section header", async () => {
   const { getByText } = render(
     <MockProviders isInitiallyLoggedIn={true}>
       <PageHome />
@@ -15,7 +13,7 @@ test("renders samples section header", async () => {
   );
 
   await waitFor(() => {
-    expect(getByText("Samples")).toBeInTheDocument();
+    expect(getByText("Update Sample Metadata")).toBeInTheDocument();
   });
 });
 

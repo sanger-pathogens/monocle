@@ -51,7 +51,7 @@ class Sample(models.Model):
         MENINGITIS = "meningitis"
         PNEUMONIA = "pneumonia"
         URINARY_TRACT_INFECTION = "urinary tract infection"
-        INFECTION_AND_SOFT_TISSUE_INFECTION = "skin and soft-tissue infection"
+        SKIN_AND_SOFT_TISSUE_INFECTION = "skin and soft-tissue infection"
         OSTEOMYELITIS = "osteomyelitis"
         ENDOCARDITIS = "endocarditis"
         SEPTIC_ARTHRITIS = "septic arthritis"

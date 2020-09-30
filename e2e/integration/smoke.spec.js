@@ -5,6 +5,6 @@ describe("smoke", () => {
 
   it("has page title", () => {
     cy.visit("/");
-    cy.title().should("eq", "Monocle");
+    cy.title().should("eq", "Monocle | Wellcome Sanger Institute");
   });
 });
