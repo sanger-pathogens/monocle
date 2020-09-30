@@ -1,3 +1,4 @@
+import sys
 import time
 from django.db import connection
 from django.db.utils import OperationalError
@@ -24,4 +25,12 @@ class Command(BaseCommand):
                 self.stdout.write("Database unavailable, waiting 1 second...")
                 time.sleep(1)
 
-        self.stdout.write(self.style.SUCCESS("Database available!"))
+        if db_conn:
+            self.stdout.write(self.style.SUCCESS("Database available!"))
+        else:
+            self.stdout.write(
+                self.style.ERROR(
+                    "Database not available after 10 attempts to connect."
+                )
+            )
+            sys.exit(1)
