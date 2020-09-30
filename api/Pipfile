@@ -18,6 +18,7 @@ uvicorn = "*"
 testfixtures = "*"
 django-environ = "*"
 graphene-django-extras = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.7"

@@ -8,3 +8,14 @@ ALLOWED_HOSTS = [
 ]
 DATA_DIR = "/data"
 USE_MOCK_LANE_DATA = True
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "docker",
+        "USER": "docker",
+        "PASSWORD": "docker",
+        "HOST": "db",
+        "PORT": "3306",
+    }
+}

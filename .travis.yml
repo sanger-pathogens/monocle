@@ -4,6 +4,8 @@ jobs:
     - name: api unit tests
       language: python
       python: "3.7"
+      env:
+        - DJANGO_SETTINGS_MODULE=juno.settings.unittest
       before_install:
         - cd api
       install:

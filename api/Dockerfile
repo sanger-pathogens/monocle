@@ -1,10 +1,14 @@
-FROM python:3-slim
+FROM python:3.7
 
 # pass version at build time (displayed in footer)
 ARG VERSION='VERSION'
 ENV VERSION=$VERSION
 
 WORKDIR /app
+
+# install several mysql related deps
+RUN apt-get upgrade -y
+RUN apt-get install -y default-libmysqlclient-dev
 
 # install (separation of COPY to help cache dependencies)
 COPY Pipfile Pipfile.lock /app/
@@ -13,12 +17,6 @@ RUN pip install pipenv \
 
 # add rest of code
 COPY . /app
-
-# TODO: make the database external
-#       (currently very small and read only)
-RUN python manage.py migrate \
-    && python manage.py loaddev \
-    && python manage.py collectstatic
 
 CMD ["gunicorn", "-w 3", "-b :80", "juno.wsgi"]
 
