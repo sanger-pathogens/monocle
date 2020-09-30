@@ -21,8 +21,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: juno.settings.e2e
     depends_on:
-      db:
-        condition: service_healthy
+      - db
   db:
     image: mysql:5
     environment:
@@ -32,7 +31,3 @@ services:
       MYSQL_PASSWORD: docker
     ports:
       - "9001:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
