@@ -112,7 +112,7 @@ describe("sample table update", () => {
       dragAndDropFile("test.txt", MIMETYPE_TEXT);
 
       // Filetype not expected
-      cy.contains("File type not accepted, sorry!");
+      cy.contains("File type not accepted.");
     });
   });
 
@@ -211,7 +211,9 @@ describe("sample table update", () => {
       cy.wait(API_WAIT_MS);
       cy.url().should("include", "/update");
       cy.contains("Added: 3").should("not.exist");
-      cy.contains("Click here or drop a file to upload!").should("exist");
+      cy.contains("Click or drop a valid metadata file to upload.").should(
+        "exist"
+      );
     });
   });
 
@@ -264,7 +266,9 @@ describe("sample table update", () => {
       cy.wait(API_WAIT_MS);
       cy.contains("Cancel").click();
       cy.url().should("include", "/update");
-      cy.contains("Click here or drop a file to upload!").should("exist");
+      cy.contains("Click or drop a valid metadata file to upload.").should(
+        "exist"
+      );
     });
   });
 

@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { Box, Typography } from "@material-ui/core";
 import { useDropzone } from "react-dropzone";
 import XLSX from "xlsx";
 
@@ -36,14 +37,21 @@ const UpdateSamplesDropZone = ({ setSheet }) => {
   });
 
   return (
-    <div className="container text-center mt-5" id="uploadButton">
-      <div {...getRootProps()}>
-        <input {...getInputProps()} />
-        {!isDragActive && "Click here or drop a file to upload!"}
-        {isDragActive && !isDragReject && "Drop it like it's hot!"}
-        {isDragReject && "File type not accepted, sorry!"}
-      </div>
-    </div>
+    <Box
+      bgcolor="primary.main"
+      minHeight="4rem"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      {...getRootProps()}
+    >
+      <input {...getInputProps()} />
+      <Typography align="center">
+        {!isDragActive && "Click or drop a valid metadata file to upload."}
+        {isDragActive && !isDragReject && "Drop the metadata file to upload."}
+        {isDragReject && "File type not accepted."}
+      </Typography>
+    </Box>
   );
 };
 
