@@ -16,9 +16,10 @@ API
 [![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)
 
 ## Components
-There are currently two components:
+There are currently three components:
 - User Interface (`ui` directory; a React application)
-- GraphQL API (`api` directory; a Django+Graphene application with mock data in SQLite3)
+- GraphQL API (`api` directory; a Django+Graphene application)
+- MySQL database (on a host managed by the Service Desk DBA team)
 
 There is a further README in each directory with more detailed information.
 

@@ -23,7 +23,7 @@ pipenv install
 pipenv shell
 ```
 
-Create a `sqlite3` database and load some sample data:
+Create the database and load some sample data (locally, the default is `SQLite3`, but you can uncomment some lines in `juno/settings/dev.py` to use `MySQL` instead, in order to mirror the production environment):
 ```
 python manage.py migrate
 python manage.py loaddev
