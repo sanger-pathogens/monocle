@@ -20,6 +20,8 @@ services:
         - HOSTNAME=<HOSTNAME>
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
+
+# Volume needs driver, since it's a mounted S3 bucket
 volumes:
     data:
         driver: local
@@ -27,3 +29,11 @@ volumes:
             o: bind
             type: none
             device: /home/pathpipe/monocle_juno_test
+
+# Change address range of default compose network so as
+# not to clash with ISG infrastructure
+networks:
+    default:
+       ipam:
+          config:
+              - subnet: 192.168.192.0/18
