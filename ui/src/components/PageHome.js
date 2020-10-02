@@ -14,7 +14,7 @@ const PageHome = () => {
   return (
     <Page header={<Header />} footer={<Footer />}>
       <Box>
-        <Section title="Samples">
+        <Section>
           {isAdmin ? (
             <Box pb={1}>
               <Button component={RouterLink} to="/update">
