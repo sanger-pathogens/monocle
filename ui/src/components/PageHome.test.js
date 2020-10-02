@@ -7,18 +7,6 @@ import PageHome from "./PageHome";
 
 // Note: PageHome is only rendered when logged in
 
-test("renders samples section header", async () => {
-  const { getByText } = render(
-    <MockProviders isInitiallyLoggedIn={true}>
-      <PageHome />
-    </MockProviders>
-  );
-
-  await waitFor(() => {
-    expect(getByText("Samples")).toBeInTheDocument();
-  });
-});
-
 test("renders logged in user's name", async () => {
   const { getByText } = render(
     <MockProviders isInitiallyLoggedIn={true}>
