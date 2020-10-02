@@ -1,8 +1,5 @@
 FROM python:3-slim
 
-ARG VERSION='VERSION'
-ENV VERSION=$VERSION
-
 WORKDIR /app
 
 # install (separation of COPY to help cache dependencies)

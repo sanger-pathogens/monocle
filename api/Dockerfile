@@ -1,9 +1,5 @@
 FROM python:3.7
 
-# pass version at build time (displayed in footer)
-ARG VERSION='VERSION'
-ENV VERSION=$VERSION
-
 WORKDIR /app
 
 # install several mysql related deps

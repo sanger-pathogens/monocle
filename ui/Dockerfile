@@ -5,10 +5,6 @@ FROM node:alpine as builder
 # `docker image prune --filter label=stage=builder`
 LABEL stage=builder
 
-# pass version at build time (displayed in footer)
-ARG VERSION='VERSION'
-ENV VERSION=$VERSION
-
 # install (separation of COPY to help cache node_modules)
 WORKDIR /app
 COPY package.json yarn.lock /app/
