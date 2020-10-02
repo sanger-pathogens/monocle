@@ -31,40 +31,35 @@ const Samples = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Metadata",
-        columns: [
-          {
-            Header: "Lane ID",
-            accessor: "laneId",
-          },
-          {
-            Header: "Sample ID",
-            accessor: "sampleId",
-          },
-          {
-            Header: "Public Name",
-            accessor: "publicName",
-          },
-          {
-            Header: "Submitter",
-            accessor: "submittingInstitution.name",
-          },
-          {
-            Header: "Host Status",
-            accessor: "hostStatus",
-          },
-          {
-            Header: "Serotype",
-            accessor: "serotype",
-          },
-          {
-            Header: "Actions",
-            canSort: false,
-            Cell: ({ row }) => (
-              <SampleDownloadButton laneId={row.original.laneId} />
-            ),
-          },
-        ],
+        Header: "Lane ID",
+        accessor: "laneId",
+      },
+      {
+        Header: "Sample ID",
+        accessor: "sampleId",
+      },
+      {
+        Header: "Public Name",
+        accessor: "publicName",
+      },
+      {
+        Header: "Submitter",
+        accessor: "submittingInstitution.name",
+      },
+      {
+        Header: "Host Status",
+        accessor: "hostStatus",
+      },
+      {
+        Header: "Serotype",
+        accessor: "serotype",
+      },
+      {
+        Header: "Actions",
+        canSort: false,
+        Cell: ({ row }) => (
+          <SampleDownloadButton laneId={row.original.laneId} />
+        ),
       },
     ],
     []
