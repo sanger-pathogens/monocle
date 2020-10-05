@@ -11,17 +11,17 @@ describe("SampleDownloadButton", () => {
     const isDownloading = false;
     const downloadSample = jest.fn();
 
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <DownloadingContext.Provider value={{ isDownloading, downloadSample }}>
         <SampleDownloadButton laneId={laneId} />
       </DownloadingContext.Provider>
     );
 
     act(() => {
-      fireEvent.click(getByText(laneId));
+      fireEvent.click(getByLabelText(laneId));
     });
 
-    expect(getByText(laneId)).toBeInTheDocument();
+    expect(getByLabelText(laneId)).toBeInTheDocument();
     expect(downloadSample).toHaveBeenCalled();
   });
 
@@ -29,13 +29,13 @@ describe("SampleDownloadButton", () => {
     const isDownloading = true;
     const downloadSample = jest.fn();
 
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <DownloadingContext.Provider value={{ isDownloading, downloadSample }}>
         <SampleDownloadButton laneId={laneId} />
       </DownloadingContext.Provider>
     );
 
-    expect(getByText(laneId)).toBeInTheDocument();
-    expect(getByText(laneId).closest("button")).toBeDisabled();
+    expect(getByLabelText(laneId)).toBeInTheDocument();
+    expect(getByLabelText(laneId).closest("button")).toBeDisabled();
   });
 });

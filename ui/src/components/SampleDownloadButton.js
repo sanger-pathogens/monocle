@@ -19,11 +19,11 @@ const SampleDownloadButton = ({ laneId }) => {
   };
   return (
     <IconButton
-      id={`download-sample-${laneId}`}
       className={classes.margin}
       onClick={handler}
       disabled={isDownloading}
       size="small"
+      aria-label={laneId}
     >
       <CloudDownload fontSize="inherit" />
     </IconButton>
