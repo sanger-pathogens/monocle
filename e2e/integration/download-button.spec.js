@@ -12,9 +12,9 @@ describe("download button", () => {
       login(user.email);
 
       // button does not exist
-      cy.get(`table#sampleTable`)
-        .contains("td button", "31663_7#113")
-        .should("not.exist");
+      cy.get(`table#sampleTable td button[aria-label="31663_7#113"]`).should(
+        "not.exist"
+      );
     });
   });
 
@@ -29,7 +29,9 @@ describe("download button", () => {
       login(user.email);
 
       // button exists
-      cy.get(`table#sampleTable`).contains("td button", "31663_7#113");
+      cy.get(`table#sampleTable td button[aria-label="31663_7#113"]`).should(
+        "exist"
+      );
     });
   });
 
@@ -55,8 +57,7 @@ describe("download button", () => {
 
       const stub = cy.stub();
       cy.on("window:alert", stub);
-      cy.get(`table#sampleTable`)
-        .contains("td button", laneId)
+      cy.get(`table#sampleTable td button[aria-label="${laneId}"]`)
         .click()
         .then(() => {
           expect(stub.getCall(0)).to.be.calledWith(expectedDownloads.join(";"));
