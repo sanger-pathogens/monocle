@@ -126,3 +126,29 @@ class AuthTestCase(AuthenticatableGraphQLTestCase):
         # refresh to get a new access token fails?
         response = self.refresh_token()
         self.validate_refresh_token_signature_expired(response)
+
+    def test_new_password_succeeds_after_changing_password(self):
+        # login
+        response = self.login(self.user.email, self.PASSWORD)
+        self.validate_login_successful(response)
+
+        # change password
+        new_password = "YOSEMITE"
+        response = self.change_password(self.PASSWORD, new_password)
+
+        # login again with new password
+        response = self.login(self.user.email, new_password)
+        self.validate_login_successful(response)
+
+    def test_old_password_fails_after_changing_password(self):
+        # login
+        response = self.login(self.user.email, self.PASSWORD)
+        self.validate_login_successful(response)
+
+        # change password
+        new_password = "YOSEMITE"
+        response = self.change_password(self.PASSWORD, new_password)
+
+        # attempt login again with old password
+        response = self.login(self.user.email, self.PASSWORD)
+        self.validate_unsuccessful(response)
