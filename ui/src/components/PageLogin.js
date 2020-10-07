@@ -6,7 +6,7 @@ import Page from "./Page";
 import Footer from "./Footer";
 import Login from "./Login";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   container: {
     flex: 1,
     display: "flex",
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
-}));
+});
 
 const PageLogin = () => {
   const classes = useStyles();
