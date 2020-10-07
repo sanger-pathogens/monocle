@@ -1,11 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
   Button,
-  Link,
   useScrollTrigger,
   Typography,
+  Menu,
+  MenuItem,
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
@@ -48,31 +50,64 @@ const Header = () => {
   const { logout } = useAuth();
   const { user } = useUser();
 
-  return (
-    <AppBar
-      position="fixed"
-      color={trigger ? "primary" : "transparent"}
-      style={{ borderBottom: trigger ? "2px solid white" : "none" }}
-      elevation={0}
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      keepMounted
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      open={isMenuOpen}
+      onClose={handleProfileMenuClose}
     >
-      <Toolbar variant="dense">
-        <Button id="buttonHome" color="inherit" href="/" component={Link}>
-          Monocle
-        </Button>
-        <div className={classes.grow} />
-        {user ? (
-          <div className={classes.user}>
-            <AccountCircle className={classes.accountIcon} />
-            <Typography variant="button">
-              {user.firstName} {user.lastName}
-            </Typography>
-          </div>
-        ) : null}
-        <Button id="buttonLogout" color="inherit" onClick={() => logout()}>
-          Logout
-        </Button>
-      </Toolbar>
-    </AppBar>
+      <MenuItem component={Link} to="/change-password">
+        Change Password
+      </MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
+    </Menu>
+  );
+
+  return (
+    <React.Fragment>
+      <AppBar
+        position="fixed"
+        color={trigger ? "primary" : "transparent"}
+        style={{ borderBottom: trigger ? "2px solid white" : "none" }}
+        elevation={0}
+      >
+        <Toolbar variant="dense">
+          {/* title/home button */}
+          <Button id="buttonHome" color="default" to="/" component={Link}>
+            Monocle
+          </Button>
+
+          {/* fill horizontally */}
+          <div className={classes.grow} />
+
+          {/* user profile */}
+          {user ? (
+            <Button id="buttonProfileMenu" onClick={handleProfileMenuOpen}>
+              <AccountCircle className={classes.accountIcon} />
+              <Typography variant="button">
+                {user.firstName} {user.lastName}
+              </Typography>
+            </Button>
+          ) : null}
+        </Toolbar>
+      </AppBar>
+
+      {/* user profile menu */}
+      {renderMenu}
+    </React.Fragment>
   );
 };
 
