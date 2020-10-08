@@ -1,11 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
   Button,
   useScrollTrigger,
   Typography,
+  Link,
   Menu,
   MenuItem,
 } from "@material-ui/core";
@@ -69,7 +69,7 @@ const Header = () => {
       open={isMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem component={Link} to="/change-password">
+      <MenuItem component={Link} href="/change-password">
         Change Password
       </MenuItem>
       <MenuItem onClick={logout}>Logout</MenuItem>
@@ -86,7 +86,7 @@ const Header = () => {
       >
         <Toolbar variant="dense">
           {/* title/home button */}
-          <Button id="buttonHome" color="default" to="/" component={Link}>
+          <Button id="buttonHome" color="default" href="/" component={Link}>
             Monocle
           </Button>
 
