@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 });
 
-const Footer = () => {
+const PageFooter = () => {
   const classes = useStyles();
   return (
     <Box className={classes.footer} mt={8}>
@@ -90,4 +90,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default PageFooter;
