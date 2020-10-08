@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Box, Button } from "@material-ui/core";
 
 import Page from "./Page";
-import Header from "./Header";
+import Header from "./PageHeader";
 import Section from "./Section";
 import Samples from "./SamplesTable";
 import { useUser } from "../user";
