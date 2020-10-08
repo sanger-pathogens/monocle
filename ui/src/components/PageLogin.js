@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 const PageLogin = () => {
   const classes = useStyles();
   return (
-    <Page header={null}>
+    <Page hideHeader>
       <Box className={classes.container}>
         <Login />
       </Box>

@@ -2,6 +2,7 @@ import React from "react";
 import { Paper, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+import PageHeader from "./PageHeader";
 import PageFooter from "./PageFooter";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,11 +18,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Page = ({ header, hideFooter, children }) => {
+const Page = ({ hideHeader, hideFooter, children }) => {
   const classes = useStyles();
   return (
     <Paper className={classes.page}>
-      {header ? header : null}
+      {hideHeader ? null : <PageHeader />}
       {children ? <Box flexGrow={1}>{children}</Box> : null}
       {hideFooter ? null : <PageFooter />}
     </Paper>
