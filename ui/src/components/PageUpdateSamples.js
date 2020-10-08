@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 
 import Page from "./Page";
-import Header from "./Header";
+import Header from "./PageHeader";
 import Section from "./Section";
 import UpdateSamplesManager from "./UpdateSamplesManager";
 
