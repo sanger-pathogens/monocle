@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Page from "./Page";
-import Footer from "./Footer";
+import Footer from "./PageFooter";
 import ChangePassword from "./ChangePassword";
 
 const useStyles = makeStyles({

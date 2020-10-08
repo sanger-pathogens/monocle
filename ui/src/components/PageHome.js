@@ -4,7 +4,7 @@ import { Box, Button } from "@material-ui/core";
 
 import Page from "./Page";
 import Header from "./Header";
-import Footer from "./Footer";
+import Footer from "./PageFooter";
 import Section from "./Section";
 import Samples from "./SamplesTable";
 import { useUser } from "../user";
