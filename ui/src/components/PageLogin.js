@@ -3,7 +3,6 @@ import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Page from "./Page";
-import Footer from "./PageFooter";
 import Login from "./Login";
 
 const useStyles = makeStyles({
@@ -19,7 +18,7 @@ const useStyles = makeStyles({
 const PageLogin = () => {
   const classes = useStyles();
   return (
-    <Page header={null} footer={<Footer />}>
+    <Page header={null}>
       <Box className={classes.container}>
         <Login />
       </Box>

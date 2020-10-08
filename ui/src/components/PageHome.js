@@ -4,7 +4,6 @@ import { Box, Button } from "@material-ui/core";
 
 import Page from "./Page";
 import Header from "./Header";
-import Footer from "./PageFooter";
 import Section from "./Section";
 import Samples from "./SamplesTable";
 import { useUser } from "../user";
@@ -12,7 +11,7 @@ import { useUser } from "../user";
 const PageHome = () => {
   const { isAdmin } = useUser();
   return (
-    <Page header={<Header />} footer={<Footer />}>
+    <Page header={<Header />}>
       <Box>
         <Section>
           {isAdmin ? (
