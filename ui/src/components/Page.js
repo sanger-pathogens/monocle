@@ -18,7 +18,7 @@ const Page = ({ hideHeader, hideFooter, children }) => {
       bgcolor="primary.dark"
     >
       {hideHeader ? null : <PageHeader />}
-      {children ? <Box flexGrow={1}>{children}</Box> : null}
+      <Box flexGrow={1}>{children}</Box>
       {hideFooter ? null : <PageFooter />}
     </Box>
   );
