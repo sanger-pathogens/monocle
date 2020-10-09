@@ -5,6 +5,9 @@ import { Box, Typography, TextField, Paper, Button } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { useAuth } from "../auth";
+import { useHistory } from "react-router-dom";
+
 const useStyles = makeStyles({
   login: {
     maxWidth: "400px",
@@ -22,9 +25,19 @@ const CHANGE_PASSWORD_MUTATION = gql`
 
 const ChangePassword = () => {
   const classes = useStyles();
+  const history = useHistory();
+  const { logout } = useAuth();
 
-  const [changePasswordMutation, { error }] = useMutation(
-    CHANGE_PASSWORD_MUTATION
+  const [changePasswordMutation, { error, data }] = useMutation(
+    CHANGE_PASSWORD_MUTATION,
+    {
+      onCompleted({ changePassword }) {
+        if (changePassword && changePassword.committed) {
+          logout();
+          history.push("/");
+        }
+      },
+    }
   );
   const changePassword = ({ oldPassword, newPassword }) => {
     changePasswordMutation({ variables: { oldPassword, newPassword } });
@@ -50,6 +63,11 @@ const ChangePassword = () => {
           {error ? (
             <Alert severity="error" elevation={0} variant="filled">
               {error}
+            </Alert>
+          ) : null}
+          {data && data.changePassword && !data.changePassword.committed ? (
+            <Alert severity="info" elevation={0} variant="filled">
+              Password not changed. Did you enter the correct old password?
             </Alert>
           ) : null}
           <TextField

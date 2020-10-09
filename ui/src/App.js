@@ -15,7 +15,7 @@ const App = () => {
         <Route exact path="/">
           {isLoading ? null : isLoggedIn ? <PageHome /> : <PageLogin />}
         </Route>
-        <Route exact path="/change-password">
+        <Route path="/change-password">
           <PageChangePassword />
         </Route>
         <Route path="/update">
