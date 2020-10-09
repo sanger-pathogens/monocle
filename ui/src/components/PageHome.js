@@ -11,18 +11,16 @@ const PageHome = () => {
   const { isAdmin } = useUser();
   return (
     <Page>
-      <Box>
-        <Section>
-          {isAdmin ? (
-            <Box pb={1}>
-              <Button component={RouterLink} to="/update">
-                Update metadata from spreadsheet
-              </Button>
-            </Box>
-          ) : null}
-          <Samples />
-        </Section>
-      </Box>
+      <Section>
+        {isAdmin ? (
+          <Box pb={1}>
+            <Button component={RouterLink} to="/update">
+              Update metadata from spreadsheet
+            </Button>
+          </Box>
+        ) : null}
+        <Samples />
+      </Section>
     </Page>
   );
 };
