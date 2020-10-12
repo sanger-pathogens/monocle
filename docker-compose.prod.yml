@@ -4,6 +4,9 @@ services:
     image: "sangerpathogens/monocle-app:<VERSION>"
     ports:
         - "80:80"
+    restart: unless-stopped
+    security_opt:
+       - no-new-privileges
     volumes:
         - ./settings.js:/usr/share/nginx/html/settings.js
         - ./nginx.conf:/etc/nginx/conf.d/default.conf
@@ -13,6 +16,9 @@ services:
     image: "sangerpathogens/monocle-api:<VERSION>"
     ports:
         - "8000:80"
+    restart: unless-stopped
+    security_opt:
+       - no-new-privileges
     volumes:
         - data:/data
         - ./my.cnf:/etc/mysql/my.cnf
@@ -28,7 +34,7 @@ volumes:
         driver_opts:
             o: bind
             type: none
-            device: /home/pathpipe/monocle_juno_test
+            device: /home/<USER>/monocle_juno
 
 # Change address range of default compose network so as
 # not to clash with ISG infrastructure
