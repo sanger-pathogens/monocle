@@ -26,7 +26,7 @@ cd ${deploy_dir}
 trap "{ if [[ -d ${deploy_dir} ]]; then rm -rf ${deploy_dir}; fi }" EXIT
 git checkout tags/${VERSION}
 
-# Validate inout args
+# Validate input args
 source "${deploy_dir}/utils/common.sh"
 validate_environment "${ENVIRONMENT}"
 validate_version "${VERSION}"
