@@ -1,29 +1,27 @@
 import React from "react";
-import { Paper, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
-  page: {
-    margin: 0,
-    padding: 0,
-    maxWidth: "100%",
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "stretch",
-    flexDirection: "column",
-    background: theme.palette.primary.dark,
-  },
-}));
+import PageHeader from "./PageHeader";
+import PageFooter from "./PageFooter";
+import PageContent from "./PageContent";
 
-const Page = ({ header, footer, children }) => {
-  const classes = useStyles();
-  return (
-    <Paper className={classes.page}>
-      {header ? header : null}
-      {children ? <Box flexGrow={1}>{children}</Box> : null}
-      {footer ? footer : null}
-    </Paper>
-  );
-};
+const Page = ({ hideHeader, hideFooter, centerContent, children }) => (
+  <Box
+    margin={0}
+    padding={0}
+    paddingTop={hideHeader ? 0 : "48px"}
+    maxWidth="100%"
+    minHeight="100vh"
+    display="flex"
+    alignItems="stretch"
+    flexDirection="column"
+    bgcolor="primary.dark"
+    color="text.primary"
+  >
+    {hideHeader ? null : <PageHeader />}
+    <PageContent centerContent={centerContent}>{children}</PageContent>
+    {hideFooter ? null : <PageFooter />}
+  </Box>
+);
 
 export default Page;

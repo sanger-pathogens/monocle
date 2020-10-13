@@ -43,7 +43,10 @@ export const login = (email) => {
   cy.wait(API_WAIT_MS);
 };
 export const logout = () => {
-  // find and click logout button
+  // click the profile menu
+  cy.get("#buttonProfileMenu").click();
+
+  // now click logout button
   cy.contains("Logout").click();
 
   // await page change
