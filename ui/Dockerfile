@@ -1,6 +1,10 @@
 # ---------- build step ----------
 FROM node:alpine as builder
 
+# git needed
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
+
 # label, so that intermediate images can easily be removed with
 # `docker image prune --filter label=stage=builder`
 LABEL stage=builder
