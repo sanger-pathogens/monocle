@@ -1,6 +1,0 @@
-FROM node:alpine
-
-WORKDIR /app
-RUN yarn install --silent
-
-EXPOSE 3000

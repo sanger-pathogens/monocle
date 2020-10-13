@@ -57,24 +57,9 @@ Notes:
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
 
 ## Development
-There are two supported ways to set up a development environment:
-- using `docker-compose`
-- installing dependencies locally and running directly on your development machine
 
-### Development with `docker-compose`
-If you have `docker` installed, run:
-```
-docker-compose -f docker-compose.dev.yml build
-docker-compose -f docker-compose.dev.yml up
-```
-
-It should then be possible to run commands on subcomponents with:
-```
-docker-compose -f docker-compose.dev.yml run <subcomponent> <command>
-```
-
-### Development directly on your development machine
-This requires a bit more setup, but may be easier to debug. Also, editor integration such as python linting/autocomplete may be easier to set up. Read about setting up the [ui](ui/README.md) and [api](api/README.md) separately.
+### Setup
+Read about setting up the [ui](ui/README.md) and [api](api/README.md) separately.
 
 ## Data
 In production, the real data files are loaded from an S3 bucket, which is synced from farm5. If you have Sanger credentials, see the companion gitlab repo [monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
