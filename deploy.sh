@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 # Deploy a release of Monocle.
+# The version number provided is expected to be without the leading v, e.g. 0.1.26
 
 # check args count
 if [ $# -ne 4 ]; then
-  echo "Usage: $0 <environment - prod|dev> <version> <remote user> <deployment host address>"
+  echo "Usage: $0 <environment - prod|dev> <version e.g. 0.1.1> <remote user> <deployment host address>"
   exit 1
 fi
 
@@ -24,7 +25,7 @@ deploy_dir=$(mktemp -d -t monocle-XXXXXXXXXX)
 git clone https://github.com/sanger-pathogens/monocle.git ${deploy_dir}
 cd ${deploy_dir}
 trap "{ if [[ -d ${deploy_dir} ]]; then rm -rf ${deploy_dir}; fi }" EXIT
-git checkout tags/${VERSION}
+git checkout tags/v${VERSION}
 
 # Validate input args
 source "${deploy_dir}/utils/common.sh"
@@ -56,11 +57,11 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
     sed -i -e "s/<SECRET_KEY>/\${API_SECRET_KEY}/g" docker-compose.yml
-
     echo "Setting configuration in UI's settings.js..."
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
     echo "Setting file permissions..."
-    chmod 600 docker-compose.yml settings.js nginx.conf
+    chmod 600 docker-compose.yml
+    chmod 644 settings.js nginx.conf
     echo "Starting new containers..."
     docker-compose up -d
     echo "Done."
