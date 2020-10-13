@@ -1,4 +1,4 @@
-const baseUrl = "http://<HOSTNAME>:8000/";
+const baseUrl = "http://<HOSTNAME>/api/";
 
 window.env = {
   API_ROOT_URL: baseUrl,

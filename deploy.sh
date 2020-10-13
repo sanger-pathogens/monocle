@@ -59,6 +59,8 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
 
     echo "Setting configuration in UI's settings.js..."
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
+    echo "Setting file permissions..."
+    chmod 600 docker-compose.yml settings.js nginx.conf
     echo "Starting new containers..."
     docker-compose up -d
     echo "Done."
