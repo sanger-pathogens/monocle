@@ -228,6 +228,24 @@ class AuthenticatableGraphQLTestCase(GraphQLTestCase):
 
         return response
 
+    def change_password(self, old_password, new_password):
+        response = self.post(
+            """
+            mutation ChangePassword($old_password: String!, $new_password: String!) {
+                changePassword(oldPassword: $old_password, newPassword: $new_password) {
+                    committed
+                }
+            }
+            """,
+            op_name="ChangePassword",
+            variables={
+                "old_password": old_password,
+                "new_password": new_password,
+            },
+        )
+
+        return response
+
     def validate_login_successful(self, response):
         data = self.validate_successful(response)
         token_auth = self.validate_field(data, "tokenAuth")

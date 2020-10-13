@@ -227,6 +227,29 @@ class UpdateSamplesMutation(Mutation):
         return UpdateSamplesMutation(committed=committed, diff=diff)
 
 
+class ChangePasswordMutation(Mutation):
+    class Arguments:
+        old_password = NonNull(String)
+        new_password = NonNull(String)
+
+    committed = NonNull(Boolean)
+
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, old_password, new_password, *args, **kwargs):
+        # get current user
+        user = info.context.user
+
+        # reset if old password valid
+        committed = False
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            committed = True
+
+        return ChangePasswordMutation(committed=committed)
+
+
 class Mutation(object):
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
@@ -234,6 +257,7 @@ class Mutation(object):
     delete_token_cookie = DeleteTokens.Field()
 
     update_samples = UpdateSamplesMutation.Field()
+    change_password = ChangePasswordMutation.Field()
 
 
 class Query(object):
