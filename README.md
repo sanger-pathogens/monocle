@@ -3,7 +3,7 @@ Monocle is an exploration tool for data from the [Juno project](https://www.gbsg
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
 [![Build Status](https://travis-ci.com/sanger-pathogens/monocle.svg?branch=master)](https://travis-ci.com/sanger-pathogens/monocle)  
-[![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle) 
+[![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle)
 
 UI
 
@@ -48,7 +48,7 @@ Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built t
 
 Now run:
 ```
-./deploy.sh <version> <dev|prod>
+./deploy.sh <prod|dev> <version e.g. 0.1.1> <remote user> <host address>
 ```
 
 Notes:
