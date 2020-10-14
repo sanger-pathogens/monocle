@@ -75,7 +75,7 @@ const PageFooter = () => {
               <Typography variant="body1" align="right">
                 <Link
                   className={classes.footerLink}
-                  href={`https://github.com/sanger-pathogens/juno-app/commit/${process.env.REACT_APP_VERSION}`}
+                  href={`https://github.com/sanger-pathogens/monocle/tree/v${process.env.REACT_APP_VERSION}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -44,8 +44,8 @@
     "xlsx": "^0.16.5"
   },
   "scripts": {
-    "start": "REACT_APP_VERSION=\"$(git rev-parse --short HEAD)\" react-scripts start",
-    "build": "REACT_APP_VERSION=\"$(git rev-parse --short HEAD)\" react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:ci": "SKIP_PREFLIGHT_CHECK=true CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject"
