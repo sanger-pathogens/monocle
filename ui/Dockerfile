@@ -1,13 +1,13 @@
 # ---------- build step ----------
 FROM node:alpine as builder
 
-# git needed
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
-
 # label, so that intermediate images can easily be removed with
 # `docker image prune --filter label=stage=builder`
 LABEL stage=builder
+
+# use the DOCKER_TAG build arg from hub.docker.com to set
+# the version, or the string x.y.z as a default
+ARG DOCKER_TAG=x.y.z
 
 # install (separation of COPY to help cache node_modules)
 WORKDIR /app
@@ -15,9 +15,11 @@ COPY package.json yarn.lock /app/
 RUN yarn install --silent --network-timeout 1000000
 ENV PATH /app/node_modules/.bin:$PATH
 
-# build the static files
+# copy source
 COPY . /app
-RUN yarn build
+
+# build static files
+RUN REACT_APP_VERSION=$DOCKER_TAG yarn build
 
 
 # ---------- production runtime ----------
