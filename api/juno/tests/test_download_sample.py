@@ -34,8 +34,8 @@ class TestMakeTarfileReal(unittest.TestCase):
         self.expected_archive_files = [
             self.lane_id + "_1.fastq.gz",
             self.lane_id + "_2.fastq.gz",
-            self.lane_id + ".contigs_spades.fa",
-            self.lane_id + ".spades.gff"
+            self.lane_id + ".fa",
+            self.lane_id + ".gff"
         ]
 
         for file in self.files:
@@ -63,7 +63,7 @@ class TestMakeTarfileReal(unittest.TestCase):
 
         # contains individual data files?
         for filename in self.expected_archive_files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))
 
     def test_raises_filenotfound_for_invalid_lane(self):
         with self.assertRaises(FileNotFoundError):
@@ -83,8 +83,8 @@ class TestMakeTarfileMock(unittest.TestCase):
         self.expected_archive_files = [
             self.lane_id + "_1.fastq.gz",
             self.lane_id + "_2.fastq.gz",
-            self.lane_id + ".contigs_spades.fa",
-            self.lane_id + ".spades.gff"
+            self.lane_id + ".fa",
+            self.lane_id + ".gff"
         ]
 
     def tearDown(self):
@@ -113,7 +113,7 @@ class TestMakeTarfileMock(unittest.TestCase):
 
         # contains individual data files?
         for filename in self.expected_archive_files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))
 
     def test_returns_bytes_for_other_lane(self):
         """
@@ -134,4 +134,4 @@ class TestMakeTarfileMock(unittest.TestCase):
 
         # contains individual data files?
         for filename in self.expected_archive_files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))
