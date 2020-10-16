@@ -26,7 +26,7 @@ def get_read2_fastq_file_path(lane_id):
 
 def get_spades_assembly_contigs_download_name(lane_id):
     """ The file name that will be downloaded """
-    return lane_id + ".contigs_spades.fa"
+    return lane_id + ".fa"
 
 
 def get_spades_assembly_contigs_file_path(lane_id):
@@ -36,7 +36,7 @@ def get_spades_assembly_contigs_file_path(lane_id):
 
 def get_spades_annotation_gff_download_name(lane_id):
     """ The file name that will be downloaded """
-    return lane_id + ".spades.gff"
+    return lane_id + ".gff"
 
 
 def get_spades_annotation_gff_file_path(lane_id):

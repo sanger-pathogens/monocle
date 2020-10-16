@@ -19,8 +19,8 @@ class TestDownloads(TestCase):
         self.url_annotation = "/annotation/31663_7%23113"
         self.filename_read1 = "31663_7#113_1.fastq.gz"
         self.filename_read2 = "31663_7#113_2.fastq.gz"
-        self.filename_assembly = "31663_7#113.contigs_spades.fa"
-        self.filename_annotation = "31663_7#113.spades.gff"
+        self.filename_assembly = "31663_7#113.fa"
+        self.filename_annotation = "31663_7#113.gff"
 
         # small mock data files
         settings.USE_MOCK_LANE_DATA = True
