@@ -12,24 +12,34 @@ class TestMakeTarfileReal(unittest.TestCase):
     def setUp(self):
         # create DATA_DIR
         self.data_dir = TempDirectory()
+        self.data_dir.makedir("reads")
+        self.data_dir.makedir("assembly")
+        self.data_dir.makedir("annotation")
 
         # create extraction directory
         self.extract_dir = TempDirectory()
 
-        # create single lane directory
+        # test lane
         self.lane_id = "31663_7#113"
 
         # create mock files for single lane
         self.files = [
+            os.path.join("reads", self.lane_id + "_1.fastq.gz"),
+            os.path.join("reads", self.lane_id + "_2.fastq.gz"),
+            os.path.join("assembly", self.lane_id + ".contigs_spades.fa"),
+            os.path.join("annotation", self.lane_id + ".spades.gff")
+        ]
+
+        # define what we expect to find in a tar download
+        self.expected_archive_files = [
             self.lane_id + "_1.fastq.gz",
             self.lane_id + "_2.fastq.gz",
-            "spades_assembly/contigs.fa",
-            "spades_assembly/annotation/" + self.lane_id + ".gff",
+            self.lane_id + ".fa",
+            self.lane_id + ".gff"
         ]
-        for filename in self.files:
-            self.data_dir.write(
-                "/".join([self.lane_id, filename]), b"some data"
-            )
+
+        for file in self.files:
+            self.data_dir.write(file, b"some data")
 
         # override settings
         settings.DATA_DIR = self.data_dir.path
@@ -52,8 +62,8 @@ class TestMakeTarfileReal(unittest.TestCase):
         tar.extractall(self.extract_dir.path + "/extract/")
 
         # contains individual data files?
-        for filename in self.files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+        for filename in self.expected_archive_files:
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))
 
     def test_raises_filenotfound_for_invalid_lane(self):
         with self.assertRaises(FileNotFoundError):
@@ -69,12 +79,12 @@ class TestMakeTarfileMock(unittest.TestCase):
         self.lane_id = "31663_7#113"
         self.other_lane_id = "31663_7#115"
 
-        # expected filenames
-        self.files = [
+        # define what we expect to find in a download
+        self.expected_archive_files = [
             self.lane_id + "_1.fastq.gz",
             self.lane_id + "_2.fastq.gz",
-            "spades_assembly/contigs.fa",
-            "spades_assembly/annotation/" + self.lane_id + ".gff",
+            self.lane_id + ".fa",
+            self.lane_id + ".gff"
         ]
 
     def tearDown(self):
@@ -102,10 +112,15 @@ class TestMakeTarfileMock(unittest.TestCase):
         tar.extractall(self.extract_dir.path + "/extract/")
 
         # contains individual data files?
-        for filename in self.files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+        for filename in self.expected_archive_files:
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))
 
     def test_returns_bytes_for_other_lane(self):
+        """
+            Although we specify a different lane here, because we are operating
+            in mock mode it will just use the default mock lane
+        """
+
         tar_file = downloads.make_tarfile(self.other_lane_id)
 
         # file?
@@ -118,5 +133,5 @@ class TestMakeTarfileMock(unittest.TestCase):
         tar.extractall(self.extract_dir.path + "/extract/")
 
         # contains individual data files?
-        for filename in self.files:
-            os.path.isfile(self.extract_dir.path + "/extract/" + filename)
+        for filename in self.expected_archive_files:
+            self.assertTrue(os.path.isfile(self.extract_dir.path + "/extract/" + filename))

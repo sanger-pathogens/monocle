@@ -1,20 +1,20 @@
 import io
-import os
 from django.http import FileResponse, StreamingHttpResponse, Http404
 from django.conf import settings
 from wsgiref.util import FileWrapper
 
-from juno.api.downloads import make_tarfile
+from juno.api import downloads
+
+MOCK_LANE_ID = "31663_7#113"
 
 
 def download_read_1(request, lane_id):
     if settings.USE_MOCK_LANE_DATA:
-        lane_id = "31663_7#113"
+        lane_id = MOCK_LANE_ID
 
-    filename = lane_id + "_1.fastq.gz"
-    filepath = os.path.abspath(
-        os.path.join(settings.DATA_DIR, lane_id, filename)
-    )
+    filename = downloads.get_read1_fastq_download_name(lane_id)
+    filepath = downloads.get_read1_fastq_file_path(lane_id)
+
     return FileResponse(
         open(filepath, "rb"), filename=filename, as_attachment=True
     )
@@ -22,12 +22,11 @@ def download_read_1(request, lane_id):
 
 def download_read_2(request, lane_id):
     if settings.USE_MOCK_LANE_DATA:
-        lane_id = "31663_7#113"
+        lane_id = MOCK_LANE_ID
 
-    filename = lane_id + "_2.fastq.gz"
-    filepath = os.path.abspath(
-        os.path.join(settings.DATA_DIR, lane_id, filename)
-    )
+    filename = downloads.get_read2_fastq_download_name(lane_id)
+    filepath = downloads.get_read2_fastq_file_path(lane_id)
+
     return FileResponse(
         open(filepath, "rb"), filename=filename, as_attachment=True
     )
@@ -35,12 +34,11 @@ def download_read_2(request, lane_id):
 
 def download_assembly(request, lane_id):
     if settings.USE_MOCK_LANE_DATA:
-        lane_id = "31663_7#113"
+        lane_id = MOCK_LANE_ID
 
-    filename = lane_id + ".fa"
-    filepath = os.path.abspath(
-        os.path.join(settings.DATA_DIR, lane_id, "spades_assembly/contigs.fa")
-    )
+    filename = downloads.get_spades_assembly_contigs_download_name(lane_id)
+    filepath = downloads.get_spades_assembly_contigs_file_path(lane_id)
+
     return FileResponse(
         open(filepath, "rb"), filename=filename, as_attachment=True
     )
@@ -48,16 +46,11 @@ def download_assembly(request, lane_id):
 
 def download_annotation(request, lane_id):
     if settings.USE_MOCK_LANE_DATA:
-        lane_id = "31663_7#113"
+        lane_id = MOCK_LANE_ID
 
-    filename = lane_id + ".gff"
-    filepath = os.path.abspath(
-        os.path.join(
-            settings.DATA_DIR,
-            lane_id,
-            "spades_assembly/annotation/" + lane_id + ".gff",
-        )
-    )
+    filename = downloads.get_spades_annotation_gff_download_name(lane_id)
+    filepath = downloads.get_spades_annotation_gff_file_path(lane_id)
+
     return FileResponse(
         open(filepath, "rb"), filename=filename, as_attachment=True
     )
@@ -65,7 +58,7 @@ def download_annotation(request, lane_id):
 
 def download_sample(request, laneId):
     try:
-        file_in_mem = make_tarfile(laneId)
+        file_in_mem = downloads.make_tarfile(laneId)
     except FileNotFoundError:
         raise Http404
     filename = laneId + ".tar.gz"

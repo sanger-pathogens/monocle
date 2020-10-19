@@ -1,4 +1,3 @@
-from juno.api import views
 import unittest
 from django.test import Client
 import io
@@ -12,7 +11,7 @@ class TestDownload(unittest.TestCase):
         self.url = "/SampleDownload/31663_7%23113_1"
 
     def test_download_sample(self):
-        with patch("juno.api.views.make_tarfile", return_value=io.BytesIO()) as tarMock:
+        with patch("juno.api.downloads.make_tarfile", return_value=io.BytesIO()) as tarMock:
             response = self.client.get(self.url)
         self.assertEquals(
             response.get("Content-Disposition"),
@@ -22,7 +21,7 @@ class TestDownload(unittest.TestCase):
 
     def test_download_sample_file_not_found(self):
         with patch(
-            "juno.api.views.make_tarfile", side_effect=FileNotFoundError
+            "juno.api.downloads.make_tarfile", side_effect=FileNotFoundError
         ) as tarMock:
             try:
                 self.client.get(self.url)
