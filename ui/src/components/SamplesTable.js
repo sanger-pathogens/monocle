@@ -45,6 +45,7 @@ const Samples = () => {
       {
         Header: "Submitter",
         accessor: "submittingInstitution.name",
+        id: "submittingInstitution",
       },
       {
         Header: "Host Status",
@@ -82,11 +83,8 @@ const Samples = () => {
         const limit = pageSize;
         const ordering =
           sortBy && sortBy.length === 1
-            ? `${sortBy[0].desc ? "-" : ""}${camelCaseToSnakeCase(
-                sortBy[0].id
-              )}`
+            ? `${sortBy[0].desc ? "-" : ""}${camelCaseToSnakeCase(sortBy[0].id)}`
             : "lane_id";
-
         // call api
         loadData({
           variables: {
