@@ -45,6 +45,7 @@ const Samples = () => {
       {
         Header: "Submitter",
         accessor: "submittingInstitution.name",
+        id: "submittingInstitution",
       },
       {
         Header: "Host Status",
@@ -88,7 +89,7 @@ const Samples = () => {
                 sortBy[0].id
               )}`
             : "sample_id";
-
+  
         // call api
         loadData({
           variables: {
