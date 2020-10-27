@@ -90,7 +90,7 @@ describe("sample table update", () => {
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
       // changes recongised?
-      cy.contains("Added: 4").should("exist");
+      cy.contains("Added: 5").should("exist");
     });
   });
 
@@ -206,11 +206,11 @@ describe("sample table update", () => {
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
       // clear button reloads page and removes stats
-      cy.contains("Added: 4").should("exist");
+      cy.contains("Added: 5").should("exist");
       cy.contains("Clear").click();
       cy.wait(API_WAIT_MS);
       cy.url().should("include", "/update");
-      cy.contains("Added: 4").should("not.exist");
+      cy.contains("Added: 5").should("not.exist");
       cy.contains("Click or drop a valid metadata file to upload.").should(
         "exist"
       );
@@ -272,7 +272,7 @@ describe("sample table update", () => {
     });
   });
 
-  it("Commiting spreadsheet adds samples to the table correctly", () => {
+  it("Committing spreadsheet adds samples to the table correctly", () => {
     loadDatabaseProfile(DB_PROFILES.EMPTY).then((db) => {
       // load and login
       cy.visit("/");
@@ -298,17 +298,16 @@ describe("sample table update", () => {
       cy.url().should("include", "/");
 
       // Table has 3 samples added
-      cy.get("table#sampleTable tbody").find("tr").should("have.length", 4);
-      cy.get("table#sampleTable tbody")
-        .contains("31663_7#1000")
-        .should("exist");
+      cy.get("table#sampleTable tbody").find("tr").should("have.length", 5);
+      cy.get("table#sampleTable tbody").contains("31663_7#1000").should("exist");
       cy.get("table#sampleTable tbody").contains("31663_7#113").should("exist");
       cy.get("table#sampleTable tbody").contains("31663_7#115").should("exist");
       cy.get("table#sampleTable tbody").contains("1234STDY1235").should("exist");
+      cy.get("table#sampleTable tbody").contains("1234STDY1236").should("exist");
     });
   });
 
-  it("Commiting spreadsheet removes samples correctly", () => {
+  it("Committing spreadsheet removes samples correctly", () => {
     loadDatabaseProfile(DB_PROFILES.SMALL).then((db) => {
       // load and login
       cy.visit("/");
@@ -325,7 +324,7 @@ describe("sample table update", () => {
       // load the new file
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
-      // commit button should not be diasbled
+      // commit button should not be disabled
       cy.contains("Commit").click();
       cy.wait(API_WAIT_MS);
 
@@ -351,6 +350,7 @@ describe("sample table update", () => {
 
       // check sample added
       cy.get("table#sampleTable tbody").contains("1234STDY1235").should("exist");
+      cy.get("table#sampleTable tbody").contains("1234STDY1236").should("exist");
     });
   });
 });
