@@ -16,8 +16,15 @@ const UpdateSamplesDropZone = ({ setSheet }) => {
           const worksheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[worksheetName];
 
-          // TODO: handle spreadsheet->JSON array parse failures
-          const json = XLSX.utils.sheet_to_json(worksheet);
+          // Trim sheet fields...
+          const sheet_json = XLSX.utils.sheet_to_json(worksheet);
+          const json = JSON.parse(JSON.stringify(sheet_json, (key, value) => (typeof value === 'string' ? value.trim() : value)))
+
+          // Check for missing lane ids
+          json.forEach((row)  => {
+            if (row.laneId === undefined) row.laneId = "";
+          });
+
           setSheet(json);
         };
         reader.readAsBinaryString(f);

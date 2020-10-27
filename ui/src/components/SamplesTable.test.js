@@ -51,10 +51,18 @@ test("queries and renders non-empty table content when logged in", async () => {
 
   // mock data present in table?
   mockSamplesList.results.forEach(
-    ({ laneId, publicName, hostStatus, serotype }) => {
-      const row = getAllByText(laneId)[0].closest("tr");
+    ({ sampleId, laneId, publicName, hostStatus, serotype }) => {
+
+      const row = getAllByText(sampleId)[0].closest("tr");
 
       // per column field checks
+      if (laneId) {
+        expect(within(row).getByText(laneId)).toBeInTheDocument();
+        expect(within(row).queryByRole('button')).toBeInTheDocument();
+      } else {
+        // Check download button is not shown when we have no lane id
+        expect(within(row).queryByRole('button')).toBeNull();
+      }
       expect(within(row).getByText(publicName)).toBeInTheDocument();
       expect(within(row).getByText(hostStatus)).toBeInTheDocument();
       expect(within(row).getByText(serotype)).toBeInTheDocument();

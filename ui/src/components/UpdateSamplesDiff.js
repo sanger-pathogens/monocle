@@ -29,15 +29,15 @@ const DIFF_QUERY = gql`
   query CompareSamples($samples: [SampleInput!]!) {
     compareSamples(samples: $samples) {
       added {
-        laneId
+        sampleId
       }
       removed {
-        laneId
+        sampleId
       }
       changed {
+        sampleId
         laneId
         hostStatus
-        sampleId
         publicName
         serotype
         submittingInstitution {
@@ -45,7 +45,7 @@ const DIFF_QUERY = gql`
         }
       }
       same {
-        laneId
+        sampleId
       }
       missingInstitutions
     }
@@ -80,7 +80,7 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
     history.push(path);
   };
 
-  if (loading || error || !data) {
+  if ( error || (!loading && !data)) {
     return (
       <GenericDialog
         showModal={true}
@@ -92,34 +92,35 @@ const UpdateSamplesDiff = ({ sheet, setSheet, setIsCommittable }) => {
         onCancel={routeHome}
       />
     );
+  } else if (!loading && data) {
+    const { missingInstitutions, added, removed, changed } = data.compareSamples;
+    return (
+      <Card className={classes.root}>
+        <CardContent>
+          <Typography className={classes.title} gutterBottom>
+            Update Summary
+          </Typography>
+          <Typography variant="body2" component="p">
+            Changed: {changed.length}
+            <br />
+            Added: {added.length}
+            <br />
+            Removed: {removed.length}
+            <br />
+            Missing Institutions: {missingInstitutions.length}
+            <br />
+            <br />
+          </Typography>
+          <Typography className={classes.pos} color="textSecondary">
+            Please consider these results carefully before clicking commit. These
+            changes can't be reversed!
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  } else {
+    return null;
   }
-
-  const { missingInstitutions, added, removed, changed } = data.compareSamples;
-
-  return (
-    <Card className={classes.root}>
-      <CardContent>
-        <Typography className={classes.title} gutterBottom>
-          Update Summary
-        </Typography>
-        <Typography variant="body2" component="p">
-          Changed: {changed.length}
-          <br />
-          Added: {added.length}
-          <br />
-          Removed: {removed.length}
-          <br />
-          Missing Institutions: {missingInstitutions.length}
-          <br />
-          <br />
-        </Typography>
-        <Typography className={classes.pos} color="textSecondary">
-          Please consider these results carefully before clicking commit. These
-          changes can't be reversed!
-        </Typography>
-      </CardContent>
-    </Card>
-  );
 };
 
 export default UpdateSamplesDiff;

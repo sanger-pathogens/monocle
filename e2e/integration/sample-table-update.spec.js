@@ -90,7 +90,7 @@ describe("sample table update", () => {
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
       // changes recongised?
-      cy.contains("Added: 3").should("exist");
+      cy.contains("Added: 4").should("exist");
     });
   });
 
@@ -206,11 +206,11 @@ describe("sample table update", () => {
       dragAndDropFile("test_committable.xlsx", MIMETYPE_EXCEL);
 
       // clear button reloads page and removes stats
-      cy.contains("Added: 3").should("exist");
+      cy.contains("Added: 4").should("exist");
       cy.contains("Clear").click();
       cy.wait(API_WAIT_MS);
       cy.url().should("include", "/update");
-      cy.contains("Added: 3").should("not.exist");
+      cy.contains("Added: 4").should("not.exist");
       cy.contains("Click or drop a valid metadata file to upload.").should(
         "exist"
       );
@@ -298,12 +298,13 @@ describe("sample table update", () => {
       cy.url().should("include", "/");
 
       // Table has 3 samples added
-      cy.get("table#sampleTable tbody").find("tr").should("have.length", 3);
+      cy.get("table#sampleTable tbody").find("tr").should("have.length", 4);
       cy.get("table#sampleTable tbody")
         .contains("31663_7#1000")
         .should("exist");
       cy.get("table#sampleTable tbody").contains("31663_7#113").should("exist");
       cy.get("table#sampleTable tbody").contains("31663_7#115").should("exist");
+      cy.get("table#sampleTable tbody").contains("1234STDY1235").should("exist");
     });
   });
 
@@ -328,11 +329,11 @@ describe("sample table update", () => {
       cy.contains("Commit").click();
       cy.wait(API_WAIT_MS);
 
-      // Modal pops up
+      // modal pops up
       cy.contains("Okay").click();
       cy.url().should("include", "/");
 
-      // Check samples removed from table
+      // check samples removed from table
       cy.get("table#sampleTable tbody")
         .contains("32820_2#367")
         .should("not.exist");
@@ -340,13 +341,16 @@ describe("sample table update", () => {
         .contains("32820_2#368")
         .should("not.exist");
 
-      // Check samples changed
+      // check samples changed
       cy.get("table#sampleTable tbody")
         .contains("Wellcome Sanger Institute")
         .should("exist");
       cy.get("table#sampleTable tbody")
         .contains("National Reference Laboratories")
         .should("not.exist");
+
+      // check sample added
+      cy.get("table#sampleTable tbody").contains("1234STDY1235").should("exist");
     });
   });
 });

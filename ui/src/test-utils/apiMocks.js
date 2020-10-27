@@ -22,8 +22,8 @@ export const mockUser = {
 
 export const mockSamples = [
   {
-    laneId: "31663_7#113",
     sampleId: "5903STDY8059170",
+    laneId: "31663_7#113",
     publicName: "CUHK_GBS177WT_16",
     hostStatus: "SKIN_AND_SOFT_TISSUE_INFECTION",
     serotype: "IA",
@@ -33,9 +33,20 @@ export const mockSamples = [
     },
   },
   {
-    laneId: "32820_2#367",
     sampleId: "5903STDY8113194",
+    laneId: "32820_2#367",
     publicName: "JN_IL_ST31578",
+    hostStatus: "PNEUMONIA",
+    serotype: "VI",
+    submittingInstitution: {
+      name: "The Chinese University of Hong Kong",
+      country: "China",
+    },
+  },
+  {
+    sampleId: "5903STDY8114195",
+    laneId: null,
+    publicName: "JN_IL_ST31590",
     hostStatus: "PNEUMONIA",
     serotype: "VI",
     submittingInstitution: {
@@ -47,7 +58,7 @@ export const mockSamples = [
 
 export const mockSamplesList = {
   results: mockSamples,
-  totalCount: 2,
+  totalCount: 3,
 };
 
 export const mockLoginSuccess = {
@@ -157,7 +168,7 @@ export const generateApiMocks = (mocks = mockDefaults) => {
       {
         request: {
           query: SAMPLES_LIST_QUERY,
-          variables: { offset: 0, limit: 10, ordering: "lane_id" },
+          variables: { offset: 0, limit: 10, ordering: "sample_id" },
         },
         result: () => {
           called.samplesListQuery += 1;

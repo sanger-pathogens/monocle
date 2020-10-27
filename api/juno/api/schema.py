@@ -27,6 +27,9 @@ from juno.api.delete_tokens_mutation import DeleteTokens
 from juno.api import models
 
 
+EMPTY_SAMPLE_RECORD_FIELD = ""
+
+
 class Institution(DjangoObjectType):
     class Meta:
         model = models.Institution
@@ -59,7 +62,7 @@ class SampleList(DjangoListObjectType):
         description = " Type definition for user list "
         model = models.Sample
         pagination = LimitOffsetGraphqlPagination(
-            default_limit=10, ordering="lane_id"
+            default_limit=10, ordering="sample_id"
         )
 
 
@@ -123,9 +126,10 @@ def deep_compare(sample1, sample2):
 
 def diff_samples(samples_db, samples_to_compare):
     # build look up tables
-    samples_db_lut = {sample.lane_id: sample for sample in samples_db}
+
+    samples_db_lut = {sample.sample_id: sample for sample in samples_db}
     samples_to_compare_lut = {
-        sample.lane_id: sample for sample in samples_to_compare
+        sample.sample_id: sample for sample in samples_to_compare
     }
 
     # get id sets
@@ -182,7 +186,7 @@ def deserialise_samples(samples):
         models.Sample(
             submitting_institution_id=sample.submitting_institution,
             **{
-                key: value
+                key: value if value != EMPTY_SAMPLE_RECORD_FIELD else None
                 for key, value in sample.items()
                 if key != "submitting_institution"
             },
@@ -200,9 +204,6 @@ class UpdateSamplesMutation(Mutation):
 
     @classmethod
     def mutate(cls, root, info, samples, *args, **kwargs):
-        # TODO: consider that lane_id is not really metadata
-        # (metadata should be indexed by public name, since
-        # lane_id is sequencing related and may not be known)
         committed = False
         with transaction.atomic():
             # retrieve samples from db
@@ -214,7 +215,7 @@ class UpdateSamplesMutation(Mutation):
             # compute diff
             diff = diff_samples(samples_db, samples_to_compare)
 
-            # only make there are no missing institutions
+            # only update if there are no missing institutions
             if len(diff["missing_institutions"]) == 0:
                 # clear samples table in db
                 samples_db.delete()
