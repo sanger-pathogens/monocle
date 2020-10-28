@@ -15,16 +15,16 @@ const UPDATE_MUTATION = gql`
       committed
       diff {
         added {
-          laneId
+          sampleId
         }
         removed {
-          laneId
+          sampleId
         }
         changed {
-          laneId
+          sampleId
         }
         same {
-          laneId
+          sampleId
         }
         missingInstitutions
       }

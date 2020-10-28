@@ -9,6 +9,7 @@ import PageUpdateSamples from "./components/PageUpdateSamples";
 
 const App = () => {
   const { isLoggedIn, isLoading } = useAuth();
+
   return (
     <Router>
       <Switch>
@@ -16,10 +17,10 @@ const App = () => {
           {isLoading ? null : isLoggedIn ? <PageHome /> : <PageLogin />}
         </Route>
         <Route path="/change-password">
-          <PageChangePassword />
+          {isLoading ? null : isLoggedIn ? <PageChangePassword /> : <PageLogin />}
         </Route>
         <Route path="/update">
-          <PageUpdateSamples />
+          {isLoading ? null : isLoggedIn ? <PageUpdateSamples /> : <PageLogin />}
         </Route>
       </Switch>
     </Router>

@@ -48,16 +48,16 @@ class SamplesQueryRestrictedTestCase(AuthenticatableGraphQLTestCase):
 
         # put a sample in the db per institution
         self.sample_other = Sample.objects.create(
-            lane_id="31663_7#113",
             sample_id="5903STDY8059170",
+            lane_id="31663_7#113",
             public_name="CUHK_GBS177WT_16",
             serotype="Ia",
             host_status="skin and soft-tissue infection",
             submitting_institution=self.institution_other,
         )
         self.sample_another = Sample.objects.create(
-            lane_id="31663_7#114",
             sample_id="5903STDY8059171",
+            lane_id="31663_7#114",
             public_name="CUHK_GBS177WT_17",
             serotype="Ib",
             host_status="skin and soft-tissue infection",
@@ -98,7 +98,7 @@ class SamplesQueryRestrictedTestCase(AuthenticatableGraphQLTestCase):
 
     def test_non_authenticated_user_cannot_view_samples(self):
         # call api
-        response = self.make_paginated_samples_query("laneId")
+        response = self.make_paginated_samples_query("sampleId")
 
         # checks
         content = self.validate_unsuccessful(response)
@@ -118,12 +118,12 @@ class SamplesQueryRestrictedTestCase(AuthenticatableGraphQLTestCase):
         self.validate_login_successful(response)
 
         # call api
-        samples = self.make_and_validate_samples_query("laneId")
+        samples = self.make_and_validate_samples_query("sampleId")
 
         # checks
         self.assertEqual(len(samples), 1)
         self.validate_field(
-            samples[0], "laneId", expected_value=self.sample_other.lane_id,
+            samples[0], "sampleId", expected_value=self.sample_other.sample_id,
         )
 
     def test_sanger_user_can_view_all_samples(self):
@@ -132,13 +132,13 @@ class SamplesQueryRestrictedTestCase(AuthenticatableGraphQLTestCase):
         self.validate_login_successful(response)
 
         # call api
-        samples = self.make_and_validate_samples_query("laneId")
+        samples = self.make_and_validate_samples_query("sampleId")
 
         # checks
         self.assertEqual(len(samples), 2)
         self.validate_field(
-            samples[0], "laneId", expected_value=self.sample_other.lane_id,
+            samples[0], "sampleId", expected_value=self.sample_other.sample_id,
         )
         self.validate_field(
-            samples[1], "laneId", expected_value=self.sample_another.lane_id,
+            samples[1], "sampleId", expected_value=self.sample_another.sample_id,
         )

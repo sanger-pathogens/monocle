@@ -124,37 +124,46 @@ class Command(BaseCommand):
 
         # samples
         Sample.objects.create(
-            lane_id="31663_7#113",
             sample_id="5903STDY8059170",
+            lane_id="31663_7#113",
             public_name="CUHK_GBS177WT_16",
             serotype="Ia",
             host_status="skin and soft-tissue infection",
             submitting_institution=nrl,
         )
         Sample.objects.create(
-            lane_id="31663_7#115",
             sample_id="5903STDY8059071",
+            lane_id="31663_7#115",
             public_name="NA",
             serotype="Ib",
             host_status="meningitis",
             submitting_institution=nrl,
         )
         Sample.objects.create(
-            lane_id="32820_2#367",
             sample_id="5903STDY8113194",
+            lane_id="32820_2#367",
             public_name="JN_IL_ST31578",
             serotype="VI",
             host_status="pneumonia",
             submitting_institution=cuhk,
         )
         Sample.objects.create(
-            lane_id="32820_2#368",
             sample_id="5903STDY8113195",
+            lane_id="32820_2#368",
             public_name="JN_IL_ST31579",
             serotype="V",
             host_status="pneumonia",
             submitting_institution=sanger,
         )
+        """ No lane id... 
+        Sample.objects.create(
+            sample_id="5903STDY8113196",
+            lane_id=None,
+            public_name="JN_IL_ST31580",
+            serotype="V",
+            host_status="pneumonia",
+            submitting_institution=sanger,
+        )"""
 
     def large(self):
         self.clear()
@@ -221,8 +230,8 @@ class Command(BaseCommand):
             submitting_institution = random.choice([sanger, nrl, cuhk])
 
             Sample.objects.create(
-                lane_id=lane_id,
                 sample_id=sample_id,
+                lane_id=lane_id,
                 public_name=public_name,
                 serotype=serotype,
                 host_status=host_status,

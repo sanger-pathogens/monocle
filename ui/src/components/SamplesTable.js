@@ -11,8 +11,8 @@ export const SAMPLES_LIST_QUERY = gql`
   query SamplesList($offset: Int, $limit: Int, $ordering: String) {
     samplesList {
       results(limit: $limit, offset: $offset, ordering: $ordering) {
-        laneId
         sampleId
+        laneId
         publicName
         hostStatus
         serotype
@@ -31,12 +31,12 @@ const Samples = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "Lane ID",
-        accessor: "laneId",
-      },
-      {
         Header: "Sample ID",
         accessor: "sampleId",
+      },
+      {
+        Header: "Lane ID",
+        accessor: "laneId",
       },
       {
         Header: "Public Name",
@@ -59,13 +59,15 @@ const Samples = () => {
         Header: "Actions",
         canSort: false,
         Cell: ({ row }) => (
-          <SampleDownloadButton laneId={row.original.laneId} />
+          row.original.laneId
+             ? <SampleDownloadButton laneId={row.original.laneId} />
+             : ""
         ),
       },
     ],
     []
   );
-  const sortBy = useMemo(() => [{ id: "laneId", desc: false }], []);
+  const sortBy = useMemo(() => [{ id: "sampleId", desc: false }], []);
 
   // see https://github.com/tannerlinsley/react-table/discussions/2296
   let [loadData, { loading, error, data }] = useLazyQuery(SAMPLES_LIST_QUERY, {
@@ -83,8 +85,11 @@ const Samples = () => {
         const limit = pageSize;
         const ordering =
           sortBy && sortBy.length === 1
-            ? `${sortBy[0].desc ? "-" : ""}${camelCaseToSnakeCase(sortBy[0].id)}`
-            : "lane_id";
+            ? `${sortBy[0].desc ? "-" : ""}${camelCaseToSnakeCase(
+                sortBy[0].id
+              )}`
+            : "sample_id";
+  
         // call api
         loadData({
           variables: {

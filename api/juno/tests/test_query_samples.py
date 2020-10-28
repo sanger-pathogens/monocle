@@ -28,8 +28,8 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
 
         # put a sample in the db, submitted by the institution
         self.sample = Sample.objects.create(
-            lane_id="31663_7#113",
             sample_id="5903STDY8059170",
+            lane_id="31663_7#113",
             public_name="CUHK_GBS177WT_16",
             serotype="Ia",
             host_status="skin and soft-tissue infection",
@@ -122,4 +122,15 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
             submitting_institution,
             "name",
             expected_value=self.institution.name,
+        )
+
+    def test_has_field_no_lane_id(self):
+
+        # Remove the lane_id
+        self.sample.lane_id = None
+        self.sample.save()
+
+        samples = self.make_and_validate_samples_query("laneId")
+        self.validate_field(
+            samples[0], "laneId", expected_value=None,
         )

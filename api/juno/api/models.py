@@ -64,8 +64,8 @@ class Sample(models.Model):
         MASTITIS = "mastitis"
         DISEASE_OTHER = "disease other"
 
-    lane_id = models.CharField(max_length=256, primary_key=True)
-    sample_id = models.CharField(max_length=256, unique=True)
+    sample_id = models.CharField(max_length=256, primary_key=True)
+    lane_id = models.CharField(max_length=256, unique=True, null=True)
     public_name = models.CharField(max_length=256, unique=True)
     host_status = models.CharField(max_length=256, choices=HostStatus.choices)
     serotype = models.CharField(max_length=7, choices=Serotype.choices)

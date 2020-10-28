@@ -20,7 +20,7 @@ describe("sample table sorting", () => {
     }
   };
 
-  it("defaults to sorting by laneId ascending", () => {
+  it("defaults to sorting by sampleId ascending", () => {
     loadDatabaseProfile(DB_PROFILES.LARGE).then((db) => {
       const pageSize = 10;
 
@@ -32,15 +32,43 @@ describe("sample table sorting", () => {
       const user = db.user[0];
       login(user.email);
 
-      // table contains first page sorted by laneId ascending only?
+      // table contains first page sorted by sampleId ascending only?
       const firstPage = db.sample
-        .sort(fieldComparator((d) => d.lane_id, true))
+        .sort(fieldComparator((d) => d.sample_id, true))
         .slice(0, pageSize);
       cy.get("table#sampleTable tbody")
         .find("tr")
         .should("have.length", pageSize);
-      firstPage.forEach(({ lane_id }) => {
-        cy.get(`table#sampleTable`).contains("td", lane_id);
+      firstPage.forEach(({ sample_id }) => {
+        cy.get(`table#sampleTable`).contains("td", sample_id);
+      });
+    });
+  });
+
+  it("changes to sorting by sampleId descending on clicking the sampleId column header", () => {
+    loadDatabaseProfile(DB_PROFILES.LARGE).then((db) => {
+      const pageSize = 10;
+
+      // non-empty samples table with more than one page?
+      expect(db.sample.length).to.be.greaterThan(pageSize);
+
+      // login as sanger user (can view all samples)
+      cy.visit("/");
+      const user = db.user[0];
+      login(user.email);
+
+      // click the sampleId column header
+      cy.contains("Sample ID").click();
+
+      // table contains first page sorted by sampleId descending only?
+      const firstPage = db.sample
+        .sort(fieldComparator((d) => d.sample_id, false))
+        .slice(0, pageSize);
+      cy.get("table#sampleTable tbody")
+        .find("tr")
+        .should("have.length", pageSize);
+      firstPage.forEach(({ sample_id }) => {
+        cy.get(`table#sampleTable`).contains("td", sample_id);
       });
     });
   });
@@ -60,37 +88,9 @@ describe("sample table sorting", () => {
       // click the laneId column header
       cy.contains("Lane ID").click();
 
-      // table contains first page sorted by laneId descending only?
+      // table contains first page sorted by laneId ascending only?
       const firstPage = db.sample
-        .sort(fieldComparator((d) => d.lane_id, false))
-        .slice(0, pageSize);
-      cy.get("table#sampleTable tbody")
-        .find("tr")
-        .should("have.length", pageSize);
-      firstPage.forEach(({ lane_id }) => {
-        cy.get(`table#sampleTable`).contains("td", lane_id);
-      });
-    });
-  });
-
-  it("changes to sorting by sampleId ascending on clicking the sampleId column header", () => {
-    loadDatabaseProfile(DB_PROFILES.LARGE).then((db) => {
-      const pageSize = 10;
-
-      // non-empty samples table with more than one page?
-      expect(db.sample.length).to.be.greaterThan(pageSize);
-
-      // login as sanger user (can view all samples)
-      cy.visit("/");
-      const user = db.user[0];
-      login(user.email);
-
-      // click the laneId column header
-      cy.contains("Sample ID").click();
-
-      // table contains first page sorted by laneId descending only?
-      const firstPage = db.sample
-        .sort(fieldComparator((d) => d.sample_id, true))
+        .sort(fieldComparator((d) => d.lane_id, true))
         .slice(0, pageSize);
       cy.get("table#sampleTable tbody")
         .find("tr")

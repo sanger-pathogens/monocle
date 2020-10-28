@@ -41,8 +41,8 @@ type Refresh {
 }
 
 type Sample {
-  laneId: String!
   sampleId: String!
+  laneId: String!
   publicName: String!
   hostStatus: SampleHostStatus!
   serotype: SampleSerotype!
