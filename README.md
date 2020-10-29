@@ -48,10 +48,11 @@ Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built t
 
 Now run:
 ```
-./deploy.sh <prod|dev> <version e.g. 0.1.1> <remote user> <host address>
+./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m >yes|no>-u <remote user> -h <host address>
 ```
 
 Notes:
+- Using <b>-m yes</b> will also run any release Django database migrations
 - Although separate containers are built for UI and API components, they are currently deployed to the same OpenStack VM, running with `docker-compose`. This may change.
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
