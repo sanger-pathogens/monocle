@@ -48,7 +48,7 @@ Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built t
 
 Now run:
 ```
-./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m >yes|no>-u <remote user> -h <host address>
+./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m <yes|no> -u <remote user> -h <host address>
 ```
 
 Notes:
