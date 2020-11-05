@@ -46,6 +46,7 @@ services:
         - ./my.cnf:/etc/mysql/my.cnf
     environment:
         - HOSTNAME=<HOSTNAME>
+        - HOSTNAME_PUBLIC=<HOSTNAME_PUBLIC>
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
 

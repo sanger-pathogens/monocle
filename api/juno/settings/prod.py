@@ -7,7 +7,11 @@ env = environ.Env()
 
 DEBUG = False
 SECRET_KEY = env("SECRET_KEY")
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", env("HOSTNAME")]
+if env("HOSTNAME_PUBLIC"):
+    ALLOWED_HOSTS.append(env("HOSTNAME_PUBLIC"))
+
 DATA_DIR = "/data"
 USE_MOCK_LANE_DATA = False
 

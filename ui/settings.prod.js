@@ -1,4 +1,4 @@
-const baseUrl = "http://<HOSTNAME>/api/";
+const baseUrl = `${document.URL.startsWith("https") ? "https" : "http"}://${document.domain}/api/`;
 
 window.env = {
   API_ROOT_URL: baseUrl,

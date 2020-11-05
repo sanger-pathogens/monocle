@@ -79,8 +79,10 @@ fi
 
 if [[ "$ENVIRONMENT" == "prod" ]]; then
     DOMAIN=monocle.pam.sanger.ac.uk
+    PUBLIC_DOMAIN=monocle.sanger.ac.uk
 elif [[ "$ENVIRONMENT" == "dev" ]]; then
     DOMAIN=monocle.dev.pam.sanger.ac.uk
+    PUBLIC_DOMAIN=
 else
     usage
 fi
@@ -121,6 +123,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Setting configuration in docker-compose.yml..."
     sed -i -e "s/<VERSION>/${VERSION}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
+    sed -i -e "s/<HOSTNAME_PUBLIC>/${PUBLIC_DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
     sed -i -e "s/<SECRET_KEY>/\${API_SECRET_KEY}/g" docker-compose.yml
     echo "Setting configuration in UI's settings.js..."
