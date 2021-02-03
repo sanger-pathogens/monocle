@@ -6,14 +6,10 @@ Monocle is an exploration tool for data from the [Juno project](https://www.gbsg
 
 UI
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-app.svg)](https://hub.docker.com/sangerpathogens/monocle-app)  
-[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-app.svg)](https://hub.docker.com/r/sangerpathogens/monocle-app)
 [![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-app/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-app)
 
 API
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)  
-[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)
 [![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-api/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-api)
 
 ## Components
