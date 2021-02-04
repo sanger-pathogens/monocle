@@ -44,10 +44,7 @@ Integration tests:
   stage: integration_test
   tags:
     - openstack-autoscale-theta
-  image: docker:19
-  services:
-    - name:  "${DOCKER_DIND_IMAGE}"
-      alias: docker
+  image: "${DOCKER_DIND_IMAGE}"
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST:        "tcp://docker:2375"
