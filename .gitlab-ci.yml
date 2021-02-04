@@ -26,11 +26,9 @@ API unit tests:
   before_script:
     - cd api
     - pip install pipenv
-    - pipenv install
+    - pipenv install --system
     - pip install codecov
   script:
-    - pwd
-    - pipenv run ./manage.py test
     - coverage run ./manage.py test && codecov -F api
     
 ## at every push/merge to master, tag the latest image builds as 'unstable'
