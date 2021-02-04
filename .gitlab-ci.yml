@@ -1,25 +1,15 @@
 
-#image: docker:19
-
 stages:
-  - test
-  - codecov
+  - unit_test
+  - integration_test
   
+
 variables:
   CODECOV_TOKEN: "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
-  #DOCKER_BUILDKIT:    1
-  #DOCKER_TLS_CERTDIR: ""
-  #DOCKER_HOST:        "tcp://docker:2375"
-    
-#services:
-  #- name:  gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/parasite-genomics-panoptes/gitlab-ci-dind:fd94a3871d14398a8064c6e5ec8e3bf40dce4c92
-    #alias: docker
-
-#before_script:
-  #- echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:09c9110a51a0b6c380ca36ff269f32b3a0b068cb"
   
 API unit tests:
-  stage: test
+  stage: unit_test
   tags:
     - openstack-autoscale-theta
   variables:
@@ -35,7 +25,7 @@ API unit tests:
    
     
 App unit tests:
-  stage: test
+  stage: unit_test
   tags:
     - openstack-autoscale-theta
   image: "node:12"
@@ -50,38 +40,21 @@ App unit tests:
     - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
     
-    
-## at every push/merge to master, tag the latest image builds as 'unstable'
-#Push unstable:
-  #variables:
-    ## only working with docker images; don't need to clone repo
-    #GIT_STRATEGY: none
-  #stage: push
-  #tags:
-    #- openstack-autoscale-theta
-  #only:
-    #- master
-  #script:
-    #- docker pull ${IMAGE_NAME}:${CI_COMMIT_SHA}
-    #- docker tag  ${IMAGE_NAME}:${CI_COMMIT_SHA} ${IMAGE_NAME}:unstable
-    #- echo "🐳 Pushing ${IMAGE_NAME}:unstable 🐳"
-    #- docker push ${IMAGE_NAME}:unstable
-
-## at every release/tag, tag the images built from the latest image builds as 'latest'
-#Push tag:
-  #variables:
-    ## only working with docker images; don't need to clone repo
-    #GIT_STRATEGY: none
-  #stage: push
-  #tags:
-    #- openstack-autoscale-theta
-  #only:
-    #- tags
-  #script:
-    #- docker pull ${IMAGE_NAME}:${CI_COMMIT_SHA}
-    #- >
-         #for this_tag in $CI_COMMIT_REF_NAME 'latest'; do
-            #docker tag  ${IMAGE_NAME}:${CI_COMMIT_SHA} ${IMAGE_NAME}:${this_tag}
-            #echo "🐳 Pushing ${IMAGE_NAME}:${this_tag} 🐳"
-            #docker push ${IMAGE_NAME}:${this_tag}
-         #done
+Integration tests:
+  stage: integration_test
+  tags:
+    - openstack-autoscale-theta
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST:        "tcp://docker:2375"
+  before_script:
+    - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
+    - yarn install
+    - docker-compose -f docker-compose.e2e.yml build
+  script:
+    - docker-compose -f docker-compose.e2e.yml up -d
+    - cd e2e
+    - yarn test:ci
