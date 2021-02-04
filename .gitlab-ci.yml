@@ -40,12 +40,15 @@ App unit tests:
     - openstack-autoscale-theta
   image: "node:12"
   before_script:
+    - apt-get -qq update
+    - apt-get install -y python-pip
+    - pip install codecov
     - cd ui
     - yarn install
+    
   script:
-    - bash <(curl -s https://codecov.io/bash) --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
- 
-   
+    - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+
     
     
 ## at every push/merge to master, tag the latest image builds as 'unstable'
