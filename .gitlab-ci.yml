@@ -29,7 +29,7 @@ API unit tests:
     - pipenv install --system
     - pip install codecov
   script:
-    - coverage run ./manage.py test && codecov -F api
+    - coverage run ./manage.py test && codecov --file api --commit ${CI_COMMIT_SHA} --required
     
 ## at every push/merge to master, tag the latest image builds as 'unstable'
 #Push unstable:
