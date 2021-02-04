@@ -34,16 +34,16 @@ API unit tests:
     - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
    
     
-#App unit tests:
-  #stage: test
-  #tags:
-    #- openstack-autoscale-theta
-  #image: "node:12"
-  #before_script:
-    #- cd ui
-    #- yarn install
-  #script:
-    #- bash <(curl -s https://codecov.io/bash) --file ui --commit ${CI_COMMIT_SHA} --required
+App unit tests:
+  stage: test
+  tags:
+    - openstack-autoscale-theta
+  image: "node:12"
+  before_script:
+    - cd ui
+    - yarn install
+  script:
+    - bash <(curl -s https://codecov.io/bash) --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
  
    
     
