@@ -6,6 +6,12 @@ DOCKER_BUILDKIT=1
 COMMIT=$(git rev-parse HEAD)
 REGISTRY=gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle
 
+git update-index --refresh
+if ! git diff-index --quiet HEAD --; then
+   echo "Please commit your changes and run again: the docker tag is based on the last commit SHA-1."
+   exit 255
+fi
+
 docker_login_done=false
 if [ ! -z ${GITLAB_USER} ] && [ ! -z ${GITLAB_TOKEN+x} ]; then
    echo "${GITLAB_TOKEN}" | docker login -u "${GITLAB_USER}" --password-stdin "${REGISTRY}"
