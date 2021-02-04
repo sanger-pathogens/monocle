@@ -1,0 +1,69 @@
+
+#image: docker:19
+
+#stages:
+  #- test
+
+#variables:
+  #DOCKER_BUILDKIT:    1
+  #DOCKER_TLS_CERTDIR: ""
+  #DOCKER_HOST:        "tcp://docker:2375"
+    
+#services:
+  #- name:  gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/parasite-genomics-panoptes/gitlab-ci-dind:fd94a3871d14398a8064c6e5ec8e3bf40dce4c92
+    #alias: docker
+
+#before_script:
+  #- echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  
+API unit tests:
+  stage: test
+  tags:
+    - openstack-autoscale-theta
+  variables:
+    DJANGO_SETTINGS_MODULE: "juno.settings.unittest"
+  image: "python:3.7"
+  before_script:
+    - cd api
+    - pip install pipenv
+    - pipenv install
+    - pip install codecov
+  script:
+    - pwd
+    - pipenv run ./manage.py test
+    - coverage run ./manage.py test && codecov -F api
+    
+## at every push/merge to master, tag the latest image builds as 'unstable'
+#Push unstable:
+  #variables:
+    ## only working with docker images; don't need to clone repo
+    #GIT_STRATEGY: none
+  #stage: push
+  #tags:
+    #- openstack-autoscale-theta
+  #only:
+    #- master
+  #script:
+    #- docker pull ${IMAGE_NAME}:${CI_COMMIT_SHA}
+    #- docker tag  ${IMAGE_NAME}:${CI_COMMIT_SHA} ${IMAGE_NAME}:unstable
+    #- echo "🐳 Pushing ${IMAGE_NAME}:unstable 🐳"
+    #- docker push ${IMAGE_NAME}:unstable
+
+## at every release/tag, tag the images built from the latest image builds as 'latest'
+#Push tag:
+  #variables:
+    ## only working with docker images; don't need to clone repo
+    #GIT_STRATEGY: none
+  #stage: push
+  #tags:
+    #- openstack-autoscale-theta
+  #only:
+    #- tags
+  #script:
+    #- docker pull ${IMAGE_NAME}:${CI_COMMIT_SHA}
+    #- >
+         #for this_tag in $CI_COMMIT_REF_NAME 'latest'; do
+            #docker tag  ${IMAGE_NAME}:${CI_COMMIT_SHA} ${IMAGE_NAME}:${this_tag}
+            #echo "🐳 Pushing ${IMAGE_NAME}:${this_tag} 🐳"
+            #docker push ${IMAGE_NAME}:${this_tag}
+         #done
