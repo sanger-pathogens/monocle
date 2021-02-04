@@ -55,14 +55,11 @@ Integration tests:
     DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
-    - cd "${CI_PROJECT_DIR}/e2e"
-    - pwd
+    - cd "${CI_PROJECT_DIR}/e2e"; pwd
     - yarn install --verbose
-    - cd "${CI_PROJECT_DIR}"
-    - pwd
+    - cd "${CI_PROJECT_DIR}"; pwd
     - docker-compose -f docker-compose.e2e.yml build
     - docker-compose -f docker-compose.e2e.yml up -d
   script:
-    - cd "${CI_PROJECT_DIR}/e2e"
-    - pwd
+    - cd "${CI_PROJECT_DIR}/e2e"; pwd
     - yarn test:ci
