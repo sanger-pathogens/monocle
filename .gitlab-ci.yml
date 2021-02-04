@@ -44,6 +44,7 @@ Integration tests:
   stage: integration_test
   tags:
     - openstack-autoscale-theta
+  image: docker:19
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
