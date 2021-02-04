@@ -6,7 +6,7 @@ stages:
   
 variables:
   CODECOV_TOKEN: "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
-  DOCKER_INTEGRATION_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-docker:latest"
+  DOCKER_INTEGRATION_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-node-with-docker:latest"
   DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
