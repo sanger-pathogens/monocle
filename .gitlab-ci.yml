@@ -1,10 +1,12 @@
 
 #image: docker:19
 
-#stages:
-  #- test
-
-#variables:
+stages:
+  - test
+  - codecov
+  
+variables:
+  CODECOV_TOKEN: "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
   #DOCKER_BUILDKIT:    1
   #DOCKER_TLS_CERTDIR: ""
   #DOCKER_HOST:        "tcp://docker:2375"
@@ -29,7 +31,22 @@ API unit tests:
     - pipenv install --system
     - pip install codecov
   script:
-    - coverage run ./manage.py test && codecov --file api --commit ${CI_COMMIT_SHA} --required
+    - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+   
+    
+#App unit tests:
+  #stage: test
+  #tags:
+    #- openstack-autoscale-theta
+  #image: "node:12"
+  #before_script:
+    #- cd ui
+    #- yarn install
+  #script:
+    #- bash <(curl -s https://codecov.io/bash) --file ui --commit ${CI_COMMIT_SHA} --required
+ 
+   
+    
     
 ## at every push/merge to master, tag the latest image builds as 'unstable'
 #Push unstable:
