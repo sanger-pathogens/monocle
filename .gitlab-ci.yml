@@ -3,10 +3,12 @@ stages:
   - unit_test
   - integration_test
   
-
+  
 variables:
   CODECOV_TOKEN: "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
-  DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:09c9110a51a0b6c380ca36ff269f32b3a0b068cb"
+  DOCKER_INTEGRATION_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-docker:latest"
+  DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  
   
 API unit tests:
   stage: unit_test
@@ -44,10 +46,13 @@ Integration tests:
   stage: integration_test
   tags:
     - openstack-autoscale-theta
-  image: "${DOCKER_DIND_IMAGE}"
+  image: "${DOCKER_INTEGRATION_TEST_IMAGE}"
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
   variables:
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST:        "tcp://docker:2375"
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
     - yarn install
