@@ -6,7 +6,7 @@ DOCKER_BUILDKIT=1
 COMMIT=$(git rev-parse HEAD)
 REGISTRY=gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle
 
-git update-index --refresh
+git update-index --refresh || true
 if ! git diff-index --quiet HEAD --; then
    echo "Please commit your changes and run again: the docker tag is based on the last commit SHA-1."
    exit 255

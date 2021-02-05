@@ -59,7 +59,8 @@ Integration tests:
     - yarn install --verbose
     - cd "${CI_PROJECT_DIR}"; pwd
     - docker-compose -f docker-compose.e2e.yml build
-    - docker-compose -f docker-compose.e2e.yml up -d
   script:
+    - docker-compose -f docker-compose.e2e.yml up -d
+    - sleep 5; docker container ls
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
     - yarn test:ci
