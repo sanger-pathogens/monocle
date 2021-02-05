@@ -53,6 +53,7 @@ Integration tests:
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: "tcp://docker:2375"
+    DEBUG: "cypress:*"
   before_script:
     - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
@@ -63,4 +64,4 @@ Integration tests:
     - docker-compose -f docker-compose.e2e.yml up -d
     - sleep 5; docker container ls
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
-    - yarn test:ci
+    - sleep 20; yarn test:ci
