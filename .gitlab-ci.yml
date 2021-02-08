@@ -45,14 +45,7 @@ App unit tests:
 Integration tests:
   stage: integration_test
   tags:
-    - openstack-autoscale-theta
-  image: "${DOCKER_INTEGRATION_TEST_IMAGE}"
-  services:
-    - name:  "${DOCKER_DIND_IMAGE}"
-      alias: docker
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: "tcp://docker:2375"
+    - monocle-e2e
   before_script:
     - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
