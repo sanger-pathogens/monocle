@@ -45,7 +45,7 @@ App unit tests:
 Integration tests:
   stage: integration_test
   tags:
-    - monocle-e2e
+    - monocle_e2e_runner
   before_script:
     - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
