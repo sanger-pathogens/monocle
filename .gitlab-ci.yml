@@ -5,9 +5,10 @@ stages:
   
   
 variables:
-  CODECOV_TOKEN: "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
-  DOCKER_INTEGRATION_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-node-with-docker:latest"
-  DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  CODECOV_TOKEN:        "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
+  API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
+  UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
 API unit tests:
@@ -16,12 +17,10 @@ API unit tests:
     - openstack-autoscale-theta
   variables:
     DJANGO_SETTINGS_MODULE: "juno.settings.unittest"
-  image: "python:3.7"
+  image: "${API_UNIT_TEST_IMAGE}"
   before_script:
     - cd api
-    - pip install pipenv
     - pipenv install --system
-    - pip install codecov
   script:
     - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
    
@@ -30,14 +29,10 @@ App unit tests:
   stage: unit_test
   tags:
     - openstack-autoscale-theta
-  image: "node:12"
+  image: "${UI_UNIT_TEST_IMAGE}"
   before_script:
-    - apt-get -qq update
-    - apt-get install -y python-pip
-    - pip install codecov
     - cd ui
     - yarn install
-    
   script:
     - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 

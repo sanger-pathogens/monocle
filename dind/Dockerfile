@@ -4,6 +4,29 @@
 
 
 ###################################################################################################################################
+
+# API unit test image
+
+# python base image with pipenv and codecov
+
+FROM  python:3.7 AS gitlab-api-unit-tests
+RUN   pip install pipenv codecov
+
+
+###################################################################################################################################
+
+# App unit test image
+
+# nodejs image with python codecov package installed
+
+FROM  node:12 AS gitlab-ui-unit-tests
+ARG   DEBIAN_FRONTEND=noninteractive
+RUN   apt-get -qq update && \
+      apt-get install -y python-pip && \
+      pip install codecov
+
+
+###################################################################################################################################
       
 # dind image
 
