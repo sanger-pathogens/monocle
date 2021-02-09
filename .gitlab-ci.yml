@@ -62,6 +62,7 @@ Docker builds:
   stage: docker_build
   tags:
     - openstack-autoscale-theta
+  image: docker:19
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -93,6 +94,7 @@ Docker push as 'unstable':
     - master
   tags:
     - openstack-autoscale-theta
+  image: docker:19
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -121,6 +123,7 @@ Docker push with release tag and as 'latest':
     - tags
   tags:
     - openstack-autoscale-theta
+  image: docker:19
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
