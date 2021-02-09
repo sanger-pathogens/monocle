@@ -71,15 +71,15 @@ Docker builds:
     DOCKER_HOST:          "tcp://docker:2375"
   script:
     - >
-         for this_context in api ui
+         for this_context in api ui;
          do
-            cd "${CI_PROJECT_DIR}/${this_context}"; pwd
-            this_image="monocle-${this_context}"
-            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${CI_COMMIT_SHA} 🐳"
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true
-            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA .
-            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳"
-            docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA
+            cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
+            this_image="monocle-${this_context}";
+            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${CI_COMMIT_SHA} 🐳";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA . ;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
          done
 
     
@@ -102,12 +102,12 @@ Docker push as 'unstable':
     DOCKER_HOST:          "tcp://docker:2375"
   script:
     - >
-         for this_image in monocle-api monocle-ui
+         for this_image in monocle-api monocle-ui;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA
-            docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable
-            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳"
-            docker push $CI_REGISTRY_IMAGE/${this_image}:unstable
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
 
          
@@ -130,12 +130,13 @@ Docker push with release tag and as 'latest':
     DOCKER_HOST:          "tcp://docker:2375"
   script:
     - >
-         for this_image in monocle-api monocle-ui
+         for this_image in monocle-api monocle-ui;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA
-            for this_tag in $CI_COMMIT_REF_NAME 'latest'; do
-               docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:${this_tag}
-               echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳"
-               docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag}
-            done
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            for this_tag in $CI_COMMIT_REF_NAME 'latest';
+            do
+               docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+               echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
+               docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+            done;
          done
