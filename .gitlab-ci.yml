@@ -1,7 +1,7 @@
 
 stages:
-  #- unit_test
-  #- integration_test
+  - unit_test
+  - integration_test
   - docker_build
   - docker_push
   
@@ -73,6 +73,7 @@ Docker builds:
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
+    - docker info
     - >
          for this_context in api ui;
          do
@@ -84,6 +85,7 @@ Docker builds:
             echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳";
             docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
          done
+    - docker image ls
 
     
 # at every push/merge to master, tag the latest image builds as 'unstable'
