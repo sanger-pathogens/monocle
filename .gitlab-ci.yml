@@ -1,0 +1,151 @@
+
+stages:
+  - unit_test
+  - integration_test
+  - docker_build
+  - docker_push
+  
+  
+variables:
+  CODECOV_TOKEN:        "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
+  API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
+  UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  
+  
+API unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  variables:
+    DJANGO_SETTINGS_MODULE: "juno.settings.unittest"
+  image: "${API_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd api
+    - pipenv install --system
+  script:
+    - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+   
+    
+App unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  image: "${UI_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd ui
+    - yarn install
+  script:
+    - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+
+    
+Integration tests:
+  stage: integration_test
+  tags:
+    - monocle_e2e_runner
+  before_script:
+    - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
+    - cd "${CI_PROJECT_DIR}/e2e"; pwd
+    - yarn install --verbose
+    - cd "${CI_PROJECT_DIR}"; pwd
+    - docker-compose -f docker-compose.e2e.yml build
+  script:
+    - docker-compose -f docker-compose.e2e.yml up -d
+    - sleep 5; docker container ls
+    - cd "${CI_PROJECT_DIR}/e2e"; pwd
+    - yarn test:ci
+
+    
+# at every gitpush, build docker images in /api and /ui
+# push the images to the container registry  with the commit SHA-1 as the tag
+Docker builds:
+  stage: docker_build
+  tags:
+    - openstack-autoscale-theta
+  image: docker:19
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT:      1
+    DOCKER_TLS_CERTDIR:   ""
+    DOCKER_HOST:          "tcp://docker:2375"
+  before_script:
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  script:
+    - >
+         for this_context in api ui;
+         do
+            cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
+            this_image="monocle-${this_context}";
+            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${CI_COMMIT_SHA} 🐳";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA . ;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+         done
+
+    
+# at every push/merge to master, tag the latest image builds as 'unstable'
+Docker push as 'unstable':
+  variables:
+    # only docker, don't need to clone repo
+    GIT_STRATEGY: none
+  stage: docker_push
+  only:
+    - master
+  tags:
+    - openstack-autoscale-theta
+  image: docker:19
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT:      1
+    DOCKER_TLS_CERTDIR:   ""
+    DOCKER_HOST:          "tcp://docker:2375"
+  before_script:
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  script:
+    - >
+         for this_image in monocle-api monocle-ui;
+         do
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
+         done
+
+         
+# at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
+Docker push with release tag and as 'latest':
+  variables:
+    # only docker, don't need to clone repo
+    GIT_STRATEGY: none
+  stage: docker_push
+  only:
+    - tags
+  tags:
+    - openstack-autoscale-theta
+  image: docker:19
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT:      1
+    DOCKER_TLS_CERTDIR:   ""
+    DOCKER_HOST:          "tcp://docker:2375"
+  before_script:
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  script:
+    - >
+         for this_image in monocle-api monocle-ui;
+         do
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            for this_tag in $CI_COMMIT_REF_NAME 'latest';
+            do
+               docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+               echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
+               docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+            done;
+         done

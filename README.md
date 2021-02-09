@@ -2,18 +2,15 @@
 Monocle is an exploration tool for data from the [Juno project](https://www.gbsgen.net/). It is early in development, so may be renamed and **should currently be considered unstable**.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
-[![Build Status](https://travis-ci.com/sanger-pathogens/monocle.svg?branch=master)](https://travis-ci.com/sanger-pathogens/monocle)  
 [![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle)
 
 UI
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-app.svg)](https://hub.docker.com/sangerpathogens/monocle-app)  
-[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-app.svg)](https://hub.docker.com/r/sangerpathogens/monocle-app)
+[![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-app/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-app)
 
 API
 
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)  
-[![Docker Pulls](https://img.shields.io/docker/pulls/sangerpathogens/monocle-api.svg)](https://hub.docker.com/r/sangerpathogens/monocle-api)
+[![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-api/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-api)
 
 ## Components
 There are currently three components:
