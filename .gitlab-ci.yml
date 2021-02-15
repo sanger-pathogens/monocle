@@ -7,7 +7,6 @@ stages:
   
   
 variables:
-  CODECOV_TOKEN:        "97dd07b5-c730-490a-a30f-b7d3ca3e023c"
   API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
