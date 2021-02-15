@@ -1,7 +1,7 @@
 version: '3'
 services:
   ui:
-    image: "sangerpathogens/monocle-app:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<VERSION>"
     ports:
         - "80:80"
         - "8000:80"
@@ -25,7 +25,7 @@ services:
     depends_on:
         - api
   api:
-    image: "sangerpathogens/monocle-api:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-api:<VERSION>"
     expose:
         - "80"
     restart: unless-stopped
