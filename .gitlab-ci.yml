@@ -55,7 +55,7 @@ Integration tests:
     - yarn test:ci
 
     
-# at every gitpush, build docker images in /api and /ui
+# at every gitpush, build docker images in /api, /ui and /dash
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
   stage: docker_build
@@ -73,7 +73,7 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in api ui;
+         for this_context in api ui dash;
          do
             cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
             this_image="monocle-${this_context}";
@@ -107,7 +107,7 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui;
+         for this_image in monocle-api monocle-ui monocle-dash;
          do
             docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
             docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable;
@@ -138,7 +138,7 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui;
+         for this_image in monocle-api monocle-ui monocle-dash;
          do
             docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
