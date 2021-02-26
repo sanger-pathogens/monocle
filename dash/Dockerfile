@@ -10,4 +10,6 @@ RUN      pip install dash==1.19.0      \
 
 COPY     . /dash
 
-CMD ["gunicorn", "-w 3", "-b :80", "wsgi:server"]
+
+EXPOSE   80
+CMD      ["gunicorn", "-w 3", "-b :80", "wsgi:server"]
