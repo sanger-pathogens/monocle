@@ -121,7 +121,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
     echo "Setting configuration in docker-compose.yml..."
-    sed -i -e "s/<VERSION>/${VERSION}/g" docker-compose.yml
+    sed -i -e "s/<VERSION>/v${VERSION}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME_PUBLIC>/${PUBLIC_DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
@@ -131,7 +131,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
     chmod 644 settings.js nginx.conf
-    echo "Pulling version ${VERSION} images..."
+    echo "Pulling version v${VERSION} images..."
     docker-compose pull
     status=0
     if [[ "${APPLY_MIGRATIONS}" == "yes" ]]
