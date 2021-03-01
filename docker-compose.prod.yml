@@ -49,6 +49,15 @@ services:
         - HOSTNAME_PUBLIC=<HOSTNAME_PUBLIC>
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
+  dash:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<VERSION>"
+    expose:
+        - "80"
+    restart: unless-stopped
+    security_opt:
+       - no-new-privileges
+    cap_drop:
+       - ALL
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
