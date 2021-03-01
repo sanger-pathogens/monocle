@@ -88,7 +88,7 @@ def sample_time_series_graph(params):
    for k in [params['x_col_key']]+params['y_cols_keys']:
       if not isinstance(params['data'][k], list):
          raise TypeError( "params.data.{} is {}, should be a list".format(e,type(data[k])) )
-   logging.info("rendering time seris graph")
+   logging.info("rendering time series graph")
    elements = [
                   dcc.Graph(  className   = 'progress_graph',
                               figure      = px.line(  params['data'],
