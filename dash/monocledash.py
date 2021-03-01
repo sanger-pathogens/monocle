@@ -8,7 +8,8 @@ import MonocleDash.components    as mc
 
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
-app      = dash.Dash(__name__)
+# url_base_pathname should match the `location` used for nginx proxy config
+app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
 server   = app.server
 api      = api.Mock()
 
