@@ -1,199 +1,238 @@
 import json
 import urllib.parse
 import urllib.request
+import DataSources.monocledb
+
+
+class MonocleData:
+   """ provides wrapper for classes that query various data sources for Monocle data """
+   
+   def __init__(self):
+      self.monocledb = DataSources.monocledb.MonocleDB()
+
+   def get_progress(self):
+      return self.mock_progress
+
+   def get_institutions(self):
+      names = self.monocledb.get_institution_names()
+      institutions = {}
+      for this_name in names:
+         key = self.institution_name_to_key(this_name, institutions.keys())
+         institutions[key] = this_name
+      return institutions
+   
+   def get_batches(self, institutions):
+      batches = {}
+      i = 0
+      for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
+         batches[this_institution] = self.mock_batches[ i % len(self.mock_batches) ]
+         i += 1
+      return batches
+   
+   def get_sequencing_status(self, institutions):
+      sequencing_status = {}
+      i = 0
+      for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
+         sequencing_status[this_institution] = self.mock_sequencing_status[ i % len(self.mock_sequencing_status) ]
+         i += 1
+      return sequencing_status
+   
+   def get_pipeline_status(self, institutions):
+      pipeline_status = {}
+      i = 0
+      for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
+         pipeline_status[this_institution] = self.mock_pipeline_status[ i % len(self.mock_pipeline_status) ]
+         i += 1
+      return pipeline_status
+
+   def institution_name_to_key(self, name, existing_keys):
+      # create key from institution name -- shortened, no non-alphanumerics
+      key = ''
+      for word in name.split():
+         if word[0].isupper():
+            key += word[0:3]
+         if 12 < len(key):
+            break
+      # almost certain to be unique, but...
+      while key in existing_keys:
+         key += '_X'
+      return(key)
+
+
+   mock_progress = { 'months'             : [1,2,3,4,5,6,7,8,9],
+                     'samples received'   : [158,225,367,420,580,690,750,835,954],
+                     'samples sequenced'  : [95,185,294,399,503,640,730,804,895],
+                     }
+
+   mock_batches = [  {  'expected'  : 800,
+                        'received'  : 188,
+                        'deliveries': [{'name': 'batch 1', 'date': '3 Dec 2020',  'number': 95  },
+                                       {'name': 'batch 2', 'date': '11 Jan 2021', 'number': 93  },
+                                       ]
+                        },
+                     {  'expected'  : 1200,
+                        'received'  : 668,
+                        'deliveries': [{'name': 'batch 1', 'date': '24 Nov 2020', 'number': 237 },
+                                       {'name': 'batch 2', 'date': '16 Dec 2020', 'number': 175 },
+                                       {'name': 'batch 3', 'date': '3 Jan 2021',  'number': 194 },
+                                       ]
+                        },
+                     {  'expected'  : 900,
+                        'received'  : 232,
+                        'deliveries': [{'name': 'batch 1', 'date': '28 Dec 2020', 'number': 104 },
+                                       {'name': 'batch 2', 'date': '27 Jan 2021', 'number': 128 },
+                                       ]
+                        },
+                     {  'expected'  : 1500,
+                        'received'  : 341,
+                        'deliveries': [{'name': 'batch 1', 'date': '25 Feb 2021', 'number': 341 },
+                                       ]
+                        },
+                     {  'expected'  : 1000,
+                        'received'  : 505,
+                        'deliveries': [{'name': 'batch 1', 'date': '30 Oct 2020', 'number': 76  },
+                                       {'name': 'batch 2', 'date': '24 Nov 2020', 'number': 85  },
+                                       {'name': 'batch 3', 'date': '17 Dec 2020', 'number': 105 },
+                                       {'name': 'batch 4', 'date': '11 Jan 2021', 'number': 128 },
+                                       {'name': 'batch 5', 'date': '3 Feb 2021',  'number': 111 },
+                                       ]
+                        },
+                     {  'expected'  : 600,
+                        'received'  : 203,
+                        'deliveries': [{'name': 'batch 1', 'date': '17 Jan 2020', 'number': 203 },
+                                       ]
+                        },
+                     ]
+   
+   mock_sequencing_status = [ {  'received'  : mock_batches[0]['received'],
+                                 'completed' : 173,
+                                 'failed'    : []
+                                 },
+                              {  'received'  : mock_batches[1]['received'],
+                                 'completed' : 632,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                {  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                ]
+                                 },
+                              {  'received'  : mock_batches[2]['received'],
+                                 'completed' : 198,
+                                 'failed'    : []
+                                 },
+                              {  'received'  : mock_batches[3]['received'],
+                                 'completed' : 0,
+                                 'failed'    : []
+                                 },
+                              {  'received'  : mock_batches[4]['received'],
+                                 'completed' : 394,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                {  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                ]
+                                 },
+                              {  'received'  : mock_batches[5]['received'],
+                                 'completed' : 157,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                ]
+                                 },
+                              ]
+
+   mock_pipeline_status = [   {  'sequenced' : mock_sequencing_status[0]['completed']-len(mock_sequencing_status[0]['failed']),
+                                 'running'   : 30,
+                                 'completed' : 63,
+                                 'failed'    : []
+                                 },
+                              {  'sequenced' : mock_sequencing_status[1]['completed']-len(mock_sequencing_status[1]['failed']),
+                                 'running'   : 180,
+                                 'completed' : 187,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                {  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                ]
+                                 },
+                              {  'sequenced' : mock_sequencing_status[2]['completed']-len(mock_sequencing_status[2]['failed']),
+                                 'running'   : 25,
+                                 'completed' : 98,
+                                 'failed'    : []
+                                 },
+                              {  'sequenced' : mock_sequencing_status[3]['completed']-len(mock_sequencing_status[3]['failed']),
+                                 'running'   : 0,
+                                 'completed' : 0,
+                                 'failed'    : []
+                                 },
+                              {  'sequenced' : mock_sequencing_status[4]['completed']-len(mock_sequencing_status[4]['failed']),
+                                 'running'   : 105,
+                                 'completed' : 179,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                ]
+                                 },
+                              {  'sequenced' : mock_sequencing_status[5]['completed']-len(mock_sequencing_status[5]['failed']),
+                                 'running'   : 53,
+                                 'completed' : 54,
+                                 'failed'    : [{  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                {  'sample' : '4321STDY4334078',
+                                                   'qc'     : 'sequencing',
+                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
+                                                   },
+                                                {  'sample' : '4321STDY4321099',
+                                                   'qc'     : 'DNA',
+                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
+                                                   },
+                                                ]
+                                 },   
+                              ]
+
 
 class ProtocolError(Exception):
     pass
-
-
-class Mock:
-
-   def get_progress(self):
-      return   {  'months'             : [1,2,3,4,5,6,7,8,9],
-                  'samples received'   : [158,225,367,420,580,690,750,835,954],
-                  'samples sequenced'  : [95,185,294,399,503,640,730,804,895],
-                  }
-
-   def get_institutions(self):
-      return   {  'Sydney':     'University of Sydney',
-                  'Keio':       'Keio University School of Medicine',
-                  'HK':         'Chinese University of Hong Kong',
-                  'CHRF':       'Child Health Research Foundation',
-                  'Peradeniya': 'University of Peradeniya',
-                  'Gondar':     'University of Gondar',
-                  }
-   
-   def get_batches(self):
-      return   {  'Sydney'      : { 'expected'  : 800,
-                                    'received'  : 188,
-                                    'deliveries': [{'name': 'batch 1', 'date': '3 Dec 2020',  'number': 95  },
-                                                   {'name': 'batch 2', 'date': '11 Jan 2021', 'number': 93  },
-                                                   ]
-                                    },
-                  'CHRF'        : { 'expected'  : 1200,
-                                    'received'  : 668,
-                                    'deliveries': [{'name': 'batch 1', 'date': '24 Nov 2020', 'number': 237 },
-                                                   {'name': 'batch 2', 'date': '16 Dec 2020', 'number': 175 },
-                                                   {'name': 'batch 3', 'date': '3 Jan 2021',  'number': 194 },
-                                                   ]
-                                    },
-                  'HK'          : { 'expected'  : 900,
-                                    'received'  : 232,
-                                    'deliveries': [{'name': 'batch 1', 'date': '28 Dec 2020', 'number': 104 },
-                                                   {'name': 'batch 2', 'date': '27 Jan 2021', 'number': 128 },
-                                                   ]
-                                    },
-                  'Keio'        : { 'expected'  : 1500,
-                                    'received'  : 341,
-                                    'deliveries': [{'name': 'batch 1', 'date': '25 Feb 2021', 'number': 341 },
-                                                   ]
-                                    },
-                  'Peradeniya'  : { 'expected'  : 1000,
-                                    'received'  : 505,
-                                    'deliveries': [{'name': 'batch 1', 'date': '30 Oct 2020', 'number': 76  },
-                                                   {'name': 'batch 2', 'date': '24 Nov 2020', 'number': 85  },
-                                                   {'name': 'batch 3', 'date': '17 Dec 2020', 'number': 105 },
-                                                   {'name': 'batch 4', 'date': '11 Jan 2021', 'number': 128 },
-                                                   {'name': 'batch 5', 'date': '3 Feb 2021',  'number': 111 },
-                                                   ]
-                                    },
-                  'Gondar'      : { 'expected'  : 600,
-                                    'received'  : 203,
-                                    'deliveries': [{'name': 'batch 1', 'date': '17 Jan 2020', 'number': 203 },
-                                                   ]
-                                    },
-                  }
-                                    
-   def get_sequencing_status(self):
-      batches=self.get_batches()
-      return   {  'Sydney'      : { 'received'  : batches['Sydney']['received'],
-                                    'completed' : 173,
-                                    'failed'    : []
-                                    },
-                  'CHRF'        : { 'received'  : batches['CHRF']['received'],
-                                    'completed' : 632,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   {  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   ]
-                                    },
-                  'HK'          : { 'received'  : batches['HK']['received'],
-                                    'completed' : 198,
-                                    'failed'    : []
-                                    },
-                  'Keio'        : { 'received'  : batches['Keio']['received'],
-                                    'completed' : 0,
-                                    'failed'    : []
-                                    },
-                  'Peradeniya'  : { 'received'  : batches['Peradeniya']['received'],
-                                    'completed' : 394,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   {  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   ]
-                                    },
-                  'Gondar'      : { 'received'  : batches['Gondar']['received'],
-                                    'completed' : 157,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   ]
-                                    },
-                  }
-
-   def get_pipeline_status(self):
-      status=self.get_sequencing_status()
-      return   {  'Sydney'      : { 'sequenced' : status['Sydney']['completed']-len(status['Sydney']['failed']),
-                                    'running'   : 30,
-                                    'completed' : 63,
-                                    'failed'    : []
-                                    },
-                  'CHRF'        : { 'sequenced' : status['CHRF']['completed']-len(status['CHRF']['failed']),
-                                    'running'   : 180,
-                                    'completed' : 187,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   {  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   ]
-                                    },
-                  'HK'          : { 'sequenced' : status['HK']['completed']-len(status['HK']['failed']),
-                                    'running'   : 25,
-                                    'completed' : 98,
-                                    'failed'    : []
-                                    },
-                  'Keio'        : { 'sequenced' : status['Keio']['completed']-len(status['Keio']['failed']),
-                                    'running'   : 0,
-                                    'completed' : 0,
-                                    'failed'    : []
-                                    },
-                  'Peradeniya'  : { 'sequenced' : status['Peradeniya']['completed']-len(status['Peradeniya']['failed']),
-                                    'running'   : 105,
-                                    'completed' : 179,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   ]
-                                    },
-                  'Gondar'      : { 'sequenced' : status['Gondar']['completed']-len(status['Gondar']['failed']),
-                                    'running'   : 53,
-                                    'completed' : 54,
-                                    'failed'    : [{  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   {  'sample' : '4321STDY4334078',
-                                                      'qc'     : 'sequencing',
-                                                      'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                      },
-                                                   {  'sample' : '4321STDY4321099',
-                                                      'qc'     : 'DNA',
-                                                      'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                      },
-                                                   ]
-                                    },
-                  }
-
 
 class Client:
    
