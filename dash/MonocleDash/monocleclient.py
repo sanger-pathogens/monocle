@@ -6,38 +6,66 @@ import DataSources.monocledb
 
 class MonocleData:
    """ provides wrapper for classes that query various data sources for Monocle data """
-   
+
+   sample_table_inst_key   = 'submitting_institution_id'
+  
    def __init__(self):
       self.monocledb = DataSources.monocledb.MonocleDB()
+      # db keys are full institution names strings, but that dashboard wants keys
+      # that are alphanumric only and useable as HTML id attributes; and it is useful to
+      # keep data in dicts with keys that match HTML id attr values.
+      # these 2 dicts allow mapping between db keys and dict keys, in either direction
+      self.institution_dict_to_db_key  = {}
+      self.institution_db_key_to_dict  = {}
 
    def get_progress(self):
       return self.mock_progress
 
    def get_institutions(self):
+      """ Returns a dict of institutions.  Dict keys are alphanumeric-only and safe for HTML id attr (do not confuse with database keys).  MonocleData.institution_dict_to_db_key (populated by this method) maps these internal dict keys onto the database keys """
       names = self.monocledb.get_institution_names()
       institutions = {}
       for this_name in names:
-         key = self.institution_name_to_key(this_name, institutions.keys())
-         institutions[key] = this_name
+         dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
+         institutions[dict_key] = this_name
+         # currently the db uses insitution names as keys, but we don't want to rely on that
+         # so store db keys in a pair of hashes to allo lookup both ways
+         institution_db_key = this_name
+         self.institution_dict_to_db_key[dict_key]             = institution_db_key
+         self.institution_db_key_to_dict[institution_db_key]   = dict_key
       return institutions
-   
+
    def get_batches(self, institutions):
+      """ Pass dict of institutions. Returns dict with details of batches delivered. """
       batches = {}
       i = 0
       for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
          batches[this_institution] = self.mock_batches[ i % len(self.mock_batches) ]
          i += 1
       return batches
+
+   def get_samples(self, institutions):
+      """ Pass dict of institutions. Returns a dict of all samples for each institution in the dict. """
+      unsorted_samples = self.monocledb.get_samples( institutions = list(self.institution_dict_to_db_key.values()) )
+      # samples dict keys are same as institutions hash; values are listed (to be filled with samples)
+      samples = { i:[] for i in institutions.keys() }
+      for this_sample in unsorted_samples:
+         this_institution_key = self.institution_db_key_to_dict[ this_sample[self.sample_table_inst_key] ]
+         this_sample.pop(self.sample_table_inst_key, None)
+         samples[this_institution_key].append( this_sample )
+      return samples
    
    def get_sequencing_status(self, institutions):
+      """ Pass dict of institutions. Returns dict with sequencing status for each institution in the dict. """
       sequencing_status = {}
       i = 0
       for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
          sequencing_status[this_institution] = self.mock_sequencing_status[ i % len(self.mock_sequencing_status) ]
          i += 1
       return sequencing_status
-   
+
    def get_pipeline_status(self, institutions):
+      """ Pass dict of institutions. Returns dict with pipeline status for each institution in the dict. """
       pipeline_status = {}
       i = 0
       for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
@@ -45,8 +73,8 @@ class MonocleData:
          i += 1
       return pipeline_status
 
-   def institution_name_to_key(self, name, existing_keys):
-      # create key from institution name -- shortened, no non-alphanumerics
+   def institution_name_to_dict_key(self, name, existing_keys):
+      """ Private method that creates a shortened, all-alphanumeric version of the institution name that can be used as a dict key and also as an HTML id attr """
       key = ''
       for word in name.split():
          if word[0].isupper():

@@ -3,7 +3,9 @@ import yaml
 from   sqlalchemy       import create_engine
 from   sqlalchemy.sql   import text
 
-
+class DataSourceParamError(Exception):
+   """ exception when data source methods are aclled with invalid parameter(s) """
+   pass
 
 class MonocleDB:
    """ provides access to the Monocle database """
@@ -47,6 +49,8 @@ class MonocleDB:
       return institutions
    
    def get_samples(self, institutions=None):
+      if institutions is not None and not isinstance(institutions, list):
+         raise DataSourceParamError( "named parameter 'institutions' is {}, should be a list".format(type(institutions)) )
       with self.connection() as conn:
          sql = "select * from {}".format(self.sample_table)
          if institutions is not None:
