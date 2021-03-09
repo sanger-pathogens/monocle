@@ -6,3 +6,6 @@ real-data
 users.md
 my.cnf
 db_credentials.md
+# can use `data/` in local development environment to hold example data
+# (in production the s3 bucket is mounted as `data/`)
+data

@@ -1,0 +1,6 @@
+# data source.yml contains secrets; don't add it to the build context (mount at runtime)
+data_sources.yml
+# data sources template is harmless, but no use in the image
+data_sources.yml.template
+# data/ must also be mounted at runtime => don't include in build
+data
