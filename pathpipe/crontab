@@ -1,4 +1,0 @@
-SHELL="/bin/bash"
-BASH_ENV="/software/pathogen/etc/cron.profile"
-
-7 * * * * $HOME/bin/juno_pipeline_status.sh 

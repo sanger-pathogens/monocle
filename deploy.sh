@@ -15,7 +15,6 @@ VERSION=
 REMOTE_USER=
 REMOTE_HOST=
 APPLY_MIGRATIONS=
-PIPELINE_STATUS_DATA_DIR="${HOME}/pipeline_data"
 
 # read command line arguments
 while [[ $# -gt 0 ]]; do
@@ -59,14 +58,6 @@ while [[ $# -gt 0 ]]; do
       ;;
       -m=*|--migrate-db=*)
       APPLY_MIGRATIONS="${key#*=}"
-      ;;
-
-      -p|--pipeline-status-data-dir)
-      shift
-      PIPELINE_STATUS_DATA_DIR="$1"
-      ;;
-      -p=*|--pipeline-status-data-dir=*)
-      PIPELINE_STATUS_DATA_DIR="${key#*=}"
       ;;
 
       *)
@@ -140,8 +131,6 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
     chmod 644 settings.js nginx.conf
-    echo "Creating directory for pipeline status data..."
-    mkdir -p "${PIPELINE_STATUS_DATA_DIR}"
     echo "Pulling version v${VERSION} images..."
     docker-compose pull
     status=0

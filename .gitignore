@@ -6,5 +6,3 @@ real-data
 users.md
 my.cnf
 db_credentials.md
-# can use a pipeline-data in local development environment to hold pipeline status data (see the pathpipe files for the cron job that provides this)
-pipeline-data
