@@ -58,6 +58,8 @@ services:
        - no-new-privileges
     cap_drop:
        - ALL
+    volumes:
+        - pipeline_data:/dash/pipeline_data
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
