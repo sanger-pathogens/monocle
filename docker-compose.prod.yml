@@ -59,7 +59,7 @@ services:
     cap_drop:
        - ALL
     volumes:
-        - data:/data
+        - data:/dash/data
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:

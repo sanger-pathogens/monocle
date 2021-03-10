@@ -1,29 +1,30 @@
 import pprint
 import MonocleDash.monocleclient
 
-data  = MonocleDash.monocleclient.MonocleData()
+data  = MonocleDash.monocleclient.MonocleData(pipeline_status_csv_file='../data/status/pipelines.csv')
 pp    = pprint.PrettyPrinter(indent=3)
 
-#prog = data.get_progress()
 #print("Progress:\n")
+#prog = data.get_progress()
 #pp.pprint(prog)
 
-inst = data.get_institutions()
 print("\nInstitutions:\n")
+inst = data.get_institutions()
 pp.pprint(inst)
 
-#samples = data.get_samples(inst)
 #print("\nSamples:\n")
+#samples = data.get_samples(inst)
 #pp.pprint(samples)
 
-batches = data.get_batches(inst)
-print("\nBatches:\n")
-pp.pprint(batches)
+#print("\nBatches:\n")
+#batches = data.get_batches(inst)
+#pp.pprint(batches)
 
-#sequencing_status = data.get_sequencing_status(inst)
 #print("\nSequencing status:\n")
+#sequencing_status = data.get_sequencing_status(inst)
 #pp.pprint(sequencing_status)
 
-#pipeline_status = data.get_pipeline_status(inst)
-#print("\nPipeline status:\n")
-#pp.pprint(pipeline_status)
+print("\nPipeline status:\n")
+samples = data.get_samples(inst)
+pipeline_status = data.get_pipeline_status(inst,samples)
+pp.pprint(pipeline_status)

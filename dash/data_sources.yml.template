@@ -1,6 +1,15 @@
 monocledb:
-   host     : 'pathdev-services-dev-db.internal.sanger.ac.uk'
-   port     : '3486'
-   database : 'monocle_juno_dev'
-   user     : 'pathogen_monocle'
-   password : {MONOCLEDB_PASSWORD}
+   dev:
+      host     : 'pathdev-services-dev-db.internal.sanger.ac.uk'
+      port     : '3486'
+      database : 'monocle_juno_dev'
+      user     : 'pathogen_monocle'
+      password : {MONOCLEDB_DEV_PASSWORD}
+   prod:
+      host     : juno-db.internal.sanger.ac.uk
+      port     : '3487'
+      database : 'monocle_juno_prod'
+      user     : 'pathogen_monocle'
+      password : {MONOCLEDB_PROD_PASSWORD}
+pipeline_status:
+   csv_file : 'data/status/pipelines.csv'

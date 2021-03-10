@@ -2,6 +2,7 @@ import json
 import urllib.parse
 import urllib.request
 import DataSources.monocledb
+import DataSources.pipeline_status
 
 
 class MonocleData:
@@ -10,8 +11,12 @@ class MonocleData:
    """
    sample_table_inst_key   = 'submitting_institution_id'
   
-   def __init__(self):
-      self.monocledb = DataSources.monocledb.MonocleDB()
+   def __init__(self,pipeline_status_csv_file=None):
+      self.monocledb       = DataSources.monocledb.MonocleDB()
+      if pipeline_status_csv_file is not None:
+         self.pipeline_status = DataSources.pipeline_status.PipelineStatus(csv_file=pipeline_status_csv_file)
+      else:
+         self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
       # db keys are full institution names strings, but that dashboard wants keys
       # that are alphanumric only and useable as HTML id attributes; and it is useful to
       # keep data in dicts with keys that match HTML id attr values.
@@ -102,17 +107,37 @@ class MonocleData:
          i += 1
       return sequencing_status
 
-   def get_pipeline_status(self, institutions):
+   def get_pipeline_status(self, institutions, samples):
       """
-      Pass dict of institutions. Returns dict with pipeline status for each institution in the dict.
+      Pass dict of institutions and list of samples. Returns dict with pipeline status for each institution in the dict.
       """
-      # USES MOCK DATA
-      pipeline_status = {}
-      i = 0
+      status = {}
       for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
-         pipeline_status[this_institution] = self.mock_pipeline_status[ i % len(self.mock_pipeline_status) ]
-         i += 1
-      return pipeline_status
+         status[this_institution] = {  'sequenced' : 0,
+                                       'running'   : 0,
+                                       'completed' : 0,
+                                       'failed'    : [],
+                                       }
+         for this_sample in samples[this_institution]:
+            if this_sample['lane_id'] is not None:
+               this_pipeline_status = self.pipeline_status.lane_status(this_sample['lane_id'])
+               status[this_institution]['sequenced'] += 1
+               if this_pipeline_status['FAILED']:
+                  for this_stage in self.pipeline_status.pipeline_stage_fields:
+                     if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                        status[this_institution]['failed'].append({  'lane'   : this_sample['lane_id'],
+                                                                     'stage'  : this_stage,
+                                                                     # currently have no way to retrieve a failure report
+                                                                     'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                                                                     },           
+                                                                  )
+               else:
+                  if this_pipeline_status['COMPLETED']:
+                     status[this_institution]['completed'] += 1
+                  else:
+                     # not completed, but no failures reported
+                     status[this_institution]['running'] += 1
+      return status
 
    def institution_name_to_dict_key(self, name, existing_keys):
       """

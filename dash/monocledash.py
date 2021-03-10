@@ -14,7 +14,8 @@ data  = MonocleDash.monocleclient.MonocleData()
 app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
 server   = app.server
 
-institutions=data.get_institutions()
+institutions = data.get_institutions()
+samples      = data.get_samples(institutions)
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
@@ -33,7 +34,7 @@ institution_status_params  =  {  'app'                : app,
                                  'institutions'       : institutions,
                                  'batches'            : data.get_batches(institutions),
                                  'sequencing_status'  : data.get_sequencing_status(institutions),
-                                 'pipeline_status'    : data.get_pipeline_status(institutions),
+                                 'pipeline_status'    : data.get_pipeline_status(institutions,samples),
                                  'institution_callback_output_id'    : 'institution-status',
                                  'sequencing_callback_input_type'    : 'sequencing-failed-input',
                                  'sequencing_callback_output_type'   : 'sequencing-failed-container',

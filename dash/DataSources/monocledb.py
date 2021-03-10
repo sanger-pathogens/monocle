@@ -12,6 +12,7 @@ class MonocleDB:
    
    data_sources_config        = 'data_sources.yml'
    data_source                = 'monocledb'
+   dev_or_prod                = 'dev'
    institution_table          = 'api_institution'
    institution_table_inst_key = 'name'
    sample_table               = 'api_sample'
@@ -21,7 +22,7 @@ class MonocleDB:
    def __init__(self):
       with open(self.data_sources_config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
-      these_credentials = data_sources[self.data_source]
+      these_credentials = data_sources[self.data_source][self.dev_or_prod]
       self.db_url = "mysql://{}:{}@{}:{}/{}".format(  these_credentials['user'],
                                                       these_credentials['password'],
                                                       these_credentials['host'],
