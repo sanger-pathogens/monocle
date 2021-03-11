@@ -1,7 +1,9 @@
+import configparser
 import logging
 import yaml
 from   sqlalchemy       import create_engine
 from   sqlalchemy.sql   import text
+from   urllib.parse     import quote as urlencode
 
 class DataSourceParamError(Exception):
    """ exception when data source methods are aclled with invalid parameter(s) """
@@ -12,7 +14,6 @@ class MonocleDB:
    
    data_sources_config        = 'data_sources.yml'
    data_source                = 'monocledb'
-   dev_or_prod                = 'dev'
    institution_table          = 'api_institution'
    institution_table_inst_key = 'name'
    sample_table               = 'api_sample'
@@ -22,19 +23,25 @@ class MonocleDB:
    def __init__(self):
       with open(self.data_sources_config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
-      these_credentials = data_sources[self.data_source][self.dev_or_prod]
-      self.db_url = "mysql://{}:{}@{}:{}/{}".format(  these_credentials['user'],
-                                                      these_credentials['password'],
-                                                      these_credentials['host'],
-                                                      these_credentials['port'],
-                                                      these_credentials['database'],
-                                                      )
-      self.db_engine       = None
+         db_cnf_file = data_sources[self.data_source]['cnf_file']
+         logging.info("Reading database config from {}".format(db_cnf_file))
+         db_config = configparser.ConfigParser()
+         db_config.read(db_cnf_file)
+         db_password = urlencode( db_config['client']['password'].strip('"') )
+         self.db_url = "mysql://{}:{}@{}:{}/{}".format(  db_config['client']['user'],
+                                                         db_password,
+                                                         db_config['client']['host'],
+                                                         db_config['client']['port'],
+                                                         db_config['client']['database'],
+                                                         )
+      logging.info("Database URL {}".format( self.db_url.replace(db_password, 'SECRET') ))
+      self.db_engine = None
 
    def connection(self):
       if self.db_engine is None:
          self.db_engine = create_engine( self.db_url, echo = False )
       connection = self.db_engine.connect()
+      logging.debug("opened db connection")
       return connection
       
    def get_institution_names(self):
@@ -47,6 +54,7 @@ class MonocleDB:
          for row in results:
             # TO DO: sanity check row[0] as an institution name
             institutions.append( row[0] )
+         logging.info("found {} institutions in monocle db".format(len(institutions)))
       return institutions
    
    def get_samples(self, institutions=None):
@@ -65,5 +73,6 @@ class MonocleDB:
                this_sample[this_field] = row[r]
                r += 1
             samples.append( this_sample )
+         logging.info("found {} samples in monocle db".format(len(samples)))
       return samples
       

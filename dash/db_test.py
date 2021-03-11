@@ -1,9 +1,12 @@
+import logging
 import pprint
 import DataSources.monocledb
 import DataSources.pipeline_status
 
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='INFO')
+
 monocledb         = DataSources.monocledb.MonocleDB()
-pipeline_status   = DataSources.pipeline_status.PipelineStatus(csv_file='../data/status/pipelines_test.csv')
+pipeline_status   = DataSources.pipeline_status.PipelineStatus()
 pp                = pprint.PrettyPrinter(indent=3)
 
 #print("Tables:\n")
@@ -24,6 +27,11 @@ pp                = pprint.PrettyPrinter(indent=3)
 print("\nPipeline status:\n")
 samples = monocledb.get_samples()
 for this_sample in samples:
-   if this_sample['lane_id'] is not None:
-      this_sample['pipeline_status'] = pipeline_status.lane_status(this_sample['lane_id'])
+   logging.debug("getting status for sample {}".format(this_sample['sample_id']))
+   this_lane_id = this_sample['lane_id']
+   if this_lane_id is not None:
+      logging.debug("  lane id = {}".format(this_lane_id))
+      this_sample['pipeline_status'] = pipeline_status.lane_status(this_lane_id)
+   else:
+      logging.debug("  no lane id: skipping")
 pp.pprint( samples )

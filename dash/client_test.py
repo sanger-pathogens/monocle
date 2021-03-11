@@ -1,7 +1,10 @@
+import logging
 import pprint
 import MonocleDash.monocleclient
 
-data  = MonocleDash.monocleclient.MonocleData(pipeline_status_csv_file='../data/status/pipelines.csv')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+
+data  = MonocleDash.monocleclient.MonocleData()
 pp    = pprint.PrettyPrinter(indent=3)
 
 #print("Progress:\n")

@@ -11,14 +11,11 @@ class MonocleData:
    """
    sample_table_inst_key   = 'submitting_institution_id'
   
-   def __init__(self,pipeline_status_csv_file=None):
+   def __init__(self):
       self.monocledb       = DataSources.monocledb.MonocleDB()
-      if pipeline_status_csv_file is not None:
-         self.pipeline_status = DataSources.pipeline_status.PipelineStatus(csv_file=pipeline_status_csv_file)
-      else:
-         self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
+      self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
       # db keys are full institution names strings, but that dashboard wants keys
-      # that are alphanumric only and useable as HTML id attributes; and it is useful to
+      # that are alphanumeric only and useable as HTML id attributes; and it is useful to
       # keep data in dicts with keys that match HTML id attr values.
       # these 2 dicts allow mapping between db keys and dict keys, in either direction
       self.institution_dict_to_db_key  = {}
@@ -62,10 +59,10 @@ class MonocleData:
    def get_batches(self, institutions):
       """
       Pass dict of institutions. Returns dict with details of batches delivered.
+      
+      TO DO:  we need to know the total number of samples expected, and ideally batch information
       """
-      # based on get_samples; ADDS EXTRA MOCKED VALUES
-      from random    import randint, random, randrange
-      from datetime  import timedelta,datetime
+      from datetime  import date
       def random_date(start, end):
          delta = end - start
          int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
@@ -75,10 +72,11 @@ class MonocleData:
       batches = { i:{} for i in institutions.keys() }
       for this_institution in institutions.keys():
          num_samples = len(samples[this_institution])
-         date = random_date(datetime.strptime("1/9/2020",'%d/%m/%Y'),datetime.strptime("1/4/2021",'%d/%m/%Y'))
-         batches[this_institution] = { 'expected'  : int( num_samples * (randint(1,4)+ random()) ),
+         batches[this_institution] = { 'expected'  : num_samples,
                                        'received'  : num_samples,
-                                       'deliveries': [{'name': 'batch 1', 'date': date.strftime("%d %b %Y"),  'number': num_samples },
+                                       'deliveries': [{  'name'   : 'All samples received',
+                                                         'date'   : date.today().strftime("%B %d, %Y"),
+                                                         'number' : num_samples },
                                                       ]
                                        }
       return batches

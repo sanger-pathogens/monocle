@@ -1,0 +1,4 @@
+monocledb:
+   cnf_file : 'my.cnf'
+pipeline_status:
+   csv_file : 'data/status/pipelines.csv'

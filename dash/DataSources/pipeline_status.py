@@ -19,24 +19,23 @@ class PipelineStatus:
    # these are the pipeline stages we'd like information about
    pipeline_stage_fields   = ['Import','QC','Assemble','Annotate']
 
-   def __init__(self, csv_file=None):
-      if csv_file is None:
-         with open(self.data_sources_config, 'r') as file:
-            data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            this_source  = data_sources[self.data_source]
-         self.csv_file  = this_source['csv_file']
-      else:
-         self.csv_file = csv_file
+   def __init__(self):
+      with open(self.data_sources_config, 'r') as file:
+         data_sources = yaml.load(file, Loader=yaml.FullLoader)
+         this_source  = data_sources[self.data_source]
+      self.csv_file = this_source['csv_file']
       self.populate_dataframe(self.csv_file)
 
    def populate_dataframe(self, csv_filename):
+      logging.info("reading pipeline status data from {}".format(csv_filename))
       with open(csv_filename, 'r') as csv:
          self.dataframe = pandas.read_csv(csv).set_index(self.pipeline_lane_field)
-      print(self.dataframe)
+      logging.debug(self.dataframe)
       return self.dataframe
       
    def lane_status(self, lane_id):
       assert (self.dataframe is not None), "lane_status() called before dataframe was populated"
+      logging.debug("extracting pipeline status data for lane {}".format(lane_id))
       status_data = {'FAILED':False, 'COMPLETED':False}
       num_stages_done = 0
       for this_field in self.pipeline_stage_fields:
@@ -49,10 +48,13 @@ class PipelineStatus:
          elif this_value == self.stage_failed_string:
             # if any stage fails, flag lane as failed
             status_data['FAILED'] = True
+            logging.debug("   found failed status for {} stage".format(this_field))
          elif this_value == self.stage_done_string:
             num_stages_done += 1
          status_data[this_field] = this_value
       # if all stages are done, flag lane as completed
       if len(self.pipeline_stage_fields) == num_stages_done:
          status_data['COMPLETED'] = True
+         logging.debug("   all stages are '{}'".format(self.stage_done_string))
+      logging.debug("   lane status: {}".format(status_data))
       return status_data
