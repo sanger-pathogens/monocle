@@ -182,15 +182,15 @@ def samples_received_table(this_institution, params):
                                           ]+[
                                              # this row repeated for each batch
                                              html.Tr( children = [
-                                                         html.Td( b['name'] ),
-                                                         html.Td( b['date'] ),
+                                                         html.Td( b['name'],   className = 'text_column' ),
+                                                         html.Td( b['date'],   className = 'text_column' ),
                                                          html.Td( b['number'], className='numeric' ),
                                                          ]
                                                       )
                                              for b in this_batch['deliveries']
                                           ]+[
                                           html.Tr([
-                                             html.Td( 'total received:', colSpan=2, style={'text-align': 'center'} ),
+                                             html.Td( 'total received:', colSpan=2, className = 'text_column centered' ),
                                              html.Td( this_batch['received'], className='numeric' ),
                                              ]),
                                           ]),
@@ -259,18 +259,18 @@ def samples_sequenced_table(this_institution, params):
                                                 ),
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Pending', colSpan  = 2 ),
+                                             html.Td( 'Pending', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['received']-this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Completed', colSpan  = 2 ),
+                                             html.Td( 'Completed', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
                                              html.Td( ),
-                                             html.Td( 'Success' ),
+                                             html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
                                                                         params['app'].get_asset_url("download-icon.png"),
@@ -293,7 +293,8 @@ def samples_sequenced_table(this_institution, params):
                                                                                                 value       =  False
                                                                                                 ),
                                                                               ],
-                                                               )
+                                                               ),
+                                                      className = 'text_column'
                                                    ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
@@ -363,23 +364,23 @@ def pipeline_table(this_institution, params):
                                                 ),
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Waiting', colSpan  = 2 ),
+                                             html.Td( 'Waiting', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['sequenced']-(this_status['running']+this_status['completed']), className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Running', colSpan  = 2 ),
+                                             html.Td( 'Running', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['running'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Completed', colSpan  = 2 ),
+                                             html.Td( 'Completed', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
                                              html.Td( ),
-                                             html.Td( 'Success' ),
+                                             html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
                                                                         params['app'].get_asset_url("download-icon.png"),
@@ -402,7 +403,8 @@ def pipeline_table(this_institution, params):
                                                                                                 value       =  False
                                                                                                 ),
                                                                               ],
-                                                               )
+                                                               ),
+                                                      className = 'text_column'
                                                       ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
