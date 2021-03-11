@@ -165,7 +165,7 @@ def samples_received_table(this_institution, params):
          raise TypeError( "params.batches.{}.deliveries contains a {}, should be a dict".format(k,type(this_delivery)) )
    elements = [   html.Table(
                      className   = 'samples_received_table',
-                     children    = [   html.Caption('Samples Receieved'),
+                     children    = [   html.Caption('Samples Received'),
                                        html.Tbody([
                                           html.Tr([
                                              html.Td(
