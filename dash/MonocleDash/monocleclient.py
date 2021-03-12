@@ -1,4 +1,6 @@
+import logging
 import DataSources.monocledb
+import DataSources.sequencing_status
 import DataSources.pipeline_status
 
 
@@ -7,10 +9,16 @@ class MonocleData:
    provides wrapper for classes that query various data sources for Monocle data
    """
    sample_table_inst_key   = 'submitting_institution_id'
+   # these are trhe sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
+   # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
+   sequencing_flags        = {'qc_lib':   'library',
+                              'qc_seq':   'sequencing',
+                              }
   
    def __init__(self):
-      self.monocledb       = DataSources.monocledb.MonocleDB()
-      self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
+      self.monocledb          = DataSources.monocledb.MonocleDB()
+      self.sequencing_status  = DataSources.sequencing_status.SequencingStatus()
+      self.pipeline_status    = DataSources.pipeline_status.PipelineStatus()
       # db keys are full institution names strings, but that dashboard wants keys
       # that are alphanumeric only and useable as HTML id attributes; and it is useful to
       # keep data in dicts with keys that match HTML id attr values.
@@ -60,11 +68,6 @@ class MonocleData:
       TO DO:  we need to know the total number of samples expected, and ideally batch information
       """
       from datetime  import date
-      def random_date(start, end):
-         delta = end - start
-         int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-         random_second = randrange(int_delta)
-         return start + timedelta(seconds=random_second)
       samples = self.get_samples(institutions)
       batches = { i:{} for i in institutions.keys() }
       for this_institution in institutions.keys():
@@ -77,34 +80,63 @@ class MonocleData:
                                                       ]
                                        }
       return batches
-
-   #def get_batches(self, institutions):
+   
+   #def get_sequencing_status(self, institutions):
       #"""
-      #Pass dict of institutions. Returns dict with details of batches delivered.
+      #Pass dict of institutions. Returns dict with sequencing status for each institution in the dict.
       #"""
-      ##USES MOCK DATA
-      #batches = {}
+      ## USES MOCK DATA
+      #sequencing_status = {}
       #i = 0
       #for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
-         #batches[this_institution] = self.mock_batches[ i % len(self.mock_batches) ]
+         #sequencing_status[this_institution] = self.mock_sequencing_status[ i % len(self.mock_sequencing_status) ]
          #i += 1
-      #return batches
+      #return sequencing_status
    
-   def get_sequencing_status(self, institutions):
+   def get_sequencing_status(self, institutions, samples):
       """
-      Pass dict of institutions. Returns dict with sequencing status for each institution in the dict.
+      Pass dict of institutions and list of samples.
+      Returns dict with sequencing status for each institution in the dict.
+      
+      TO DO:  failures are LANES not SAMPLES;  there could be more lanes than samples
+              so in theory we could have more failures than samples.  This is OK
+              but in the dashboard code success is calculated as samples - faulures
+              and could be a negative number (or at least, misleading)
+      TO DO:  improve 'failed' dict 'issue' strings
       """
-      # USES MOCK DATA
-      sequencing_status = {}
-      i = 0
-      for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
-         sequencing_status[this_institution] = self.mock_sequencing_status[ i % len(self.mock_sequencing_status) ]
-         i += 1
-      return sequencing_status
-
+      status = {}
+      for this_institution in institutions.keys():
+         status[this_institution] = {  'received'  : len(samples[this_institution]),
+                                       'completed' : 0,
+                                       'failed'    : [],
+                                       }
+         sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
+         if 0 < len(sample_id_list):
+            sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
+            for this_sample in samples[this_institution]:
+               if this_sample['sample_id'] is not None:
+                  status[this_institution]['completed'] += 1
+                  this_sequencing_status = sequencing_status_data[this_sample['sample_id']]
+                  detected_failure = False
+                  for this_lane in this_sequencing_status['lanes']:
+                     for this_flag in self.sequencing_flags.keys():
+                        if not 1 == this_lane[this_flag]:
+                           detected_failure = True
+                           status[this_institution]['failed'].append({  'sample' : this_sample['sample_id'],
+                                                                        'qc'     : self.sequencing_flags[this_flag],
+                                                                        'issue'  : "lane {} failed".format(this_lane),
+                                                                        },
+                                                                     )
+      return status
+   
    def get_pipeline_status(self, institutions, samples):
       """
       Pass dict of institutions and list of samples. Returns dict with pipeline status for each institution in the dict.
+      
+      TO DO:  the count here is of LANES rather than SAMPLES, so the dashboard could end up displaying
+              more pipeline status results than sequencing status results.   That'snot incorrect but
+              the dashboard display needs to be sorted out to make it clear.
+      TO DO:  decide what to do about about 'failed' dict 'issue' strings
       """
       status = {}
       for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):

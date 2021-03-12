@@ -2,7 +2,7 @@ import logging
 import pprint
 import MonocleDash.monocleclient
 
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARNING')
 
 data  = MonocleDash.monocleclient.MonocleData()
 pp    = pprint.PrettyPrinter(indent=3)
@@ -23,11 +23,12 @@ pp.pprint(inst)
 #batches = data.get_batches(inst)
 #pp.pprint(batches)
 
-#print("\nSequencing status:\n")
-#sequencing_status = data.get_sequencing_status(inst)
-#pp.pprint(sequencing_status)
-
-print("\nPipeline status:\n")
+print("\nSequencing status:\n")
 samples = data.get_samples(inst)
-pipeline_status = data.get_pipeline_status(inst,samples)
-pp.pprint(pipeline_status)
+sequencing_status = data.get_sequencing_status(inst, samples)
+pp.pprint(sequencing_status)
+
+#print("\nPipeline status:\n")
+#samples = data.get_samples(inst)
+#pipeline_status = data.get_pipeline_status(inst,samples)
+#pp.pprint(pipeline_status)
