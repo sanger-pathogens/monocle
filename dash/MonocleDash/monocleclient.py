@@ -1,6 +1,3 @@
-import json
-import urllib.parse
-import urllib.request
 import DataSources.monocledb
 import DataSources.pipeline_status
 
@@ -324,58 +321,3 @@ class MonocleData:
                                                 ]
                                  },   
                               ]
-
-
-class ProtocolError(Exception):
-    pass
-
-class Client:
-   
-   base_url="http://ts24.dev.pam.sanger.ac.uk:5000/"
-   
-   
-   def get_progress(self):
-      data = self.make_request('data/juno-progress/', required_keys=['months', 'samples received', 'samples sequenced'])
-      return data
-
-
-   def get_institutions(self):
-      data = self.make_request('data/institutions/', required_keys=['institutions'])
-      return data['institutions']
-   
-   
-   def get_batches(self):
-      data = self.make_request('data/batches/', required_keys=['batches'])
-      return data['batches']
-
-
-   def make_request(self, endpoint, required_keys=[]):
-      
-      request_url = self.base_url+endpoint
-      
-      try:
-         with urllib.request.urlopen(request_url) as this_response:
-            response_as_string = this_response.read().decode('utf-8')
-            response_data = json.loads(response_as_string)
-            data=response_data.get('data')
-            success=response_data.get('success')
-            if None == data or None == success:
-               error_message = "badly formed JSON response object: missing `data` and/or 'success' keys"
-               raise ProtocolError(error_message)
-            if not success:
-               # expect 'data' to contain an error message of some sort
-               error_message = "request to '{}' failed: {}".format(endpoint, data)
-               raise ProtocolError(error_message)               
-            for required_key in required_keys:
-               try:
-                  data[required_key]
-               except KeyError:
-                  error_message = "response data not contain the expected key '{}'".format(required_key)
-                  raise ProtocolError(error_message)
-            return(data)
-         
-      except urllib.error.HTTPError:
-         # insert any logging/error handling code we want here
-         raise
-      
-      return data
