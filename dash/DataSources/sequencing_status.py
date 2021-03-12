@@ -48,26 +48,29 @@ class MLWH_Client:
       with open(self.data_sources_config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
          this_source  = data_sources[self.data_source]
-      self.base_url     = this_source['base_url']
-      self.swagger      = this_source['swagger']
-      self.findById_ep  = this_source['findById']
-      self.findByIds_ep = this_source['findByIds']
-      self.result_keys  = ['id', 'lanes', 'dna_measured_volume', 'dna_concentration', 'total_dna_ng']
-
+      self.base_url        = this_source['base_url']
+      self.swagger         = this_source['swagger']
+      self.findById_ep     = this_source['findById']
+      self.findById_key    = 'sample'
+      self.findByIds_ep    = this_source['findByIds']
+      self.findByIds_key   = 'samples'
+      
    def find_by_id(self, sample_id):
       endpoint = self.findById_ep+sample_id
       logging.debug("{}.find_by_id({}) using endpoint {}".format(__class__.__name__,sample_id,endpoint))
-      return self.make_request(  endpoint,
-                                 required_keys  = self.result_keys
-                                 )
+      results = self.make_request(  endpoint,
+                                    required_keys  = [self.findById_key],
+                                    )
+      return results[self.findById_key]
    
    def find_by_ids(self, sample_ids):
-      endpoint = self.findByIds_ep
+      endpoint    = self.findByIds_ep
       logging.debug("{}.find_by_id() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
-      return self.make_request(  endpoint,
-                                 post_data      = sample_ids,
-                                 required_keys  = self.result_keys
-                                 )
+      results = self.make_request(  endpoint,
+                                    post_data      = sample_ids,
+                                    required_keys  = [self.findByIds_key],
+                                    )
+      return results[self.findByIds_key]
 
    def make_request(self, endpoint, post_data=None, required_keys=[]):
       request_url       = self.base_url+endpoint
@@ -87,19 +90,17 @@ class MLWH_Client:
          with urllib.request.urlopen( http_request ) as this_response:
             response_as_string = this_response.read().decode('utf-8')
             logging.debug("response from MLWH API: {}".format(response_as_string))
-            results_list = json.loads(response_as_string)
-            if not isinstance(results_list, list):
-               error_message = "request to '{}' did not return a list as expected (see API documentation at {})".format(endpoint, swagger_url)
+            results_data = json.loads(response_as_string)
+            if not isinstance(results_data, dict):
+               error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)
                raise ProtocolError(error_message)
-            logging.info("MLWH API returned a list of {} result(s)".format(len(results_list)))
-            for this_result in results_list:
-               for required_key in required_keys:
-                  try:
-                     this_result[required_key]
-                  except KeyError:
-                     error_message = "response data contained a list item that not contain the expected key '{}' (see API documentation at {})".format(required_key,swagger_url)
-                     raise ProtocolError(error_message)
-            return results_list
+            for required_key in required_keys:
+               try:
+                  results_data[required_key]
+               except KeyError:
+                  error_message = "response data did not contain the expected key '{}' (see API documentation at {})".format(required_key,swagger_url)
+                  raise ProtocolError(error_message)
+            return results_data
 
       except urllib.error.HTTPError:
          logging.error("HTTP error during MLWH API request {}".format(request_url))
