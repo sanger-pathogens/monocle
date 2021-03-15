@@ -3,7 +3,6 @@ import DataSources.monocledb
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 
-
 class MonocleData:
    """
    provides wrapper for classes that query various data sources for Monocle data
@@ -29,9 +28,10 @@ class MonocleData:
    def get_progress(self):
       return self.mock_progress
 
-   def get_institutions(self):
+   def get_institutions(self, pattern=None):
       """
       Returns a dict of institutions.
+      If option pattern is passed, only institutions with names that include the pattern are returned (case insensitive)
       Dict keys are alphanumeric-only and safe for HTML id attr (do not confuse with database keys).
       MonocleData.institution_dict_to_db_key  and MonocleData.institution_db_key_to_dict (both populated by this method)
       maps internal dict keys to/from the database keys
@@ -39,13 +39,14 @@ class MonocleData:
       names = self.monocledb.get_institution_names()
       institutions = {}
       for this_name in names:
-         dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
-         institutions[dict_key] = this_name
-         # currently the db uses insitution names as keys, but we don't want to rely on that
-         # so store db keys in a pair of hashes to allo lookup both ways
-         institution_db_key = this_name
-         self.institution_dict_to_db_key[dict_key]             = institution_db_key
-         self.institution_db_key_to_dict[institution_db_key]   = dict_key
+         if None == pattern or pattern.lower() in this_name.lower():
+            dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
+            institutions[dict_key] = this_name
+            # currently the db uses insitution names as keys, but we don't want to rely on that
+            # so store db keys in a pair of hashes to allo lookup both ways
+            institution_db_key = this_name
+            self.institution_dict_to_db_key[dict_key]             = institution_db_key
+            self.institution_db_key_to_dict[institution_db_key]   = dict_key
       return institutions
 
    def get_samples(self, institutions):
@@ -80,19 +81,7 @@ class MonocleData:
                                                       ]
                                        }
       return batches
-   
-   #def get_sequencing_status(self, institutions):
-      #"""
-      #Pass dict of institutions. Returns dict with sequencing status for each institution in the dict.
-      #"""
-      ## USES MOCK DATA
-      #sequencing_status = {}
-      #i = 0
-      #for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
-         #sequencing_status[this_institution] = self.mock_sequencing_status[ i % len(self.mock_sequencing_status) ]
-         #i += 1
-      #return sequencing_status
-   
+      
    def get_sequencing_status(self, institutions, samples):
       """
       Pass dict of institutions and list of samples.
@@ -114,19 +103,27 @@ class MonocleData:
          if 0 < len(sample_id_list):
             sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
             for this_sample in samples[this_institution]:
-               if this_sample['sample_id'] is not None:
+               this_sample_id = this_sample['sample_id']
+               # ignore any samples that have no Sanger sample ID
+               if this_sample_id is None:
+                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions[this_institution]))
+               # also ignore samples not in the MLWH
+               elif this_sample_id not in sequencing_status_data:
+                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions[this_institution]))
+               else:
                   status[this_institution]['completed'] += 1
-                  this_sequencing_status = sequencing_status_data[this_sample['sample_id']]
+                  this_sequencing_status = sequencing_status_data[this_sample_id]
                   detected_failure = False
                   for this_lane in this_sequencing_status['lanes']:
                      for this_flag in self.sequencing_flags.keys():
                         if not 1 == this_lane[this_flag]:
                            detected_failure = True
-                           status[this_institution]['failed'].append({  'sample' : this_sample['sample_id'],
+                           status[this_institution]['failed'].append({  'sample' : this_sample_id,
                                                                         'qc'     : self.sequencing_flags[this_flag],
                                                                         'issue'  : "lane {} failed".format(this_lane),
                                                                         },
                                                                      )
+                  
       return status
    
    def get_pipeline_status(self, institutions, samples):
@@ -146,7 +143,15 @@ class MonocleData:
                                        'failed'    : [],
                                        }
          for this_sample in samples[this_institution]:
-            if this_sample['lane_id'] is not None:
+            # important:  our source of lane IDs for each sample is the monocle db
+            # but there are also lane data in MLWH
+            # currently it is not clear whether the monocle db or MLWH should be used as the definitive source of lane IDs
+            # (using the monocle db is simpler as it has a 1:1 relation between samples and lanes; MLWH can have many lanes for
+            # each sample)
+            # TO DO:  get a decision on where we should retrieve lane IDs from!
+            if this_sample['lane_id'] is None:
+               logging.info("sample {} ({}) has no lanes in Monocle database (note: MLWH may have lane data): skipped in pipeline status".format(this_sample['sample_id'],institutions[this_institution]))
+            else:
                this_pipeline_status = self.pipeline_status.lane_status(this_sample['lane_id'])
                status[this_institution]['sequenced'] += 1
                if this_pipeline_status['FAILED']:
@@ -187,169 +192,3 @@ class MonocleData:
                      'samples received'   : [158,225,367,420,580,690,750,835,954],
                      'samples sequenced'  : [95,185,294,399,503,640,730,804,895],
                      }
-
-   mock_batches = [  {  'expected'  : 800,
-                        'received'  : 188,
-                        'deliveries': [{'name': 'batch 1', 'date': '3 Dec 2020',  'number': 95  },
-                                       {'name': 'batch 2', 'date': '11 Jan 2021', 'number': 93  },
-                                       ]
-                        },
-                     {  'expected'  : 1200,
-                        'received'  : 668,
-                        'deliveries': [{'name': 'batch 1', 'date': '24 Nov 2020', 'number': 237 },
-                                       {'name': 'batch 2', 'date': '16 Dec 2020', 'number': 175 },
-                                       {'name': 'batch 3', 'date': '3 Jan 2021',  'number': 194 },
-                                       ]
-                        },
-                     {  'expected'  : 900,
-                        'received'  : 232,
-                        'deliveries': [{'name': 'batch 1', 'date': '28 Dec 2020', 'number': 104 },
-                                       {'name': 'batch 2', 'date': '27 Jan 2021', 'number': 128 },
-                                       ]
-                        },
-                     {  'expected'  : 1500,
-                        'received'  : 341,
-                        'deliveries': [{'name': 'batch 1', 'date': '25 Feb 2021', 'number': 341 },
-                                       ]
-                        },
-                     {  'expected'  : 1000,
-                        'received'  : 505,
-                        'deliveries': [{'name': 'batch 1', 'date': '30 Oct 2020', 'number': 76  },
-                                       {'name': 'batch 2', 'date': '24 Nov 2020', 'number': 85  },
-                                       {'name': 'batch 3', 'date': '17 Dec 2020', 'number': 105 },
-                                       {'name': 'batch 4', 'date': '11 Jan 2021', 'number': 128 },
-                                       {'name': 'batch 5', 'date': '3 Feb 2021',  'number': 111 },
-                                       ]
-                        },
-                     {  'expected'  : 600,
-                        'received'  : 203,
-                        'deliveries': [{'name': 'batch 1', 'date': '17 Jan 2020', 'number': 203 },
-                                       ]
-                        },
-                     ]
-   
-   mock_sequencing_status = [ {  'received'  : mock_batches[0]['received'],
-                                 'completed' : 173,
-                                 'failed'    : []
-                                 },
-                              {  'received'  : mock_batches[1]['received'],
-                                 'completed' : 632,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                {  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                ]
-                                 },
-                              {  'received'  : mock_batches[2]['received'],
-                                 'completed' : 198,
-                                 'failed'    : []
-                                 },
-                              {  'received'  : mock_batches[3]['received'],
-                                 'completed' : 0,
-                                 'failed'    : []
-                                 },
-                              {  'received'  : mock_batches[4]['received'],
-                                 'completed' : 394,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                {  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                ]
-                                 },
-                              {  'received'  : mock_batches[5]['received'],
-                                 'completed' : 157,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                ]
-                                 },
-                              ]
-
-   mock_pipeline_status = [   {  'sequenced' : mock_sequencing_status[0]['completed']-len(mock_sequencing_status[0]['failed']),
-                                 'running'   : 30,
-                                 'completed' : 63,
-                                 'failed'    : []
-                                 },
-                              {  'sequenced' : mock_sequencing_status[1]['completed']-len(mock_sequencing_status[1]['failed']),
-                                 'running'   : 180,
-                                 'completed' : 187,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                {  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                ]
-                                 },
-                              {  'sequenced' : mock_sequencing_status[2]['completed']-len(mock_sequencing_status[2]['failed']),
-                                 'running'   : 25,
-                                 'completed' : 98,
-                                 'failed'    : []
-                                 },
-                              {  'sequenced' : mock_sequencing_status[3]['completed']-len(mock_sequencing_status[3]['failed']),
-                                 'running'   : 0,
-                                 'completed' : 0,
-                                 'failed'    : []
-                                 },
-                              {  'sequenced' : mock_sequencing_status[4]['completed']-len(mock_sequencing_status[4]['failed']),
-                                 'running'   : 105,
-                                 'completed' : 179,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                ]
-                                 },
-                              {  'sequenced' : mock_sequencing_status[5]['completed']-len(mock_sequencing_status[5]['failed']),
-                                 'running'   : 53,
-                                 'completed' : 54,
-                                 'failed'    : [{  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                {  'sample' : '4321STDY4334078',
-                                                   'qc'     : 'sequencing',
-                                                   'issue'  : 'Phred scores across sequences are insufficient quality',
-                                                   },
-                                                {  'sample' : '4321STDY4321099',
-                                                   'qc'     : 'DNA',
-                                                   'issue'  : 'DNA concentration 7nM  required >= 10nM',
-                                                   },
-                                                ]
-                                 },   
-                              ]

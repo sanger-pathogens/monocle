@@ -5,3 +5,5 @@ real-data
 .idea
 users.md
 my.cnf
+my-dev.cnf
+my-prod.cnf
