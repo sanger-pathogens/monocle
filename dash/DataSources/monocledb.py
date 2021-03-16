@@ -10,7 +10,9 @@ class DataSourceParamError(Exception):
    pass
 
 class MonocleDB:
-   """ provides access to the Monocle database """
+   """
+   Methods for retrieving data from the the Monocle database.
+   """
    
    data_sources_config        = 'data_sources.yml'
    data_source                = 'monocledb'
@@ -18,7 +20,8 @@ class MonocleDB:
    institution_table_inst_key = 'name'
    sample_table               = 'api_sample'
    sample_table_inst_key      = 'submitting_institution_id'
-   sample_table_fields        = ['lane_id', 'sample_id', 'public_name', 'host_status', 'serotype', sample_table_inst_key]
+   sample_table_lane_id_field = 'lane_id'
+   sample_table_fields        = [sample_table_lane_id_field, 'sample_id', 'public_name', 'host_status', 'serotype', sample_table_inst_key]
 
    def __init__(self):
       with open(self.data_sources_config, 'r') as file:
@@ -38,6 +41,9 @@ class MonocleDB:
       self.db_engine = None
 
    def connection(self):
+      """
+      Gets and returns a database connection
+      """
       if self.db_engine is None:
          self.db_engine = create_engine( self.db_url, echo = False )
       connection = self.db_engine.connect()
@@ -45,6 +51,9 @@ class MonocleDB:
       return connection
       
    def get_institution_names(self):
+      """
+      Returns a list of all instiution names
+      """
       institutions = None
       with self.connection() as conn:
          #rs = conn.execute(text("""select * from api_institution where country = :the_country"""), the_country='China')
@@ -57,7 +66,13 @@ class MonocleDB:
          logging.info("found {} institutions in monocle db".format(len(institutions)))
       return institutions
    
-   def get_samples(self, institutions=None):
+   def get_samples(self, exclude_lane_id=True, institutions=None):
+      """
+      Retrieve all sample records; return as array of dicts, dict keys are field names from monocle db
+      Optional params:
+      `exclude_lane_id`, flag; if true, `land_id` is exnclouded from the dicts returned
+      `institutions`, a list of institution names; only samples from those listed are returned
+      """
       if institutions is not None and not isinstance(institutions, list):
          raise DataSourceParamError( "named parameter 'institutions' is {}, should be a list".format(type(institutions)) )
       with self.connection() as conn:
@@ -70,10 +85,13 @@ class MonocleDB:
             this_sample = {}
             r = 0
             for this_field in self.sample_table_fields:
-               this_sample[this_field] = row[r]
+               if exclude_lane_id and this_field == self.sample_table_lane_id_field:
+                  logging.debug("excluding the {} table field {} from the sample data".format(self.sample_table,this_field))
+               else:
+                  this_sample[this_field] = row[r]
+                  if None == this_sample[this_field]:
+                     logging.warn("monocle db: record in {} has null {}: {}".format(self.sample_table,this_field,row))
                r += 1
-               if None == this_sample[this_field]:
-                  logging.warn("monocle db: record in {} has null {}: {}".format(self.sample_table,this_field,row))
             samples.append( this_sample )
          logging.info("found {} samples in monocle db".format(len(samples)))
       return samples

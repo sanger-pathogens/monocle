@@ -128,8 +128,7 @@ class MonocleData:
    
    def get_pipeline_status(self, institutions, samples):
       """
-      Pass dict of institutions and list of samples. Returns dict with pipeline status for each institution in the dict.
-      
+      Pass dict of institutions and list of samples; returns dict with pipeline status for each institution in the dict.
       TO DO:  the count here is of LANES rather than SAMPLES, so the dashboard could end up displaying
               more pipeline status results than sequencing status results.   That'snot incorrect but
               the dashboard display needs to be sorted out to make it clear.
@@ -142,33 +141,32 @@ class MonocleData:
                                        'completed' : 0,
                                        'failed'    : [],
                                        }
-         for this_sample in samples[this_institution]:
-            # important:  our source of lane IDs for each sample is the monocle db
-            # but there are also lane data in MLWH
-            # currently it is not clear whether the monocle db or MLWH should be used as the definitive source of lane IDs
-            # (using the monocle db is simpler as it has a 1:1 relation between samples and lanes; MLWH can have many lanes for
-            # each sample)
-            # TO DO:  get a decision on where we should retrieve lane IDs from!
-            if this_sample['lane_id'] is None:
-               logging.info("sample {} ({}) has no lanes in Monocle database (note: MLWH may have lane data): skipped in pipeline status".format(this_sample['sample_id'],institutions[this_institution]))
+         sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
+         if 0 < len(sample_id_list):
+            sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
+         for this_sample_id in sample_id_list:
+            if this_sample_id not in sequencing_status_data:
+               logging.warning("{} sample {} has no lanes".format(this_institution, this_sample_id))
             else:
-               this_pipeline_status = self.pipeline_status.lane_status(this_sample['lane_id'])
-               status[this_institution]['sequenced'] += 1
-               if this_pipeline_status['FAILED']:
-                  for this_stage in self.pipeline_status.pipeline_stage_fields:
-                     if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
-                        status[this_institution]['failed'].append({  'lane'   : this_sample['lane_id'],
-                                                                     'stage'  : this_stage,
-                                                                     # currently have no way to retrieve a failure report
-                                                                     'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                                                                     },           
-                                                                  )
-               else:
-                  if this_pipeline_status['COMPLETED']:
-                     status[this_institution]['completed'] += 1
+               this_sample_lanes = sequencing_status_data[this_sample_id]['lanes']
+               for this_lane_id in [ lane['id'] for lane in sequencing_status_data[this_sample_id]['lanes'] ]:
+                  this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
+                  status[this_institution]['sequenced'] += 1
+                  if this_pipeline_status['FAILED']:
+                     for this_stage in self.pipeline_status.pipeline_stage_fields:
+                        if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
+                                                                        'stage'  : this_stage,
+                                                                        # currently have no way to retrieve a failure report
+                                                                        'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                                                                        },           
+                                                                     )
                   else:
-                     # not completed, but no failures reported
-                     status[this_institution]['running'] += 1
+                     if this_pipeline_status['COMPLETED']:
+                        status[this_institution]['completed'] += 1
+                     else:
+                        # not completed, but no failures reported
+                        status[this_institution]['running'] += 1
       return status
 
    def institution_name_to_dict_key(self, name, existing_keys):
