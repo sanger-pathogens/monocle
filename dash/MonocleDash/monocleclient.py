@@ -102,8 +102,7 @@ class MonocleData:
          sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
          if 0 < len(sample_id_list):
             sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
-            for this_sample in samples[this_institution]:
-               this_sample_id = this_sample['sample_id']
+            for this_sample_id in sample_id_list:
                # ignore any samples that have no Sanger sample ID
                if this_sample_id is None:
                   logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions[this_institution]))
@@ -118,12 +117,11 @@ class MonocleData:
                      for this_flag in self.sequencing_flags.keys():
                         if not 1 == this_lane[this_flag]:
                            detected_failure = True
-                           status[this_institution]['failed'].append({  'sample' : this_sample_id,
+                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane['id'], this_sample_id),
                                                                         'qc'     : self.sequencing_flags[this_flag],
                                                                         'issue'  : "lane {} failed".format(this_lane),
                                                                         },
                                                                      )
-                  
       return status
    
    def get_pipeline_status(self, institutions, samples):
@@ -144,29 +142,31 @@ class MonocleData:
          sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
          if 0 < len(sample_id_list):
             sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
-         for this_sample_id in sample_id_list:
-            if this_sample_id not in sequencing_status_data:
-               logging.warning("{} sample {} has no lanes".format(this_institution, this_sample_id))
-            else:
-               this_sample_lanes = sequencing_status_data[this_sample_id]['lanes']
-               for this_lane_id in [ lane['id'] for lane in sequencing_status_data[this_sample_id]['lanes'] ]:
-                  this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
-                  status[this_institution]['sequenced'] += 1
-                  if this_pipeline_status['FAILED']:
-                     for this_stage in self.pipeline_status.pipeline_stage_fields:
-                        if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
-                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
-                                                                        'stage'  : this_stage,
-                                                                        # currently have no way to retrieve a failure report
-                                                                        'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                                                                        },           
-                                                                     )
-                  else:
-                     if this_pipeline_status['COMPLETED']:
-                        status[this_institution]['completed'] += 1
+            for this_sample_id in sample_id_list:
+               if this_sample_id is None:
+                  logging.warning("a sample from {} has no Sanger sample ID: skipped in pipeline status".format(this_sample_id,institutions[this_institution]))
+               elif this_sample_id not in sequencing_status_data:
+                  logging.warning("{} sample {} has no lanes".format(institutions[this_institution], this_sample_id))
+               else:
+                  this_sample_lanes = sequencing_status_data[this_sample_id]['lanes']
+                  for this_lane_id in [ lane['id'] for lane in sequencing_status_data[this_sample_id]['lanes'] ]:
+                     this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
+                     status[this_institution]['sequenced'] += 1
+                     if this_pipeline_status['FAILED']:
+                        for this_stage in self.pipeline_status.pipeline_stage_fields:
+                           if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                              status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
+                                                                           'stage'  : this_stage,
+                                                                           # currently have no way to retrieve a failure report
+                                                                           'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                                                                           },           
+                                                                        )
                      else:
-                        # not completed, but no failures reported
-                        status[this_institution]['running'] += 1
+                        if this_pipeline_status['COMPLETED']:
+                           status[this_institution]['completed'] += 1
+                        else:
+                           # not completed, but no failures reported
+                           status[this_institution]['running'] += 1
       return status
 
    def institution_name_to_dict_key(self, name, existing_keys):
