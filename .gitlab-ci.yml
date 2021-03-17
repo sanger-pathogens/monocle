@@ -9,6 +9,11 @@ stages:
 variables:
   API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  # this is the most recent build in the master branch
+  # it would be better if the current docker iamge was used, but currently unit tests are done before
+  # docker builds, so the latest docker image isn't yet available :-/
+  # this only matters when the dependencies change
+  DASH_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/monocle-dash:unstable"
   DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
@@ -37,6 +42,17 @@ App unit tests:
   script:
     - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
+    
+Dash unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  image: "${DASH_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd dash
+  script:
+    - ./unittests.sh
+    
     
 Integration tests:
   stage: integration_test
