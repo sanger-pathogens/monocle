@@ -17,10 +17,10 @@ class SequencingStatus:
       self.mlwh_client = MLWH_Client()
       
    def get_sample(self, sample_id):
-      results_list = self.mlwh_client.find_by_id(sample_id)
-      logging.info("{}.get_sample({}) got {} result(s)".format(__class__.__name__,sample_id,len(results_list)))
+      result = self.mlwh_client.find_by_id(sample_id)
+      logging.debug("{}.get_sample({}) result(s) = {}".format(__class__.__name__,sample_id,result))
       # there should be one sample only
-      return results_list[0]
+      return result
 
    def get_multiple_samples(self, sample_ids):
       """
@@ -61,6 +61,7 @@ class MLWH_Client:
       results = self.make_request(  endpoint,
                                     required_keys  = [self.findById_key],
                                     )
+      logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__,sample_id,results))
       return results[self.findById_key]
    
    def find_by_ids(self, sample_ids):
@@ -76,7 +77,7 @@ class MLWH_Client:
       request_url       = self.base_url+endpoint
       swagger_url       = self.base_url+self.swagger # only because it may be useful for error messages
       request_data      = None
-      request_headers   = None
+      request_headers   = {}
       # if POST data were passed, convert to a UTF-8 JSON string
       if post_data is not None:
          assert ( isinstance(post_data, dict) or isinstance(post_data, list) ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__,post_data)
