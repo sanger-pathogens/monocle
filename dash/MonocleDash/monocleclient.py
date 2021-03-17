@@ -5,7 +5,9 @@ import DataSources.pipeline_status
 
 class MonocleData:
    """
-   provides wrapper for classes that query various data sources for Monocle data
+   Provides wrapper for classes that query various data sources for Monocle data.
+   This class exists to convert data between the form in which they are provided by the data sources,
+   and whatever form is most convenient for rendering the dashboard.
    """
    sample_table_inst_key   = 'submitting_institution_id'
    # these are trhe sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
@@ -15,9 +17,12 @@ class MonocleData:
                               }
   
    def __init__(self):
-      self.monocledb          = DataSources.monocledb.MonocleDB()
-      self.sequencing_status  = DataSources.sequencing_status.SequencingStatus()
-      self.pipeline_status    = DataSources.pipeline_status.PipelineStatus()
+      self.monocledb                = DataSources.monocledb.MonocleDB()
+      self.institutions_data        = None
+      self.samples_data             = None
+      self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
+      self.sequencing_status_data   = None
+      self.pipeline_status          = DataSources.pipeline_status.PipelineStatus()
       # db keys are full institution names strings, but that dashboard wants keys
       # that are alphanumeric only and useable as HTML id attributes; and it is useful to
       # keep data in dicts with keys that match HTML id attr values.
@@ -31,11 +36,21 @@ class MonocleData:
    def get_institutions(self, pattern=None):
       """
       Returns a dict of institutions.
+      
+      {  institution_1   => 'the institution name',
+         institution_2...
+         }
+         
       If option pattern is passed, only institutions with names that include the pattern are returned (case insensitive)
       Dict keys are alphanumeric-only and safe for HTML id attr (do not confuse with database keys).
       MonocleData.institution_dict_to_db_key  and MonocleData.institution_db_key_to_dict (both populated by this method)
       maps internal dict keys to/from the database keys
+      
+      The data are cached so this can safely be called multiple times without
+      repeated monocle db queries being made.
       """
+      if self.institutions_data is not None:
+         return self.institutions_data
       names = self.monocledb.get_institution_names()
       institutions = {}
       for this_name in names:
@@ -47,31 +62,94 @@ class MonocleData:
             institution_db_key = this_name
             self.institution_dict_to_db_key[dict_key]             = institution_db_key
             self.institution_db_key_to_dict[institution_db_key]   = dict_key
-      return institutions
+      self.institutions_data = institutions
+      return self.institutions_data
 
-   def get_samples(self, institutions):
+   def get_samples(self):
       """
       Pass dict of institutions. Returns a dict of all samples for each institution in the dict.
+      
+      {  institution_1   => [sample_id_1, sample_id_2...],
+         institution_2...
+         }
+         
+      All institutions are included in the top level dict, even if they have no
+      has no samples in the monocle db; the value will be an empty list.
+      
+      Note that samples in the monocle db derive from an inventory of those that are expected;
+      they are not necessarily all present in MLWH, so certain samples may not be found
+      in the data returned methods that look for sequencing or pipeline status data.  Think
+      of the lists returned by this method as being "all samples IDs that you MIGHT be able to
+      retrieve data for".
+
+      The data are cached so this can safely be called multiple times without
+      repeated monocle db queries being made.
       """
-      unsorted_samples = self.monocledb.get_samples( institutions = list(self.institution_dict_to_db_key.values()) )
+      if self.samples_data is not None:
+         return self.samples_data
+      institutions_data = self.get_institutions()
+      all_juno_samples = self.monocledb.get_samples()
       # samples dict keys are same as institutions hash; values are listed (to be filled with samples)
-      samples = { i:[] for i in institutions.keys() }
-      for this_sample in unsorted_samples:
+      samples = { i:[] for i in list(self.institutions_data.keys()) }
+      for this_sample in all_juno_samples:
          this_institution_key = self.institution_db_key_to_dict[ this_sample[self.sample_table_inst_key] ]
          this_sample.pop(self.sample_table_inst_key, None)
          samples[this_institution_key].append( this_sample )
-      return samples
+      self.samples_data = samples
+      return self.samples_data
+            
+   def get_sequencing_status(self):
+      """
+      Pass dict of institutions.
+      Returns dict with sequencing data for each institution; data are in
+      a dict, keyed on the sample ID
+      
+      Note that these are sample IDs that were found in MLWH, and have therefore
+      neen processed at Sanger; some samples that are in the monocle db may not
+      be present here.
+      
+      {  institution_1: {  sample_id_1: { seq_data_1 => 'the value',
+                                          seq_data_2 => 'the value',
+                                          seq_data_3...
+                                          },
+                           sample_id_2...
+                           },
+         institution_2...
+         }
+         
+      All institutions are included in the top level dict, even if they have no
+      has no samples in the monocle db; the sequencing data for these in an empty dict.
+      If a sample from the monocle db has no sequencing data available, that sample's
+      ID will not appear as a key in the dict of sequencing data for its institution.
+      
+      The data are cached so this can safely be called multiple times without
+      repeated MLWH queries being made.
+      """
+      if self.sequencing_status_data is not None:
+         return self.sequencing_status_data
+      samples_data = self.get_samples()
+      institutions_data = self.get_institutions()
+      sequencing_status = {}
+      for this_institution in institutions_data.keys():
+         sequencing_status[this_institution] = {}
+         sample_id_list = [ s['sample_id'] for s in samples_data[this_institution] ]
+         if 0 < len(sample_id_list):
+            logging.debug("{}.get_sequencing_status() requesting sequencing status for samples {}".format(__class__.__name__,sample_id_list))
+            sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
+      self.sequencing_status_data = sequencing_status
+      return self.sequencing_status_data
 
-   def get_batches(self, institutions):
+   def get_batches(self):
       """
       Pass dict of institutions. Returns dict with details of batches delivered.
       
       TO DO:  we need to know the total number of samples expected, and ideally batch information
       """
       from datetime  import date
-      samples = self.get_samples(institutions)
-      batches = { i:{} for i in institutions.keys() }
-      for this_institution in institutions.keys():
+      samples = self.get_samples()
+      institutions_data = self.get_institutions()
+      batches = { i:{} for i in institutions_data.keys() }
+      for this_institution in institutions_data.keys():
          num_samples = len(samples[this_institution])
          batches[this_institution] = { 'expected'  : num_samples,
                                        'received'  : num_samples,
@@ -82,91 +160,112 @@ class MonocleData:
                                        }
       return batches
       
-   def get_sequencing_status(self, institutions, samples):
+   def sequencing_status_summary(self):
       """
-      Pass dict of institutions and list of samples.
-      Returns dict with sequencing status for each institution in the dict.
+      Returns dict with a summary of sequencing outcomes for each institution.
       
-      TO DO:  failures are LANES not SAMPLES;  there could be more lanes than samples
-              so in theory we could have more failures than samples.  This is OK
-              but in the dashboard code success is calculated as samples - faulures
-              and could be a negative number (or at least, misleading)
+      {  institution_1: {  'received':    <int>,
+                           'completed':   <int>,
+                           'failed':      [  {  'lane':  lane_id_1,
+                                                'stage': 'name of QC stage where issues was detected',
+                                                'issue': 'string describing the issue'
+                                                },
+                                             ...
+                                             ],
+                           },
+         institution_2...
+         }
+
       TO DO:  improve 'failed' dict 'issue' strings
       """
+      institutions_data = self.get_institutions()
+      sequencing_status_data = self.get_sequencing_status()
       status = {}
-      for this_institution in institutions.keys():
-         status[this_institution] = {  'received'  : len(samples[this_institution]),
+      for this_institution in sequencing_status_data.keys():
+         sample_id_list = sequencing_status_data[this_institution].keys()
+         status[this_institution] = {  'received'  : len(sample_id_list),
                                        'completed' : 0,
                                        'failed'    : [],
                                        }
-         sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
-         if 0 < len(sample_id_list):
-            sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
+         if 0 < len(sample_id_list) and this_institution in sequencing_status_data:
+            this_sequencing_status_data = sequencing_status_data[this_institution]
             for this_sample_id in sample_id_list:
                # ignore any samples that have no Sanger sample ID
                if this_sample_id is None:
-                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions[this_institution]))
+                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]))
                # also ignore samples not in the MLWH
-               elif this_sample_id not in sequencing_status_data:
-                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions[this_institution]))
+               elif this_sample_id not in this_sequencing_status_data:
+                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]))
                else:
                   status[this_institution]['completed'] += 1
-                  this_sequencing_status = sequencing_status_data[this_sample_id]
+                  this_sequencing_status = this_sequencing_status_data[this_sample_id]
                   detected_failure = False
                   for this_lane in this_sequencing_status['lanes']:
                      for this_flag in self.sequencing_flags.keys():
                         if not 1 == this_lane[this_flag]:
                            detected_failure = True
                            status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane['id'], this_sample_id),
-                                                                        'qc'     : self.sequencing_flags[this_flag],
+                                                                        'stage'  : self.sequencing_flags[this_flag],
                                                                         'issue'  : "lane {} failed".format(this_lane),
                                                                         },
                                                                      )
       return status
    
-   def get_pipeline_status(self, institutions, samples):
+   def pipeline_status_summary(self):
       """
-      Pass dict of institutions and list of samples; returns dict with pipeline status for each institution in the dict.
-      TO DO:  the count here is of LANES rather than SAMPLES, so the dashboard could end up displaying
-              more pipeline status results than sequencing status results.   That'snot incorrect but
-              the dashboard display needs to be sorted out to make it clear.
+      Returns dict with summary of the pipeline outcomes for each institution.
+
+      {  institution_1: {  'sequenced':   <int>,
+                           'running':     <int>,
+                           'completed':   <int>,
+                           'failed':      [  {  'lane':  lane_id_1,
+                                                'stage': 'name of QC stage where issues was detected',
+                                                'issue': 'string describing the issue'
+                                                },
+                                             ...
+                                             ],
+                           },
+         institution_2...
+         }
+         
+      Note that when self.pipeline_status is instantiated it creates a dataframe with
+      the data, rather than querying an API, there is no separate method to "get" pipeline
+      data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
+      are handled in this class.
+         
       TO DO:  decide what to do about about 'failed' dict 'issue' strings
       """
+      institutions_data = self.get_institutions()
+      sequencing_status_data = self.get_sequencing_status()
       status = {}
-      for this_institution in sorted( institutions.keys(), key=institutions.__getitem__ ):
+      for this_institution in institutions_data.keys():
          status[this_institution] = {  'sequenced' : 0,
                                        'running'   : 0,
                                        'completed' : 0,
                                        'failed'    : [],
                                        }
-         sample_id_list = [ s['sample_id'] for s in samples[this_institution] ]
+         sample_id_list = sequencing_status_data[this_institution].keys()
          if 0 < len(sample_id_list):
-            sequencing_status_data = self.sequencing_status.get_multiple_samples(sample_id_list)
             for this_sample_id in sample_id_list:
-               if this_sample_id is None:
-                  logging.warning("a sample from {} has no Sanger sample ID: skipped in pipeline status".format(this_sample_id,institutions[this_institution]))
-               elif this_sample_id not in sequencing_status_data:
-                  logging.warning("{} sample {} has no lanes".format(institutions[this_institution], this_sample_id))
-               else:
-                  this_sample_lanes = sequencing_status_data[this_sample_id]['lanes']
-                  for this_lane_id in [ lane['id'] for lane in sequencing_status_data[this_sample_id]['lanes'] ]:
-                     this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
-                     status[this_institution]['sequenced'] += 1
-                     if this_pipeline_status['FAILED']:
-                        for this_stage in self.pipeline_status.pipeline_stage_fields:
-                           if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
-                              status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
-                                                                           'stage'  : this_stage,
-                                                                           # currently have no way to retrieve a failure report
-                                                                           'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                                                                           },           
-                                                                        )
+               this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
+               for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
+                  this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
+                  status[this_institution]['sequenced'] += 1
+                  if this_pipeline_status['FAILED']:
+                     for this_stage in self.pipeline_status.pipeline_stage_fields:
+                        if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
+                                                                        'stage'  : this_stage,
+                                                                        # currently have no way to retrieve a failure report
+                                                                        'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                                                                        },           
+                                                                     )
+                  else:
+                     if this_pipeline_status['COMPLETED']:
+                        status[this_institution]['completed'] += 1
                      else:
-                        if this_pipeline_status['COMPLETED']:
-                           status[this_institution]['completed'] += 1
-                        else:
-                           # not completed, but no failures reported
-                           status[this_institution]['running'] += 1
+                        # not completed, but no failures reported
+                        status[this_institution]['running'] += 1
       return status
 
    def institution_name_to_dict_key(self, name, existing_keys):

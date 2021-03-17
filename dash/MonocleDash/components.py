@@ -452,49 +452,30 @@ def failed_samples_container(this_institution,params,stage,show):
                      style       =  {'display': display},
                      className   =  'failed_samples_by_institution_container',
                      children    =  #failed_samples_download(failed_samples, params['app'].get_asset_url("download-icon.png")) +
-                                    failed_samples_table('{} Failures'.format(stage.capitalize()), stage, failed_samples)
+                                    failed_samples_table('{} Failures'.format(stage.capitalize()), failed_samples)
                      )
                   ]
    return elements
 
 
-def failed_samples_table(caption,stage,failed_samples):
-   if not 'sequencing' == stage and not 'pipeline' == stage:
-      raise ValueError( "stage should be  'sequencing' or 'pipeline', not n'{}'".format(stage) )
+def failed_samples_table(caption,failed_samples):
    if not isinstance(failed_samples, list):
       raise TypeError( "failed_samples is {}, should be a list".format(type(failed_samples)) )
-   if 'sequencing' == stage:
-      table_rows =   [  html.Tr([
-                           html.Th('Sample'),
-                           html.Th('QC'),
-                           html.Th('Issue'),
-                           ])
-                        ]+[
-                           # this row repeated for each failed sample
-                           html.Tr( children = [
-                                       html.Td( f['sample'] ),
-                                       html.Td( f['qc'] ),
-                                       html.Td( f['issue'] ),
-                                       ]
-                                    )
-                           for f in failed_samples
-                        ]
-   elif 'pipeline' == stage:
-      table_rows =   [  html.Tr([
-                           html.Th('Lane'),
-                           html.Th('Stage'),
-                           html.Th('Issue'),
-                           ])
-                        ]+[
-                           # this row repeated for each failed sample
-                           html.Tr( children = [
-                                       html.Td( f['lane'] ),
-                                       html.Td( f['stage'] ),
-                                       html.Td( f['issue'] ),
-                                       ]
-                                    )
-                           for f in failed_samples
-                        ]
+   table_rows =   [  html.Tr([
+                        html.Th('Lane'),
+                        html.Th('Stage'),
+                        html.Th('Issue'),
+                        ])
+                     ]+[
+                        # this row repeated for each failed sample
+                        html.Tr( children = [
+                                    html.Td( f['lane'] ),
+                                    html.Td( f['stage'] ),
+                                    html.Td( f['issue'] ),
+                                    ]
+                                 )
+                        for f in failed_samples
+                     ]
    elements = [   html.Table(
                      className   = 'failed_samples_table',
                      children    = [   html.Caption(caption),

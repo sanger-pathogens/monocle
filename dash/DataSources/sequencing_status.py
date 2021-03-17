@@ -65,7 +65,7 @@ class MLWH_Client:
    
    def find_by_ids(self, sample_ids):
       endpoint    = self.findByIds_ep
-      logging.debug("{}.find_by_id() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
+      logging.debug("{}.find_by_ids() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
       results = self.make_request(  endpoint,
                                     post_data      = sample_ids,
                                     required_keys  = [self.findByIds_key],

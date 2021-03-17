@@ -36,18 +36,18 @@ sequencing_status_data = sequencing_status.get_multiple_samples(sample_id_list)
 for this_sample in test_set:
    this_sample['lane_id'] = [ lane['id'] for lane in sequencing_status_data[this_sample['sample_id']]['lanes'] ]
    this_sample['sequencing_status'] = sequencing_status_data[this_sample['sample_id']]
-#pp.pprint( test_set )
-
-
-pipeline_status = DataSources.pipeline_status.PipelineStatus()
-print("\nPipeline status:\n")
-for this_sample in test_set:
-   this_sample['pipeline_status'] = {}
-   logging.debug("getting pipeline status for sample {}".format(this_sample['sample_id']))
-   for this_lane_id in this_sample['lane_id']:
-      if this_lane_id is not None:
-         logging.debug("  lane id = {}".format(this_lane_id))
-         this_sample['pipeline_status'][this_lane_id] = pipeline_status.lane_status(this_lane_id)
-      else:
-         logging.debug("  no lane id: skipping")
 pp.pprint( test_set )
+
+
+#pipeline_status = DataSources.pipeline_status.PipelineStatus()
+#print("\nPipeline status:\n")
+#for this_sample in test_set:
+   #this_sample['pipeline_status'] = {}
+   #logging.debug("getting pipeline status for sample {}".format(this_sample['sample_id']))
+   #for this_lane_id in this_sample['lane_id']:
+      #if this_lane_id is not None:
+         #logging.debug("  lane id = {}".format(this_lane_id))
+         #this_sample['pipeline_status'][this_lane_id] = pipeline_status.lane_status(this_lane_id)
+      #else:
+         #logging.debug("  no lane id: skipping")
+#pp.pprint( test_set )

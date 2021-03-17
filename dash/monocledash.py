@@ -14,9 +14,6 @@ data  = MonocleDash.monocleclient.MonocleData()
 app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
 server   = app.server
 
-institutions = data.get_institutions()
-samples      = data.get_samples(institutions)
-
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
                                  'x_col_key'          : 'months',
@@ -25,16 +22,16 @@ progress_graph_params      = {   'title'              : 'Project Progress',
                                  'y_label'            : 'number of samples',
                                  }
 
-institution_select_params  =  {  'institutions'       : institutions,
+institution_select_params  =  {  'institutions'       : data.get_institutions(),
                                  'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
                                  'institution_callback_input_id'  : 'institution-select',
                                  }
 
 institution_status_params  =  {  'app'                : app,
-                                 'institutions'       : institutions,
-                                 'batches'            : data.get_batches(institutions),
-                                 'sequencing_status'  : data.get_sequencing_status(institutions,samples),
-                                 'pipeline_status'    : data.get_pipeline_status(institutions,samples),
+                                 'institutions'       : data.get_institutions(),
+                                 'batches'            : data.get_batches(),
+                                 'sequencing_status'  : data.sequencing_status_summary(),
+                                 'pipeline_status'    : data.pipeline_status_summary(),
                                  'institution_callback_output_id'    : 'institution-status',
                                  'sequencing_callback_input_type'    : 'sequencing-failed-input',
                                  'sequencing_callback_output_type'   : 'sequencing-failed-container',
