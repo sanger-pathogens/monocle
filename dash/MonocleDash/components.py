@@ -51,10 +51,8 @@ def institution_choice(params):
                                              html.Label('Select an institution:'),
                                              dcc.Dropdown(
                                                 id       = params['institution_callback_input_id'],
-                                                options  = [   {'value': k, 'label': params['institutions'][k]}
-                                                               for k in sorted(  params['institutions'].keys(),
-                                                                                 key=params['institutions'].__getitem__
-                                                                                 )
+                                                options  = [   {'value': k, 'label': params['institutions'][k]['name']}
+                                                               for k in sorted( params['institutions'].keys() )
                                                                ],
                                                 value    = params['initially_selected'],
                                                 multi    = True
@@ -122,15 +120,15 @@ def status_by_institution(selected_institutions, params):
    elements =  [
                   html.Div(id          =  '{}-status'.format(this_institution),
                            style       =  {'display': params['display'][this_institution]},
-                           children    =  [ html.H2( params['institutions'][this_institution] ) ]     +
-                                          samples_received_by_institution(  this_institution, params) +
-                                          samples_sequenced_by_institution( this_institution, params) +
-                                          pipeline_by_institution(          this_institution, params) +
-                                          [ html.Br(className = 'clear_float') ]                      +
-                                          failed_samples_by_institution( this_institution, params)    +
+                           children    =  [ html.H2( params['institutions'][this_institution]['name'] ) ]   +
+                                          samples_received_by_institution(  this_institution, params)       +
+                                          samples_sequenced_by_institution( this_institution, params)       +
+                                          pipeline_by_institution(          this_institution, params)       +
+                                          [ html.Br(className = 'clear_float') ]                            +
+                                          failed_samples_by_institution( this_institution, params)          +
                                           [ html.Br(className = 'clear_float') ],
                            )
-                  for this_institution in sorted( params['institutions'].keys(), key=params['institutions'].__getitem__ )
+                  for this_institution in sorted( params['institutions'].keys() )
                   ]
    return elements
 

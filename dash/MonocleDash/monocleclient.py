@@ -17,18 +17,13 @@ class MonocleData:
                               }
   
    def __init__(self):
-      self.monocledb                = DataSources.monocledb.MonocleDB()
-      self.institutions_data        = None
-      self.samples_data             = None
-      self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
-      self.sequencing_status_data   = None
-      self.pipeline_status          = DataSources.pipeline_status.PipelineStatus()
-      # db keys are full institution names strings, but that dashboard wants keys
-      # that are alphanumeric only and useable as HTML id attributes; and it is useful to
-      # keep data in dicts with keys that match HTML id attr values.
-      # these 2 dicts allow mapping between db keys and dict keys, in either direction
-      self.institution_dict_to_db_key  = {}
-      self.institution_db_key_to_dict  = {}
+      self.monocledb                   = DataSources.monocledb.MonocleDB()
+      self.institutions_data           = None
+      self.samples_data                = None
+      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
+      self.sequencing_status_data      = None
+      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
+      self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
 
    def get_progress(self):
       return self.mock_progress
@@ -37,14 +32,18 @@ class MonocleData:
       """
       Returns a dict of institutions.
       
-      {  institution_1   => 'the institution name',
+      {  institution_1   => { 'name':     'the institution name',
+                              'db_key':   'db key'
+                              }
          institution_2...
          }
          
-      If option pattern is passed, only institutions with names that include the pattern are returned (case insensitive)
-      Dict keys are alphanumeric-only and safe for HTML id attr (do not confuse with database keys).
-      MonocleData.institution_dict_to_db_key  and MonocleData.institution_db_key_to_dict (both populated by this method)
-      maps internal dict keys to/from the database keys
+      If option pattern is passed, only institutions with names that include the pattern are returned (case insensitive).
+      
+      Dict keys are alphanumeric-only and safe for HTML id attr. The monocle db keys are not
+      suitable for this as they are full institution names.   It's useful to be able to lookup
+      a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
+      is provided.
       
       The data are cached so this can safely be called multiple times without
       repeated monocle db queries being made.
@@ -56,12 +55,14 @@ class MonocleData:
       for this_name in names:
          if None == pattern or pattern.lower() in this_name.lower():
             dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
-            institutions[dict_key] = this_name
             # currently the db uses insitution names as keys, but we don't want to rely on that
-            # so store db keys in a pair of hashes to allo lookup both ways
-            institution_db_key = this_name
-            self.institution_dict_to_db_key[dict_key]             = institution_db_key
-            self.institution_db_key_to_dict[institution_db_key]   = dict_key
+            # so the name and db key are stored as separate items
+            this_db_key = this_name
+            institutions[dict_key] = { 'name'   : this_name,
+                                       'db_key' : this_db_key
+                                      }
+            # this allows lookup of the institution dict key from a db key
+            self.institution_db_key_to_dict[this_db_key] = dict_key
       self.institutions_data = institutions
       return self.institutions_data
 
@@ -89,7 +90,6 @@ class MonocleData:
          return self.samples_data
       institutions_data = self.get_institutions()
       all_juno_samples = self.monocledb.get_samples()
-      # samples dict keys are same as institutions hash; values are listed (to be filled with samples)
       samples = { i:[] for i in list(self.institutions_data.keys()) }
       for this_sample in all_juno_samples:
          this_institution_key = self.institution_db_key_to_dict[ this_sample[self.sample_table_inst_key] ]
@@ -192,10 +192,10 @@ class MonocleData:
             for this_sample_id in sample_id_list:
                # ignore any samples that have no Sanger sample ID
                if this_sample_id is None:
-                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]))
+                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]['name']))
                # also ignore samples not in the MLWH
                elif this_sample_id not in this_sequencing_status_data:
-                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]))
+                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]['name']))
                else:
                   status[this_institution]['completed'] += 1
                   this_sequencing_status = this_sequencing_status_data[this_sample_id]
