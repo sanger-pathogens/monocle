@@ -1,8 +1,7 @@
 monocledb:
-   cnf_file                   :  'my.cnf'
+   cnf_file                   :  'DataSources/tests/mock_data/mock.cnf'
    institution_table          :  'api_institution'
    institution_table_inst_key :  'name'
-   sample_table               :  'api_sample'
    sample_table_inst_key      :  'submitting_institution_id'
    sample_table_lane_id_field :  'lane_id'
    sample_table_fields        :  
@@ -13,9 +12,6 @@ monocledb:
                                  - 'serotype'
                                  - 'submitting_institution_id'
 mlwh_rest_api:
-   base_url    : 'http://mlwh_api.dev.pam.sanger.ac.uk'
+   base_url    : 'http://fake_host.dev.pam.sanger.ac.uk'
    swagger     : '/sequencing/data/ui/'
    findById    : '/sequencing/data/samples/findById'
-   findByIds   : '/sequencing/data/samples/findByIds'
-pipeline_status:
-   csv_file : 'data/status/pipelines.csv'
