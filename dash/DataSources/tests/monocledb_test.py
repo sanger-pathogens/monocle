@@ -1,5 +1,3 @@
-# TO DO: use a mock/dummy API, these tests rely on the MLWH API
-
 import sqlalchemy
 from   unittest               import TestCase
 from   unittest.mock          import patch

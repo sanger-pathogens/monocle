@@ -13,9 +13,11 @@ monocledb:
                                  - 'serotype'
                                  - 'submitting_institution_id'
 mlwh_rest_api:
-   base_url    : 'http://fake_host.dev.pam.sanger.ac.uk'
-   swagger     : '/sequencing/data/ui/'
-   findById    : '/sequencing/data/samples/findById'
-   findByIds   : '/sequencing/data/samples/findByIds'
+   base_url       : 'http://fake_host.dev.pam.sanger.ac.uk'
+   swagger        : '/sequencing/data/ui/'
+   findById       : '/sequencing/data/samples/findById'
+   findById_key   : 'sample'
+   findByIds      : '/sequencing/data/samples/findByIds'
+   findByIds_key  : 'samples'
 pipeline_status:
    csv_file : 'DataSources/tests/mock_data/s3/status/pipelines.csv'

@@ -15,7 +15,9 @@ monocledb:
 mlwh_rest_api:
    base_url    : 'http://mlwh_api.dev.pam.sanger.ac.uk'
    swagger     : '/sequencing/data/ui/'
-   findById    : '/sequencing/data/samples/findById'
-   findByIds   : '/sequencing/data/samples/findByIds'
+   findById       : '/sequencing/data/samples/findById'
+   findById_key   : 'sample'
+   findByIds      : '/sequencing/data/samples/findByIds'
+   findByIds_key  : 'samples'
 pipeline_status:
    csv_file : 'data/status/pipelines.csv'

@@ -1,7 +1,8 @@
 # TO DO: use a mock/dummy API, these tests rely on the MLWH API
 
 import unittest
-import DataSources.sequencing_status
+from   DataSources.sequencing_status  import SequencingStatus
+from   DataSources.sequencing_status  import MLWH_Client
 
 #import logging
 #logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
@@ -22,6 +23,8 @@ import DataSources.sequencing_status
 
 class SequencingStatusTest(unittest.TestCase):
 
+   test_config             = 'DataSources/tests/mock_data/data_sources.yml'
+   bad_config              = 'DataSources/tests/mock_data/data_sources_bad.yml'
    required_mlwh_config    = ['base_url', 'swagger', 'findById', 'findByIds']
    base_url_regex          = '^https?://[\w\-]+(\.dev)?\.pam\.sanger\.ac\.uk$'
    endpoint_regex          = '(/[\w\-\.]+)+'
@@ -41,24 +44,32 @@ class SequencingStatusTest(unittest.TestCase):
                               "q30_total_yield"    : type(1.1),
                               }
    def setUp(self):
-      self.seq_status = DataSources.sequencing_status.SequencingStatus()
+      self.seq_status             = SequencingStatus(set_up=False)
+      self.seq_status.mlwh_client = MLWH_Client(set_up=False)
+      self.seq_status.mlwh_client.set_up(self.test_config)
 
    def test_init(self):
       self.assertIsInstance(self.seq_status,             DataSources.sequencing_status.SequencingStatus)
       self.assertIsInstance(self.seq_status.mlwh_client, DataSources.sequencing_status.MLWH_Client)
             
-   def test_config(self):
-      self.assertRegex(self.seq_status.mlwh_client.base_url,            self.base_url_regex)
-      self.assertRegex(self.seq_status.mlwh_client.swagger,             self.endpoint_regex)
-      self.assertRegex(self.seq_status.mlwh_client.findById_ep,         self.endpoint_regex)
-      self.assertIsInstance(self.seq_status.mlwh_client.findById_key,   type('a string'))
-      self.assertRegex(self.seq_status.mlwh_client.findByIds_ep,        self.endpoint_regex)
-      self.assertIsInstance(self.seq_status.mlwh_client.findByIds_key,  type('a string'))
-      with self.assertRaises(FileNotFoundError):
-         doomed = DataSources.sequencing_status.MLWH_Client()
-         doomed.data_sources_config = 'no_such_config.yml'
-         doomed.__init__()
+   def test_init(self):
+      self.assertRegex(self.seq_status.mlwh_client.config['base_url'],           self.base_url_regex)
+      self.assertRegex(self.seq_status.mlwh_client.config['swagger'],            self.endpoint_regex)
+      self.assertRegex(self.seq_status.mlwh_client.config['findById'],           self.endpoint_regex)
+      self.assertIsInstance(self.seq_status.mlwh_client.config['findById_key'],  type('a string'))
+      self.assertRegex(self.seq_status.mlwh_client.config['findByIds'],          self.endpoint_regex)
+      self.assertIsInstance(self.seq_status.mlwh_client.config['findByIds_key'], type('a string'))
+ 
+   def test_reject_bad_config(self):
+      with self.assertRaises(KeyError):
+         doomed = MLWH_Client(set_up=False)
+         doomed.set_up(self.bad_config)
          
+   def test_missing_config(self):
+      with self.assertRaises(FileNotFoundError):
+         doomed = MLWH_Client(set_up=False)
+         doomed.set_up('no_such_config.yml')
+ 
    def test_get_sample(self):
       sample = self.seq_status.get_sample(self.expected_sample_ids[0])
       self.assertIsInstance(sample, type({'a': 'dict'}))
@@ -66,21 +77,21 @@ class SequencingStatusTest(unittest.TestCase):
          self.assertTrue(required in sample, msg="required key '{}' not found in sample dict".format(required))
          self.assertIsInstance(sample[required], self.required_sample_keys[required], msg="sample item {} is wrong thpe".format(required))
          
-   def test_get_multiple_samples(self):
-      samples = self.seq_status.get_multiple_samples(self.expected_sample_ids)
-      self.assertIsInstance(samples, type({'a': 'dict'}))
-      for this_sample_id in self.expected_sample_ids:
-         self.assertTrue(this_sample_id in samples, msg="test sample ID '{}' not returned by get_multiple_samples()".format(this_sample_id))
-      for this_sample_id in samples.keys():
-         this_sample = samples[this_sample_id]
-         self.assertIsInstance(this_sample,   type({'a': 'dict'}), msg="sample should be a dict, not {}".format(type(this_sample)))
-         for required in self.required_sample_keys.keys():
-            self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
-            self.assertIsInstance(this_sample[required], self.required_sample_keys[required], msg="sample item {} is wrong type".format(required))
-         for required_absent in self.absent_sample_keys:
-            self.assertFalse(required_absent in this_sample, msg="key '{}' found in sample dict, but it should be absent".format(required_absent))
-         for this_lane in this_sample['lanes']:
-            for required in self.required_lane_keys.keys():
-               self.assertTrue(required in this_lane, msg="required key '{}' not found in lane dict".format(required))
-               self.assertIsInstance(this_lane[required], self.required_lane_keys[required], msg="lane item {} is wrong type".format(required))
+   #def test_get_multiple_samples(self):
+      #samples = self.seq_status.get_multiple_samples(self.expected_sample_ids)
+      #self.assertIsInstance(samples, type({'a': 'dict'}))
+      #for this_sample_id in self.expected_sample_ids:
+         #self.assertTrue(this_sample_id in samples, msg="test sample ID '{}' not returned by get_multiple_samples()".format(this_sample_id))
+      #for this_sample_id in samples.keys():
+         #this_sample = samples[this_sample_id]
+         #self.assertIsInstance(this_sample,   type({'a': 'dict'}), msg="sample should be a dict, not {}".format(type(this_sample)))
+         #for required in self.required_sample_keys.keys():
+            #self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
+            #self.assertIsInstance(this_sample[required], self.required_sample_keys[required], msg="sample item {} is wrong type".format(required))
+         #for required_absent in self.absent_sample_keys:
+            #self.assertFalse(required_absent in this_sample, msg="key '{}' found in sample dict, but it should be absent".format(required_absent))
+         #for this_lane in this_sample['lanes']:
+            #for required in self.required_lane_keys.keys():
+               #self.assertTrue(required in this_lane, msg="required key '{}' not found in lane dict".format(required))
+               #self.assertIsInstance(this_lane[required], self.required_lane_keys[required], msg="lane item {} is wrong type".format(required))
       

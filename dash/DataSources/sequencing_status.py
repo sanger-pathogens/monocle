@@ -13,7 +13,11 @@ import yaml
 class SequencingStatus:
    """ provides access to pipeline status data """
    
-   def __init__(self):
+   def __init__(self, set_up=True):
+      if set_up:
+         self.set_up()
+      
+   def set_up(self):
       self.mlwh_client = MLWH_Client()
       
    def get_sample(self, sample_id):
@@ -43,39 +47,47 @@ class MLWH_Client:
    
    data_sources_config     = 'data_sources.yml'
    data_source             = 'mlwh_rest_api'
+   required_config_params  = [   'base_url',
+                                 'swagger',
+                                 'findById',
+                                 'findById_key',
+                                 'findByIds',
+                                 'findByIds_key'
+                                 ]
+   def __init__(self, set_up=True):
+      if set_up:
+         self.set_up(self.data_sources_config)
 
-   def __init__(self):
-      with open(self.data_sources_config, 'r') as file:
+   def set_up(self, config_file_name):
+      with open(config_file_name, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
-         this_source  = data_sources[self.data_source]
-      self.base_url        = this_source['base_url']
-      self.swagger         = this_source['swagger']
-      self.findById_ep     = this_source['findById']
-      self.findById_key    = 'sample'
-      self.findByIds_ep    = this_source['findByIds']
-      self.findByIds_key   = 'samples'
+         self.config  = data_sources[self.data_source]
+      for required_param in self.required_config_params:
+         if not required_param in self.config:
+            logging.error("data source config file {} does not provide the required paramter {}.{}".format(self.data_sources_config,self.data_source,required_param))
+            raise KeyError
       
    def find_by_id(self, sample_id):
-      endpoint = self.findById_ep+sample_id
+      endpoint = self.config['findById']+sample_id
       logging.debug("{}.find_by_id({}) using endpoint {}".format(__class__.__name__,sample_id,endpoint))
       results = self.make_request(  endpoint,
-                                    required_keys  = [self.findById_key],
+                                    required_keys  = [self.config['findById_key']],
                                     )
       logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__,sample_id,results))
-      return results[self.findById_key]
+      return results[self.config['findById_key']]
    
    def find_by_ids(self, sample_ids):
-      endpoint    = self.findByIds_ep
+      endpoint    = self.config['findByIds']
       logging.debug("{}.find_by_ids() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
       results = self.make_request(  endpoint,
                                     post_data      = sample_ids,
-                                    required_keys  = [self.findByIds_key],
+                                    required_keys  = [self.config['findByIds_key']],
                                     )
-      return results[self.findByIds_key]
+      return results[self.config['findByIds_key']]
 
    def make_request(self, endpoint, post_data=None, required_keys=[]):
-      request_url       = self.base_url+endpoint
-      swagger_url       = self.base_url+self.swagger # only because it may be useful for error messages
+      request_url       = self.config['base_url']+endpoint
+      swagger_url       = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
       request_data      = None
       request_headers   = {}
       # if POST data were passed, convert to a UTF-8 JSON string
