@@ -9,6 +9,7 @@ stages:
 variables:
   API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DOCKER_IMAGE:         "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
@@ -61,7 +62,7 @@ Docker builds:
   stage: docker_build
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -95,7 +96,7 @@ Docker push as 'unstable':
     - master
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -126,7 +127,7 @@ Docker push with release tag and as 'latest':
     - tags
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
