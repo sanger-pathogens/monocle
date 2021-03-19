@@ -57,6 +57,10 @@ Integration tests:
     - sleep 10; docker container ls
     - cd "${CI_PROJECT_DIR}/e2e"; pwd
     - yarn test:ci
+  after_script:
+    - cd "${CI_PROJECT_DIR}"; pwd
+    - docker-compose -f docker-compose.e2e.yml down
+
     
 # at every gitpush, build docker images in /api, /ui and /dash
 # push the images to the container registry  with the commit SHA-1 as the tag
