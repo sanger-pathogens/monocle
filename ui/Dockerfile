@@ -1,5 +1,5 @@
 # ---------- build step ----------
-FROM node:alpine as builder
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine as builder
 
 # label, so that intermediate images can easily be removed with
 # `docker image prune --filter label=stage=builder`
@@ -23,7 +23,7 @@ RUN REACT_APP_VERSION=$DOCKER_TAG yarn build
 
 
 # ---------- production runtime ----------
-FROM nginx:alpine
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html/*
 RUN chmod -R 0755 /usr/share/nginx/html/*

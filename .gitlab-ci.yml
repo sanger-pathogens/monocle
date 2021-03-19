@@ -9,6 +9,7 @@ stages:
 variables:
   API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DOCKER_IMAGE:         "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
@@ -26,33 +27,33 @@ API unit tests:
     - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
    
     
-App unit tests:
-  stage: unit_test
-  tags:
-    - openstack-autoscale-theta
-  image: "${UI_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd ui
-    - yarn install
-  script:
-    - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+#App unit tests:
+  #stage: unit_test
+  #tags:
+    #- openstack-autoscale-theta
+  #image: "${UI_UNIT_TEST_IMAGE}"
+  #before_script:
+    #- cd ui
+    #- yarn install
+  #script:
+    #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
     
-Integration tests:
-  stage: integration_test
-  tags:
-    - monocle_e2e_runner
-  before_script:
-    - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
-    - cd "${CI_PROJECT_DIR}/e2e"; pwd
-    - yarn install --verbose
-    - cd "${CI_PROJECT_DIR}"; pwd
-    - docker-compose -f docker-compose.e2e.yml build
-  script:
-    - docker-compose -f docker-compose.e2e.yml up -d
-    - sleep 5; docker container ls
-    - cd "${CI_PROJECT_DIR}/e2e"; pwd
-    - yarn test:ci
+#Integration tests:
+  #stage: integration_test
+  #tags:
+    #- monocle_e2e_runner
+  #before_script:
+    #- echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
+    #- cd "${CI_PROJECT_DIR}/e2e"; pwd
+    #- yarn install --verbose
+    #- cd "${CI_PROJECT_DIR}"; pwd
+    #- docker-compose -f docker-compose.e2e.yml build
+  #script:
+    #- docker-compose -f docker-compose.e2e.yml up -d
+    #- sleep 5; docker container ls
+    #- cd "${CI_PROJECT_DIR}/e2e"; pwd
+    #- yarn test:ci
 
     
 # at every gitpush, build docker images in /api, /ui and /dash
@@ -61,7 +62,7 @@ Docker builds:
   stage: docker_build
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -95,7 +96,7 @@ Docker push as 'unstable':
     - master
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
@@ -126,7 +127,7 @@ Docker push with release tag and as 'latest':
     - tags
   tags:
     - openstack-autoscale-theta
-  image: docker:19
+  image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker

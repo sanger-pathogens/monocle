@@ -1,4 +1,4 @@
-FROM     python:3.7
+FROM     gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/python:3.7
 
 WORKDIR  /dash
 
