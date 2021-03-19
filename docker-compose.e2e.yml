@@ -31,3 +31,8 @@ services:
       MYSQL_PASSWORD: docker
     ports:
       - "9001:3306"
+  dash:
+    build:
+      context: ./dash-e2e-dummy
+    ports:
+      - "80:80"
