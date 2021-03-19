@@ -1,3 +1,4 @@
+import http.client
 import json
 import logging
 import pandas
@@ -70,24 +71,21 @@ class MLWH_Client:
    def find_by_id(self, sample_id):
       endpoint = self.config['findById']+sample_id
       logging.debug("{}.find_by_id({}) using endpoint {}".format(__class__.__name__,sample_id,endpoint))
-      results = self.make_request(  endpoint,
-                                    required_keys  = [self.config['findById_key']],
-                                    )
-      logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__,sample_id,results))
+      response = self.make_request(endpoint)
+      logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__,sample_id,response))
+      results = self.parse_response(response, required_keys = [self.config['findById_key']])
       return results[self.config['findById_key']]
    
    def find_by_ids(self, sample_ids):
       endpoint    = self.config['findByIds']
       logging.debug("{}.find_by_ids() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
-      results = self.make_request(  endpoint,
-                                    post_data      = sample_ids,
-                                    required_keys  = [self.config['findByIds_key']],
-                                    )
+      response = self.make_request( endpoint, post_data = sample_ids )
+      logging.debug("{}.find_by_ids([{}]) returned {}".format(__class__.__name__,','.join(sample_ids),response))
+      results = self.parse_response(response, required_keys = [self.config['findByIds_key']])
       return results[self.config['findByIds_key']]
 
-   def make_request(self, endpoint, post_data=None, required_keys=[]):
+   def make_request(self, endpoint, post_data=None):
       request_url       = self.config['base_url']+endpoint
-      swagger_url       = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
       request_data      = None
       request_headers   = {}
       # if POST data were passed, convert to a UTF-8 JSON string
@@ -103,20 +101,21 @@ class MLWH_Client:
          with urllib.request.urlopen( http_request ) as this_response:
             response_as_string = this_response.read().decode('utf-8')
             logging.debug("response from MLWH API: {}".format(response_as_string))
-            results_data = json.loads(response_as_string)
-            if not isinstance(results_data, dict):
-               error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)
-               raise ProtocolError(error_message)
-            for required_key in required_keys:
-               try:
-                  results_data[required_key]
-               except KeyError:
-                  error_message = "response data did not contain the expected key '{}' (see API documentation at {})".format(required_key,swagger_url)
-                  raise ProtocolError(error_message)
-            return results_data
-
       except urllib.error.HTTPError:
          logging.error("HTTP error during MLWH API request {}".format(request_url))
          raise
+      return response_as_string
 
-      return data
+   def parse_response(self, response_as_string, required_keys=[]):
+      swagger_url  = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
+      results_data = json.loads(response_as_string)
+      if not isinstance(results_data, dict):
+         error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)
+         raise ProtocolError(error_message)
+      for required_key in required_keys:
+         try:
+            results_data[required_key]
+         except KeyError:
+            error_message = "response data did not contain the expected key '{}' (see API documentation at {})".format(required_key,swagger_url)
+            raise ProtocolError(error_message)
+      return results_data

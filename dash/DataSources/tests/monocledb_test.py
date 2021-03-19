@@ -4,7 +4,7 @@ from   unittest.mock          import patch
 from   DataSources.monocledb  import MonocleDB
 
 import logging
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='INFO')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class MonocleDBTest(TestCase):
 
