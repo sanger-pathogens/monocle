@@ -28,7 +28,7 @@ API unit tests:
    
     
 #App unit tests:
-App unit tests currently disabled:
+DISABLED: App unit tests:
   stage: unit_test
   tags:
     - openstack-autoscale-theta
