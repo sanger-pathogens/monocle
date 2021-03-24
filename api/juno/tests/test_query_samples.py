@@ -95,7 +95,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
     def test_has_field_serotype(self):
         samples = self.make_and_validate_samples_query("serotype")
         self.validate_field(
-            samples[0], "serotype", expected_value="IA",
+            samples[0], "serotype", expected_value="Ia",
         )
 
     def test_has_field_host_status(self):

@@ -140,7 +140,7 @@ class UpdateSamplesMutationTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": self.SAMPLE_ID_TO_USE,
                 "laneId":  "",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": self.SUBMITTING_INSTITUTION,
             }
@@ -167,7 +167,7 @@ class UpdateSamplesMutationTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": self.SAMPLE_ID_TO_USE,
                 "laneId":  "",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": self.SUBMITTING_INSTITUTION,
             }
@@ -203,7 +203,7 @@ class UpdateSamplesMutationTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": self.SAMPLE_ID_TO_USE,
                 "laneId":  "",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": self.SUBMITTING_INSTITUTION,
             }

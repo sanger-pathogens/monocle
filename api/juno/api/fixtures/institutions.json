@@ -21,7 +21,7 @@
         "model": "api.Institution",
         "fields": {
             "name": "The Chinese University of Hong Kong",
-            "latitude": 22.419722, 
+            "latitude": 22.419722,
             "longitude": 114.206792,
             "country": "China"
         }
