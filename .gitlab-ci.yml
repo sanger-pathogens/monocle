@@ -8,6 +8,7 @@ stages:
 variables:
   API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DASH_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
   DOCKER_IMAGE:         "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
@@ -27,15 +28,27 @@ API unit tests:
    
     
 #App unit tests:
-  #stage: unit_test
-  #tags:
-    #- openstack-autoscale-theta
-  #image: "${UI_UNIT_TEST_IMAGE}"
+DISABLED App unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  image: "${UI_UNIT_TEST_IMAGE}"
   #before_script:
     #- cd ui
     #- yarn install
-  #script:
+  script:
     #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - echo "App unit tests are failing intermittently, so temporaily dsiabled whilst we are not developing it"
+    
+Dashboard unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  image: "${DASH_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd dash
+  script:
+    - ./unittests.sh
 
     
 Integration tests:

@@ -3,36 +3,35 @@ import dash_html_components as html
 from   dash.dependencies import Input, Output, State, ALL, MATCH
 import logging
 
-import MonocleDash.monocleclient as api
+import MonocleDash.monocleclient
 import MonocleDash.components    as mc
 
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARN')
+
+data  = MonocleDash.monocleclient.MonocleData()
 
 # url_base_pathname should match the `location` used for nginx proxy config
 app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
 server   = app.server
-api      = api.Mock()
-
-institutions=api.get_institutions()
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
-                                 'data'               : api.get_progress(),
+                                 'data'               : data.get_progress(),
                                  'x_col_key'          : 'months',
                                  'y_cols_keys'        : ['samples received', 'samples sequenced'],
                                  'x_label'            : 'months since project start',
                                  'y_label'            : 'number of samples',
                                  }
 
-institution_select_params  =  {  'institutions'       : institutions,
+institution_select_params  =  {  'institutions'       : data.get_institutions(),
                                  'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
                                  'institution_callback_input_id'  : 'institution-select',
                                  }
 
 institution_status_params  =  {  'app'                : app,
-                                 'institutions'       : institutions,
-                                 'batches'            : api.get_batches(),
-                                 'sequencing_status'  : api.get_sequencing_status(),
-                                 'pipeline_status'    : api.get_pipeline_status(),
+                                 'institutions'       : data.get_institutions(),
+                                 'batches'            : data.get_batches(),
+                                 'sequencing_status'  : data.sequencing_status_summary(),
+                                 'pipeline_status'    : data.pipeline_status_summary(),
                                  'institution_callback_output_id'    : 'institution-status',
                                  'sequencing_callback_input_type'    : 'sequencing-failed-input',
                                  'sequencing_callback_output_type'   : 'sequencing-failed-container',

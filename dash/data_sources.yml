@@ -1,0 +1,23 @@
+monocledb:
+   cnf_file                   :  'my.cnf'
+   institution_table          :  'api_institution'
+   institution_table_inst_key :  'name'
+   sample_table               :  'api_sample'
+   sample_table_inst_key      :  'submitting_institution_id'
+   sample_table_lane_id_field :  'lane_id'
+   sample_table_fields        :  
+                                 - 'sample_table_lane_id_field'
+                                 - 'sample_id'
+                                 - 'public_name'
+                                 - 'host_status'
+                                 - 'serotype'
+                                 - 'submitting_institution_id'
+mlwh_rest_api:
+   base_url    : 'http://mlwh_api.dev.pam.sanger.ac.uk'
+   swagger     : '/sequencing/data/ui/'
+   findById       : '/sequencing/data/samples/findById'
+   findById_key   : 'sample'
+   findByIds      : '/sequencing/data/samples/findByIds'
+   findByIds_key  : 'samples'
+pipeline_status:
+   csv_file : 'data/status/pipelines.csv'

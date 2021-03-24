@@ -187,6 +187,14 @@ td.status_desc {
    text-align:    center;
 }
 
+td.text_column {
+   max-width:     10ex;
+}
+
+td.centered {
+   text-align:    center;
+}
+
 button.button_looks_like_link {
    display:       inherit;
    border:        none;

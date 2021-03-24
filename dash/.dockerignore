@@ -1,0 +1,4 @@
+# my.cnf mounted at runtime, and contains secrets => keep it out of the image!
+my.cnf
+# data/ must also be mounted at runtime => don't include in build
+data

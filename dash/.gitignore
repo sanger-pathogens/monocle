@@ -1,1 +1,6 @@
 __pycache__
+*.pyc
+# use `data/` in local development environment to hold example data
+# (in production the workdir in the dash container is `/dash`, and the s3 bucket is mounted as `/dash/data`)
+data
+tracking_db_notes.txt

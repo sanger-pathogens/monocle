@@ -51,10 +51,8 @@ def institution_choice(params):
                                              html.Label('Select an institution:'),
                                              dcc.Dropdown(
                                                 id       = params['institution_callback_input_id'],
-                                                options  = [   {'value': k, 'label': params['institutions'][k]}
-                                                               for k in sorted(  params['institutions'].keys(),
-                                                                                 key=params['institutions'].__getitem__
-                                                                                 )
+                                                options  = [   {'value': k, 'label': params['institutions'][k]['name']}
+                                                               for k in sorted( params['institutions'].keys() )
                                                                ],
                                                 value    = params['initially_selected'],
                                                 multi    = True
@@ -122,15 +120,15 @@ def status_by_institution(selected_institutions, params):
    elements =  [
                   html.Div(id          =  '{}-status'.format(this_institution),
                            style       =  {'display': params['display'][this_institution]},
-                           children    =  [ html.H2( params['institutions'][this_institution] ) ]     +
-                                          samples_received_by_institution(  this_institution, params) +
-                                          samples_sequenced_by_institution( this_institution, params) +
-                                          pipeline_by_institution(          this_institution, params) +
-                                          [ html.Br(className = 'clear_float') ]                      +
-                                          failed_samples_by_institution( this_institution, params)    +
+                           children    =  [ html.H2( params['institutions'][this_institution]['name'] ) ]   +
+                                          samples_received_by_institution(  this_institution, params)       +
+                                          samples_sequenced_by_institution( this_institution, params)       +
+                                          pipeline_by_institution(          this_institution, params)       +
+                                          [ html.Br(className = 'clear_float') ]                            +
+                                          failed_samples_by_institution( this_institution, params)          +
                                           [ html.Br(className = 'clear_float') ],
                            )
-                  for this_institution in sorted( params['institutions'].keys(), key=params['institutions'].__getitem__ )
+                  for this_institution in sorted( params['institutions'].keys() )
                   ]
    return elements
 
@@ -165,7 +163,7 @@ def samples_received_table(this_institution, params):
          raise TypeError( "params.batches.{}.deliveries contains a {}, should be a dict".format(k,type(this_delivery)) )
    elements = [   html.Table(
                      className   = 'samples_received_table',
-                     children    = [   html.Caption('Samples Receieved'),
+                     children    = [   html.Caption('Samples Received'),
                                        html.Tbody([
                                           html.Tr([
                                              html.Td(
@@ -182,15 +180,15 @@ def samples_received_table(this_institution, params):
                                           ]+[
                                              # this row repeated for each batch
                                              html.Tr( children = [
-                                                         html.Td( b['name'] ),
-                                                         html.Td( b['date'] ),
+                                                         html.Td( b['name'],   className = 'text_column' ),
+                                                         html.Td( b['date'],   className = 'text_column' ),
                                                          html.Td( b['number'], className='numeric' ),
                                                          ]
                                                       )
                                              for b in this_batch['deliveries']
                                           ]+[
                                           html.Tr([
-                                             html.Td( 'total received:', colSpan=2, style={'text-align': 'center'} ),
+                                             html.Td( 'total received:', colSpan=2, className = 'text_column centered' ),
                                              html.Td( this_batch['received'], className='numeric' ),
                                              ]),
                                           ]),
@@ -259,18 +257,18 @@ def samples_sequenced_table(this_institution, params):
                                                 ),
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Pending', colSpan  = 2 ),
+                                             html.Td( 'Pending', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['received']-this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Completed', colSpan  = 2 ),
+                                             html.Td( 'Completed', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
                                              html.Td( ),
-                                             html.Td( 'Success' ),
+                                             html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
                                                                         params['app'].get_asset_url("download-icon.png"),
@@ -293,7 +291,8 @@ def samples_sequenced_table(this_institution, params):
                                                                                                 value       =  False
                                                                                                 ),
                                                                               ],
-                                                               )
+                                                               ),
+                                                      className = 'text_column'
                                                    ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
@@ -363,23 +362,23 @@ def pipeline_table(this_institution, params):
                                                 ),
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Waiting', colSpan  = 2 ),
+                                             html.Td( 'Waiting', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['sequenced']-(this_status['running']+this_status['completed']), className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Running', colSpan  = 2 ),
+                                             html.Td( 'Running', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['running'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
-                                             html.Td( 'Completed', colSpan  = 2 ),
+                                             html.Td( 'Completed', colSpan  = 2, className = 'text_column' ),
                                              html.Td( this_status['completed'], className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
                                              html.Td( ),
-                                             html.Td( 'Success' ),
+                                             html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
                                                                         params['app'].get_asset_url("download-icon.png"),
@@ -402,7 +401,8 @@ def pipeline_table(this_institution, params):
                                                                                                 value       =  False
                                                                                                 ),
                                                                               ],
-                                                               )
+                                                               ),
+                                                      className = 'text_column'
                                                       ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
                                              html.Td( download_button(  '#',
@@ -459,26 +459,25 @@ def failed_samples_container(this_institution,params,stage,show):
 def failed_samples_table(caption,failed_samples):
    if not isinstance(failed_samples, list):
       raise TypeError( "failed_samples is {}, should be a list".format(type(failed_samples)) )
+   table_rows =   [  html.Tr([
+                        html.Th('Lane'),
+                        html.Th('Stage'),
+                        html.Th('Issue'),
+                        ])
+                     ]+[
+                        # this row repeated for each failed sample
+                        html.Tr( children = [
+                                    html.Td( f['lane'] ),
+                                    html.Td( f['stage'] ),
+                                    html.Td( f['issue'] ),
+                                    ]
+                                 )
+                        for f in failed_samples
+                     ]
    elements = [   html.Table(
                      className   = 'failed_samples_table',
                      children    = [   html.Caption(caption),
-                                       html.Tbody(
-                                          children  = [
-                                             html.Tr([
-                                                html.Th('Sample'),
-                                                html.Th('QC'),
-                                                html.Th('Issue'),
-                                                ])
-                                             ]+[
-                                                # this row repeated for each failed sample
-                                                html.Tr( children = [
-                                                            html.Td( f['sample'] ),
-                                                            html.Td( f['qc'] ),
-                                                            html.Td( f['issue'] ),
-                                                            ]
-                                                         )
-                                                for f in failed_samples
-                                             ])
+                                       html.Tbody(table_rows)
                                        ]
                      )
                   ]
