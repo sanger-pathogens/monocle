@@ -25,43 +25,5 @@
             "longitude": 114.206792,
             "country": "China"
         }
-    },
-    {
-        "model": "api.Institution",
-        "fields": {
-            "name": "Universidade Federal do Rio de Janeiro",
-            "latitude": -22.8625,
-            "longitude": -43.2235,
-            "country": "Brazil"
-        }
-    },
-    {
-        "model": "api.Institution",
-        "fields": {
-            "name": "Pontifícia Universidade Católica do Paraná",
-            "latitude": -25.4519,
-            "longitude": -49.2511,
-            "country": "Brazil"
-        }
-    },
-    {
-        "model": "api.Institution",
-        "fields": {
-            "name": "Faculty of Pharmacy, Suez Canal University",
-            "latitude": 30.6205,
-            "longitude": 32.2697,
-            "country": "Egypt"
-        }
-    },
-    {
-        "model": "api.Institution",
-        "fields": {
-            "name": "Ministry of Health, Central laboratories",
-            "latitude": 31.9007,
-            "longitude": 35.2069,
-            "country": "Israel"
-        }
     }
 ]
-
-Pontifícia Universidade Católica do Paraná
