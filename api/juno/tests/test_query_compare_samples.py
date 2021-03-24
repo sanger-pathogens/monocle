@@ -101,7 +101,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "31663_7#113",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
@@ -136,7 +136,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
@@ -167,7 +167,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "31663_7#113",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IB",
+                "serotype": "Ib",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
@@ -204,7 +204,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "31663_7#113",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IB",
+                "serotype": "Ib",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
@@ -237,7 +237,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "31663_7#113",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             },
@@ -245,7 +245,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059171",
                 "laneId": "31663_7#115",
                 "publicName": "CUHK_GBS177WT_17",
-                "serotype": "IB",
+                "serotype": "Ib",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
@@ -282,7 +282,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059170",
                 "laneId": "31663_7#113",
                 "publicName": "CUHK_GBS177WT_16",
-                "serotype": "IA",
+                "serotype": "Ia",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             },
@@ -290,7 +290,7 @@ class SamplesQueryTestCase(AuthenticatableGraphQLTestCase):
                 "sampleId": "5903STDY8059171",
                 "laneId": "",
                 "publicName": "CUHK_GBS177WT_17",
-                "serotype": "IB",
+                "serotype": "Ib",
                 "hostStatus": "CARRIAGE",
                 "submittingInstitution": "Wellcome Sanger Institute",
             }
