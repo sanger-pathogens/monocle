@@ -197,18 +197,20 @@ class MonocleData:
                elif this_sample_id not in this_sequencing_status_data:
                   logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]['name']))
                else:
-                  status[this_institution]['completed'] += 1
-                  this_sequencing_status = this_sequencing_status_data[this_sample_id]
-                  detected_failure = False
-                  for this_lane in this_sequencing_status['lanes']:
-                     for this_flag in self.sequencing_flags.keys():
-                        if not 1 == this_lane[this_flag]:
-                           detected_failure = True
-                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane['id'], this_sample_id),
-                                                                        'stage'  : self.sequencing_flags[this_flag],
-                                                                        'issue'  : "lane {} failed".format(this_lane),
-                                                                        },
-                                                                     )
+                  this_sample_lanes = this_sequencing_status_data[this_sample_id]['lanes']
+                  if len(this_sample_lanes) > 0:
+                     # is a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
+                     status[this_institution]['completed'] += 1
+                     detected_failure = False
+                     for this_lane in this_sample_lanes:
+                        for this_flag in self.sequencing_flags.keys():
+                           if not 1 == this_lane[this_flag]:
+                              detected_failure = True
+                              status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane['id'], this_sample_id),
+                                                                           'stage'  : self.sequencing_flags[this_flag],
+                                                                           'issue'  : "lane {} failed".format(this_lane),
+                                                                           },
+                                                                        )
       return status
    
    def pipeline_status_summary(self):
