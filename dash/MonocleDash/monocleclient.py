@@ -199,18 +199,23 @@ class MonocleData:
                else:
                   this_sample_lanes = this_sequencing_status_data[this_sample_id]['lanes']
                   if len(this_sample_lanes) > 0:
-                     # is a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
-                     status[this_institution]['completed'] += 1
-                     detected_failure = False
+                     # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
+                     sample_completed = False
                      for this_lane in this_sample_lanes:
-                        for this_flag in self.sequencing_flags.keys():
-                           if not 1 == this_lane[this_flag]:
-                              detected_failure = True
-                              status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane['id'], this_sample_id),
-                                                                           'stage'  : self.sequencing_flags[this_flag],
-                                                                           'issue'  : "lane {} failed".format(this_lane),
-                                                                           },
-                                                                        )
+                        if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
+                           sample_completed = True
+                           for this_flag in self.sequencing_flags.keys():
+                              if not 1 == this_lane[this_flag]:
+                                 status[this_institution]['failed'].append(
+                                    {'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
+                                     'stage': self.sequencing_flags[this_flag],
+                                     'issue': "lane {} failed".format(this_lane),
+                                     },
+                                 )
+
+                     if sample_completed:
+                        status[this_institution]['completed'] += 1
+
       return status
    
    def pipeline_status_summary(self):
