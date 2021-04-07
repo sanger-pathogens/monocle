@@ -23,13 +23,17 @@ class SequencingStatusTest(TestCase):
                               'dna_concentration'     : type(1.1),
                               'total_dna_ng'          : type(1.1),
                               'pool_barcode'          : type('a string'),
-                              'creation_datetime'     : type('a string')
+                              'creation_datetime'     : type('a string'),
+                              'library_prep_complete' : type('a string'),
                               }
    absent_sample_keys      = ['id']
    required_lane_keys      = {"id"                 : type('a string'),
                               "qc_lib"             : type(1),
                               "qc_seq"             : type(1),
                               "run_status"         : type('a string'),
+                              "qc_started"         : type(1),
+                              'qc_complete_datetime': type('a string'),
+                              'complete_datetime'  : type('a string'),
                               "q30_yield_forward"  : type(1),
                               "q30_yield_reverse"  : type(1),
                               "q30_total_yield"    : type(1),
@@ -51,6 +55,9 @@ class SequencingStatusTest(TestCase):
                                              "qc_lib": 1,
                                              "qc_seq": 1,
                                              "run_status": "qc complete",
+                                             "qc_started": 1,
+                                             "qc_complete_datetime": "2019-09-22T01:59:30Z",
+                                             "complete_datetime": "2019-09-20T01:20:53Z",
                                              "q30_yield_forward": 170437,
                                              "q30_yield_reverse": 160998,
                                              "q30_total_yield": 331435
@@ -60,7 +67,8 @@ class SequencingStatusTest(TestCase):
                                           "dna_concentration": 195.72,
                                           "total_dna_ng": 5280.21,
                                           "pool_barcode": "NT1570031O",
-                                          "creation_datetime": "2019-09-18T08:46:35Z"
+                                          "creation_datetime": "2019-09-18T08:46:35Z",
+                                          "library_prep_complete": "2019-09-19T08:46:35Z"
                                        }
                                     }"""
 
@@ -73,6 +81,9 @@ class SequencingStatusTest(TestCase):
                                              "qc_lib": 1,
                                              "qc_seq": 1,
                                              "run_status": "qc complete",
+                                             "qc_started": 1,
+                                             "qc_complete_datetime": "2019-09-22T01:59:30Z",
+                                             "complete_datetime": "2019-09-20T01:20:53Z",
                                              "q30_yield_forward": 170437,
                                              "q30_yield_reverse": 160998,
                                              "q30_total_yield": 331435
@@ -82,7 +93,8 @@ class SequencingStatusTest(TestCase):
                                           "dna_concentration": 195.72,
                                           "total_dna_ng": 5280.21,
                                           "pool_barcode": "NT1570031O",
-                                          "creation_datetime": "2019-09-18T08:46:35Z"
+                                          "creation_datetime": "2019-09-18T08:46:35Z",
+                                          "library_prep_complete": "2019-09-19T08:46:35Z"
                                        },
                                        {
                                           "id": "5903STDY8059055",
@@ -92,6 +104,9 @@ class SequencingStatusTest(TestCase):
                                              "qc_lib": 1,
                                              "qc_seq": 1,
                                              "run_status": "qc complete",
+                                             "qc_started": 1,
+                                             "qc_complete_datetime": "2019-09-22T01:59:30Z",
+                                             "complete_datetime": "2019-09-20T01:20:53Z",
                                              "q30_yield_forward": 194391,
                                              "q30_yield_reverse": 182730,
                                              "q30_total_yield": 377121
@@ -101,7 +116,8 @@ class SequencingStatusTest(TestCase):
                                           "dna_concentration": 200.974,
                                           "total_dna_ng": 5453.63,
                                           "pool_barcode": "NT1570031O",
-                                          "creation_datetime": "2019-09-18T08:46:35Z"
+                                          "creation_datetime": "2019-09-18T08:46:35Z",
+                                          "library_prep_complete": "2019-09-19T08:46:35Z"
                                        }
                                     ]
                                     }"""
