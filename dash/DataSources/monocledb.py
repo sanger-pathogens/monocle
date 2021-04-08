@@ -113,7 +113,7 @@ class MonocleDB:
       """
       Retrieve all sample records; return as array of dicts, dict keys are field names from monocle db
       Optional params:
-      `exclude_lane_id`, flag; if true, `land_id` is exnclouded from the dicts returned
+      `exclude_lane_id`, flag; if true, `lane_id` is excluded from the dicts returned
       `institutions`, a list of institution names; only samples from those listed are returned
       """
       if institutions is not None and not isinstance(institutions, list):
