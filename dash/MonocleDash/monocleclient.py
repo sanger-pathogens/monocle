@@ -1,5 +1,3 @@
-from   collections  import defaultdict
-from   datetime     import datetime
 import logging
 import DataSources.monocledb
 import DataSources.sequencing_status
@@ -17,8 +15,6 @@ class MonocleData:
    sequencing_flags        = {'qc_lib':   'library',
                               'qc_seq':   'sequencing',
                               }
-  
-   mlwh_datetime_fmt = '%Y-%m-%dT%H:%M:%S%z'
   
    def __init__(self):
       self.monocledb                   = DataSources.monocledb.MonocleDB()
@@ -147,38 +143,20 @@ class MonocleData:
       """
       Pass dict of institutions. Returns dict with details of batches delivered.
       
-      TO DO:  find out a way to get the genuine total number of expected samples for each institution
-      """ 
+      TO DO:  we need to know the total number of samples expected, and ideally batch information
+      """
+      from datetime  import date
       samples = self.get_samples()
-      institutions_data       = self.get_institutions()
-      sequencing_status_data  = self.get_sequencing_status()
+      institutions_data = self.get_institutions()
       batches = { i:{} for i in institutions_data.keys() }
       for this_institution in institutions_data.keys():
-         # this ought to be the totalnumber of samples expected from an institution during the JUNO project
-         # but currently all we know are the number of samples for which we have metadata; this will be
-         # a subset of the total expected samples (until the last delivery arrives) so it isn't what we really want
-         # but we have no other data yet
-         num_samples_expected          = len(samples[this_institution])
-         # this is a list of the samples actually found in MLWH; it is not necessarily the same as
-         # the list of sample IDs in the monocle db
-         samples_received              = sequencing_status_data[this_institution].keys()
-         # this is a dict of the number of samples received on each date; keys are YYYY-MM-DD
-         num_samples_received_by_date  = self.num_samples_received_by_date(this_institution)
-         # work out the number of samples in each delivery
-         # assumption: treat all samples received on a given date as single delivery
-         #             this is an approximation: one actual batch might have dates that span two (or a few?) days?
-         deliveries = []
-         delivery_counter = 0
-         for this_date in num_samples_received_by_date.keys():
-            delivery_counter += 1
-            deliveries.append(  {   'name'   : 'Batch {}'.format(delivery_counter),
-                                    'date'   : this_date,
-                                    'number' : num_samples_received_by_date[this_date],
-                                    },
-                                 )
-         batches[this_institution] = { 'expected'  : num_samples_expected,
-                                       'received'  : len(samples_received),
-                                       'deliveries': deliveries,
+         num_samples = len(samples[this_institution])
+         batches[this_institution] = { 'expected'  : num_samples,
+                                       'received'  : num_samples,
+                                       'deliveries': [{  'name'   : 'All samples received',
+                                                         'date'   : date.today().strftime("%B %d, %Y"),
+                                                         'number' : num_samples },
+                                                      ]
                                        }
       return batches
       
@@ -312,19 +290,6 @@ class MonocleData:
       while key in existing_keys:
          key += '_X'
       return(key)
-
-
-   def num_samples_received_by_date(self, institution):
-      sequencing_status_data        = self.get_sequencing_status()
-      samples_received              = sequencing_status_data[institution].keys()
-      num_samples_received_by_date  = defaultdict(int)
-      for this_sample_id in samples_received:
-         # get date and convert to YYYY-MM-DD
-         received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
-                                             self.mlwh_datetime_fmt
-                                             ).strftime("%Y-%m-%d")
-         num_samples_received_by_date[received_date] += 1
-      return num_samples_received_by_date
 
 
    mock_progress = { 'months'             : [1,2,3,4,5,6,7,8,9],
