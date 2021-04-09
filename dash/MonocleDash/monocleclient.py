@@ -36,23 +36,43 @@ class MonocleData:
    def get_progress(self):
       institutions_data = self.get_institutions()
       total_num_samples_received_by_month = defaultdict(int)
-      progress =  {  'months'             : [],
-                     'samples received'   : [],
-                     # 'samples sequenced'  : [],
-                     }
+      total_num_lanes_sequenced_by_month  = defaultdict(int)
+      max_months_elapsed   = 0
+      progress             = {   'months'             : [],
+                                 'samples received'   : [],
+                                 'samples sequenced'  : [],
+                                 }
+      # get number of samples received and number of lanes sequenced during each month counted from "day zero"
       for this_institution in institutions_data.keys():
+         # samples received
          this_institution_num_samples_received_by_date = self.num_samples_received_by_date(this_institution)
          for this_date_string in this_institution_num_samples_received_by_date.keys():
-            this_date  = datetime.fromisoformat( this_date_string )
-            #days_elapsed = (this_date - self.day_zero).days
+            this_date      = datetime.fromisoformat( this_date_string )
+            #days_elapsed   = (this_date - self.day_zero).days
             months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+            previous_max = max_months_elapsed
+            max_months_elapsed = max(months_elapsed,max_months_elapsed)
             total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[this_date_string]
-      num_samples_received_cumulative = 0
-      for this_mount_count,this_num_samples in sorted(total_num_samples_received_by_month.items()):
-         num_samples_received_cumulative += this_num_samples
-         logging.debug("{} months: {} more samples, total = {}".format(this_mount_count,this_num_samples,num_samples_received_cumulative))
+         # lanes sequenced
+         this_institution_num_lanes_sequenced_by_date = self.num_lanes_sequenced_by_date(this_institution)
+         for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
+            this_date      = datetime.fromisoformat( this_date_string )
+            months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+            previous_max = max_months_elapsed
+            max_months_elapsed = max(months_elapsed,max_months_elapsed)
+            total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[this_date_string]
+      # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
+      num_samples_received_cumulative  = 0
+      num_lanes_sequenced_cumulative   = 0
+      logging.error("num months {}".format(max_months_elapsed))
+      for this_mount_count in range(0, max_months_elapsed+1, 1):
+         if this_mount_count in total_num_samples_received_by_month:
+            num_samples_received_cumulative += total_num_samples_received_by_month[this_mount_count]
+         if this_mount_count in total_num_lanes_sequenced_by_month:
+            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_mount_count]
          progress['months'].append( this_mount_count )
-         progress['samples received'].append( num_samples_received_cumulative )
+         progress['samples received'].append(  num_samples_received_cumulative )
+         progress['samples sequenced'].append( num_lanes_sequenced_cumulative  )
       return progress
 
    def get_institutions(self, pattern=None):
@@ -348,3 +368,19 @@ class MonocleData:
                                              ).strftime( '%Y-%m-%d' )
          num_samples_received_by_date[received_date] += 1
       return num_samples_received_by_date
+   
+   def num_lanes_sequenced_by_date(self, institution):
+      sequencing_status_data        = self.get_sequencing_status()
+      samples_received              = sequencing_status_data[institution].keys()
+      num_lanes_sequenced_by_date   = defaultdict(int)
+
+      for this_sample_id in samples_received:
+         # get each lane (some samples may have non lanes yet)
+         for this_lane in sequencing_status_data[institution][this_sample_id]['lanes']:
+            # get timestamp for completion (some lanes may not have one yet)
+            if 'complete_datetime' in this_lane:
+               this_lane['complete_datetime']
+               # get date in ISO8601 format (YYYY-MM-DD)
+               sequenced_date = datetime.strptime( this_lane['complete_datetime'], self.mlwh_datetime_fmt ).strftime( '%Y-%m-%d' )
+               num_lanes_sequenced_by_date[sequenced_date] += 1
+      return num_lanes_sequenced_by_date

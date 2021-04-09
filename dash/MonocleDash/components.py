@@ -93,7 +93,7 @@ def sample_time_series_graph(params):
                                                       x  = params['x_col_key'],
                                                       y  = params['y_cols_keys'],
                                                       labels      = {'value':params['y_label'], 'variable': ''},
-                                                      line_shape  = 'spline',
+                                                      line_shape  = 'linear',
                                                       color_discrete_sequence = ['deepskyblue','mediumblue','midnightblue','black'],
                                                       ),
                               )
