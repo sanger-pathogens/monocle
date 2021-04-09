@@ -31,9 +31,13 @@ data.get_samples()
 samples = data.get_samples()
 #pp.pprint(samples)
 
-print("\nBatches:\n")
-batches = data.get_batches()
-pp.pprint(batches)
+print("\nProgress:\n")
+progress = data.get_progress()
+pp.pprint(progress)
+
+#print("\nBatches:\n")
+#batches = data.get_batches()
+#pp.pprint(batches)
 
 #print("\nSequencing status:\n")
 #sequencing_status = data.sequencing_status_summary()

@@ -27,16 +27,16 @@ print("First 3 samples:")
 pp.pprint( samples[0:3] )
 
 
-#sequencing_status = DataSources.sequencing_status.SequencingStatus()
-#print("\nSequencing status:\n")
-#test_set = samples[0:3]
-#sample_id_list = [ s['sample_id'] for s in test_set ]
-#sequencing_status_data = sequencing_status.get_multiple_samples(sample_id_list)
-##pp.pprint( sequencing_status_data )
-#for this_sample in test_set:
-   #this_sample['lane_id'] = [ lane['id'] for lane in sequencing_status_data[this_sample['sample_id']]['lanes'] ]
-   #this_sample['sequencing_status'] = sequencing_status_data[this_sample['sample_id']]
-#pp.pprint( test_set )
+sequencing_status = DataSources.sequencing_status.SequencingStatus()
+print("\nSequencing status:\n")
+test_set = samples[0:3]
+sample_id_list = [ s['sample_id'] for s in test_set ]
+sequencing_status_data = sequencing_status.get_multiple_samples(sample_id_list)
+#pp.pprint( sequencing_status_data )
+for this_sample in test_set:
+   this_sample['lane_id'] = [ lane['id'] for lane in sequencing_status_data[this_sample['sample_id']]['lanes'] ]
+   this_sample['sequencing_status'] = sequencing_status_data[this_sample['sample_id']]
+pp.pprint( test_set )
 
 
 #pipeline_status = DataSources.pipeline_status.PipelineStatus()
