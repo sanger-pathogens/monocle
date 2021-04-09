@@ -1,5 +1,6 @@
-from   collections  import defaultdict
-from   datetime     import datetime
+from   collections            import defaultdict
+from   datetime               import datetime
+from   dateutil.relativedelta import relativedelta
 import logging
 import DataSources.monocledb
 import DataSources.sequencing_status
@@ -38,7 +39,7 @@ class MonocleData:
       total_num_samples_received_by_month = defaultdict(int)
       total_num_lanes_sequenced_by_month  = defaultdict(int)
       max_months_elapsed   = 0
-      progress             = {   'months'             : [],
+      progress             = {   'date'             : [],
                                  'samples received'   : [],
                                  'samples sequenced'  : [],
                                  }
@@ -65,12 +66,13 @@ class MonocleData:
       num_samples_received_cumulative  = 0
       num_lanes_sequenced_cumulative   = 0
       logging.error("num months {}".format(max_months_elapsed))
-      for this_mount_count in range(0, max_months_elapsed+1, 1):
-         if this_mount_count in total_num_samples_received_by_month:
-            num_samples_received_cumulative += total_num_samples_received_by_month[this_mount_count]
-         if this_mount_count in total_num_lanes_sequenced_by_month:
-            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_mount_count]
-         progress['months'].append( this_mount_count )
+      for this_mount_elapsed in range(0, max_months_elapsed+1, 1):
+         if this_mount_elapsed in total_num_samples_received_by_month:
+            num_samples_received_cumulative += total_num_samples_received_by_month[this_mount_elapsed]
+         if this_mount_elapsed in total_num_lanes_sequenced_by_month:
+            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_mount_elapsed]
+         #progress['date'].append( this_mount_elapsed )
+         progress['date'].append( (self.day_zero + relativedelta(months=this_mount_elapsed)).strftime('%b %Y') )
          progress['samples received'].append(  num_samples_received_cumulative )
          progress['samples sequenced'].append( num_lanes_sequenced_cumulative  )
       return progress
