@@ -16,9 +16,9 @@ server   = app.server
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
-                                 'x_col_key'          : 'months',
+                                 'x_col_key'          : 'date',
                                  'y_cols_keys'        : ['samples received', 'samples sequenced'],
-                                 'x_label'            : 'months since project start',
+                                 'x_label'            : '',
                                  'y_label'            : 'number of samples',
                                  }
 

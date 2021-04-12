@@ -1,3 +1,6 @@
+from   collections            import defaultdict
+from   datetime               import datetime
+from   dateutil.relativedelta import relativedelta
 import logging
 import DataSources.monocledb
 import DataSources.sequencing_status
@@ -10,12 +13,18 @@ class MonocleData:
    and whatever form is most convenient for rendering the dashboard.
    """
    sample_table_inst_key   = 'submitting_institution_id'
-   # these are trhe sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
+   # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
    sequencing_flags        = {'qc_lib':   'library',
                               'qc_seq':   'sequencing',
                               }
   
+   # format of timestamp returned in MLWH queries
+   mlwh_datetime_fmt    = '%Y-%m-%dT%H:%M:%S%z'
+   
+   # date from which progress is counted
+   day_zero = datetime(2019,9,17)
+
    def __init__(self):
       self.monocledb                   = DataSources.monocledb.MonocleDB()
       self.institutions_data           = None
@@ -26,7 +35,46 @@ class MonocleData:
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
 
    def get_progress(self):
-      return self.mock_progress
+      institutions_data = self.get_institutions()
+      total_num_samples_received_by_month = defaultdict(int)
+      total_num_lanes_sequenced_by_month  = defaultdict(int)
+      max_months_elapsed   = 0
+      progress             = {   'date'             : [],
+                                 'samples received'   : [],
+                                 'samples sequenced'  : [],
+                                 }
+      # get number of samples received and number of lanes sequenced during each month counted from "day zero"
+      for this_institution in institutions_data.keys():
+         # samples received
+         this_institution_num_samples_received_by_date = self.num_samples_received_by_date(this_institution)
+         for this_date_string in this_institution_num_samples_received_by_date.keys():
+            this_date      = datetime.fromisoformat( this_date_string )
+            #days_elapsed   = (this_date - self.day_zero).days
+            months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+            previous_max = max_months_elapsed
+            max_months_elapsed = max(months_elapsed,max_months_elapsed)
+            total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[this_date_string]
+         # lanes sequenced
+         this_institution_num_lanes_sequenced_by_date = self.num_lanes_sequenced_by_date(this_institution)
+         for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
+            this_date      = datetime.fromisoformat( this_date_string )
+            months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+            previous_max = max_months_elapsed
+            max_months_elapsed = max(months_elapsed,max_months_elapsed)
+            total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[this_date_string]
+      # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
+      num_samples_received_cumulative  = 0
+      num_lanes_sequenced_cumulative   = 0
+      for this_month_elapsed in range(0, max_months_elapsed+1, 1):
+         if this_month_elapsed in total_num_samples_received_by_month:
+            num_samples_received_cumulative += total_num_samples_received_by_month[this_month_elapsed]
+         if this_month_elapsed in total_num_lanes_sequenced_by_month:
+            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_month_elapsed]
+         #progress['date'].append( this_month_elapsed )
+         progress['date'].append( (self.day_zero + relativedelta(months=this_month_elapsed)).strftime('%b %Y') )
+         progress['samples received'].append(  num_samples_received_cumulative )
+         progress['samples sequenced'].append( num_lanes_sequenced_cumulative  )
+      return progress
 
    def get_institutions(self, pattern=None):
       """
@@ -143,20 +191,38 @@ class MonocleData:
       """
       Pass dict of institutions. Returns dict with details of batches delivered.
       
-      TO DO:  we need to know the total number of samples expected, and ideally batch information
-      """
-      from datetime  import date
+      TO DO:  find out a way to get the genuine total number of expected samples for each institution
+      """ 
       samples = self.get_samples()
-      institutions_data = self.get_institutions()
+      institutions_data       = self.get_institutions()
+      sequencing_status_data  = self.get_sequencing_status()
       batches = { i:{} for i in institutions_data.keys() }
       for this_institution in institutions_data.keys():
-         num_samples = len(samples[this_institution])
-         batches[this_institution] = { 'expected'  : num_samples,
-                                       'received'  : num_samples,
-                                       'deliveries': [{  'name'   : 'All samples received',
-                                                         'date'   : date.today().strftime("%B %d, %Y"),
-                                                         'number' : num_samples },
-                                                      ]
+         # this ought to be the totalnumber of samples expected from an institution during the JUNO project
+         # but currently all we know are the number of samples for which we have metadata; this will be
+         # a subset of the total expected samples (until the last delivery arrives) so it isn't what we really want
+         # but we have no other data yet
+         num_samples_expected          = len(samples[this_institution])
+         # this is a list of the samples actually found in MLWH; it is not necessarily the same as
+         # the list of sample IDs in the monocle db
+         samples_received              = sequencing_status_data[this_institution].keys()
+         # this is a dict of the number of samples received on each date; keys are YYYY-MM-DD
+         num_samples_received_by_date  = self.num_samples_received_by_date(this_institution)
+         # work out the number of samples in each delivery
+         # assumption: treat all samples received on a given date as single delivery
+         #             this is an approximation: one actual batch might have dates that span two (or a few?) days?
+         deliveries = []
+         delivery_counter = 0
+         for this_date in num_samples_received_by_date.keys():
+            delivery_counter += 1
+            deliveries.append(  {   'name'   : 'Batch {}'.format(delivery_counter),
+                                    'date'   : this_date,
+                                    'number' : num_samples_received_by_date[this_date],
+                                    },
+                                 )
+         batches[this_institution] = { 'expected'  : num_samples_expected,
+                                       'received'  : len(samples_received),
+                                       'deliveries': deliveries,
                                        }
       return batches
       
@@ -292,7 +358,30 @@ class MonocleData:
       return(key)
 
 
-   mock_progress = { 'months'             : [1,2,3,4,5,6,7,8,9],
-                     'samples received'   : [158,225,367,420,580,690,750,835,954],
-                     'samples sequenced'  : [95,185,294,399,503,640,730,804,895],
-                     }
+   def num_samples_received_by_date(self, institution):
+      sequencing_status_data        = self.get_sequencing_status()
+      samples_received              = sequencing_status_data[institution].keys()
+      num_samples_received_by_date  = defaultdict(int)
+      for this_sample_id in samples_received:
+         # get date in ISO8601 format (YYYY-MM-DD)
+         received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
+                                             self.mlwh_datetime_fmt
+                                             ).strftime( '%Y-%m-%d' )
+         num_samples_received_by_date[received_date] += 1
+      return num_samples_received_by_date
+   
+   def num_lanes_sequenced_by_date(self, institution):
+      sequencing_status_data        = self.get_sequencing_status()
+      samples_received              = sequencing_status_data[institution].keys()
+      num_lanes_sequenced_by_date   = defaultdict(int)
+
+      for this_sample_id in samples_received:
+         # get each lane (some samples may have non lanes yet)
+         for this_lane in sequencing_status_data[institution][this_sample_id]['lanes']:
+            # get timestamp for completion (some lanes may not have one yet)
+            if 'complete_datetime' in this_lane:
+               this_lane['complete_datetime']
+               # get date in ISO8601 format (YYYY-MM-DD)
+               sequenced_date = datetime.strptime( this_lane['complete_datetime'], self.mlwh_datetime_fmt ).strftime( '%Y-%m-%d' )
+               num_lanes_sequenced_by_date[sequenced_date] += 1
+      return num_lanes_sequenced_by_date
