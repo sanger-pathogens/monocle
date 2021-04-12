@@ -1,8 +1,10 @@
 import dash
-import dash_html_components as html
-from   dash.dependencies import Input, Output, State, ALL, MATCH
+import dash_html_components
+from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
+from   flask_parameter_validation   import ValidateParameters, Route
 import logging
+from   markupsafe                   import escape
 
 import MonocleDash.monocleclient
 import MonocleDash.components    as mc
@@ -13,13 +15,14 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 # first create a Flask server
 server = flask.Flask(__name__)
 
-# add a route is the normal way for Flask
-# route should match the `location` used for nginx proxy config
-@server.route('/hello')
-def index():
-    logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='INFO')
-    logging.info("FRlask roiute /hello")
-    return "hello world"
+# first bit of path should match the `location` used for nginx proxy config
+@server.route('/download/<string:institution>/<string:category>/<string:status>')
+@ValidateParameters()
+def index(  institution:   str = Route(min_length=5),
+            category:      str = Route(pattern='^(seq(uencing)?)|(pipe(line)?)$'),
+            status:        str = Route(pattern='^(success(ful)?)|(fail(ed)?)$'),
+            ):
+   return "institution = {}, category = {}, status = {}".format(escape(institution),escape(category),escape(status))
 
 
 # create Dash app using the extisting Flask server `server`
@@ -52,7 +55,7 @@ institution_status_params  =  {  'app'                : app,
                                  'pipeline_callback_output_type'     : 'pipeline-failed-container',
                                  }
 
-app.layout = html.Div(
+app.layout = dash_html_components.Div(
                className='main_page_container',
                children =  mc.page_header( 'Juno' ) +
                            mc.sample_progress( progress_graph_params ) +
