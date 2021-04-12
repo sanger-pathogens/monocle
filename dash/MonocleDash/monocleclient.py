@@ -66,13 +66,13 @@ class MonocleData:
       num_samples_received_cumulative  = 0
       num_lanes_sequenced_cumulative   = 0
       logging.error("num months {}".format(max_months_elapsed))
-      for this_mount_elapsed in range(0, max_months_elapsed+1, 1):
-         if this_mount_elapsed in total_num_samples_received_by_month:
-            num_samples_received_cumulative += total_num_samples_received_by_month[this_mount_elapsed]
-         if this_mount_elapsed in total_num_lanes_sequenced_by_month:
-            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_mount_elapsed]
-         #progress['date'].append( this_mount_elapsed )
-         progress['date'].append( (self.day_zero + relativedelta(months=this_mount_elapsed)).strftime('%b %Y') )
+      for this_month_elapsed in range(0, max_months_elapsed+1, 1):
+         if this_month_elapsed in total_num_samples_received_by_month:
+            num_samples_received_cumulative += total_num_samples_received_by_month[this_month_elapsed]
+         if this_month_elapsed in total_num_lanes_sequenced_by_month:
+            num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_month_elapsed]
+         #progress['date'].append( this_month_elapsed )
+         progress['date'].append( (self.day_zero + relativedelta(months=this_month_elapsed)).strftime('%b %Y') )
          progress['samples received'].append(  num_samples_received_cumulative )
          progress['samples sequenced'].append( num_lanes_sequenced_cumulative  )
       return progress
