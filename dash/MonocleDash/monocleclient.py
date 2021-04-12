@@ -65,7 +65,6 @@ class MonocleData:
       # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
       num_samples_received_cumulative  = 0
       num_lanes_sequenced_cumulative   = 0
-      logging.error("num months {}".format(max_months_elapsed))
       for this_month_elapsed in range(0, max_months_elapsed+1, 1):
          if this_month_elapsed in total_num_samples_received_by_month:
             num_samples_received_cumulative += total_num_samples_received_by_month[this_month_elapsed]
