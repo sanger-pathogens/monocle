@@ -1,6 +1,7 @@
 import dash
 import dash_html_components as html
 from   dash.dependencies import Input, Output, State, ALL, MATCH
+import flask
 import logging
 
 import MonocleDash.monocleclient
@@ -8,11 +9,23 @@ import MonocleDash.components    as mc
 
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARN')
 
-data  = MonocleDash.monocleclient.MonocleData()
 
+# first create a Flask server
+server = flask.Flask(__name__)
+
+# add a route is the normal way for Flask
+# route should match the `location` used for nginx proxy config
+@server.route('/hello')
+def index():
+    logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='INFO')
+    logging.info("FRlask roiute /hello")
+    return "hello world"
+
+
+# create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
-app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
-server   = app.server
+app   = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
+data  = MonocleDash.monocleclient.MonocleData()
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
