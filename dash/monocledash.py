@@ -7,28 +7,37 @@ import logging
 from   markupsafe                   import escape
 
 import MonocleDash.monocleclient
-import MonocleDash.components    as mc
+import MonocleDash.components as mc
 
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARN')
 
+data  = MonocleDash.monocleclient.MonocleData()
 
 # first create a Flask server
 server = flask.Flask(__name__)
 
+def download_parameter_error(message):
+   logging.error("Invalid request to /download: {}".format(message))
+   return "Download request was not valid.  {}".format(message), 400
+
 # first bit of path should match the `location` used for nginx proxy config
 @server.route('/download/<string:institution>/<string:category>/<string:status>')
-@ValidateParameters()
+@ValidateParameters(download_parameter_error)
 def index(  institution:   str = Route(min_length=5),
             category:      str = Route(pattern='^(seq(uencing)?)|(pipe(line)?)$'),
             status:        str = Route(pattern='^(success(ful)?)|(fail(ed)?)$'),
             ):
+   institution_data  = data.get_institutions()
+   institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
+   if not institution in institution_names:
+      return download_parameter_error("Parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
    return "institution = {}, category = {}, status = {}".format(escape(institution),escape(category),escape(status))
 
 
 # create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
 app   = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
-data  = MonocleDash.monocleclient.MonocleData()
+
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
