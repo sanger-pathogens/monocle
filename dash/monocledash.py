@@ -4,7 +4,6 @@ from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
 from   flask_parameter_validation   import ValidateParameters, Route
 import logging
-from   markupsafe                   import escape
 
 import MonocleDash.monocleclient
 import MonocleDash.components as mc

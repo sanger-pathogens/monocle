@@ -2,7 +2,9 @@ import dash_core_components   as dcc
 import dash_daq               as daq
 import dash_html_components   as html
 import plotly.express         as px
+from   markupsafe             import escape
 import logging
+import urllib.parse
 
 raquo = '\u00bb'
 
@@ -270,9 +272,11 @@ def samples_sequenced_table(this_institution, params):
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} successfully sequenced samples".format(len(this_status['failed']))
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} successfully sequenced samples".format(len(this_status['failed'])),
+                                                                        params['institutions'][this_institution]['name'],
+                                                                        'sequencing',
+                                                                        'successful',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_success_download},
@@ -295,9 +299,11 @@ def samples_sequenced_table(this_institution, params):
                                                       className = 'text_column'
                                                    ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} failed samples".format(len(this_status['failed']))
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} failed samples".format(len(this_status['failed'])),
+                                                                        params['institutions'][this_institution]['name'],
+                                                                        'sequencing',
+                                                                        'failed',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_failed_download},
@@ -380,9 +386,11 @@ def pipeline_table(this_institution, params):
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
                                              html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} samples successfully processed through the pipeline".format(len(this_status['failed']))
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} samples successfully processed through the pipeline".format(len(this_status['failed'])),
+                                                                        params['institutions'][this_institution]['name'],
+                                                                        'pipeline',
+                                                                        'successful',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_success_download},
@@ -405,9 +413,11 @@ def pipeline_table(this_institution, params):
                                                       className = 'text_column'
                                                       ),
                                              html.Td( len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} failed samples".format(len(this_status['failed']))
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} failed samples".format(len(this_status['failed'])),
+                                                                        params['institutions'][this_institution]['name'],
+                                                                        'pipeline',
+                                                                        'failed',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_failed_download},
@@ -449,7 +459,7 @@ def failed_samples_container(this_institution,params,stage,show):
                      id          =  '{}-{}-failed-table'.format(this_institution,stage),
                      style       =  {'display': display},
                      className   =  'failed_samples_by_institution_container',
-                     children    =  #failed_samples_download(failed_samples, params['app'].get_asset_url("download-icon.png")) +
+                     children    =  #failed_samples_download(failed_samples, params['app']) +
                                     failed_samples_table('{} Failures'.format(stage.capitalize()), failed_samples)
                      )
                   ]
@@ -528,11 +538,21 @@ def progress_gauge(current,total):
                   ]
    return elements
 
-def download_button(download_url, icon_url, alt_text):
+def download_button(app, alt_text, institution, category, status):
+   icon_url          = app.get_asset_url("download-icon.png")
+   download_url      = '/download/{}/{}/{}'.format(urllib.parse.quote(institution),
+                                                   urllib.parse.quote(category),
+                                                   urllib.parse.quote(status),
+                                                   )
+   download_target   = '{}_{}_{}'.format( escape(institution),
+                                          escape(category),
+                                          escape(status)
+                                          )
    logging.debug("download button: download URL = {}, icon URL = {}, alt text = '{}'".format(download_url, icon_url, alt_text))
    elements = [   
                   html.A(  className   = 'download_link',
                            href        = download_url,
+                           target      = download_target,
                            children    = [html.Img(src   = icon_url,
                                                    alt   = alt_text,
                                                    title = alt_text,
