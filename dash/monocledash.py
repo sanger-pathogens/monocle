@@ -9,7 +9,7 @@ from   markupsafe                   import escape
 import MonocleDash.monocleclient
 import MonocleDash.components as mc
 
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARN')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
 data  = MonocleDash.monocleclient.MonocleData()
 
@@ -31,7 +31,16 @@ def index(  institution:   str = Route(min_length=5),
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
       return download_parameter_error("Parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
-   return "institution = {}, category = {}, status = {}".format(escape(institution),escape(category),escape(status))
+   if   'seq'     == category: category = 'sequencing'
+   elif 'pipe'    == category: category = 'pipeline'
+   if   'success' == status:   status   = 'successful'
+   elif 'fail'    == status:   status   = 'failed'
+   csv_response = flask.Response( data.get_metadata(institution,category,status) )
+   csv_response.headers['Content-Type']         = 'text/csv; charset=UTF-8' # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
+   csv_response.headers['Content-Disposition']  = 'attachment; filename="{}_{}_{}.csv"'.format("".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
+                                                                                               category,
+                                                                                               status)
+   return csv_response
 
 
 # create Dash app using the extisting Flask server `server`

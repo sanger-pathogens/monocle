@@ -3,6 +3,7 @@ from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
 import DataSources.monocledb
+import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 
@@ -27,11 +28,12 @@ class MonocleData:
 
    def __init__(self):
       self.monocledb                   = DataSources.monocledb.MonocleDB()
+      self.metadata_source             = DataSources.metadata_download.MetadataDownload()
+      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
+      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institutions_data           = None
       self.samples_data                = None
-      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
       self.sequencing_status_data      = None
-      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
 
    def get_progress(self):
@@ -340,6 +342,26 @@ class MonocleData:
                         # not completed, but no failures reported
                         status[this_institution]['running'] += 1
       return status
+
+   def get_metadata(self,institution,category,status):
+      """
+      Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
+      this identifies the lanes for which metadata are required.
+      
+      Returns metadata as CSV
+      """
+      lane_id_list = []
+      # TODO get list of lane IDs for this combo of institution/category/status
+      self.metadata_source.get_metadata(lane_id_list)
+      csv = []
+      # TODO turn metadata structure into CSV; below is some mock data
+      csv = """\"column_one\",\"column_two\",\"column_three\"
+\"col 1 row 1\",1.31234,\"some string\"
+\"col 1 row 3\",4.32454,\"this, string, has commas\"
+\"col 1 row 3\",17.58991,\"another string\"
+"""
+      return csv
+
 
    def institution_name_to_dict_key(self, name, existing_keys):
       """
