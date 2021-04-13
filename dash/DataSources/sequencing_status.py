@@ -1,8 +1,6 @@
 import http.client
 import json
 import logging
-import pandas
-from   pandas import DataFrame, read_csv
 import urllib.parse
 import urllib.request
 import yaml

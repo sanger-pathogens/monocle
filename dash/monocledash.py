@@ -9,7 +9,7 @@ from   markupsafe                   import escape
 import MonocleDash.monocleclient
 import MonocleDash.components as mc
 
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARNING')
 
 data  = MonocleDash.monocleclient.MonocleData()
 
