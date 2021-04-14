@@ -11,12 +11,12 @@ pp    = pprint.PrettyPrinter(indent=3)
 #prog = data.get_progress()
 #pp.pprint(prog)
 
-print("\nInstitutions:\n")
+#print("\nInstitutions:\n")
 inst = data.get_institutions()#'hong kong')
-#pp.pprint(inst)
+pp.pprint(inst)
 
-print("\nSamples:\n")
-data.get_samples()
+#print("\nSamples:\n")
+#data.get_samples()
 ### add a sample that is missing from monocle db because it wasn't sequenced
 ### sample ID is genuine, should exist in MLWH
 ## note data.get_samples() must be called before we insert this, so that
@@ -28,12 +28,12 @@ data.get_samples()
                                                 #'serotype'     : 'NT'
                                                 #}
                                              #)
-samples = data.get_samples()
+#samples = data.get_samples()
 #pp.pprint(samples)
 
-print("\nProgress:\n")
-progress = data.get_progress()
-pp.pprint(progress)
+#print("\nProgress:\n")
+#progress = data.get_progress()
+#pp.pprint(progress)
 
 #print("\nBatches:\n")
 #batches = data.get_batches()
@@ -46,3 +46,11 @@ pp.pprint(progress)
 #print("\nPipeline status:\n")
 #pipeline_status = data.pipeline_status_summary()
 #pp.pprint(pipeline_status)
+
+print("\nMetadata:\n")
+for institution in ['The Chinese University of Hong Kong', 'Faculty of Pharmacy, Suez Canal University']: # [ inst[i]['db_key'] for i in inst.keys() ]:
+   for category in ['sequencing', 'pipeline']:
+      for status in ['successful', 'failed']:
+         #logging.info("Metadata for lanes from {} with {} status {}".format(institution,category,status))
+         metadata = data.get_metadata(institution,category,status)
+

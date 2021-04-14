@@ -43,14 +43,19 @@ class PipelineStatus:
             this_value = self.dataframe.loc[lane_id, this_field]
          except KeyError:
             this_value=None
-         if this_value == self.stage_null_string:
-            this_value=None
-         elif this_value == self.stage_failed_string:
-            # if any stage fails, flag lane as failed
-            status_data['FAILED'] = True
-            logging.debug("   found failed status for {} stage".format(this_field))
-         elif this_value == self.stage_done_string:
-            num_stages_done += 1
+         # if a value was read...
+         if this_value is not None:
+            # convert "null" string to `None`
+            if this_value == self.stage_null_string:
+               this_value=None
+            # any occurrence of the "failed" string sets FAILED flag
+            elif this_value == self.stage_failed_string:
+               # if any stage fails, flag lane as failed
+               status_data['FAILED'] = True
+               logging.debug("   found failed status for {} stage".format(this_field))
+            # the "done" string increments the count of stages done
+            elif this_value == self.stage_done_string:
+               num_stages_done += 1
          status_data[this_field] = this_value
       # if all stages are done, flag lane as completed
       if len(self.pipeline_stage_fields) == num_stages_done:
