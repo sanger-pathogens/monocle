@@ -27,18 +27,16 @@ API unit tests:
     - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
    
     
-#App unit tests:
-DISABLED App unit tests:
+App unit tests:
   stage: unit_test
   tags:
     - openstack-autoscale-theta
   image: "${UI_UNIT_TEST_IMAGE}"
-  #before_script:
-    #- cd ui
-    #- yarn install
+  before_script:
+    - cd ui
+    - yarn install
   script:
-    #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - echo "App unit tests are failing intermittently, so temporaily dsiabled whilst we are not developing it"
+    - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
     
     
 Dashboard unit tests:
