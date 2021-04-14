@@ -1,0 +1,359 @@
+openapi: '3.0.0'
+info:
+  title: "Pathogen Informatics Monocle Sample Metadata API"
+  version: "0.0.1"
+  description: "A REST API for sample metadata"
+  contact:
+    email: "path-help@sanger.ac.uk"
+
+servers:
+  - url: /metadata
+    description: Context path
+
+paths:
+  /download:
+    post:
+      operationId: metadata.api.routes.get_download_metadata
+      summary: "Download the metadata for the given download keys"
+      requestBody:
+        description: "A list of 'sampleId:laneId' keys"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadKeys"
+              examples: "[\"5903STDY8059122:24936_2#76\", \"5903STDY8059054:24937_1#22\"]"
+      responses:
+        200:
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metadata"
+        404:
+          description: "No data could be found for the given download key"
+
+
+components:
+  schemas:
+    DownloadKeys:
+      type: array
+      items:
+        type: string
+      minItems: 1
+    Metadata:
+      type: object
+      required:
+        - "sanger_sample_id"
+      properties:
+        sanger_sample_id:
+          type: string
+          description: "Sanger Sample ID from Sample Manifest"
+          example: "5903STDY8059122"
+          readOnly: true
+        lane_id:
+          type: string
+          description: "The Sanger lane ID"
+          example: "24937_1#22"
+          readOnly: true
+        submitting_institution:
+          type: string
+          description: "The name of the institution submitting the isolate"
+          example: "University of Hong Kong"
+          readOnly: true
+        supplier_sample_name:
+          type: string
+          description: "The sample name"
+          example: "CUHK_GBS8WT_01"
+          readOnly: true
+        public_name:
+          type: string
+          description: "The public name for the sample"
+          example: "JN_HK_GBS5WQ"
+          readOnly: true
+        host_status:
+          type: string
+          description: "The host status"
+          example: "Carriage, invaisve disease or non-invasive disease"
+          readOnly: true
+        study_name:
+          type: string
+          description: "The Study name if isolates taken from defined in-country study"
+          example: "mystudy"
+          readOnly: true
+        study_ref:
+          type: string
+          description: "The pubmed ID (PMID) for article describing the study if available"
+          example: "17397525"
+          readOnly: true
+        selection_random:
+          type: string
+          description: "Was the isolate selected randomly? Options: Yes/No"
+          example: "Yes"
+          readOnly: true
+        country:
+          type: string
+          description: "The country where the isolate was collected"
+          example: "China [Hong Kong]"
+          readOnly: true
+        county_state:
+          type: string
+          description: "The county/state where the isolate was collected if known"
+          example: "Hertfordshire"
+          readOnly: true
+        city:
+          type: string
+          description: "The city where the isolate was collected if known"
+          example: "Hong Kong"
+          readOnly: true
+        collection_year:
+          type: string
+          description: "The year the sample was collected, YYYY format"
+          example: "2010"
+          readOnly: true
+        collection_month:
+          type: string
+          description: "The month the sample was collected, MM format"
+          example: "10"
+          readOnly: true
+        collection_day:
+          type: string
+          description: "The day the sample was collected, DD format"
+          example: "05"
+          readOnly: true
+        host_species:
+          type: string
+          description: "The host species"
+          example: "Human"
+          readOnly: true
+        gender:
+          type: string
+          description: "The gender M/F"
+          example: "F"
+          readOnly: true
+        age_group:
+          type: string
+          description: "The age group"
+          example: "neonate"
+          readOnly: true
+        age_years:
+          type: string
+          description: "The host age in years"
+          example: "5"
+          readOnly: true
+        age_months:
+          type: string
+          description: "The host age in months"
+          example: "10"
+          readOnly: true
+        age_weeks:
+          type: string
+          description: "The host age in weeks"
+          example: "23"
+          readOnly: true
+        age_days:
+          type: string
+          description: "The host age in days"
+          example: "5"
+          readOnly: true
+        disease_type:
+          type: string
+          description: "The disease type"
+          example: "Invasive GBS"
+          readOnly: true
+        disease_onset:
+          type: string
+          description: "The disease onset"
+          example: "EOD"
+          readOnly: true
+        isolation_source:
+          type: string
+          description: "The sample isolation source/site"
+          example: "BLOOD"
+          readOnly: true
+        serotype:
+          type: string
+          description: "The serotype"
+          example: "III-1"
+          readOnly: true
+        serotype_method:
+          type: string
+          description: "The method used to determine serotype"
+          example: "MPCR (Imperi et al)"
+          readOnly: true
+        infection_during_pregnancy:
+          type: string
+          description: "Was the infection during pregnancy"
+          example: "Yes"
+          readOnly: true
+        maternal_infection_type:
+          type: string
+          description: "The maternal infection type, if applicable"
+          example: "NA"
+          readOnly: true
+        gestational_age_weeks:
+          type: string
+          description: "The gestational age in weeks"
+          example: "NA"
+          readOnly: true
+        birth_weight_gram:
+          type: string
+          description: "The birth weight in grams"
+          example: "1000"
+          readOnly: true
+        apgar_score:
+          type: string
+          description: "The apgar scrore"
+          example: "Unknown"
+          readOnly: true
+        ceftizoxime:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        ceftizoxime_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        cefoxitin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        cefoxitin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        cefotaxime:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        cefotaxime_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        cefazolin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        cefazolin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        ampicillin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        ampicillin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        penicillin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        penicillin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        erythromycin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        erythromycin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        clindamycin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        clindamycin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        tetracycline:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        tetracycline_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        levofloxacin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        levofloxacin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        ciprofloxacin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        ciprofloxacin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        daptomycin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        daptomycin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        vancomycin:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        vancomycin_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        linezolid:
+          type: string
+          description: "Zone size or MIC value"
+          example: "NT1570031O"
+          readOnly: true
+        linezolid_method:
+          type: string
+          description: "Method used"
+          example: "Disk diffusion"
+          readOnly: true
+        additional_metadata:
+          type: string
+          description: "Additional metadata"
+          example: "NA"
+          readOnly: true
+

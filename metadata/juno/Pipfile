@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+
+[packages]
+pyyaml = "*"
+flask = "*"
+flask-cors = "*"
+Flask-Injector = "*"
+mysqlclient = "*"
+testfixtures = "*"
+sqlalchemy = "*"
+gunicorn = "*"
+uvicorn = "*"
+'connexion[swagger-ui]' = "*"
+
+[requires]
+python_version = "3.7"
