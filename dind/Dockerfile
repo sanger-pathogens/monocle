@@ -46,6 +46,14 @@ RUN   pip install dash==1.19.0         \
                   PyYAML==5.3.1        \
                   SQLAlchemy==1.3.23
 
+###################################################################################################################################
+
+# Metadata unit test image
+
+FROM  python:3.7 AS gitlab-metadata-unit-tests
+ARG   DEBIAN_FRONTEND=noninteractive
+# RUN   pip install codecov
+RUN   pip install pipenv
       
 ###################################################################################################################################
       
