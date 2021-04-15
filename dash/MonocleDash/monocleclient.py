@@ -234,12 +234,14 @@ class MonocleData:
       
       {  institution_1: {  'received':    <int>,
                            'completed':   <int>,
-                           'failed':      [  {  'lane':  lane_id_1,
-                                                'stage': 'name of QC stage where issues was detected',
-                                                'issue': 'string describing the issue'
-                                                },
-                                             ...
-                                             ],
+                           'success':     <int>,
+                           'failed':      <int>,
+                           'fail_messages':  [  {  'lane':  lane_id_1,
+                                                   'stage': 'name of QC stage where issues was detected',
+                                                   'issue': 'string describing the issue'
+                                                   },
+                                                ...
+                                                ],
                            },
          institution_2...
          }
@@ -254,7 +256,8 @@ class MonocleData:
          status[this_institution] = {  'received'  : len(sample_id_list),
                                        'completed' : 0,
                                        'success'   : 0,
-                                       'failed'    : [],
+                                       'failed'    : 0,
+                                       'fail_messages' : [],
                                        }
          if 0 < len(sample_id_list):
             this_sequencing_status_data = sequencing_status_data[this_institution]
@@ -263,19 +266,25 @@ class MonocleData:
                # i.e. only samples with lanes need to be looked at by the lines below
                for this_lane in this_sequencing_status_data[this_sample_id]['lanes']:
                   if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
+                     # lane has completed, whether success or failure
                      status[this_institution]['completed'] += 1
-                     failed_stages = []
+                     # look for any failures; note one lane could have more than one failure
+                     this_lane_failed = False
                      for this_flag in self.sequencing_flags.keys():
                         if not 1 == this_lane[this_flag]:
-                           failed_stages.append(self.sequencing_flags[this_flag])
-                     if 0 < len(failed_stages):
-                        status[this_institution]['failed'].append(
-                           {  'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
-                              'stage': ', '.join(failed_stages),
-                              'issue': 'sorry, failure mesages cannot currently be seen here',
-                              },
-                           )
-         status[this_institution]['success'] = status[this_institution]['completed'] - len(status[this_institution]['failed'])
+                           this_lane_failed = True
+                           # record message for this failure
+                           status[this_institution]['fail_messages'].append(
+                              {  'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
+                                 'stage': self.sequencing_flags[this_flag],
+                                 'issue': 'sorry, failure mesages cannot currently be seen here',
+                                 },
+                              )
+                     # count lane either as a success or failure
+                     if this_lane_failed:
+                        status[this_institution]['failed'] += 1
+                     else:
+                        status[this_institution]['success'] += 1
       return status
 
    def pipeline_status_summary(self):
@@ -285,12 +294,13 @@ class MonocleData:
       {  institution_1: {  'sequenced':   <int>,
                            'running':     <int>,
                            'completed':   <int>,
-                           'failed':      [  {  'lane':  lane_id_1,
-                                                'stage': 'name of QC stage where issues was detected',
-                                                'issue': 'string describing the issue'
-                                                },
-                                             ...
-                                             ],
+                           'failed':      <int>,
+                           'fail_messages':  [  {  'lane':  lane_id_1,
+                                                   'stage': 'name of QC stage where issues was detected',
+                                                   'issue': 'string describing the issue'
+                                                   },
+                                                ...
+                                                ],
                            },
          institution_2...
          }
@@ -310,7 +320,8 @@ class MonocleData:
                                        'running'   : 0,
                                        'completed' : 0,
                                        'success'   : 0,
-                                       'failed'    : [],
+                                       'failed'    : 0,
+                                       'fail_messages' : [],
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
          for this_sample_id in sample_id_list:
@@ -319,24 +330,26 @@ class MonocleData:
                this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
                status[this_institution]['sequenced'] += 1
                if this_pipeline_status['FAILED']:
-                  failed_stages = []
+                  status[this_institution]['failed'] += 1
+                  # check each stage of the pipeline...
                   for this_stage in self.pipeline_status.pipeline_stage_fields:
+                     # ...and if the stage failed...
                      if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
-                        failed_stages.append(this_stage)
-                  if 0 < len(failed_stages):
-                     status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
-                                                                  'stage'  : ', '.join(failed_stages),
-                                                                  # currently have no way to retrieve a failure report
-                                                                  'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                                                                  },           
-                                                               )
+                        # ...record a message for the failed stage
+                        status[this_institution]['fail_messages'].append(  
+                           {  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
+                              'stage'  : this_stage,
+                              # currently have no way to retrieve a failure report
+                              'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                              },           
+                           )
                else:
                   if this_pipeline_status['COMPLETED']:
                      status[this_institution]['completed'] += 1
+                     status[this_institution]['success'] += 1
                   else:
                      # not completed, but no failures reported
                      status[this_institution]['running'] += 1
-         status[this_institution]['success'] = status[this_institution]['completed'] - len(status[this_institution]['failed'])
       return status
 
    def get_metadata(self,institution,category,status):

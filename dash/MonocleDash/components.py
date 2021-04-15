@@ -219,24 +219,17 @@ def samples_sequenced_table(this_institution, params):
    this_status = params['sequencing_status'][this_institution]
    if not isinstance(this_status, dict):
       raise TypeError( "params.status.{} is {}, should be a dict".format(k,type(this_status)) )
-   for required_int in ['received', 'completed']:
+   for required_int in ['received', 'completed', 'success', 'failed']:
       if not isinstance(this_status[required_int], int):
          raise TypeError( "params.status.{}.{} is {}, should be a int".format(this_institution,required_int,type(this_status[required_int])) )
-   if not isinstance(this_status['failed'], list):
-      raise TypeError( "params.status.{}.failed is {}, should be a list".format(this_institution,type(this_status['failed'])) )
+   if not isinstance(this_status['fail_messages'], list):
+      raise TypeError( "params.status.{}.fail_messages is {}, should be a list".format(this_institution,type(this_status['fail_messages'])) )
    # some elements are not displayed if there are no related samples
-   if 1 == len(this_status['failed']):
-      logging.warn(  "{}: completed = {}, failed = {}, success = {}".format(  this_institution,
-                                                                              this_status['completed'],
-                                                                              this_status['failed'],
-                                                                              this_status['success']
-                                                                              )
-                     )
-   if not this_status['completed']-len(this_status['failed']) > 0:
+   if not this_status['success'] > 0:
       display_success_download = 'none'
    else:
       display_success_download = 'table-cell'
-   if not len(this_status['failed']) > 0:
+   if not this_status['failed'] > 0:
       toggle_disabled         = True;
       display_failed_download = 'none';
    else:
@@ -298,9 +291,9 @@ def samples_sequenced_table(this_institution, params):
                                                                ),
                                                       className = 'text_column'
                                                    ),
-                                             html.Td( len(this_status['failed']), className='numeric' ),
+                                             html.Td( this_status['failed'], className='numeric' ),
                                              html.Td( download_button(  params['app'],
-                                                                        "download {} failed samples".format(len(this_status['failed'])),
+                                                                        "download {} failed samples".format(this_status['failed']),
                                                                         params['institutions'][this_institution]['db_key'],
                                                                         'sequencing',
                                                                         'failed',
@@ -335,17 +328,17 @@ def pipeline_table(this_institution, params):
    this_status           = params['pipeline_status'][this_institution]
    if not isinstance(this_status, dict):
       raise TypeError( "params.pipeline_status is {}, should be a dict".format(k,type(this_status)) )
-   for required_int in ['sequenced', 'running', 'completed']:
+   for required_int in ['sequenced', 'running', 'completed', 'success', 'failed']:
       if not isinstance(this_status[required_int], int):
          raise TypeError( "params.pipeline_status.{}.{} is {}, should be a int".format(this_institution,required_int,type(this_status[required_int])) )
-   if not isinstance(this_status['failed'], list):
-      raise TypeError( "params.pipeline_status.{}.failed is {}, should be a list".format(this_institution,type(this_status['failed'])) )
+   if not isinstance(this_status['fail_messages'], list):
+      raise TypeError( "params.pipeline_status.{}.fail_messages is {}, should be a list".format(this_institution,type(this_status['fail_messages'])) )
    # some elements are not displayed/disabled if there are no related samples 
-   if not this_status['completed']-len(this_status['failed']) > 0:
+   if not this_status['success'] > 0:
       display_success_download = 'none';
    else:
       display_success_download = 'table-cell';
-   if not len(this_status['failed']) > 0:
+   if not this_status['failed'] > 0:
       toggle_disabled         = True;
       display_failed_download = 'none';
    else:
@@ -412,9 +405,9 @@ def pipeline_table(this_institution, params):
                                                                ),
                                                       className = 'text_column'
                                                       ),
-                                             html.Td( len(this_status['failed']), className='numeric' ),
+                                             html.Td( this_status['failed'], className='numeric' ),
                                              html.Td( download_button(  params['app'],
-                                                                        "download {} failed samples".format(len(this_status['failed'])),
+                                                                        "download {} failed samples".format(this_status['failed']),
                                                                         params['institutions'][this_institution]['db_key'],
                                                                         'pipeline',
                                                                         'failed',
@@ -447,7 +440,7 @@ def failed_samples_container(this_institution,params,stage,show):
    if not 'sequencing' == stage and not 'pipeline' == stage:
       raise ValueError( "stage should be  'sequencing' or 'pipeline', not n'{}'".format(stage) )
    key = '{}_status'.format(stage)
-   failed_samples = params[key][this_institution]['failed']
+   failed_samples = params[key][this_institution]['fail_messages']
    if not isinstance(failed_samples, list):
       raise TypeError( "params.{}.{}.failed is {}, should be a list".format(key,this_institution,type(failed_samples)) )
    if False == show:
