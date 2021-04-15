@@ -1,3 +1,6 @@
+
+# codecov removed 2021-04-15 after security breach notice
+
 stages:
   - unit_test
   - integration_test
@@ -24,21 +27,22 @@ API unit tests:
     - cd api
     - pipenv install --system
   script:
-    - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    #- coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - ./manage.py test
    
     
-#App unit tests:
-DISABLED App unit tests:
+App unit tests:
   stage: unit_test
   tags:
     - openstack-autoscale-theta
   image: "${UI_UNIT_TEST_IMAGE}"
-  #before_script:
-    #- cd ui
-    #- yarn install
+  before_script:
+    - cd ui
+    - yarn install
   script:
     #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - echo "App unit tests are failing intermittently, so temporaily dsiabled whilst we are not developing it"
+    - yarn test:ci
+    
     
 Dashboard unit tests:
   stage: unit_test
@@ -93,11 +97,12 @@ Docker builds:
          do
             cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
             this_image="monocle-${this_context}";
-            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${CI_COMMIT_SHA} 🐳";
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA . ;
-            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳";
-            docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} . ;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
     
@@ -125,8 +130,9 @@ Docker push as 'unstable':
     - >
          for this_image in monocle-api monocle-ui monocle-dash;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
-            docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable;
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+            docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
             echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
             docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
@@ -156,10 +162,11 @@ Docker push with release tag and as 'latest':
     - >
          for this_image in monocle-api monocle-ui monocle-dash;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
             do
-               docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+               docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
                echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
                docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
             done;
