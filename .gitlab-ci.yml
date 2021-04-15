@@ -1,3 +1,6 @@
+
+# codecov removed 2021-04-15 after security breach notice
+
 stages:
   - unit_test
   - integration_test
@@ -24,7 +27,8 @@ API unit tests:
     - cd api
     - pipenv install --system
   script:
-    - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    #- coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - ./manage.py test
    
     
 App unit tests:
@@ -36,7 +40,8 @@ App unit tests:
     - cd ui
     - yarn install
   script:
-    - yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - yarn test:ci
     
     
 Dashboard unit tests:
