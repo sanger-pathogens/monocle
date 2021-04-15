@@ -253,6 +253,7 @@ class MonocleData:
          sample_id_list = sequencing_status_data[this_institution].keys()
          status[this_institution] = {  'received'  : len(sample_id_list),
                                        'completed' : 0,
+                                       'success'   : 0,
                                        'failed'    : [],
                                        }
          if 0 < len(sample_id_list):
@@ -274,8 +275,9 @@ class MonocleData:
                               'issue': 'sorry, failure mesages cannot currently be seen here',
                               },
                            )
+         status[this_institution]['success'] = status[this_institution]['completed'] - len(status[this_institution]['failed'])
       return status
-   
+
    def pipeline_status_summary(self):
       """
       Returns dict with summary of the pipeline outcomes for each institution.
@@ -307,6 +309,7 @@ class MonocleData:
          status[this_institution] = {  'sequenced' : 0,
                                        'running'   : 0,
                                        'completed' : 0,
+                                       'success'   : 0,
                                        'failed'    : [],
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
@@ -333,6 +336,7 @@ class MonocleData:
                   else:
                      # not completed, but no failures reported
                      status[this_institution]['running'] += 1
+         status[this_institution]['success'] = status[this_institution]['completed'] - len(status[this_institution]['failed'])
       return status
 
    def get_metadata(self,institution,category,status):

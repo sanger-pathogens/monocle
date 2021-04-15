@@ -229,7 +229,7 @@ def samples_sequenced_table(this_institution, params):
       logging.warn(  "{}: completed = {}, failed = {}, success = {}".format(  this_institution,
                                                                               this_status['completed'],
                                                                               this_status['failed'],
-                                                                              (this_status['completed']-len(this_status['failed']))
+                                                                              this_status['success']
                                                                               )
                      )
    if not this_status['completed']-len(this_status['failed']) > 0:
@@ -271,9 +271,9 @@ def samples_sequenced_table(this_institution, params):
                                           html.Tr([
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
-                                             html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
+                                             html.Td( this_status['success'], className='numeric' ),
                                              html.Td( download_button(  params['app'],
-                                                                        "download {} successfully sequenced samples".format(this_status['completed']-len(this_status['failed'])),
+                                                                        "download {} successfully sequenced samples".format(this_status['success']),
                                                                         params['institutions'][this_institution]['db_key'],
                                                                         'sequencing',
                                                                         'successful',
@@ -385,9 +385,9 @@ def pipeline_table(this_institution, params):
                                           html.Tr([
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
-                                             html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
+                                             html.Td( this_status['success'], className='numeric' ),
                                              html.Td( download_button(  params['app'],
-                                                                        "download {} samples successfully processed through the pipeline".format(this_status['completed']-len(this_status['failed'])),
+                                                                        "download {} samples successfully processed through the pipeline".format(this_status['success']),
                                                                         params['institutions'][this_institution]['db_key'],
                                                                         'pipeline',
                                                                         'successful',
