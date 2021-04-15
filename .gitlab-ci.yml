@@ -88,7 +88,7 @@ Integration tests:
     - docker-compose -f docker-compose.e2e.yml down
 
     
-# at every gitpush, build docker images in /api, /ui, /dash and /metadata
+# at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
   stage: docker_build
@@ -108,7 +108,9 @@ Docker builds:
     - >
          for this_context in api ui dash metadata;
          do
-            cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
+            cd "${CI_PROJECT_DIR}/${this_context}";
+            if [[ "metadata" == ${this_context} ]]; do cd 'juno'; done;
+            pwd;
             this_image="monocle-${this_context}";
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
@@ -118,7 +120,7 @@ Docker builds:
             docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
-    
+
 # at every push/merge to master, tag the latest image builds as 'unstable'
 Docker push as 'unstable':
   variables:
