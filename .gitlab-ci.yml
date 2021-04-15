@@ -62,7 +62,7 @@ Metadata unit tests:
     - openstack-autoscale-theta
   image: "${METADATA_UNIT_TEST_IMAGE}"
   before_script:
-    - cd metadata
+    - cd metadata/juno
     - pipenv install --system --ignore-pipfile
   script:
     - ./unittests.sh
