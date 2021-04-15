@@ -36,7 +36,7 @@ class PipelineStatus:
    def lane_status(self, lane_id):
       assert (self.dataframe is not None), "lane_status() called before dataframe was populated"
       logging.debug("extracting pipeline status data for lane {}".format(lane_id))
-      status_data = {'FAILED':False, 'COMPLETED':False}
+      status_data = {'FAILED':False, 'SUCCESS':False, }
       num_stages_done = 0
       for this_field in self.pipeline_stage_fields:
          try:
@@ -57,9 +57,9 @@ class PipelineStatus:
             elif this_value == self.stage_done_string:
                num_stages_done += 1
          status_data[this_field] = this_value
-      # if all stages are done, flag lane as completed
+      # if all stages are done, flag lane as completed successfully
       if len(self.pipeline_stage_fields) == num_stages_done:
-         status_data['COMPLETED'] = True
+         status_data['SUCCESS'] = True
          logging.debug("   all stages are '{}'".format(self.stage_done_string))
       logging.debug("   lane status: {}".format(status_data))
       return status_data
