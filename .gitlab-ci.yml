@@ -1,3 +1,6 @@
+
+# codecov removed 2021-04-15 after security breach notice
+
 stages:
   - unit_test
   - integration_test
@@ -6,11 +9,12 @@ stages:
   
   
 variables:
-  API_UNIT_TEST_IMAGE:  "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
-  UI_UNIT_TEST_IMAGE:   "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
-  DASH_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
-  DOCKER_IMAGE:         "${CI_REGISTRY_IMAGE}/docker:19"
-  DOCKER_DIND_IMAGE:    "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  API_UNIT_TEST_IMAGE:      "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
+  UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
+  DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
+  METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
+  DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
+  DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   
   
 API unit tests:
@@ -24,22 +28,23 @@ API unit tests:
     - cd api
     - pipenv install --system
   script:
-    - coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-   
-    
-#App unit tests:
-DISABLED App unit tests:
+    #- coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - ./manage.py test
+
+
+App unit tests:
   stage: unit_test
   tags:
     - openstack-autoscale-theta
   image: "${UI_UNIT_TEST_IMAGE}"
-  #before_script:
-    #- cd ui
-    #- yarn install
+  before_script:
+    - cd ui
+    - yarn install
   script:
     #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - echo "App unit tests are failing intermittently, so temporaily dsiabled whilst we are not developing it"
-    
+    - yarn test:ci
+
+
 Dashboard unit tests:
   stage: unit_test
   tags:
@@ -50,7 +55,20 @@ Dashboard unit tests:
   script:
     - ./unittests.sh
 
-    
+
+Metadata unit tests:
+  stage: unit_test
+  tags:
+    - openstack-autoscale-theta
+  image: "${METADATA_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd metadata/juno
+    - pipenv install --system --ignore-pipfile
+    - cd ..
+  script:
+    - ./unittests.sh
+
+
 Integration tests:
   stage: integration_test
   tags:
@@ -71,7 +89,7 @@ Integration tests:
     - docker-compose -f docker-compose.e2e.yml down
 
     
-# at every gitpush, build docker images in /api, /ui and /dash
+# at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
   stage: docker_build
@@ -89,18 +107,21 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in api ui dash;
+         for this_context in api ui dash metadata;
          do
-            cd "${CI_PROJECT_DIR}/${this_context}"; pwd;
+            cd "${CI_PROJECT_DIR}/${this_context}";
+            if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
+            pwd;
             this_image="monocle-${this_context}";
-            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${CI_COMMIT_SHA} 🐳";
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA . ;
-            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${CI_COMMIT_SHA} 🐳";
-            docker push $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} . ;
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
-    
+
 # at every push/merge to master, tag the latest image builds as 'unstable'
 Docker push as 'unstable':
   variables:
@@ -123,10 +144,11 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash;
+         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
-            docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:unstable;
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+            docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
             echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
             docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
@@ -154,12 +176,13 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash;
+         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
          do
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA;
+            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
             do
-               docker tag  $CI_REGISTRY_IMAGE/${this_image}:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+               docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
                echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
                docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
             done;

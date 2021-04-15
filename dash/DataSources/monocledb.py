@@ -132,7 +132,7 @@ class MonocleDB:
             else:
                this_sample[this_field] = row[r]
                if None == this_sample[this_field]:
-                  logging.warn("monocle db: record in {} has null {}: {}".format(self.config['sample_table'],this_field,row))
+                  logging.info("monocle db: record in {} has null {}: {}".format(self.config['sample_table'],this_field,row))
             r += 1
          samples.append( this_sample )
       logging.info("found {} samples in monocle db".format(len(samples)))
