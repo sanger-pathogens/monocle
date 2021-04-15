@@ -291,10 +291,10 @@ class MonocleData:
       """
       Returns dict with summary of the pipeline outcomes for each institution.
 
-      {  institution_1: {  'sequenced':   <int>,
-                           'running':     <int>,
-                           'completed':   <int>,
+      {  institution_1: {  'running':     <int>,
+                           'success':     <int>
                            'failed':      <int>,
+                           'completed':   <int>,
                            'fail_messages':  [  {  'lane':  lane_id_1,
                                                    'stage': 'name of QC stage where issues was detected',
                                                    'issue': 'string describing the issue'
@@ -316,8 +316,7 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in institutions_data.keys():
-         status[this_institution] = {  'sequenced' : 0,
-                                       'running'   : 0,
+         status[this_institution] = {  'running'   : 0,
                                        'completed' : 0,
                                        'success'   : 0,
                                        'failed'    : 0,
@@ -328,9 +327,10 @@ class MonocleData:
             this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
             for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
                this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
-               status[this_institution]['sequenced'] += 1
+               # if the lane failed, increment failed and completed counter
                if this_pipeline_status['FAILED']:
                   status[this_institution]['failed'] += 1
+                  status[this_institution]['completed'] += 1
                   # check each stage of the pipeline...
                   for this_stage in self.pipeline_status.pipeline_stage_fields:
                      # ...and if the stage failed...
@@ -343,13 +343,13 @@ class MonocleData:
                               'issue'  : 'sorry, failure mesages cannot currently be seen here',
                               },           
                            )
+               # if not failed, but succeded, increment success and completed counter
+               elif this_pipeline_status['SUCCESS']:
+                  status[this_institution]['success'] += 1
+                  status[this_institution]['completed'] += 1
+               # if neither succeeded nor failed, must still be running
                else:
-                  if this_pipeline_status['COMPLETED']:
-                     status[this_institution]['completed'] += 1
-                     status[this_institution]['success'] += 1
-                  else:
-                     # not completed, but no failures reported
-                     status[this_institution]['running'] += 1
+                  status[this_institution]['running'] += 1
       return status
 
    def get_metadata(self,institution,category,status):

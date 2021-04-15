@@ -325,14 +325,16 @@ def pipeline_by_institution(this_institution, params):
    return elements
 
 def pipeline_table(this_institution, params):
-   this_status           = params['pipeline_status'][this_institution]
+   this_status    = params['pipeline_status'][this_institution]
    if not isinstance(this_status, dict):
       raise TypeError( "params.pipeline_status is {}, should be a dict".format(k,type(this_status)) )
-   for required_int in ['sequenced', 'running', 'completed', 'success', 'failed']:
+   for required_int in ['running', 'completed', 'success', 'failed']:
       if not isinstance(this_status[required_int], int):
          raise TypeError( "params.pipeline_status.{}.{} is {}, should be a int".format(this_institution,required_int,type(this_status[required_int])) )
    if not isinstance(this_status['fail_messages'], list):
       raise TypeError( "params.pipeline_status.{}.fail_messages is {}, should be a list".format(this_institution,type(this_status['fail_messages'])) )
+   # we need to know the number of successfully sequenced lanes, as that's the number we expect to go through the pipelines
+   num_seq_success = params['sequencing_status'][this_institution]['success']
    # some elements are not displayed/disabled if there are no related samples 
    if not this_status['success'] > 0:
       display_success_download = 'none';
@@ -352,17 +354,17 @@ def pipeline_table(this_institution, params):
                                              html.Td(
                                                 colSpan     = 4,
                                                 className   = 'status_desc',
-                                                children    = ['Of the {} samples successfully sequenced:'.format(this_status['sequenced'])]
+                                                children    = ['Of the {} samples successfully sequenced:'.format(num_seq_success)]
                                                 ),
                                              html.Td( 
                                                 rowSpan     = 5,
                                                 className   = 'per_cent_gauge',
-                                                children    = progress_gauge(this_status['completed'], this_status['sequenced']),
+                                                children    = progress_gauge(this_status['completed'], num_seq_success),
                                                 ),
                                              ]),
                                           html.Tr([
                                              html.Td( 'Waiting', colSpan  = 2, className = 'text_column' ),
-                                             html.Td( this_status['sequenced']-(this_status['running']+this_status['completed']), className='numeric' ),
+                                             html.Td( num_seq_success-(this_status['running']+this_status['completed']), className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
