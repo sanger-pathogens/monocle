@@ -65,6 +65,7 @@ services:
       - ./config.json:/app/config.json
       - ./my.cnf:/app/my.cnf
     environment:
+      - ENABLE_SWAGGER_UI=false
       - API_TEST_MODE=false
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<VERSION>"

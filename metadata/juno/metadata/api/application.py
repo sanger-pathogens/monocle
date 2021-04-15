@@ -2,6 +2,7 @@
 
 import connexion
 import json
+import os
 import logging.config
 
 from flask_cors import CORS
@@ -17,8 +18,10 @@ OPEN_API_SPEC_FILE = 'openapi.yml'
 def create_application(conf_file):
     """ Application configuration """
 
+    use_swagger_ui = True if os.environ.get('ENABLE_SWAGGER_UI', '').lower() == 'true' else False
+
     # Create connexion flask application and load the open api REST specification file
-    app_handle = connexion.FlaskApp(__name__, specification_dir='../interface', options={'swagger_ui': True})
+    app_handle = connexion.FlaskApp(__name__, specification_dir='../interface', options={'swagger_ui': use_swagger_ui})
     app_handle.add_api(OPEN_API_SPEC_FILE, strict_validation=True)
 
     # Load configuration

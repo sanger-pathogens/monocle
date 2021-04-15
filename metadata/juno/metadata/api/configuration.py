@@ -43,7 +43,7 @@ def read_database_connection_config(config: Config) -> DbConnectionConfig:
 
         config = DbConnectionConfig('monocle', url)
         logger.info("Database connection details loaded")
-        print(url)
+
         return config
 
     except FileNotFoundError as e:

@@ -22,12 +22,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_download_metadata(self, keys: [str]) -> [Metadata]:
         """ Get download metadata for given list of 'sample:lane' keys """
 
-        results = []
-        lanes = []
-        for key in keys:
-            key_parts = key.split(':')
-            lanes.append(key_parts[1])
+        if len(keys) == 0:
+            return []
 
+        results = []
+        samples, lanes = self.split_keys(keys)
         lane_ids = tuple(lanes)
 
         sql = text(""" \
@@ -44,7 +43,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(sql, lanes=lane_ids)
 
             for row in rs:
-                print(row)
                 results.append(
                     Metadata(
                         sanger_sample_id=row['sample_id'],

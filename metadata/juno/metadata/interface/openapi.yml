@@ -35,6 +35,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Metadata"
+        400:
+          description: "Invalid arguments provided"
         404:
           description: "No data could be found for the given download key"
 
