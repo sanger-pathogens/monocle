@@ -64,6 +64,7 @@ Metadata unit tests:
   before_script:
     - cd metadata/juno
     - pipenv install --system --ignore-pipfile
+    - cd ..
   script:
     - ./unittests.sh
 
