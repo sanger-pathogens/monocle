@@ -1,8 +1,8 @@
 openapi: '3.0.0'
 info:
-  title: "Pathogen Informatics Monocle Sample Metadata API"
+  title: "Monocle Sample Metadata API"
   version: "0.0.1"
-  description: "A REST API for sample metadata"
+  description: "A REST API for accessing/updating sample metadata"
   contact:
     email: "path-help@sanger.ac.uk"
 
@@ -85,7 +85,7 @@ components:
           readOnly: true
         study_name:
           type: string
-          description: "The Study name if isolates taken from defined in-country study"
+          description: "The Study name if isolates were taken from defined in-country study"
           example: "mystudy"
           readOnly: true
         study_ref:
