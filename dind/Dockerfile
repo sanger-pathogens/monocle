@@ -2,6 +2,7 @@
 
 # N.B. the build script will use the stage (AS ...) name as the image name
 
+# codecov removed 2021-04-15 after security breach notice
 
 ###################################################################################################################################
 
@@ -10,7 +11,8 @@
 # python base image with pipenv and codecov
 
 FROM  python:3.7 AS gitlab-api-unit-tests
-RUN   pip install pipenv codecov
+# RUN   pip install pipenv codecov
+RUN   pip install pipenv
 
 
 ###################################################################################################################################
@@ -21,10 +23,12 @@ RUN   pip install pipenv codecov
 
 FROM  node:12 AS gitlab-ui-unit-tests
 ARG   DEBIAN_FRONTEND=noninteractive
+# RUN   apt-get -qq update && \
+#       apt-get install -y python-pip && \
+#       pip install codecov
 RUN   apt-get -qq update && \
-      apt-get install -y python-pip && \
-      pip install codecov
-
+      apt-get install -y python-pip
+      
 
 ###################################################################################################################################
 
@@ -32,7 +36,7 @@ RUN   apt-get -qq update && \
 
 FROM  python:3.7 AS gitlab-dash-unit-tests
 ARG   DEBIAN_FRONTEND=noninteractive
-RUN   pip install codecov
+# RUN   pip install codecov
 RUN   pip install dash==1.19.0         \
                   dash-daq==0.5.0      \
                   flask==1.1.2         \
