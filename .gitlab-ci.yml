@@ -110,7 +110,7 @@ Docker builds:
          for this_context in api ui dash metadata;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
-            if [[ "metadata" == ${this_context} ]]; do cd 'juno'; done;
+            if [[ "metadata" == ${this_context} ]]; then cd 'juno'; done;
             pwd;
             this_image="monocle-${this_context}";
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
