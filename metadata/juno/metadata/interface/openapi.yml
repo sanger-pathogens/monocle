@@ -43,319 +43,218 @@ paths:
 
 components:
   schemas:
+
     DownloadKeys:
       type: array
       items:
         type: string
       minItems: 1
+
+    DownloadField:
+      type: object
+      required:
+        - "name"
+        - "value"
+        - "order"
+      properties:
+        order:
+          type: integer
+          description: "An ordering integer index for the field"
+          readOnly: true
+        name:
+          type: string
+          description: "The name of the metadata field"
+          readOnly: true
+        value:
+          type: string
+          description: "The value of the metadata field"
+          readOnly: true
+
     Metadata:
       type: object
       required:
         - "sanger_sample_id"
+        - "lane_id"
+        - "submitting_institution"
+        - "supplier_sample_name"
+        - "public_name"
+        - "host_status"
+        - "study_name"
+        - "study_ref"
+        - "selection_random"
+        - "country"
+        - "county_state"
+        - "city"
+        - "collection_year"
+        - "collection_month"
+        - "collection_day"
+        - "host_species"
+        - "gender"
+        - "age_group"
+        - "age_years"
+        - "age_months"
+        - "age_weeks"
+        - "age_days"
+        - "disease_type"
+        - "disease_onset"
+        - "isolation_source"
+        - "serotype"
+        - "serotype_method"
+        - "infection_during_pregnancy"
+        - "maternal_infection_type"
+        - "gestational_age_weeks"
+        - "birth_weight_gram"
+        - "apgar_score"
+        - "ceftizoxime"
+        - "ceftizoxime_method"
+        - "cefoxitin"
+        - "cefoxitin_method"
+        - "cefotaxime"
+        - "cefotaxime_method"
+        - "cefazolin"
+        - "cefazolin_method"
+        - "ampicillin"
+        - "ampicillin_method"
+        - "penicillin"
+        - "penicillin_method"
+        - "erythromycin"
+        - "erythromycin_method"
+        - "clindamycin"
+        - "clindamycin_method"
+        - "tetracycline"
+        - "tetracycline_method"
+        - "levofloxacin"
+        - "levofloxacin_method"
+        - "ciprofloxacin"
+        - "ciprofloxacin_method"
+        - "daptomycin"
+        - "daptomycin_method"
+        - "vancomycin"
+        - "vancomycin_method"
+        - "linezolid"
+        - "linezolid_method"
+        - "additional_metadata"
       properties:
         sanger_sample_id:
-          type: string
-          description: "Sanger Sample ID from Sample Manifest"
-          example: "5903STDY8059122"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         lane_id:
-          type: string
-          description: "The Sanger lane ID"
-          example: "24937_1#22"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         submitting_institution:
-          type: string
-          description: "The name of the institution submitting the isolate"
-          example: "University of Hong Kong"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         supplier_sample_name:
-          type: string
-          description: "The sample name"
-          example: "CUHK_GBS8WT_01"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         public_name:
-          type: string
-          description: "The public name for the sample"
-          example: "JN_HK_GBS5WQ"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         host_status:
-          type: string
-          description: "The host status"
-          example: "Carriage, invaisve disease or non-invasive disease"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         study_name:
-          type: string
-          description: "The Study name if isolates were taken from defined in-country study"
-          example: "mystudy"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         study_ref:
-          type: string
-          description: "The pubmed ID (PMID) for article describing the study if available"
-          example: "17397525"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         selection_random:
-          type: string
-          description: "Was the isolate selected randomly? Options: Yes/No"
-          example: "Yes"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         country:
-          type: string
-          description: "The country where the isolate was collected"
-          example: "China [Hong Kong]"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         county_state:
-          type: string
-          description: "The county/state where the isolate was collected if known"
-          example: "Hertfordshire"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         city:
-          type: string
-          description: "The city where the isolate was collected if known"
-          example: "Hong Kong"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         collection_year:
-          type: string
-          description: "The year the sample was collected, YYYY format"
-          example: "2010"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         collection_month:
-          type: string
-          description: "The month the sample was collected, MM format"
-          example: "10"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         collection_day:
-          type: string
-          description: "The day the sample was collected, DD format"
-          example: "05"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         host_species:
-          type: string
-          description: "The host species"
-          example: "Human"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         gender:
-          type: string
-          description: "The gender M/F"
-          example: "F"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         age_group:
-          type: string
-          description: "The age group"
-          example: "neonate"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         age_years:
-          type: string
-          description: "The host age in years"
-          example: "5"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         age_months:
-          type: string
-          description: "The host age in months"
-          example: "10"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         age_weeks:
-          type: string
-          description: "The host age in weeks"
-          example: "23"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         age_days:
-          type: string
-          description: "The host age in days"
-          example: "5"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         disease_type:
-          type: string
-          description: "The disease type"
-          example: "Invasive GBS"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         disease_onset:
-          type: string
-          description: "The disease onset"
-          example: "EOD"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         isolation_source:
-          type: string
-          description: "The sample isolation source/site"
-          example: "BLOOD"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         serotype:
-          type: string
-          description: "The serotype"
-          example: "III-1"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         serotype_method:
-          type: string
-          description: "The method used to determine serotype"
-          example: "MPCR (Imperi et al)"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         infection_during_pregnancy:
-          type: string
-          description: "Was the infection during pregnancy"
-          example: "Yes"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         maternal_infection_type:
-          type: string
-          description: "The maternal infection type, if applicable"
-          example: "NA"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         gestational_age_weeks:
-          type: string
-          description: "The gestational age in weeks"
-          example: "NA"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         birth_weight_gram:
-          type: string
-          description: "The birth weight in grams"
-          example: "1000"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         apgar_score:
-          type: string
-          description: "The apgar scrore"
-          example: "Unknown"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ceftizoxime:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ceftizoxime_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefoxitin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefoxitin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefotaxime:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefotaxime_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefazolin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         cefazolin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ampicillin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ampicillin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         penicillin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         penicillin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         erythromycin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         erythromycin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         clindamycin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         clindamycin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         tetracycline:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         tetracycline_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         levofloxacin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         levofloxacin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ciprofloxacin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         ciprofloxacin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         daptomycin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         daptomycin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         vancomycin:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         vancomycin_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         linezolid:
-          type: string
-          description: "Zone size or MIC value"
-          example: "NT1570031O"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         linezolid_method:
-          type: string
-          description: "Method used"
-          example: "Disk diffusion"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
         additional_metadata:
-          type: string
-          description: "Additional metadata"
-          example: "NA"
-          readOnly: true
+          $ref: "#/components/schemas/DownloadField"
 
