@@ -34,6 +34,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         sample_id,
                         lane_id,
                         serotype,
+                        public_name,
+                        host_status,
                         submitting_institution_id
                     FROM api_sample
                     WHERE
@@ -49,8 +51,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         lane_id=row['lane_id'],
                         submitting_institution=row['submitting_institution_id'],
                         supplier_sample_name='',
-                        public_name='',
-                        host_status='',
+                        public_name=row['public_name'],
+                        host_status=row['host_status'],
                         study_name='',
                         study_ref='',
                         selection_random='',

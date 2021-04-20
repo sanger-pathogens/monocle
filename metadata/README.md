@@ -5,7 +5,7 @@ This component provides an API for accessing and updating metadata in the Monocl
 The service can be run locally outside of compose using the following command:
 ```
 cd monocle
-docker run -v `pwd`/metadata/api/my.cnf:/app/my.cnf -v `pwd`/metadata/api/config.json:/app/config.json -p3001:80 -it --rm metadata-api:test
+docker run -v `pwd`/metadata/juno/my.cnf:/app/my.cnf -v `pwd`/metadata/juno/config.json:/app/config.json -p3001:80 -it --rm metadata-api:test
 ```
 
 # Testing
