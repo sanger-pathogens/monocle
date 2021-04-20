@@ -13,10 +13,10 @@ monocledb:
                                  - 'serotype'
                                  - 'submitting_institution_id'
 monocle_download_api:
-   base_url       : 'http://monocle-download'
-   swagger        : '/download/metadata/ui/'
-   metadata       : '/download/metadata'
-   metadata_key   : 'metadata'
+   base_url       : 'http://metadata-api'
+   swagger        : '/metadata/ui/'
+   metadata       : '/metadata'
+   metadata_key   : 'download'
 mlwh_rest_api:
    base_url       : 'http://mlwh_api.dev.pam.sanger.ac.uk'
    swagger        : '/sequencing/data/ui/'
