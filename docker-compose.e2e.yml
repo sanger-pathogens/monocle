@@ -31,8 +31,13 @@ services:
       MYSQL_PASSWORD: docker
     ports:
       - "9001:3306"
+  metadata-api:
+    build:
+      context: ./metadata-e2e-dummy
+    ports:
+      - "8002:80"
   dash:
     build:
       context: ./dash-e2e-dummy
     ports:
-      - "80:80"
+      - "8003:80"
