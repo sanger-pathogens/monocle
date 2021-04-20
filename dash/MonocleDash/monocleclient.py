@@ -390,14 +390,12 @@ class MonocleData:
                   ## ...(which means the lane must previously have been sequenced OK)...
                   if not this_lane_seq_fail:
                      this_pipeline_status = self.pipeline_status.lane_status(this_lane['id'])
-                     
                      # ...and were successful; so only want this lane if it completed and did *not* fail
-                     if 'successful' == status and this_pipeline_status['COMPLETED']:
+                     if 'successful' == status and this_pipeline_status['SUCCESS']:
                         want_this_lane = True
                      # ...and failed; so only want this lane if it is a failure
                      elif 'failed' == status and this_pipeline_status['FAILED']:
                         want_this_lane = True
-               
                if want_this_lane:
                   lane_id_list.append( ':'.join([this_sample_id,this_lane['id']]) )
       
