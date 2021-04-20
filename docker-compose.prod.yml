@@ -49,6 +49,24 @@ services:
         - HOSTNAME_PUBLIC=<HOSTNAME_PUBLIC>
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
+  metadata-api:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata-api:<VERSION>"
+    expose:
+      - "80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    tmpfs:
+      - "/run:rw,noexec,nosuid"
+      - "/tmp:rw,noexec,nosuid"
+    volumes:
+      - ./config.json:/app/config.json
+      - ./my.cnf:/app/my.cnf
+    environment:
+      - ENABLE_SWAGGER_UI=false
+      - API_TEST_MODE=false
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<VERSION>"
     expose:

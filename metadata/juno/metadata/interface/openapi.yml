@@ -1,0 +1,260 @@
+openapi: '3.0.0'
+info:
+  title: "Monocle Sample Metadata API"
+  version: "0.0.1"
+  description: "A REST API for accessing/updating sample metadata"
+  contact:
+    email: "path-help@sanger.ac.uk"
+
+servers:
+  - url: /metadata
+    description: Context path
+
+paths:
+  /download:
+    post:
+      operationId: metadata.api.routes.get_download_metadata
+      summary: "Download the metadata for the given download keys"
+      requestBody:
+        description: "A list of 'sampleId:laneId' keys"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadKeys"
+              examples: "[\"5903STDY8059122:24936_2#76\", \"5903STDY8059054:24937_1#22\"]"
+      responses:
+        200:
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metadata"
+        400:
+          description: "Invalid arguments provided"
+        404:
+          description: "No data could be found for the given download key"
+
+
+components:
+  schemas:
+
+    DownloadKeys:
+      type: array
+      items:
+        type: string
+      minItems: 1
+
+    DownloadField:
+      type: object
+      required:
+        - "name"
+        - "value"
+        - "order"
+      properties:
+        order:
+          type: integer
+          description: "An ordering integer index for the field"
+          readOnly: true
+        name:
+          type: string
+          description: "The name of the metadata field"
+          readOnly: true
+        value:
+          type: string
+          description: "The value of the metadata field"
+          readOnly: true
+
+    Metadata:
+      type: object
+      required:
+        - "sanger_sample_id"
+        - "lane_id"
+        - "submitting_institution"
+        - "supplier_sample_name"
+        - "public_name"
+        - "host_status"
+        - "study_name"
+        - "study_ref"
+        - "selection_random"
+        - "country"
+        - "county_state"
+        - "city"
+        - "collection_year"
+        - "collection_month"
+        - "collection_day"
+        - "host_species"
+        - "gender"
+        - "age_group"
+        - "age_years"
+        - "age_months"
+        - "age_weeks"
+        - "age_days"
+        - "disease_type"
+        - "disease_onset"
+        - "isolation_source"
+        - "serotype"
+        - "serotype_method"
+        - "infection_during_pregnancy"
+        - "maternal_infection_type"
+        - "gestational_age_weeks"
+        - "birth_weight_gram"
+        - "apgar_score"
+        - "ceftizoxime"
+        - "ceftizoxime_method"
+        - "cefoxitin"
+        - "cefoxitin_method"
+        - "cefotaxime"
+        - "cefotaxime_method"
+        - "cefazolin"
+        - "cefazolin_method"
+        - "ampicillin"
+        - "ampicillin_method"
+        - "penicillin"
+        - "penicillin_method"
+        - "erythromycin"
+        - "erythromycin_method"
+        - "clindamycin"
+        - "clindamycin_method"
+        - "tetracycline"
+        - "tetracycline_method"
+        - "levofloxacin"
+        - "levofloxacin_method"
+        - "ciprofloxacin"
+        - "ciprofloxacin_method"
+        - "daptomycin"
+        - "daptomycin_method"
+        - "vancomycin"
+        - "vancomycin_method"
+        - "linezolid"
+        - "linezolid_method"
+        - "additional_metadata"
+      properties:
+        sanger_sample_id:
+          $ref: "#/components/schemas/DownloadField"
+        lane_id:
+          $ref: "#/components/schemas/DownloadField"
+        submitting_institution:
+          $ref: "#/components/schemas/DownloadField"
+        supplier_sample_name:
+          $ref: "#/components/schemas/DownloadField"
+        public_name:
+          $ref: "#/components/schemas/DownloadField"
+        host_status:
+          $ref: "#/components/schemas/DownloadField"
+        study_name:
+          $ref: "#/components/schemas/DownloadField"
+        study_ref:
+          $ref: "#/components/schemas/DownloadField"
+        selection_random:
+          $ref: "#/components/schemas/DownloadField"
+        country:
+          $ref: "#/components/schemas/DownloadField"
+        county_state:
+          $ref: "#/components/schemas/DownloadField"
+        city:
+          $ref: "#/components/schemas/DownloadField"
+        collection_year:
+          $ref: "#/components/schemas/DownloadField"
+        collection_month:
+          $ref: "#/components/schemas/DownloadField"
+        collection_day:
+          $ref: "#/components/schemas/DownloadField"
+        host_species:
+          $ref: "#/components/schemas/DownloadField"
+        gender:
+          $ref: "#/components/schemas/DownloadField"
+        age_group:
+          $ref: "#/components/schemas/DownloadField"
+        age_years:
+          $ref: "#/components/schemas/DownloadField"
+        age_months:
+          $ref: "#/components/schemas/DownloadField"
+        age_weeks:
+          $ref: "#/components/schemas/DownloadField"
+        age_days:
+          $ref: "#/components/schemas/DownloadField"
+        disease_type:
+          $ref: "#/components/schemas/DownloadField"
+        disease_onset:
+          $ref: "#/components/schemas/DownloadField"
+        isolation_source:
+          $ref: "#/components/schemas/DownloadField"
+        serotype:
+          $ref: "#/components/schemas/DownloadField"
+        serotype_method:
+          $ref: "#/components/schemas/DownloadField"
+        infection_during_pregnancy:
+          $ref: "#/components/schemas/DownloadField"
+        maternal_infection_type:
+          $ref: "#/components/schemas/DownloadField"
+        gestational_age_weeks:
+          $ref: "#/components/schemas/DownloadField"
+        birth_weight_gram:
+          $ref: "#/components/schemas/DownloadField"
+        apgar_score:
+          $ref: "#/components/schemas/DownloadField"
+        ceftizoxime:
+          $ref: "#/components/schemas/DownloadField"
+        ceftizoxime_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefoxitin:
+          $ref: "#/components/schemas/DownloadField"
+        cefoxitin_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefotaxime:
+          $ref: "#/components/schemas/DownloadField"
+        cefotaxime_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefazolin:
+          $ref: "#/components/schemas/DownloadField"
+        cefazolin_method:
+          $ref: "#/components/schemas/DownloadField"
+        ampicillin:
+          $ref: "#/components/schemas/DownloadField"
+        ampicillin_method:
+          $ref: "#/components/schemas/DownloadField"
+        penicillin:
+          $ref: "#/components/schemas/DownloadField"
+        penicillin_method:
+          $ref: "#/components/schemas/DownloadField"
+        erythromycin:
+          $ref: "#/components/schemas/DownloadField"
+        erythromycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        clindamycin:
+          $ref: "#/components/schemas/DownloadField"
+        clindamycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        tetracycline:
+          $ref: "#/components/schemas/DownloadField"
+        tetracycline_method:
+          $ref: "#/components/schemas/DownloadField"
+        levofloxacin:
+          $ref: "#/components/schemas/DownloadField"
+        levofloxacin_method:
+          $ref: "#/components/schemas/DownloadField"
+        ciprofloxacin:
+          $ref: "#/components/schemas/DownloadField"
+        ciprofloxacin_method:
+          $ref: "#/components/schemas/DownloadField"
+        daptomycin:
+          $ref: "#/components/schemas/DownloadField"
+        daptomycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        vancomycin:
+          $ref: "#/components/schemas/DownloadField"
+        vancomycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        linezolid:
+          $ref: "#/components/schemas/DownloadField"
+        linezolid_method:
+          $ref: "#/components/schemas/DownloadField"
+        additional_metadata:
+          $ref: "#/components/schemas/DownloadField"
+
