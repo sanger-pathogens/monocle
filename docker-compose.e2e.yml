@@ -35,9 +35,9 @@ services:
     build:
       context: ./metadata-e2e-dummy
     ports:
-      - "80:80"
+      - "8002:80"
   dash:
     build:
       context: ./dash-e2e-dummy
     ports:
-      - "80:80"
+      - "8003:80"
