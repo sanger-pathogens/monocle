@@ -13,9 +13,9 @@ monocledb:
                                  - 'serotype'
                                  - 'submitting_institution_id'
 monocle_download_api:
-   base_url       : 'http://metadata-api'
+   base_url       : 'http://localhost:8080/'
    swagger        : '/metadata/ui/'
-   metadata       : '/metadata'
+   download       : '/metadata/download'
    metadata_key   : 'download'
 mlwh_rest_api:
    base_url       : 'http://mlwh_api.dev.pam.sanger.ac.uk'

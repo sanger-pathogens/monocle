@@ -5,6 +5,10 @@ import urllib.parse
 import urllib.request
 import yaml
 
+# run test metadata api server with:
+# 
+# IMAGE=gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:unstable
+# docker run -p 8080:80 -v`pwd`/dash/my.cnf:/app/my.cnf -v`pwd`/metadata/juno/config.json:/app/config.json --env ENABLE_SWAGGER_UI=true --rm ${IMAGE}
 
 class MetadataDownload:
    """ provides access to monocle metadata """
@@ -17,12 +21,12 @@ class MetadataDownload:
       self.dl_client = Monocle_Download_Client()
             
    def get_metadata(self, lane_id_list):
-      # TODO check what is being returned; is it actually a list?
+      logging.debug("{}.request_metadata() called with {}".format(__class__.__name__,lane_id_list))
       results_list = self.dl_client.metadata(lane_id_list)
+      assert ( isinstance(results_list, list) ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
+      logging.debug("{}.request_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
       logging.info("{}.request_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
-      metadata = {}
-      # TODO make actual request to get metadata, turn into suitable structure (probably trivial)
-      return metadata
+      return results_list
 
 
 class ProtocolError(Exception):
@@ -33,10 +37,9 @@ class Monocle_Download_Client:
    
    data_sources_config     = 'data_sources.yml'
    data_source             = 'monocle_download_api'
-   # TODO put actual API coinfig into data_sources.yml and import here:
    required_config_params  = [   'base_url',
                                  'swagger',
-                                 'metadata'
+                                 'download'
                                  ]
    def __init__(self, set_up=True):
       if set_up:
@@ -52,10 +55,7 @@ class Monocle_Download_Client:
             raise KeyError
       
    def metadata(self, lane_id_list):
-      # TODO get rid of this mock (empty) response
-      return []
-      # TODO use actual endpoint param in data_sources.yml
-      endpoint = self.config['metadata']
+      endpoint = self.config['download']
       logging.debug("{}.metadata() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
       response = self.make_request( endpoint, post_data = lane_id_list )
       logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
@@ -87,7 +87,6 @@ class Monocle_Download_Client:
    def parse_response(self, response_as_string, required_keys=[]):
       swagger_url  = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
       results_data = json.loads(response_as_string)
-      # TODO check API's actual JSON structure
       if not isinstance(results_data, dict):
          error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)
          raise ProtocolError(error_message)

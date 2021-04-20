@@ -400,16 +400,27 @@ class MonocleData:
                   lane_id_list.append( ':'.join([this_sample_id,this_lane['id']]) )
       
       logging.info("Found {} lanes from {} with {} status {}".format(len(lane_id_list),institution,category,status))
-      
-      #self.metadata_source.get_metadata(lane_id_list)
+      # create list of CSV rows; each list item will be a single string of CSV values
       csv = []
-      # TODO turn metadata structure into CSV; below is some mock data
-      csv = """\"column_one\",\"column_two\",\"column_three\"
-\"col 1 row 1\",1.31234,\"some string\"
-\"col 1 row 3\",4.32454,\"this, string, has commas\"
-\"col 1 row 3\",17.58991,\"another string\"
-"""
-      return csv
+      headings = []
+      reading_the_first_row = True
+      for this_row in self.metadata_source.get_metadata(lane_id_list):
+         this_row_csv_strings = []
+         headings_csv_strings = []
+         # sort columns according to value of dict item `order`
+         for this_column in sorted(this_row, key=lambda col: (this_row[col]['order'])):
+            # get the column headings, if this is the first row being read
+            if reading_the_first_row:
+               headings_csv_strings.append( '"{}"'.format(this_row[this_column]['name']) )
+            this_row_csv_strings.append( '"{}"'.format(this_row[this_column]['value']) )
+         # add headings to CSV if this is the first row
+         if reading_the_first_row:
+            csv.append( ','.join(headings_csv_strings) )
+            reading_the_first_row = False
+         csv.append( ','.join(this_row_csv_strings) )
+      # CSV as one string
+      csv_giant_string = "\n".join(csv)
+      return csv_giant_string
 
 
    def institution_name_to_dict_key(self, name, existing_keys):

@@ -48,9 +48,12 @@ pp.pprint(inst)
 #pp.pprint(pipeline_status)
 
 print("\nMetadata:\n")
-for institution in ['The Chinese University of Hong Kong', 'Faculty of Pharmacy, Suez Canal University']: # [ inst[i]['db_key'] for i in inst.keys() ]:
-   for category in ['sequencing', 'pipeline']:
-      for status in ['successful', 'failed']:
-         #logging.info("Metadata for lanes from {} with {} status {}".format(institution,category,status))
+for institution in ['The Chinese University of Hong Kong']: # , 'Faculty of Pharmacy, Suez Canal University']: # [ inst[i]['db_key'] for i in inst.keys() ]:
+   for category in ['sequencing']:#, 'pipeline']:
+      for status in ['successful']: #, 'failed']:
+         logging.info("Metadata for lanes from {} with {} status {}".format(institution,category,status))
          metadata = data.get_metadata(institution,category,status)
+         for this_row in metadata:
+            print(this_row)
+         
 
