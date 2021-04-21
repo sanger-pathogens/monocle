@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Deploy a release of Monocle.
 # The version number provided is expected to be without the leading v, e.g. 0.1.26
