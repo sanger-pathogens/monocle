@@ -130,8 +130,8 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Setting configuration in UI's settings.js..."
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
     echo "Setting file permissions..."
-    chmod 600 docker-compose.yml metadata-api.json
-    chmod 644 settings.js nginx.conf
+    chmod 600 docker-compose.yml
+    chmod 644 settings.js nginx.conf metadata-api.json
     echo "Pulling version v${VERSION} images..."
     docker-compose pull
     status=0
