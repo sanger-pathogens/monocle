@@ -50,7 +50,7 @@ services:
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
   metadata-api:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata-api:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<VERSION>"
     expose:
       - "80"
     restart: unless-stopped
@@ -62,7 +62,7 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      - ./config.json:/app/config.json
+      - ./metadata-api.json:/app/config.json
       - ./my.cnf:/app/my.cnf
     environment:
       - ENABLE_SWAGGER_UI=false
