@@ -1,18 +1,47 @@
 import dash
-import dash_html_components as html
-from   dash.dependencies import Input, Output, State, ALL, MATCH
+import dash_html_components
+from   dash.dependencies            import Input, Output, State, ALL, MATCH
+import flask
+from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
 import MonocleDash.monocleclient
-import MonocleDash.components    as mc
+import MonocleDash.components as mc
 
-logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARN')
+logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='WARNING')
 
 data  = MonocleDash.monocleclient.MonocleData()
 
+# first create a Flask server
+server = flask.Flask(__name__)
+
+def download_parameter_error(message):
+   logging.error("Invalid request to /download: {}".format(message))
+   return "Download request was not valid.  {}".format(message), 400
+
+# first bit of path should match the `location` used for nginx proxy config
+@server.route('/download/<string:institution>/<string:category>/<string:status>')
+@ValidateParameters(download_parameter_error)
+def index(  institution:   str = Route(min_length=5),
+            category:      str = Route(pattern='^(sequencing)|(pipeline)$'),
+            status:        str = Route(pattern='^(successful)|(failed)$'),
+            ):
+   institution_data  = data.get_institutions()
+   institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
+   if not institution in institution_names:
+      return download_parameter_error("Parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
+   csv_response = flask.Response( data.get_metadata(institution,category,status) )
+   csv_response.headers['Content-Type']         = 'text/csv; charset=UTF-8' # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
+   csv_response.headers['Content-Disposition']  = 'attachment; filename="{}_{}_{}.csv"'.format("".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
+                                                                                               category,
+                                                                                               status)
+   return csv_response
+
+
+# create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
-app      = dash.Dash(__name__, url_base_pathname='/dashboard/')
-server   = app.server
+app   = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/')
+
 
 progress_graph_params      = {   'title'              : 'Project Progress',  
                                  'data'               : data.get_progress(),
@@ -39,7 +68,7 @@ institution_status_params  =  {  'app'                : app,
                                  'pipeline_callback_output_type'     : 'pipeline-failed-container',
                                  }
 
-app.layout = html.Div(
+app.layout = dash_html_components.Div(
                className='main_page_container',
                children =  mc.page_header( 'Juno' ) +
                            mc.sample_progress( progress_graph_params ) +

@@ -5,53 +5,41 @@ import urllib.parse
 import urllib.request
 import yaml
 
-# class DataSourceParamError(Exception):
-#    """ exception when data source methods are called with invalid parameter(s) """
-#    pass
+# run test metadata api server with:
+# 
+# IMAGE=gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:unstable
+# docker run -p 8080:80 -v`pwd`/dash/my.cnf:/app/my.cnf -v`pwd`/metadata/juno/config.json:/app/config.json --env ENABLE_SWAGGER_UI=true --rm ${IMAGE}
 
-class SequencingStatus:
-   """ provides access to pipeline status data """
+class MetadataDownload:
+   """ provides access to monocle metadata """
    
    def __init__(self, set_up=True):
       if set_up:
          self.set_up()
       
    def set_up(self):
-      self.mlwh_client = MLWH_Client()
-      
-   def get_sample(self, sample_id):
-      result = self.mlwh_client.find_by_id(sample_id)
-      logging.debug("{}.get_sample({}) result(s) = {}".format(__class__.__name__,sample_id,result))
-      # there should be one sample only
-      return result
+      self.dl_client = Monocle_Download_Client()
+            
+   def get_metadata(self, lane_id_list):
+      logging.debug("{}.request_metadata() called with {}".format(__class__.__name__,lane_id_list))
+      results_list = self.dl_client.metadata(lane_id_list)
+      assert ( isinstance(results_list, list) ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
+      logging.debug("{}.request_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.request_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
+      return results_list
 
-   def get_multiple_samples(self, sample_ids):
-      """
-      Pass a list of sample IDs.
-      Returns a dict, keys are sample IDs, values are the sequencing status data as a dict
-      If a sample ID is passed that is not found by the API, it will be missing from the returned dict.
-      """
-      results_list = self.mlwh_client.find_by_ids(sample_ids)
-      logging.info("{}.get_multiple_samples() got {} result(s)".format(__class__.__name__,len(results_list)))
-      # turn results list into dict keys on the sample IDs
-      results_by_sample_id = {}
-      for this_result in results_list:
-         results_by_sample_id[ this_result.pop('id') ] = this_result
-      return results_by_sample_id
 
 class ProtocolError(Exception):
     pass
 
-class MLWH_Client:
+
+class Monocle_Download_Client:
    
    data_sources_config     = 'data_sources.yml'
-   data_source             = 'mlwh_rest_api'
+   data_source             = 'monocle_download_api'
    required_config_params  = [   'base_url',
                                  'swagger',
-                                 'findById',
-                                 'findById_key',
-                                 'findByIds',
-                                 'findByIds_key'
+                                 'download'
                                  ]
    def __init__(self, set_up=True):
       if set_up:
@@ -66,21 +54,13 @@ class MLWH_Client:
             logging.error("data source config file {} does not provide the required paramter {}.{}".format(self.data_sources_config,self.data_source,required_param))
             raise KeyError
       
-   def find_by_id(self, sample_id):
-      endpoint = self.config['findById']+sample_id
-      logging.debug("{}.find_by_id({}) using endpoint {}".format(__class__.__name__,sample_id,endpoint))
-      response = self.make_request(endpoint)
-      logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__,sample_id,response))
-      results = self.parse_response(response, required_keys = [self.config['findById_key']])
-      return results[self.config['findById_key']]
-   
-   def find_by_ids(self, sample_ids):
-      endpoint    = self.config['findByIds']
-      logging.debug("{}.find_by_ids() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
-      response = self.make_request( endpoint, post_data = sample_ids )
-      logging.debug("{}.find_by_ids([{}]) returned {}".format(__class__.__name__,','.join(sample_ids),response))
-      results = self.parse_response(response, required_keys = [self.config['findByIds_key']])
-      return results[self.config['findByIds_key']]
+   def metadata(self, lane_id_list):
+      endpoint = self.config['download']
+      logging.debug("{}.metadata() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
+      response = self.make_request( endpoint, post_data = lane_id_list )
+      logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
+      results = self.parse_response(response, required_keys = [self.config['metadata_key']])
+      return results[self.config['metadata_key']]
 
    def make_request(self, endpoint, post_data=None):
       request_url       = self.config['base_url']+endpoint
@@ -90,17 +70,17 @@ class MLWH_Client:
       if post_data is not None:
          assert ( isinstance(post_data, dict) or isinstance(post_data, list) ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__,post_data)
          request_data = str(json.dumps(post_data))
-         logging.debug("POST data for MLWH API: {}".format(request_data))
+         logging.debug("POST data for Monocle Download API: {}".format(request_data))
          request_data      = request_data.encode('utf-8')
          request_headers   = {'Content-type': 'application/json;charset=utf-8'}
       try:
-         logging.info("request to MLWH API: {}".format(request_url))
+         logging.info("request to Monocle Download: {}".format(request_url))
          http_request = urllib.request.Request(request_url, data = request_data, headers = request_headers)
          with urllib.request.urlopen( http_request ) as this_response:
             response_as_string = this_response.read().decode('utf-8')
-            logging.debug("response from MLWH API: {}".format(response_as_string))
+            logging.debug("response from Monocle Download: {}".format(response_as_string))
       except urllib.error.HTTPError:
-         logging.error("HTTP error during MLWH API request {}".format(request_url))
+         logging.error("HTTP error during Monocle Download request {}".format(request_url))
          raise
       return response_as_string
 

@@ -2,7 +2,9 @@ import dash_core_components   as dcc
 import dash_daq               as daq
 import dash_html_components   as html
 import plotly.express         as px
+from   markupsafe             import escape
 import logging
+import urllib.parse
 
 raquo = '\u00bb'
 
@@ -217,24 +219,17 @@ def samples_sequenced_table(this_institution, params):
    this_status = params['sequencing_status'][this_institution]
    if not isinstance(this_status, dict):
       raise TypeError( "params.status.{} is {}, should be a dict".format(k,type(this_status)) )
-   for required_int in ['received', 'completed']:
+   for required_int in ['received', 'completed', 'success', 'failed']:
       if not isinstance(this_status[required_int], int):
          raise TypeError( "params.status.{}.{} is {}, should be a int".format(this_institution,required_int,type(this_status[required_int])) )
-   if not isinstance(this_status['failed'], list):
-      raise TypeError( "params.status.{}.failed is {}, should be a list".format(this_institution,type(this_status['failed'])) )
+   if not isinstance(this_status['fail_messages'], list):
+      raise TypeError( "params.status.{}.fail_messages is {}, should be a list".format(this_institution,type(this_status['fail_messages'])) )
    # some elements are not displayed if there are no related samples
-   if 1 == len(this_status['failed']):
-      logging.warn(  "{}: completed = {}, failed = {}, success = {}".format(  this_institution,
-                                                                              this_status['completed'],
-                                                                              this_status['failed'],
-                                                                              (this_status['completed']-len(this_status['failed']))
-                                                                              )
-                     )
-   if not this_status['completed']-len(this_status['failed']) > 0:
+   if not this_status['success'] > 0:
       display_success_download = 'none'
    else:
       display_success_download = 'table-cell'
-   if not len(this_status['failed']) > 0:
+   if not this_status['failed'] > 0:
       toggle_disabled         = True;
       display_failed_download = 'none';
    else:
@@ -269,10 +264,12 @@ def samples_sequenced_table(this_institution, params):
                                           html.Tr([
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
-                                             html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} successfully sequenced samples".format(len(this_status['failed']))
+                                             html.Td( this_status['success'], className='numeric' ),
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} successfully sequenced samples".format(this_status['success']),
+                                                                        params['institutions'][this_institution]['db_key'],
+                                                                        'sequencing',
+                                                                        'successful',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_success_download},
@@ -294,10 +291,12 @@ def samples_sequenced_table(this_institution, params):
                                                                ),
                                                       className = 'text_column'
                                                    ),
-                                             html.Td( len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} failed samples".format(len(this_status['failed']))
+                                             html.Td( this_status['failed'], className='numeric' ),
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} failed samples".format(this_status['failed']),
+                                                                        params['institutions'][this_institution]['db_key'],
+                                                                        'sequencing',
+                                                                        'failed',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_failed_download},
@@ -326,20 +325,22 @@ def pipeline_by_institution(this_institution, params):
    return elements
 
 def pipeline_table(this_institution, params):
-   this_status           = params['pipeline_status'][this_institution]
+   this_status    = params['pipeline_status'][this_institution]
    if not isinstance(this_status, dict):
       raise TypeError( "params.pipeline_status is {}, should be a dict".format(k,type(this_status)) )
-   for required_int in ['sequenced', 'running', 'completed']:
+   for required_int in ['running', 'completed', 'success', 'failed']:
       if not isinstance(this_status[required_int], int):
          raise TypeError( "params.pipeline_status.{}.{} is {}, should be a int".format(this_institution,required_int,type(this_status[required_int])) )
-   if not isinstance(this_status['failed'], list):
-      raise TypeError( "params.pipeline_status.{}.failed is {}, should be a list".format(this_institution,type(this_status['failed'])) )
+   if not isinstance(this_status['fail_messages'], list):
+      raise TypeError( "params.pipeline_status.{}.fail_messages is {}, should be a list".format(this_institution,type(this_status['fail_messages'])) )
+   # we need to know the number of successfully sequenced lanes, as that's the number we expect to go through the pipelines
+   num_seq_success = params['sequencing_status'][this_institution]['success']
    # some elements are not displayed/disabled if there are no related samples 
-   if not this_status['completed']-len(this_status['failed']) > 0:
+   if not this_status['success'] > 0:
       display_success_download = 'none';
    else:
       display_success_download = 'table-cell';
-   if not len(this_status['failed']) > 0:
+   if not this_status['failed'] > 0:
       toggle_disabled         = True;
       display_failed_download = 'none';
    else:
@@ -353,17 +354,17 @@ def pipeline_table(this_institution, params):
                                              html.Td(
                                                 colSpan     = 4,
                                                 className   = 'status_desc',
-                                                children    = ['Of the {} samples successfully sequenced:'.format(this_status['sequenced'])]
+                                                children    = ['Of the {} samples successfully sequenced:'.format(num_seq_success)]
                                                 ),
                                              html.Td( 
                                                 rowSpan     = 5,
                                                 className   = 'per_cent_gauge',
-                                                children    = progress_gauge(this_status['completed'], this_status['sequenced']),
+                                                children    = progress_gauge(this_status['completed'], num_seq_success),
                                                 ),
                                              ]),
                                           html.Tr([
                                              html.Td( 'Waiting', colSpan  = 2, className = 'text_column' ),
-                                             html.Td( this_status['sequenced']-(this_status['running']+this_status['completed']), className='numeric' ),
+                                             html.Td( num_seq_success-(this_status['running']+this_status['completed']), className='numeric' ),
                                              html.Td(), # no download currently
                                              ]),
                                           html.Tr([
@@ -379,10 +380,12 @@ def pipeline_table(this_institution, params):
                                           html.Tr([
                                              html.Td( ),
                                              html.Td( 'Success', className = 'text_column' ),
-                                             html.Td( this_status['completed']-len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} samples successfully processed through the pipeline".format(len(this_status['failed']))
+                                             html.Td( this_status['success'], className='numeric' ),
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} samples successfully processed through the pipeline".format(this_status['success']),
+                                                                        params['institutions'][this_institution]['db_key'],
+                                                                        'pipeline',
+                                                                        'successful',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_success_download},
@@ -404,10 +407,12 @@ def pipeline_table(this_institution, params):
                                                                ),
                                                       className = 'text_column'
                                                       ),
-                                             html.Td( len(this_status['failed']), className='numeric' ),
-                                             html.Td( download_button(  '#',
-                                                                        params['app'].get_asset_url("download-icon.png"),
-                                                                        "download {} failed samples".format(len(this_status['failed']))
+                                             html.Td( this_status['failed'], className='numeric' ),
+                                             html.Td( download_button(  params['app'],
+                                                                        "download {} failed samples".format(this_status['failed']),
+                                                                        params['institutions'][this_institution]['db_key'],
+                                                                        'pipeline',
+                                                                        'failed',
                                                                         ),
                                                       className   = 'download',
                                                       style       = {'display': display_failed_download},
@@ -437,7 +442,7 @@ def failed_samples_container(this_institution,params,stage,show):
    if not 'sequencing' == stage and not 'pipeline' == stage:
       raise ValueError( "stage should be  'sequencing' or 'pipeline', not n'{}'".format(stage) )
    key = '{}_status'.format(stage)
-   failed_samples = params[key][this_institution]['failed']
+   failed_samples = params[key][this_institution]['fail_messages']
    if not isinstance(failed_samples, list):
       raise TypeError( "params.{}.{}.failed is {}, should be a list".format(key,this_institution,type(failed_samples)) )
    if False == show:
@@ -449,7 +454,7 @@ def failed_samples_container(this_institution,params,stage,show):
                      id          =  '{}-{}-failed-table'.format(this_institution,stage),
                      style       =  {'display': display},
                      className   =  'failed_samples_by_institution_container',
-                     children    =  #failed_samples_download(failed_samples, params['app'].get_asset_url("download-icon.png")) +
+                     children    =  #failed_samples_download(failed_samples, params['app']) +
                                     failed_samples_table('{} Failures'.format(stage.capitalize()), failed_samples)
                      )
                   ]
@@ -528,11 +533,21 @@ def progress_gauge(current,total):
                   ]
    return elements
 
-def download_button(download_url, icon_url, alt_text):
+def download_button(app, alt_text, institution, category, status):
+   icon_url          = app.get_asset_url("download-icon.png")
+   download_url      = '/download/{}/{}/{}'.format(urllib.parse.quote(institution),
+                                                   urllib.parse.quote(category),
+                                                   urllib.parse.quote(status),
+                                                   )
+   download_target   = '{}_{}_{}'.format( escape(institution),
+                                          escape(category),
+                                          escape(status)
+                                          )
    logging.debug("download button: download URL = {}, icon URL = {}, alt text = '{}'".format(download_url, icon_url, alt_text))
    elements = [   
                   html.A(  className   = 'download_link',
                            href        = download_url,
+                           target      = download_target,
                            children    = [html.Img(src   = icon_url,
                                                    alt   = alt_text,
                                                    title = alt_text,

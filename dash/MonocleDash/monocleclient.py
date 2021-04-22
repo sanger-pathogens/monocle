@@ -3,6 +3,7 @@ from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
 import DataSources.monocledb
+import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 
@@ -27,11 +28,12 @@ class MonocleData:
 
    def __init__(self):
       self.monocledb                   = DataSources.monocledb.MonocleDB()
+      self.metadata_source             = DataSources.metadata_download.MetadataDownload()
+      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
+      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institutions_data           = None
       self.samples_data                = None
-      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
       self.sequencing_status_data      = None
-      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
 
    def get_progress(self):
@@ -232,12 +234,14 @@ class MonocleData:
       
       {  institution_1: {  'received':    <int>,
                            'completed':   <int>,
-                           'failed':      [  {  'lane':  lane_id_1,
-                                                'stage': 'name of QC stage where issues was detected',
-                                                'issue': 'string describing the issue'
-                                                },
-                                             ...
-                                             ],
+                           'success':     <int>,
+                           'failed':      <int>,
+                           'fail_messages':  [  {  'lane':  lane_id_1,
+                                                   'stage': 'name of QC stage where issues was detected',
+                                                   'issue': 'string describing the issue'
+                                                   },
+                                                ...
+                                                ],
                            },
          institution_2...
          }
@@ -251,48 +255,52 @@ class MonocleData:
          sample_id_list = sequencing_status_data[this_institution].keys()
          status[this_institution] = {  'received'  : len(sample_id_list),
                                        'completed' : 0,
-                                       'failed'    : [],
+                                       'success'   : 0,
+                                       'failed'    : 0,
+                                       'fail_messages' : [],
                                        }
-         if 0 < len(sample_id_list) and this_institution in sequencing_status_data:
+         if 0 < len(sample_id_list):
             this_sequencing_status_data = sequencing_status_data[this_institution]
             for this_sample_id in sample_id_list:
-               # ignore any samples that have no Sanger sample ID
-               if this_sample_id is None:
-                  logging.warning("a sample from {} has no Sanger sample ID: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]['name']))
-               # also ignore samples not in the MLWH
-               elif this_sample_id not in this_sequencing_status_data:
-                  logging.warning("sample {} ({}) was not found in MLWH: skipped in sequencing status".format(this_sample_id,institutions_data[this_institution]['name']))
-               else:
-                  this_sample_lanes = this_sequencing_status_data[this_sample_id]['lanes']
-                  # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
-                  # i.e. only samples with lanes need to be looked at by the lines below
-                  if len(this_sample_lanes) > 0:
-                     for this_lane in this_sample_lanes:
-                        if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
-                           status[this_institution]['completed'] += 1
-                           for this_flag in self.sequencing_flags.keys():
-                              if not 1 == this_lane[this_flag]:
-                                 status[this_institution]['failed'].append(
-                                    {'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
-                                     'stage': self.sequencing_flags[this_flag],
-                                     'issue': "lane {} failed".format(this_lane),
-                                     },
-                                 )
+               # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
+               # i.e. only samples with lanes need to be looked at by the lines below
+               for this_lane in this_sequencing_status_data[this_sample_id]['lanes']:
+                  if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
+                     # lane has completed, whether success or failure
+                     status[this_institution]['completed'] += 1
+                     # look for any failures; note one lane could have more than one failure
+                     this_lane_failed = False
+                     for this_flag in self.sequencing_flags.keys():
+                        if not 1 == this_lane[this_flag]:
+                           this_lane_failed = True
+                           # record message for this failure
+                           status[this_institution]['fail_messages'].append(
+                              {  'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
+                                 'stage': self.sequencing_flags[this_flag],
+                                 'issue': 'sorry, failure mesages cannot currently be seen here',
+                                 },
+                              )
+                     # count lane either as a success or failure
+                     if this_lane_failed:
+                        status[this_institution]['failed'] += 1
+                     else:
+                        status[this_institution]['success'] += 1
       return status
-   
+
    def pipeline_status_summary(self):
       """
       Returns dict with summary of the pipeline outcomes for each institution.
 
-      {  institution_1: {  'sequenced':   <int>,
-                           'running':     <int>,
+      {  institution_1: {  'running':     <int>,
+                           'success':     <int>
+                           'failed':      <int>,
                            'completed':   <int>,
-                           'failed':      [  {  'lane':  lane_id_1,
-                                                'stage': 'name of QC stage where issues was detected',
-                                                'issue': 'string describing the issue'
-                                                },
-                                             ...
-                                             ],
+                           'fail_messages':  [  {  'lane':  lane_id_1,
+                                                   'stage': 'name of QC stage where issues was detected',
+                                                   'issue': 'string describing the issue'
+                                                   },
+                                                ...
+                                                ],
                            },
          institution_2...
          }
@@ -308,34 +316,112 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in institutions_data.keys():
-         status[this_institution] = {  'sequenced' : 0,
-                                       'running'   : 0,
+         status[this_institution] = {  'running'   : 0,
                                        'completed' : 0,
-                                       'failed'    : [],
+                                       'success'   : 0,
+                                       'failed'    : 0,
+                                       'fail_messages' : [],
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
-         if 0 < len(sample_id_list):
-            for this_sample_id in sample_id_list:
-               this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
-               for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
-                  this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
-                  status[this_institution]['sequenced'] += 1
-                  if this_pipeline_status['FAILED']:
-                     for this_stage in self.pipeline_status.pipeline_stage_fields:
-                        if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
-                           status[this_institution]['failed'].append({  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
-                                                                        'stage'  : this_stage,
-                                                                        # currently have no way to retrieve a failure report
-                                                                        'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                                                                        },           
-                                                                     )
-                  else:
-                     if this_pipeline_status['COMPLETED']:
-                        status[this_institution]['completed'] += 1
-                     else:
-                        # not completed, but no failures reported
-                        status[this_institution]['running'] += 1
+         for this_sample_id in sample_id_list:
+            this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
+            for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
+               this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
+               # if the lane failed, increment failed and completed counter
+               if this_pipeline_status['FAILED']:
+                  status[this_institution]['failed'] += 1
+                  status[this_institution]['completed'] += 1
+                  # check each stage of the pipeline...
+                  for this_stage in self.pipeline_status.pipeline_stage_fields:
+                     # ...and if the stage failed...
+                     if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                        # ...record a message for the failed stage
+                        status[this_institution]['fail_messages'].append(  
+                           {  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
+                              'stage'  : this_stage,
+                              # currently have no way to retrieve a failure report
+                              'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                              },           
+                           )
+               # if not failed, but succeded, increment success and completed counter
+               elif this_pipeline_status['SUCCESS']:
+                  status[this_institution]['success'] += 1
+                  status[this_institution]['completed'] += 1
+               # if neither succeeded nor failed, must still be running
+               else:
+                  status[this_institution]['running'] += 1
       return status
+
+   def get_metadata(self,institution,category,status):
+      """
+      Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
+      this identifies the lanes for which metadata are required.
+      
+      Returns metadata as CSV
+      """
+      sequencing_status_data = self.get_sequencing_status()
+      institution_data_key = self.institution_db_key_to_dict[institution]
+      logging.debug("getting metadata: institution db key {} maps to dict key {}".format(institution,institution_data_key))
+         
+      # get list of lane IDs for this combo of institution/category/status
+      lane_id_list = []
+      for this_sample_id in sequencing_status_data[institution_data_key].keys():
+         for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
+            
+            if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
+               # lane completed sequencing, though possibly failed
+               this_lane_seq_fail = False
+               for this_flag in self.sequencing_flags.keys():
+                  if not 1 == this_lane[this_flag]:
+                     this_lane_seq_fail = True
+                     break
+               
+               want_this_lane = False
+               # we're looking for lanes that completed sequencing...
+               if 'sequencing' == category:
+                  # ...and were successful; so only want this lane if it did *not* fail
+                  if 'successful' == status and not this_lane_seq_fail:
+                     want_this_lane = True
+                  # ...and failed; so only want this lane if it is a failure
+                  elif 'failed' == status and this_lane_seq_fail:
+                     want_this_lane = True
+               # we're looking for lanes that completed the pipelines...
+               elif 'pipeline' == category:
+                  ## ...(which means the lane must previously have been sequenced OK)...
+                  if not this_lane_seq_fail:
+                     this_pipeline_status = self.pipeline_status.lane_status(this_lane['id'])
+                     # ...and were successful; so only want this lane if it completed and did *not* fail
+                     if 'successful' == status and this_pipeline_status['SUCCESS']:
+                        want_this_lane = True
+                     # ...and failed; so only want this lane if it is a failure
+                     elif 'failed' == status and this_pipeline_status['FAILED']:
+                        want_this_lane = True
+               if want_this_lane:
+                  lane_id_list.append( ':'.join([this_sample_id,this_lane['id']]) )
+      
+      logging.info("Found {} lanes from {} with {} status {}".format(len(lane_id_list),institution,category,status))
+      # create list of CSV rows; each list item will be a single string of CSV values
+      csv = []
+      headings = []
+      reading_the_first_row = True
+      for this_row in self.metadata_source.get_metadata(lane_id_list):
+         this_row_csv_strings = []
+         headings_csv_strings = []
+         # sort columns according to value of dict item `order`
+         for this_column in sorted(this_row, key=lambda col: (this_row[col]['order'])):
+            # get the column headings, if this is the first row being read
+            if reading_the_first_row:
+               headings_csv_strings.append( '"{}"'.format(this_row[this_column]['name']) )
+            this_row_csv_strings.append( '"{}"'.format(this_row[this_column]['value']) )
+         # add headings to CSV if this is the first row
+         if reading_the_first_row:
+            csv.append( ','.join(headings_csv_strings) )
+            reading_the_first_row = False
+         csv.append( ','.join(this_row_csv_strings) )
+      # CSV as one string
+      csv_giant_string = "\n".join(csv)
+      return csv_giant_string
+
 
    def institution_name_to_dict_key(self, name, existing_keys):
       """
