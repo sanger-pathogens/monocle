@@ -39,7 +39,8 @@ class Monocle_Download_Client:
    data_source             = 'monocle_download_api'
    required_config_params  = [   'base_url',
                                  'swagger',
-                                 'download'
+                                 'download',
+                                 'metadata_key'
                                  ]
    def __init__(self, set_up=True):
       if set_up:
