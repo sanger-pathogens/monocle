@@ -14,12 +14,12 @@ raquo = '\u00bb'
 # 
 
 
-def page_header(text, logo_url=None, logo_link='/', header_links=None):
+def page_header(text, logo_url=None, logo_text='', logo_link='/', header_links=None):
    logo_html = ''
    if logo_url is not None:
       logo_img = html.Img( src         = logo_url,
-                           alt         = 'project logo',
-                           title       = 'project logo',
+                           alt         = logo_text,
+                           title       = logo_text,
                            height      = '67px',
                            )
       logo_html = html.Div(className   = 'header_logo_container',
@@ -40,8 +40,6 @@ def page_header(text, logo_url=None, logo_link='/', header_links=None):
                                              for k in header_links.keys()
                                              ],
                               )
-
-
    elements = [
       html.Div(className   = 'page_header',
                children    = [logo_html,
@@ -59,11 +57,56 @@ def page_header(text, logo_url=None, logo_link='/', header_links=None):
    return elements
 
 
-def page_footer(text):
+def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/', right_text=None):
+   contacts_html = ''
+   if contacts is not None:
+      if not isinstance(contacts, dict):
+         raise TypeError( "kwarg contacts is {}, should be a dict".format(type(contacts)) )
+      contacts_children =  [  html.Div(className = 'contacts_text',
+                                       children  = ['Contacts: '],
+                                       ),
+                              ]
+      for this_contact in contacts.keys():
+         contacts_children.append(  html.A(  className   = 'footer_link',
+                                             href        = 'mailto:{}'.format(contacts[this_contact]),
+                                             children    = [this_contact],
+                                             )
+                                    )
+      contacts_html = html.Div(  className   = 'footer_contacts_container',
+                                 children    = contacts_children,
+                                 )
+   logo_html = ''
+   if logo_url is not None:
+      logo_img = html.Img( className   = 'footer_logo',
+                           src         = logo_url,
+                           alt         = logo_text,
+                           title       = logo_text,
+                           )
+      logo_html = html.Div(className   = 'footer_logo_container',
+                           children    = [html.A(  href     = logo_link,
+                                                   children = [logo_img],
+                                                   ),
+                                          ],
+                           )
+   right_text_html = ''
+   if right_text is not None:
+      right_text_html = html.Div(className   = 'footer_right_text_container',
+                                 children    = [html.Span(  className   = 'footer_right_text',
+                                                            children    = [right_text],
+                                                            )
+                                                ]
+                                 )
    elements = [
       html.Div(
-         className   = 'page_footer',
-         children    = [text],
+         className   = 'footer_outer_container',
+         children    = [html.Div(
+                           className   = 'page_footer',
+                           children    = [logo_html,
+                                          right_text_html,
+                                          contacts_html
+                                          ],
+                           )
+                        ]
          )
       ]
    return elements
