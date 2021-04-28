@@ -15,6 +15,7 @@ th:not(.CalendarDay), td:not(.CalendarDay) {
 h1 {
    font-size:     400%;
    font-variant:  small-caps;
+   font-weight:   550;
 }
 
 h2 {
@@ -56,9 +57,32 @@ div.main_page_container {
 }
 
 .page_header {
-   padding:       1ex;
-   background:    dimgray;
-   color:         ghostwhite;
+   padding:       1ex 1ex 0.5ex 1ex;
+   background:    #6868BE;
+   /* color:         #fef4ee; */
+   color:         white;
+   text-align:    center;
+}
+
+a.title_link, a.header_link {
+   color:         inherit;
+   text-decoration: none;
+}
+
+a.header_link {
+   margin-right:  1.6ex;
+}
+
+.header_logo_container {
+   position:      absolute;
+   top:           3ex;
+   left:          3ex;
+}
+
+.header_links_container {
+   position:      absolute;
+   top:           3ex;
+   right:         3ex;
 }
 
 .page_footer {

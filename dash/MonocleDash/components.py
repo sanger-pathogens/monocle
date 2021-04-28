@@ -14,12 +14,47 @@ raquo = '\u00bb'
 # 
 
 
-def page_header(text):
+def page_header(text, logo_url=None, logo_link='/', header_links=None):
+   logo_html = ''
+   if logo_url is not None:
+      logo_img = html.Img( src         = logo_url,
+                           alt         = 'project logo',
+                           title       = 'project logo',
+                           height      = '67px',
+                           )
+      logo_html = html.Div(className   = 'header_logo_container',
+                           children    = [html.A(  href     = logo_link,
+                                                   children = [logo_img],
+                                                   ),
+                                          ],
+                           )
+   links_html = ''
+   if header_links is not None:
+      if not isinstance(header_links, dict):
+         raise TypeError( "kwarg header_links is {}, should be a dict".format(type(header_links)) )
+      links_html = html.Div(  className   = 'header_links_container',
+                              children    = [html.A(  className   = 'header_link',
+                                                      href        = header_links[k],
+                                                      children    = [k],
+                                                      )
+                                             for k in header_links.keys()
+                                             ],
+                              )
+
+
    elements = [
-      html.H1(
-         className   = 'page_header',
-         children    = [text],
-         )
+      html.Div(className   = 'page_header',
+               children    = [logo_html,
+                              links_html,
+                              html.H1( html.A(  className   = 'title_link',
+                                                href        = '/',
+                                                children    = text,
+                                                ),
+                                       ),
+                              ],
+               ),
+      html.Br( className   = 'clear_float'
+               ),
       ]
    return elements
 
