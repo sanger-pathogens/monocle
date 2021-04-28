@@ -60,7 +60,7 @@ def page_header(text, logo_url=None, logo_text='', logo_link='/', header_links=N
    return elements
 
 
-def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/', right_text=None):
+def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/'):
    contacts_html = ''
    if contacts is not None:
       if not isinstance(contacts, dict):
@@ -91,21 +91,12 @@ def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/', right
                                                    ),
                                           ],
                            )
-   right_text_html = ''
-   if right_text is not None:
-      right_text_html = html.Div(className   = 'footer_right_text_container',
-                                 children    = [html.Span(  className   = 'footer_right_text',
-                                                            children    = [right_text],
-                                                            )
-                                                ]
-                                 )
    elements = [
       html.Div(
          className   = 'footer_outer_container',
          children    = [html.Div(
                            className   = 'page_footer',
                            children    = [logo_html,
-                                          right_text_html,
                                           contacts_html
                                           ],
                            )

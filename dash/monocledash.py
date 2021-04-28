@@ -88,14 +88,12 @@ app.layout = dash_html_components.Div(
                            mc.institution_status(  institution_select_params['initially_selected'],
                                                    institution_status_params
                                                    ) +
-                           mc.page_footer(         contacts   = { 'Monocle Help'    : 'monocle-help@sanger.ac.uk',
-                                                                  'Stephen Bentley' : 'sdb@sanger.ac.uk',
-                                                                  },
-                                                   logo_url    = app.get_asset_url('SangerLogo.9423243b.png'),
+                           mc.page_footer(         logo_url    = app.get_asset_url('SangerLogo.9423243b.png'),
                                                    logo_link   = 'https://www.sanger.ac.uk/',
                                                    logo_text   = 'Wellcome Sanger Institute',
-                                                   # can add version here, if desired:
-                                                   #right_text  = 'Version x.y.z',
+                                                   contacts   = { 'Monocle Help'    : 'monocle-help@sanger.ac.uk',
+                                                                  'Stephen Bentley' : 'sdb@sanger.ac.uk',
+                                                                  },
                                                    )
                )
 

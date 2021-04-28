@@ -108,7 +108,9 @@ img.header_logo {
 }
 
 .footer_contacts_container {
-   display:       inline-block;
+   position:      absolute;
+   bottom:        1.6ex;
+   right:         1ex;
 }
 
 .contacts_text {
@@ -131,16 +133,6 @@ a.footer_link {
 img.footer_logo {
    height:        50px;
    margin-left:   1.6ex;
-}
-
-.footer_right_text_container {
-   position:      absolute;
-   bottom:        2.6ex;
-   right:         1ex;
-}
-
-.footer_right_text {
-   margin-right:  1.6ex;
 }
 
 div.sample_progress_container {
