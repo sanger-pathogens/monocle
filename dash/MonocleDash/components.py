@@ -17,10 +17,10 @@ raquo = '\u00bb'
 def page_header(text, logo_url=None, logo_text='', logo_link='/', header_links=None):
    logo_html = ''
    if logo_url is not None:
-      logo_img = html.Img( src         = logo_url,
+      logo_img = html.Img( className   = 'header_logo',
+                           src         = logo_url,
                            alt         = logo_text,
                            title       = logo_text,
-                           height      = '67px',
                            )
       logo_html = html.Div(className   = 'header_logo_container',
                            children    = [html.A(  href     = logo_link,
@@ -41,18 +41,21 @@ def page_header(text, logo_url=None, logo_text='', logo_link='/', header_links=N
                                              ],
                               )
    elements = [
-      html.Div(className   = 'page_header',
-               children    = [logo_html,
-                              links_html,
-                              html.H1( html.A(  className   = 'title_link',
-                                                href        = '/',
-                                                children    = text,
-                                                ),
-                                       ),
-                              ],
-               ),
-      html.Br( className   = 'clear_float'
-               ),
+      html.Div(
+         className   = 'footer_outer_container',
+         children    = [html.Div(
+                           className   = 'page_header',
+                           children    = [logo_html,
+                                          links_html,
+                                          html.H1( html.A(  className   = 'title_link',
+                                                            href        = '/',
+                                                            children    = text,
+                                                            ),
+                                                   ),
+                                          ],
+                           ),
+                        ],
+         ),
       ]
    return elements
 

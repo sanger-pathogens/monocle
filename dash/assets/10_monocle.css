@@ -56,6 +56,15 @@ div.main_page_container {
    color:         dimgray;
 }
 
+/* provides a reference for the absolute positioning within .page_header and .page_footer */
+div.header_outer_container, div.footer_outer_container {
+   position:      relative;
+   display:       inline-block;
+   width:         100%;
+   padding:       0px;
+   margin:        0px;
+}
+
 .page_header {
    padding:       1ex 1ex 0.5ex 1ex;
    background:    #6868BE;
@@ -75,23 +84,18 @@ a.header_link {
 
 .header_logo_container {
    position:      absolute;
-   top:           3ex;
-   left:          3ex;
+   top:           2ex;
+   left:          1ex;
+}
+
+img.header_logo {
+   height:        67px;
 }
 
 .header_links_container {
    position:      absolute;
-   top:           3ex;
-   right:         3ex;
-}
-
-/* provides a reference for the absolute positioning within .page_footer */
-div.footer_outer_container {
-   position:      relative;
-   display:       inline-block;
-   width:         100%;
-   padding:       0px;
-   margin:        0px;
+   top:           2ex;
+   right:         1ex;
 }
 
 .page_footer {
