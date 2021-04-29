@@ -70,11 +70,31 @@ institution_status_params  =  {  'app'                : app,
 
 app.layout = dash_html_components.Div(
                className='main_page_container',
-               children =  mc.page_header( 'Juno' ) +
-                           mc.sample_progress( progress_graph_params ) +
-                           mc.institution_choice( institution_select_params  ) +
-                           mc.institution_status( institution_select_params['initially_selected'], institution_status_params  ) +
-                           mc.page_footer( 'page footer placeholder'  )
+               children =  mc.page_header(         'Monocle',
+                                                   logo_url       = app.get_asset_url('JunoLogo.svg'),
+                                                   logo_link      = 'https://www.gbsgen.net/',
+                                                   logo_text      = 'Juno Project',
+                                                   header_links   = {'About'     : 'https://www.gbsgen.net/#about',
+                                                                     'Team'      : 'https://www.gbsgen.net/#team',
+                                                                     'Partners'  : 'https://www.gbsgen.net/#partners',
+                                                                     'News'      : 'https://www.gbsgen.net/#twitterFeed',
+                                                                     'Funders'   : 'https://www.gbsgen.net/#funders',
+                                                                     }
+                                                   ) +
+                           mc.sample_progress(     progress_graph_params
+                                                   ) +
+                           mc.institution_choice(  institution_select_params
+                                                   ) +
+                           mc.institution_status(  institution_select_params['initially_selected'],
+                                                   institution_status_params
+                                                   ) +
+                           mc.page_footer(         logo_url    = app.get_asset_url('SangerLogo.9423243b.png'),
+                                                   logo_link   = 'https://www.sanger.ac.uk/',
+                                                   logo_text   = 'Wellcome Sanger Institute',
+                                                   contacts   = { 'Monocle Help'    : 'monocle-help@sanger.ac.uk',
+                                                                  'Stephen Bentley' : 'sdb@sanger.ac.uk',
+                                                                  },
+                                                   )
                )
 
 
