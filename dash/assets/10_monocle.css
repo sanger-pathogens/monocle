@@ -102,7 +102,7 @@ img.header_logo {
    padding:       1ex;
    margin-top:    1em;
    /* height must accomodate the height of img.footer_logo */
-   height:        60px;
+   min-height:    60px;
    background:    #6868BE;
    color:         white;
 }
