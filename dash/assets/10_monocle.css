@@ -65,11 +65,18 @@ div.header_outer_container, div.footer_outer_container {
    margin:        0px;
 }
 
-.page_header {
-   padding:       1ex 1ex 0.5ex 1ex;
-   background:    #6868BE;
+.page_header, .page_footer {
+   /* this is the monocle/juno header/footer color: */
+   /*background:    #6868BE;*/
+   /* this is the monocle/juno background (darker shade of purple) color: */
+   background:    rgb(72, 72, 133);
+   /* this is the juno logo colour: */
    /* color:         #fef4ee; */
    color:         white;
+}
+
+.page_header {
+   padding:       1ex 1ex 0.5ex 1ex;
    text-align:    center;
 }
 
@@ -103,8 +110,6 @@ img.header_logo {
    margin-top:    1em;
    /* height must accomodate the height of img.footer_logo */
    min-height:    60px;
-   background:    #6868BE;
-   color:         white;
 }
 
 .footer_contacts_container {
