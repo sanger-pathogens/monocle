@@ -5,8 +5,29 @@
 # Running with '-m yes' will run the release django database migrations.
 
 usage() {
-  echo "Usage: $0 -e|--env <environment - prod|dev> -v|--version <version e.g. 0.1.1>" \
-    "-m|--migrate-db <yes|no> -u|--user <remote user id> -h|--host <deployment host address>"
+  echo "Usage: $0 arguments [options]
+       
+       Mandatory arguments:
+       -e --env         deployed environment: \`prod\` or \`dev\` 
+       -v --version     version number without \`v\` prefix
+       -m --migrate_db  run db migrations
+       -u --user        user id on deployment host
+       -h --host        deployment host name or IP address
+       
+       Options:
+       -d --domain      service domain name; overrides the default based on
+                        the deployed environment (set by \`--env\`)
+       -b --branch      deploy from this branch instead of git tag derived
+                        from version number (set by \`--version\`)
+       -t --tag         docker images tag; overrides tag derived from version
+                        number (set by \`--version\`)
+       (There is no option to set the public domain for the service, as
+       that feature is reserved for the production environment.)
+  
+       Examples:
+       deploy to pathogens_dev instance:
+          $0 -e dev -v 0.1.45 -m no -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk
+"
   exit 1
 }
 
@@ -15,6 +36,9 @@ VERSION=
 REMOTE_USER=
 REMOTE_HOST=
 APPLY_MIGRATIONS=
+
+ECHO_EM=$(tput bold)
+ECHO_RESET=$(tput sgr0)
 
 # read command line arguments
 while [[ $# -gt 0 ]]; do
@@ -60,6 +84,30 @@ while [[ $# -gt 0 ]]; do
       APPLY_MIGRATIONS="${key#*=}"
       ;;
 
+      -d|--domain)
+      shift
+      OPT_DOMAIN="$1"
+      ;;
+      -d=*|--domain=*)
+      OPT_DOMAIN="${key#*=}"
+      ;;
+
+      -b|--branch)
+      shift
+      OPT_BRANCH="$1"
+      ;;
+      -b=*|--branch=*)
+      OPT_BRANCH="${key#*=}"
+      ;;
+
+      -t|--tag)
+      shift
+      OPT_TAG="$1"
+      ;;
+      -t=*|--tag=*)
+      OPT_TAG="${key#*=}"
+      ;;
+
       *)
       echo "Unknown option '$key'"
       usage
@@ -87,12 +135,28 @@ else
     usage
 fi
 
-# pull the required tag
+if [[ ! -z "$OPT_DOMAIN" ]]; then
+   echo "${ECHO_EM}Service will use domain ${OPT_DOMAIN} in place of ${DOMAIN}${ECHO_RESET}"
+   DOMAIN="$OPT_DOMAIN"
+fi
+
+# pull the required git tag, or branch
 deploy_dir=$(mktemp -d -t monocle-XXXXXXXXXX)
 git clone https://github.com/sanger-pathogens/monocle.git ${deploy_dir}
 cd ${deploy_dir}
 trap "{ if [[ -d ${deploy_dir} ]]; then rm -rf ${deploy_dir}; fi }" EXIT
-git checkout tags/v${VERSION}
+if [[ ! -z "$OPT_BRANCH" ]]; then
+   echo "${ECHO_EM}Checking out ${OPT_BRANCH} in place of tags/v${VERSION}${ECHO_RESET}"
+   git checkout --track "origin/$OPT_BRANCH"
+else
+   git checkout "tags/v${VERSION}"
+fi
+
+docker_tag="v${VERSION}"
+if [[ ! -z "$OPT_TAG" ]]; then
+   echo "${ECHO_EM}Using docker images with tag ${$OPT_TAG} in place of ${docker_tag}${ECHO_RESET}"
+   docker_tag="$OPT_TAG"
+fi
 
 # Validate input args
 source "${deploy_dir}/utils/common.sh"
@@ -122,7 +186,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Stopping existing containers..."
     docker-compose down
     echo "Setting configuration in docker-compose.yml..."
-    sed -i -e "s/<VERSION>/v${VERSION}/g" docker-compose.yml
+    sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<HOSTNAME_PUBLIC>/${PUBLIC_DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
@@ -132,7 +196,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
     chmod 644 settings.js nginx.conf metadata-api.json
-    echo "Pulling version v${VERSION} images..."
+    echo "Pulling ${docker_tag} docker images..."
     docker-compose pull
     status=0
     if [[ "${APPLY_MIGRATIONS}" == "yes" ]]
