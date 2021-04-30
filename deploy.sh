@@ -9,13 +9,15 @@ usage() {
        
        Mandatory arguments:
        -e --env         deployed environment: \`prod\` or \`dev\` 
-       -v --version     version number without \`v\` prefix
        -m --migrate_db  run django db migrations: \`yes\` or \`no\`
                         (only do this if ORM has been changed)
        -u --user        user id on deployment host
        -h --host        deployment host name or IP address
        
        Options:
+       -v --version     version number without \`v\` prefix
+                        IMPORTANT: if this is not provided, then both
+                        \`--branch\` and \`--tag\` must be specified
        -d --domain      service domain name; overrides the default based on
                         the deployed environment (set by \`--env\`)
        -b --branch      deploy from this branch instead of git tag derived
@@ -26,11 +28,15 @@ usage() {
        that feature is reserved for the production environment.)
   
        Example 1: deploy to pathogens_dev instance:
-          $0 -e dev -v 0.1.45 -m no -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk
-       Example 2: deploy as \`dev_user@localhost\`, from feature branch
+       $0 -e dev -v 0.1.45 -m no -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk
+          
+       Example 2: deploy unstable (pre-release) version as \`dev_user@localhost\`
+       $0 -e dev -m no -u dev_user -h localhost --domain localhost --branch master --tag unstable
+          
+       Example 3: deploy as \`dev_user@localhost\`, from feature branch
                   \`some_feature_branch\`, using docker images built from
                   commit \`ae48f554\`:
-          $0 -e dev -v 0.1.45 -m no -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
+       $0 -e dev -m no -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
 "
   exit 1
 }
@@ -122,11 +128,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 # basic arg validation
-if  [[ -z "${ENVIRONMENT}" ]] || [[ -z "${VERSION}" ]] ||
+if  [[ -z "${ENVIRONMENT}" ]] ||
     [[ -z "${REMOTE_USER}" ]] || [[ -z "${REMOTE_HOST}" ]] ||
     [[ -z "${APPLY_MIGRATIONS}" ]] || [[ "${APPLY_MIGRATIONS}" != "yes" && "${APPLY_MIGRATIONS}" != "no" ]]
 then
     usage
+fi
+
+# if no version, then branch and tag must be specified
+if [[ -z "${VERSION}" ]] && [[ -z "${OPT_BRANCH}" || -z "${OPT_TAG}" ]]
+then
+   echo "${ECHO_EM}When not using --version is given, --branch and --tag must both be provided${ECHO_RESET}"
+   usage
 fi
 
 if [[ "$ENVIRONMENT" == "prod" ]]; then
@@ -150,7 +163,7 @@ git clone git@gitlab.internal.sanger.ac.uk:sanger-pathogens/monocle.git ${deploy
 cd ${deploy_dir}
 trap "{ if [[ -d ${deploy_dir} ]]; then rm -rf ${deploy_dir}; fi }" EXIT
 if [[ ! -z "$OPT_BRANCH" ]]; then
-   echo "${ECHO_EM}Checking out ${OPT_BRANCH} in place of tags/v${VERSION}${ECHO_RESET}"
+   echo "${ECHO_EM}Checking out ${OPT_BRANCH} in place of version number tag${ECHO_RESET}"
    git switch "$OPT_BRANCH"
 else
    git checkout "tags/v${VERSION}"
@@ -158,14 +171,16 @@ fi
 
 docker_tag="v${VERSION}"
 if [[ ! -z "$OPT_TAG" ]]; then
-   echo "${ECHO_EM}Using docker images with tag ${OPT_TAG} in place of ${docker_tag}${ECHO_RESET}"
+   echo "${ECHO_EM}Using docker images with tag ${OPT_TAG} in place of version number tag${ECHO_RESET}"
    docker_tag="$OPT_TAG"
 fi
 
 # Validate input args
 source "${deploy_dir}/utils/common.sh"
 validate_environment "${ENVIRONMENT}"
-validate_version "${VERSION}"
+if [[ ! -z "${VERSION}" ]]; then
+   validate_version "${VERSION}"
+fi
 
 # copy production compose file (template)
 # keep connection to avoid multiple password entries
