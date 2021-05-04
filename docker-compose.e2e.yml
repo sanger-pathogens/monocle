@@ -7,7 +7,7 @@ services:
       - "3001:80"
     volumes:
       - ./ui/settings.e2e.js:/usr/share/nginx/html/settings.js
-      - ./ui/nginx.e2e.conf:/etc/nginx/conf.d/default.conf
+      - ./ui/nginx.prod.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - api
   api:
