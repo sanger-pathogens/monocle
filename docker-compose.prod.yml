@@ -1,7 +1,7 @@
 version: '3'
 services:
   ui:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
     ports:
         - "80:80"
         - "8000:80"
@@ -25,7 +25,7 @@ services:
     depends_on:
         - api
   api:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-api:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-api:<DOCKERTAG>"
     expose:
         - "80"
     restart: unless-stopped
@@ -50,7 +50,7 @@ services:
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
   metadata-api:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
     expose:
       - "80"
     restart: unless-stopped
@@ -68,7 +68,7 @@ services:
       - ENABLE_SWAGGER_UI=false
       - API_TEST_MODE=false
   dash:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<VERSION>"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     expose:
         - "80"
     restart: unless-stopped
