@@ -10,14 +10,15 @@ services:
     cap_drop:
        - ALL
     cap_add:
-       - NET_BIND_SERVICE
+       - FOWNER
+       - CHOWN
+       - SETGID
+       - SETUID
     tmpfs:
        - "/run:rw,noexec,nosuid"
        - "/tmp:rw,noexec,nosuid"
     volumes:
         - ./nginx.proxy.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-        - api
   ui:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
     expose:
@@ -40,6 +41,7 @@ services:
         - ./settings.js:/usr/share/nginx/html/settings.js
         - ./nginx.ui.conf:/etc/nginx/conf.d/default.conf
     depends_on:
+        - proxy
         - api
   api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-api:<DOCKERTAG>"
@@ -66,6 +68,8 @@ services:
         - HOSTNAME_PUBLIC=<HOSTNAME_PUBLIC>
         - SECRET_KEY=<SECRET_KEY>
         - DJANGO_SETTINGS_MODULE=juno.settings.prod
+    depends_on:
+        - proxy
   metadata-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
     expose:
@@ -93,9 +97,14 @@ services:
        - no-new-privileges
     cap_drop:
        - ALL
+    tmpfs:
+       - "/run:rw,noexec,nosuid"
+       - "/tmp:rw,noexec,nosuid"
     volumes:
         - data:/dash/data
         - ./my.cnf:/dash/my.cnf
+    depends_on:
+        - proxy
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
