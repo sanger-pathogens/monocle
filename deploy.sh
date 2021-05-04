@@ -189,11 +189,12 @@ scp -o ControlMaster=yes \
     -o ControlPath=%C \
     docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
-# copy production settings file, nginx config, metadata api config
+# copy production settings file, nginx config (for proxy and ui), metadata api config
 # (may want to remove from git long term)
-scp -o ControlPath=%C ui/settings.prod.js $REMOTE_USER@$REMOTE_HOST:~/settings.js
-scp -o ControlPath=%C ui/nginx.prod.conf $REMOTE_USER@$REMOTE_HOST:~/nginx.conf
-scp -o ControlPath=%C metadata/juno/config.json $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
+scp -o ControlPath=%C ui/settings.prod.js          $REMOTE_USER@$REMOTE_HOST:~/settings.js
+scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
+scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
+scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
 # replace the running version
 # using existing connection
@@ -214,7 +215,7 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
-    chmod 644 settings.js nginx.conf metadata-api.json
+    chmod 644 settings.js nginx.proxy.conf nginx.ui.conf metadata-api.json
     echo "Pulling ${docker_tag} docker images..."
     docker-compose pull
     status=0

@@ -1,10 +1,27 @@
 version: '3'
 services:
-  ui:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
+  proxy:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-proxy:<DOCKERTAG>"
     ports:
         - "80:80"
-        - "8000:80"
+    restart: unless-stopped
+    security_opt:
+       - no-new-privileges
+    cap_drop:
+       - ALL
+    cap_add:
+       - NET_BIND_SERVICE
+    tmpfs:
+       - "/run:rw,noexec,nosuid"
+       - "/tmp:rw,noexec,nosuid"
+    volumes:
+        - ./nginx.proxy.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+        - api
+  ui:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
+    expose:
+        - "80"
     restart: unless-stopped
     security_opt:
        - no-new-privileges
@@ -21,7 +38,7 @@ services:
        - "/tmp:rw,noexec,nosuid"
     volumes:
         - ./settings.js:/usr/share/nginx/html/settings.js
-        - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        - ./nginx.ui.conf:/etc/nginx/conf.d/default.conf
     depends_on:
         - api
   api:
