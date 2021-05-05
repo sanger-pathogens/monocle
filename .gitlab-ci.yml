@@ -1,4 +1,3 @@
-
 # codecov removed 2021-04-15 after security breach notice
 
 stages:
@@ -19,6 +18,8 @@ variables:
   
 API unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   variables:
@@ -34,6 +35,8 @@ API unit tests:
 
 App unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${UI_UNIT_TEST_IMAGE}"
@@ -47,6 +50,8 @@ App unit tests:
 
 Dashboard unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${DASH_UNIT_TEST_IMAGE}"
@@ -58,6 +63,8 @@ Dashboard unit tests:
 
 Metadata unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${METADATA_UNIT_TEST_IMAGE}"
@@ -71,6 +78,8 @@ Metadata unit tests:
 
 Integration tests:
   stage: integration_test
+  only:
+    - branches
   tags:
     - monocle_e2e_runner
   before_script:
