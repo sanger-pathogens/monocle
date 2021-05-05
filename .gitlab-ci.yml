@@ -107,7 +107,7 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in api ui dash metadata;
+         for this_context in proxy api ui dash metadata;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
             if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
@@ -144,7 +144,7 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
@@ -176,7 +176,7 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
