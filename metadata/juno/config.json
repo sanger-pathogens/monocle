@@ -33,5 +33,190 @@
       "http://127.0.0.1:*",
       "http://0.0.0.0:*"
     ]
+  },
+  "spreadsheet_definition": {
+    "sanger_sample_id": {
+      "title": "Sanger_Sample_ID"
+    },
+    "supplier_sample_name": {
+      "title": "Supplier_Sample_Name"
+    },
+    "public_name": {
+      "title": "Public_Name"
+    },
+    "lane_id": {
+      "title": "Lane_ID"
+    },
+    "study_name": {
+      "title": "Study_Name"
+    },
+    "study_ref": {
+      "title": "Study_Reference"
+    },
+    "selection_random": {
+      "title": "Selection_Random"
+    },
+    "country": {
+      "title": "Country"
+    },
+    "county_state": {
+      "title": "County/state"
+    },
+    "city": {
+      "title": "City"
+    },
+    "submitting_institution": {
+      "title": "Submitting_Institution"
+    },
+    "collection_year": {
+      "title": "Collection_year"
+    },
+    "collection_month": {
+      "title": "Collection_month"
+    },
+    "collection_day": {
+      "title": "Collection_day"
+    },
+    "host_species": {
+      "title": "Host_species"
+    },
+    "gender": {
+      "title": "Gender"
+    },
+    "age_group": {
+      "title": "Age_group"
+    },
+    "age_years": {
+      "title": "Age_years"
+    },
+    "age_months": {
+      "title": "Age_months"
+    },
+    "age_weeks": {
+      "title": "Age_weeks"
+    },
+    "age_days": {
+      "title": "Age_days"
+    },
+    "host_status": {
+      "title": "Host_status"
+    },
+    "disease_type": {
+      "title": "Disease_type"
+    },
+    "disease_onset": {
+      "title": "Disease_onset"
+    },
+    "isolation_source": {
+      "title": "Isolation_source"
+    },
+    "serotype": {
+      "title": "Serotype"
+    },
+    "serotype_method": {
+      "title": "Serotype_method"
+    },
+    "infection_during_pregnancy": {
+      "title": "Infection_during_pregnancy"
+    },
+    "maternal_infection_type": {
+      "title": "Maternal_infection_type"
+    },
+    "gestational_age_weeks": {
+      "title": "Gestational_age_weeks"
+    },
+    "birth_weight_gram": {
+      "title": "Birthweight_gram"
+    },
+    "apgar_score": {
+      "title": "Apgar_score"
+    },
+    "ceftizoxime": {
+      "title": "Ceftizoxime"
+    },
+    "ceftizoxime_method": {
+      "title": "Ceftizoxime_method"
+    },
+    "cefoxitin": {
+      "title": "Cefoxitin"
+    },
+    "cefoxitin_method": {
+      "title": "Cefoxitin_method"
+    },
+    "cefotaxime": {
+      "title": "Cefotaxime"
+    },
+    "cefotaxime_method": {
+      "title": "Cefotaxime_method"
+    },
+    "cefazolin": {
+      "title": "Cefazolin"
+    },
+    "cefazolin_method": {
+      "title": "Cefazolin_method"
+    },
+    "ampicillin": {
+      "title": "Ampicillin"
+    },
+    "ampicillin_method": {
+      "title": "Ampicillin_method"
+    },
+    "penicillin": {
+      "title": "Penicillin"
+    },
+    "penicillin_method": {
+      "title": "Penicillin_method"
+    },
+    "erythromycin": {
+      "title": "Erythromycin"
+    },
+    "erythromycin_method": {
+      "title": "Erythromycin_method"
+    },
+    "clindamycin": {
+      "title": "Clindamycin"
+    },
+    "clindamycin_method": {
+      "title": "Clindamycin_method"
+    },
+    "tetracycline": {
+      "title": "Tetracycline"
+    },
+    "tetracycline_method": {
+      "title": "Tetracycline_method"
+    },
+    "levofloxacin": {
+      "title": "Levofloxacin"
+    },
+    "levofloxacin_method": {
+      "title": "Levofloxacin_method"
+    },
+    "ciprofloxacin": {
+      "title": "Ciprofloxacin"
+    },
+    "ciprofloxacin_method": {
+      "title": "Ciprofloxacin_method"
+    },
+    "daptomycin": {
+      "title": "Daptomycin"
+    },
+    "daptomycin_method": {
+      "title": "Daptomycin_method"
+    },
+    "vancomycin": {
+      "title": "Vancomycin"
+    },
+    "vancomycin_method": {
+      "title": "Vancomycin_method"
+    },
+    "linezolid": {
+      "title": "Linezolid"
+    },
+    "linezolid_method": {
+      "title": "Linezolid_method"
+    },
+    "additional_metadata": {
+      "title": "Additional_metadata"
+    }
   }
 }

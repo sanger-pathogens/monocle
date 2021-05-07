@@ -1,8 +1,9 @@
 import logging
-from flask import Config
 import configparser
+from flask import Config
 from urllib.parse  import quote as urlencode
 from metadata.api.model.db_connection_config import DbConnectionConfig
+from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
 logger = logging.getLogger()
 
@@ -57,3 +58,7 @@ def read_database_connection_config(config: Config) -> DbConnectionConfig:
 def read_mock_database_connection_config(config: Config) -> DbConnectionConfig:
     """ Create dummy database connection settings """
     return DbConnectionConfig('monocle', None)
+
+
+def read_spreadsheet_definition_config(config: Config) -> SpreadsheetDefinition:
+    return SpreadsheetDefinition(config['spreadsheet_definition'])

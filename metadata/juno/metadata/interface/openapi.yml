@@ -11,6 +11,31 @@ servers:
     description: Context path
 
 paths:
+  /upload:
+    post:
+      operationId: metadata.api.routes.update_sample_metadata
+      summary: "Upload a new Excel spreadsheet of metadata"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                spreadsheet:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: "The upload succeeded"
+        400:
+          description: "The spreadsheet has not passed validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    $ref: "#/components/schemas/ValidationErrors"
   /download:
     post:
       operationId: metadata.api.routes.get_download_metadata
@@ -43,6 +68,13 @@ paths:
 
 components:
   schemas:
+
+    ValidationErrors:
+      type: array
+      items:
+        type: string
+      minItems: 0
+      readOnly: true
 
     DownloadKeys:
       type: array

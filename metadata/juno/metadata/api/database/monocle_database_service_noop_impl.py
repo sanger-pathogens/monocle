@@ -1,6 +1,8 @@
+from typing import List
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
+from metadata.api.model.institution import Institution
 
 
 class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
@@ -12,11 +14,15 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
     def get_connection(self) -> None:
         pass
 
-    def update_sample_metadata(self, samples: dict) -> None:
+    def get_institutions(self) -> List[Institution]:
+        """ Return a list of institutions """
+        pass
+
+    def update_sample_metadata(self, metadata_list: List[Metadata]) -> None:
         """ Update sample metadata in the database """
         pass
 
-    def get_download_metadata(self, keys: [str]) -> [Metadata]:
+    def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download mock metadata for given list of 'sample:lane' keys """
 
         results = []

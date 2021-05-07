@@ -16,6 +16,10 @@ testfixtures = "*"
 sqlalchemy = "*"
 gunicorn = "*"
 uvicorn = "*"
+pandas="*"
+openpyxl="*"
+numpy="*"
+pandas-schema="*"
 'connexion[swagger-ui]' = "*"
 
 [requires]
