@@ -165,7 +165,6 @@ components:
         - "vancomycin_method"
         - "linezolid"
         - "linezolid_method"
-        - "additional_metadata"
       properties:
         sanger_sample_id:
           $ref: "#/components/schemas/DownloadField"
@@ -286,7 +285,5 @@ components:
         linezolid:
           $ref: "#/components/schemas/DownloadField"
         linezolid_method:
-          $ref: "#/components/schemas/DownloadField"
-        additional_metadata:
           $ref: "#/components/schemas/DownloadField"
 

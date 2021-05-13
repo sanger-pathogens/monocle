@@ -6,7 +6,7 @@ from metadata.api.configuration import *
 from metadata.api.upload_handler import UploadHandler
 from metadata.api.download_handler import DownloadHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
-from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
+from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, Connector
 from metadata.api.database.monocle_database_service_noop_impl import MonocleDatabaseServiceNoOpImpl
 
 logger = logging.getLogger()
@@ -27,15 +27,20 @@ class MetadataApiModule(Module):
     @singleton
     def metadata_dao(self, config: Config) -> MonocleDatabaseService:
         if not self.API_TEST_MODE:
-            return MonocleDatabaseServiceImpl(read_database_connection_config(config))
+            return MonocleDatabaseServiceImpl(Connector(read_database_connection_config(config)))
         else:
             logger.info('Using mock database back end')
-            return MonocleDatabaseServiceNoOpImpl(read_mock_database_connection_config(config))
+            return MonocleDatabaseServiceNoOpImpl(Connector(read_mock_database_connection_config(config)))
 
     @provider
-    def upload_handler(self, config: Config) -> UploadHandler:
-        return UploadHandler(read_spreadsheet_definition_config(config))
+    def upload_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
+        do_validation = False
+        try:
+            do_validation = config['upload_validation_enabled']
+        except KeyError:
+            pass
+        return UploadHandler(metadata_dao, read_spreadsheet_definition_config(config), do_validation)
 
     @provider
-    def download_handler(self, config: Config) -> DownloadHandler:
-        return DownloadHandler(read_spreadsheet_definition_config(config))
+    def download_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> DownloadHandler:
+        return DownloadHandler(metadata_dao, read_spreadsheet_definition_config(config))

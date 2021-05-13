@@ -34,18 +34,27 @@
       "http://0.0.0.0:*"
     ]
   },
+  "spreadsheet_header_row_position": 2,
+  "upload_validation_enabled": true,
   "spreadsheet_definition": {
     "sanger_sample_id": {
-      "title": "Sanger_Sample_ID"
+      "title": "Sanger_Sample_ID",
+      "mandatory": true,
+      "regex": "[0-9a-zA-Z\\-_]+"
     },
     "supplier_sample_name": {
-      "title": "Supplier_Sample_Name"
+      "title": "Supplier_Sample_Name",
+      "mandatory": true,
+      "regex": "[0-9a-zA-Z\\-_]+"
     },
     "public_name": {
-      "title": "Public_Name"
+      "title": "Public_Name",
+      "mandatory": true,
+      "regex": "[0-9a-zA-Z\\-_]+"
     },
     "lane_id": {
-      "title": "Lane_ID"
+      "title": "Lane_ID",
+      "regex": "[0-9#_]+"
     },
     "study_name": {
       "title": "Study_Name"
@@ -54,169 +63,233 @@
       "title": "Study_Reference"
     },
     "selection_random": {
-      "title": "Selection_Random"
+      "title": "Selection_Random",
+      "mandatory": true,
+      "allowed_values": ["yes", "no"]
     },
     "country": {
-      "title": "Country"
+      "title": "Country",
+      "mandatory": true
     },
     "county_state": {
-      "title": "County/state"
+      "title": "County/state",
+      "regex": "[0-9a-zA-Z\\'\\- ]+"
     },
     "city": {
-      "title": "City"
+      "title": "City",
+      "regex": "[0-9a-zA-Z\\'\\- ]+"
     },
     "submitting_institution": {
-      "title": "Submitting_Institution"
+      "title": "Submitting_Institution",
+      "mandatory": true
     },
     "collection_year": {
-      "title": "Collection_year"
+      "title": "Collection_year",
+      "mandatory": true,
+      "regex": "[0-9]{4}|unknown"
     },
     "collection_month": {
-      "title": "Collection_month"
+      "title": "Collection_month",
+      "regex": "[0-9]{1,2}|unknown"
     },
     "collection_day": {
-      "title": "Collection_day"
+      "title": "Collection_day",
+      "regex": "[0-9]{1,2}|unknown"
     },
     "host_species": {
-      "title": "Host_species"
+      "title": "Host_species",
+      "mandatory": true,
+      "allowed_values": ["human", "bovine", "fish", "camel", "other", "unknown"]
     },
     "gender": {
-      "title": "Gender"
+      "title": "Gender",
+      "allowed_values": ["M", "F", "unknown"]
     },
     "age_group": {
-      "title": "Age_group"
+      "title": "Age_group",
+      "mandatory": true,
+      "allowed_values": ["neonate", "adult", "other", "unknown"]
     },
     "age_years": {
-      "title": "Age_years"
+      "title": "Age_years",
+      "regex": "[0-9]{1,3}|unknown"
     },
     "age_months": {
-      "title": "Age_months"
+      "title": "Age_months",
+      "regex": "[0-9]{1,2}|unknown"
     },
     "age_weeks": {
-      "title": "Age_weeks"
+      "title": "Age_weeks",
+      "regex": "[0-9]{1,2}|unknown"
     },
     "age_days": {
-      "title": "Age_days"
+      "title": "Age_days",
+      "regex": "[0-9]{1,2}|unknown"
     },
     "host_status": {
-      "title": "Host_status"
+      "title": "Host_status",
+      "mandatory": true,
+      "allowed_values": ["carriage", "invasive disease", "non-invasive disease", "unknown"]
     },
     "disease_type": {
-      "title": "Disease_type"
+      "title": "Disease_type",
+      "allowed_values": ["sepsis", "bacteraemia", "meningitis", "pneumonia", "urinary tract infection",
+        "skin and soft-tissue infection", "osteomyelitis", "endocarditis", "septic arthritis", "chorioamnionitis",
+        "peritonitis", "empyema", "surgical site infection", "urosepsis", "endometritis", "mastitis",
+        "invasive GBS", "invasive other", "non-invasive other", "unknown"]
     },
     "disease_onset": {
-      "title": "Disease_onset"
+      "title": "Disease_onset",
+      "allowed_values": ["EOD", "LOD", "VLOD", "other", "unknown"]
     },
     "isolation_source": {
-      "title": "Isolation_source"
+      "title": "Isolation_source",
+      "allowed_values": ["rectovaginal swab", "vaginal swab", "ear swab", "umbilical swab", "umbilical swab",
+        "throat swab", "skin swab", "rectal swab", "placenta", "blood", "cerebrospinal fluid", "cord blood",
+        "pus: skin infection", "pus: brain abscess", "pus: other abscess", "sputum", "urine", "pleural fluid",
+        "peritoneal fluid", "pericardial fluid", "joint/synovial fluid", "bone", "lymph node", "semen", "milk",
+        "spleen", "kidney", "liver", "brain", "heart", "pancreas", "other sterile site", "other non-sterile site",
+        "unknown"]
     },
     "serotype": {
-      "title": "Serotype"
+      "title": "Serotype",
+      "allowed_values": ["Ia", "Ib", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "NT"]
     },
     "serotype_method": {
       "title": "Serotype_method"
     },
     "infection_during_pregnancy": {
-      "title": "Infection_during_pregnancy"
+      "title": "Infection_during_pregnancy",
+      "allowed_values": ["yes", "no", "unknown"]
     },
     "maternal_infection_type": {
-      "title": "Maternal_infection_type"
+      "title": "Maternal_infection_type",
+      "allowed_values": ["urinary tract infection", "chorioamnionitis/intrauterine infection", "sepsis", "meningitis",
+        "arthritis", "skin and soft-tissue infection", "invasive other", "non-invasive other", "unknown"]
     },
     "gestational_age_weeks": {
-      "title": "Gestational_age_weeks"
+      "title": "Gestational_age_weeks",
+      "regex": "[0-9]{1,3}|unknown|nonpregnant|"
     },
     "birth_weight_gram": {
-      "title": "Birthweight_gram"
+      "title": "Birthweight_gram",
+      "regex": "[0-9]{1,3}|unknown"
     },
     "apgar_score": {
-      "title": "Apgar_score"
+      "title": "Apgar_score",
+      "regex": "[1-9]|10|unknown"
     },
     "ceftizoxime": {
-      "title": "Ceftizoxime"
+      "title": "Ceftizoxime",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "ceftizoxime_method": {
-      "title": "Ceftizoxime_method"
+      "title": "Ceftizoxime_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "cefoxitin": {
-      "title": "Cefoxitin"
+      "title": "Cefoxitin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "cefoxitin_method": {
-      "title": "Cefoxitin_method"
+      "title": "Cefoxitin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "cefotaxime": {
-      "title": "Cefotaxime"
+      "title": "Cefotaxime",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "cefotaxime_method": {
-      "title": "Cefotaxime_method"
+      "title": "Cefotaxime_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "cefazolin": {
-      "title": "Cefazolin"
+      "title": "Cefazolin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "cefazolin_method": {
-      "title": "Cefazolin_method"
+      "title": "Cefazolin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "ampicillin": {
-      "title": "Ampicillin"
+      "title": "Ampicillin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "ampicillin_method": {
-      "title": "Ampicillin_method"
+      "title": "Ampicillin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "penicillin": {
-      "title": "Penicillin"
+      "title": "Penicillin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "penicillin_method": {
-      "title": "Penicillin_method"
+      "title": "Penicillin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "erythromycin": {
-      "title": "Erythromycin"
+      "title": "Erythromycin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "erythromycin_method": {
-      "title": "Erythromycin_method"
+      "title": "Erythromycin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "clindamycin": {
-      "title": "Clindamycin"
+      "title": "Clindamycin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "clindamycin_method": {
-      "title": "Clindamycin_method"
+      "title": "Clindamycin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "tetracycline": {
-      "title": "Tetracycline"
+      "title": "Tetracycline",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "tetracycline_method": {
-      "title": "Tetracycline_method"
+      "title": "Tetracycline_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "levofloxacin": {
-      "title": "Levofloxacin"
+      "title": "Levofloxacin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "levofloxacin_method": {
-      "title": "Levofloxacin_method"
+      "title": "Levofloxacin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "ciprofloxacin": {
-      "title": "Ciprofloxacin"
+      "title": "Ciprofloxacin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "ciprofloxacin_method": {
-      "title": "Ciprofloxacin_method"
+      "title": "Ciprofloxacin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "daptomycin": {
-      "title": "Daptomycin"
+      "title": "Daptomycin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "daptomycin_method": {
-      "title": "Daptomycin_method"
+      "title": "Daptomycin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "vancomycin": {
-      "title": "Vancomycin"
+      "title": "Vancomycin",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "vancomycin_method": {
-      "title": "Vancomycin_method"
+      "title": "Vancomycin_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     },
     "linezolid": {
-      "title": "Linezolid"
+      "title": "Linezolid",
+      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
     },
     "linezolid_method": {
-      "title": "Linezolid_method"
-    },
-    "additional_metadata": {
-      "title": "Additional_metadata"
+      "title": "Linezolid_method",
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
     }
   }
 }

@@ -111,7 +111,6 @@ class Sample(models.Model):
     vancomycin_method = models.CharField(max_length=256, null=True)
     linezolid = models.CharField(max_length=256, null=True)
     linezolid_method = models.CharField(max_length=256, null=True)
-    additional_metadata = models.CharField(max_length=256, null=True)
     submitting_institution = models.ForeignKey(
         Institution, on_delete=models.CASCADE, related_name="samples"
     )

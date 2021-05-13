@@ -8,14 +8,12 @@ import logging.config
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 
-from metadata.api.dependencies import MetadataApiModule
-
 
 CORS_CONTEXT_REGEX = r"/metadata/*"
 OPEN_API_SPEC_FILE = 'openapi.yml'
 
 
-def create_application(conf_file):
+def create_application(conf_file, injection_bindings):
     """ Application configuration """
 
     use_swagger_ui = True if os.environ.get('ENABLE_SWAGGER_UI', '').lower() == 'true' else False
@@ -35,7 +33,7 @@ def create_application(conf_file):
     app_handle.app.config['JSON_SORT_KEYS'] = False
 
     # Setup Flask Injector
-    FlaskInjector(app=app_handle.app, modules=[MetadataApiModule()])
+    FlaskInjector(app=app_handle.app, modules=[injection_bindings])
 
     # CORS setup
     app_handle.app.config['CORS_HEADERS'] = 'Content-Type'

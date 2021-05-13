@@ -3,11 +3,9 @@ import uuid
 import os
 import connexion
 from flask import jsonify
+from injector import inject
 from metadata.api.upload_handler import UploadHandler
 from metadata.api.download_handler import DownloadHandler
-from metadata.api.database.monocle_database_service import MonocleDatabaseService
-
-from injector import inject
 
 
 logger = logging.getLogger()
@@ -18,11 +16,13 @@ HTTP_SUCCEEDED_STATUS = 200
 
 
 @inject
-def update_sample_metadata(body: list, upload_handler: UploadHandler, dao: MonocleDatabaseService):
+def update_sample_metadata(body: list, upload_handler: UploadHandler):
     """ Upload a spreadsheet to the database """
     try:
         uploaded_file = connexion.request.files['spreadsheet']
-    except KeyError as ke:
+        if not uploaded_file:
+            raise KeyError('No upload spreadsheet file found')
+    except KeyError:
         logger.error('Missing upload spreadsheet file in request')
         return 'Missing spreadsheet file', HTTP_BAD_REQUEST_STATUS
 
@@ -34,7 +34,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler, dao: Monoc
         if len(validation_errors) > 0:
             return jsonify({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
-            dao.update_sample_metadata(upload_handler.parse())
+            upload_handler.store()
     finally:
         os.remove(spreadsheet_file)
 
@@ -42,16 +42,16 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler, dao: Monoc
 
 
 @inject
-def compare_sample_metadata(body: list, dao: MonocleDatabaseService):
+def compare_sample_metadata(body: list):
     pass
 
 
 @inject
-def get_download_metadata(body: list, download_handler: DownloadHandler, dao: MonocleDatabaseService):
+def get_download_metadata(body: list, download_handler: DownloadHandler):
     """ Download sample metadata from the database """
     keys = body
     try:
-        metadata_list = dao.get_download_metadata(keys)
+        metadata_list = download_handler.read_download_metadata(keys)
     except ValueError as ve:
         logger.error(str(ve))
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS

@@ -1,10 +1,12 @@
 import pandas
 import logging
+import re
 from typing import List
 from pandas_schema import Column, Schema
 from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, MatchesPatternValidation, InRangeValidation, InListValidation
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
+from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
 logger = logging.getLogger()
 
@@ -16,164 +18,85 @@ class UploadHandler:
     def data_frame(self):
         return self.__df
 
-    def __init__(self, in_def: SpreadsheetDefinition) -> None:
+    def __init__(self, dao: MonocleDatabaseService, in_def: SpreadsheetDefinition, do_validation: bool) -> None:
         self.__df = None
-        # self.spreadsheet_def = config['spreadsheet_definition']
-        self.spreadsheet_def = in_def
+        self.dao = dao
+        self.__spreadsheet_def = in_def
+        self.do_validation = do_validation
 
     def get_column_name_for_key(self, key: str):
-        return self.spreadsheet_def.get_column_name(key)
+        """ Given a spreadsheet definition key return the corresponding column title """
+        return self.__spreadsheet_def.get_column_name(key)
 
     def create_schema(self) -> Schema:
-        return Schema([
-            Column(self.get_column_name_for_key('sanger_sample_id'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('supplier_sample_name'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('public_name'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('lane_id'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('study_name'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('study_ref'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('selection_random'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['Yes', 'No'])],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('country'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('county_state'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('city'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('submitting_institution'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('collection_year'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InRangeValidation(2000, 9999)],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('collection_month'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InRangeValidation(0, 12)],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('collection_day'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InRangeValidation(0, 31)],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('host_species'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['human', 'bovine', 'fish', 'camel', 'other'])],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('gender'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['M', 'F', 'Unknown', 'unknown'])],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('age_group'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['Neonate', 'Adult', 'Other', 'Unknown'])],
-                   allow_empty=False),
-            Column(self.get_column_name_for_key('age_years'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('age_months'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('age_weeks'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('age_days'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('host_status'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['carriage', 'invasive', 'non-invasive', 'disease other'])],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('disease_type'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('disease_onset'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['EOD', 'LOD', 'VLOD', 'other', 'unknown', 'NA'])],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('isolation_source'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('serotype'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('serotype_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['latex agglutination', 'lancefield', 'PCR', 'other'])],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('infection_during_pregnancy'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation(), InListValidation(['Yes', 'No', 'Unknown'])],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('maternal_infection_type'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('gestational_age_weeks'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('birth_weight_gram'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('apgar_score'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ceftizoxime'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ceftizoxime_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefoxitin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefoxitin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefotaxime'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefotaxime_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefazolin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('cefazolin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ampicillin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ampicillin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('penicillin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('penicillin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('erythromycin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('erythromycin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('clindamycin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('clindamycin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('tetracycline'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('tetracycline_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('levofloxacin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('levofloxacin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ciprofloxacin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('ciprofloxacin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('daptomycin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('daptomycin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('vancomycin'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('vancomycin_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('linezolid'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('linezolid_method'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True),
-            Column(self.get_column_name_for_key('additional_metadata'), [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()],
-                   allow_empty=True)
-        ])
+        """ Create Pandas schema with all the necessary validation rules read in from config """
+        col_list = []
+        for column in self.__spreadsheet_def.keys():
+            validators = [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()]
+
+            mandatory_field_flag = self.__spreadsheet_def.is_mandatory(column)
+
+            # Special cases for checking institutions/countries...
+            if column == 'submitting_institution':
+                validators.append(InListValidation([i.name for i in self.dao.get_institutions()]))
+            if column == 'country':
+                validators.append(InListValidation([i.country for i in self.dao.get_institutions()]))
+            else:
+                if self.__spreadsheet_def.get_regex(column):
+                    validators.append(MatchesPatternValidation(self.__spreadsheet_def.get_regex(column)))
+
+                if self.__spreadsheet_def.get_allowed_values(column):
+                    validators.append(InListValidation(self.__spreadsheet_def.get_allowed_values(column)))
+
+            col_list.append(
+                Column(self.__spreadsheet_def.get_column_name(column), validators, allow_empty=not mandatory_field_flag)
+            )
+
+        return Schema(col_list)
 
     def format_validation_errors(self, errors: list) -> List[str]:
+        """
+            Format any validation errors.
+            Pandas schema does not seem to take notice of where the header row is for its validation error
+            row numbering so we need to modify the error messages to correct it.
+        """
         results = []
         for error in errors:
-            results.append(str(error))
+            error_text = str(error)
+            m = re.match(r"^[{]row: (\d+),", error_text)
+            if m:
+                row_num_int = int(m[1]) + self.__spreadsheet_def.header_row_position + 2
+                error_text = re.sub(r"row: \d+,", "row: {},".format(row_num_int), error_text)
+            results.append(error_text)
         return results
 
     def load(self, file_path: str) -> List[str]:
-        data = pandas.read_excel(file_path, header=2)
+        """
+            Read the spreadsheet to a pandas data frame.
+            Returns a list of validation error strings [if any].
+        """
+        errors = []
+        data = pandas.read_excel(file_path, header=self.__spreadsheet_def.header_row_position)
         data = data.astype(str)
         data.replace(to_replace=r'^nan$', value='', regex=True, inplace=True)
 
-        for key, value in data.iterrows():
-            print(key, value)
-            print()
+        print(str(data['Gestational_age_weeks']))
+        # for key, value in data.iterrows():
+        #    print(key, value)
+        #    print()
 
-        errors = self.create_schema().validate(data)
-        if len(errors) > 0:
-            return self.format_validation_errors(errors)
+        if self.do_validation:
+            schema = self.create_schema()
+            errors = schema.validate(data, columns=schema.get_column_names())
+            if len(errors) > 0:
+                return self.format_validation_errors(errors)
 
         self.__df = pandas.DataFrame(data.replace('NaN', ''))
 
         return errors
 
     def parse(self) -> List[Metadata]:
+        """ Parse the data frame into dataclasses """
         results = []
         for _, row in self.__df.iterrows():
             metadata = Metadata(
@@ -236,9 +159,12 @@ class UploadHandler:
                             vancomycin=row[self.get_column_name_for_key('vancomycin')].replace("nan", 'HELLO WORLD'),
                             vancomycin_method=row[self.get_column_name_for_key('vancomycin_method')],
                             linezolid=row[self.get_column_name_for_key('linezolid')],
-                            linezolid_method=row[self.get_column_name_for_key('linezolid_method')],
-                            additional_metadata=row[self.get_column_name_for_key('additional_metadata')])
+                            linezolid_method=row[self.get_column_name_for_key('linezolid_method')])
             results.append(metadata)
         return results
 
-
+    def store(self):
+        if self.__df is not None:
+            self.dao.update_sample_metadata(self.parse())
+        else:
+            raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")
