@@ -15,6 +15,7 @@ th:not(.CalendarDay), td:not(.CalendarDay) {
 h1 {
    font-size:     400%;
    font-variant:  small-caps;
+   font-weight:   550;
 }
 
 h2 {
@@ -55,17 +56,88 @@ div.main_page_container {
    color:         dimgray;
 }
 
+/* provides a reference for the absolute positioning within .page_header and .page_footer */
+div.header_outer_container, div.footer_outer_container {
+   position:      relative;
+   display:       inline-block;
+   width:         100%;
+   padding:       0px;
+   margin:        0px;
+}
+
+.page_header, .page_footer {
+   /* this is the monocle/juno header/footer color: */
+   /*background:    #6868BE;*/
+   /* this is the monocle/juno background (darker shade of purple) color: */
+   background:    rgb(72, 72, 133);
+   /* this is the juno logo colour: */
+   /* color:         #fef4ee; */
+   color:         white;
+}
+
 .page_header {
-   padding:       1ex;
-   background:    dimgray;
-   color:         ghostwhite;
+   padding:       1ex 1ex 0.5ex 1ex;
+   text-align:    center;
+}
+
+a.title_link, a.header_link {
+   color:         inherit;
+   text-decoration: none;
+}
+
+a.header_link {
+   margin-right:  1.6ex;
+}
+
+.header_logo_container {
+   position:      absolute;
+   top:           2ex;
+   left:          1ex;
+}
+
+img.header_logo {
+   height:        67px;
+}
+
+.header_links_container {
+   position:      absolute;
+   top:           2ex;
+   right:         1ex;
 }
 
 .page_footer {
    padding:       1ex;
    margin-top:    1em;
-   background:    dimgray;
-   color:         ghostwhite;
+   /* height must accomodate the height of img.footer_logo */
+   min-height:    60px;
+}
+
+.footer_contacts_container {
+   position:      absolute;
+   bottom:        1.6ex;
+   right:         1ex;
+}
+
+.contacts_text {
+   text-align:    left;
+   font-style:    italic;
+}
+
+a.footer_link {
+   margin-right:  1.6ex;
+   color:         inherit;
+   text-decoration: none;
+}
+
+.footer_logo_container {
+   position:      absolute;
+   bottom:        1ex;
+   left:          1ex;
+}
+
+img.footer_logo {
+   height:        50px;
+   margin-left:   1.6ex;
 }
 
 div.sample_progress_container {

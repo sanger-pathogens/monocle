@@ -15,7 +15,6 @@ class SequencingStatusTest(TestCase):
    genuine_api_host        = 'http://mlwh_api.dev.pam.sanger.ac.uk/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'
-   required_mlwh_config    = ['base_url', 'swagger', 'findById', 'findByIds']
    base_url_regex          = '^https?://[\w\-]+(\.dev)?\.pam\.sanger\.ac\.uk$'
    endpoint_regex          = '(/[\w\-\.]+)+'
    required_sample_keys    = {'lanes'                 : type(['a list']),

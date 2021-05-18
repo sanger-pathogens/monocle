@@ -1,4 +1,3 @@
-
 # codecov removed 2021-04-15 after security breach notice
 
 stages:
@@ -19,6 +18,8 @@ variables:
   
 API unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   variables:
@@ -34,6 +35,8 @@ API unit tests:
 
 App unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${UI_UNIT_TEST_IMAGE}"
@@ -47,6 +50,8 @@ App unit tests:
 
 Dashboard unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${DASH_UNIT_TEST_IMAGE}"
@@ -58,6 +63,8 @@ Dashboard unit tests:
 
 Metadata unit tests:
   stage: unit_test
+  only:
+    - branches
   tags:
     - openstack-autoscale-theta
   image: "${METADATA_UNIT_TEST_IMAGE}"
@@ -70,6 +77,8 @@ Metadata unit tests:
 
 Integration tests:
   stage: integration_test
+  only:
+    - branches
   tags:
     - monocle_e2e_runner
   before_script:
@@ -106,7 +115,7 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in api ui dash metadata;
+         for this_context in proxy api ui dash metadata;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
             if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
@@ -143,7 +152,7 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
@@ -175,7 +184,7 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};

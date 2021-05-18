@@ -2,3 +2,6 @@ static/
 db.sqlite3
 schema-db.png
 schema.graphql
+# shouldn't be a my.cnf in this directory, but we want to be certain none gets added to a docker build
+my.cnf
+
