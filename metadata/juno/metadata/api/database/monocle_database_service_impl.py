@@ -30,8 +30,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
-    INSERT_SAMPLE_SQL = text(""" \
-            insert into api_sample (
+    INSERT_OR_UPDATE_SAMPLE_SQL = text(""" \
+            INSERT INTO api_sample (
                 sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
                 ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
@@ -43,7 +43,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
                 selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
                 vancomycin, vancomycin_method
-            ) values (
+            ) VALUES (
                 :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution_id,
                 :age_days, :age_group, :age_months, :age_weeks, :age_years, :ampicillin,
                 :ampicillin_method, :apgar_score, :birth_weight_gram, :cefazolin, :cefazolin_method, :cefotaxime,
@@ -54,8 +54,69 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 :host_species, :infection_during_pregnancy, :isolation_source, :levofloxacin, :levofloxacin_method,
                 :linezolid, :linezolid_method, :maternal_infection_type, :penicillin, :penicillin_method,
                 :selection_random, :serotype_method, :study_name, :study_ref, :tetracycline, :tetracycline_method,
-                :vancomycin, :vancomycin_method
-            )""")
+                :vancomycin, :vancomycin_method 
+            ) ON DUPLICATE KEY UPDATE
+                sample_id = :sanger_sample_id, 
+                lane_id = :lane_id, 
+                supplier_sample_name = :supplier_sample_name, 
+                public_name = :public_name, 
+                host_status = :host_status, 
+                serotype = :serotype, 
+                submitting_institution_id = :submitting_institution_id,
+                age_days = :age_days, 
+                age_group = :age_group, 
+                age_months = :age_months, 
+                age_weeks = :age_weeks, 
+                age_years = :age_years, 
+                ampicillin = :ampicillin,
+                ampicillin_method = :ampicillin_method, 
+                apgar_score = :apgar_score, 
+                birthweight_gram = :birth_weight_gram, 
+                cefazolin = :cefazolin, 
+                cefazolin_method = :cefazolin_method, 
+                cefotaxime = :cefotaxime,
+                cefotaxime_method = :cefotaxime_method, 
+                cefoxitin = :cefoxitin, 
+                cefoxitin_method = :cefoxitin_method, 
+                ceftizoxime = :ceftizoxime, 
+                ceftizoxime_method = :ceftizoxime_method,
+                ciprofloxacin = :ciprofloxacin, 
+                ciprofloxacin_method = :ciprofloxacin_method, 
+                city = :city, 
+                clindamycin = :clindamycin, 
+                clindamycin_method = :clindamycin_method, 
+                collection_day = :collection_day,
+                collection_month = :collection_month, 
+                collection_year = :collection_year, 
+                country = :country, 
+                county_state = :county_state, 
+                daptomycin = :daptomycin, 
+                daptomycin_method = :daptomycin_method, 
+                disease_onset = :disease_onset,
+                disease_type = :disease_type, 
+                erythromycin = :erythromycin, 
+                erythromycin_method = :erythromycin_method, 
+                gender = :gender, 
+                gestational_age_weeks = :gestational_age_weeks,
+                host_species = :host_species, 
+                infection_during_pregnancy = :infection_during_pregnancy, 
+                isolation_source = :isolation_source, 
+                levofloxacin = :levofloxacin, 
+                levofloxacin_method = :levofloxacin_method,
+                linezolid = :linezolid, 
+                linezolid_method = :linezolid_method, 
+                maternal_infection_type = :maternal_infection_type, 
+                penicillin = :penicillin, 
+                penicillin_method = :penicillin_method,
+                selection_random = :selection_random, 
+                serotype_method = :serotype_method, 
+                study_name = :study_name, 
+                study_ref = :study_ref, 
+                tetracycline = :tetracycline, 
+                tetracycline_method = :tetracycline_method,
+                vancomycin = :vancomycin, 
+                vancomycin_method = :vancomycin_method
+            """)
 
     SELECT_LANES_SQL = text(""" \
             SELECT
@@ -102,13 +163,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             return
 
         # Use a transaction...
-        with self.connector.get_transactional_connection() as con:
+        with self.connector.get_connection() as con:
 
-            con.execute(self.DELETE_ALL_SAMPLES_SQL)
+            #con.execute(self.DELETE_ALL_SAMPLES_SQL)
 
             for metadata in metadata_list:
                 con.execute(
-                    self.INSERT_SAMPLE_SQL,
+                    self.INSERT_OR_UPDATE_SAMPLE_SQL,
                     sanger_sample_id=metadata.sanger_sample_id,
                     lane_id=metadata.lane_id,
                     supplier_sample_name=metadata.supplier_sample_name,

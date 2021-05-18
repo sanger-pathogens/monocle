@@ -30,38 +30,16 @@ class Affiliation(models.Model):
 
 
 class Sample(models.Model):
-
-    class HostStatus(models.TextChoices):
-        CARRIAGE = "carriage"
-        SEPSIS = "sepsis"
-        BACTERAEMIA = "bacteraemia"
-        MENINGITIS = "meningitis"
-        PNEUMONIA = "pneumonia"
-        URINARY_TRACT_INFECTION = "urinary tract infection"
-        SKIN_AND_SOFT_TISSUE_INFECTION = "skin and soft-tissue infection"
-        OSTEOMYELITIS = "osteomyelitis"
-        ENDOCARDITIS = "endocarditis"
-        SEPTIC_ARTHRITIS = "septic arthritis"
-        CHORIOAMNIONITIS = "chorioamnionitis"
-        PERITONITIS = "peritonitis"
-        EMPYEMA = "empyema"
-        SURGICAL_SITE_INFECTION = "surgical site infection"
-        UROSEPSIS = "urosepsis"
-        ENDOMETRITIS = "endometritis"
-        MASTITIS = "mastitis"
-        DISEASE_OTHER = "disease other"
-        INVASIVE = "invasive"
-
     sample_id = models.CharField(max_length=256, primary_key=True)
     lane_id = models.CharField(max_length=256, unique=True, null=True)
     supplier_sample_name = models.CharField(max_length=256, default='')
     public_name = models.CharField(max_length=256, unique=True)
-    host_status = models.CharField(max_length=256, choices=HostStatus.choices)
+    host_status = models.CharField(max_length=256, null=False)
     study_name = models.CharField(max_length=256, null=True)
     study_ref = models.CharField(max_length=256, null=True)
     selection_random = models.CharField(max_length=256, null=True)
     country = models.CharField(max_length=256, null=True)
-    country_state = models.CharField(max_length=256, null=True)
+    county_state = models.CharField(max_length=256, null=True)
     city = models.CharField(max_length=256, null=True)
     collection_year = models.CharField(max_length=256, null=True)
     collection_month = models.CharField(max_length=256, null=True)

@@ -3,7 +3,7 @@ import logging
 import re
 from typing import List
 from pandas_schema import Column, Schema
-from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, MatchesPatternValidation, InRangeValidation, InListValidation
+from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, MatchesPatternValidation, InRangeValidation, InListValidation, CustomSeriesValidation
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -20,9 +20,10 @@ class UploadHandler:
 
     def __init__(self, dao: MonocleDatabaseService, in_def: SpreadsheetDefinition, do_validation: bool) -> None:
         self.__df = None
-        self.dao = dao
+        self.__dao = dao
         self.__spreadsheet_def = in_def
         self.do_validation = do_validation
+        self.__institutions = None
 
     def get_column_name_for_key(self, key: str):
         """ Given a spreadsheet definition key return the corresponding column title """
@@ -38,12 +39,22 @@ class UploadHandler:
 
             # Special cases for checking institutions/countries...
             if column == 'submitting_institution':
-                validators.append(InListValidation([i.name for i in self.dao.get_institutions()]))
+                validators.append(InListValidation([i.name for i in self.__institutions], case_sensitive=False))
             if column == 'country':
-                validators.append(InListValidation([i.country for i in self.dao.get_institutions()]))
+                validators.append(InListValidation([i.country for i in self.__institutions], case_sensitive=False))
             else:
                 if self.__spreadsheet_def.get_regex(column):
                     validators.append(MatchesPatternValidation(self.__spreadsheet_def.get_regex(column)))
+
+                max_len = self.__spreadsheet_def.get_max_length(column)
+                if max_len and max_len > 0:
+
+                    validators.append(
+                        CustomSeriesValidation(
+                            lambda s: s.str.len() > max_len,
+                            'field length is greater than {} characters'.format(str(max_len))
+                        )
+                    )
 
                 if self.__spreadsheet_def.get_allowed_values(column):
                     validators.append(InListValidation(self.__spreadsheet_def.get_allowed_values(column)))
@@ -76,23 +87,26 @@ class UploadHandler:
             Returns a list of validation error strings [if any].
         """
         errors = []
-        data = pandas.read_excel(file_path, header=self.__spreadsheet_def.header_row_position)
-        data = data.astype(str)
-        data.replace(to_replace=r'^nan$', value='', regex=True, inplace=True)
 
-        print(str(data['Gestational_age_weeks']))
-        # for key, value in data.iterrows():
-        #    print(key, value)
-        #    print()
+        logger.info("Loading spreadsheet...")
+
+        data = pandas.read_excel(file_path, dtype=str, header=self.__spreadsheet_def.header_row_position)
+        data.fillna('', inplace=True)
+
+        for key, value in data.iterrows():
+            logger.debug("{} {}".format(key, value))
 
         if self.do_validation:
+            # Get a list of valid institutions and cache them
+            self.__institutions = self.__dao.get_institutions()
+            # Create a validation schema
             schema = self.create_schema()
+            # Run the validation
             errors = schema.validate(data, columns=schema.get_column_names())
             if len(errors) > 0:
                 return self.format_validation_errors(errors)
 
-        self.__df = pandas.DataFrame(data.replace('NaN', ''))
-
+        self.__df = pandas.DataFrame(data)
         return errors
 
     def parse(self) -> List[Metadata]:
@@ -156,7 +170,7 @@ class UploadHandler:
                             ciprofloxacin_method=row[self.get_column_name_for_key('ciprofloxacin_method')],
                             daptomycin=row[self.get_column_name_for_key('daptomycin')],
                             daptomycin_method=row[self.get_column_name_for_key('daptomycin_method')],
-                            vancomycin=row[self.get_column_name_for_key('vancomycin')].replace("nan", 'HELLO WORLD'),
+                            vancomycin=row[self.get_column_name_for_key('vancomycin')],
                             vancomycin_method=row[self.get_column_name_for_key('vancomycin_method')],
                             linezolid=row[self.get_column_name_for_key('linezolid')],
                             linezolid_method=row[self.get_column_name_for_key('linezolid_method')])
@@ -165,6 +179,7 @@ class UploadHandler:
 
     def store(self):
         if self.__df is not None:
-            self.dao.update_sample_metadata(self.parse())
+            logger.info("Storing spreadsheet...")
+            self.__dao.update_sample_metadata(self.parse())
         else:
             raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")

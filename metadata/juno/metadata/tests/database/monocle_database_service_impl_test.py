@@ -54,9 +54,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         metadata_list = [TEST_SAMPLE_1, TEST_SAMPLE_2]
         self.under_test.update_sample_metadata(metadata_list)
         calls = [
-            call(MonocleDatabaseServiceImpl.DELETE_ALL_SAMPLES_SQL),
             call(
-                MonocleDatabaseServiceImpl.INSERT_SAMPLE_SQL,
+                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_SAMPLE_SQL,
                 sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution_id='UniversityA',
@@ -120,7 +119,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             )
         ]
 
-        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+        self.connection.execute.assert_has_calls(calls, any_order=False)
 
     def test_update_sample_metadata_noinput(self) -> None:
         metadata_list = []

@@ -25,6 +25,12 @@ class SpreadsheetDefinition(dict):
         except KeyError:
             return None
 
+    def get_max_length(self, name: str):
+        try:
+            return int(self[name]['max_length'])
+        except KeyError:
+            return None
+
     def is_mandatory(self, name: str):
         try:
             return self[name]['mandatory']

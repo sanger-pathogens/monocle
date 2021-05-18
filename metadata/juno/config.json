@@ -40,32 +40,34 @@
     "sanger_sample_id": {
       "title": "Sanger_Sample_ID",
       "mandatory": true,
-      "regex": "[0-9a-zA-Z\\-_]+"
+      "regex": "^[0-9a-zA-Z\\-_]+$"
     },
     "supplier_sample_name": {
       "title": "Supplier_Sample_Name",
       "mandatory": true,
-      "regex": "[0-9a-zA-Z\\-_]+"
+      "regex": "^[0-9a-zA-Z_]+$"
     },
     "public_name": {
       "title": "Public_Name",
       "mandatory": true,
-      "regex": "[0-9a-zA-Z\\-_]+"
+      "regex": "^[0-9a-zA-Z\\-_ ]+$"
     },
     "lane_id": {
       "title": "Lane_ID",
-      "regex": "[0-9#_]+"
+      "regex": "^[0-9#_]+$"
     },
     "study_name": {
-      "title": "Study_Name"
+      "title": "Study_Name",
+      "regex": "^[0-9a-zA-Z\\-_, ]+$"
     },
     "study_ref": {
-      "title": "Study_Reference"
+      "title": "Study_Reference",
+      "regex": "^PMID: \\d{7,8}(, PMID: \\d{7,8})*$"
     },
     "selection_random": {
       "title": "Selection_Random",
       "mandatory": true,
-      "allowed_values": ["yes", "no"]
+      "allowed_values": ["Yes", "No"]
     },
     "country": {
       "title": "Country",
@@ -73,11 +75,11 @@
     },
     "county_state": {
       "title": "County/state",
-      "regex": "[0-9a-zA-Z\\'\\- ]+"
+      "regex": "^[0-9a-zA-Z\\'\\- ]+$"
     },
     "city": {
       "title": "City",
-      "regex": "[0-9a-zA-Z\\'\\- ]+"
+      "regex": "^[0-9a-zA-Z\\'\\- ]+$"
     },
     "submitting_institution": {
       "title": "Submitting_Institution",
@@ -86,20 +88,20 @@
     "collection_year": {
       "title": "Collection_year",
       "mandatory": true,
-      "regex": "[0-9]{4}|unknown"
+      "regex": "^\\d{4}$|^unknown$"
     },
     "collection_month": {
       "title": "Collection_month",
-      "regex": "[0-9]{1,2}|unknown"
+      "regex": "^\\d{1,2}$|^unknown$"
     },
     "collection_day": {
       "title": "Collection_day",
-      "regex": "[0-9]{1,2}|unknown"
+      "regex": "^\\d{1,2}$|^unknown$"
     },
     "host_species": {
       "title": "Host_species",
       "mandatory": true,
-      "allowed_values": ["human", "bovine", "fish", "camel", "other", "unknown"]
+      "regex": "^[a-z0-9\\-\\']+$|^unknown$"
     },
     "gender": {
       "title": "Gender",
@@ -108,23 +110,23 @@
     "age_group": {
       "title": "Age_group",
       "mandatory": true,
-      "allowed_values": ["neonate", "adult", "other", "unknown"]
+      "allowed_values": ["neonate", "infant", "child", "adolescent", "adult", "unknown"]
     },
     "age_years": {
       "title": "Age_years",
-      "regex": "[0-9]{1,3}|unknown"
+      "regex": "^\\d{1,3}$|^unknown$"
     },
     "age_months": {
       "title": "Age_months",
-      "regex": "[0-9]{1,2}|unknown"
+      "regex": "^[0-9]{1,2}$|^unknown$"
     },
     "age_weeks": {
       "title": "Age_weeks",
-      "regex": "[0-9]{1,2}|unknown"
+      "regex": "^[0-9]{1,2}$|^unknown$"
     },
     "age_days": {
       "title": "Age_days",
-      "regex": "[0-9]{1,2}|unknown"
+      "regex": "^[0-9]{1,2}$|^unknown$"
     },
     "host_status": {
       "title": "Host_status",
@@ -136,7 +138,7 @@
       "allowed_values": ["sepsis", "bacteraemia", "meningitis", "pneumonia", "urinary tract infection",
         "skin and soft-tissue infection", "osteomyelitis", "endocarditis", "septic arthritis", "chorioamnionitis",
         "peritonitis", "empyema", "surgical site infection", "urosepsis", "endometritis", "mastitis",
-        "invasive GBS", "invasive other", "non-invasive other", "unknown"]
+        "septicaemia", "invasive other", "non-invasive other", "unknown"]
     },
     "disease_onset": {
       "title": "Disease_onset",
@@ -149,6 +151,10 @@
         "pus: skin infection", "pus: brain abscess", "pus: other abscess", "sputum", "urine", "pleural fluid",
         "peritoneal fluid", "pericardial fluid", "joint/synovial fluid", "bone", "lymph node", "semen", "milk",
         "spleen", "kidney", "liver", "brain", "heart", "pancreas", "other sterile site", "other non-sterile site",
+        "abscess", "abscess/pus fluid", "aspirate fluid", "blood vessels", "bronchoalveolar lavage", "burn",
+        "cellulitis/erysipelas", "decubitus", "drains/tubes", "endotracheal aspirate", "furuncle", "gall bladder",
+        "impetiginous lesions", "lungs", "muscle tissue", "prostate", "skin ulcer", "spinal cord", "stomach",
+        "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus",
         "unknown"]
     },
     "serotype": {
@@ -156,7 +162,8 @@
       "allowed_values": ["Ia", "Ib", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "NT"]
     },
     "serotype_method": {
-      "title": "Serotype_method"
+      "title": "Serotype_method",
+      "regex": "^latex agglutination|lancefield|PCR|other|unknown(, latex agglutination|lancefield|PCR|other)*$"
     },
     "infection_during_pregnancy": {
       "title": "Infection_during_pregnancy",
@@ -169,15 +176,15 @@
     },
     "gestational_age_weeks": {
       "title": "Gestational_age_weeks",
-      "regex": "[0-9]{1,3}|unknown|nonpregnant|"
+      "regex": "^\\d{1,2}$|^unknown$|^nonpregnant$"
     },
     "birth_weight_gram": {
       "title": "Birthweight_gram",
-      "regex": "[0-9]{1,3}|unknown"
+      "regex": "^\\d{1,3}$|^unknown$"
     },
     "apgar_score": {
       "title": "Apgar_score",
-      "regex": "[1-9]|10|unknown"
+      "regex": "^[1-9]|10$|^unknown$"
     },
     "ceftizoxime": {
       "title": "Ceftizoxime",
