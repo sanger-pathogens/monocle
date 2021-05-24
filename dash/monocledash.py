@@ -3,6 +3,7 @@ import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
 from   flask_parameter_validation   import ValidateParameters, Route
+from   flask                        import render_template
 import logging
 
 import MonocleDash.monocleclient
@@ -54,8 +55,7 @@ def metadata_download(  institution:   str = Route(min_length=5),
 
 @server.route('/upload')
 def metadata_upload():
-   upload_page = flask.Response( 'Metadata upload page' )
-   return upload_page 
+   return render_template('upload.html', title='Monocle metadata upload')
 
 
 ###################################################################################################################################
