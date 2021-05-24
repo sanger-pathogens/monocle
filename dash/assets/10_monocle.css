@@ -105,6 +105,19 @@ img.header_logo {
    right:         1ex;
 }
 
+button.refresh_button{
+   float:         right;
+   margin-top:    10px;
+   /* must accommodate img.refresh_icon */
+   min-height:    25px;
+   border:        none;
+   padding:       none;
+}
+
+img.refresh_icon {
+   height:        25px;
+}
+
 .page_footer {
    padding:       1ex;
    margin-top:    1em;
@@ -265,6 +278,15 @@ td.text_column {
 
 td.centered {
    text-align:    center;
+}
+
+.tiny_text {
+   font-size:     xx-small;
+}
+
+.compact {
+   margin:        none;
+   padding:       none;
 }
 
 button.button_looks_like_link {

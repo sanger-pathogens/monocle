@@ -27,6 +27,8 @@ class MonocleData:
    day_zero = datetime(2019,9,17)
 
    def __init__(self):
+      logging.info("*** instatiating MonocleData:  dashboatd data will be updated ***")
+      self.updated                     = datetime.now()
       self.monocledb                   = DataSources.monocledb.MonocleDB()
       self.metadata_source             = DataSources.metadata_download.MetadataDownload()
       self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
