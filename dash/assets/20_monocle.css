@@ -96,17 +96,9 @@ img.header_logo {
    right:         1ex;
 }
 
-button.refresh_button{
+div.button_bar{
    float:         right;
    margin-top:    10px;
-   /* must accommodate img.refresh_icon */
-   min-height:    25px;
-   border:        none;
-   padding:       none;
-}
-
-img.refresh_icon {
-   height:        25px;
 }
 
 .page_footer {
@@ -317,6 +309,11 @@ button.button_looks_like_link:hover {
    font-style:    italic;
 }
 
+
+td.numeric {
+   text-align:    right;
+}
+
 a.download_link {
    text-decoration: none;
 }
@@ -325,14 +322,31 @@ img.download_icon{
    height:        1.6em;
 }
 
-td.numeric {
-   text-align:    right;
-}
-
-
 td.download {
    vertical-align: bottom;
    padding-left:  0px;
+}
+
+button.refresh_button{
+   /* must match img.refresh_icon */
+   border:        none;
+   padding:       0px;
+   margin:        0px;
+}
+
+img.refresh_icon {
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.upload_icon{
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.dashboard_icon{
+   height:        30px;
+   margin-left:   10px;
 }
 
 td.per_cent_gauge {

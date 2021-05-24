@@ -128,7 +128,7 @@ def page_content(dash_params=None):
                                                                         'Funders'   : 'https://www.gbsgen.net/#funders',
                                                                         }
                                                       ) +
-                              mc.refresh_button(      app.get_asset_url('refresh-icon.png')
+                              mc.button_bar(          app
                                                       ) +
                               mc.sample_progress(     dash_params['progress_graph']
                                                       ) +
