@@ -15,6 +15,13 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 # first create a Flask server
 server = flask.Flask(__name__)
 
+
+###################################################################################################################################
+# 
+# /download
+# 
+# Flask route, returns CSV retrieved via MonocleData.get_metadata()
+
 def download_parameter_error(message):
    logging.error("Invalid request to /download: {}".format(message))
    return "Download request was not valid.  {}".format(message), 400
@@ -22,11 +29,10 @@ def download_parameter_error(message):
 # first bit of path should match the `location` used for nginx proxy config
 @server.route('/download/<string:institution>/<string:category>/<string:status>')
 @ValidateParameters(download_parameter_error)
-def index(  institution:   str = Route(min_length=5),
-            category:      str = Route(pattern='^(sequencing)|(pipeline)$'),
-            status:        str = Route(pattern='^(successful)|(failed)$'),
-            ):
-   data              = MonocleDash.monocleclient.MonocleData()
+def metadata_download(  institution:   str = Route(min_length=5),
+                        category:      str = Route(pattern='^(sequencing)|(pipeline)$'),
+                        status:        str = Route(pattern='^(successful)|(failed)$'),
+                        ):
    institution_data  = data.get_institutions()
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
@@ -38,6 +44,25 @@ def index(  institution:   str = Route(min_length=5),
                                                                                                status)
    return csv_response
 
+
+###################################################################################################################################
+# 
+# /upload
+# 
+# Flask route, displays metadata upload page
+# TODO this is just a placeholder, there's no actual upload finctionality here
+
+@server.route('/upload')
+def metadata_upload():
+   upload_page = flask.Response( 'Metadata upload page' )
+   return upload_page 
+
+
+###################################################################################################################################
+# 
+# /dashboard
+# 
+# this is the main Dash app, not a bog stnadrad Flask route
 
 # create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
