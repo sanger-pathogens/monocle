@@ -2,8 +2,8 @@ import dash
 import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
-from   flask_parameter_validation   import ValidateParameters, Route
 from   flask                        import render_template
+from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
 import MonocleDash.monocleclient
@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 ###################################################data  = MonocleDash.monocleclient.MonocleData()
 
 # first create a Flask server
-server = flask.Flask(__name__)
+server = flask.Flask(__name__, static_folder='assets')
 
 
 ###################################################################################################################################
@@ -53,9 +53,10 @@ def metadata_download(  institution:   str = Route(min_length=5),
 # Flask route, displays metadata upload page
 # TODO this is just a placeholder, there's no actual upload finctionality here
 
-@server.route('/upload')
+@server.route('/upload/')
 def metadata_upload():
    return render_template('upload.html', title='Monocle metadata upload')
+ 
 
 
 ###################################################################################################################################
