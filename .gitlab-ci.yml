@@ -32,21 +32,6 @@ API unit tests:
     - ./manage.py test
 
 
-App unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${UI_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd ui
-    - yarn install
-  script:
-    #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - yarn test:ci
-
-
 Dashboard unit tests:
   stage: unit_test
   only:
