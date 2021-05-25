@@ -162,6 +162,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         if not metadata_list:
             return
 
+        logger.info(
+            "update_sample_metadata: About to write {} upload samples to the database...".format(len(metadata_list))
+        )
+
         # Use a transaction...
         with self.connector.get_connection() as con:
 
@@ -231,6 +235,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     vancomycin=metadata.vancomycin,
                     vancomycin_method=metadata.vancomycin_method
                 )
+
+        logger.info("update_sample_metadata completed")
 
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download metadata for given list of 'sample:lane' keys """

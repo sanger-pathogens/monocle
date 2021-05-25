@@ -1,4 +1,5 @@
 {
+  "MAX_CONTENT_LENGTH": 1048576,
   "logging_config": {
     "version": 1,
     "formatters": {
@@ -40,46 +41,66 @@
     "sanger_sample_id": {
       "title": "Sanger_Sample_ID",
       "mandatory": true,
-      "regex": "^[0-9a-zA-Z\\-_]+$"
+      "max_length": 256,
+      "regex": "^[0-9a-zA-Z\\-_]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "supplier_sample_name": {
       "title": "Supplier_Sample_Name",
       "mandatory": true,
-      "regex": "^[0-9a-zA-Z_]+$"
+      "max_length": 20,
+      "regex": "^[0-9a-zA-Z_]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "public_name": {
       "title": "Public_Name",
       "mandatory": true,
-      "regex": "^[0-9a-zA-Z\\-_ ]+$"
+      "max_length": 256,
+      "regex": "^[0-9a-zA-Z\\-_ ]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "lane_id": {
       "title": "Lane_ID",
-      "regex": "^[0-9#_]+$"
+      "max_length": 256,
+      "regex": "^\\d+_\\d+#\\d+$",
+      "regex_validation_message": "is not a recognised lane Id format"
     },
     "study_name": {
       "title": "Study_Name",
-      "regex": "^[0-9a-zA-Z\\-_, ]+$"
+      "max_length": 1024,
+      "regex": "^[0-9a-zA-Z\\-_, ]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "study_ref": {
       "title": "Study_Reference",
-      "regex": "^PMID: \\d{7,8}(, PMID: \\d{7,8})*$"
+      "max_length": 1024,
+      "regex": "^PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*$",
+      "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID 1234567, PMID: 23456789"
     },
     "selection_random": {
       "title": "Selection_Random",
-      "mandatory": true,
-      "allowed_values": ["Yes", "No"]
+      "max_length": 10,
+      "allowed_values": ["yes", "no"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "country": {
       "title": "Country",
-      "mandatory": true
+      "mandatory": true,
+      "max_length": 90
     },
     "county_state": {
       "title": "County/state",
-      "regex": "^[0-9a-zA-Z\\'\\- ]+$"
+      "max_length": 200,
+      "regex": "^[0-9a-zA-Z\\'\\- ]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "city": {
       "title": "City",
-      "regex": "^[0-9a-zA-Z\\'\\- ]+$"
+      "max_length": 200,
+      "regex": "^[0-9a-zA-Z\\'\\- ]+$",
+      "regex_validation_message": "contains illegal characters"
     },
     "submitting_institution": {
       "title": "Submitting_Institution",
@@ -87,65 +108,123 @@
     },
     "collection_year": {
       "title": "Collection_year",
-      "mandatory": true,
-      "regex": "^\\d{4}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{4}$|^unknown$",
+      "regex_validation_message": "must be a YYYY format year or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "collection_month": {
       "title": "Collection_month",
-      "regex": "^\\d{1,2}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{1,2}$|^unknown$",
+      "regex_validation_message": "must be a MM format month or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "collection_day": {
       "title": "Collection_day",
-      "regex": "^\\d{1,2}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{1,2}$|^unknown$",
+      "regex_validation_message": "must be a DD format day or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "host_species": {
       "title": "Host_species",
-      "mandatory": true,
-      "regex": "^[a-z0-9\\-\\']+$|^unknown$"
+      "max_length": 100,
+      "allowed_values": ["human", "bovine", "fish", "camel", "other", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "gender": {
       "title": "Gender",
-      "allowed_values": ["M", "F", "unknown"]
+      "max_length": 10,
+      "allowed_values": ["M", "F", "unknown"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["M", "F"]
+      }
     },
     "age_group": {
       "title": "Age_group",
-      "mandatory": true,
-      "allowed_values": ["neonate", "infant", "child", "adolescent", "adult", "unknown"]
+      "max_length": 30,
+      "allowed_values": ["neonate", "infant", "child", "adolescent", "adult", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "age_years": {
       "title": "Age_years",
-      "regex": "^\\d{1,3}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{1,3}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "age_months": {
       "title": "Age_months",
-      "regex": "^[0-9]{1,2}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "age_weeks": {
       "title": "Age_weeks",
-      "regex": "^[0-9]{1,2}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "age_days": {
       "title": "Age_days",
-      "regex": "^[0-9]{1,2}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "host_status": {
       "title": "Host_status",
-      "mandatory": true,
-      "allowed_values": ["carriage", "invasive disease", "non-invasive disease", "unknown"]
+      "max_length": 256,
+      "allowed_values": ["carriage", "invasive disease", "non-invasive disease", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "disease_type": {
       "title": "Disease_type",
+      "max_length": 100,
       "allowed_values": ["sepsis", "bacteraemia", "meningitis", "pneumonia", "urinary tract infection",
         "skin and soft-tissue infection", "osteomyelitis", "endocarditis", "septic arthritis", "chorioamnionitis",
         "peritonitis", "empyema", "surgical site infection", "urosepsis", "endometritis", "mastitis",
-        "septicaemia", "invasive other", "non-invasive other", "unknown"]
+        "septicaemia", "invasive other", "non-invasive other", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "disease_onset": {
       "title": "Disease_onset",
-      "allowed_values": ["EOD", "LOD", "VLOD", "other", "unknown"]
+      "max_length": 10,
+      "allowed_values": ["EOD", "LOD", "VLOD", "other", "unknown"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["EOD", "LOD", "VLOD"]
+      }
     },
     "isolation_source": {
       "title": "Isolation_source",
+      "max_length": 100,
       "allowed_values": ["rectovaginal swab", "vaginal swab", "ear swab", "umbilical swab", "umbilical swab",
         "throat swab", "skin swab", "rectal swab", "placenta", "blood", "cerebrospinal fluid", "cord blood",
         "pus: skin infection", "pus: brain abscess", "pus: other abscess", "sputum", "urine", "pleural fluid",
@@ -155,148 +234,279 @@
         "cellulitis/erysipelas", "decubitus", "drains/tubes", "endotracheal aspirate", "furuncle", "gall bladder",
         "impetiginous lesions", "lungs", "muscle tissue", "prostate", "skin ulcer", "spinal cord", "stomach",
         "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus",
-        "unknown"]
+        "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "serotype": {
       "title": "Serotype",
+      "max_length": 7,
       "allowed_values": ["Ia", "Ib", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "NT"]
     },
     "serotype_method": {
       "title": "Serotype_method",
-      "regex": "^latex agglutination|lancefield|PCR|other|unknown(, latex agglutination|lancefield|PCR|other)*$"
+      "max_length": 100,
+      "regex": "(?i)^latex agglutination|Lancefield|PCR|other|unknown(, latex agglutination|Lancefield|PCR|other)*$",
+      "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other, unknown)",
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Lancefield", "PCR"]
+      }
     },
     "infection_during_pregnancy": {
       "title": "Infection_during_pregnancy",
-      "allowed_values": ["yes", "no", "unknown"]
+      "max_length": 10,
+      "allowed_values": ["yes", "no", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "maternal_infection_type": {
       "title": "Maternal_infection_type",
+      "max_length": 100,
       "allowed_values": ["urinary tract infection", "chorioamnionitis/intrauterine infection", "sepsis", "meningitis",
-        "arthritis", "skin and soft-tissue infection", "invasive other", "non-invasive other", "unknown"]
+        "arthritis", "skin and soft-tissue infection", "invasive other", "non-invasive other", "unknown"],
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "gestational_age_weeks": {
       "title": "Gestational_age_weeks",
-      "regex": "^\\d{1,2}$|^unknown$|^nonpregnant$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{1,2}$|^unknown$|^nonpregnant$",
+      "regex_validation_message": "should be a valid number, 'unknown' or 'nonpregnant'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "birth_weight_gram": {
       "title": "Birthweight_gram",
-      "regex": "^\\d{1,3}$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^\\d{1,3}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "apgar_score": {
       "title": "Apgar_score",
-      "regex": "^[1-9]|10$|^unknown$"
+      "max_length": 10,
+      "regex": "(?i)^[1-9]|10$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
+      "convert_case": {
+        "case": "lower"
+      }
     },
     "ceftizoxime": {
       "title": "Ceftizoxime",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "ceftizoxime_method": {
       "title": "Ceftizoxime_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "cefoxitin": {
       "title": "Cefoxitin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "cefoxitin_method": {
       "title": "Cefoxitin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "cefotaxime": {
       "title": "Cefotaxime",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "cefotaxime_method": {
       "title": "Cefotaxime_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "cefazolin": {
       "title": "Cefazolin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "cefazolin_method": {
       "title": "Cefazolin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "ampicillin": {
       "title": "Ampicillin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "ampicillin_method": {
       "title": "Ampicillin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "penicillin": {
       "title": "Penicillin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "penicillin_method": {
       "title": "Penicillin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "erythromycin": {
       "title": "Erythromycin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "erythromycin_method": {
       "title": "Erythromycin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "clindamycin": {
       "title": "Clindamycin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "clindamycin_method": {
       "title": "Clindamycin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "tetracycline": {
       "title": "Tetracycline",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "tetracycline_method": {
       "title": "Tetracycline_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "levofloxacin": {
       "title": "Levofloxacin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "levofloxacin_method": {
       "title": "Levofloxacin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "ciprofloxacin": {
       "title": "Ciprofloxacin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "ciprofloxacin_method": {
       "title": "Ciprofloxacin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "daptomycin": {
       "title": "Daptomycin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "daptomycin_method": {
       "title": "Daptomycin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "vancomycin": {
       "title": "Vancomycin",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "vancomycin_method": {
       "title": "Vancomycin_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     },
     "linezolid": {
       "title": "Linezolid",
-      "regex": "(?:\\d+(?:\\.\\d*)?|\\.\\d+)|S|I|R"
+      "max_length": 30,
+      "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)$|^[S|I|R]{1}$",
+      "regex_validation_message": "should be a valid floating point number or alternatively S, I, or R"
     },
     "linezolid_method": {
       "title": "Linezolid_method",
-      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "etes"]
+      "max_length": 60,
+      "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
+      "convert_case": {
+        "case": "lower",
+        "exclusions": ["Etest"]
+      }
     }
   }
 }

@@ -14,6 +14,8 @@ HTTP_BAD_REQUEST_STATUS = 400
 HTTP_NOT_FOUND_STATUS = 404
 HTTP_SUCCEEDED_STATUS = 200
 
+UPLOAD_EXTENSION = '.xlsx'
+
 
 @inject
 def update_sample_metadata(body: list, upload_handler: UploadHandler):
@@ -26,7 +28,18 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
         logger.error('Missing upload spreadsheet file in request')
         return 'Missing spreadsheet file', HTTP_BAD_REQUEST_STATUS
 
-    spreadsheet_file = '/tmp/{}.xlsx'.format(str(uuid.uuid4()))
+    # Check the extension...
+    # TODO File extensions should be externalised to config
+    if uploaded_file.filename:
+        file_ext = os.path.splitext(uploaded_file.filename)[1]
+        if file_ext != UPLOAD_EXTENSION:
+            logger.error('Upload file does not have the correct extension: {}'.format(file_ext))
+            return 'The upload file must be an Excel spreadsheet {} file'.format(UPLOAD_EXTENSION), \
+                   HTTP_BAD_REQUEST_STATUS
+
+    logger.info('Uploading spreadsheet {}...'.format(uploaded_file.filename))
+
+    spreadsheet_file = '/tmp/{}.{}'.format(str(uuid.uuid4()), UPLOAD_EXTENSION)
     uploaded_file.save(spreadsheet_file)
 
     try:
@@ -43,6 +56,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
 
 @inject
 def compare_sample_metadata(body: list):
+    # TODO do we need to compare before we update the db?
     pass
 
 
