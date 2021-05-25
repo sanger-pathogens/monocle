@@ -91,7 +91,7 @@ services:
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     expose:
-        - "80"
+       - "80"
     restart: unless-stopped
     security_opt:
        - no-new-privileges
@@ -101,10 +101,48 @@ services:
        - "/run:rw,noexec,nosuid"
        - "/tmp:rw,noexec,nosuid"
     volumes:
-        - data:/dash/data
-        - ./my.cnf:/dash/my.cnf
+       - data:/dash/data
+       - ./my.cnf:/dash/my.cnf
     depends_on:
         - proxy
+  monocle-ldap:
+    # temporarily use default image; should create out own (https://github.com/osixia/docker-openldap#advanced-user-guide)
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/openldap:1.5.0"
+    expose:
+        - "80"
+    restart: unless-stopped
+    security_opt:
+       - no-new-privileges
+    cap_drop:
+       - ALL
+    tmpfs:
+      - "/run:rw,noexec,nosuid"
+      - "/tmp:rw,noexec,nosuid"
+    volumes:
+      # this YAML file can be used to override defaults
+      # (see https://github.com/osixia/docker-openldap/blob/master/image/environment/default.startup.yaml)
+      - ./openldap-env.yaml/container:/environment/01-custom/my-env.yaml
+      - ./openldap-data/var/lib/ldap:/var/lib/ldap
+      - ./openldap-data/etc/ldap/slapd.d:/etc/ldap/slapd.d
+    depends_on:
+      - proxy
+  ldap-admin:
+    image: gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:0.9.0
+    expose:
+      - "80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    tmpfs:
+      - "/run:rw,noexec,nosuid"
+      - "/tmp:rw,noexec,nosuid"
+    environment:
+      - PHPLDAPADMIN_HTTPS="false"
+      # make sure this matches the name of the openldap service (above)
+      - PHPLDAPADMIN_LDAP_HOSTS="monocle-ldap"
+   
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
