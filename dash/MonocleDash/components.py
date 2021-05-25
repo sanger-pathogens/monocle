@@ -108,9 +108,13 @@ def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/'):
    return elements
    
    
-def refresh_button(icon_url):
-   icon = html.Img(className = 'refresh_icon', src = icon_url, alt = 'refresh data', title = 'refresh data')
-   return [ html.Button(icon, id='refresh-button', className="refresh_button", name='fpp', n_clicks=0) ]
+def button_bar(app):
+   elements = [   html.Div(id          =  'button-bar',
+                           className   =  'button_bar',
+                           children    =  upload_button(app) + refresh_button(app)
+                           )
+                  ]
+   return elements
 
 
 def sample_progress(params):
@@ -155,6 +159,7 @@ def institution_status(selected_institutions, params):
                   html.Br(className = 'clear_float'),
                   ]
    return elements
+
 
 
 ###################################################################################################################################
@@ -645,3 +650,29 @@ def download_button(app, alt_text, institution, category, status):
                            ),
                   ]
    return elements
+
+def upload_button(app):
+   icon_url    = app.get_asset_url("upload-icon.png")
+   upload_url  = '/upload/'
+   alt_text    = 'upload metadata'
+   logging.debug("upload button: upload URL = {}, icon URL = {}, alt text = '{}'".format(upload_url, icon_url, alt_text))
+   elements = [   
+                  html.A(  className   = 'upload_link',
+                           href        = upload_url,
+                           children    = [html.Img(src   = icon_url,
+                                                   alt   = alt_text,
+                                                   title = alt_text,
+                                                   className = 'upload_icon',
+                                                   ),
+                                          ],
+                           ),
+                  ]
+   return elements
+
+
+def refresh_button(app):
+   icon_url    = app.get_asset_url("refresh-icon-2.png")
+   alt_text    = 'refresh data'
+   logging.debug("refresh button: icon URL = {}, alt text = '{}'".format(icon_url, alt_text))
+   icon = html.Img(className = 'refresh_icon', src = icon_url, alt =alt_text, title = alt_text)
+   return [ html.Button(icon, id='refresh-button', className="refresh_button", n_clicks=0) ]
