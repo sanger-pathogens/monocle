@@ -121,7 +121,7 @@ services:
     volumes:
       # this YAML file can be used to override defaults
       # (see https://github.com/osixia/docker-openldap/blob/master/image/environment/default.startup.yaml)
-      - ./openldap-env.yaml/container:/environment/01-custom/my-env.yaml
+      - ./openldap-env.yaml:/container/environment/01-custom/my-env.yaml
       - ./openldap-data/var/lib/ldap:/var/lib/ldap
       - ./openldap-data/etc/ldap/slapd.d:/etc/ldap/slapd.d
     depends_on:
