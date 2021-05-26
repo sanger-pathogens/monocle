@@ -67,13 +67,13 @@
     },
     "study_name": {
       "title": "Study_Name",
-      "max_length": 1024,
+      "max_length": 600,
       "regex": "^[0-9a-zA-Z\\-_, ]+$",
       "regex_validation_message": "contains illegal characters"
     },
     "study_ref": {
       "title": "Study_Reference",
-      "max_length": 1024,
+      "max_length": 400,
       "regex": "^PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*$",
       "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID 1234567, PMID: 23456789"
     },
@@ -274,8 +274,8 @@
     "gestational_age_weeks": {
       "title": "Gestational_age_weeks",
       "max_length": 10,
-      "regex": "(?i)^\\d{1,2}$|^unknown$|^nonpregnant$",
-      "regex_validation_message": "should be a valid number, 'unknown' or 'nonpregnant'",
+      "regex": "(?i)^\\d{1,2}$|^unknown$",
+      "regex_validation_message": "should be a valid number or 'unknown'",
       "convert_case": {
         "case": "lower"
       }
