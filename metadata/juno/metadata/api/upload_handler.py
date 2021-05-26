@@ -12,6 +12,13 @@ from metadata.api.database.monocle_database_service import MonocleDatabaseServic
 logger = logging.getLogger()
 
 
+class _StringLengthValidation(CustomElementValidation):
+    """ A custom validator class for checking the data frame string lengths """
+    def __init__(self, message: str, max_length: int):
+        self.max_length = max_length
+        super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
+
+
 class UploadHandler:
     """ Handle processing of upload spreadsheets """
 
@@ -79,9 +86,9 @@ class UploadHandler:
                 max_len = self.__spreadsheet_def.get_max_length(column)
                 if max_len and max_len > 0:
                     validators.append(
-                        CustomElementValidation(
-                            lambda s: len(s) <= max_len,
-                            'field length is greater than {} characters'.format(str(max_len))
+                        _StringLengthValidation(
+                            'field length is greater than {} characters'.format(str(max_len)),
+                            max_len
                         )
                     )
 
@@ -120,8 +127,9 @@ class UploadHandler:
         data = pandas.read_excel(file_path, dtype=str, header=self.__spreadsheet_def.header_row_position)
         data.fillna('', inplace=True)
 
-        for key, value in data.iterrows():
-            logger.debug("{} {}".format(key, value))
+        # Display spreadsheet contents for debugging if required
+        # for key, value in data.iterrows():
+        #    logger.debug("{} {}".format(key, value))
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them

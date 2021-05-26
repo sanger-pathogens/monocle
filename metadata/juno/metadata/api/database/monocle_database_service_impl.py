@@ -56,7 +56,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 :selection_random, :serotype_method, :study_name, :study_ref, :tetracycline, :tetracycline_method,
                 :vancomycin, :vancomycin_method 
             ) ON DUPLICATE KEY UPDATE
-                sample_id = :sanger_sample_id, 
                 lane_id = :lane_id, 
                 supplier_sample_name = :supplier_sample_name, 
                 public_name = :public_name, 
@@ -167,10 +166,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         )
 
         # Use a transaction...
-        with self.connector.get_connection() as con:
-
-            #con.execute(self.DELETE_ALL_SAMPLES_SQL)
-
+        with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
                 con.execute(
                     self.INSERT_OR_UPDATE_SAMPLE_SQL,

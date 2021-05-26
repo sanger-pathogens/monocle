@@ -119,15 +119,15 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             )
         ]
 
-        self.connection.execute.assert_has_calls(calls, any_order=False)
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
 
     def test_update_sample_metadata_noinput(self) -> None:
         metadata_list = []
         self.under_test.update_sample_metadata(metadata_list)
-        self.connector.get_connection.assert_not_called()
+        self.transactional_connection.get_connection.assert_not_called()
         metadata_list = None
         self.under_test.update_sample_metadata(metadata_list)
-        self.connector.get_connection.assert_not_called()
+        self.transactional_connection.get_connection.assert_not_called()
 
     def test_get_download_metadata(self) -> None:
 

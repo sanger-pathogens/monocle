@@ -85,7 +85,7 @@ class TestUploadHandler(unittest.TestCase):
         self.assertTrue(
             '{row: 35, column: "Collection_day"}: "ABCD" must be a DD format day or \'unknown\'' in validation_errors)
         self.assertTrue(
-            '{row: 37, column: "Host_species"}: "Panda" is not in the list of legal options (human, bovine, fish, camel, other, unknown)' in validation_errors)
+            '{row: 37, column: "Host_species"}: "Panda" is not in the list of legal options (human, bovine, fish, goat, camel, other, unknown)' in validation_errors)
         self.assertTrue(
             '{row: 38, column: "Gender"}: "INVALID" is not in the list of legal options (M, F, unknown)' in validation_errors)
         self.assertTrue(
