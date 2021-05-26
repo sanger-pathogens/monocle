@@ -109,7 +109,7 @@ class TestUploadHandler(unittest.TestCase):
         self.assertTrue(
             '{row: 47, column: "Infection_during_pregnancy"}: "HUH?" is not in the list of legal options (yes, no, unknown)' in validation_errors)
         self.assertTrue(
-            '{row: 51, column: "Gestational_age_weeks"}: "ZZ" should be a valid number, \'unknown\' or \'nonpregnant\'' in validation_errors)
+            '{row: 51, column: "Gestational_age_weeks"}: "ZZ" should be a valid number or \'unknown\'' in validation_errors)
         self.assertTrue(
             '{row: 51, column: "Birthweight_gram"}: "HHHH" should be a valid number or \'unknown\'' in validation_errors)
         self.assertTrue(
