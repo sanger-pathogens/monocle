@@ -31,9 +31,9 @@ class Affiliation(models.Model):
 
 class Sample(models.Model):
     sample_id = models.CharField(max_length=256, primary_key=True)
-    lane_id = models.CharField(max_length=256, unique=True, null=True)
+    lane_id = models.CharField(max_length=256, default='', null=True)
     supplier_sample_name = models.CharField(max_length=256, default='')
-    public_name = models.CharField(max_length=256, unique=True)
+    public_name = models.CharField(max_length=256, default='')
     host_status = models.CharField(max_length=256, default='')
     study_name = models.CharField(max_length=600, default='')
     study_ref = models.CharField(max_length=400, default='')
