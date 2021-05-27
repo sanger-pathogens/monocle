@@ -80,6 +80,9 @@ components:
       type: array
       items:
         type: string
+        minLength: 3
+        maxLength: 270
+        pattern: '^\S+[:]\S+$'
       minItems: 1
 
     DownloadField:
