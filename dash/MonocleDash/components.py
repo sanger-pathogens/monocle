@@ -8,6 +8,8 @@ import urllib.parse
 
 raquo = '\u00bb'
 
+
+
 ###################################################################################################################################
 # 
 #  main sections of the page
@@ -42,7 +44,7 @@ def page_header(text, logo_url=None, logo_text='', logo_link='/', header_links=N
                               )
    elements = [
       html.Div(
-         className   = 'footer_outer_container',
+         className   = 'header_outer_container',
          children    = [html.Div(
                            className   = 'page_header',
                            children    = [logo_html,
@@ -105,6 +107,15 @@ def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/'):
       ]
    return elements
    
+   
+def button_bar(app):
+   elements = [   html.Div(id          =  'button-bar',
+                           className   =  'button_bar',
+                           children    =  upload_button(app) + refresh_button(app)
+                           )
+                  ]
+   return elements
+
 
 def sample_progress(params):
    elements = [   html.Div(id          =  'juno-project-progress',
@@ -139,14 +150,16 @@ def institution_choice(params):
    return elements
 
 
-def institution_status(initially_selected, params):
-   logging.info("rendering institution status container; {} initially selected".format(initially_selected))
+def institution_status(selected_institutions, params):
+   logging.info("rendering institution status container; selected institutions = {}".format(selected_institutions))
    elements =  [  html.Div(id          =  params['institution_callback_output_id'],
                            className   =  'institution_status_container',
+                           children    =  status_by_institution(selected_institutions, params)
                            ),
                   html.Br(className = 'clear_float'),
                   ]
    return elements
+
 
 
 ###################################################################################################################################
@@ -194,12 +207,12 @@ def status_by_institution(selected_institutions, params):
    elements =  [
                   html.Div(id          =  '{}-status'.format(this_institution),
                            style       =  {'display': params['display'][this_institution]},
-                           children    =  [ html.H2( params['institutions'][this_institution]['name'] ) ]   +
-                                          samples_received_by_institution(  this_institution, params)       +
-                                          samples_sequenced_by_institution( this_institution, params)       +
-                                          pipeline_by_institution(          this_institution, params)       +
-                                          [ html.Br(className = 'clear_float') ]                            +
-                                          failed_samples_by_institution( this_institution, params)          +
+                           children    =  [ html.H2( escape(params['institutions'][this_institution]['name']) ) ] +
+                                          samples_received_by_institution(  this_institution, params)             +
+                                          samples_sequenced_by_institution( this_institution, params)             +
+                                          pipeline_by_institution(          this_institution, params)             +
+                                          [ html.Br(className = 'clear_float') ]                                  +
+                                          failed_samples_by_institution( this_institution, params)                +
                                           [ html.Br(className = 'clear_float') ],
                            )
                   for this_institution in sorted( params['institutions'].keys() )
@@ -264,6 +277,14 @@ def samples_received_table(this_institution, params):
                                           html.Tr([
                                              html.Td( 'total received:', colSpan=2, className = 'text_column centered' ),
                                              html.Td( this_batch['received'], className='numeric' ),
+                                             ]),
+                                          ]+[
+                                          html.Tr([
+                                             html.Td( 
+                                                colSpan     = 4,
+                                                className   = 'text_column centered compact tiny_text',
+                                                children    = [params['updated'].strftime( '%H:%M:%S.%f' )],
+                                                ),
                                              ]),
                                           ]),
                                        ]
@@ -629,3 +650,29 @@ def download_button(app, alt_text, institution, category, status):
                            ),
                   ]
    return elements
+
+def upload_button(app):
+   icon_url    = app.get_asset_url("upload-icon.png")
+   upload_url  = '/upload/'
+   alt_text    = 'upload metadata'
+   logging.debug("upload button: upload URL = {}, icon URL = {}, alt text = '{}'".format(upload_url, icon_url, alt_text))
+   elements = [   
+                  html.A(  className   = 'upload_link',
+                           href        = upload_url,
+                           children    = [html.Img(src   = icon_url,
+                                                   alt   = alt_text,
+                                                   title = alt_text,
+                                                   className = 'upload_icon',
+                                                   ),
+                                          ],
+                           ),
+                  ]
+   return elements
+
+
+def refresh_button(app):
+   icon_url    = app.get_asset_url("refresh-icon-2.png")
+   alt_text    = 'refresh data'
+   logging.debug("refresh button: icon URL = {}, alt text = '{}'".format(icon_url, alt_text))
+   icon = html.Img(className = 'refresh_icon', src = icon_url, alt =alt_text, title = alt_text)
+   return [ html.Button(icon, id='refresh-button', className="refresh_button", n_clicks=0) ]

@@ -2,7 +2,6 @@
 
 stages:
   - unit_test
-  - integration_test
   - docker_build
   - docker_push
   
@@ -13,21 +12,6 @@ variables:
   METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-
-
-App unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${UI_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd ui
-    - yarn install
-  script:
-    #- yarn test:ci && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - yarn test:ci
 
 
 Dashboard unit tests:
@@ -56,27 +40,6 @@ Metadata unit tests:
   script:
     - ./unittests.sh
 
-
-Integration tests:
-  stage: integration_test
-  only:
-    - branches
-  tags:
-    - monocle_e2e_runner
-  before_script:
-    - echo -n "${CI_JOB_TOKEN}" | docker login -u gitlab-ci-token --password-stdin "${CI_REGISTRY}"
-    - cd "${CI_PROJECT_DIR}/e2e"; pwd
-    - yarn install --verbose
-    - cd "${CI_PROJECT_DIR}"; pwd
-    - docker-compose -f docker-compose.e2e.yml build
-  script:
-    - docker-compose -f docker-compose.e2e.yml up -d
-    - sleep 10; docker container ls
-    - cd "${CI_PROJECT_DIR}/e2e"; pwd
-    - yarn test:ci
-  after_script:
-    - cd "${CI_PROJECT_DIR}"; pwd
-    - docker-compose -f docker-compose.e2e.yml down
 
     
 # at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno

@@ -1,12 +1,3 @@
-/*
- *    specific changes to default styles
- */
-
-th:not(.CalendarDay), td:not(.CalendarDay) {
-   border-bottom: none;
-   padding: 0.6em 1ex;
-}
-
 
 /*
  *    styles applied throughout page
@@ -103,6 +94,11 @@ img.header_logo {
    position:      absolute;
    top:           2ex;
    right:         1ex;
+}
+
+div.button_bar{
+   float:         right;
+   margin-top:    10px;
 }
 
 .page_footer {
@@ -267,6 +263,15 @@ td.centered {
    text-align:    center;
 }
 
+.tiny_text {
+   font-size:     xx-small;
+}
+
+.compact {
+   margin:        none;
+   padding:       none;
+}
+
 button.button_looks_like_link {
    display:       inherit;
    border:        none;
@@ -304,6 +309,11 @@ button.button_looks_like_link:hover {
    font-style:    italic;
 }
 
+
+td.numeric {
+   text-align:    right;
+}
+
 a.download_link {
    text-decoration: none;
 }
@@ -312,14 +322,31 @@ img.download_icon{
    height:        1.6em;
 }
 
-td.numeric {
-   text-align:    right;
-}
-
-
 td.download {
    vertical-align: bottom;
    padding-left:  0px;
+}
+
+button.refresh_button{
+   /* must match img.refresh_icon */
+   border:        none;
+   padding:       0px;
+   margin:        0px;
+}
+
+img.refresh_icon {
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.upload_icon{
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.dashboard_icon{
+   height:        30px;
+   margin-left:   10px;
 }
 
 td.per_cent_gauge {
