@@ -133,23 +133,19 @@ services:
       # this next directory isn't mentioned in the documentation, but the container won't start without it
       - ./openldap-data/var/run/slapd:/var/run/slapd
   ldap-admin:
-    image: gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:0.9.0
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:0.9.0"
     expose:
       - "80"
     restart: unless-stopped
     tmpfs:
-      - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      # these directories aren't mentioned in the documentation, but the container won't start without them
-      - ./phpldapadmin-data/run/php:/run/php
+      # this next directory isn't mentioned in the documentation, but the container won't start without it
       - ./phpldapadmin-data/var/lock:/var/lock
     environment:
-      - PHPLDAPADMIN_HTTPS="false"
-      # make sure this matches the name of the openldap service (above)
-      - PHPLDAPADMIN_LDAP_HOSTS="monocle-ldap"
-    depends_on:
-      - monocle-ldap
+      - PHPLDAPADMIN_HTTPS=false
+      # make sure the host name matches the name of the openldap service (above)
+      - PHPLDAPADMIN_LDAP_HOSTS=monocle-ldap
    
 
 # Volume needs driver, since it's a mounted S3 bucket
