@@ -208,7 +208,7 @@ class TestUploadHandler(unittest.TestCase):
         expected_results = [
             Metadata(sanger_sample_id='1000STDY7000166', lane_id='50000_2#282', submitting_institution='Test Institution A',
                  supplier_sample_name='EY70425', public_name='CD_XX_EW00001', host_status='invasive disease',
-                 study_name='TEST-stUDY NA_ME1', study_ref='PMID: 1234567, PMID: 12345678', selection_random='yes',
+                 study_name='TEST-stUDY NA_ME1 (123), [ABC] %.', study_ref='PMID: 1234567, PMID: 12345678', selection_random='yes',
                  country='TestCountryA', county_state='State', city='London', collection_year='2014',
                  collection_month='10', collection_day='2', host_species='human', gender='unknown', age_group='neonate',
                  age_years='', age_months='', age_weeks='', age_days='', disease_type='bacteraemia',
