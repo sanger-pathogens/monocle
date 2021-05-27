@@ -68,7 +68,7 @@
     "study_name": {
       "title": "Study_Name",
       "max_length": 600,
-      "regex": "^[0-9a-zA-Z\\-_, ]+$",
+      "regex": "^[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+$",
       "regex_validation_message": "contains illegal characters"
     },
     "study_ref": {
@@ -283,7 +283,7 @@
     "birth_weight_gram": {
       "title": "Birthweight_gram",
       "max_length": 10,
-      "regex": "(?i)^\\d{1,3}$|^unknown$",
+      "regex": "(?i)^\\d{1,4}$|^unknown$",
       "regex_validation_message": "should be a valid number or 'unknown'",
       "convert_case": {
         "case": "lower"
@@ -292,8 +292,8 @@
     "apgar_score": {
       "title": "Apgar_score",
       "max_length": 10,
-      "regex": "(?i)^[1-9]|10$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
+      "regex": "(?i)^[0-9]|10$|^unknown$",
+      "regex_validation_message": "should be a valid number between 0 and 10, or 'unknown'",
       "convert_case": {
         "case": "lower"
       }

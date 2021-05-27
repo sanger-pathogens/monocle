@@ -40,9 +40,9 @@ class TestUploadHandler(unittest.TestCase):
 
     def test_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
-        self.display_errors(validation_errors)
+        # self.display_errors(validation_errors)
 
-        self.assertEqual(len(validation_errors), 66)
+        self.assertEqual(len(validation_errors), 67)
 
         self.assertTrue(
             '{row: 4, column: "Sanger_Sample_ID"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)
@@ -113,7 +113,7 @@ class TestUploadHandler(unittest.TestCase):
         self.assertTrue(
             '{row: 51, column: "Birthweight_gram"}: "HHHH" should be a valid number or \'unknown\'' in validation_errors)
         self.assertTrue(
-            '{row: 51, column: "Apgar_score"}: "AAA" should be a valid number or \'unknown\'' in validation_errors)
+            '{row: 51, column: "Apgar_score"}: "AAA" should be a valid number between 0 and 10, or \'unknown\'' in validation_errors)
         self.assertTrue(
             '{row: 52, column: "Maternal_infection_type"}: "OTHER" is not in the list of legal options (urinary tract infection, chorioamnionitis/intrauterine infection, sepsis, meningitis, arthritis, skin and soft-tissue infection, invasive other, non-invasive other, unknown)' in validation_errors)
         self.assertTrue(
@@ -268,9 +268,6 @@ class TestUploadHandler(unittest.TestCase):
 
         samples = self.under_test.parse()
         self.assertEqual(len(samples), len(expected_results))
-
-        # for idx in range(0, len(expected_results)-1):
-        #    print(str(samples[idx]))
 
         for idx in range(0, len(expected_results)-1):
             self.assertEqual(samples[idx], expected_results[idx])
