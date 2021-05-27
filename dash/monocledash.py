@@ -34,6 +34,7 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         category:      str = Route(pattern='^(sequencing)|(pipeline)$'),
                         status:        str = Route(pattern='^(successful)|(failed)$'),
                         ):
+   data = MonocleDash.monocleclient.MonocleData()
    institution_data  = data.get_institutions()
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
