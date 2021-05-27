@@ -24,6 +24,7 @@ services:
        - api
        - dash
        - metadata-api
+       - ldap-admin
   ui:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
     expose:
@@ -136,13 +137,13 @@ services:
     expose:
       - "80"
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges
-    cap_drop:
-      - ALL
     tmpfs:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
+    volumes:
+      # these directories aren't mentioned in the documentation, but the container won't start without them
+      - ./phpldapadmin-data/run/php:/run/php
+      - ./phpldapadmin-data/var/lock:/var/lock
     environment:
       - PHPLDAPADMIN_HTTPS="false"
       # make sure this matches the name of the openldap service (above)
