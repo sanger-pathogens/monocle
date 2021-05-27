@@ -56,7 +56,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
 
 @inject
 def compare_sample_metadata(body: list):
-    # TODO do we need to compare before we update the db?
+    # TODO do we need to compare before we update the db? TBD
     pass
 
 
