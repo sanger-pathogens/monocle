@@ -29,7 +29,7 @@ class TestSpreadsheetDefinition(unittest.TestCase):
                             "allowed_values": ["val_1", "val_2", "val_3", "val_4"],
                             "convert_case": {
                                 "case": "upper",
-                                "exclusions": ["val_1", "val_3"]
+                                "preserve": ["val_1", "val_3"]
                             }
                         },
                         "column_3": {
@@ -66,9 +66,9 @@ class TestSpreadsheetDefinition(unittest.TestCase):
         self.assertEqual(self.under_test.get_case('column_2'), 'upper')
         self.assertIsNone(self.under_test.get_case('column_3'))
 
-    def test_get_case_exclusions(self) -> None:
-        self.assertEqual(self.under_test.get_case_exclusions('column_1'), [])
-        self.assertEqual(self.under_test.get_case_exclusions('column_2'), ['val_1', 'val_3'])
+    def test_get_case_preserve(self) -> None:
+        self.assertEqual(self.under_test.get_case_preserve('column_1'), [])
+        self.assertEqual(self.under_test.get_case_preserve('column_2'), ['val_1', 'val_3'])
 
     def test_get_regex_validation_message(self) -> None:
         self.assertEqual(self.under_test.get_regex_validation_message('column_1'), 'Validation message 1')

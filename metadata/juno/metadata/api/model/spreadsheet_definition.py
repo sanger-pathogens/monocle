@@ -37,9 +37,9 @@ class SpreadsheetDefinition(dict):
         except KeyError:
             return None
 
-    def get_case_exclusions(self, name: str) -> list:
+    def get_case_preserve(self, name: str) -> list:
         try:
-            return self[name]['convert_case']["exclusions"]
+            return self[name]['convert_case']["preserve"]
         except KeyError:
             return []
 

@@ -133,8 +133,7 @@
       "max_length": 10,
       "allowed_values": ["M", "F"],
       "convert_case": {
-        "case": "lower",
-        "exclusions": ["M", "F"]
+        "case": "upper"
       }
     },
     "age_group": {
@@ -190,7 +189,7 @@
       "allowed_values": ["EOD", "LOD", "VLOD", "other"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["EOD", "LOD", "VLOD"]
+        "preserve": ["EOD", "LOD", "VLOD"]
       }
     },
     "isolation_source": {
@@ -221,7 +220,7 @@
       "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other)",
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Lancefield", "PCR"]
+        "preserve": ["Lancefield", "PCR"]
       }
     },
     "infection_during_pregnancy": {
@@ -277,7 +276,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "cefoxitin": {
@@ -292,7 +291,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "cefotaxime": {
@@ -307,7 +306,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "cefazolin": {
@@ -322,7 +321,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "ampicillin": {
@@ -337,7 +336,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "penicillin": {
@@ -352,7 +351,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "erythromycin": {
@@ -367,7 +366,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "clindamycin": {
@@ -382,7 +381,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "tetracycline": {
@@ -397,7 +396,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "levofloxacin": {
@@ -412,7 +411,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "ciprofloxacin": {
@@ -427,7 +426,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "daptomycin": {
@@ -442,7 +441,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "vancomycin": {
@@ -457,7 +456,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     },
     "linezolid": {
@@ -472,7 +471,7 @@
       "allowed_values": ["disk diffusion", "broth dilution", "agar dilution", "Etest"],
       "convert_case": {
         "case": "lower",
-        "exclusions": ["Etest"]
+        "preserve": ["Etest"]
       }
     }
   }

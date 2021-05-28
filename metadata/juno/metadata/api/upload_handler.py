@@ -43,13 +43,16 @@ class UploadHandler:
 
         # Do we need to convert case...
         if case_setting:
-            exclusions = self.__spreadsheet_def.get_case_exclusions(column_key)
             if case_setting == 'lower':
-                if val not in exclusions:
-                    val = val.lower()
+                val = val.lower()
             elif case_setting == 'upper':
-                if val not in exclusions:
-                    val = val.upper()
+                val = val.upper()
+
+            preserved_values = self.__spreadsheet_def.get_case_preserve(column_key)
+            if preserved_values:
+                for p in preserved_values:
+                    regex = re.compile(re.escape(p), re.IGNORECASE)
+                    val = regex.sub(p, val)
 
         return val
 
