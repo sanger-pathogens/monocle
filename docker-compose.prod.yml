@@ -137,6 +137,16 @@ services:
     expose:
       - "80"
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
     tmpfs:
       - "/tmp:rw,noexec,nosuid"
     volumes:
