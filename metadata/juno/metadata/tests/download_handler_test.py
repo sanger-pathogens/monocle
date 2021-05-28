@@ -101,7 +101,7 @@ class TestDownloadHandler(unittest.TestCase):
             self.assertEqual(results[0]['collection_day'][value_field_name], '05')
             self.assertEqual(results[0]['host_species'][value_field_name], 'human')
             self.assertEqual(results[0]['gender'][value_field_name], 'M')
-            self.assertEqual(results[0]['age_group'][value_field_name], '30')
+            self.assertEqual(results[0]['age_group'][value_field_name], 'adult')
             self.assertEqual(results[0]['age_years'][value_field_name], '35')
             self.assertEqual(results[0]['age_months'][value_field_name], '10')
             self.assertEqual(results[0]['age_weeks'][value_field_name], '2')

@@ -75,7 +75,7 @@
       "title": "Study_Reference",
       "max_length": 400,
       "regex": "^PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*$",
-      "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID 1234567, PMID: 23456789"
+      "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
     },
     "selection_random": {
       "title": "Selection_Random",
@@ -87,7 +87,6 @@
     },
     "country": {
       "title": "Country",
-      "mandatory": true,
       "max_length": 90
     },
     "county_state": {
@@ -108,35 +107,23 @@
     },
     "collection_year": {
       "title": "Collection_year",
-      "max_length": 10,
-      "regex": "(?i)^\\d{4}$|^unknown$",
-      "regex_validation_message": "must be a YYYY format year or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{4}$",
+      "regex_validation_message": "must be a YYYY format year"
     },
     "collection_month": {
       "title": "Collection_month",
-      "max_length": 10,
-      "regex": "(?i)^\\d{1,2}$|^unknown$",
-      "regex_validation_message": "must be a MM format month or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,2}$",
+      "regex_validation_message": "must be a MM format month"
     },
     "collection_day": {
       "title": "Collection_day",
-      "max_length": 10,
-      "regex": "(?i)^\\d{1,2}$|^unknown$",
-      "regex_validation_message": "must be a DD format day or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,2}$",
+      "regex_validation_message": "must be a DD format day"
     },
     "host_species": {
       "title": "Host_species",
       "max_length": 100,
-      "allowed_values": ["human", "bovine", "fish", "goat", "camel", "other", "unknown"],
+      "allowed_values": ["human", "bovine", "fish", "goat", "camel", "other"],
       "convert_case": {
         "case": "lower"
       }
@@ -144,7 +131,7 @@
     "gender": {
       "title": "Gender",
       "max_length": 10,
-      "allowed_values": ["M", "F", "unknown"],
+      "allowed_values": ["M", "F"],
       "convert_case": {
         "case": "lower",
         "exclusions": ["M", "F"]
@@ -153,51 +140,35 @@
     "age_group": {
       "title": "Age_group",
       "max_length": 30,
-      "allowed_values": ["neonate", "infant", "child", "adolescent", "adult", "other", "unknown"],
+      "allowed_values": ["neonate", "infant", "child", "adolescent", "adult", "other"],
       "convert_case": {
         "case": "lower"
       }
     },
     "age_years": {
       "title": "Age_years",
-      "max_length": 10,
-      "regex": "(?i)^\\d{1,3}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,3}$",
+      "regex_validation_message": "should be a valid 1 to 3 digit number"
     },
     "age_months": {
       "title": "Age_months",
-      "max_length": 10,
-      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,4}$",
+      "regex_validation_message": "should be a valid 1 to 4 digit number"
     },
     "age_weeks": {
       "title": "Age_weeks",
-      "max_length": 10,
-      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,4}$",
+      "regex_validation_message": "should be a valid 1 to 4 digit number"
     },
     "age_days": {
       "title": "Age_days",
-      "max_length": 10,
-      "regex": "(?i)^[0-9]{1,2}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
-      "convert_case": {
-        "case": "lower"
-      }
+      "regex": "(?i)^\\d{1,5}$",
+      "regex_validation_message": "should be a valid 1 to 5 digit number"
     },
     "host_status": {
       "title": "Host_status",
       "max_length": 256,
-      "allowed_values": ["carriage", "invasive disease", "non-invasive disease", "unknown"],
+      "allowed_values": ["carriage", "invasive disease", "non-invasive disease"],
       "convert_case": {
         "case": "lower"
       }
@@ -208,7 +179,7 @@
       "allowed_values": ["sepsis", "bacteraemia", "meningitis", "pneumonia", "urinary tract infection",
         "skin and soft-tissue infection", "osteomyelitis", "endocarditis", "septic arthritis", "chorioamnionitis",
         "peritonitis", "empyema", "surgical site infection", "urosepsis", "endometritis", "mastitis",
-        "septicaemia", "invasive other", "non-invasive other", "unknown"],
+        "septicaemia", "invasive other", "non-invasive other"],
       "convert_case": {
         "case": "lower"
       }
@@ -216,7 +187,7 @@
     "disease_onset": {
       "title": "Disease_onset",
       "max_length": 10,
-      "allowed_values": ["EOD", "LOD", "VLOD", "other", "unknown"],
+      "allowed_values": ["EOD", "LOD", "VLOD", "other"],
       "convert_case": {
         "case": "lower",
         "exclusions": ["EOD", "LOD", "VLOD"]
@@ -233,8 +204,7 @@
         "abscess", "abscess/pus fluid", "aspirate fluid", "blood vessels", "bronchoalveolar lavage", "burn",
         "cellulitis/erysipelas", "decubitus", "drains/tubes", "endotracheal aspirate", "furuncle", "gall bladder",
         "impetiginous lesions", "lungs", "muscle tissue", "prostate", "skin ulcer", "spinal cord", "stomach",
-        "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus",
-        "unknown"],
+        "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus"],
       "convert_case": {
         "case": "lower"
       }
@@ -247,8 +217,8 @@
     "serotype_method": {
       "title": "Serotype_method",
       "max_length": 100,
-      "regex": "(?i)^latex agglutination|Lancefield|PCR|other|unknown(, latex agglutination|Lancefield|PCR|other)*$",
-      "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other, unknown)",
+      "regex": "(?i)^latex agglutination|Lancefield|PCR|other(, latex agglutination|Lancefield|PCR|other)*$",
+      "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other)",
       "convert_case": {
         "case": "lower",
         "exclusions": ["Lancefield", "PCR"]
@@ -257,7 +227,7 @@
     "infection_during_pregnancy": {
       "title": "Infection_during_pregnancy",
       "max_length": 10,
-      "allowed_values": ["yes", "no", "unknown"],
+      "allowed_values": ["yes", "no"],
       "convert_case": {
         "case": "lower"
       }
@@ -266,34 +236,31 @@
       "title": "Maternal_infection_type",
       "max_length": 100,
       "allowed_values": ["urinary tract infection", "chorioamnionitis/intrauterine infection", "sepsis", "meningitis",
-        "arthritis", "skin and soft-tissue infection", "invasive other", "non-invasive other", "unknown"],
+        "arthritis", "skin and soft-tissue infection", "invasive other", "non-invasive other"],
       "convert_case": {
         "case": "lower"
       }
     },
     "gestational_age_weeks": {
       "title": "Gestational_age_weeks",
-      "max_length": 10,
-      "regex": "(?i)^\\d{1,2}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
+      "regex": "(?i)^\\d{1,3}$",
+      "regex_validation_message": "should be a valid 1 to 3 digit number",
       "convert_case": {
         "case": "lower"
       }
     },
     "birth_weight_gram": {
       "title": "Birthweight_gram",
-      "max_length": 10,
-      "regex": "(?i)^\\d{1,4}$|^unknown$",
-      "regex_validation_message": "should be a valid number or 'unknown'",
+      "regex": "(?i)^\\d{1,7}$",
+      "regex_validation_message": "should be a valid 1 to 7 digit number",
       "convert_case": {
         "case": "lower"
       }
     },
     "apgar_score": {
       "title": "Apgar_score",
-      "max_length": 10,
-      "regex": "(?i)^[0-9]|10$|^unknown$",
-      "regex_validation_message": "should be a valid number between 0 and 10, or 'unknown'",
+      "regex": "(?i)^[0-9]|10$",
+      "regex_validation_message": "should be a valid number between 0 and 10",
       "convert_case": {
         "case": "lower"
       }

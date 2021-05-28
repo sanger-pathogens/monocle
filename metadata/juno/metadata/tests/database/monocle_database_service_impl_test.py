@@ -68,16 +68,16 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 country='UK',
                 county_state='Cambridgeshire',
                 city='Cambridge',
-                collection_year='2019',
-                collection_month='12',
-                collection_day='05',
+                collection_year=2019,
+                collection_month=12,
+                collection_day=5,
                 host_species='human',
                 gender='M',
-                age_group='30',
-                age_years='35',
-                age_months='10',
-                age_weeks='2',
-                age_days='2',
+                age_group='adult',
+                age_years=35,
+                age_months=10,
+                age_weeks=2,
+                age_days=2,
                 disease_type='GBS',
                 disease_onset='EOD',
                 isolation_source='blood',
@@ -85,9 +85,9 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 serotype_method='PCR',
                 infection_during_pregnancy='N',
                 maternal_infection_type='oral',
-                gestational_age_weeks='10',
-                birth_weight_gram='400',
-                apgar_score='10',
+                gestational_age_weeks=10,
+                birth_weight_gram=400,
+                apgar_score=10,
                 ceftizoxime='1',
                 ceftizoxime_method='method1',
                 cefoxitin='2',
@@ -151,7 +151,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 collection_day='05',
                 host_species='human',
                 gender='M',
-                age_group='30',
+                age_group='adult',
                 age_years='35',
                 age_months='10',
                 age_weeks='2',
@@ -211,7 +211,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                  collection_day='07',
                  host_species='chimp',
                  gender='N',
-                 age_group='40',
+                 age_group='adult',
                  age_years='45',
                  age_months='4',
                  age_weeks='1',
@@ -274,3 +274,16 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertIsInstance(metadata, list)
         self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_SQL, lanes=('2000_2#10', '2000_2#11'))
         self.assertEqual(len(metadata), 0)
+
+    def test_convert_string(self) -> None:
+        self.assertIsNone(self.under_test.convert_string(''))
+        self.assertIsNone(self.under_test.convert_string(None))
+        self.assertIsNotNone(self.under_test.convert_string('hello'))
+
+    def test_convert_int(self) -> None:
+        self.assertIsNone(self.under_test.convert_int(''))
+        self.assertIsNone(self.under_test.convert_int(None))
+        self.assertEqual(self.under_test.convert_int('12'), 12)
+        self.assertEqual(self.under_test.convert_int('0'), 0)
+        with self.assertRaises(ValueError):
+            self.under_test.convert_int('hello')
