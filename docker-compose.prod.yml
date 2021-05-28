@@ -25,29 +25,6 @@ services:
        - dash
        - metadata-api
        - ldap-admin
-  ui:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ui:<DOCKERTAG>"
-    expose:
-        - "80"
-    restart: unless-stopped
-    security_opt:
-       - no-new-privileges
-    cap_drop:
-       - ALL
-    cap_add:
-       - NET_BIND_SERVICE
-       - FOWNER
-       - CHOWN
-       - SETGID
-       - SETUID
-    tmpfs:
-       - "/run:rw,noexec,nosuid"
-       - "/tmp:rw,noexec,nosuid"
-    volumes:
-        - ./settings.js:/usr/share/nginx/html/settings.js
-        - ./nginx.ui.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-        - api
   api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-api:<DOCKERTAG>"
     expose:
