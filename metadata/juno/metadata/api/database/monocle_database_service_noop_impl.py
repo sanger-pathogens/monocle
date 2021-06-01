@@ -16,7 +16,14 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
 
     def get_institutions(self) -> List[Institution]:
         """ Return a list of institutions """
-        pass
+        results = [
+            Institution('UniversityA', 'United Kingdom', 0, 0),
+            Institution('UniversityB', 'France', 0, 0),
+            Institution('UniversityC', 'Germany', 0, 0),
+            Institution('UniversityD', 'Italy', 0, 0)
+        ]
+
+        return results
 
     def update_sample_metadata(self, metadata_list: List[Metadata]) -> None:
         """ Update sample metadata in the database """

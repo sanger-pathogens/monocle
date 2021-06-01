@@ -30,7 +30,7 @@ class MetadataApiModule(Module):
             return MonocleDatabaseServiceImpl(Connector(read_database_connection_config(config)))
         else:
             logger.info('Using mock database back end')
-            return MonocleDatabaseServiceNoOpImpl(Connector(read_mock_database_connection_config(config)))
+            return MonocleDatabaseServiceNoOpImpl(read_mock_database_connection_config(config))
 
     @provider
     def upload_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
