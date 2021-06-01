@@ -1,6 +1,9 @@
 # my.cnf mounted at runtime, and contains secrets => keep it out of the image!
 # update: added more cnf files so I can flip my.cnf between dev and prod versions
 # safest to keep ll cnf files out of docker images
-*.cnf
+*.cnf*
 # data/ must also be mounted at runtime => don't include in build
 data
+**/__pycache__
+**/.pytest_cache
+**/.DS_Store

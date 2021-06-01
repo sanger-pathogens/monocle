@@ -63,4 +63,3 @@ class Metadata:
     vancomycin_method: str
     linezolid: str
     linezolid_method: str
-    additional_metadata: str

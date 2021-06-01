@@ -1,25 +1,257 @@
+import logging
+from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.institution import Institution
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
+
+logger = logging.getLogger()
+
+
+class Connector:
+    """ Provide SQL Alchemy connections """
+    def __init__(self, config: DbConnectionConfig) -> None:
+        self.connection_url = config.connection_url
+        self.engine = create_engine(self.connection_url)
+
+    def get_connection(self) -> object:
+        """ Get a SQL Alchemy database connection """
+        return self.engine.connect()
+
+    def get_transactional_connection(self) -> object:
+        """ Get a SQL Alchemy transactional database connection """
+        return self.engine.begin()
 
 
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """ DAO for metadata access """
 
-    def __init__(self, config: DbConnectionConfig) -> None:
-        self.connection_uri = config.connection_url
+    DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
-    def get_connection(self):
-        """ Get a SQL Alchemy database connection """
-        return create_engine(self.connection_uri)
+    INSERT_OR_UPDATE_SAMPLE_SQL = text(""" \
+            INSERT INTO api_sample (
+                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
+                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
+                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
+                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
+                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
+                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
+                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
+                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
+                vancomycin, vancomycin_method
+            ) VALUES (
+                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution_id,
+                :age_days, :age_group, :age_months, :age_weeks, :age_years, :ampicillin,
+                :ampicillin_method, :apgar_score, :birth_weight_gram, :cefazolin, :cefazolin_method, :cefotaxime,
+                :cefotaxime_method, :cefoxitin, :cefoxitin_method, :ceftizoxime, :ceftizoxime_method,
+                :ciprofloxacin, :ciprofloxacin_method, :city, :clindamycin, :clindamycin_method, :collection_day,
+                :collection_month, :collection_year, :country, :county_state, :daptomycin, :daptomycin_method, :disease_onset,
+                :disease_type, :erythromycin, :erythromycin_method, :gender, :gestational_age_weeks,
+                :host_species, :infection_during_pregnancy, :isolation_source, :levofloxacin, :levofloxacin_method,
+                :linezolid, :linezolid_method, :maternal_infection_type, :penicillin, :penicillin_method,
+                :selection_random, :serotype_method, :study_name, :study_ref, :tetracycline, :tetracycline_method,
+                :vancomycin, :vancomycin_method 
+            ) ON DUPLICATE KEY UPDATE
+                lane_id = :lane_id, 
+                supplier_sample_name = :supplier_sample_name, 
+                public_name = :public_name, 
+                host_status = :host_status, 
+                serotype = :serotype, 
+                submitting_institution_id = :submitting_institution_id,
+                age_days = :age_days, 
+                age_group = :age_group, 
+                age_months = :age_months, 
+                age_weeks = :age_weeks, 
+                age_years = :age_years, 
+                ampicillin = :ampicillin,
+                ampicillin_method = :ampicillin_method, 
+                apgar_score = :apgar_score, 
+                birthweight_gram = :birth_weight_gram, 
+                cefazolin = :cefazolin, 
+                cefazolin_method = :cefazolin_method, 
+                cefotaxime = :cefotaxime,
+                cefotaxime_method = :cefotaxime_method, 
+                cefoxitin = :cefoxitin, 
+                cefoxitin_method = :cefoxitin_method, 
+                ceftizoxime = :ceftizoxime, 
+                ceftizoxime_method = :ceftizoxime_method,
+                ciprofloxacin = :ciprofloxacin, 
+                ciprofloxacin_method = :ciprofloxacin_method, 
+                city = :city, 
+                clindamycin = :clindamycin, 
+                clindamycin_method = :clindamycin_method, 
+                collection_day = :collection_day,
+                collection_month = :collection_month, 
+                collection_year = :collection_year, 
+                country = :country, 
+                county_state = :county_state, 
+                daptomycin = :daptomycin, 
+                daptomycin_method = :daptomycin_method, 
+                disease_onset = :disease_onset,
+                disease_type = :disease_type, 
+                erythromycin = :erythromycin, 
+                erythromycin_method = :erythromycin_method, 
+                gender = :gender, 
+                gestational_age_weeks = :gestational_age_weeks,
+                host_species = :host_species, 
+                infection_during_pregnancy = :infection_during_pregnancy, 
+                isolation_source = :isolation_source, 
+                levofloxacin = :levofloxacin, 
+                levofloxacin_method = :levofloxacin_method,
+                linezolid = :linezolid, 
+                linezolid_method = :linezolid_method, 
+                maternal_infection_type = :maternal_infection_type, 
+                penicillin = :penicillin, 
+                penicillin_method = :penicillin_method,
+                selection_random = :selection_random, 
+                serotype_method = :serotype_method, 
+                study_name = :study_name, 
+                study_ref = :study_ref, 
+                tetracycline = :tetracycline, 
+                tetracycline_method = :tetracycline_method,
+                vancomycin = :vancomycin, 
+                vancomycin_method = :vancomycin_method
+            """)
 
-    def update_sample_metadata(self, samples: dict) -> None:
+    SELECT_LANES_SQL = text(""" \
+            SELECT
+                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
+                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
+                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
+                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
+                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
+                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
+                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
+                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
+                vancomycin, vancomycin_method
+            FROM api_sample
+            WHERE
+                lane_id IN :lanes""")
+
+    SELECT_INSTITUTIONS_SQL = text(""" \
+                SELECT name, country, latitude, longitude
+                FROM api_institution
+                ORDER BY name""")
+
+    def __init__(self, connector: Connector) -> None:
+        self.connector = connector
+
+    def convert_string(self, val: str) -> str:
+        """ If a given string is empty return None """
+        return val if val else None
+
+    def convert_int(self, val: str) -> int:
+        """ If a given string is empty then return None else try to convert to int """
+        if not val:
+            return None
+
+        try:
+            int_val = int(val)
+        except ValueError:
+            logger.error("ERROR: Expected value {} to be an int!".format(val))
+            raise
+
+        return int_val
+
+    def get_institutions(self) -> List[Institution]:
+        """ Return a list of allowed institutions """
+        results = []
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
+
+            for row in rs:
+                results.append(
+                    Institution(row['name'], row['country'], row['latitude'], row['longitude'])
+                )
+
+        return results
+
+    def update_sample_metadata(self, metadata_list: List[Metadata]) -> None:
         """ Update sample metadata in the database """
-        pass
 
-    def get_download_metadata(self, keys: [str]) -> [Metadata]:
+        if not metadata_list:
+            return
+
+        logger.info(
+            "update_sample_metadata: About to write {} upload samples to the database...".format(len(metadata_list))
+        )
+
+        # Use a transaction...
+        with self.connector.get_transactional_connection() as con:
+            for metadata in metadata_list:
+                con.execute(
+                    self.INSERT_OR_UPDATE_SAMPLE_SQL,
+                    sanger_sample_id=metadata.sanger_sample_id,
+                    lane_id=self.convert_string(metadata.lane_id),
+                    supplier_sample_name=metadata.supplier_sample_name,
+                    public_name=metadata.public_name,
+                    host_status=self.convert_string(metadata.host_status),
+                    serotype=self.convert_string(metadata.serotype),
+                    submitting_institution_id=metadata.submitting_institution,
+                    age_days=self.convert_int(metadata.age_days),
+                    age_group=self.convert_string(metadata.age_group),
+                    age_months=self.convert_int(metadata.age_months),
+                    age_weeks=self.convert_int(metadata.age_weeks),
+                    age_years=self.convert_int(metadata.age_years),
+                    ampicillin=self.convert_string(metadata.ampicillin),
+                    ampicillin_method=self.convert_string(metadata.ampicillin_method),
+                    apgar_score=self.convert_int(metadata.apgar_score),
+                    birth_weight_gram=self.convert_int(metadata.birth_weight_gram),
+                    cefazolin=self.convert_string(metadata.cefazolin),
+                    cefazolin_method=self.convert_string(metadata.cefazolin_method),
+                    cefotaxime=self.convert_string(metadata.cefotaxime),
+                    cefotaxime_method=self.convert_string(metadata.cefotaxime_method),
+                    cefoxitin=self.convert_string(metadata.cefoxitin),
+                    cefoxitin_method=self.convert_string(metadata.cefoxitin_method),
+                    ceftizoxime=self.convert_string(metadata.ceftizoxime),
+                    ceftizoxime_method=self.convert_string(metadata.ceftizoxime_method),
+                    ciprofloxacin=self.convert_string(metadata.ciprofloxacin),
+                    ciprofloxacin_method=self.convert_string(metadata.ciprofloxacin_method),
+                    city=self.convert_string(metadata.city),
+                    clindamycin=self.convert_string(metadata.clindamycin),
+                    clindamycin_method=self.convert_string(metadata.clindamycin_method),
+                    collection_day=self.convert_int(metadata.collection_day),
+                    collection_month=self.convert_int(metadata.collection_month),
+                    collection_year=self.convert_int(metadata.collection_year),
+                    country=self.convert_string(metadata.country),
+                    county_state=self.convert_string(metadata.county_state),
+                    daptomycin=self.convert_string(metadata.daptomycin),
+                    daptomycin_method=self.convert_string(metadata.daptomycin_method),
+                    disease_onset=self.convert_string(metadata.disease_onset),
+                    disease_type=self.convert_string(metadata.disease_type),
+                    erythromycin=self.convert_string(metadata.erythromycin),
+                    erythromycin_method=self.convert_string(metadata.erythromycin_method),
+                    gender=self.convert_string(metadata.gender),
+                    gestational_age_weeks=self.convert_int(metadata.gestational_age_weeks),
+                    host_species=self.convert_string(metadata.host_species),
+                    infection_during_pregnancy=self.convert_string(metadata.infection_during_pregnancy),
+                    isolation_source=self.convert_string(metadata.isolation_source),
+                    levofloxacin=self.convert_string(metadata.levofloxacin),
+                    levofloxacin_method=self.convert_string(metadata.levofloxacin_method),
+                    linezolid=self.convert_string(metadata.linezolid),
+                    linezolid_method=self.convert_string(metadata.linezolid_method),
+                    maternal_infection_type=self.convert_string(metadata.maternal_infection_type),
+                    penicillin=self.convert_string(metadata.penicillin),
+                    penicillin_method=self.convert_string(metadata.penicillin_method),
+                    selection_random=self.convert_string(metadata.selection_random),
+                    serotype_method=self.convert_string(metadata.serotype_method),
+                    study_name=self.convert_string(metadata.study_name),
+                    study_ref=self.convert_string(metadata.study_ref),
+                    tetracycline=self.convert_string(metadata.tetracycline),
+                    tetracycline_method=self.convert_string(metadata.tetracycline_method),
+                    vancomycin=self.convert_string(metadata.vancomycin),
+                    vancomycin_method=self.convert_string(metadata.vancomycin_method)
+                )
+
+        logger.info("update_sample_metadata completed")
+
+    def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download metadata for given list of 'sample:lane' keys """
 
         if len(keys) == 0:
@@ -29,20 +261,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         samples, lanes = self.split_keys(keys)
         lane_ids = tuple(lanes)
 
-        sql = text(""" \
-                    SELECT
-                        sample_id,
-                        lane_id,
-                        serotype,
-                        public_name,
-                        host_status,
-                        submitting_institution_id
-                    FROM api_sample
-                    WHERE
-                        lane_id IN :lanes""")
-
-        with self.get_connection().connect() as con:
-            rs = con.execute(sql, lanes=lane_ids)
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_LANES_SQL, lanes=lane_ids)
 
             for row in rs:
                 results.append(
@@ -50,64 +270,63 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         sanger_sample_id=row['sample_id'],
                         lane_id=row['lane_id'],
                         submitting_institution=row['submitting_institution_id'],
-                        supplier_sample_name='',
+                        supplier_sample_name=row['supplier_sample_name'],
                         public_name=row['public_name'],
                         host_status=row['host_status'],
-                        study_name='',
-                        study_ref='',
-                        selection_random='',
-                        country='',
-                        county_state='',
-                        city='',
-                        collection_year='',
-                        collection_month='',
-                        collection_day='',
-                        host_species='',
-                        gender='',
-                        age_group='',
-                        age_years='',
-                        age_months='',
-                        age_weeks='',
-                        age_days='',
-                        disease_type='',
-                        disease_onset='',
-                        isolation_source='',
+                        study_name=row['study_name'],
+                        study_ref=row['study_ref'],
+                        selection_random=row['selection_random'],
+                        country=row['country'],
+                        county_state=row['county_state'],
+                        city=row['city'],
+                        collection_year=str(row['collection_year']),
+                        collection_month=str(row['collection_month']),
+                        collection_day=str(row['collection_day']),
+                        host_species=row['host_species'],
+                        gender=row['gender'],
+                        age_group=row['age_group'],
+                        age_years=str(row['age_years']),
+                        age_months=str(row['age_months']),
+                        age_weeks=str(row['age_weeks']),
+                        age_days=str(row['age_days']),
+                        disease_type=row['disease_type'],
+                        disease_onset=row['disease_onset'],
+                        isolation_source=row['isolation_source'],
                         serotype=row['serotype'],
-                        serotype_method='',
-                        infection_during_pregnancy='',
-                        maternal_infection_type='',
-                        gestational_age_weeks='',
-                        birth_weight_gram='',
-                        apgar_score='',
-                        ceftizoxime='',
-                        ceftizoxime_method='',
-                        cefoxitin='',
-                        cefoxitin_method='',
-                        cefotaxime='',
-                        cefotaxime_method='',
-                        cefazolin='',
-                        cefazolin_method='',
-                        ampicillin='',
-                        ampicillin_method='',
-                        penicillin='',
-                        penicillin_method='',
-                        erythromycin='',
-                        erythromycin_method='',
-                        clindamycin='',
-                        clindamycin_method='',
-                        tetracycline='',
-                        tetracycline_method='',
-                        levofloxacin='',
-                        levofloxacin_method='',
-                        ciprofloxacin='',
-                        ciprofloxacin_method='',
-                        daptomycin='',
-                        daptomycin_method='',
-                        vancomycin='',
-                        vancomycin_method='',
-                        linezolid='',
-                        linezolid_method='',
-                        additional_metadata=''
+                        serotype_method=row['serotype_method'],
+                        infection_during_pregnancy=row['infection_during_pregnancy'],
+                        maternal_infection_type=row['maternal_infection_type'],
+                        gestational_age_weeks=str(row['gestational_age_weeks']),
+                        birth_weight_gram=str(row['birthweight_gram']),
+                        apgar_score=str(row['apgar_score']),
+                        ceftizoxime=row['ceftizoxime'],
+                        ceftizoxime_method=row['ceftizoxime_method'],
+                        cefoxitin=row['cefoxitin'],
+                        cefoxitin_method=row['cefoxitin_method'],
+                        cefotaxime=row['cefotaxime'],
+                        cefotaxime_method=row['cefotaxime_method'],
+                        cefazolin=row['cefazolin'],
+                        cefazolin_method=row['cefazolin_method'],
+                        ampicillin=row['ampicillin'],
+                        ampicillin_method=row['ampicillin_method'],
+                        penicillin=row['penicillin'],
+                        penicillin_method=row['penicillin_method'],
+                        erythromycin=row['erythromycin'],
+                        erythromycin_method=row['erythromycin_method'],
+                        clindamycin=row['clindamycin'],
+                        clindamycin_method=row['clindamycin_method'],
+                        tetracycline=row['tetracycline'],
+                        tetracycline_method=row['tetracycline_method'],
+                        levofloxacin=row['levofloxacin'],
+                        levofloxacin_method=row['levofloxacin_method'],
+                        ciprofloxacin=row['ciprofloxacin'],
+                        ciprofloxacin_method=row['ciprofloxacin_method'],
+                        daptomycin=row['daptomycin'],
+                        daptomycin_method=row['daptomycin_method'],
+                        vancomycin=row['vancomycin'],
+                        vancomycin_method=row['vancomycin_method'],
+                        linezolid=row['linezolid'],
+                        linezolid_method=row['linezolid_method']
                     )
                 )
 

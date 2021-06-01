@@ -7,29 +7,11 @@ stages:
   
   
 variables:
-  API_UNIT_TEST_IMAGE:      "${CI_REGISTRY_IMAGE}/gitlab-api-unit-tests:latest"
   UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
   METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-  
-  
-API unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  variables:
-    DJANGO_SETTINGS_MODULE: "juno.settings.unittest"
-  image: "${API_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd api
-    - pipenv install --system
-  script:
-    #- coverage run ./manage.py test && codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - ./manage.py test
 
 
 Dashboard unit tests:
@@ -55,7 +37,6 @@ Metadata unit tests:
   before_script:
     - cd metadata/juno
     - pipenv install --system --ignore-pipfile
-    - cd ..
   script:
     - ./unittests.sh
 
