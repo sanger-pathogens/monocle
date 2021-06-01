@@ -203,7 +203,8 @@
         "abscess", "abscess/pus fluid", "aspirate fluid", "blood vessels", "bronchoalveolar lavage", "burn",
         "cellulitis/erysipelas", "decubitus", "drains/tubes", "endotracheal aspirate", "furuncle", "gall bladder",
         "impetiginous lesions", "lungs", "muscle tissue", "prostate", "skin ulcer", "spinal cord", "stomach",
-        "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus"],
+        "thoracentesis fluid", "tissue fluid", "trachea", "ulcer fluid", "urethra", "urinary bladder", "uterus",
+        "wound"],
       "convert_case": {
         "case": "lower"
       }
