@@ -145,9 +145,11 @@ fi
 if [[ "$ENVIRONMENT" == "prod" ]]; then
     DOMAIN=monocle.pam.sanger.ac.uk
     PUBLIC_DOMAIN=monocle.sanger.ac.uk
+    BASE_DN="dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk"
 elif [[ "$ENVIRONMENT" == "dev" ]]; then
     DOMAIN=monocle.dev.pam.sanger.ac.uk
     PUBLIC_DOMAIN=
+    BASE_DN="dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk"
 else
     usage
 fi
@@ -156,6 +158,8 @@ if [[ ! -z "$OPT_DOMAIN" ]]; then
    echo "${ECHO_EM}Service will use domain ${OPT_DOMAIN} in place of ${DOMAIN}${ECHO_RESET}"
    DOMAIN="$OPT_DOMAIN"
 fi
+
+BIND_DN="cn=\${LDAP_BIND_USER},${BASE_DN}"
 
 # pull the required git tag, or branch
 deploy_dir=$(mktemp -d -t monocle-XXXXXXXXXX)
@@ -207,10 +211,11 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     docker-compose down
     echo "Setting configuration in docker-compose.yml..."
     sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
-    sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
-    sed -i -e "s/<HOSTNAME_PUBLIC>/${PUBLIC_DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
-    sed -i -e "s/<SECRET_KEY>/\${API_SECRET_KEY}/g" docker-compose.yml
+    echo "Setting configuration in nginx.proxy.conf..."
+    sed -i -e "s/<LDAP_BASE_DN>/${BASE_DN}/g" nginx.proxy.conf
+    sed -i -e "s/<LDAP_BIND_DN>/${BIND_DN}/g" nginx.proxy.conf
+    sed -i -e "s/<LDAP_BIND_PASSWORD>/\${LDAP_BIND_PASSWORD}/g" nginx.proxy.conf
     echo "Setting configuration in UI's settings.js..."
     sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
     echo "Setting file permissions..."
@@ -218,23 +223,9 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     chmod 644 settings.js nginx.proxy.conf nginx.ui.conf metadata-api.json
     echo "Pulling ${docker_tag} docker images..."
     docker-compose pull
-    status=0
-    if [[ "${APPLY_MIGRATIONS}" == "yes" ]]
-    then
-        echo "Applying database migrations..."
-        docker-compose run --no-deps --rm api python manage.py migrate
-        status=\$?
-        if [[ \${status} -ne 0 ]]
-        then
-            echo "FATAL ERROR: Database migration returned non-zero status: \${status}"
-        fi
-    fi
-    if [[ \${status} -eq 0 ]]
-    then
-        echo "Starting containers..."
-        docker-compose up -d
-        echo "Done."
-    fi
+    echo "Starting containers..."
+    docker-compose up -d
+    echo "Done."
 EOF
 
 # close the connection
