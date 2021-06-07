@@ -186,12 +186,16 @@ if [[ ! -z "${VERSION}" ]]; then
    validate_version "${VERSION}"
 fi
 
-# copy production compose file (template)
+# shut down applications first
 # keep connection to avoid multiple password entries
-scp -o ControlMaster=yes \
-    -o ControlPersist=yes \
-    -o ControlPath=%C \
-    docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+    set -e
+    echo "Stopping existing containers..."
+    docker-compose down
+EOF
+
+# copy production compose file (template)
+scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
 # copy production settings file, nginx config (for proxy and ui), metadata api config
 # (may want to remove from git long term)
@@ -207,8 +211,6 @@ scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/m
 #       (eg. VERSION vs API_SECRET_KEY)
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
-    echo "Stopping existing containers..."
-    docker-compose down
     echo "Setting configuration in docker-compose.yml..."
     sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
