@@ -145,11 +145,9 @@ fi
 if [[ "$ENVIRONMENT" == "prod" ]]; then
     DOMAIN=monocle.pam.sanger.ac.uk
     PUBLIC_DOMAIN=monocle.sanger.ac.uk
-    BASE_DN="dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk"
 elif [[ "$ENVIRONMENT" == "dev" ]]; then
     DOMAIN=monocle.dev.pam.sanger.ac.uk
     PUBLIC_DOMAIN=
-    BASE_DN="dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk"
 else
     usage
 fi
@@ -158,8 +156,6 @@ if [[ ! -z "$OPT_DOMAIN" ]]; then
    echo "${ECHO_EM}Service will use domain ${OPT_DOMAIN} in place of ${DOMAIN}${ECHO_RESET}"
    DOMAIN="$OPT_DOMAIN"
 fi
-
-BIND_DN="cn=\${LDAP_BIND_USER},${BASE_DN}"
 
 # pull the required git tag, or branch
 deploy_dir=$(mktemp -d -t monocle-XXXXXXXXXX)
@@ -197,9 +193,8 @@ EOF
 # copy production compose file (template)
 scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
-# copy production settings file, nginx config (for proxy and ui), metadata api config
+# copy production nginx config (for proxy and ui), metadata api config
 # (may want to remove from git long term)
-scp -o ControlPath=%C ui/settings.prod.js          $REMOTE_USER@$REMOTE_HOST:~/settings.js
 scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
 scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
 scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
@@ -215,14 +210,12 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
     echo "Setting configuration in nginx.proxy.conf..."
-    sed -i -e "s/<LDAP_BASE_DN>/${BASE_DN}/g" nginx.proxy.conf
-    sed -i -e "s/<LDAP_BIND_DN>/${BIND_DN}/g" nginx.proxy.conf
-    sed -i -e "s/<LDAP_BIND_PASSWORD>/\${LDAP_BIND_PASSWORD}/g" nginx.proxy.conf
-    echo "Setting configuration in UI's settings.js..."
-    sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
+    sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+    sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+    sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
-    chmod 644 settings.js nginx.proxy.conf nginx.ui.conf metadata-api.json
+    chmod 644 nginx.proxy.conf nginx.ui.conf metadata-api.json
     echo "Pulling ${docker_tag} docker images..."
     docker-compose pull
     echo "Starting containers..."
