@@ -9,8 +9,7 @@ usage() {
        
        Mandatory arguments:
        -e --env         deployed environment: \`prod\` or \`dev\` 
-       -m --migrate_db  run django db migrations: \`yes\` or \`no\`
-                        (only do this if ORM has been changed)
+       -m --migrate_db  run an associated database release: \`yes\` or \`no\`
        -u --user        user id on deployment host
        -h --host        deployment host name or IP address
        
@@ -180,6 +179,16 @@ source "${deploy_dir}/utils/common.sh"
 validate_environment "${ENVIRONMENT}"
 if [[ ! -z "${VERSION}" ]]; then
    validate_version "${VERSION}"
+fi
+
+# Check the database release file exists
+DB_MIGRATION_SQL_FILE="./database/releases/${VERSION}/release.sql"
+if [[ "${APPLY_MIGRATIONS}" == "yes" ]] && [[ ! -f "${DB_MIGRATION_SQL_FILE}" ]]
+then
+    echo "FATAL ERROR: Unable to find the database release file: ${DB_MIGRATION_SQL_FILE}"
+    echo "Release aborted - no changes have been applied"
+    echo "If you do not need a database release, then specify the '-m no' flag"
+    exit 2
 fi
 
 # shut down applications first
