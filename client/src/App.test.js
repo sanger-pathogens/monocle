@@ -4,7 +4,7 @@ import App from "./App.svelte";
 it("renders the metadata uploading component", () => {
   const { getByText } = render(App);
 
-  expect(getByText("Select or drag and drop your Excel files with metadata:"))
+  expect(getByText("Select or drag and drop your Excel files with sample metadata:"))
     .toBeDefined();
   expect(getByText("Upload"))
     .toBeDefined();
