@@ -26,3 +26,12 @@ mlwh_rest_api:
    findByIds_key  : 'samples'
 pipeline_status:
    csv_file : 'data/status/pipelines.csv'
+monocle_ldap:
+   openldap_config   : 'openldap-env.yaml'
+   ldap_url          : 'ldap://monocle-ldap:389'
+   users_ou          : 'users'
+   groups_ou         : 'groups'
+   username_field    : 'cn'
+   uid_field         : 'gidNumber'
+   gid_field         : 'gidNumber'
+   
