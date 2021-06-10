@@ -78,11 +78,11 @@ you may want to deploy a feature branch you are working on to your own developme
 
 Run:
 ```
-./deploy.sh -e dev -m no -u <remote user> -h <host address> --branch <feature_branch> --tag commit-<short_commit_sha>
+./deploy.sh -e dev -m no -u <remote user> -h <host address> --branch <feature_branch> --tag commit-$(git rev-parse --short=8 HEAD)
 ```
 You can name any branch and any docker tag you like; you almost certainly want the docker tag
-for your latest commit.  The CI pipelines will build images for every commit, with the prefix `commit-`
-followed by the short commit SHA.   Currently `deploy.sh` will deploy to the designated users' home
+for your latest commit (as in the example above).  The CI pipelines will build images for every commit, with the prefix `commit-`
+followed by the short commit SHA (8 chars in gitlab).   Currently `deploy.sh` will deploy to the designated users' home
 directory, so you will want to create a new user on your development box.
 
 
