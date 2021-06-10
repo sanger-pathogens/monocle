@@ -88,6 +88,7 @@ def get_dash_params():
    # get the user ID when handling a request
    # the `except` bodge is to catch when this method is called at the initial service
    # start up, at which time there's no `request` object as not handling at HTTP request
+   userid = None
    try:
       userid = request.headers['X-Remote-User']
       # this message should be dropped to 'info' or 'debug'
