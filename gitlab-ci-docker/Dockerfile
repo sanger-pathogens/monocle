@@ -29,6 +29,23 @@ RUN   pip install dash==1.19.0         \
 
 ###################################################################################################################################
 
+# Front-end unit test image
+
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine as gitlab-frontend-unit-tests
+
+WORKDIR /app
+COPY ../frontend/package.json ../frontend/package-lock.json /app/
+RUN npm set audit false &&\
+  npm config set fetch-timeout 1000000 &&\
+  npm install --silent
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY ../frontend/src /app/src
+
+RUN npm test
+
+###################################################################################################################################
+
 # Metadata unit test image
 
 FROM  python:3.7 AS gitlab-metadata-unit-tests

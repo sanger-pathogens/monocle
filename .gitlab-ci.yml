@@ -9,6 +9,7 @@ stages:
 variables:
   UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
+  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-frontend-unit-tests:latest"
   METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -97,7 +98,7 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
@@ -129,7 +130,7 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
