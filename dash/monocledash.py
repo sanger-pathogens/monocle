@@ -2,7 +2,7 @@ import dash
 import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
-from   flask                        import render_template
+from   flask                        import request, render_template
 from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
@@ -15,7 +15,6 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 # first create a Flask server
 server = flask.Flask(__name__, static_folder='assets')
-
 
 ###################################################################################################################################
 # 
@@ -59,12 +58,11 @@ def metadata_upload():
    return render_template('upload.html', title='Monocle metadata upload')
  
 
-
 ###################################################################################################################################
 # 
 # /dashboard
 # 
-# this is the main Dash app, not a bog stnadrad Flask route
+# this is the main Dash app, not a bog standard Flask route
 
 # create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
@@ -86,6 +84,25 @@ callback_component_ids =   {  'refresh_callback_input_id'         : 'refresh-but
 
 # TODO this loads all data every time; allow loading of only what's required
 def get_dash_params():
+         
+   # get the user ID when handling a request
+   # the `except` bodge is to catch when this method is called at the initial service
+   # start up, at which time there's no `request` object as not handling at HTTP request
+   try:
+      userid = request.headers['X-Remote-User']
+      # this message should be dropped to 'info' or 'debug'
+      # 'warning' is too high, but I want to watch it for a while...
+      logging.warning('X-Remote-User header = {}'.format(userid))
+   except RuntimeError as e:
+      if not 'request context' in str(e):
+         raise
+      else:
+         logging.debug('outside request context:  no user ID available')
+   user_data = {  'userid'       : userid,
+                  # TODO retrieve institutions from LDAP
+                  'institutions' : [],
+                  }
+
    data  = MonocleDash.monocleclient.MonocleData()
    progress_graph       =  {  'title'              : 'Project Progress',  
                               'data'               : data.get_progress(),
@@ -178,7 +195,7 @@ def data_refresh(num_clicks, selected_institutions):
 def update_institution_status(selected_institutions):
    logging.info("callback triggered: setting the display property for institution status containers; {} will be visible".format(selected_institutions))
    institution_status_params = get_dash_params()['institution_status']
-   logging.info("updated institution status with data loaded at {} ***".format(str(institution_status_params['updated'])))
+   logging.info("updated institution status with data loaded at {}".format(str(institution_status_params['updated'])))
    return mc.status_by_institution(selected_institutions, institution_status_params)
 
 
