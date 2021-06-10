@@ -11,7 +11,7 @@ framework based on the idea of composable UI components.
 Install the dependencies...
 
 ```bash
-cd client
+cd frontend
 npm install
 ```
 
