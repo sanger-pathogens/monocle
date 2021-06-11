@@ -33,6 +33,8 @@ monocle_ldap:
    groups_obj        : 'posixGroup'
    username_attr     : 'uid'
    uid_attr          : 'uidNumber'
+   membership_attr   : 'o'
    gid_attr          : 'gidNumber'
-   institution_attr  : 'o'
+   inst_id_attr      : 'cn'
+   inst_name_attr    : 'description'
    

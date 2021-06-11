@@ -5,7 +5,7 @@ import yaml
 
 
 class UserDataError(Exception):
-   """ exception when user data methods are called with invalid parameter(s) """
+   """ Exception when user data methods queries or responses are not valid """
    pass
 
 class UserData:
@@ -22,8 +22,12 @@ class UserData:
                                        'groups_obj',
                                        'username_attr',
                                        'uid_attr',
+                                       'membership_attr',
                                        'gid_attr',
+                                       'inst_id_attr',
+                                       'inst_name_attr',
                                        ]
+
    required_openldap_params      = [   'MONOCLE_LDAP_BASE_DN',
                                        'MONOCLE_LDAP_BIND_DN',
                                        'MONOCLE_LDAP_BIND_PASSWORD',
@@ -100,39 +104,91 @@ class UserData:
       """
       if self._current_ldap_connection is not None:
          self._current_ldap_connection = None
+         
 
-   def username_search(self, username):
+   def get_user_details(self, username):
       """
-      Wraps ldap_search() with a username search for the value passed
+      Retrieves details of a user from LDAP, given a username.
+      Returns details as a dict.
+      This is expected to be called when we have an authenticated username, so
+      if this doesn't match a valid user something has gone badly wrong.  Consequenetly,
+      will raise UserDataError unless the username matches a user whon is a member of at
+      least one institution, which is the minimum we should expect.
       """
-      logging.info('searching for username {}'.format(username))
+      logging.info('retrieving user information for username {}'.format(username))
+      user_details = {  'username' : username,
+                        'memberOf' : [],
+                        }
+      ldap_user_rec  = self.ldap_search_user_by_username(username)
+      if ldap_user_rec is None:
+         UserDataError("Username {} could not be found in LDAP, which should never happen when the user has been authenticated.".format(username))
+      # note dict of attributes is the second element of the `ldap_user_rec` tuple
+      user_attr = ldap_user_rec[1]
+      org_gids = [ org_gid_bytes.decode('UTF-8') for org_gid_bytes in user_attr[self.config['membership_attr']] ]
+      if 1 < len(org_gids):
+         UserDataError("The username {} is not associated with any organisations ".format(username,self.config['users_obj'],self.config['username_attr']))
+      for this_gid in org_gids:
+         ldap_group_rec = self.ldap_search_group_by_gid(this_gid)
+         if ldap_group_rec is None:
+            UserDataError("A group with GID {} could not be found in LDAP, which indicates an invalid user record.".format(this_gid))
+         # note dict of attributes is the second element of the `ldap_group_rec` tuple
+         group_attr = ldap_group_rec[1]
+         for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr']]:
+            if required_attr not in group_attr or 1 < len(group_attr[required_attr]):
+               UserDataError("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(this_gid,required_attr,ldap_group_rec))
+         user_details['memberOf'].append( {  'inst_id':     group_attr[ self.config['inst_id_attr']   ][0].decode('UTF-8'),
+                                             'inst_name':   group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8')
+                                             }
+                                          )
+      return user_details
+
+   def ldap_search_user_by_username(self, username):
+      """
+      Wraps ldap_search() adding params for search for a user using the username passed.
+      Returns LDAP user record for the user if found, None if not found.
+      Raises UserDataError if more than 1 match (username should be unique)
+      or if returned data are not valid for a user record.
+      LDAP record expected to be a tuple with two elements
+      - the user's DN
+      - a dict of attributes
+      Note attribute valids are bytes, require decode() to convert to string
+      """
+      logging.debug('searching for username {}'.format(username))
       result_list = self.ldap_search(  self.config['users_obj'],
                                        self.config['username_attr'],
                                        username
                                        )
+      if 0 == len(result_list):
+         return None
       # believe there should be only one hit -- or usernames aren't unique :-/
       if 1 < len(result_list):
          UserDataError("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_obj'],self.config['username_attr']))
       result = result_list[0]
-      # return value should be tuple with two elements
-      #   1 the user's DN
-      #   2 a dict with the attributes
-      # we should always have a GID in the attributes
-      if self.config['gid_attr'] not in result[1]:
-         UserDataError("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['gid_attr'],result))
+      # we should always have a attribute defined bu config `membership_attr` in the attributes
+      if self.config['membership_attr'] not in result[1]:
+         UserDataError("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['membership_attr'],result))
       # TODO more validation to check user data are OK
       logging.debug("found user: {}".format(result))
       return result
 
-   def gid_search(self, gid):
+   def ldap_search_group_by_gid(self, gid):
       """
-      Wraps ldap_search() with a GID search for the value passed
+      Wraps ldap_search() adding params for search for a group using the GID value passed.
+      Returns LDAP group record for the group if found, None if not found.
+      Returns None if no match; raises UserDataError if more than 1 match (GID should be unique)
+      or if returned data are not valid for a group record.
+      LDAP record expected to be a tuple with two elements
+      - the group's DN
+      - a dict of attributes
+      Note attribute valids are bytes, require decode() to convert to string
       """
-      logging.info('searching for GID {}'.format(gid))
+      logging.debug('searching for GID {}'.format(gid))
       result_list = self.ldap_search(  self.config['groups_obj'],
                                        self.config['gid_attr'],
                                        gid
                                        )
+      if 0 == len(result_list):
+         return None
       # should be only one hit -- or GID isn't unique :-/
       if 1 < len(result_list):
          UserDataError("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_obj'],self.config['gid_attr']))
@@ -149,7 +205,7 @@ class UserData:
       if value is not None and 0 < len(str(value)):
          UserDataError("LDAP search string must not be None and must not be an empty string")
       this_search = '(&(objectClass={})({}={}))'.format(object_class,attr,value)
-      logging.info('LDAP search: {}'.format(this_search))
+      logging.debug('LDAP search: {}'.format(this_search))
       # TODO add more graceful error handling
       result = self.connection().search_s(self.config['openldap']['MONOCLE_LDAP_BASE_DN'],
                                           ldap.SCOPE_SUBTREE,

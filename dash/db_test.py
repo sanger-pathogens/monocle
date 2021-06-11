@@ -56,11 +56,7 @@ pp = pprint.PrettyPrinter(indent=3)
 user_data = DataSources.user_data.UserData()
 ldap_conn = user_data.connection()
 
+print("\nUsers:\n")
 for user in ['user_one','user_two','user_three']:
-   user_stuff  = user_data.username_search(user)
-   orgs = [ oid.decode('UTF-8') for oid in user_stuff[1]['o'] ]
-   print("{} is member of organisations: {}".format(user,orgs))
-   for this_gid in orgs:
-      this_group_stuff = user_data.gid_search(this_gid)
-      print("Group {} data:".format(this_gid))
-      pp.pprint( this_group_stuff )
+   user_stuff  = user_data.get_user_details(user)
+   pp.pprint( user_stuff )

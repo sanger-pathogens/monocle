@@ -37,8 +37,6 @@ dn: cn=InstOne,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk
 cn: InstOne
 description: First Institution
 gidnumber: 502
-memberuid: user_one
-memberuid: user_three
 objectclass: posixGroup
 objectclass: top
 
@@ -47,8 +45,6 @@ dn: cn=InstTwo,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk
 cn: InstTwo
 description: Institution Number Two
 gidnumber: 503
-memberuid: user_three
-memberuid: user_two
 objectclass: posixGroup
 objectclass: top
 
