@@ -64,6 +64,7 @@ services:
     volumes:
        - data:/dash/data
        - ./my.cnf:/dash/my.cnf
+      - ./openldap-env.yaml:/dash/openldap-env.yaml
   monocle-ldap:
     # temporarily use default image; should create out own (https://github.com/osixia/docker-openldap#advanced-user-guide)
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/openldap:1.5.0"

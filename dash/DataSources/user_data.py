@@ -18,11 +18,11 @@ class UserData:
    data_source_config_file_param = 'openldap_config'
    required_config_params        = [   data_source_config_file_param,
                                        'ldap_url',
-                                       'users_ou',
-                                       'groups_ou',
-                                       'username_field',
-                                       'uid_field',
-                                       'gid_field',
+                                       'users_obj',
+                                       'groups_obj',
+                                       'username_attr',
+                                       'uid_attr',
+                                       'gid_attr',
                                        ]
    required_openldap_params      = [   'MONOCLE_LDAP_BASE_DN',
                                        'MONOCLE_LDAP_BIND_DN',
@@ -106,22 +106,22 @@ class UserData:
       Wraps ldap_search() with a username search for the value passed
       """
       logging.info('searching for username {}'.format(username))
-      result_list = self.ldap_search(  self.config['users_ou'],
-                                       self.config['username_field'],
+      result_list = self.ldap_search(  self.config['users_obj'],
+                                       self.config['username_attr'],
                                        username
                                        )
       # believe there should be only one hit -- or usernames aren't unique :-/
       if 1 < len(result_list):
-         UserDataError("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_ou'],self.config['username_field']))
+         UserDataError("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_obj'],self.config['username_attr']))
       result = result_list[0]
       # return value should be tuple with two elements
       #   1 the user's DN
-      #   2 a dict with the fields
-      # we should always have a GID in the fields
-      if self.config['gid_field'] not in result[1]:
-         UserDataError("username {} search result doesn't seem to contain the required field {} (complete data = {})".format(username,self.config['gid_field'],result))
+      #   2 a dict with the attributes
+      # we should always have a GID in the attributes
+      if self.config['gid_attr'] not in result[1]:
+         UserDataError("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['gid_attr'],result))
       # TODO more validation to check user data are OK
-      logging.info("found user: {}".format(result))
+      logging.debug("found user: {}".format(result))
       return result
 
    def gid_search(self, gid):
@@ -129,31 +129,31 @@ class UserData:
       Wraps ldap_search() with a GID search for the value passed
       """
       logging.info('searching for GID {}'.format(gid))
-      result_list = self.ldap_search(  self.config['groups_ou'],
-                                       self.config['gid_field'],
+      result_list = self.ldap_search(  self.config['groups_obj'],
+                                       self.config['gid_attr'],
                                        gid
                                        )
       # should be only one hit -- or GID isn't unique :-/
       if 1 < len(result_list):
-         UserDataError("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_ou'],self.config['gid_field']))
+         UserDataError("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_obj'],self.config['gid_attr']))
       result = result_list[0]
       # TODO more validation to check group data are OK
-      logging.info("found group: {}".format(result))
+      logging.debug("found group: {}".format(result))
       return result
    
-   def ldap_search(self, org_unit, field, value):
+   def ldap_search(self, object_class, attr, value):
       """
       Generic LDAP search method
-      Searches the specfied organizational unit and field, for given value, and returns whatever data is retrieved from LDAP
+      Searches for specified objects with attributes euqal to the given value, and returns whatever data is retrieved from LDAP
       """
       if value is not None and 0 < len(str(value)):
          UserDataError("LDAP search string must not be None and must not be an empty string")
-      this_search = '{}={}'.format(field,value)
+      this_search = '(&(objectClass={})({}={}))'.format(object_class,attr,value)
       logging.info('LDAP search: {}'.format(this_search))
       # TODO add more graceful error handling
       result = self.connection().search_s(self.config['openldap']['MONOCLE_LDAP_BASE_DN'],
                                           ldap.SCOPE_SUBTREE,
                                           this_search
                                           )
-      logging.info("LDAP search result: {}".format(result))
+      logging.debug("LDAP search result: {}".format(result))
       return result

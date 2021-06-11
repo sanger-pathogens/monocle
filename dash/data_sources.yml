@@ -29,9 +29,10 @@ pipeline_status:
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    ldap_url          : 'ldap://monocle-ldap:389'
-   users_ou          : 'users'
-   groups_ou         : 'groups'
-   username_field    : 'cn'
-   uid_field         : 'gidNumber'
-   gid_field         : 'gidNumber'
+   users_obj         : 'inetOrgPerson'
+   groups_obj        : 'posixGroup'
+   username_attr     : 'uid'
+   uid_attr          : 'uidNumber'
+   gid_attr          : 'gidNumber'
+   institution_attr  : 'o'
    
