@@ -39,9 +39,11 @@ Currently, to make a release, make sure you are on the `master` branch with noth
 Note: `<version>` should conform to [semver](https://semver.org/).
 
 ### Deployment
-Wait until the docker_build and docker_push stages of the CI pipeline have completed.
 
-### Deploying a release
+Wait until the `docker_build` and `docker_push` stages of ther CI pipeline have completed.
+
+#### Deploying a release
+
 Run:
 ```
 ./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -u <remote user> -h <host address>
@@ -59,7 +61,38 @@ Notes:
 If database changes are to be deployed, then the following is required:
 - A locally installed mysql client on the deployment machine.
 - Release SQL should be defined in a `database/releases/<version>/release.sql` file.
-- An additional `-c <path to connection file>` argument must be passed to the deploy.sh script. The connection file will hold the connection details for the database instance to be updated.
+- An additional `-c <path to mysql connection file>` argument must be passed to the deploy.sh script. The connection file must contain the connection details for the database instance to be updated.
+
+#### Test deployments
+
+- `prod` deployments _must_ always be releases (as above).  Anything that includes a database migration
+should also be a release.
+- `dev` deployments _could_ be a release or _could_ be from the current head of the master branch.
+
+It is often useful to deploy the the current head of the master branch, e.g. right after a merge,
+to test it but prior to making a release.
+
+Run:
+```
+./deploy.sh -e dev -m no -u <remote user> -h <host address> --branch master --tag unstable
+```
+
+This will deploy the current head of the master branch, and the docker images built from it
+(`--tag` is a _docker_ tag, not a git tag).
+
+#### Test deployments on personal development instances
+
+Test deployments to `dev` (as above) should only be a release or the head of the master branch, but
+you may want to deploy a feature branch you are working on to your own development instance.
+
+Run:
+```
+./deploy.sh -e dev -m no -u <remote user> -h <host address> --branch <feature_branch> --tag commit-$(git rev-parse --short=8 HEAD)
+```
+You can name any branch and any docker tag you like; you almost certainly want the docker tag
+for your latest commit (as in the example above).  The CI pipelines will build images for every commit, with the prefix `commit-`
+followed by the short commit SHA (8 chars in gitlab).   Currently `deploy.sh` will deploy to the designated users' home
+directory, so you will want to create a new user on your development box.
 
 ## Development
 
