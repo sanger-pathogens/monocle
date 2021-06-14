@@ -121,21 +121,25 @@ class UserData:
                         }
       ldap_user_rec  = self.ldap_search_user_by_username(username)
       if ldap_user_rec is None:
-         UserDataError("Username {} could not be found in LDAP, which should never happen when the user has been authenticated.".format(username))
+         logging.error("searched for username {} which could not be found in LDAP, which should never happen when the user has been authenticated.".format(username))
+         raise UserDataError("username {} not found".format(username))
       # note dict of attributes is the second element of the `ldap_user_rec` tuple
       user_attr = ldap_user_rec[1]
       org_gids = [ org_gid_bytes.decode('UTF-8') for org_gid_bytes in user_attr[self.config['membership_attr']] ]
-      if 1 < len(org_gids):
-         UserDataError("The username {} is not associated with any organisations ".format(username,self.config['users_obj'],self.config['username_attr']))
+      if len(org_gids) < 1:
+         logging.error("The username {} is not associated with any organisations (full attributes: {})".format(username,user_attr))
+         raise UserDataError("username {} has no organisation attribute values ".format(username))
       for this_gid in org_gids:
          ldap_group_rec = self.ldap_search_group_by_gid(this_gid)
          if ldap_group_rec is None:
-            UserDataError("A group with GID {} could not be found in LDAP, which indicates an invalid user record.".format(this_gid))
+            logging.error("A group with GID {} could not be found in LDAP, which indicates an invalid user record.".format(this_gid))
+            raise UserDataError("group with GID {} not found.".format(this_gid))
          # note dict of attributes is the second element of the `ldap_group_rec` tuple
          group_attr = ldap_group_rec[1]
          for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr']]:
-            if required_attr not in group_attr or 1 < len(group_attr[required_attr]):
-               UserDataError("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(this_gid,required_attr,ldap_group_rec))
+            if required_attr not in group_attr or len(group_attr[required_attr]) < 1:
+               logging.error("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(this_gid,required_attr,ldap_group_rec))
+               raise UserDataError("group doesn't contain the required attribute {}".format(this_gid,required_attr))
          user_details['memberOf'].append( {  'inst_id':     group_attr[ self.config['inst_id_attr']   ][0].decode('UTF-8'),
                                              'inst_name':   group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8')
                                              }
@@ -161,12 +165,14 @@ class UserData:
       if 0 == len(result_list):
          return None
       # believe there should be only one hit -- or usernames aren't unique :-/
-      if 1 < len(result_list):
-         UserDataError("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_obj'],self.config['username_attr']))
+      if len(result_list) > 1:
+         logging.error("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_obj'],self.config['username_attr']))
+         raise UserDataError("uid {} not unique".format(username))
       result = result_list[0]
       # we should always have a attribute defined bu config `membership_attr` in the attributes
       if self.config['membership_attr'] not in result[1]:
-         UserDataError("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['membership_attr'],result))
+         logging.error("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['membership_attr'],result))
+         raise UserDataError("username {} doesn't contain required attribute {}".format(username,self.config['membership_attr']))
       # TODO more validation to check user data are OK
       logging.debug("found user: {}".format(result))
       return result
@@ -190,8 +196,9 @@ class UserData:
       if 0 == len(result_list):
          return None
       # should be only one hit -- or GID isn't unique :-/
-      if 1 < len(result_list):
-         UserDataError("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_obj'],self.config['gid_attr']))
+      if len(result_list) > 1:
+         logging.error("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_obj'],self.config['gid_attr']))
+         raise UserDataError("GID {} is not unique".format(gid))
       result = result_list[0]
       # TODO more validation to check group data are OK
       logging.debug("found group: {}".format(result))
@@ -202,8 +209,8 @@ class UserData:
       Generic LDAP search method
       Searches for specified objects with attributes euqal to the given value, and returns whatever data is retrieved from LDAP
       """
-      if value is not None and 0 < len(str(value)):
-         UserDataError("LDAP search string must not be None and must not be an empty string")
+      if value is None or len(str(value)) < 1:
+         raise UserDataError("LDAP search string must not be None and must not be an empty string")
       this_search = '(&(objectClass={})({}={}))'.format(object_class,attr,value)
       logging.debug('LDAP search: {}'.format(this_search))
       # TODO add more graceful error handling

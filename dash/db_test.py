@@ -9,14 +9,7 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 pp = pprint.PrettyPrinter(indent=3)
 
-#monocledb = DataSources.monocledb.MonocleDB()
-#print("Tables:\n")
-#for table in monocledb.connection().execute('show tables'):
-   #table_name = table[0]
-   #print("\n{}".format(table_name))
-   #for desc in monocledb.connection().execute('describe {}'.format(table_name)):
-      #print("   {}".format(desc))
-      
+#monocledb = DataSources.monocledb.MonocleDB()      
       
 #print("\nInstitution names:\n")
 #inst_list = monocledb.get_institution_names()
@@ -57,6 +50,6 @@ user_data = DataSources.user_data.UserData()
 ldap_conn = user_data.connection()
 
 print("\nUsers:\n")
-for user in ['user_one','user_two','user_three']:
+for user in ['ts24', 'assaf.rokney']:
    user_stuff  = user_data.get_user_details(user)
    pp.pprint( user_stuff )
