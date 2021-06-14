@@ -1,5 +1,5 @@
 # **************************************************************
-# Table creation script for the database_version table.
+# The database_version table.
 # **************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -10,12 +10,14 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP TABLE IF EXISTS `database_version`;
+
 CREATE TABLE `database_version` (
     `version` varchar(100) NOT NULL,
     `description` varchar(255) NULL,
     `applied` datetime(6) NOT NULL,
     PRIMARY KEY (`version`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

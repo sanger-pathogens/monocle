@@ -1,8 +1,7 @@
 # **************************************************************
-# Monocle database sample table changes for extended metadata.
-# This is a SQL version of the DJango migration, for use
-# on the production database now that the Django component
-# is being retired.
+# Monocle database changes needed to bring production up to date
+# and in sync with dev.
+# This is the non-django version of the 0.1.47 database release.
 # **************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,6 +11,9 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+-- Remove the current sample set, so we can reload from the new spreadsheets
+delete from api_sample;
 
 ALTER TABLE `api_sample` DROP INDEX `public_name`;
 -- This next constraint name is different on dev/prod.
@@ -74,6 +76,29 @@ ALTER TABLE `api_sample` ADD `tetracycline` varchar(30);
 ALTER TABLE `api_sample` ADD `tetracycline_method` varchar(60);
 ALTER TABLE `api_sample` ADD `vancomycin` varchar(30);
 ALTER TABLE `api_sample` ADD `vancomycin_method` varchar(60);
+
+-- Update Hong Kong country name
+update api_institution
+set country = 'China [Hong Kong]', latitude = 22.419722, longitude = 114.206792
+where name = 'The Chinese University of Hong Kong';
+
+-- Update National Reference Laboratories
+update api_institution
+set latitude = 31.9007, longitude = 35.2069
+where name = 'National Reference Laboratories';
+
+-- Add new institutions
+insert into api_institution (name, country, latitude, longitude)
+values ('Laboratório Central do Estado do Paraná', 'Brazil', -25.42537, -49.25920);
+insert into api_institution (name, country, latitude, longitude)
+values ('Universidade Federal do Rio de Janeiro', 'Brazil', -22.8625, -43.2235);
+insert into api_institution (name, country, latitude, longitude)
+values ('Faculty of Pharmacy, Suez Canal University', 'Egypt', 30.6205, 32.2697);
+
+-- This institution will no longer be used
+update api_affiliation set institution_id = 'National Reference Laboratories'
+where institution_id = 'Ministry of Health, Central laboratories';
+delete from api_institution where name = 'Ministry of Health, Central laboratories';
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
