@@ -38,21 +38,28 @@ Currently, to make a release, make sure you are on the `master` branch with noth
 ```
 Note: `<version>` should conform to [semver](https://semver.org/).
 
-### Deploying a release
-Wait until [Docker hub](https://hub.docker.com/orgs/sangerpathogens) has built the images for the release. These are named:
-- `sangerpathogens/monocle-api:<version>`
-- `sangerpathogens/monocle-app:<version>`
+### Deployment
+Wait until the docker_build and docker_push stages of the CI pipeline have completed.
 
-Now run:
+### Deploying a release
+Run:
 ```
-./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m <yes|no> -u <remote user> -h <host address>
+./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -u <remote user> -h <host address>
 ```
 
 Notes:
-- Using <b>-m yes</b> will also run any release Django database migrations
-- Although separate containers are built for UI and API components, they are currently deployed to the same OpenStack VM, running with `docker-compose`. This may change.
+- Several release *modes* are allowed:
+  - If the deployment includes a database release as well as code, then use the `-m all` argument.
+  - If only a database release is required then use the `-m database` argument.
+  - The default is a code release only [`-m application`].
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
+
+#### Database release requirements
+If database changes are to be deployed, then the following is required:
+- A locally installed mysql client on the deployment machine.
+- Release SQL should be defined in a `database/releases/<version>/release.sql` file.
+- An additional `-c <path to connection file>` argument must be passed to the deploy.sh script. The connection file will hold the connection details for the database instance to be updated.
 
 ## Development
 
