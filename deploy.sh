@@ -10,14 +10,14 @@ usage() {
        -e --env         deployed environment: \`prod\` or \`dev\`
        -u --user        user id on deployment host
        -h --host        deployment host name or IP address
-       -m --mode        deploy mode - \`application\` (default), \`database\` or \`all\`
-                        - deploy a code version [only], database version [only]
-                          or code AND database version
 
        Options:
        -v --version     version number without \`v\` prefix
                         IMPORTANT: if this is not provided, then both
                         \`--branch\` and \`--tag\` must be specified
+       -m --mode        deploy mode - \`application\` (default), \`database\` or \`all\`
+                        - deploy a code version [only], database version [only]
+                          or code AND database version
        -d --domain      service domain name; overrides the default based on
                         the deployed environment (set by \`--env\`)
        -b --branch      deploy from this branch instead of git tag derived
