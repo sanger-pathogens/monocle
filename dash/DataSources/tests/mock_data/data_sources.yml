@@ -27,7 +27,7 @@ mlwh_rest_api:
 pipeline_status:
    csv_file : 'DataSources/tests/mock_data/s3/status/pipelines.csv'
 monocle_ldap:
-   openldap_config   : 'openldap-env.yaml'
+   openldap_config   : 'DataSources/tests/mock_data/openldap-env.yaml'
    ldap_url          : 'ldap://fake-container:389'
    users_obj         : 'inetOrgPerson'
    groups_obj        : 'posixGroup'
