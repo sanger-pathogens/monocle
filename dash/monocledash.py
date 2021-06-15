@@ -120,7 +120,7 @@ def get_dash_params():
                               'y_label'            : 'number of samples',
                               }
    institution_select   = {   'institutions'       : data.get_institutions(),
--                             'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
+                              'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
                               'institution_callback_input_id'  : callback_component_ids['institution_callback_input_id'],
                               }
    institution_status   = {   'app'                : app,
