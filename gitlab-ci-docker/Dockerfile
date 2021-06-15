@@ -11,6 +11,11 @@
 
 FROM  python:3.7 AS gitlab-dash-unit-tests
 ARG   DEBIAN_FRONTEND=noninteractive
+
+RUN      apt-get update -qq
+RUN      apt-get install -y   libldap2-dev \
+                              libsasl2-dev
+
 # RUN   pip install codecov
 RUN   pip install dash==1.19.0         \
                   dash-daq==0.5.0      \
