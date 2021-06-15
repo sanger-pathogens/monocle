@@ -15,7 +15,7 @@ class MetadataDownloadTest(TestCase):
    genuine_api_host        = 'http://metadata-api/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'
-   # this pattern shoukld match a container on the docker network
+   # this pattern should match a container on the docker network
    base_url_regex          = '^http://[\w\-]+$'
    endpoint_regex          = '(/[\w\-\.]+)+'
    required_column_keys    = {'sanger_sample_id'            : type({'a': 'dict'}),
