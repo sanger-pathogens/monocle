@@ -125,6 +125,12 @@ class UserData:
          raise UserDataError("username {} not found".format(username))
       # note dict of attributes is the second element of the `ldap_user_rec` tuple
       user_attr = ldap_user_rec[1]
+      # check username attribute matches what we searched for
+      # (if this isn't the case, the search must have found a match on some other attribute, which *should* be impossible, but LDAP)
+      uid_attr = user_attr[self.config['username_attr']][0].decode('UTF-8')
+      if not uid_attr == username:
+         logging.error("Search for username {} returned a record with a mismatched {} value of {} (should be same as the username)".format(username,self.config['username_attr'],uid_attr))
+         raise UserDataError("user record returned with mismatched {}".format(self.config['username_attr']))
       org_gids = [ org_gid_bytes.decode('UTF-8') for org_gid_bytes in user_attr[self.config['membership_attr']] ]
       if len(org_gids) < 1:
          logging.error("The username {} is not associated with any organisations (full attributes: {})".format(username,user_attr))
@@ -136,10 +142,6 @@ class UserData:
             raise UserDataError("group with GID {} not found.".format(this_gid))
          # note dict of attributes is the second element of the `ldap_group_rec` tuple
          group_attr = ldap_group_rec[1]
-         for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr']]:
-            if required_attr not in group_attr or len(group_attr[required_attr]) < 1:
-               logging.error("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(this_gid,required_attr,ldap_group_rec))
-               raise UserDataError("group doesn't contain the required attribute {}".format(this_gid,required_attr))
          user_details['memberOf'].append( {  'inst_id':     group_attr[ self.config['inst_id_attr']   ][0].decode('UTF-8'),
                                              'inst_name':   group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8')
                                              }
@@ -169,10 +171,11 @@ class UserData:
          logging.error("The username {} matched multiple entries in {}.{}:  it should be unique".format(username,self.config['users_obj'],self.config['username_attr']))
          raise UserDataError("uid {} not unique".format(username))
       result = result_list[0]
-      # we should always have a attribute defined bu config `membership_attr` in the attributes
-      if self.config['membership_attr'] not in result[1]:
-         logging.error("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,self.config['membership_attr'],result))
-         raise UserDataError("username {} doesn't contain required attribute {}".format(username,self.config['membership_attr']))
+      # check attributes returned include required attributes
+      for this_required_attr in [self.config['username_attr'], self.config['membership_attr']]:
+         if this_required_attr not in result[1]:
+            logging.error("username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(username,this_required_attr,result))
+            raise UserDataError("username {} doesn't contain required attribute {}".format(username,this_required_attr))
       # TODO more validation to check user data are OK
       logging.debug("found user: {}".format(result))
       return result
@@ -200,7 +203,11 @@ class UserData:
          logging.error("The GID {} matched multiple entries in {}.{}:  it should be unique".format(gid,self.config['groups_obj'],self.config['gid_attr']))
          raise UserDataError("GID {} is not unique".format(gid))
       result = result_list[0]
-      # TODO more validation to check group data are OK
+      group_attr = result[1]
+      for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr']]:
+         if required_attr not in group_attr or len(group_attr[required_attr]) < 1:
+            logging.error("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(gid,required_attr,result))
+            raise UserDataError("group doesn't contain the required attribute {}".format(gid,required_attr))
       logging.debug("found group: {}".format(result))
       return result
    
