@@ -34,6 +34,12 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         status:        str = Route(pattern='^(successful)|(failed)$'),
                         ):
    data = MonocleDash.monocleclient.MonocleData()
+   username = request.headers['X-Remote-User']
+   # this message should be dropped to 'info' or 'debug'
+   # 'warning' is too high, but I want to watch it for a while...
+   logging.warning('X-Remote-User header passed to /download = {}'.format(username))
+   user_obj = MonocleDash.monocleclient.MonocleUser(username)
+   data.user_record = user_obj.record
    institution_data  = data.get_institutions()
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
@@ -85,26 +91,27 @@ callback_component_ids =   {  'refresh_callback_input_id'         : 'refresh-but
 # TODO this loads all data every time; allow loading of only what's required
 def get_dash_params():
          
-   # get the user ID when handling a request
+   # get the username when handling a request
    # the `except` bodge is to catch when this method is called at the initial service
    # start up, at which time there's no `request` object as not handling at HTTP request
-   userid = None
+   username    = None
+   user_object = None
    try:
-      userid = request.headers['X-Remote-User']
-      # this message should be dropped to 'info' or 'debug'
+      username = request.headers['X-Remote-User']
+      # TODO this message should be dropped to 'info' or 'debug'
       # 'warning' is too high, but I want to watch it for a while...
-      logging.warning('X-Remote-User header = {}'.format(userid))
+      logging.warning('X-Remote-User header = {}'.format(username))
+      user_object = MonocleDash.monocleclient.MonocleUser(username)
    except RuntimeError as e:
       if not 'request context' in str(e):
          raise
       else:
          logging.debug('outside request context:  no user ID available')
-   user_data = {  'userid'       : userid,
-                  # TODO retrieve institutions from LDAP
-                  'institutions' : [],
-                  }
-
+         
    data  = MonocleDash.monocleclient.MonocleData()
+   if user_object is not None:
+      data.user_record = user_object.record
+         
    progress_graph       =  {  'title'              : 'Project Progress',  
                               'data'               : data.get_progress(),
                               'x_col_key'          : 'date',
@@ -113,7 +120,7 @@ def get_dash_params():
                               'y_label'            : 'number of samples',
                               }
    institution_select   = {   'institutions'       : data.get_institutions(),
-                              'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
+-                             'initially_selected' : [], #[sorted(institutions, key=institutions.__getitem__)[0]],
                               'institution_callback_input_id'  : callback_component_ids['institution_callback_input_id'],
                               }
    institution_status   = {   'app'                : app,
@@ -126,7 +133,8 @@ def get_dash_params():
    # add component IDs to institution_status
    for this_id in callback_component_ids.keys():
       institution_status[this_id] = callback_component_ids[this_id]
-   return { 'progress_graph'     : progress_graph,
+   return { 'user'               : user_object,
+            'progress_graph'     : progress_graph,
             'institution_select' : institution_select,
             'institution_status' : institution_status
             }
@@ -136,7 +144,7 @@ def page_content(dash_params=None):
       dash_params =get_dash_params()
    logging.info("page content (currently selected institutions: {})".format(dash_params['institution_select']['initially_selected']))
    content = dash_html_components.Div(
-               children = mc.page_header(         'Monocle',
+               children = mc.page_header(             'Monocle',
                                                       logo_url       = app.get_asset_url('JunoLogo.svg'),
                                                       logo_link      = 'https://www.gbsgen.net/',
                                                       logo_text      = 'Juno Project',
