@@ -111,7 +111,9 @@ def page_footer(contacts=None, logo_url=None, logo_text='', logo_link='/'):
 def button_bar(app):
    elements = [   html.Div(id          =  'button-bar',
                            className   =  'button_bar',
-                           children    =  upload_button(app) + refresh_button(app)
+                           # temporarily removed, pending restriction to admins
+                           # children    =  upload_button(app) + refresh_button(app)
+                           children    =  refresh_button(app)
                            )
                   ]
    return elements
