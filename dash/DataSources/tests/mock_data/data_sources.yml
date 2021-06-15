@@ -26,3 +26,15 @@ mlwh_rest_api:
    findByIds_key  : 'samples'
 pipeline_status:
    csv_file : 'DataSources/tests/mock_data/s3/status/pipelines.csv'
+monocle_ldap:
+   openldap_config   : 'openldap-env.yaml'
+   ldap_url          : 'ldap://fake-container:389'
+   users_obj         : 'inetOrgPerson'
+   groups_obj        : 'posixGroup'
+   username_attr     : 'uid'
+   uid_attr          : 'uidNumber'
+   membership_attr   : 'o'
+   gid_attr          : 'gidNumber'
+   inst_id_attr      : 'cn'
+   inst_name_attr    : 'description'
+   

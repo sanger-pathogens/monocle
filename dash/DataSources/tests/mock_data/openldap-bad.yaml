@@ -1,0 +1,14 @@
+LDAP_ORGANISATION: Juno Project
+LDAP_DOMAIN: monocle.pam.sanger.ac.uk 
+
+LDAP_ADMIN_PASSWORD: 'fake-admin-pass'
+LDAP_CONFIG_PASSWORD: 'fake-config-pass'
+
+LDAP_READONLY_USER: true
+LDAP_READONLY_USER_USERNAME: 'monocle_ldap_ro'
+LDAP_READONLY_USER_PASSWORD: 'fake_pass'
+
+# Use the above read-only user for ldap binding in monocle
+# The following variables are only used by the monocle deploy script
+MONOCLE_LDAP_BASE_DN:        'dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk'
+MONOCLE_LDAP_BIND_DN:        'cn=monocle_ldap_ro,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk'
