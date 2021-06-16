@@ -42,6 +42,20 @@ Note: `<version>` should conform to [semver](https://semver.org/).
 
 Wait until the `docker_build` and `docker_push` stages of ther CI pipeline have completed.
 
+#### LDAP data backup
+
+Before proceeding with the deployment, make sure you have backed up the groups and users from the
+LDAP service as an LDIF file.  Log in as `admin` at `/ldap-admin'
+(the password is in your `openldap-env.yaml` file) and use the "Export" function; be certain to
+export the entire subtree.
+
+The export will contain two entries that you should delete (probably the first two entries):
+the base DN entry and the "LDAP read only user".   These should be removed because these two
+entries are automatically created when the service is started, from your config file.  If you
+were to change your config then the base DN and readonly user account will change;  importing
+something save in an LDIF file from an earlier release may overwrite these entries in LDAP with
+outdated entries.  This is really quite high up the list of things you don't want to do.
+
 #### Deploying a release
 
 Run:
@@ -56,6 +70,20 @@ Notes:
   - The default is a code release only [`-m application`].
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
+
+#### Access control problems
+
+If you have made any change to LDAP configuration (these may be in in `openldap-env.yaml`, or docker-compose or NGINX proxy rules)
+then you may find that you are denied access.
+
+Before deployment, you will have exported group and user accounts from LDAP as an LDIF file.   (If not,
+roll back to the previous release and so so.)
+
+Stop the service, then back up and delete the subdirectories
+`openldap-data` and `phpldapadmin-data` on the machine you are running the service on.  Then restart the service.
+This will recreate these directories, and configure the LDAP service with the correct base DN and readonly user account
+from your config files.   There will be no groups or user accounts in the LDAP service, so log in as `admin` at `/ldap-admin'
+(the password is in your `openldap-env.yaml` file) and import the LDIF file you saved earlier.
 
 #### Database release requirements
 If database changes are to be deployed, then the following is required:
