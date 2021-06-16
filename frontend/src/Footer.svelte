@@ -5,7 +5,7 @@
 <div class="page_footer">
   <div class="footer_logo_container">
     <a href="https://www.sanger.ac.uk/">
-      <img alt="Wellcome Sanger Institute" src="/imgs/SangerLogo.png" class="footer_logo" title="Wellcome Sanger Institute">
+      <img alt="Wellcome Sanger Institute" src="/upload/imgs/SangerLogo.png" class="footer_logo" title="Wellcome Sanger Institute">
     </a>
   </div>
   <div class="footer_contacts_container">
