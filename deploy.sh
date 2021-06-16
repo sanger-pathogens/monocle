@@ -182,16 +182,19 @@ if [[ ! -z "${VERSION}" ]]; then
    validate_version "${VERSION}"
 fi
 
-# copy production compose file (template)
+# shut down applications first
 # keep connection to avoid multiple password entries
-scp -o ControlMaster=yes \
-    -o ControlPersist=yes \
-    -o ControlPath=%C \
-    docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+    set -e
+    echo "Stopping existing containers..."
+    docker-compose down
+EOF
 
-# copy production settings file, nginx config (for proxy and ui), metadata api config
+# copy production compose file (template)
+scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+
+# copy production nginx config (for proxy and ui), metadata api config
 # (may want to remove from git long term)
-scp -o ControlPath=%C ui/settings.prod.js          $REMOTE_USER@$REMOTE_HOST:~/settings.js
 scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
 scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
 scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
@@ -203,38 +206,21 @@ scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/m
 #       (eg. VERSION vs API_SECRET_KEY)
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
-    echo "Stopping existing containers..."
-    docker-compose down
     echo "Setting configuration in docker-compose.yml..."
     sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
-    sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" docker-compose.yml
-    sed -i -e "s/<HOSTNAME_PUBLIC>/${PUBLIC_DOMAIN}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
-    sed -i -e "s/<SECRET_KEY>/\${API_SECRET_KEY}/g" docker-compose.yml
-    echo "Setting configuration in UI's settings.js..."
-    sed -i -e "s/<HOSTNAME>/${DOMAIN}/g" settings.js
+    echo "Setting configuration in nginx.proxy.conf..."
+    sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+    sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+    sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
     echo "Setting file permissions..."
     chmod 600 docker-compose.yml
-    chmod 644 settings.js nginx.proxy.conf nginx.ui.conf metadata-api.json
+    chmod 644 nginx.proxy.conf nginx.ui.conf metadata-api.json
     echo "Pulling ${docker_tag} docker images..."
     docker-compose pull
-    status=0
-    if [[ "${APPLY_MIGRATIONS}" == "yes" ]]
-    then
-        echo "Applying database migrations..."
-        docker-compose run --no-deps --rm api python manage.py migrate
-        status=\$?
-        if [[ \${status} -ne 0 ]]
-        then
-            echo "FATAL ERROR: Database migration returned non-zero status: \${status}"
-        fi
-    fi
-    if [[ \${status} -eq 0 ]]
-    then
-        echo "Starting containers..."
-        docker-compose up -d
-        echo "Done."
-    fi
+    echo "Starting containers..."
+    docker-compose up -d
+    echo "Done."
 EOF
 
 # close the connection
