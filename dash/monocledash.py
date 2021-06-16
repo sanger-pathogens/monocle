@@ -104,7 +104,7 @@ def get_dash_params():
       user_object = MonocleDash.monocleclient.MonocleUser(username)
    except RuntimeError as e:
       if not 'request context' in str(e):
-         raise
+         raise e
       else:
          logging.debug('outside request context:  no user ID available')
          

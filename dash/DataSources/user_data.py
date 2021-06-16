@@ -63,7 +63,7 @@ class UserData:
          self.config = data_sources[self.data_source]
          for required_param in self.required_config_params:
             if not required_param in self.config:
-               logging.error("data source config file {} does not provide the required paramter {}.{}".format(config_file_name,self.data_source,required_param))
+               logging.error("data source config file {} does not provide the required parameter {}.{}".format(config_file_name,self.data_source,required_param))
                raise KeyError
          # OpenLDAP config is in a separate config file
          self.read_openldap_config(self.config[self.data_source_config_file_param])
@@ -79,7 +79,7 @@ class UserData:
          openldap_config = yaml.load(file, Loader=yaml.FullLoader)
          for required_param in self.required_openldap_params:
             if not required_param in openldap_config:
-               logging.error("OpenLDAP config file {} does not provide the required paramter {}".format(config_file_name,required_param))
+               logging.error("OpenLDAP config file {} does not provide the required parameter {}".format(config_file_name,required_param))
                raise KeyError
          self.config['openldap'] = openldap_config
 
@@ -92,14 +92,14 @@ class UserData:
       if self._current_ldap_connection is None:
          logging.info("Connecting to LDAP server {}".format(self.config['ldap_url']))
          conn = ldap.initialize(self.config['ldap_url'])
-         assert (isinstance(conn, ldap.ldapobject.SimpleLDAPObject)), "ldap.initialize was expected to return and instance of ldap.ldapobject.SimpleLDAPObject, not {}".format(conn)
+         assert (isinstance(conn, ldap.ldapobject.SimpleLDAPObject)), "ldap.initialize was expected to return an instance of ldap.ldapobject.SimpleLDAPObject, not {}".format(conn)
          conn.simple_bind_s(self.config['openldap']['MONOCLE_LDAP_BIND_DN'], self.config['openldap']['MONOCLE_LDAP_BIND_PASSWORD'])
          self._current_ldap_connection = conn
       return self._current_ldap_connection
    
    def disconnect(self):
       """
-      If currently connected to LDAP server, disconencts.
+      If currently connected to LDAP server, disconnects.
       Does nothing if already disconnected.
       """
       if self._current_ldap_connection is not None:
@@ -111,8 +111,8 @@ class UserData:
       Retrieves details of a user from LDAP, given a username.
       Returns details as a dict.
       This is expected to be called when we have an authenticated username, so
-      if this doesn't match a valid user something has gone badly wrong.  Consequenetly,
-      will raise UserDataError unless the username matches a user whon is a member of at
+      if this doesn't match a valid user something has gone badly wrong.  Consequently,
+      will raise UserDataError unless the username matches a user who is a member of at
       least one institution, which is the minimum we should expect.
       """
       logging.info('retrieving user information for username {}'.format(username))
@@ -214,7 +214,7 @@ class UserData:
    def ldap_search(self, object_class, attr, value):
       """
       Generic LDAP search method
-      Searches for specified objects with attributes euqal to the given value, and returns whatever data is retrieved from LDAP
+      Searches for specified objects with attributes equal to the given value, and returns whatever data is retrieved from LDAP
       """
       if value is None or len(str(value)) < 1:
          raise UserDataError("LDAP search string must not be None and must not be an empty string")
