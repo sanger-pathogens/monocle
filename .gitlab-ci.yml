@@ -9,7 +9,7 @@ stages:
 variables:
   UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
-  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-frontend-unit-tests:latest"
+  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:alpine"
   METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
