@@ -27,6 +27,20 @@ Dashboard unit tests:
   script:
     - ./unittests.sh
 
+Front end unit tests:
+  stage: unit_test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${FRONTEND_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd frontend
+    - npm set audit false
+    - npm config set fetch-timeout 1000000
+    - npm install
+  script:
+    - npm test
 
 Metadata unit tests:
   stage: unit_test
