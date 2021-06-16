@@ -31,7 +31,7 @@ RUN   pip install dash==1.19.0         \
 
 # Front-end unit test image
 
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine as gitlab-frontend-unit-tests
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine AS gitlab-frontend-unit-tests
 
 WORKDIR /app
 COPY ../frontend/package.json ../frontend/package-lock.json /app/
