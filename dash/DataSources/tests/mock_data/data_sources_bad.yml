@@ -19,3 +19,13 @@ mlwh_rest_api:
    base_url    : 'http://fake_host.dev.pam.sanger.ac.uk'
    swagger     : '/sequencing/data/ui/'
    findById    : '/sequencing/data/samples/findById'
+monocle_ldap:
+   openldap_config   : 'openldap-env.yaml'
+   users_obj         : 'inetOrgPerson'
+   groups_obj        : 'posixGroup'
+   username_attr     : 'uid'
+   uid_attr          : 'uidNumber'
+   membership_attr   : 'o'
+   gid_attr          : 'gidNumber'
+   inst_id_attr      : 'cn'
+   inst_name_attr    : 'description'

@@ -2,7 +2,7 @@ import dash
 import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
-from   flask                        import render_template
+from   flask                        import request, render_template
 from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
@@ -15,7 +15,6 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 # first create a Flask server
 server = flask.Flask(__name__, static_folder='assets')
-
 
 ###################################################################################################################################
 # 
@@ -35,6 +34,12 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         status:        str = Route(pattern='^(successful)|(failed)$'),
                         ):
    data = MonocleDash.monocleclient.MonocleData()
+   username = request.headers['X-Remote-User']
+   # this message should be dropped to 'info' or 'debug'
+   # 'warning' is too high, but I want to watch it for a while...
+   logging.warning('X-Remote-User header passed to /download = {}'.format(username))
+   user_obj = MonocleDash.monocleclient.MonocleUser(username)
+   data.user_record = user_obj.record
    institution_data  = data.get_institutions()
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
@@ -59,12 +64,11 @@ def metadata_upload():
    return render_template('upload.html', title='Monocle metadata upload')
  
 
-
 ###################################################################################################################################
 # 
 # /dashboard
 # 
-# this is the main Dash app, not a bog stnadrad Flask route
+# this is the main Dash app, not a bog standard Flask route
 
 # create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
@@ -86,7 +90,28 @@ callback_component_ids =   {  'refresh_callback_input_id'         : 'refresh-but
 
 # TODO this loads all data every time; allow loading of only what's required
 def get_dash_params():
+         
+   # get the username when handling a request
+   # the `except` bodge is to catch when this method is called at the initial service
+   # start up, at which time there's no `request` object as not handling at HTTP request
+   username    = None
+   user_object = None
+   try:
+      username = request.headers['X-Remote-User']
+      # TODO this message should be dropped to 'info' or 'debug'
+      # 'warning' is too high, but I want to watch it for a while...
+      logging.warning('X-Remote-User header = {}'.format(username))
+      user_object = MonocleDash.monocleclient.MonocleUser(username)
+   except RuntimeError as e:
+      if not 'request context' in str(e):
+         raise e
+      else:
+         logging.debug('outside request context:  no user ID available')
+         
    data  = MonocleDash.monocleclient.MonocleData()
+   if user_object is not None:
+      data.user_record = user_object.record
+         
    progress_graph       =  {  'title'              : 'Project Progress',  
                               'data'               : data.get_progress(),
                               'x_col_key'          : 'date',
@@ -108,7 +133,8 @@ def get_dash_params():
    # add component IDs to institution_status
    for this_id in callback_component_ids.keys():
       institution_status[this_id] = callback_component_ids[this_id]
-   return { 'progress_graph'     : progress_graph,
+   return { 'user'               : user_object,
+            'progress_graph'     : progress_graph,
             'institution_select' : institution_select,
             'institution_status' : institution_status
             }
@@ -118,7 +144,7 @@ def page_content(dash_params=None):
       dash_params =get_dash_params()
    logging.info("page content (currently selected institutions: {})".format(dash_params['institution_select']['initially_selected']))
    content = dash_html_components.Div(
-               children = mc.page_header(         'Monocle',
+               children = mc.page_header(             'Monocle',
                                                       logo_url       = app.get_asset_url('JunoLogo.svg'),
                                                       logo_link      = 'https://www.gbsgen.net/',
                                                       logo_text      = 'Juno Project',
@@ -178,7 +204,7 @@ def data_refresh(num_clicks, selected_institutions):
 def update_institution_status(selected_institutions):
    logging.info("callback triggered: setting the display property for institution status containers; {} will be visible".format(selected_institutions))
    institution_status_params = get_dash_params()['institution_status']
-   logging.info("updated institution status with data loaded at {} ***".format(str(institution_status_params['updated'])))
+   logging.info("updated institution status with data loaded at {}".format(str(institution_status_params['updated'])))
    return mc.status_by_institution(selected_institutions, institution_status_params)
 
 
