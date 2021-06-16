@@ -34,9 +34,6 @@ RUN npm set audit false &&\
   npm install --silent
 ENV PATH /app/node_modules/.bin:$PATH
 
-COPY ../frontend/src /app/src
-
-RUN npm test
 
 ###################################################################################################################################
 
