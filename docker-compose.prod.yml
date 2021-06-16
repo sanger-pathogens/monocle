@@ -65,7 +65,7 @@ services:
        - data:/dash/data
        - ./my.cnf:/dash/my.cnf
        - ./openldap-env.yaml:/dash/openldap-env.yaml
-frontend:
+  frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     expose:
        - "80"
