@@ -9,3 +9,5 @@ my.cnf*
 my-dev.cnf
 my-prod.cnf
 openldap-env.yaml
+node_modules/
+**/public/build/

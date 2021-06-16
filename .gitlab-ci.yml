@@ -9,6 +9,7 @@ stages:
 variables:
   UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
+  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:alpine"
   METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -26,6 +27,20 @@ Dashboard unit tests:
   script:
     - ./unittests.sh
 
+Front end unit tests:
+  stage: unit_test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${FRONTEND_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd frontend
+    - npm set audit false
+    - npm config set fetch-timeout 1000000
+    - npm install
+  script:
+    - npm test
 
 Metadata unit tests:
   stage: unit_test
@@ -60,7 +75,7 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in proxy api ui dash metadata;
+         for this_context in proxy api ui dash frontend metadata;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
             if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
@@ -97,7 +112,7 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
@@ -129,7 +144,7 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-metadata;
+         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
