@@ -46,13 +46,22 @@ Wait until the `docker_build` and `docker_push` stages of ther CI pipeline have 
 
 Run:
 ```
-./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m <yes|no> -u <remote user> -h <host address>
+./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -u <remote user> -h <host address>
 ```
 
 Notes:
-- Using <b>-m yes</b> will also run any release Django database migrations
+- Several release *modes* are allowed:
+  - If the deployment includes a database release as well as code, then use the `-m all` argument.
+  - If only a database release is required then use the `-m database` argument.
+  - The default is a code release only [`-m application`].
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
+
+#### Database release requirements
+If database changes are to be deployed, then the following is required:
+- A locally installed mysql client on the deployment machine.
+- Release SQL should be defined in a `database/releases/<version>/release.sql` file.
+- An additional `-c <path to mysql connection file>` argument must be passed to the deploy.sh script. The connection file must contain the connection details for the database instance to be updated.
 
 #### Test deployments
 
@@ -84,7 +93,6 @@ You can name any branch and any docker tag you like; you almost certainly want t
 for your latest commit (as in the example above).  The CI pipelines will build images for every commit, with the prefix `commit-`
 followed by the short commit SHA (8 chars in gitlab).   Currently `deploy.sh` will deploy to the designated users' home
 directory, so you will want to create a new user on your development box.
-
 
 ## Development
 
