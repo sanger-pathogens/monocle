@@ -27,19 +27,6 @@ RUN   pip install dash==1.19.0         \
                   PyYAML==5.3.1        \
                   SQLAlchemy==1.3.23
 
-###################################################################################################################################
-
-# Front-end unit test image
-
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine AS gitlab-frontend-unit-tests
-
-WORKDIR /app
-COPY ../frontend/package.json ../frontend/package-lock.json /app/
-RUN npm set audit false &&\
-  npm config set fetch-timeout 1000000 &&\
-  npm install --silent
-ENV PATH /app/node_modules/.bin:$PATH
-
 
 ###################################################################################################################################
 
