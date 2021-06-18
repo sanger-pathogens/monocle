@@ -97,7 +97,11 @@ def get_dash_params():
    username    = None
    user_object = None
    try:
-      username = request.headers['X-Remote-User']
+      try:
+         username = request.headers['X-Remote-User']
+      except KeyError:
+         logging.error("request was made without 'X-Remote-User' HTPP header: auth module shouldn't allow that")
+         raise
       # TODO this message should be dropped to 'info' or 'debug'
       # 'warning' is too high, but I want to watch it for a while...
       logging.warning('X-Remote-User header = {}'.format(username))
