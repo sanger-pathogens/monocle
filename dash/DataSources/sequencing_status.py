@@ -44,15 +44,19 @@ class ProtocolError(Exception):
 
 class MLWH_Client:
    
-   data_sources_config     = 'data_sources.yml'
-   data_source             = 'mlwh_rest_api'
-   required_config_params  = [   'base_url',
-                                 'swagger',
-                                 'findById',
-                                 'findById_key',
-                                 'findByIds',
-                                 'findByIds_key'
-                                 ]
+   data_sources_config           = 'data_sources.yml'
+   data_source                   = 'mlwh_rest_api'
+   data_source_conf_file_param   = 'mlwh_api_config'
+   required_config_params        = [data_source_conf_file_param,
+                                    'swagger',
+                                    'findById',
+                                    'findById_key',
+                                    'findByIds',
+                                    'findByIds_key'
+                                    ]
+   required_mlwh_api_params      = ['base_url',
+                                    ]
+   
    def __init__(self, set_up=True):
       if set_up:
          self.set_up(self.data_sources_config)
@@ -65,6 +69,18 @@ class MLWH_Client:
          if not required_param in self.config:
             logging.error("data source config file {} does not provide the required paramter {}.{}".format(self.data_sources_config,self.data_source,required_param))
             raise KeyError
+      # MLWH API connection config is in a separate config file
+      self.read_mlwh_api_config(self.config[self.data_source_conf_file_param])
+      
+   def read_mlwh_api_config(self, mlwh_api_config_file):
+      with open(mlwh_api_config_file, 'r') as file:
+         self.config['mlwh_api_connection'] = yaml.load(file, Loader=yaml.FullLoader)
+      for required_param in self.required_mlwh_api_params:
+         if not required_param in self.config['mlwh_api_connection']:
+            logging.error("MLWH API config file {} does not provide the required paramter {}".format(mlwh_api_config_file,required_param))
+            raise KeyError
+      # TODO reduce to INFO when tested
+      logging.warning("read {} to get MLWH API config: {}".format(mlwh_api_config_file,self.config['mlwh_api_connection']))
       
    def find_by_id(self, sample_id):
       endpoint = self.config['findById']+sample_id
@@ -83,7 +99,7 @@ class MLWH_Client:
       return results[self.config['findByIds_key']]
 
    def make_request(self, endpoint, post_data=None):
-      request_url       = self.config['base_url']+endpoint
+      request_url       = self.config['mlwh_api_connection']['base_url']+endpoint
       request_data      = None
       request_headers   = {}
       # if POST data were passed, convert to a UTF-8 JSON string
@@ -105,7 +121,7 @@ class MLWH_Client:
       return response_as_string
 
    def parse_response(self, response_as_string, required_keys=[]):
-      swagger_url  = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
+      swagger_url  = self.config['mlwh_api_connection']['base_url']+self.config['swagger'] # only because it may be useful for error messages
       results_data = json.loads(response_as_string)
       if not isinstance(results_data, dict):
          error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)

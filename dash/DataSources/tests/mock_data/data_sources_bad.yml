@@ -16,9 +16,9 @@ monocle_download_api:
    swagger        : '/metadata/ui/'
    download       : '/metadata/download'
 mlwh_rest_api:
-   base_url    : 'http://fake_host.dev.pam.sanger.ac.uk'
-   swagger     : '/sequencing/data/ui/'
-   findById    : '/sequencing/data/samples/findById'
+   mlwh_api_config   : 'DataSources/tests/mock_data/mlwh-api-mock.yml'
+   swagger           : '/sequencing/data/ui/'
+   findById          : '/sequencing/data/samples/findById'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    users_obj         : 'inetOrgPerson'
