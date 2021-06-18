@@ -18,12 +18,12 @@ monocle_download_api:
    download       : '/metadata/download'
    metadata_key   : 'download'
 mlwh_rest_api:
-   base_url       : 'http://fake_host.dev.pam.sanger.ac.uk'
-   swagger        : '/sequencing/data/ui/'
-   findById       : '/sequencing/data/samples/findById'
-   findById_key   : 'sample'
-   findByIds      : '/sequencing/data/samples/findByIds'
-   findByIds_key  : 'samples'
+   mlwh_api_config   : 'DataSources/tests/mock_data/mlwh-api-mock.yml'
+   swagger           : '/sequencing/data/ui/'
+   findById          : '/sequencing/data/samples/findById'
+   findById_key      : 'sample'
+   findByIds         : '/sequencing/data/samples/findByIds'
+   findByIds_key     : 'samples'
 pipeline_status:
    csv_file : 'DataSources/tests/mock_data/s3/status/pipelines.csv'
 monocle_ldap:

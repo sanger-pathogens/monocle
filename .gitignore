@@ -9,5 +9,10 @@ my.cnf*
 my-dev.cnf
 my-prod.cnf
 openldap-env.yaml
+openldap-env-dev.yaml
+openldap-env-prod.yaml
+mlwh-api.yml
+mlwh-api-dev.yml
+mlwh-api-prod.yml
 node_modules/
 **/public/build/
