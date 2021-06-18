@@ -55,6 +55,6 @@ user_data = DataSources.user_data.UserData()
 ldap_conn = user_data.connection()
 
 print("\nUsers:\n")
-for user in ['ts24', 'assaf.rokney']:
+for user in ['ts24', 'kp11']:
    user_stuff  = user_data.get_user_details(user)
    pp.pprint( user_stuff )
