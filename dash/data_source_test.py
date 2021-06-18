@@ -18,7 +18,7 @@ monocledb = DataSources.monocledb.MonocleDB()
       
 print("\nInstitution names:\n")
 inst_list = monocledb.get_institution_names()
-pp.pprint( inst_list )
+#pp.pprint( inst_list )
 
 print("\nSamples:\n")
 samples = monocledb.get_samples()
@@ -38,23 +38,23 @@ for this_sample in test_set:
 pp.pprint( test_set )
 
 
-#pipeline_status = DataSources.pipeline_status.PipelineStatus()
-#print("\nPipeline status:\n")
-#for this_sample in test_set:
-   #this_sample['pipeline_status'] = {}
-   #logging.debug("getting pipeline status for sample {}".format(this_sample['sample_id']))
-   #for this_lane_id in this_sample['lane_id']:
-      #if this_lane_id is not None:
-         #logging.debug("  lane id = {}".format(this_lane_id))
-         #this_sample['pipeline_status'][this_lane_id] = pipeline_status.lane_status(this_lane_id)
-      #else:
-         #logging.debug("  no lane id: skipping")
-#pp.pprint( test_set )
+pipeline_status = DataSources.pipeline_status.PipelineStatus()
+print("\nPipeline status:\n")
+for this_sample in test_set:
+   this_sample['pipeline_status'] = {}
+   logging.debug("getting pipeline status for sample {}".format(this_sample['sample_id']))
+   for this_lane_id in this_sample['lane_id']:
+      if this_lane_id is not None:
+         logging.debug("  lane id = {}".format(this_lane_id))
+         this_sample['pipeline_status'][this_lane_id] = pipeline_status.lane_status(this_lane_id)
+      else:
+         logging.debug("  no lane id: skipping")
+pp.pprint( test_set )
 
-#user_data = DataSources.user_data.UserData()
-#ldap_conn = user_data.connection()
+user_data = DataSources.user_data.UserData()
+ldap_conn = user_data.connection()
 
-#print("\nUsers:\n")
-#for user in ['ts24', 'assaf.rokney']:
-   #user_stuff  = user_data.get_user_details(user)
-   #pp.pprint( user_stuff )
+print("\nUsers:\n")
+for user in ['ts24', 'assaf.rokney']:
+   user_stuff  = user_data.get_user_details(user)
+   pp.pprint( user_stuff )

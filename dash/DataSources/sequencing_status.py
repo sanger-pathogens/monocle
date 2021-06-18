@@ -79,8 +79,7 @@ class MLWH_Client:
          if not required_param in self.config['mlwh_api_connection']:
             logging.error("MLWH API config file {} does not provide the required paramter {}".format(mlwh_api_config_file,required_param))
             raise KeyError
-      # TODO reduce to INFO when tested
-      logging.warning("read {} to get MLWH API config: {}".format(mlwh_api_config_file,self.config['mlwh_api_connection']))
+      logging.info("read {} to get MLWH API config: {}".format(mlwh_api_config_file,self.config['mlwh_api_connection']))
       
    def find_by_id(self, sample_id):
       endpoint = self.config['findById']+sample_id
