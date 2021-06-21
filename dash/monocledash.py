@@ -159,8 +159,9 @@ def page_content(dash_params=None):
                                                                         'Funders'   : 'https://www.gbsgen.net/#funders',
                                                                         }
                                                       ) +
-                              mc.button_bar(          app
-                                                      ) +
+                              # commenting out the line below hides the upload button and refresh button
+                              #mc.button_bar(          app
+                                                      #) +
                               mc.sample_progress(     dash_params['progress_graph']
                                                       ) +
                               mc.institution_choice(  dash_params['institution_select']
