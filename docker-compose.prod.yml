@@ -66,7 +66,7 @@ services:
        - ./my.cnf:/dash/my.cnf
        - ./mlwh-api.yml:/dash/mlwh-api.yml
        - ./openldap-env.yaml:/dash/openldap-env.yaml
-  # commenting out this service disabled the metadata upload
+  # commenting out this service disables the metadata upload
   #frontend:
     #image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     #expose:
