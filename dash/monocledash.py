@@ -2,7 +2,7 @@ import dash
 import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
-from   flask                        import request, render_template
+from   flask                        import jsonify, request, render_template
 from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
@@ -54,6 +54,36 @@ def metadata_download(  institution:   str = Route(min_length=5),
 
 ###################################################################################################################################
 # 
+# /legacy_dashboard_data
+# 
+# Flask route, providing a hacky API to retrieve the data displayed on the legacy (Dash framework) dashboard
+# 
+# IMPORTANT this bypasses the X-Remote_user header check, exposing all institutions' data, so the proxy
+# needs to restrict access to this route to the docker network
+
+@server.route('/legacy_dashboard/summary/')
+def legacy_dashboard():
+   # TODO when tested, delete line below setting verbose logging level
+   logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+   legacy_dashboard_data = get_dash_params(do_not_check_remote_user=True)
+   # remove objects not appropriate to API and/or not serializable
+   for unwanted_top_level_key in ['user']:
+      legacy_dashboard_data.pop(unwanted_top_level_key, None)
+   for unwanted_institution_select_key in ['initially_selected', 'institution_callback_input_id']:
+      legacy_dashboard_data['institution_select'].pop(unwanted_institution_select_key, None)
+   for unwanted_institution_status_key in ['app', 'updated',
+                                           'institution_callback_input_id', 'institution_callback_output_id',
+                                           'sequencing_callback_input_type', 'sequencing_callback_output_type',
+                                           'pipeline_callback_input_type',  'pipeline_callback_output_type',
+                                           'refresh_callback_input_id', 'refresh_callback_output_id']:
+      legacy_dashboard_data['institution_status'].pop(unwanted_institution_status_key, None)
+   logging.debug("legacy dashboard data returned as {}".format(legacy_dashboard_data))
+   # jsonify and return
+   return jsonify(legacy_dashboard_data)
+
+
+###################################################################################################################################
+# 
 # /upload
 # 
 # Flask route, displays metadata upload page
@@ -89,28 +119,29 @@ callback_component_ids =   {  'refresh_callback_input_id'         : 'refresh-but
                            }
 
 # TODO this loads all data every time; allow loading of only what's required
-def get_dash_params():
+def get_dash_params(do_not_check_remote_user=False):
          
    # get the username when handling a request
    # the `except` bodge is to catch when this method is called at the initial service
    # start up, at which time there's no `request` object as not handling at HTTP request
    username    = None
    user_object = None
-   try:
+   if not do_not_check_remote_user:
       try:
-         username = request.headers['X-Remote-User']
-      except KeyError:
-         logging.error("request was made without 'X-Remote-User' HTPP header: auth module shouldn't allow that")
-         raise
-      # TODO this message should be dropped to 'info' or 'debug'
-      # 'warning' is too high, but I want to watch it for a while...
-      logging.warning('X-Remote-User header = {}'.format(username))
-      user_object = MonocleDash.monocleclient.MonocleUser(username)
-   except RuntimeError as e:
-      if not 'request context' in str(e):
-         raise e
-      else:
-         logging.debug('outside request context:  no user ID available')
+         try:
+            username = request.headers['X-Remote-User']
+         except KeyError:
+            logging.error("request was made without 'X-Remote-User' HTPP header: auth module shouldn't allow that")
+            raise
+         # TODO this message should be dropped to 'info' or 'debug'
+         # 'warning' is too high, but I want to watch it for a while...
+         logging.warning('X-Remote-User header = {}'.format(username))
+         user_object = MonocleDash.monocleclient.MonocleUser(username)
+      except RuntimeError as e:
+         if not 'request context' in str(e):
+            raise e
+         else:
+            logging.debug('outside request context:  no user ID available')
          
    data  = MonocleDash.monocleclient.MonocleData()
    if user_object is not None:
