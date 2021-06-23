@@ -1,7 +1,3 @@
-<script>
-</script>
-
-
 <!-- The markup and CSS are based on https://codepen.io/Bidji/pen/emajjq -->
 <div aria-label="uploading in progress" aria-live="polite" class="cssload-wrap">
 	<div aria-hidden="true" class="cssload-container">

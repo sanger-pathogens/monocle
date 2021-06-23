@@ -17,9 +17,4 @@
 
 
 <style>
-/* FIXME: the CSS below is temporary: it'll be removed or updated once
-the dashboard CSS is updated in https://trello.com/c/X66mRnj3/130-recreate-dashboard-in-javascript */
-.page_footer {
-  position: relative;
-}
 </style>

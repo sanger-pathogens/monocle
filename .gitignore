@@ -15,4 +15,5 @@ mlwh-api.yml
 mlwh-api-dev.yml
 mlwh-api-prod.yml
 node_modules/
-**/public/build/
+.svelte-kit/
+frontend/**/build

@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import MetadataUploader from "./MetadataUploader.svelte";
+import MetadataUploader from "./_MetadataUploader.svelte";
 
 const FILE = "file";
 

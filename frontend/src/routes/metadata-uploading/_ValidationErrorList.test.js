@@ -1,5 +1,5 @@
 import { render } from "@testing-library/svelte";
-import ValidationErrorList from "./ValidationErrorList.svelte";
+import ValidationErrorList from "./_ValidationErrorList.svelte";
 
 it("is hidden when no errors are given", () => {
   const { container } = render(ValidationErrorList);
