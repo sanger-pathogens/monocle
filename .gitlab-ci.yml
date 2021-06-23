@@ -27,6 +27,20 @@ Dashboard unit tests:
     - ./unittests.sh
 
 
+Data view unit tests:
+  stage: unit_test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${DASH_UNIT_TEST_IMAGE}"
+  before_script:
+    - export PYTHONPATH=`pwd`/dash
+    - cd data_view
+  script:
+    - python3 -m unittest discover -v -s ./tests -p '*_test.py'
+
+
 Metadata unit tests:
   stage: unit_test
   only:
