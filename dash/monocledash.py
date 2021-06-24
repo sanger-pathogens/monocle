@@ -61,7 +61,7 @@ def metadata_download(  institution:   str = Route(min_length=5),
 # IMPORTANT this bypasses the X-Remote_user header check, exposing all institutions' data, so the proxy
 # needs to restrict access to this route to the docker network
 
-@server.route('/legacy_dashboard/summary/')
+@server.route('/legacy_dashboard/data/summary/')
 def legacy_dashboard():
    # TODO when tested, delete line below setting verbose logging level
    logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
