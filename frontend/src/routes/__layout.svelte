@@ -6,7 +6,9 @@
 
 <Header />
 
-<slot></slot>
+<main>
+  <slot></slot>
+</main>
 
 <Footer />
 
@@ -15,6 +17,8 @@
 :global(:root) {
   --juno-indigo: #484885;
   --juno-purple: #6868be;
+
+  --bp-xl: 1400px;
 }
 
 main {
