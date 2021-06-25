@@ -1,20 +1,52 @@
-<script>
-</script>
+<footer>
+  <div class="max-inner-width">
+    <address>
+      <div>Contacts</div>
+      <a href="mailto:monocle-help@sanger.ac.uk">Monocle Help</a>
+      <span aria-hidden="true">|</span>
+      <a href="mailto:sdb@sanger.ac.uk">Stephen Bentley</a>
+    </address>
 
-
-<div class="page_footer">
-  <div class="footer_logo_container">
-    <a href="https://www.sanger.ac.uk/">
-      <img alt="Wellcome Sanger Institute" src="/upload/imgs/SangerLogo.png" class="footer_logo" title="Wellcome Sanger Institute">
+    <a href="https://www.sanger.ac.uk/" target="_blank" class="sanger-link">
+      <img alt="Wellcome Sanger Institute" src="/imgs/sangerlogowhite.svg" title="Wellcome Sanger Institute">
     </a>
   </div>
-  <div class="footer_contacts_container">
-    <div class="contacts_text">Contacts: </div>
-    <a href="mailto:monocle-help@sanger.ac.uk" class="footer_link">Monocle Help</a>
-    <a href="mailto:sdb@sanger.ac.uk" class="footer_link">Stephen Bentley</a>
-  </div>
-</div>
+</footer>
 
 
 <style>
+footer {
+  background: var(--juno-purple);
+  color: white;
+  margin-top: auto;
+  padding: 1.4rem;
+}
+.max-inner-width {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  max-wigth: var(--bp-xl);
+}
+
+a {
+  color: white;
+}
+
+.sanger-link {
+  order: -1;
+  margin-right: auto;
+  padding-right: 0.6rem;
+}
+.sanger-link img {
+  width: 7.3rem;
+}
+
+address {
+  text-align: right;
+}
+
+address div:first-child {
+  font-style: italic;
+  text-align: right;
+}
 </style>
