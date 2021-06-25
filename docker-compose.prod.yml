@@ -110,7 +110,7 @@ services:
       # this next directory isn't mentioned in the documentation, but the container won't start without it
       - ./openldap-data/var/run/slapd:/var/run/slapd
   ldap-admin:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:0.9.0"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ldap-admin:<DOCKERTAG>"
     expose:
       - "80"
     restart: unless-stopped
