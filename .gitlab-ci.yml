@@ -37,8 +37,11 @@ Docker builds:
          for this_context in $DOCKER_BUILD_LIST;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
-            pwd;
-            this_image="monocle-${this_context}";
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
