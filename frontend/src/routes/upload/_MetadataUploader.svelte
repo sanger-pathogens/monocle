@@ -42,7 +42,13 @@
     })
       .then((response) => {
         if (!response.ok) {
-          return response.json ? response.json() : Promise.reject(response.statusText);
+          return response.json ?
+            response.json()
+              .catch((err) => {
+                console.log(`JSON parsing error: ${err}`);
+                return Promise.reject(response.statusText);
+              })
+            : Promise.reject(response.statusText);
         }
       });
 }
@@ -56,9 +62,8 @@
   }
 
   function onUploadError(err) {
-    alert(
-      `Upload error: ${err.message || err}.\nPlease try again and contact us if the problem persists.`
-    );
+    const uploadError = err ? (`Upload error: ${err.message || err}`) : "Upload error";
+    alert(`${uploadError}.\nPlease try again and contact us if the problem persists.`);
   }
 
   function hasValidationErrors(errors) {
@@ -109,19 +114,17 @@
 
 
 <style>
-/* FIXME: the CSS below is temporary: it'll be removed or updated once
-the dashboard CSS is updated in https://trello.com/c/X66mRnj3/130-recreate-dashboard-in-javascript */
-p {
-  margin-bottom: 3rem;
-}
 form, p {
   text-align: center;
 }
+
 fieldset {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
+  align-items: center;
 }
-fieldset button, fieldset input {
-  margin-bottom: 3rem;
+
+input[type=file] {
+  margin: 1rem 0 2rem;
 }
 </style>

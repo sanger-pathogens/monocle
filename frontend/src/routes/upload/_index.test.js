@@ -1,5 +1,12 @@
 import { fireEvent, render } from "@testing-library/svelte";
+import { goto } from '$app/navigation';
 import UploadingPage from "./index.svelte";
+
+// Mocking this module for the whole file is a workaround
+// for Jest's not understanding SvelteKit's $app modules.
+jest.mock('$app/navigation', () => ({
+  goto: jest.fn()
+}));
 
 it("renders the metadata uploading component", () => {
   const { getByText } = render(UploadingPage);
@@ -11,17 +18,13 @@ it("renders the metadata uploading component", () => {
 });
 
 it("redirects to the dashboard page on the upload success event", async () => {
-  const redirectionSpy = jest.fn();
-  const injectedWindow = {
-    location: { assign: redirectionSpy }
-  };
-  const { container } = render(UploadingPage, { injectedWindow });
+  const { container } = render(UploadingPage);
 
-  expect(redirectionSpy).not.toHaveBeenCalled();
+  expect(goto).not.toHaveBeenCalled();
 
   await fireEvent.submit(container.querySelector("form"));
 
-  expect(redirectionSpy).toHaveBeenCalledTimes(1);
-  expect(redirectionSpy).toHaveBeenCalledWith("/dashboard");
+  expect(goto).toHaveBeenCalledTimes(1);
+  expect(goto).toHaveBeenCalledWith("/");
 });
 

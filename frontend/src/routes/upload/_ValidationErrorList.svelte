@@ -26,33 +26,16 @@
 
 
 <style>
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
 input:checked + label {
   text-decoration: line-through;
 }
-/* FIXME: the CSS below is temporary: it'll be removed or updated once
-the dashboard CSS is updated in https://trello.com/c/X66mRnj3/130-recreate-dashboard-in-javascript */
-p {
-  margin-bottom: revert;
-  text-align: center;
-}
-summary {
-  cursor: pointer;
-  font-size: 1.35rem;
-  padding-bottom: 1rem;
-}
-ul {
-  list-style: none;
-}
-li {
-  display: flex;
-  align-items: flex-start;
-}
+
 label {
   cursor: pointer;
-  display: inline;
-}
-input {
-  margin-right: 0.5rem;
-  margin-top: 0.6rem;
 }
 </style>

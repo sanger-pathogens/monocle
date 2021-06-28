@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import nodeAdapter from '@sveltejs/adapter-node';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -7,7 +7,7 @@ const config = {
   kit: {
     // hydrate the <div id="app"> element in src/app.html
     target: '#app',
-    adapter: adapter({
+    adapter: nodeAdapter({
       precompress: production
 	})
   }
