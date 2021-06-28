@@ -3,8 +3,7 @@
 stages:
   - build
   - test
-  - docker_tags_for_merge
-  - docker_tags_for_release
+  - docker_tags_for_merges_and_releases
   
   
 variables:
@@ -109,7 +108,7 @@ Docker tags for merge:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_tags_for_merge
+  stage: docker_tags_for_merges_and_releases
   only:
     - master
   tags:
@@ -146,7 +145,7 @@ Docker tags for release:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_tags_for_release
+  stage: docker_tags_for_merges_and_releases
   only:
     - tags
   tags:
