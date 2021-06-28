@@ -78,10 +78,9 @@ Dashboard unit tests:
     - cd dash
   script:
     - ./unittests.sh
-  after_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
+  # codecov temporarily disabled 2021-04-15 after security breach notice
+  # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - echo 'NOTE: codecov temporarily disabled'
 
 Metadata unit tests:
   stage: test
@@ -96,10 +95,9 @@ Metadata unit tests:
     - cd metadata/juno
   script:
     - ./unittests.sh
-  after_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
+  # codecov temporarily disabled 2021-04-15 after security breach notice
+  # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
-    - echo 'NOTE: codecov temporarily disabled'
 
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be commits)
