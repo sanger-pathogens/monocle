@@ -12,11 +12,12 @@ variables:
   DASH_IMAGE:               "monocle-dash"
   METADATA_IMAGE:           "monocle-metadata"
   FRONTEND_IMAGE:           "monocle-frontend"
+  DOCKER_BUILD_LIST:        "proxy dash frontend metadata/juno ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
     
-# at every git push, build docker images in /api, /ui, /dash and /metadata/juno
+# at every git push, build docker images in subdirectories in DOCKER_BUILD_LIST
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
   stage: build
@@ -34,10 +35,9 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in proxy dash frontend metadata ldap-admin;
+         for this_context in "$DOCKER_BUILD_LIST";
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
-            if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
             pwd;
             this_image="monocle-${this_context}";
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
@@ -126,8 +126,13 @@ Docker tags for merge:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_context in "$DOCKER_BUILD_LIST"
          do
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
@@ -158,8 +163,13 @@ Docker tags for release:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_context in "$DOCKER_BUILD_LIST"
          do
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
