@@ -1,9 +1,10 @@
 # codecov removed 2021-04-15 after security breach notice
 
 stages:
-  - unit_test
-  - docker_build
-  - docker_push
+  - test
+  - build
+  - docker_tags_for_merge
+  - docker_tags_for_release
   
   
 variables:
@@ -16,7 +17,7 @@ variables:
 
 
 Dashboard unit tests:
-  stage: unit_test
+  stage: test
   only:
     - branches
   tags:
@@ -28,7 +29,7 @@ Dashboard unit tests:
     - ./unittests.sh
 
 Front end unit tests:
-  stage: unit_test
+  stage: test
   only:
     - branches
   tags:
@@ -43,7 +44,7 @@ Front end unit tests:
     - npm test
 
 Metadata unit tests:
-  stage: unit_test
+  stage: test
   only:
     - branches
   tags:
@@ -60,7 +61,7 @@ Metadata unit tests:
 # at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
-  stage: docker_build
+  stage: build
   tags:
     - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
@@ -95,7 +96,7 @@ Docker push as 'unstable':
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_push
+  stage: docker_tags_for_merge
   only:
     - master
   tags:
@@ -127,7 +128,7 @@ Docker push with release tag and as 'latest':
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_push
+  stage: docker_tags_for_release
   only:
     - tags
   tags:
