@@ -9,27 +9,10 @@ stages:
   
 variables:
   DASH_IMAGE:               "monocle-dash"
-  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:16.4.2-alpine3.14"
+  FRONTEND_IMAGE:           "monocle-frontend"
   METADATA_IMAGE:           "monocle-metadata"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-
-
-Front end unit tests:
-  stage: test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${FRONTEND_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd frontend
-    - npm set audit false
-    - npm config set fetch-timeout 1000000
-    - npm install
-  script:
-    - npm test
-
 
     
 # at every git push, build docker images in /api, /ui, /dash and /metadata/juno
@@ -98,6 +81,18 @@ Metadata unit tests:
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+
+Front end unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    - cd frontend
+  script:
+    - npm test
 
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be commits)
