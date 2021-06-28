@@ -34,7 +34,7 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in proxy api ui dash frontend metadata ldap-admin;
+         for this_context in proxy dash frontend metadata ldap-admin;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
             if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
@@ -126,7 +126,7 @@ Docker tags for merge:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_image in monocle-proxy monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
@@ -158,7 +158,7 @@ Docker tags for release:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_image in monocle-proxy monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
          do
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
