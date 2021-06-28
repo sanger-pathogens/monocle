@@ -106,7 +106,7 @@ Front end unit tests:
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
-# (runs for any commit to master, but these should all be commits)
+# (runs for any commit to master, but these should all be merges)
 Docker tags for merge:
   variables:
     # only docker, don't need to clone repo
