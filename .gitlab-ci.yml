@@ -91,8 +91,9 @@ Docker builds:
          done
 
 
-# at every push/merge to master, tag the latest image builds as 'unstable'
-Docker push as 'unstable':
+# at every merge to master, tag the latest image builds as 'unstable'
+# (runs for any commit to master, but these should all be commits)
+Docker tags for merge:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
@@ -124,7 +125,7 @@ Docker push as 'unstable':
 
          
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
-Docker push with release tag and as 'latest':
+Docker tags for release:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
