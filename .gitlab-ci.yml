@@ -8,7 +8,6 @@ stages:
   
   
 variables:
-  UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
   DASH_IMAGE:               "monocle-dash"
   FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:alpine"
   METADATA_IMAGE:           "monocle-metadata"
