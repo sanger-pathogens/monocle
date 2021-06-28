@@ -1,21 +1,3 @@
-# images for use in CI
-
-# N.B. the build script will use the stage (AS ...) name as the image name
-
-# codecov removed 2021-04-15 after security breach notice
-      
-
-###################################################################################################################################
-
-# Metadata unit test image
-
-FROM  python:3.7 AS gitlab-metadata-unit-tests
-ARG   DEBIAN_FRONTEND=noninteractive
-# RUN   pip install codecov
-RUN   pip install pipenv
-      
-###################################################################################################################################
-      
 # dind image
 
 # This provides the docker daemon.  It runs as a service in gitlab CI, allowing docker commands

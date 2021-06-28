@@ -9,9 +9,9 @@ stages:
   
 variables:
   UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
-  DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
+  DASH_IMAGE:               "monocle-dash"
   FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:16.4.2-alpine3.14"
-  METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
+  METADATA_IMAGE:           "monocle-metadata"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
@@ -31,18 +31,6 @@ Front end unit tests:
   script:
     - npm test
 
-Metadata unit tests:
-  stage: test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${METADATA_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd metadata/juno
-    - pipenv install --system --ignore-pipfile
-  script:
-    - ./unittests.sh
 
     
 # at every git push, build docker images in /api, /ui, /dash and /metadata/juno
@@ -91,7 +79,28 @@ Dashboard unit tests:
     - cd dash
   script:
     - ./unittests.sh
+  after_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - echo 'NOTE: codecov temporarily disabled'
 
+Metadata unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/${METADATA_IMAGE}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - pip install codecov
+    - cd metadata/juno
+  script:
+    - ./unittests.sh
+  after_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - echo 'NOTE: codecov temporarily disabled'
 
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be commits)
