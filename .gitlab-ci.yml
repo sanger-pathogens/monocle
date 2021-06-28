@@ -88,7 +88,6 @@ Dashboard unit tests:
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
     # - pip install codecov
-    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
     - cd dash
   script:
     - ./unittests.sh
