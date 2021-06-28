@@ -1,8 +1,8 @@
 # codecov removed 2021-04-15 after security breach notice
 
 stages:
-  - test
   - build
+  - test
   - docker_tags_for_merge
   - docker_tags_for_release
   
@@ -15,18 +15,6 @@ variables:
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
-
-Dashboard unit tests:
-  stage: test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${DASH_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd dash
-  script:
-    - ./unittests.sh
 
 Front end unit tests:
   stage: test
@@ -56,9 +44,8 @@ Metadata unit tests:
   script:
     - ./unittests.sh
 
-
     
-# at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno
+# at every git push, build docker images in /api, /ui, /dash and /metadata/juno
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
   stage: build
@@ -89,6 +76,22 @@ Docker builds:
             echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
             docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
+
+         
+Dashboard unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/${DASH_IMAGE}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - pip install codecov
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+    - cd dash
+  script:
+    - ./unittests.sh
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
