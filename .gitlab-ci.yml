@@ -8,9 +8,10 @@ stages:
   
   
 variables:
+  FRONTEND_UNIT_TEST_IMAGE: "node:alpine"
   DASH_IMAGE:               "monocle-dash"
-  FRONTEND_IMAGE:           "monocle-frontend"
   METADATA_IMAGE:           "monocle-metadata"
+  FRONTEND_IMAGE:           "monocle-frontend"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
@@ -65,6 +66,7 @@ Dashboard unit tests:
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
+    
 Metadata unit tests:
   stage: test
   only:
@@ -82,17 +84,24 @@ Metadata unit tests:
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
+    
+# front end test requires special unit test image, because the service image
+# doesn't include npm
 Front end unit tests:
   stage: test
   only:
     - branches
   tags:
     - openstack-autoscale-theta
-  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_IMAGE}:commit-${CI_COMMIT_SHORT_SHA}"
+  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_UNIT_TEST_IMAGE}"
   before_script:
     - cd frontend
+    - npm set audit false
+    - npm config set fetch-timeout 1000000
+    - npm install
   script:
     - npm test
+
 
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be commits)
