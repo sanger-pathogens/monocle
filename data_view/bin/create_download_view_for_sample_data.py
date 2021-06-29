@@ -17,7 +17,6 @@ INSTITUTION_NAME_TO_ID = {
   'Wellcome Sanger Institute': 'WelSanIns'
 }
 INITIAL_DIR = Path().absolute()
-
 OUTPUT_SUBDIR='data_view'
 
 def create_download_view_for_sample_data(db):
@@ -87,7 +86,7 @@ def _cd(dir):
 
 
 def _mkdir(dir_name):
-  Path(dir_name).mkdir()
+  Path(dir_name).mkdir(exist_ok=True)
 
 
 if __name__ == '__main__':
