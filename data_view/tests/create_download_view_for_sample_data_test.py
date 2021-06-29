@@ -69,9 +69,17 @@ class CreateDownloadViewForSampleDataTest(TestCase):
 
 def get_sequencing_status_data(sample_ids):
   if sample_ids == SAMPLE_IDS[:2]:
-    return {'lane_id': LANES[:2]}
+    return {
+      SAMPLE_IDS[0]:
+        {'lanes': [{'id': LANES[0]}, {'id': LANES[1]}]}
+    }
   elif sample_ids == SAMPLE_IDS[2:4]:
-    return {'lane_id': LANES[2:]}
+    return {
+      SAMPLE_IDS[2]:
+        {'lanes': [{'id': LANES[2]}]},
+      SAMPLE_IDS[3]:
+        {'lanes': []}
+    }
   return {}
 
 class DB():
