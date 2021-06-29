@@ -18,19 +18,22 @@ INSTITUTION_NAME_TO_ID = {
 }
 INITIAL_DIR = Path().absolute()
 
+OUTPUT_SUBDIR='data_view'
 
 def create_download_view_for_sample_data(db):
   institutions = db.get_institution_names()
   for institution in institutions:
-    lane_ids = _get_lane_ids(institution, db)
+   lane_ids = _get_lane_ids(institution, db)
 
-    if lane_ids:
-      institution_readable_id = INSTITUTION_NAME_TO_ID[institution]
-      _mkdir(institution_readable_id)
+   with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
 
-      with _cd(institution_readable_id):
-        for lane_id in lane_ids:
-          _create_lane_dir_with_symlinks(lane_id)
+     if lane_ids:
+       institution_readable_id = INSTITUTION_NAME_TO_ID[institution]
+       _mkdir(institution_readable_id)
+
+       with _cd(institution_readable_id):
+         for lane_id in lane_ids:
+            _create_lane_dir_with_symlinks(lane_id)
 
 
 def _get_lane_ids(institution, db):
