@@ -199,8 +199,6 @@ scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/n
 scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
 scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
-# cron task for syncing sample data view
-scp -o ControlPath=%C data_view/sync_data_view_cron $REMOTE_USER@$REMOTE_HOST:/etc/cron.d/sync_data_view
 # copy script for cron task above
 scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
 
@@ -212,7 +210,7 @@ scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REM
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
     echo "Setting configuration in docker-compose.yml..."
-    sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml /etc/cron.d/sync_data_view
+    sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
     echo "Setting configuration in nginx.proxy.conf..."
     sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
