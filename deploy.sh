@@ -199,8 +199,9 @@ scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/n
 scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
 scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
-# copy script for cron task above
+# scripts for syncing sample data view
 scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+scp -o ControlPath=%C data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
 
 # replace the running version
 # using existing connection
@@ -208,9 +209,9 @@ scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REM
 #       remote variables need escaping
 #       (eg. VERSION vs API_SECRET_KEY)
 ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
-    set -e
+    set -e    
     echo "Setting configuration in docker-compose.yml..."
-    sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml
+    sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
     sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
     echo "Setting configuration in nginx.proxy.conf..."
     sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
