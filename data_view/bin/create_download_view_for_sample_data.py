@@ -37,7 +37,12 @@ def _get_lane_ids(institution, db):
   sample_ids = [ sample['sample_id'] for sample in db.get_samples(institutions=[institution]) ]
   if not sample_ids:
     return []
-  return _get_sequencing_status_data(sample_ids).get('lane_id', [])
+  seq_data = _get_sequencing_status_data(sample_ids)
+  all_lanes = []
+  for this_sample in seq_data.keys():
+    for this_lane in seq_data[this_sample]['lanes']:
+       all_lanes.append(this_lane['id'])
+  return all_lanes
 
 
 def _get_sequencing_status_data(sample_ids):
