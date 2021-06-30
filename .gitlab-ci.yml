@@ -1,66 +1,25 @@
 # codecov removed 2021-04-15 after security breach notice
 
 stages:
-  - unit_test
-  - docker_build
-  - docker_push
+  - build
+  - test
+  - docker_tags_for_merges_and_releases
   
   
 variables:
-  UI_UNIT_TEST_IMAGE:       "${CI_REGISTRY_IMAGE}/gitlab-ui-unit-tests:latest"
-  DASH_UNIT_TEST_IMAGE:     "${CI_REGISTRY_IMAGE}/gitlab-dash-unit-tests:latest"
-  FRONTEND_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/node:alpine"
-  METADATA_UNIT_TEST_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-metadata-unit-tests:latest"
+  DASH_CONTEXT:             "dash"
+  METADATA_CONTEXT:         "metadata"
+  FRONTEND_CONTEXT:         "frontend"
+  DOCKER_BUILD_LIST:        "${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
+  FRONTEND_UNIT_TEST_IMAGE: "node:alpine"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
-
-Dashboard unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${DASH_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd dash
-  script:
-    - ./unittests.sh
-
-Front end unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${FRONTEND_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd frontend
-    - npm set audit false
-    - npm config set fetch-timeout 1000000
-    - npm install
-  script:
-    - npm test
-
-Metadata unit tests:
-  stage: unit_test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${METADATA_UNIT_TEST_IMAGE}"
-  before_script:
-    - cd metadata/juno
-    - pipenv install --system --ignore-pipfile
-  script:
-    - ./unittests.sh
-
-
     
-# at every gitpush, build docker images in /api, /ui, /dash and /metadata/juno
+# at every git push, build docker images in subdirectories in DOCKER_BUILD_LIST
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
-  stage: docker_build
+  stage: build
   tags:
     - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
@@ -75,12 +34,14 @@ Docker builds:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in proxy api ui dash frontend metadata ldap-admin;
+         for this_context in $DOCKER_BUILD_LIST;
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
-            if [[ "metadata" == ${this_context} ]]; then cd 'juno'; fi;
-            pwd;
-            this_image="monocle-${this_context}";
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -89,13 +50,68 @@ Docker builds:
             docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
+         
+Dashboard unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - pip install codecov
+    - cd "${DASH_CONTEXT}"
+  script:
+    - ./unittests.sh
+  # codecov temporarily disabled 2021-04-15 after security breach notice
+  # after_script:
+    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
-# at every push/merge to master, tag the latest image builds as 'unstable'
-Docker push as 'unstable':
+    
+Metadata unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - pip install codecov
+    - cd "${METADATA_CONTEXT}/juno"
+  script:
+    - ./unittests.sh
+  # codecov temporarily disabled 2021-04-15 after security breach notice
+  # after_script:
+    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+
+    
+# front end test requires special unit test image, because the service image
+# doesn't include npm
+Front end unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_UNIT_TEST_IMAGE}"
+  before_script:
+    - cd "${FRONTEND_CONTEXT}"
+    - npm set audit false
+    - npm config set fetch-timeout 1000000
+    - npm install
+  script:
+    - npm test
+
+
+# at every merge to master, tag the latest image builds as 'unstable'
+# (runs for any commit to master, but these should all be merges)
+Docker tags for merge:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_push
+  stage: docker_tags_for_merges_and_releases
   only:
     - master
   tags:
@@ -112,8 +128,13 @@ Docker push as 'unstable':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_context in $DOCKER_BUILD_LIST
          do
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
@@ -123,11 +144,11 @@ Docker push as 'unstable':
 
          
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
-Docker push with release tag and as 'latest':
+Docker tags for release:
   variables:
     # only docker, don't need to clone repo
     GIT_STRATEGY: none
-  stage: docker_push
+  stage: docker_tags_for_merges_and_releases
   only:
     - tags
   tags:
@@ -144,8 +165,13 @@ Docker push with release tag and as 'latest':
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in monocle-proxy monocle-api monocle-ui monocle-dash monocle-frontend monocle-metadata monocle-ldap-admin;
+         for this_context in $DOCKER_BUILD_LIST
          do
+            if [[ "metadata/juno" == ${this_context} ]]; then
+               this_image="monocle-metadata"
+            else
+               this_image="monocle-${this_context}"
+            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
