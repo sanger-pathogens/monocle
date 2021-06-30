@@ -128,7 +128,7 @@ Docker tags for merge:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in $DOCKER_BUILD_LIST
+         for this_context in $DOCKER_BUILD_LIST;
          do
             if [[ "metadata/juno" == ${this_context} ]]; then
                this_image="monocle-metadata"
@@ -165,7 +165,7 @@ Docker tags for release:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in $DOCKER_BUILD_LIST
+         for this_context in $DOCKER_BUILD_LIST;
          do
             if [[ "metadata/juno" == ${this_context} ]]; then
                this_image="monocle-metadata"
