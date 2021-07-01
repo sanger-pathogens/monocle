@@ -6,7 +6,10 @@
 # - the s3 bucket (source data) directory as `/dash/data`
 # - the output directory as `/dash/data_view`
 # - the db config file as `/dash/my.cnf`
+# - the MLWH API config file as `/dash/mlwh-api.yml`
 # - the script itself, in `/dash`
+# 
+# Any arguments provided will be passed to the script
 
 docker run  --volume `pwd`/monocle_juno:/dash/data  \
             --volume `pwd`/data_view:/dash/data_view  \
@@ -14,4 +17,4 @@ docker run  --volume `pwd`/monocle_juno:/dash/data  \
             --volume `pwd`/mlwh-api.yml:/dash/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/dash/create_download_view_for_sample_data.py \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG> \
-            python3 ./create_download_view_for_sample_data.py
+            python3 ./create_download_view_for_sample_data.py $@
