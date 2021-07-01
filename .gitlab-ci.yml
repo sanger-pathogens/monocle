@@ -69,7 +69,7 @@ Dashboard unit tests:
 
     
 Data view unit tests:
-  stage: unit_test
+  stage: test
   only:
     - branches
   tags:
