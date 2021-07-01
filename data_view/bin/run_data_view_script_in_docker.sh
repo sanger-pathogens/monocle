@@ -11,6 +11,7 @@
 docker run  --volume `pwd`/monocle_juno:/dash/data  \
             --volume `pwd`/data_view:/dash/data_view  \
             --volume `pwd`/my.cnf:/dash/my.cnf \
+            --volume `pwd`/mlwh-api.yml:/dash/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/dash/create_download_view_for_sample_data.py \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG> \
             python3 ./create_download_view_for_sample_data.py
