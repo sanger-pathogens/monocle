@@ -23,7 +23,6 @@ class MonocleDB:
                                     'institution_table_inst_key',
                                     'sample_table',
                                     'sample_table_inst_key',
-                                    'sample_table_lane_id_field',
                                     'sample_table_fields',
                                     ]
    required_db_params         = [   'user',
@@ -109,30 +108,29 @@ class MonocleDB:
       logging.info("found {} institutions in monocle db".format(len(institutions)))
       return institutions
 
-   def get_samples(self, exclude_lane_id=True, institutions=None):
+   def get_samples(self, institutions=None):
       """
       Retrieve all sample records; return as array of dicts, dict keys are field names from monocle db
       Optional params:
-      `exclude_lane_id`, flag; if true, `lane_id` is excluded from the dicts returned
       `institutions`, a list of institution names; only samples from those listed are returned
       """
       if institutions is not None and not isinstance(institutions, list):
          raise DataSourceParamError( "named parameter 'institutions' is {}, should be a list".format(type(institutions)) )
-      sql = "select * from {}".format(self.config['sample_table'])
+      sql = "select {} from {}".format(','.join(self.config['sample_table_fields']),
+                                       self.config['sample_table']
+                                       )
       if institutions is not None:
          sql += ' where {} in ("{}")'.format(self.config['sample_table_inst_key'], '","'.join(institutions))
+      logging.info("SQL query to retrieve samples from monocle db: {}".format(sql))
       results = self.make_query(sql)
       samples = []
       for row in results:
          this_sample = {}
          r = 0
          for this_field in self.config['sample_table_fields']:
-            if exclude_lane_id and this_field == self.config['sample_table_lane_id_field']:
-               logging.debug("excluding the {} table field {} from the sample data".format(self.config['sample_table'],this_field))
-            else:
-               this_sample[this_field] = row[r]
-               if None == this_sample[this_field]:
-                  logging.info("monocle db: record in {} has null {}: {}".format(self.config['sample_table'],this_field,row))
+            this_sample[this_field] = row[r]
+            if None == this_sample[this_field]:
+               logging.info("monocle db: record in {} has null {}: {}".format(self.config['sample_table'],this_field,row))
             r += 1
          samples.append( this_sample )
       logging.info("found {} samples in monocle db".format(len(samples)))

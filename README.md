@@ -42,17 +42,54 @@ Note: `<version>` should conform to [semver](https://semver.org/).
 
 Wait until the `docker_build` and `docker_push` stages of ther CI pipeline have completed.
 
+#### LDAP data backup
+
+Before proceeding with the deployment, make sure you have backed up the groups and users from the
+LDAP service as an LDIF file.  Log in as `admin` at `/ldap-admin'
+(the password is in your `openldap-env.yaml` file) and use the "Export" function; be certain to
+export the entire subtree.
+
+The export will contain two entries that you should delete (probably the first two entries):
+the base DN entry and the "LDAP read only user".   These should be removed because these two
+entries are automatically created when the service is started, from your config file.  If you
+were to change your config then the base DN and readonly user account will change;  importing
+something save in an LDIF file from an earlier release may overwrite these entries in LDAP with
+outdated entries.  This is really quite high up the list of things you don't want to do.
+
 #### Deploying a release
 
 Run:
 ```
-./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -m <yes|no> -u <remote user> -h <host address>
+./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -u <remote user> -h <host address>
 ```
 
 Notes:
-- Using <b>-m yes</b> will also run any release Django database migrations
+- Several release *modes* are allowed:
+  - If the deployment includes a database release as well as code, then use the `-m all` argument.
+  - If only a database release is required then use the `-m database` argument.
+  - The default is a code release only [`-m application`].
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
+
+#### Access control problems
+
+If you have made any change to LDAP configuration (these may be in in `openldap-env.yaml`, or docker-compose or NGINX proxy rules)
+then you may find that you are denied access.
+
+Before deployment, you will have exported group and user accounts from LDAP as an LDIF file.   (If not,
+roll back to the previous release and so so.)
+
+Stop the service, then back up and delete the subdirectories
+`openldap-data` and `phpldapadmin-data` on the machine you are running the service on.  Then restart the service.
+This will recreate these directories, and configure the LDAP service with the correct base DN and readonly user account
+from your config files.   There will be no groups or user accounts in the LDAP service, so log in as `admin` at `/ldap-admin'
+(the password is in your `openldap-env.yaml` file) and import the LDIF file you saved earlier.
+
+#### Database release requirements
+If database changes are to be deployed, then the following is required:
+- A locally installed mysql client on the deployment machine.
+- Release SQL should be defined in a `database/releases/<version>/release.sql` file.
+- An additional `-c <path to mysql connection file>` argument must be passed to the deploy.sh script. The connection file must contain the connection details for the database instance to be updated.
 
 #### Test deployments
 
@@ -84,7 +121,6 @@ You can name any branch and any docker tag you like; you almost certainly want t
 for your latest commit (as in the example above).  The CI pipelines will build images for every commit, with the prefix `commit-`
 followed by the short commit SHA (8 chars in gitlab).   Currently `deploy.sh` will deploy to the designated users' home
 directory, so you will want to create a new user on your development box.
-
 
 ## Development
 

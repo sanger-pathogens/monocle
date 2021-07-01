@@ -1,0 +1,436 @@
+
+/*
+ *    styles applied throughout page
+ */
+
+h1 {
+   font-size:     400%;
+   font-variant:  small-caps;
+   font-weight:   550;
+}
+
+h2 {
+   font-size:     150%;
+   margin-bottom: 0px;
+}
+
+h3 {
+   font-size:     125%;
+}
+
+caption {
+   font-weight:   bold;
+   font-size:     115%;
+}
+
+th {
+   font-weight:   normal;
+}
+
+div {
+   border-radius: 4px;
+}
+
+br.clear_float {
+   clear:         both;
+}
+
+
+/*
+ *    main sections of the page
+ */
+
+div.main_page_container {
+   text-align:    center;
+   padding:       1ex;
+   margin:        1ex;
+   color:         dimgray;
+}
+
+/* provides a reference for the absolute positioning within .page_header and .page_footer */
+div.header_outer_container, div.footer_outer_container {
+   position:      relative;
+   display:       inline-block;
+   width:         100%;
+   padding:       0px;
+   margin:        0px;
+}
+
+.page_header, .page_footer {
+   /* this is the monocle/juno header/footer color: */
+   /*background:    #6868BE;*/
+   /* this is the monocle/juno background (darker shade of purple) color: */
+   background:    rgb(72, 72, 133);
+   /* this is the juno logo colour: */
+   /* color:         #fef4ee; */
+   color:         white;
+}
+
+.page_header {
+   padding:       1ex 1ex 0.5ex 1ex;
+   text-align:    center;
+}
+
+a.title_link, a.header_link {
+   color:         inherit;
+   text-decoration: none;
+}
+
+a.header_link {
+   margin-right:  1.6ex;
+}
+
+.header_logo_container {
+   position:      absolute;
+   top:           2ex;
+   left:          1ex;
+}
+
+img.header_logo {
+   height:        67px;
+}
+
+.header_links_container {
+   position:      absolute;
+   top:           2ex;
+   right:         1ex;
+}
+
+div.button_bar{
+   float:         right;
+   margin-top:    10px;
+}
+
+.page_footer {
+   padding:       1ex;
+   margin-top:    1em;
+   /* height must accomodate the height of img.footer_logo */
+   min-height:    60px;
+}
+
+.footer_contacts_container {
+   position:      absolute;
+   bottom:        1.6ex;
+   right:         1ex;
+}
+
+.contacts_text {
+   text-align:    left;
+   font-style:    italic;
+}
+
+a.footer_link {
+   margin-right:  1.6ex;
+   color:         inherit;
+   text-decoration: none;
+}
+
+.footer_logo_container {
+   position:      absolute;
+   bottom:        1ex;
+   left:          1ex;
+}
+
+img.footer_logo {
+   height:        50px;
+   margin-left:   1.6ex;
+}
+
+div.sample_progress_container {
+   border:        none;
+}
+
+.institution_select_container {
+   float:         left;
+   min-width:     30%;
+   margin-left:   1ex;
+}
+
+div.institution_status_container {
+   border:        none;
+}
+
+/*
+ *    project progress section
+ */
+
+.progress_graph {
+   margin-left:   16%;
+   max-width:     67%;
+}
+
+
+/*
+ *    samples progress section
+ */
+
+
+div.samples_received_by_institution_container {
+   float:         left;
+   min-width:     30%;
+   margin:        1ex;
+   padding:       1ex;
+   border:        thin lightgray solid;
+}
+
+table.samples_received_table {
+   width:         100%;
+   border:        none;
+   border-collapse: collapse;
+}
+
+
+/*
+ *    sequencing status section
+ */
+
+div.samples_sequenced_by_institution_container {
+   float:         left;
+   min-width:     30%;
+   margin:        1ex;
+   padding:       1ex;
+   border:        thin lightgray solid;
+}
+
+table.samples_sequenced_table {
+   width:         100%;
+   border:        none;
+   border-collapse: collapse;
+}
+
+
+/*
+ *    pipeline status section
+ */
+
+div.pipeline_by_institution_container {
+   float:         left;
+   min-width:     30%;
+   margin:        1ex;
+   padding:       1ex;
+   border:        thin lightgray solid;
+}
+
+table.pipeline_table {
+   width:         100%;
+   border:        none;
+   border-collapse: collapse;
+}
+
+
+/*
+ *    failed samples section
+ */
+
+div.failed_samples_by_institution_container {
+   position:      relative;
+   height:        10em;
+   overflow:      hidden scroll;
+   margin:        1ex;
+   padding:       1ex;
+   border:        thin lightgray solid;
+}
+
+table.failed_samples_table {
+   float:         left;
+   width:         100%;
+   border:        none;
+   border-collapse: collapse;
+}
+
+button.failed_samples_download {
+   min-width:     16ex;
+   display:       flex;
+   align-items:   center;
+   background-color: dimgray;
+   color:         ghostwhite;
+}
+
+/*
+ *    generic components
+ */
+
+td.status_desc {
+   max-width:     25ex;
+   text-align:    center;
+}
+
+td.text_column {
+   max-width:     10ex;
+}
+
+td.centered {
+   text-align:    center;
+}
+
+.tiny_text {
+   font-size:     xx-small;
+}
+
+.compact {
+   margin:        none;
+   padding:       none;
+}
+
+button.button_looks_like_link {
+   display:       inherit;
+   border:        none;
+   padding:       0px;
+   text-align:    inherit;
+   line-height:   inherit;
+   box-sizing:    inherit;
+   color:         navy;
+   background-color: transparent;
+   font-family:   inherit;
+   font-size:     inherit;
+   font-style:    inherit;
+   font-weight:   inherit;
+   letter-spacing: inherit;
+   text-transform: none;
+   text-decoration: inherit;
+   white-space:   inherit;
+}
+
+button.button_looks_like_link:hover {
+   text-decoration: underline;
+   font-size:     103%;
+   color:         blue;
+}
+
+.toggle_switch {
+   display:       inherit;
+   vertical-align: middle;
+   padding-left:  1ex;
+}
+
+.more_link {
+   padding-left:  1ex;
+   font-size:     small;
+   font-style:    italic;
+}
+
+
+td.numeric {
+   text-align:    right;
+}
+
+a.download_link {
+   text-decoration: none;
+}
+
+img.download_icon{
+   height:        1.6em;
+}
+
+td.download {
+   vertical-align: bottom;
+   padding-left:  0px;
+}
+
+button.refresh_button{
+   /* must match img.refresh_icon */
+   border:        none;
+   padding:       0px;
+   margin:        0px;
+}
+
+img.refresh_icon {
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.upload_icon{
+   height:        30px;
+   margin-left:   10px;
+}
+
+img.dashboard_icon{
+   height:        30px;
+   margin-left:   10px;
+}
+
+td.per_cent_gauge {
+   text-align:    center;
+   vertical-align: top;
+   padding-top:   1em;
+}
+
+td.per_cent_container {
+   position:      relative;
+   text-align:    center;
+   vertical-align: top;
+   width:         6em;
+   font-size:     150%;
+   padding-top:   1em;
+}
+
+div.per_cent_label {
+   max-width:     15ex;
+   vertical-align: top;
+   padding-top:   1em;
+}
+
+div.per_cent_circle {
+   position:      absolute;
+   top:           1em;
+   padding:       1em;
+   margin-left:   1em;
+   border:        thin dimgray solid;
+   border-radius: 75%;
+   background:    ghostwhite;
+   color:         dimgray;
+}
+
+div.aligned_button_container, div.aligned_button_container_inside_failed_sampled_container {
+   position:      relative;
+   display:       inline-block;
+   padding:       0px;
+   margin:        0px;
+}
+
+div.aligned_button_container_inside_failed_sampled_container {
+   position:      absolute;
+   right:         1ex;
+   top:           0.6em;
+}
+
+/* use 'has_tooltip' and 'tooltiptext' thusly:
+ * 
+   <div "has_tooltip">
+     <div>whatever content you want the tooltip to appear over (not necessarily a div)</div>
+     <span class="tooltiptext">tool tip text here</span>
+   <div>
+ */
+
+div.has_tooltip {
+   display:       inline-block;
+   padding:       0px;
+   margin:        0px;
+}
+/* has_tooltip is suitable for most elements with tooltips */
+div.has_tooltip {
+   position:      relative;
+}
+
+/* Tooltip text */
+div.has_tooltip .tooltiptext {
+   visibility:    hidden;
+   position:      absolute;
+   top:           2.8em;
+   left:          1ex;
+   z-index:       1;
+   padding:       0.3ex 0.3ex;
+   /*border-radius: 4px;*/
+   min-width:     16ex;
+   text-align:    center;
+   font-size:     75%;
+   color:         dimgray;
+   background-color: ghostwhite;
+   opacity:       0.8;
+   border:        thin dimgray dotted;
+}
+
+/* cause tooltiptext to appear when hovering over containing element with has_tooltip */
+div.has_tooltip:hover .tooltiptext  {
+   visibility:    visible;
+}

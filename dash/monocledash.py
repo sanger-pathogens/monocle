@@ -2,7 +2,7 @@ import dash
 import dash_html_components
 from   dash.dependencies            import Input, Output, State, ALL, MATCH
 import flask
-from   flask                        import render_template
+from   flask                        import jsonify, request, render_template
 from   flask_parameter_validation   import ValidateParameters, Route
 import logging
 
@@ -15,7 +15,6 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 # first create a Flask server
 server = flask.Flask(__name__, static_folder='assets')
-
 
 ###################################################################################################################################
 # 
@@ -35,6 +34,12 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         status:        str = Route(pattern='^(successful)|(failed)$'),
                         ):
    data = MonocleDash.monocleclient.MonocleData()
+   username = request.headers['X-Remote-User']
+   # this message should be dropped to 'info' or 'debug'
+   # 'warning' is too high, but I want to watch it for a while...
+   logging.warning('X-Remote-User header passed to /download = {}'.format(username))
+   user_obj = MonocleDash.monocleclient.MonocleUser(username)
+   data.user_record = user_obj.record
    institution_data  = data.get_institutions()
    institution_names = [ institution_data[i]['name'] for i in institution_data.keys() ]
    if not institution in institution_names:
@@ -49,6 +54,36 @@ def metadata_download(  institution:   str = Route(min_length=5),
 
 ###################################################################################################################################
 # 
+# /legacy_dashboard_data
+# 
+# Flask route, providing a hacky API to retrieve the data displayed on the legacy (Dash framework) dashboard
+# 
+# IMPORTANT this bypasses the X-Remote_user header check, exposing all institutions' data, so the proxy
+# needs to restrict access to this route to the docker network
+
+@server.route('/legacy_dashboard/data/summary/')
+def legacy_dashboard():
+   # TODO when tested, delete line below setting verbose logging level
+   logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+   legacy_dashboard_data = get_dash_params(check_remote_user=False)
+   # remove objects not appropriate to API and/or not serializable
+   for unwanted_top_level_key in ['user']:
+      legacy_dashboard_data.pop(unwanted_top_level_key, None)
+   for unwanted_institution_select_key in ['initially_selected', 'institution_callback_input_id']:
+      legacy_dashboard_data['institution_select'].pop(unwanted_institution_select_key, None)
+   for unwanted_institution_status_key in ['app', 'updated',
+                                           'institution_callback_input_id', 'institution_callback_output_id',
+                                           'sequencing_callback_input_type', 'sequencing_callback_output_type',
+                                           'pipeline_callback_input_type',  'pipeline_callback_output_type',
+                                           'refresh_callback_input_id', 'refresh_callback_output_id']:
+      legacy_dashboard_data['institution_status'].pop(unwanted_institution_status_key, None)
+   logging.debug("legacy dashboard data returned as {}".format(legacy_dashboard_data))
+   # jsonify and return
+   return jsonify(legacy_dashboard_data)
+
+
+###################################################################################################################################
+# 
 # /upload
 # 
 # Flask route, displays metadata upload page
@@ -59,12 +94,11 @@ def metadata_upload():
    return render_template('upload.html', title='Monocle metadata upload')
  
 
-
 ###################################################################################################################################
 # 
 # /dashboard
 # 
-# this is the main Dash app, not a bog stnadrad Flask route
+# this is the main Dash app, not a bog standard Flask route
 
 # create Dash app using the extisting Flask server `server`
 # url_base_pathname should match the `location` used for nginx proxy config
@@ -84,9 +118,45 @@ callback_component_ids =   {  'refresh_callback_input_id'         : 'refresh-but
                               'pipeline_callback_output_type'     : 'pipeline-failed-container',
                            }
 
+# get_dash_params() returns all the data required to render the dashboard
 # TODO this loads all data every time; allow loading of only what's required
-def get_dash_params():
+# 
+# `check_remote_user` causes the X-Remote-User header to be checked for a
+# username; this raises an exception *within a request context* because the
+# auth module should always set the header.  The username is used downstream
+# to restrict access to data from institutions of which that user is a member.
+# 
+# set `check_remote_user` to False when getting data for an API call that requires
+# data from all institutions, *but* be certain to restrict such API endpoints
+# to internal access only!
+def get_dash_params(check_remote_user=True):
+         
+   # get the username when handling a request
+   # the `except` bodge is to catch when this method is called at the initial service
+   # start up, at which time there's no `request` object as not handling at HTTP request
+   username    = None
+   user_object = None
+   if check_remote_user:
+      try:
+         try:
+            username = request.headers['X-Remote-User']
+         except KeyError:
+            logging.error("request was made without 'X-Remote-User' HTPP header: auth module shouldn't allow that")
+            raise
+         # TODO this message should be dropped to 'info' or 'debug'
+         # 'warning' is too high, but I want to watch it for a while...
+         logging.warning('X-Remote-User header = {}'.format(username))
+         user_object = MonocleDash.monocleclient.MonocleUser(username)
+      except RuntimeError as e:
+         if not 'request context' in str(e):
+            raise e
+         else:
+            logging.debug('outside request context:  no user ID available')
+         
    data  = MonocleDash.monocleclient.MonocleData()
+   if user_object is not None:
+      data.user_record = user_object.record
+         
    progress_graph       =  {  'title'              : 'Project Progress',  
                               'data'               : data.get_progress(),
                               'x_col_key'          : 'date',
@@ -108,7 +178,8 @@ def get_dash_params():
    # add component IDs to institution_status
    for this_id in callback_component_ids.keys():
       institution_status[this_id] = callback_component_ids[this_id]
-   return { 'progress_graph'     : progress_graph,
+   return { 'user'               : user_object,
+            'progress_graph'     : progress_graph,
             'institution_select' : institution_select,
             'institution_status' : institution_status
             }
@@ -118,7 +189,7 @@ def page_content(dash_params=None):
       dash_params =get_dash_params()
    logging.info("page content (currently selected institutions: {})".format(dash_params['institution_select']['initially_selected']))
    content = dash_html_components.Div(
-               children = mc.page_header(         'Monocle',
+               children = mc.page_header(             'Monocle',
                                                       logo_url       = app.get_asset_url('JunoLogo.svg'),
                                                       logo_link      = 'https://www.gbsgen.net/',
                                                       logo_text      = 'Juno Project',
@@ -178,7 +249,7 @@ def data_refresh(num_clicks, selected_institutions):
 def update_institution_status(selected_institutions):
    logging.info("callback triggered: setting the display property for institution status containers; {} will be visible".format(selected_institutions))
    institution_status_params = get_dash_params()['institution_status']
-   logging.info("updated institution status with data loaded at {} ***".format(str(institution_status_params['updated'])))
+   logging.info("updated institution status with data loaded at {}".format(str(institution_status_params['updated'])))
    return mc.status_by_institution(selected_institutions, institution_status_params)
 
 

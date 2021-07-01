@@ -131,12 +131,12 @@ class SequencingStatusTest(TestCase):
       self.assertIsInstance(self.seq_status.mlwh_client, DataSources.sequencing_status.MLWH_Client)
             
    def test_init(self):
-      self.assertRegex(self.seq_status.mlwh_client.config['base_url'],           self.base_url_regex)
-      self.assertRegex(self.seq_status.mlwh_client.config['swagger'],            self.endpoint_regex)
-      self.assertRegex(self.seq_status.mlwh_client.config['findById'],           self.endpoint_regex)
-      self.assertIsInstance(self.seq_status.mlwh_client.config['findById_key'],  type('a string'))
-      self.assertRegex(self.seq_status.mlwh_client.config['findByIds'],          self.endpoint_regex)
-      self.assertIsInstance(self.seq_status.mlwh_client.config['findByIds_key'], type('a string'))
+      self.assertRegex(self.seq_status.mlwh_client.config['mlwh_api_connection']['base_url'],   self.base_url_regex)
+      self.assertRegex(self.seq_status.mlwh_client.config['swagger'],                           self.endpoint_regex)
+      self.assertRegex(self.seq_status.mlwh_client.config['findById'],                          self.endpoint_regex)
+      self.assertIsInstance(self.seq_status.mlwh_client.config['findById_key'],                 type('a string'))
+      self.assertRegex(self.seq_status.mlwh_client.config['findByIds'],                         self.endpoint_regex)
+      self.assertIsInstance(self.seq_status.mlwh_client.config['findByIds_key'],                type('a string'))
  
    def test_reject_bad_config(self):
       with self.assertRaises(KeyError):
@@ -190,7 +190,7 @@ class SequencingStatusTest(TestCase):
       with self.assertRaises(URLError):
          doomed = MLWH_Client(set_up=False)
          doomed.set_up(self.test_config)
-         doomed.config['base_url']=self.bad_api_host
+         doomed.config['mlwh_api_connection']['base_url']=self.bad_api_host
          endpoint = doomed.config['findById']+self.expected_sample_ids[0]
          doomed.make_request(endpoint)
          
@@ -198,6 +198,6 @@ class SequencingStatusTest(TestCase):
       with self.assertRaises(URLError):
          doomed = MLWH_Client(set_up=False)
          doomed.set_up(self.test_config)
-         doomed.config['base_url']=self.genuine_api_host
+         doomed.config['mlwh_api_connection']['base_url']=self.genuine_api_host
          endpoint = self.bad_api_endpoint+self.expected_sample_ids[0]
          doomed.make_request(endpoint)

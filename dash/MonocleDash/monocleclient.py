@@ -6,6 +6,25 @@ import DataSources.monocledb
 import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
+import DataSources.user_data
+
+
+class MonocleUser:
+   """
+   Provides a wrapper for claasses the retrieve user details
+   Only use this after authentication: trying to get details of users that are not in LDAP will raise an exception
+   """
+   
+   def __init__(self, authenticated_username=None):
+      self.updated      = datetime.now()
+      self.user_data    = DataSources.user_data.UserData()
+      if authenticated_username is not None:
+         self.load_user_record(authenticated_username)
+
+   def load_user_record(self, authenticated_username):
+      self.record = self.user_data.get_user_details(authenticated_username)
+      return self.record
+
 
 class MonocleData:
    """
@@ -29,6 +48,7 @@ class MonocleData:
    def __init__(self):
       logging.info("*** instatiating MonocleData:  dashboatd data will be updated ***")
       self.updated                     = datetime.now()
+      self.user_record                 = None
       self.monocledb                   = DataSources.monocledb.MonocleDB()
       self.metadata_source             = DataSources.metadata_download.MetadataDownload()
       self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
@@ -80,7 +100,7 @@ class MonocleData:
          progress['samples sequenced'].append( num_lanes_sequenced_cumulative  )
       return progress
 
-   def get_institutions(self, pattern=None):
+   def get_institutions(self):
       """
       Returns a dict of institutions.
       
@@ -90,12 +110,20 @@ class MonocleData:
          institution_2...
          }
          
-      If option pattern is passed, only institutions with names that include the pattern are returned (case insensitive).
-      
+      If .user_record is defined, it will be used to filter the institutions for those the user belongs to.
+            
       Dict keys are alphanumeric-only and safe for HTML id attr. The monocle db keys are not
       suitable for this as they are full institution names.   It's useful to be able to lookup
       a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
       is provided.
+      
+      ***IMPORTANT***
+      Institution IDs (`cn`) are now in LDAP, as are their names.
+      We need to stop reading institutions from monocledb, and read the names and IDs from LDAP
+      The IDs from LDAP will be used as the dict keys in the code in this module, and we can
+      then deprecate `institution_name_to_dict_key()`
+      *During the transition* the IDs used in LDAP will be the same as the values returned by
+      `institution_name_to_dict_key()`
       
       The data are cached so this can safely be called multiple times without
       repeated monocle db queries being made.
@@ -103,16 +131,22 @@ class MonocleData:
       if self.institutions_data is not None:
          return self.institutions_data
       names = self.monocledb.get_institution_names()
+      if self.user_record is not None:
+         user_memberships = [ inst['inst_id'] for inst in self.user_record['memberOf'] ]
+         logging.info("user {} is a member of {}".format( self.user_record['username'],user_memberships))
       institutions = {}
       for this_name in names:
-         if None == pattern or pattern.lower() in this_name.lower():
-            dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
+         dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
+         # filter out institution that the user is a member of
+         if self.user_record is None or dict_key in user_memberships:
             # currently the db uses insitution names as keys, but we don't want to rely on that
             # so the name and db key are stored as separate items
+            # TODO we will start to use the metadata API instread of the database, so this problem will go away soon
+            #      (this reckless prediction made 2021-06-15)
             this_db_key = this_name
             institutions[dict_key] = { 'name'   : this_name,
                                        'db_key' : this_db_key
-                                      }
+                                       }
             # this allows lookup of the institution dict key from a db key
             self.institution_db_key_to_dict[this_db_key] = dict_key
       self.institutions_data = institutions
@@ -144,9 +178,12 @@ class MonocleData:
       all_juno_samples = self.monocledb.get_samples()
       samples = { i:[] for i in list(self.institutions_data.keys()) }
       for this_sample in all_juno_samples:
-         this_institution_key = self.institution_db_key_to_dict[ this_sample[self.sample_table_inst_key] ]
-         this_sample.pop(self.sample_table_inst_key, None)
-         samples[this_institution_key].append( this_sample )
+         try:
+            this_institution_key = self.institution_db_key_to_dict[ this_sample[self.sample_table_inst_key] ]
+            this_sample.pop(self.sample_table_inst_key, None)
+            samples[this_institution_key].append( this_sample )
+         except KeyError:
+            logging.info("samples excluded because {} is not in current user's institutions list".format(this_sample[self.sample_table_inst_key]))
       self.samples_data = samples
       return self.samples_data
             
