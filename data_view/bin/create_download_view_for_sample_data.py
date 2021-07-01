@@ -6,6 +6,7 @@ from os import path
 from pathlib import Path
 
 import argparse
+from sys import argv
 import logging
 
 from DataSources.monocledb import MonocleDB
@@ -107,12 +108,12 @@ def _mkdir(dir_name):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Create sample data view')
-  parser.add_argument("--log-level", "-L", type=int, nargs='1',
+  parser.add_argument("--log-level", "-L", type=int, nargs=1,
     default=logging.WARNING,
     choices=[logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL],
     help=f"Threshold for logging. Accepted integer values: \
       {logging.DEBUG} (for debug), {logging.INFO} (for info), {logging.WARNING} (for warning), \
       {logging.ERROR} (for error), {logging.CRITICAL} (for critical).")
 
-  log_level = parser.parse_args(sys.argv[1:3]).log_level
+  log_level = parser.parse_args(argv[1:3]).log_level
   create_download_view_for_sample_data(MonocleDB(), log_level)
