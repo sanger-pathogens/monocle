@@ -103,8 +103,7 @@ def _create_symlink_to(path_to_file, symlink_name):
     logging.error("data file {} does not exist".format(path_to_file))
   else:
     if Path(symlink_name).is_symlink():
-      # TODO reduce to DEBUG
-      logging.error("symlink {} already exists: not recreated".format(symlink_name))
+      logging.debug("symlink {} already exists: not recreated".format(symlink_name))
     else:
      Path(symlink_name).symlink_to(path_to_file)
 
