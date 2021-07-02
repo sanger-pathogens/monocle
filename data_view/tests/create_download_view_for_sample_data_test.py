@@ -7,6 +7,7 @@ from bin.create_download_view_for_sample_data import (
 )
 
 SAMPLE_IDS = ['a', 'b', 'c', 'd']
+DATA_DIR='/abs/path/data'
 INSTITUTION_NAME_TO_ID = {
   'Faculty of Pharmacy, Suez Canal University': 'FacPhaSueCanUni',
   'Laboratório Central do Estado do Paraná': 'LabCenEstPar',

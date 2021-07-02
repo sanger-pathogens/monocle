@@ -14,8 +14,8 @@ from DataSources.sequencing_status import SequencingStatus
 from MonocleDash import monocleclient
 
 INITIAL_DIR = Path().absolute()
-# directoru in which the data files are located
-DATA_DIR='/dash/data'
+# directory in which the data files are located
+DATA_DIR='/home/ubuntu/monocle_juno'
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
 def create_download_view_for_sample_data(db, institution_name_to_id):
@@ -108,9 +108,13 @@ def _create_symlink_to(path_to_file, symlink_name):
      Path(symlink_name).symlink_to(path_to_file)
 
 
-def get_institutions():
+def get_institutions(monocledb):
    name_to_id = {}
-   institutions = monocleclient.MonocleData().get_institutions()
+   # set_up = False stops MonocleData instantiating lots of objects we don't need...
+   dashboard_data = monocleclient.MonocleData(set_up=False)
+   # ...but that means we need to gove it a MonocleDB
+   dashboard_data.monocledb = monocledb
+   institutions = dashboard_data.get_institutions()
    for this_institution_id in institutions.keys():
       name_to_id[ institutions[this_institution_id]['name'] ] = this_institution_id
    return name_to_id
@@ -139,11 +143,16 @@ def _mkdir(dir_name):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Create sample data view')
+  parser.add_argument("-D", "--data_dir", help="Data file directory [default: {}]".format(DATA_DIR), default=DATA_DIR )
   parser.add_argument("-L", "--log_level", help="Logging level [default: WARNING]", choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='WARNING')
   options = parser.parse_args(argv[1:])
+
+  DATA_DIR=options.data_dir
 
   # adding `module` for log format allows us to filter out messages from monocledb or squencing_status,
   # which can be handy
   logging.basicConfig(format='%(levelname)s %(module)s:  %(message)s', level=options.log_level)
 
-  create_download_view_for_sample_data(MonocleDB(), get_institutions())
+  monocledb = MonocleDB()
+
+  create_download_view_for_sample_data(monocledb, get_institutions(monocledb))

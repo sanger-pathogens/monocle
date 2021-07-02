@@ -23,7 +23,7 @@ mlwh_rest_api:
    findByIds         : '/sequencing/data/samples/findByIds'
    findByIds_key     : 'samples'
 pipeline_status:
-   csv_file : 'data/status/pipelines.csv'
+   csv_file          : 'monocle_juno/status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    ldap_url          : 'ldap://monocle-ldap:389'
