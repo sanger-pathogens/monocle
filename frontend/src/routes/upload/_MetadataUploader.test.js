@@ -135,7 +135,7 @@ describe("the loading indicator", () => {
   });
 
   it("is hidden after uploading resolves", async () => {
-    const { component, container, queryByLabelText } = render(MetadataUploader);
+    const { container, queryByLabelText } = render(MetadataUploader);
     const loadingIndicator = queryByLabelText(LOADING_LABEL_TEXT);
     global.fetch = jest.fn(() =>
       Promise.resolve({ ok: true })

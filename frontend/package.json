@@ -28,6 +28,7 @@
   "_id": "Monocle frontend@0.0.1",
   "jest": {
     "testEnvironment": "jsdom",
+    "setupFiles": ["./scripts/jest/mockBrowser.js"],
     "transform": {
       "^.+\\.js$": "babel-jest",
       "^.+\\.svelte$": "svelte-jester"

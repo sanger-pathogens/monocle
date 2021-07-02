@@ -32,7 +32,7 @@ describe("w/ errors", () => {
   });
   
   it("collapses error lists for all but the first file", () => {
-    const { container, queryAllByText, queryByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
+    const { container } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
     const errorBlocks = container.querySelectorAll("details");
   
     expect(errorBlocks).toHaveLength(2);
