@@ -76,10 +76,9 @@ Data view unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - export PYTHONPATH=`pwd`/dash
     - cd data_view
   script:
-    - python3 -m unittest discover -v -s ./tests -p '*_test.py'
+    - ./unittests.sh
 
     
 Metadata unit tests:
