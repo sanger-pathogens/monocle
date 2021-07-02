@@ -29,8 +29,6 @@ def create_download_view_for_sample_data(db):
           for lane_id in lane_ids:
             _create_lane_dir_with_symlinks(lane_id, institution)
 
-      else:
-        logging.warning(f'No lanes for {institution} were returned from the DB')
   else:
     logging.warning('No institutions returned from the DB.')
 
@@ -41,10 +39,14 @@ def _get_lane_ids(institution, db):
     logging.warning(f'No sample IDs for {institution} were found in the DB')
     return []
   seq_data = _get_sequencing_status_data(sample_ids)
+  # this list contains all the lanes for sampels from this institution
+  # (we don't need to know which lanes came from each sample originally)
   all_lanes = []
   for this_sample in seq_data.keys():
     for this_lane in seq_data[this_sample]['lanes']:
        all_lanes.append(this_lane['id'])
+  if 0 == len(all_lanes):
+   logging.warning(f'No lanes for {institution} were returned from the DB')
   return all_lanes
 
 
