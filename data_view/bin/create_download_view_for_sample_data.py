@@ -11,17 +11,8 @@ import logging
 
 from DataSources.monocledb import MonocleDB
 from DataSources.sequencing_status import SequencingStatus
+from MonocleDash import monocleclient
 
-INSTITUTION_NAME_TO_ID = {
-  'Faculty of Pharmacy, Suez Canal University': 'FacPhaSueCanUni',
-  'Laboratório Central do Estado do Paraná': 'LabCenEstPar',
-  'National Reference Laboratories': 'NatRefLab',
-  'The Chinese University of Hong Kong': 'TheChiUniHonKon',
-  'Universidade Federal do Rio de Janeiro': 'UniFedRioJan',
-  'Wellcome Sanger Institute': 'WelSanIns'
-}
-INITIAL_DIR = Path().absolute()
-OUTPUT_SUBDIR='data_view'
 
 def create_download_view_for_sample_data(db):
   institutions = db.get_institution_names()
@@ -86,6 +77,14 @@ def _create_symlink_to(path_to_file, symlink_name):
   logging.info(f'Symlink "{symlink_name}" to {path_to_file} was created.')
 
 
+def get_institutions():
+   name_to_id = {}
+   institutions = monocleclient.MonocleData().get_institutions()
+   for this_institution_id in institutions.keys():
+      name_to_id[ institutions[this_institution_id]['name'] ] = this_institution_id
+   return name_to_id
+
+
 # Allows to `cd` in the context of the `with` statement and automatically
 # `cd` back  upon leaving the corresponding`with` statement
 # (credits to https://stackoverflow.com/a/24176022/4579279).
@@ -110,5 +109,9 @@ if __name__ == '__main__':
   options = parser.parse_args(argv[1:])
 
   logging.basicConfig(format='%(levelname)s: %(message)s.', level=options.log_level)
+
+  INSTITUTION_NAME_TO_ID = get_institutions()
+  INITIAL_DIR = Path().absolute()
+  OUTPUT_SUBDIR='data_view'
 
   create_download_view_for_sample_data(MonocleDB())
