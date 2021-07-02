@@ -15,5 +15,6 @@ mlwh-api.yml
 mlwh-api-dev.yml
 mlwh-api-prod.yml
 node_modules/
+npm-debug.log
 .svelte-kit/
 frontend/**/build
