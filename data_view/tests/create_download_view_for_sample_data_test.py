@@ -63,18 +63,16 @@ class CreateDownloadViewForSampleDataTest(TestCase):
 
   def test_create_symlink_per_data_file(self):
     data_files = list(map(lambda lane: Path(f'{lane}.vcf'), LANES))
-    data_files.append(Path(f'LANES[0].fastq'))
+    data_files.append(Path(f'{LANES[0]}.fastq'))
     patch('bin.create_download_view_for_sample_data._get_data_files', return_value=data_files
           ).start()
 
     create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
     self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
-    # assrt_any_call below always fails
-    # don't know why this isn't called in patched function; the code works
-    #for data_file in data_files:
-      #path_to_data_file = data_file.resolve()
-      #self.create_symlink_to.assert_any_call(path_to_data_file, data_file)
+    for data_file in data_files:
+      path_to_data_file = data_file.resolve()
+      self.create_symlink_to.assert_any_call(data_file, data_file.name)
 
 def get_sequencing_status_data(sample_ids):
   if sample_ids == SAMPLE_IDS[:2]:

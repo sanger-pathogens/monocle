@@ -73,7 +73,7 @@ def _create_lane_dir_with_symlinks(lane_id, institution):
     directory_containing_symlinks = Path().absolute()
     logging.debug(f'Creating symlinks in {directory_containing_symlinks} for lane {lane_id} for {institution}.')
     for data_file in data_files:
-      _create_symlink_to(data_file, path.basename(data_file))
+      _create_symlink_to(data_file, data_file.name)
 
 
 def _get_data_files(lane_id):
@@ -105,7 +105,7 @@ def _create_symlink_to(path_to_file, symlink_name):
     if Path(symlink_name).is_symlink():
       logging.debug("symlink {} already exists: not recreated".format(symlink_name))
     else:
-     Path(symlink_name).symlink_to(path_to_file)
+      Path(symlink_name).symlink_to(path_to_file)
 
 
 def get_institutions():
