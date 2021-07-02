@@ -16,21 +16,24 @@ from MonocleDash import monocleclient
 
 def create_download_view_for_sample_data(db):
   institutions = db.get_institution_names()
-  for institution in institutions:
-    lane_ids = _get_lane_ids(institution, db)
-
-    with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
-
-      if lane_ids:
-        institution_readable_id = INSTITUTION_NAME_TO_ID[institution]
-        _mkdir(institution_readable_id)
-
-        with _cd(institution_readable_id):
-          for lane_id in lane_ids:
-            _create_lane_dir_with_symlinks(lane_id, institution)
-
+  
+  if 0 == len(institutions):
+    logging.warning('No institutions were found.')
+  
   else:
-    logging.warning('No institutions returned from the DB.')
+    for institution in institutions:
+      lane_ids = _get_lane_ids(institution, db)
+  
+      with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
+  
+        if lane_ids:
+          institution_readable_id = INSTITUTION_NAME_TO_ID[institution]
+          _mkdir(institution_readable_id)
+  
+          with _cd(institution_readable_id):
+            for lane_id in lane_ids:
+              _create_lane_dir_with_symlinks(lane_id, institution)
+      
 
 
 def _get_lane_ids(institution, db):
