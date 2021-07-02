@@ -3,11 +3,18 @@ from unittest.mock import patch
 from pathlib import Path
 
 from bin.create_download_view_for_sample_data import (
-  INSTITUTION_NAME_TO_ID,
   create_download_view_for_sample_data
 )
 
 SAMPLE_IDS = ['a', 'b', 'c', 'd']
+INSTITUTION_NAME_TO_ID = {
+  'Faculty of Pharmacy, Suez Canal University': 'FacPhaSueCanUni',
+  'Laboratório Central do Estado do Paraná': 'LabCenEstPar',
+  'National Reference Laboratories': 'NatRefLab',
+  'The Chinese University of Hong Kong': 'TheChiUniHonKon',
+  'Universidade Federal do Rio de Janeiro': 'UniFedRioJan',
+  'Wellcome Sanger Institute': 'WelSanIns'
+}
 INSTITUTIONS = [{
   'name': 'National Reference Laboratories',
   'id': INSTITUTION_NAME_TO_ID['National Reference Laboratories'],
@@ -43,13 +50,13 @@ class CreateDownloadViewForSampleDataTest(TestCase):
     self.mkdir = mkdir_patch.start()
 
   def test_create_folder_per_institute(self):
-    create_download_view_for_sample_data(self.db)
+    create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
     for institution in INSTITUTIONS:
       self.mkdir.assert_any_call(institution['id'])
 
   def test_create_lane_folder_for_each_institute(self):
-    create_download_view_for_sample_data(self.db)
+    create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
     for lane in LANES:
       self.mkdir.assert_any_call(lane)
@@ -60,7 +67,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
     patch('bin.create_download_view_for_sample_data._get_data_files', return_value=data_files
           ).start()
 
-    create_download_view_for_sample_data(self.db)
+    create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
     self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
     for data_file in data_files:

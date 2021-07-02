@@ -13,9 +13,11 @@ from DataSources.monocledb import MonocleDB
 from DataSources.sequencing_status import SequencingStatus
 from MonocleDash import monocleclient
 
+INITIAL_DIR = Path().absolute()
+OUTPUT_SUBDIR='data_view'
 
-def create_download_view_for_sample_data(db):
-  institutions = db.get_institution_names()
+def create_download_view_for_sample_data(db, institution_name_to_id):
+  institutions = list(db.get_institution_names())
   
   if 0 == len(institutions):
     logging.warning('No institutions were found.')
@@ -27,7 +29,7 @@ def create_download_view_for_sample_data(db):
       with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
   
         if lane_ids:
-          institution_readable_id = INSTITUTION_NAME_TO_ID[institution]
+          institution_readable_id = institution_name_to_id[institution]
           _mkdir(institution_readable_id)
   
           with _cd(institution_readable_id):
@@ -115,8 +117,4 @@ if __name__ == '__main__':
 
   logging.basicConfig(format='%(levelname)s: %(message)s.', level=options.log_level)
 
-  INSTITUTION_NAME_TO_ID = get_institutions()
-  INITIAL_DIR = Path().absolute()
-  OUTPUT_SUBDIR='data_view'
-
-  create_download_view_for_sample_data(MonocleDB())
+  create_download_view_for_sample_data(MonocleDB(), get_institutions())
