@@ -21,6 +21,7 @@ services:
        - "/tmp:rw,noexec,nosuid"
     volumes:
        - ./nginx.proxy.conf:/etc/nginx/conf.d/default.conf
+       - ./monocle_juno_web_root/downloads:/usr/share/nginx/html/downloads
     depends_on:
        - dash
        - metadata-api
