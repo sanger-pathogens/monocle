@@ -45,18 +45,20 @@ class MonocleData:
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
-   def __init__(self):
-      logging.info("*** instatiating MonocleData:  dashboatd data will be updated ***")
-      self.updated                     = datetime.now()
+   def __init__(self, set_up=True):
       self.user_record                 = None
-      self.monocledb                   = DataSources.monocledb.MonocleDB()
-      self.metadata_source             = DataSources.metadata_download.MetadataDownload()
-      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
-      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institutions_data           = None
       self.samples_data                = None
       self.sequencing_status_data      = None
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
+      # set_up flag causes data objects to be loaded on instantiation
+      # only set to False if you know what you're doing
+      if set_up:
+         self.updated                     = datetime.now()
+         self.monocledb                   = DataSources.monocledb.MonocleDB()
+         self.metadata_source             = DataSources.metadata_download.MetadataDownload()
+         self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
+         self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
 
    def get_progress(self):
       institutions_data = self.get_institutions()
