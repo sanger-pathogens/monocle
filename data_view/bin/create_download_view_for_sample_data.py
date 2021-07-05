@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
   # adding `module` for log format allows us to filter out messages from monocledb or squencing_status,
   # which can be handy
-  logging.basicConfig(format='%(levelname)s %(module)s:  %(message)s', level=options.log_level)
+  logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=options.log_level)
 
   monocledb = MonocleDB()
 
