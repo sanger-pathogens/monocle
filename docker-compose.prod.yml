@@ -47,6 +47,23 @@ services:
     environment:
       - ENABLE_SWAGGER_UI=false
       - API_TEST_MODE=false
+  dash-api:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG>"
+    expose:
+      - "80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    tmpfs:
+      - "/run:rw,noexec,nosuid"
+      - "/tmp:rw,noexec,nosuid"
+    environment:
+      - ENABLE_SWAGGER_UI=false
+      - API_TEST_MODE=false
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     expose:
@@ -66,6 +83,8 @@ services:
        - ./my.cnf:/dash/my.cnf
        - ./mlwh-api.yml:/dash/mlwh-api.yml
        - ./openldap-env.yaml:/dash/openldap-env.yaml
+    depends_on:
+      - dash-api
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     expose:
