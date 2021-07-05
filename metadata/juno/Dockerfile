@@ -3,9 +3,9 @@ FROM  gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/python:3.7
 WORKDIR /app
 
 # install dependencies
-COPY Pipfile /app/
+COPY Pipfile Pipfile.lock /app/
 RUN pip install pipenv \
-    && pipenv install --system --skip-lock
+    && pipenv install --system --ignore-pipfile
 
 # add rest of code
 COPY . /app
