@@ -72,19 +72,19 @@ Dashboard unit tests:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
-Dashboard API unit tests:
-  stage: test
-  only:
-    - branches
-  tags:
-    - openstack-autoscale-theta
-  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
-  before_script:
+#Dashboard API unit tests:
+#  stage: test
+#  only:
+#    - branches
+#  tags:
+#    - openstack-autoscale-theta
+#  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+#  before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
     # - pip install codecov
-    - cd "${DASH_CONTEXT}/juno"
-  script:
-    - ./unittests.sh
+#    - cd "${DASH_CONTEXT}/juno"
+#  script:
+#    - ./unittests.sh
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
