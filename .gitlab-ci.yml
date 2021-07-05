@@ -8,9 +8,10 @@ stages:
   
 variables:
   DASH_CONTEXT:             "dash"
+  DASH_API_CONTEXT:         "dash-api"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
-  DOCKER_BUILD_LIST:        "${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
+  DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   FRONTEND_UNIT_TEST_IMAGE: "node:alpine"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -38,7 +39,9 @@ Docker builds:
          do
             cd "${CI_PROJECT_DIR}/${this_context}";
             if [[ "metadata/juno" == ${this_context} ]]; then
-               this_image="monocle-metadata"
+               this_image="monocle-${METADATA_CONTEXT}"
+            elif [[ "dash-api/juno" == ${this_context} ]]; then
+               this_image="monocle-${DASH_API_CONTEXT}"
             else
                this_image="monocle-${this_context}"
             fi;
@@ -62,6 +65,24 @@ Dashboard unit tests:
     # codecov temporarily disabled 2021-04-15 after security breach notice
     # - pip install codecov
     - cd "${DASH_CONTEXT}"
+  script:
+    - ./unittests.sh
+  # codecov temporarily disabled 2021-04-15 after security breach notice
+  # after_script:
+    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+
+
+Dashboard API unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    # codecov temporarily disabled 2021-04-15 after security breach notice
+    # - pip install codecov
+    - cd "${DASH_CONTEXT}/juno"
   script:
     - ./unittests.sh
   # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -131,7 +152,9 @@ Docker tags for merge:
          for this_context in $DOCKER_BUILD_LIST;
          do
             if [[ "metadata/juno" == ${this_context} ]]; then
-               this_image="monocle-metadata"
+               this_image="monocle-${METADATA_CONTEXT}"
+            elif [[ "dash-api/juno" == ${this_context} ]]; then
+               this_image="monocle-${DASH_API_CONTEXT}"
             else
                this_image="monocle-${this_context}"
             fi;
@@ -168,7 +191,9 @@ Docker tags for release:
          for this_context in $DOCKER_BUILD_LIST;
          do
             if [[ "metadata/juno" == ${this_context} ]]; then
-               this_image="monocle-metadata"
+               this_image="monocle-${METADATA_CONTEXT}"
+            elif [[ "dash-api/juno" == ${this_context} ]]; then
+               this_image="monocle-${DASH_API_CONTEXT}"
             else
                this_image="monocle-${this_context}"
             fi;
