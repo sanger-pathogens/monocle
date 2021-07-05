@@ -82,7 +82,7 @@ Dashboard API unit tests:
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
     # - pip install codecov
-    - cd "${DASH_CONTEXT}/juno"
+    - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
   # codecov temporarily disabled 2021-04-15 after security breach notice
