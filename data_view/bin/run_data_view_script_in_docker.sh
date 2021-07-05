@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # This runs `create_download_view_for_sample_data.py` inside a `monocle-dash` container
 # 
