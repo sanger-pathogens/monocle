@@ -21,7 +21,12 @@ services:
        - "/tmp:rw,noexec,nosuid"
     volumes:
        - ./nginx.proxy.conf:/etc/nginx/conf.d/default.conf
-       - ./monocle_juno_web_root/downloads:/usr/share/nginx/html/downloads
+       # data must have the same path in the container as on the host, otherwise symlinks from data_institution_view break
+       - data:/home/<USER>/monocle_juno
+       # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
+       - data_institution_view:/home/<USER>/monocle_juno_institution_view
+       # the download directory must have mode 331, so users can access files via their own download path, but cannot see other download paths
+       - data_downloads:/usr/share/nginx/html/downloads
     depends_on:
        - dash
        - metadata-api
@@ -50,6 +55,7 @@ services:
       - API_TEST_MODE=false
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
        - "80"
     restart: unless-stopped
@@ -64,6 +70,9 @@ services:
        - "/tmp:rw,noexec,nosuid"
     volumes:
        - data:/dash/monocle_juno
+       # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
+       - data_institution_view:/home/<USER>/monocle_juno_institution_view
+       - data_downloads:/dash/monocle_juno_web_root/downloads
        - ./my.cnf:/dash/my.cnf
        - ./mlwh-api.yml:/dash/mlwh-api.yml
        - ./openldap-env.yaml:/dash/openldap-env.yaml
@@ -159,6 +168,18 @@ volumes:
             o: bind
             type: none
             device: /home/<USER>/monocle_juno
+    data_institution_view:
+        driver: local
+        driver_opts:
+            o: bind
+            type: none
+            device: /home/<USER>/monocle_juno_institution_view
+    data_downloads:
+        driver: local
+        driver_opts:
+            o: bind
+            type: none
+            device: /home/<USER>/monocle_juno_web_root/downloads
 
 # Change address range of default compose network so as
 # not to clash with ISG infrastructure
