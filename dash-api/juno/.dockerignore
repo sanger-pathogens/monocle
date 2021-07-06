@@ -1,0 +1,8 @@
+my.cnf*
+config.json
+openldap-*.yaml
+mlwh-*.yml
+.git
+**/__pycache__
+**/.pytest_cache
+**/.DS_Store
