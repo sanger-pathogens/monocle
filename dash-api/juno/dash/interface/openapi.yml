@@ -19,3 +19,63 @@ paths:
         200:
           description: "Success"
 
+  /get_user_details{username}:
+    post:
+      operationId: dash.api.routes.get_user_details
+      summary: "Return all user details for a given username"
+      parameters:
+        - name: "username"
+          in: path
+          description: "The username to be queried"
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+            pattern: '^[-a-zA-Z0-9]*$'
+      responses:
+        200:
+          description: "Data for the specified user"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sample:
+                    $ref: "#/components/schemas/UserData"
+        404:
+          description: "The user could not be found"
+
+components:
+  schemas:
+
+    UserData:
+      type: object
+      required:
+        - "username"
+      properties:
+        username:
+          type: string
+          description: "The username for this user"
+          readOnly: true
+        groups:
+          type: array
+          description: "A list of groups for which the given user is a member"
+          items:
+            $ref: "#/components/schemas/MembershipGroup"
+           readOnly: true
+
+    MembershipGroup:
+      type: object
+      required:
+        - "id"
+        - "name"
+      properties:
+        id:
+          type: string
+          description: "The id of the group"
+          readOnly: true
+        name:
+          type: string
+          description: "The name of the group"
+          readOnly: true
