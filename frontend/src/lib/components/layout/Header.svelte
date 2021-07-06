@@ -23,6 +23,7 @@ header {
 
 h1 {
   font-size: 2.6rem;
+  font-weight: 600;
   margin-top: 0;
   position: absolute;
   left: 50%;

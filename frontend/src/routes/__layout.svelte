@@ -17,12 +17,13 @@
 :global(:root) {
   --juno-indigo: #484885;
   --juno-purple: #6868be;
+  --color-border: #dfe3e6;
 
   --bp-xl: 1400px;
 }
 
 main {
-  margin: 1rem auto;
+  margin: 2rem auto;
   padding-left: 0.8rem;
   padding-right: 0.8rem;
   width: 50rem;
