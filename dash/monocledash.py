@@ -35,7 +35,7 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         ):
    data = MonocleDash.monocleclient.MonocleData()
    username = request.headers['X-Remote-User']
-   # this message should be dropped to 'info' or 'debug'
+   # TODO this message should be dropped to 'info' or 'debug'
    # 'warning' is too high, but I want to watch it for a while...
    logging.warning('X-Remote-User header passed to /download = {}'.format(username))
    user_obj = MonocleDash.monocleclient.MonocleUser(username)
@@ -63,8 +63,6 @@ def metadata_download(  institution:   str = Route(min_length=5),
 
 @server.route('/legacy_dashboard/data/summary/')
 def legacy_dashboard():
-   # TODO when tested, delete line below setting verbose logging level
-   logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
    legacy_dashboard_data = get_dash_params(check_remote_user=False)
    # remove objects not appropriate to API and/or not serializable
    for unwanted_top_level_key in ['user']:
@@ -143,9 +141,7 @@ def get_dash_params(check_remote_user=True):
          except KeyError:
             logging.error("request was made without 'X-Remote-User' HTPP header: auth module shouldn't allow that")
             raise
-         # TODO this message should be dropped to 'info' or 'debug'
-         # 'warning' is too high, but I want to watch it for a while...
-         logging.warning('X-Remote-User header = {}'.format(username))
+         logging.info('X-Remote-User header = {}'.format(username))
          user_object = MonocleDash.monocleclient.MonocleUser(username)
       except RuntimeError as e:
          if not 'request context' in str(e):
