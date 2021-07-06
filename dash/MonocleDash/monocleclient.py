@@ -393,10 +393,12 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self,institution,category,status):
+   def get_metadata(self,institution,category,status,download_base_url):
       """
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
+      Also pass the base URL for the download.  The complete download URL for each lane is this
+      base URL with the lane ID appended.
       
       Returns metadata as CSV
       """
@@ -406,8 +408,12 @@ class MonocleData:
          
       # get list of lane IDs for this combo of institution/category/status
       lane_id_list = []
+      sample_id_to_lanes = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
+         sample_id_to_lanes[this_sample_id] = []
+         
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
+            sample_id_to_lanes[this_sample_id].append(this_lane['id'])
             
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
                # lane completed sequencing, though possibly failed
@@ -458,6 +464,15 @@ class MonocleData:
          if reading_the_first_row:
             csv.append( ','.join(headings_csv_strings) )
             reading_the_first_row = False
+         # the download link(s) must be added as an extra column
+         if reading_the_first_row:
+            headings_csv_strings.append('Download link')
+         else:
+            download_links = []
+            for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
+               download_links.append('/'.join([download_base_url, this_lane_id]))
+            this_row_csv_strings.append(" ".join(download_links))
+         # add this row to the main list of CSV rows
          csv.append( ','.join(this_row_csv_strings) )
       # CSV as one string
       csv_giant_string = "\n".join(csv)

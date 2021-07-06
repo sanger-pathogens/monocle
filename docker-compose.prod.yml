@@ -76,6 +76,10 @@ services:
        - ./my.cnf:/dash/my.cnf
        - ./mlwh-api.yml:/dash/mlwh-api.yml
        - ./openldap-env.yaml:/dash/openldap-env.yaml
+    environment:
+       # this MUST be the same path as the mount point for data_institution_view
+       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+       
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     expose:
