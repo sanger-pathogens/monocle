@@ -7,3 +7,6 @@ data
 **/__pycache__
 **/.pytest_cache
 **/.DS_Store
+# config mounted at runtime
+openldap-env*yml
+mlwh-api*yml
