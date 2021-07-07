@@ -63,7 +63,7 @@
 
   function onUploadError(err) {
     const uploadError = err ? (`Upload error: ${err.message || err}`) : "Upload error";
-    alert(`${uploadError}.\nPlease try again and contact us if the problem persists.`);
+    alert(`${uploadError}\nPlease try again and contact us if the problem persists.`);
   }
 
   function hasValidationErrors(errors) {

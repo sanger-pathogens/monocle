@@ -23,11 +23,12 @@
 		};
 	}
 
-	function collateInstitutionStatus({ institutions, batches }) {
+	function collateInstitutionStatus({ institutions, batches, sequencing_status }) {
 		return Object.keys(institutions)
 			.map((key) => ({
 				name: institutions[key].name,
-				batches: batches[key]
+				batches: batches[key],
+				sequencingStatus: sequencing_status[key]
 			}))
 	}
 </script>
@@ -47,9 +48,10 @@
   labels={projectProgress.dates}
 />
 
-{#each institutions as { name, batches }}
+{#each institutions as { name, batches, sequencingStatus }}
 	<InstitutionStatus
 		{batches}
+		{sequencingStatus}
 		institutionName={name}
 	/>
 {:else}

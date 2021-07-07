@@ -114,7 +114,7 @@ describe("file uploading", () => {
       expect(fetch).toHaveBeenCalledTimes(2);
       expect(alert).toHaveBeenCalledTimes(1);
       expect(alert).toHaveBeenCalledWith(
-        `Upload error: ${error.message}.\nPlease try again and contact us if the problem persists.`
+        `Upload error: ${error.message}\nPlease try again and contact us if the problem persists.`
       );
     });
   });

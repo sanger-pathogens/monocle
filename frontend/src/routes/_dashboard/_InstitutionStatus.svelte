@@ -25,7 +25,14 @@
 article {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  /* Exceed the `<main>` container and center itself. */
+  width: min(98vw, var(--bp-xl));
+  position: relative;
+  left: 50%;
+  transform: translate(-50%);
 }
+
 article:not(:first-of-type) {
   margin-top: 3.4rem;
 }
@@ -35,6 +42,10 @@ article:first-of-type {
 
 h3 {
   margin-top: 1rem;
+  width: 100%;
+}
+
+p {
   width: 100%;
 }
 </style>

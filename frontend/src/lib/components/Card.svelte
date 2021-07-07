@@ -1,4 +1,9 @@
-<article>
+<script>
+  export let style = '';
+</script>
+
+
+<article {style}>
   <slot></slot>
 </article>
 
@@ -12,6 +17,7 @@ article {
   margin-left: .5rem;
   margin-right: .5rem;
   padding: 1rem;
+  min-width: 20rem;
   max-width: 25rem;
 }
 </style>
