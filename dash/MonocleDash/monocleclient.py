@@ -467,7 +467,7 @@ class MonocleData:
          download_links = []
          for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
             download_links.append('/'.join([download_base_url, urllib.parse.quote(this_lane_id), '']))
-         this_row_csv_strings.append(" ".join(download_links))
+         this_row_csv_strings.append( '"{}"'.format(" ".join(download_links)) )
          # add headings to CSV if this is the first row
          if reading_the_first_row:
             csv.append( ','.join(headings_csv_strings) )
