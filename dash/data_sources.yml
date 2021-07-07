@@ -37,4 +37,5 @@ monocle_ldap:
    inst_name_attr    : 'description'
 data_download:
    web_dir           : 'monocle_juno_web_root/downloads'
+   url_path          : 'files/downloads'
    

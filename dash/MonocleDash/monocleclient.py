@@ -2,6 +2,8 @@ from   collections            import defaultdict
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
+import urllib.parse
+
 import DataSources.monocledb
 import DataSources.metadata_download
 import DataSources.sequencing_status
@@ -460,18 +462,16 @@ class MonocleData:
             if reading_the_first_row:
                headings_csv_strings.append( '"{}"'.format(this_row[this_column]['name']) )
             this_row_csv_strings.append( '"{}"'.format(this_row[this_column]['value']) )
+         # download links are an extra column added by this function
+         headings_csv_strings.append( '"Download link"' )
+         download_links = []
+         for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
+            download_links.append('/'.join([download_base_url, urllib.parse.quote(this_lane_id), '']))
+         this_row_csv_strings.append(" ".join(download_links))
          # add headings to CSV if this is the first row
          if reading_the_first_row:
             csv.append( ','.join(headings_csv_strings) )
             reading_the_first_row = False
-         # the download link(s) must be added as an extra column
-         if reading_the_first_row:
-            headings_csv_strings.append('Download link')
-         else:
-            download_links = []
-            for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
-               download_links.append('/'.join([download_base_url, this_lane_id]))
-            this_row_csv_strings.append(" ".join(download_links))
          # add this row to the main list of CSV rows
          csv.append( ','.join(this_row_csv_strings) )
       # CSV as one string

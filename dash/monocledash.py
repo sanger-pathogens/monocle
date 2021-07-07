@@ -44,38 +44,39 @@ def make_download_symlink(monocle_data, target_institution):
    data_sources_config     = 'data_sources.yml'
    download_config_section = 'data_download'
    download_dir_param      = 'web_dir'
+   download_url_path       = 'url_path'
    data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
-   download_web_dir  = None
-   download_host_dir = None
    # get web server directory, and check it exists
    if not Path(data_sources_config).is_file():
       return download_config_error("data source config file {} missing".format(data_sources_config))
    with open(data_sources_config, 'r') as file:
       data_sources = yaml.load(file, Loader=yaml.FullLoader)
       if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
-         return download_config_error("data source config file {} does not provide the required paramter {}.{}".format(data_sources_config,download_config_section,download_dir_param))
+         return download_config_error("data source config file {} does not provide the required parameter {}.{}".format(data_sources_config,download_config_section,download_dir_param))
       download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
+      if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
+         return download_config_error("data source config file {} does not provide the required parameter {}.{}".format(data_sources_config,download_config_section,download_url_path))
+      download_url_path  = data_sources[download_config_section][download_url_path]
    if not download_web_dir.is_dir():
       return download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
-   # TODO reduce this to DEBUG after testing
-   logging.warning('web server data download dir = {}'.format(str(download_web_dir)))
+   logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
    # get the "target" directory where the data for the institution is kept, and check it exists
    if data_inst_view_environ not in environ:
       return download_config_error("environment varibale {} is not set".format(data_inst_view_environ))
    download_host_dir = Path(environ[data_inst_view_environ], monocle_data.institution_db_key_to_dict[target_institution])
    if not download_host_dir.is_dir():
       return download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
-   # TODO reduce this to DEBUG after testing
-   logging.warning('host data download dir = {}'.format(str(download_host_dir)))
+   logging.debug('host data download dir = {}'.format(str(download_host_dir)))
    # create a randomly named symlink to present to the user (do..while is just in case the path exists already)
    while True:
-      data_download_link = Path(download_web_dir, uuid.uuid4().hex)
+      random_name          = uuid.uuid4().hex
+      data_download_link   = Path(download_web_dir, random_name)
+      download_url_path    = '/'.join([download_url_path, random_name])
       if not data_download_link.exists():
          break
-   # TODO reduce this to DEBUG after testing
-   logging.warning('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
+   logging.debug('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
    data_download_link.symlink_to(download_host_dir)
-   return str(download_web_dir)
+   return download_url_path
 
 
 # first bit of path should match the `location` used for nginx proxy config
@@ -87,9 +88,7 @@ def metadata_download(  institution:   str = Route(min_length=5),
                         ):
    data = MonocleDash.monocleclient.MonocleData()
    username = request.headers['X-Remote-User']
-   # TODO this message should be dropped to 'info' or 'debug'
-   # 'warning' is too high, but I want to watch it for a while...
-   logging.warning('X-Remote-User header passed to /download = {}'.format(username))
+   logging.info('X-Remote-User header passed to /download = {}'.format(username))
    user_obj = MonocleDash.monocleclient.MonocleUser(username)
    data.user_record = user_obj.record
    institution_data  = data.get_institutions()
@@ -97,16 +96,15 @@ def metadata_download(  institution:   str = Route(min_length=5),
    if not institution in institution_names:
       return download_parameter_error("Parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
    
-   institution_download_symlink = make_download_symlink(data,institution)
-   if institution_download_symlink is None:
+   institution_download_symlink_url_path = make_download_symlink(data,institution)
+   if institution_download_symlink_url_path is None:
       return "Sample data are temporarily unavailable", 500
    host_url = 'https://{}'.format(request.host)
    # TODO add correct port number
    # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
    # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
-   download_base_url = '{}/{}/'.format(host_url, institution_download_symlink)
-   # TODO reduce this to INFO after testing
-   logging.warning('Data download base URL = {}'.format(download_base_url))
+   download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
+   logging.info('Data download base URL = {}'.format(download_base_url))
    
    csv_response = flask.Response( data.get_metadata(institution,category,status,download_base_url) )
    csv_response.headers['Content-Type']         = 'text/csv; charset=UTF-8' # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
