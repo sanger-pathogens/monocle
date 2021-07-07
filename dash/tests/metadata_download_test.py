@@ -411,7 +411,7 @@ class MetadataDownloadTest(TestCase):
       self.assertIsInstance(self.download,            DataSources.metadata_download.MetadataDownload)
       self.assertIsInstance(self.download.dl_client,  DataSources.metadata_download.Monocle_Download_Client)
             
-   def test_init(self):
+   def test_init_values(self):
       self.assertRegex(self.download.dl_client.config['base_url'],   self.base_url_regex)
       self.assertRegex(self.download.dl_client.config['swagger'],    self.endpoint_regex)
       self.assertRegex(self.download.dl_client.config['download'],   self.endpoint_regex)

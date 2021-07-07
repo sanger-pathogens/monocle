@@ -130,7 +130,7 @@ class SequencingStatusTest(TestCase):
       self.assertIsInstance(self.seq_status,             DataSources.sequencing_status.SequencingStatus)
       self.assertIsInstance(self.seq_status.mlwh_client, DataSources.sequencing_status.MLWH_Client)
             
-   def test_init(self):
+   def test_init_values(self):
       self.assertRegex(self.seq_status.mlwh_client.config['mlwh_api_connection']['base_url'],   self.base_url_regex)
       self.assertRegex(self.seq_status.mlwh_client.config['swagger'],                           self.endpoint_regex)
       self.assertRegex(self.seq_status.mlwh_client.config['findById'],                          self.endpoint_regex)
