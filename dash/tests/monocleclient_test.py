@@ -9,7 +9,8 @@ from   DataSources.user_data           import UserData
 from   MonocleDash.monocleclient       import MonocleUser, MonocleData
 
 class MonocleUserTest(TestCase):
-
+   
+   test_config             = 'tests/mock_data/data_sources.yml'
    mock_ldap_result_user   = (   'cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
                                  {  'cn': [b'mock_user_sanger_ac_uk'],
                                     'gidNumber': [b'501'],
@@ -32,6 +33,8 @@ class MonocleUserTest(TestCase):
 
    def setUp(self):
       self.user = MonocleUser()
+      self.user.userdata = UserData(set_up=False)
+      self.user.userdata.set_up(self.test_config)
 
    def test_init(self):
       self.assertIsInstance(self.user, MonocleUser)
