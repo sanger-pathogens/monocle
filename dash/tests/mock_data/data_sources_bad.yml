@@ -29,3 +29,6 @@ monocle_ldap:
    gid_attr          : 'gidNumber'
    inst_id_attr      : 'cn'
    inst_name_attr    : 'description'
+data_download:
+   web_dir           : 'monocle_juno_web_root/downloads'
+   url_path          : 'files/downloads'

@@ -408,8 +408,8 @@ class MetadataDownloadTest(TestCase):
       self.download.dl_client.set_up(self.test_config)
 
    def test_init(self):
-      self.assertIsInstance(self.download,            DataSources.metadata_download.MetadataDownload)
-      self.assertIsInstance(self.download.dl_client,  DataSources.metadata_download.Monocle_Download_Client)
+      self.assertIsInstance(self.download,            MetadataDownload)
+      self.assertIsInstance(self.download.dl_client,  Monocle_Download_Client)
             
    def test_init_values(self):
       self.assertRegex(self.download.dl_client.config['base_url'],   self.base_url_regex)
