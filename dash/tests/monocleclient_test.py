@@ -32,9 +32,8 @@ class MonocleUserTest(TestCase):
                                  )
 
    def setUp(self):
-      self.user = MonocleUser()
-      self.user.userdata = UserData(set_up=False)
-      self.user.userdata.set_up(self.test_config)
+      self.user = MonocleUser(set_up=False)
+      self.user.user_data.set_up(self.test_config)
 
    def test_init(self):
       self.assertIsInstance(self.user, MonocleUser)
