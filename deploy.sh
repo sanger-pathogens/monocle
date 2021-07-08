@@ -307,6 +307,8 @@ then
         echo "Setting configuration in docker-compose.yml..."
         sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
         sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
+        sed -i -e "s/<USER_UID>/\$(id -u)/g" docker-compose.yml
+        sed -i -e "s/<USER_GID>/\$(id -g)/g" docker-compose.yml
         echo "Setting configuration in nginx.proxy.conf..."
         sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
         sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf

@@ -1,5 +1,5 @@
 monocledb:
-   cnf_file                   :  'DataSources/tests/mock_data/mock.cnf'
+   cnf_file                   :  'tests/mock_data/mock.cnf'
    institution_table          :  'api_institution'
    institution_table_inst_key :  'name'
    sample_table_inst_key      :  'submitting_institution_id'
@@ -16,7 +16,7 @@ monocle_download_api:
    swagger        : '/metadata/ui/'
    download       : '/metadata/download'
 mlwh_rest_api:
-   mlwh_api_config   : 'DataSources/tests/mock_data/mlwh-api-mock.yml'
+   mlwh_api_config   : 'tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
 monocle_ldap:
@@ -29,3 +29,6 @@ monocle_ldap:
    gid_attr          : 'gidNumber'
    inst_id_attr      : 'cn'
    inst_name_attr    : 'description'
+data_download:
+   web_dir           : 'monocle_juno_web_root/downloads'
+   url_path          : 'files/downloads'
