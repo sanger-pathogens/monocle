@@ -3,15 +3,14 @@ import json
 import os
 import logging.config
 
-from flask_cors import CORS
+#from flask_cors import CORS
 from flask_injector import FlaskInjector
-from dash.api.dependencies import DashboardApiModule
 
 
 OPEN_API_SPEC_FILE = 'openapi.yml'
 
 
-def create_application(conf_file: str, injection_bindings: DashboardApiModule):
+def create_application(conf_file: str, injection_bindings):
     """ Application configuration """
 
     use_swagger_ui = True if os.environ.get('ENABLE_SWAGGER_UI', '').lower() == 'true' else False
@@ -25,7 +24,8 @@ def create_application(conf_file: str, injection_bindings: DashboardApiModule):
         app_handle.app.config.update(json.load(config_file))
 
     # Load logging configuration
-    logging.config.dictConfig(app_handle.app.config.get('logging_config'))
+    #logging.config.dictConfig(app_handle.app.config.get('logging_config'))
+    app_handle.app.config['DEBUG'] = True
 
     # Turn off automatic ordering of JSON keys
     app_handle.app.config['JSON_SORT_KEYS'] = False

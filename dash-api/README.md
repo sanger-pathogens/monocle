@@ -1,5 +1,5 @@
 # Dashboard API
-This component provides an API for accessing ata required by the dashboard UI.
+This component provides an API for accessing data required by the frontend dashboard UI.
 
 ## Building a local Docker image
 A local docker image can be built using the following:

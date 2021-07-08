@@ -8,12 +8,12 @@ pytest = "*"
 
 [packages]
 pyyaml = "*"
-flask = "*"
+python-ldap = "3.3.1"
+flask = "1.1.2"
 flask-cors = "*"
-Flask-Injector = "*"
+Flask-Injector = "0.12.3"
 testfixtures = "*"
 gunicorn = "*"
-uvicorn = "*"
 'connexion[swagger-ui]' = "*"
 
 [requires]

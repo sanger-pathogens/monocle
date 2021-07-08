@@ -1,6 +1,6 @@
-my.cnf*
+**/my.cnf*
 config.json
-openldap-*.yaml
+**/openldap-env.yaml
 mlwh-*.yml
 .git
 **/__pycache__

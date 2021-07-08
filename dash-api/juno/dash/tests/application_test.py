@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from dash.api.dependencies import DashboardApiModule
+from dash.api.dependencies import ApiModule
 
 
 class TestApplication(unittest.TestCase):
@@ -14,4 +14,4 @@ class TestApplication(unittest.TestCase):
         create_application.assert_called_once()
         config, dependencies = create_application.call_args[0]
         self.assertEqual(config, 'config.json')
-        self.assertIsInstance(dependencies, DashboardApiModule)
+        self.assertIsInstance(dependencies, ApiModule)

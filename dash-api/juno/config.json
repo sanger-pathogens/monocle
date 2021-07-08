@@ -1,5 +1,4 @@
 {
-  "MAX_CONTENT_LENGTH": 1048576,
   "logging_config": {
     "version": 1,
     "formatters": {
@@ -26,5 +25,34 @@
         "wsgi"
       ]
     }
+  },
+  "monocle_download_api": {
+    "base_url":  "http://metadata-api",
+    "swagger": "/metadata/ui/",
+    "download": "/metadata/download",
+    "metadata_key": "download"
+  },
+  "mlwh_rest_api": {
+    "mlwh_api_config": "mlwh-api.yml",
+    "swagger": "/sequencing/data/ui/",
+    "findById": "/sequencing/data/samples/findById",
+    "findById_key": "sample",
+    "findByIds": "/sequencing/data/samples/findByIds",
+    "findByIds_key": "samples"
+  },
+  "pipeline_status": {
+    "csv_file": "monocle_juno/status/pipelines.csv"
+  },
+  "monocle_ldap": {
+    "openldap_config": "openldap-env.yaml",
+    "ldap_url": "ldap://monocle-ldap:389",
+    "users_obj": "inetOrgPerson",
+    "groups_obj": "posixGroup",
+    "username_attr": "uid",
+    "uid_attr": "uidNumber",
+    "membership_attr": "o",
+    "gid_attr": "gidNumber",
+    "inst_id_attr": "cn",
+    "inst_name_attr": "description"
   }
 }

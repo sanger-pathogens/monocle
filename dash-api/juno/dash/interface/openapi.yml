@@ -11,14 +11,6 @@ servers:
     description: Context path
 
 paths:
-  /helloworld:
-    post:
-      operationId: dash.api.routes.hello_world
-      summary: "Dummy test method"
-      responses:
-        200:
-          description: "Success"
-
   /get_user_details{username}:
     post:
       operationId: dash.api.routes.get_user_details
@@ -32,7 +24,7 @@ paths:
             type: string
             minLength: 1
             maxLength: 255
-            pattern: '^[-a-zA-Z0-9]*$'
+            pattern: '^[_-a-zA-Z0-9]*$'
       responses:
         200:
           description: "Data for the specified user"
@@ -43,8 +35,15 @@ paths:
                 properties:
                   sample:
                     $ref: "#/components/schemas/UserData"
-        404:
-          description: "The user could not be found"
+        400:
+          description: "User information could not be found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -62,10 +61,10 @@ components:
           type: array
           description: "A list of groups for which the given user is a member"
           items:
-            $ref: "#/components/schemas/MembershipGroup"
-           readOnly: true
+            $ref: "#/components/schemas/Group"
+          readOnly: true
 
-    MembershipGroup:
+    Group:
       type: object
       required:
         - "id"
@@ -79,3 +78,12 @@ components:
           type: string
           description: "The name of the group"
           readOnly: true
+
+    Error:
+      type: object
+      required:
+        - "message"
+      properties:
+        message:
+          type: string
+          description: "The error details"

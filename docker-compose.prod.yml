@@ -62,6 +62,7 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
+      - ./dash-api.json:/app/config.json
       - ./openldap-env.yaml:/app/openldap-env.yaml
     environment:
       - ENABLE_SWAGGER_UI=false
