@@ -10,8 +10,8 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 class MetadataDownloadTest(TestCase):
 
-   test_config             = 'DataSources/tests/mock_data/data_sources.yml'
-   bad_config              = 'DataSources/tests/mock_data/data_sources_bad.yml'
+   test_config             = 'tests/mock_data/data_sources.yml'
+   bad_config              = 'tests/mock_data/data_sources_bad.yml'
    genuine_api_host        = 'http://metadata-api/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'
@@ -408,10 +408,10 @@ class MetadataDownloadTest(TestCase):
       self.download.dl_client.set_up(self.test_config)
 
    def test_init(self):
-      self.assertIsInstance(self.download,            DataSources.metadata_download.MetadataDownload)
-      self.assertIsInstance(self.download.dl_client,  DataSources.metadata_download.Monocle_Download_Client)
+      self.assertIsInstance(self.download,            MetadataDownload)
+      self.assertIsInstance(self.download.dl_client,  Monocle_Download_Client)
             
-   def test_init(self):
+   def test_init_values(self):
       self.assertRegex(self.download.dl_client.config['base_url'],   self.base_url_regex)
       self.assertRegex(self.download.dl_client.config['swagger'],    self.endpoint_regex)
       self.assertRegex(self.download.dl_client.config['download'],   self.endpoint_regex)

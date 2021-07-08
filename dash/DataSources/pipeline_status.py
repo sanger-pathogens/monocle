@@ -19,8 +19,10 @@ class PipelineStatus:
    # these are the pipeline stages we'd like information about
    pipeline_stage_fields   = ['Import','QC','Assemble','Annotate']
 
-   def __init__(self):
-      with open(self.data_sources_config, 'r') as file:
+   def __init__(self, config=None):
+      if config is None:
+         config = self.data_sources_config
+      with open(config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
          this_source  = data_sources[self.data_source]
       self.csv_file = this_source['csv_file']
