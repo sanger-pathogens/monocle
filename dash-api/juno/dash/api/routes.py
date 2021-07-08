@@ -12,7 +12,7 @@ HTTP_SUCCEEDED_STATUS = 200
 
 
 @inject
-def get_user_details(username: str):
+def get_user_details(username: str, service: UserService):
     """ Given a username retrieve all details for that user """
     try:
         user_data = service.get_user_details(username)
