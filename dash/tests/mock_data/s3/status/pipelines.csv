@@ -3,10 +3,10 @@ Name,Import,QC,Mapping,Archive,Improve,"SNP call",RNASeq,Assemble,Annotate
 31663_7#3,Done,Done,-,Done,-,-,-,Done,Done
 31663_7#4,Done,Done,-,Done,-,-,-,Done,Done
 31663_7#6,Done,Done,-,Done,-,-,-,Done,Done
-31663_7#7,Done,Done,-,Done,-,-,-,Done,Done
+31663_7#7,Done,Pending,-,Pending,-,-,-,Pending,Pending
 31663_7#8,Done,Done,-,Done,-,-,-,Done,Done
 31663_7#10,Done,Done,-,Done,-,-,-,Done,Done
-31663_7#11,Done,Done,-,Done,-,-,-,Done,Done
+31663_7#11,Done,Failed,-,Failed,-,-,-,Failed,Failed
 31663_7#12,Done,Done,-,Done,-,-,-,Done,Done
 31663_7#14,Done,Done,-,Done,-,-,-,Done,Done
 31663_7#15,Done,Done,-,Done,-,-,-,Done,Done

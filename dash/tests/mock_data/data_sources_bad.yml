@@ -19,6 +19,8 @@ mlwh_rest_api:
    mlwh_api_config   : 'tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
+pipeline_status:
+   csv_file          : 'tests/mock_data/s3/status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    users_obj         : 'inetOrgPerson'
