@@ -10,7 +10,7 @@ import yaml
 #    """ exception when data source methods are called with invalid parameter(s) """
 #    pass
 
-class SequencingStatus:
+class SampleMetadata:
     """ provides access to pipeline status data """
 
     def __init__(self, set_up=True):
