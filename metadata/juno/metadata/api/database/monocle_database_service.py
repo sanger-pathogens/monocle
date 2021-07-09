@@ -8,6 +8,16 @@ class MonocleDatabaseService(ABC):
     """ Base class for metadata access """
 
     @abstractmethod
+    def get_institution_names(self) -> List[Institution]:
+        """ Return a list of institutions """
+        pass
+
+    @abstractmethod
+    def get_samples(self) -> List[Institution]:
+        """ Return a list of institutions """
+        pass
+
+    @abstractmethod
     def get_institutions(self) -> List[Institution]:
         """ Return a list of institutions """
         pass

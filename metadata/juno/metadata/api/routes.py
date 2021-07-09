@@ -6,6 +6,7 @@ from flask import jsonify
 from injector import inject
 from metadata.api.upload_handler import UploadHandler
 from metadata.api.download_handler import DownloadHandler
+from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
 
 logger = logging.getLogger()
@@ -74,5 +75,41 @@ def get_download_metadata(body: list, download_handler: DownloadHandler):
 
     if len(metadata_list) > 0:
         return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_institution_names(dao: MonocleDatabaseService):
+    """ Download all institution names from the database """
+    institutions = dao.get_institution_names()
+
+    result = jsonify({'institutions': institutions})
+
+    if len(institutions) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_samples(dao: MonocleDatabaseService):
+    """ Download all samples and their metadata from the database """
+    samples = dao.get_samples()
+
+    result = jsonify({'download': samples})
+
+    if len(samples) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_samples_for_study_id(study_id: int, dao: SequencingDatabaseService):
+
+    samples = dao.get_samples_for_study_id(study_id)
+
+    result = jsonify({'samples': samples})
+
+    if len(samples) > 0:
+        return result
     else:
         return result, HTTP_NOT_FOUND_STATUS
