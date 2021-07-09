@@ -65,6 +65,38 @@ paths:
         404:
           description: "No data could be found for the given download key"
 
+  /institutions:
+    post:
+      operationId: metadata.api.routes.get_institution_names
+      summary: "Gather the names for all institutions"
+      responses:
+        200:
+          description: "The institution result set"
+          content:
+            application/json:
+              schema:
+                type: string
+        404:
+          description: "No data could be found for the given download key"
+
+  /samples:
+    post:
+      operationId: metadata.api.routes.get_samples
+      summary: "Gather all sample records"
+      200:
+        description: "The sample result set"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sample:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Metadata"
+        404:
+          description: "No data could be found for the given download key"
+
 
 components:
   schemas:
