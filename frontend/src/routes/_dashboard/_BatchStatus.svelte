@@ -16,7 +16,7 @@
       <th>received on</th>
       <th># samples</th>
     </tr>
-    {#each batches.deliveries as { name, date, number }}
+    {#each batches.deliveries as { name, date, number } (name)}
       <tr>
         <td>{name}</td>
         <td>{date}</td>

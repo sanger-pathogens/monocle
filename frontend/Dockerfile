@@ -13,11 +13,11 @@ COPY . .
 # build production bundle
 RUN npm run build
 
-
+# ---------- production runtime ----------
 FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.4.2-alpine3.14
 
 WORKDIR /app
-COPY --from=0 /app .
+COPY --from=builder /app .
 COPY . .
 
 EXPOSE 80

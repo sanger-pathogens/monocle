@@ -7,19 +7,27 @@ it("displays the project progress chart", () => {
   expect(getByText("Project Progress")).toBeDefined();
 });
 
-it("displays status for each institution passed", () => {
+//FIXME: unskip once the pipeline status pane is ready
+it.skip("displays status for each institution passed", () => {
   const institutions = [{
     name: "Center for Reducing Suffering",
-    batches: { received: 0, deliveries: [] }
+    key: "CRS",
+    batches: { received: 0, deliveries: [] },
+    sequencingStatus: {}
   }, {
     name: "Qualia Research Institute",
-    batches: { received: 42, deliveries: [] }
+    key: "QRI",
+    batches: { received: 42, deliveries: [] },
+    sequencingStatus: {}
   }];
 
   const { component, getByText } = render(DashboardPage, { institutions });
 
   institutions.forEach(({ name }) => {
-    expect(getByText(name)).toBeDefined();
+    const institutionHeadingElement = getByText(name);
+    const institutionStatusPanes = institutionHeadingElement.parentElement
+      .querySelectorAll("h3 ~ article");
+    expect(institutionStatusPanes).toHaveLength(3);
   });
 });
 

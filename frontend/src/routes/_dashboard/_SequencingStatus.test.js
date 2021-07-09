@@ -16,7 +16,7 @@ it("displays data passed", () => {
     .toBeDefined();
 });
 
-it("displays special title when all samples are sequenced", () => {
+it("displays a special heading when all samples are sequenced", () => {
   const received = 30;
 
   const { container } = render(SequencingStatus, { sequencingStatus: {

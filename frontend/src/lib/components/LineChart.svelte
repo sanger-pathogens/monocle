@@ -30,13 +30,18 @@
 </script>
 
 
-<div bind:this={chartElement}></div>
+<div bind:this={chartElement} class="container"></div>
 
 
 <style>
 /* TODO: is there a way to style dynamic elements w/o "polluting" global CSS? */
 :global(.frappe-chart .title) {
   font-size: 1rem;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 50rem;
 }
 </style>
 

@@ -14,7 +14,7 @@
       <code>{fileName}</code>
     </summary>
     <ul>
-      {#each errorMessages as error, j}
+      {#each errorMessages as error, j (error)}
         <li>
           <input type="checkbox" aria-hidden="true" id="validation-error-{i}-{j}" >
           <label for="validation-error-{i}-{j}">{error}</label>

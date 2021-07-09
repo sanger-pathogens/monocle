@@ -12,8 +12,8 @@
   <h3>{institutionName}</h3>
 
   {#if batches.received}
-    <SequencingStatus {sequencingStatus} />
     <BatchStatus {batches} />
+    <SequencingStatus {sequencingStatus} />
   {:else}
     <p>No samples received</p>
   {/if}
@@ -22,15 +22,14 @@
 
 
 <style>
+:root {
+  --width-main: min(98vw, var(--bp-xl));
+}
+
 article {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* Exceed the `<main>` container and center itself. */
-  width: min(98vw, var(--bp-xl));
-  position: relative;
-  left: 50%;
-  transform: translate(-50%);
 }
 
 article:not(:first-of-type) {
@@ -46,6 +45,6 @@ h3 {
 }
 
 p {
-  width: 100%;
+  text-align: center;
 }
 </style>
