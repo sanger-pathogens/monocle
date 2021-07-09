@@ -95,12 +95,9 @@ Front end unit tests:
     - branches
   tags:
     - openstack-autoscale-theta
-  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_UNIT_TEST_IMAGE}"
+  image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${FRONTEND_CONTEXT}"
-    - npm set audit false
-    - npm config set fetch-timeout 1000000
-    - npm install
   script:
     - npm test
 
