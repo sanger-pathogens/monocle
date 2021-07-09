@@ -99,8 +99,7 @@ Front end unit tests:
   before_script:
     - cd "${FRONTEND_CONTEXT}"
   script:
-    - ls
-    #- npm test
+    - npm test
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
