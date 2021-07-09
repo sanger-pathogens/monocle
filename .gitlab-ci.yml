@@ -96,8 +96,6 @@ Front end unit tests:
   tags:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
-  before_script:
-    - cd "${FRONTEND_CONTEXT}"
   script:
     - npm run test
 
