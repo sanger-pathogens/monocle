@@ -1,5 +1,5 @@
 # ---------- build step ----------
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:alpine as builder
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.4.2-alpine3.14 as builder
 
 WORKDIR /app
 COPY package.json package-lock.json ./
