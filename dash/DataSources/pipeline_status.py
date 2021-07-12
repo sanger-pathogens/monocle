@@ -4,7 +4,7 @@ from   pandas import DataFrame, read_csv
 import yaml
 
 class PipelineStatusDataError(Exception):
-   """ exception when an error is detected wwith the pipeline status data """
+   """ exception when an error is detected with the pipeline status data """
    pass
 
 class PipelineStatus:
