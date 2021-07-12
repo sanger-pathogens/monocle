@@ -10,7 +10,7 @@ monocledb:
                                  - 'host_status'
                                  - 'serotype'
                                  - 'submitting_institution_id'
-monocle_download_api:
+monocle_metadata_api:
    base_url       : 'http://metadata-api'
    swagger        : '/metadata/ui/'
    download       : '/metadata/download'

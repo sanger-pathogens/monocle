@@ -54,7 +54,7 @@ class ProtocolError(Exception):
 
 class Monocle_Client:
     data_sources_config = 'data_sources.yml'
-    data_source = 'monocle_download_api'
+    data_source = 'monocle_metadata_api'
     required_config_params = ['base_url',
                               'swagger',
                               'institutions',
