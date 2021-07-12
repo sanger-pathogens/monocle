@@ -23,7 +23,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = ''
         mocked_jsoncall.assert_called_once()
         under_test = mar.get_samples()
-        self.assertEqual(under_test, '')
+        self.assertEqual(under_test, 'MAKE_THIS_FAIL_SO_WE_KNOW_IT_IS_WIP')
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions')
     @patch('metadata.api.routes.convert_to_json')
@@ -32,7 +32,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = ''
         mocked_jsoncall.assert_called_once()
         under_test = mar.get_samples()
-        self.assertEqual(under_test, '')
+        self.assertEqual(under_test, 'MAKE_THIS_FAIL_SO_WE_KNOW_IT_IS_WIP')
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institution_names')
     @patch('metadata.api.routes.convert_to_json')
@@ -41,4 +41,4 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = ''
         mocked_jsoncall.assert_called_once()
         under_test = mar.get_samples()
-        self.assertEqual(under_test, '')
+        self.assertEqual(under_test, 'MAKE_THIS_FAIL_SO_WE_KNOW_IT_IS_WIP')
