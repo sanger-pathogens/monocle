@@ -245,9 +245,5 @@ class MonocleDataTest(TestCase):
    def test_get_metadata(self, mock_metadata_fetch):
       mock_metadata_fetch.return_value = self.mock_metadata
       metadata = self.monocle_data.get_metadata(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
-      import logging
-      logging.critical("")
-      logging.critical("METADATA: {}".format(metadata))
-      logging.critical("EXPECT:   {}".format(self.expected_metadata))
       self.assertEqual(self.expected_metadata, metadata)
       
