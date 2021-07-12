@@ -11,10 +11,11 @@ monocledb:
                                  - 'host_status'
                                  - 'serotype'
                                  - 'submitting_institution_id'
-monocle_download_api:
+monocle_metadata_api:
    base_url       : 'http://fake-container'
    swagger        : '/metadata/ui/'
    download       : '/metadata/download'
+   samples        : '/metadata/samples'
 mlwh_rest_api:
    mlwh_api_config   : 'tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
