@@ -13,6 +13,7 @@ RUN      pip install flask==1.1.2                     \
                   PyYAML==5.3.1                       \
                   python-dateutil==2.8.1              \
                   'connexion[swagger-ui]'             \
+                  mysqlclient==2.0.1                  \
                   SQLAlchemy==1.3.23
 
 COPY     . /app
