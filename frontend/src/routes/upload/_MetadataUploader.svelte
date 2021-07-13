@@ -51,7 +51,7 @@
             : Promise.reject(response.statusText);
         }
       });
-}
+  }
 
   function emitUploadSuccess() {
     dispatch("uploadSuccess");
