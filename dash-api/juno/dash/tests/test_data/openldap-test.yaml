@@ -1,8 +1,0 @@
-# LDAP configuration file for unit testing
-MONOCLE_LDAP_BASE_DN:         'dc=myapp,dc=myorg,dc=mycountry'
-MONOCLE_LDAP_BIND_DN:         'dc=myapp,dc=myorg,dc=mycountry'
-MONOCLE_LDAP_BIND_PASSWORD:   'bind_pass'
-LDAP_ADMIN_PASSWORD:          'admin_pass'
-LDAP_CONFIG_PASSWORD:         'config_pass'
-LDAP_READONLY_USER_PASSWORD:  'ro_pass'
-
