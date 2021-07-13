@@ -3,9 +3,9 @@ import pandas
 from   pandas import DataFrame, read_csv
 import yaml
 
-# class DataSourceParamError(Exception):
-#    """ exception when data source methods are called with invalid parameter(s) """
-#    pass
+class PipelineStatusDataError(Exception):
+   """ exception when an error is detected with the pipeline status data """
+   pass
 
 class PipelineStatus:
    """ provides access to pipeline status data """
@@ -25,7 +25,8 @@ class PipelineStatus:
       with open(config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
          this_source  = data_sources[self.data_source]
-      self.csv_file = this_source['csv_file']
+      self.csv_file     = this_source['csv_file']
+      self.num_columns  = this_source['num_columns']
       self.populate_dataframe(self.csv_file)
 
    def populate_dataframe(self, csv_filename):
@@ -33,7 +34,25 @@ class PipelineStatus:
       with open(csv_filename, 'r') as csv:
          self.dataframe = pandas.read_csv(csv).set_index(self.pipeline_lane_field)
       logging.debug(self.dataframe)
+      self.validate_dataframe()
       return self.dataframe
+   
+   # some basic validation
+   # TODO consider adding a proper schema for pandas to do thorough validation
+   def validate_dataframe(self):
+      # because one columns is used as index, number of ciolumns is the CSV is one greater than pandas tells us
+      num_columns_read = len(self.dataframe.columns) + 1
+      if self.num_columns != num_columns_read:
+         logging.error("Pipeline status data file {} has {} columns, but {} are expected".format(self.csv_file,num_columns_read,self.num_columns))
+         raise PipelineStatusDataError("pipeline status data is badly formatted")
+      row_error_found = False
+      for this_row_num_columns_read in [c+1 for c in self.dataframe.count(axis='columns')]:
+         if self.num_columns != this_row_num_columns_read:
+            logging.error("Pipeline status data file {} contains a row with {} columns, but {} are expected for all rows".format(self.csv_file,this_row_num_columns_read,self.num_columns))
+            row_error_found = True
+      if row_error_found:
+         raise PipelineStatusDataError("pipeline status data is badly formatted")
+      
       
    def lane_status(self, lane_id):
       assert (self.dataframe is not None), "lane_status() called before dataframe was populated"
