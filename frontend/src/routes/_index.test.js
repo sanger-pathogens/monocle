@@ -7,18 +7,19 @@ it("displays the project progress chart", () => {
   expect(getByText("Project Progress")).toBeDefined();
 });
 
-//FIXME: unskip once the pipeline status pane is ready
-it.skip("displays status for each institution passed", () => {
+it("displays status for each institution passed", () => {
   const institutions = [{
     name: "Center for Reducing Suffering",
     key: "CRS",
-    batches: { received: 0, deliveries: [] },
-    sequencingStatus: {}
+    batches: { received: 1, deliveries: [] },
+    sequencingStatus: {},
+    pipelineStatus: {}
   }, {
     name: "Qualia Research Institute",
     key: "QRI",
     batches: { received: 42, deliveries: [] },
-    sequencingStatus: {}
+    sequencingStatus: {},
+    pipelineStatus: {}
   }];
 
   const { component, getByText } = render(DashboardPage, { institutions });
@@ -26,7 +27,7 @@ it.skip("displays status for each institution passed", () => {
   institutions.forEach(({ name }) => {
     const institutionHeadingElement = getByText(name);
     const institutionStatusPanes = institutionHeadingElement.parentElement
-      .querySelectorAll("h3 ~ article");
+      .querySelectorAll(":scope > article");
     expect(institutionStatusPanes).toHaveLength(3);
   });
 });
