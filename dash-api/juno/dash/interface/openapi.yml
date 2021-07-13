@@ -15,6 +15,13 @@ paths:
     get:
       operationId: dash.api.routes.get_batches
       summary: "Return information on batches delivered, keyed by institution id"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -32,6 +39,13 @@ paths:
     get:
       operationId: dash.api.routes.sequencing_status_summary
       summary: "Return information on sample/lane sequencing status, keyed by institution id"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -49,6 +63,13 @@ paths:
     get:
       operationId: dash.api.routes.pipeline_status_summary
       summary: "Return information on sample/lane pipeline status, keyed by institution id"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -66,6 +87,13 @@ paths:
     get:
       operationId: dash.api.routes.get_progress
       summary: "Return the information necessary for plotting the project sample progress graph"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: "The operation was successful. The following data format will be returned..."
@@ -81,6 +109,13 @@ paths:
     get:
       operationId: dash.api.routes.get_institutions
       summary: "Return a list of institutions"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -99,6 +134,12 @@ paths:
       operationId: dash.api.routes.get_metadata_for_download
       summary: "The operation was successful. The following data format will be returned..."
       parameters:
+        - in: header
+          name: X-Remote-User
+          description: "Basic authentication header"
+          required: false
+          schema:
+            type: string
         - in: query
           name: institution
           description: "The institution name"
