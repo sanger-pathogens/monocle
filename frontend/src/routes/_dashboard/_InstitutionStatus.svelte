@@ -1,10 +1,12 @@
 <script>
   import BatchStatus from "./_BatchStatus.svelte";
   import SequencingStatus from "./_SequencingStatus.svelte";
+  import PipelineStatus from "./_PipelineStatus.svelte";
 
   export let institutionName;
   export let batches;
   export let sequencingStatus;
+  export let pipelineStatus;
 </script>
 
 
@@ -14,6 +16,7 @@
   {#if batches.received}
     <BatchStatus {batches} />
     <SequencingStatus {sequencingStatus} />
+    <PipelineStatus {pipelineStatus} />
   {:else}
     <p>No samples received</p>
   {/if}
@@ -33,7 +36,7 @@ article {
 }
 
 article:not(:first-of-type) {
-  margin-top: 3.4rem;
+  margin-top: 3.2rem;
 }
 article:first-of-type {
   margin-top: 1.5rem;

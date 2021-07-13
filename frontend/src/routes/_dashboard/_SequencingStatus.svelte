@@ -28,7 +28,7 @@
     labels={CHART_LABELS}
     values={[pending, succeeded, failed]}
   />
-
+  <!-- FIXME: extract into component -->
   {#if hasFailMessages}
     <button on:click={() => dialogOpen = true} class="light">
       Show fail messages
