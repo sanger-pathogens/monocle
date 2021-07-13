@@ -62,7 +62,7 @@ services:
        - "/run:rw,noexec,nosuid"
        - "/tmp:rw,noexec,nosuid"
     volumes:
-       - data:/dash/monocle_juno
+       - data:/dash/data
        - ./my.cnf:/dash/my.cnf
        - ./mlwh-api.yml:/dash/mlwh-api.yml
        - ./openldap-env.yaml:/dash/openldap-env.yaml
