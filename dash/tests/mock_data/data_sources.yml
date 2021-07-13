@@ -25,7 +25,8 @@ mlwh_rest_api:
    findByIds         : '/sequencing/data/samples/findByIds'
    findByIds_key     : 'samples'
 pipeline_status:
-   csv_file : 'tests/mock_data/s3/status/pipelines.csv'
+   csv_file          : 'tests/mock_data/s3/status/pipelines.csv'
+   num_columns       : 10
 monocle_ldap:
    openldap_config   : 'tests/mock_data/openldap-mock.yaml'
    ldap_url          : 'ldap://fake-container:389'

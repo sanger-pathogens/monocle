@@ -67,7 +67,6 @@ class MonocleData:
       institutions_data = self.get_institutions()
       total_num_samples_received_by_month = defaultdict(int)
       total_num_lanes_sequenced_by_month  = defaultdict(int)
-      max_months_elapsed   = 0
       progress             = {   'date'             : [],
                                  'samples received'   : [],
                                  'samples sequenced'  : [],
@@ -80,21 +79,18 @@ class MonocleData:
             this_date      = datetime.fromisoformat( this_date_string )
             #days_elapsed   = (this_date - self.day_zero).days
             months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
-            previous_max = max_months_elapsed
-            max_months_elapsed = max(months_elapsed,max_months_elapsed)
             total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[this_date_string]
          # lanes sequenced
          this_institution_num_lanes_sequenced_by_date = self.num_lanes_sequenced_by_date(this_institution)
          for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
             this_date      = datetime.fromisoformat( this_date_string )
             months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
-            previous_max = max_months_elapsed
-            max_months_elapsed = max(months_elapsed,max_months_elapsed)
             total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[this_date_string]
       # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
       num_samples_received_cumulative  = 0
       num_lanes_sequenced_cumulative   = 0
-      for this_month_elapsed in range(0, max_months_elapsed+1, 1):
+      project_months_elapsed = ((self.updated.year - self.day_zero.year) * 12) + (self.updated.month - self.day_zero.month)
+      for this_month_elapsed in range(0, project_months_elapsed+1, 1):
          if this_month_elapsed in total_num_samples_received_by_month:
             num_samples_received_cumulative += total_num_samples_received_by_month[this_month_elapsed]
          if this_month_elapsed in total_num_lanes_sequenced_by_month:

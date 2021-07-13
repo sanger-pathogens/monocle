@@ -1,5 +1,6 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
+from   datetime      import datetime
 
 from   DataSources.monocledb           import MonocleDB
 from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
@@ -60,6 +61,10 @@ class MonocleUserTest(TestCase):
 class MonocleDataTest(TestCase):
 
    test_config = 'tests/mock_data/data_sources.yml'
+
+   # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
+   # (because get_progeress() always returns date values up to "now")
+   mock_data_updated = datetime(2021,5,15)
 
    # mock values for patching queries in DataSources modules
    mock_institutions          = [   'Fake institution One',
@@ -126,12 +131,13 @@ class MonocleDataTest(TestCase):
                                     ]
    
    # data we expect MonocleData method to return, given patched queries with the value above
-   expected_progress_data     =  {'date': [  'Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
+   # the latest month included here must match the date provided by `mock_data_updated`
+   expected_progress_data     = {   'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
                                              'Apr 2020', 'May 2020', 'Jun 2020', 'Jul 2020', 'Aug 2020', 'Sep 2020', 'Oct 2020',
                                              'Nov 2020', 'Dec 2020', 'Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021'],
-                                  'samples received':  [2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8],
-                                  'samples sequenced': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                                  }
+                                    'samples received':  [2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8],
+                                    'samples sequenced': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                    }
    
    expected_institution_data  = {   'FakOne' : {'name': 'Fake institution One', 'db_key': 'Fake institution One'},
                                     'FakTwo' : {'name': 'Fake institution Two', 'db_key': 'Fake institution Two'},
@@ -183,6 +189,8 @@ class MonocleDataTest(TestCase):
       # mock moncoledb
       self.monocle_data.monocledb = MonocleDB(set_up=False)
       self.monocle_data.monocledb.set_up(self.test_config)
+      self.monocle_data.updated = self.mock_data_updated
+
       # mock sequencing_status
       self.monocle_data.sequencing_status_source = SequencingStatus(set_up=False)
       self.monocle_data.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
@@ -245,9 +253,5 @@ class MonocleDataTest(TestCase):
    def test_get_metadata(self, mock_metadata_fetch):
       mock_metadata_fetch.return_value = self.mock_metadata
       metadata = self.monocle_data.get_metadata(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
-      import logging
-      logging.critical("")
-      logging.critical("METADATA: {}".format(metadata))
-      logging.critical("EXPECT:   {}".format(self.expected_metadata))
       self.assertEqual(self.expected_metadata, metadata)
       
