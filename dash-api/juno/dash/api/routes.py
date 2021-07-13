@@ -98,9 +98,9 @@ def get_metadata_for_download(institution: str, category: str, status: str):
     return HTTP_SUCCEEDED_STATUS
 
 
-def call_jsonify(*args, **kwargs) -> str:
+def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
-    return jsonify(args, kwargs)
+    return jsonify(args)
 
 
 def get_authenticated_username(req_obj):
