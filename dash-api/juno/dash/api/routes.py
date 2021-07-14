@@ -10,7 +10,7 @@ logger = logging.getLogger()
 HTTP_SUCCEEDED_STATUS = 200
 
 # Testing only
-ServiceFactory.TEST_MODE = False
+ServiceFactory.TEST_MODE = True
 
 
 def get_batches():
@@ -105,6 +105,7 @@ def call_jsonify(args) -> str:
 
 def get_authenticated_username(req_obj):
     """ Return the request authenticated user name or throw an UnauthorisedException if one is not present """
+    username = None
     if not ServiceFactory.TEST_MODE:
         try:
             username = req_obj.headers['X-Remote-User']
@@ -116,7 +117,5 @@ def get_authenticated_username(req_obj):
             msg = "Request was made without 'X-Remote-User' HTTP header: auth module shouldn't allow that!"
             logger.error(msg)
             raise NotAuthorisedException(msg)
-    else:
-        username = None
 
     return username

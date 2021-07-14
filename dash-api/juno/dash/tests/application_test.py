@@ -8,9 +8,6 @@ class TestApplication(unittest.TestCase):
 
     @patch.object(app, 'create_application')
     def test_app_creation(self, create_application):
-        # TODO Finish this test
-        # from dash.wsgi import application
-
-        # self.assertIsNotNone(application)
-        # create_application.assert_called_once()
-        pass
+        from dash.wsgi import application
+        self.assertIsNotNone(application)
+        create_application.assert_called_once()
