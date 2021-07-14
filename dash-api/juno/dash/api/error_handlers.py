@@ -1,4 +1,5 @@
 """ Module for all error handler methods """
+import json
 from flask import Response
 
 
