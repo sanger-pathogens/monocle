@@ -8,9 +8,9 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 class MonocleDBTest(TestCase):
 
-   test_config       = 'tests/mock_data/data_sources.yml'
-   bad_config        = 'tests/mock_data/data_sources_bad.yml'
-   bad_db_cnf        = 'tests/mock_data/bad.cnf'
+   test_config       = 'dash/tests/mock_data/data_sources.yml'
+   bad_config        = 'dash/tests/mock_data/data_sources_bad.yml'
+   bad_db_cnf        = 'dash/tests/mock_data/bad.cnf'
    # these patterns for database username and password may be too strict
    db_user_regex     = '[\w]+'
    db_passwd_regex   = '[\w%\-\.]+'

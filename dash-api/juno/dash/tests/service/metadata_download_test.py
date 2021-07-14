@@ -10,8 +10,8 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 class MetadataDownloadTest(TestCase):
 
-   test_config             = 'tests/mock_data/data_sources.yml'
-   bad_config              = 'tests/mock_data/data_sources_bad.yml'
+   test_config             = 'dash/tests/mock_data/data_sources.yml'
+   bad_config              = 'dash/tests/mock_data/data_sources_bad.yml'
    genuine_api_host        = 'http://metadata-api/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'

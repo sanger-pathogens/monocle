@@ -1,5 +1,5 @@
 monocledb:
-   cnf_file                   :  'tests/mock_data/mock.cnf'
+   cnf_file                   :  'dash/tests/mock_data/mock.cnf'
    institution_table          :  'api_institution'
    institution_table_inst_key :  'name'
    sample_table               :  'api_sample'
@@ -18,17 +18,17 @@ monocle_download_api:
    download       : '/metadata/download'
    metadata_key   : 'download'
 mlwh_rest_api:
-   mlwh_api_config   : 'tests/mock_data/mlwh-api-mock.yml'
+   mlwh_api_config   : 'dash/tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
    findById_key      : 'sample'
    findByIds         : '/sequencing/data/samples/findByIds'
    findByIds_key     : 'samples'
 pipeline_status:
-   csv_file          : 'tests/mock_data/s3/status/pipelines.csv'
+   csv_file          : 'dash/tests/mock_data/s3/status/pipelines.csv'
    num_columns       : 10
 monocle_ldap:
-   openldap_config   : 'tests/mock_data/openldap-mock.yaml'
+   openldap_config   : 'dash/tests/mock_data/openldap-mock.yaml'
    ldap_url          : 'ldap://fake-container:389'
    users_obj         : 'inetOrgPerson'
    groups_obj        : 'posixGroup'
