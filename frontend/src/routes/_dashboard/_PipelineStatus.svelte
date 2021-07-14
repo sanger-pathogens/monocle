@@ -1,12 +1,13 @@
 <script>
   import Card from "$lib/components/Card.svelte";
-  import Dialog from "$lib/components/Dialog.svelte";
+  import FailMessages from "./_FailMessages.svelte";
   import StatusChart from "./_StatusChart.svelte";
 
   export let pipelineStatus = {};
 
   const CHART_LABELS = ["Waiting", "Running", "Succeeded", "Failed"];
-  
+  const FAIL_MESSAGES_TITLE = "Pipeline Failures";
+
   const {
     sequencedSuccess,
     running,
@@ -16,8 +17,6 @@
     fail_messages: failures
   } = pipelineStatus;
   const waiting = sequencedSuccess - completed;
-  const hasFailMessages = failures?.length;
-  let dialogOpen;
 </script>
 
 
@@ -41,41 +40,10 @@
       includesRunning={true}
     />
   
-    {#if hasFailMessages}
-      <button on:click={() => dialogOpen = true} class="light">
-        Show fail messages
-      </button>
-  
-      <Dialog bind:isOpen={dialogOpen}>
-        <h4>Pipeline Failures</h4>
-        <table>
-          <tr>
-            <th>lane</th>
-            <th>stage</th>
-            <th class="fail-msg-column">fail message</th>
-          </tr>
-          {#each failures as { lane, stage, issue } (lane+stage+issue)}
-            <tr>
-              <td>{lane}</td>
-              <td>{stage}</td>
-              <td>{issue}</td>
-            </tr>
-          {/each}
-        </table>
-      </Dialog>
-    {/if}
+    <FailMessages
+      {failures}
+      title={FAIL_MESSAGES_TITLE}
+    />
   {/if}
 </Card>
-
-
-<style>
-button {
-  display: block;
-  margin: .9rem 0 0;
-}
-
-.fail-msg-column {
-  width: 48%;
-}
-</style>
 
