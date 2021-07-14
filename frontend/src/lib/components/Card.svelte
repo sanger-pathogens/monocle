@@ -3,7 +3,7 @@
 </script>
 
 
-<article {style}>
+<article>
   <slot></slot>
 </article>
 
