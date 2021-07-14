@@ -14,7 +14,7 @@
 
 
 <style>
-:global(:root) {
+:root {
   --juno-indigo: #484885;
   --juno-purple: #6868be;
   --color-border: #dfe3e6;

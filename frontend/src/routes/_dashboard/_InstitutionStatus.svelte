@@ -26,7 +26,8 @@
 
 <style>
 :root {
-  --width-main: min(98vw, var(--bp-xl));
+  /* w/o `!important` redefining `--width-main` variable doesn't work in production build */
+  --width-main: min(98vw, var(--bp-xl)) !important;
 }
 
 article {
