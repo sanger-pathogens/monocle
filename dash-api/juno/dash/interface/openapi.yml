@@ -1,0 +1,21 @@
+openapi: '3.0.0'
+info:
+  title: "Monocle Dashboard API"
+  version: "0.0.1"
+  description: "A REST API service used by the Monocle dashboard"
+  contact:
+    email: "path-help@sanger.ac.uk"
+
+servers:
+  - url: /
+    description: Context path
+
+paths:
+  /helloworld:
+    post:
+      operationId: dash.api.routes.hello_world
+      summary: "Dummy test method"
+      responses:
+        200:
+          description: "Success"
+

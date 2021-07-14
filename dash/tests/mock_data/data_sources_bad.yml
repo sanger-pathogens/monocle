@@ -1,33 +1,28 @@
 monocledb:
-   cnf_file                   :  'my.cnf'
+   cnf_file                   :  'tests/mock_data/mock.cnf'
    institution_table          :  'api_institution'
    institution_table_inst_key :  'name'
-   sample_table               :  'api_sample'
    sample_table_inst_key      :  'submitting_institution_id'
+   sample_table_lane_id_field :  'lane_id'
    sample_table_fields        :  
+                                 - 'sample_table_lane_id_field'
                                  - 'sample_id'
                                  - 'public_name'
                                  - 'host_status'
                                  - 'serotype'
                                  - 'submitting_institution_id'
 monocle_download_api:
-   base_url       : 'http://metadata-api'
+   base_url       : 'http://fake-container'
    swagger        : '/metadata/ui/'
    download       : '/metadata/download'
-   metadata_key   : 'download'
 mlwh_rest_api:
-   mlwh_api_config   : 'mlwh-api.yml'
+   mlwh_api_config   : 'tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
-   findById_key      : 'sample'
-   findByIds         : '/sequencing/data/samples/findByIds'
-   findByIds_key     : 'samples'
 pipeline_status:
-   csv_file          : 'monocle_juno/status/pipelines.csv'
-   num_columns       : 10
+   csv_file          : 'tests/mock_data/s3/status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
-   ldap_url          : 'ldap://monocle-ldap:389'
    users_obj         : 'inetOrgPerson'
    groups_obj        : 'posixGroup'
    username_attr     : 'uid'
@@ -39,4 +34,3 @@ monocle_ldap:
 data_download:
    web_dir           : 'monocle_juno_web_root/downloads'
    url_path          : 'files/downloads'
-   

@@ -2,6 +2,8 @@ from   collections            import defaultdict
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
+import urllib.parse
+
 import DataSources.monocledb
 import DataSources.metadata_download
 import DataSources.sequencing_status
@@ -15,10 +17,11 @@ class MonocleUser:
    Only use this after authentication: trying to get details of users that are not in LDAP will raise an exception
    """
    
-   def __init__(self, authenticated_username=None):
+   def __init__(self, authenticated_username=None, set_up=True):
       self.updated      = datetime.now()
-      self.user_data    = DataSources.user_data.UserData()
-      if authenticated_username is not None:
+      self.user_data    = DataSources.user_data.UserData(set_up=set_up)
+      # only attempt to load if set_up flag is true
+      if authenticated_username is not None and set_up:
          self.load_user_record(authenticated_username)
 
    def load_user_record(self, authenticated_username):
@@ -45,24 +48,25 @@ class MonocleData:
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
-   def __init__(self):
-      logging.info("*** instatiating MonocleData:  dashboatd data will be updated ***")
-      self.updated                     = datetime.now()
+   def __init__(self, set_up=True):
       self.user_record                 = None
-      self.monocledb                   = DataSources.monocledb.MonocleDB()
-      self.metadata_source             = DataSources.metadata_download.MetadataDownload()
-      self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
-      self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
       self.institutions_data           = None
       self.samples_data                = None
       self.sequencing_status_data      = None
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
+      # set_up flag causes data objects to be loaded on instantiation
+      # only set to False if you know what you're doing
+      if set_up:
+         self.updated                     = datetime.now()
+         self.monocledb                   = DataSources.monocledb.MonocleDB()
+         self.metadata_source             = DataSources.metadata_download.MetadataDownload()
+         self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
+         self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
 
    def get_progress(self):
       institutions_data = self.get_institutions()
       total_num_samples_received_by_month = defaultdict(int)
       total_num_lanes_sequenced_by_month  = defaultdict(int)
-      max_months_elapsed   = 0
       progress             = {   'date'             : [],
                                  'samples received'   : [],
                                  'samples sequenced'  : [],
@@ -75,21 +79,18 @@ class MonocleData:
             this_date      = datetime.fromisoformat( this_date_string )
             #days_elapsed   = (this_date - self.day_zero).days
             months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
-            previous_max = max_months_elapsed
-            max_months_elapsed = max(months_elapsed,max_months_elapsed)
             total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[this_date_string]
          # lanes sequenced
          this_institution_num_lanes_sequenced_by_date = self.num_lanes_sequenced_by_date(this_institution)
          for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
             this_date      = datetime.fromisoformat( this_date_string )
             months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
-            previous_max = max_months_elapsed
-            max_months_elapsed = max(months_elapsed,max_months_elapsed)
             total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[this_date_string]
       # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
       num_samples_received_cumulative  = 0
       num_lanes_sequenced_cumulative   = 0
-      for this_month_elapsed in range(0, max_months_elapsed+1, 1):
+      project_months_elapsed = ((self.updated.year - self.day_zero.year) * 12) + (self.updated.month - self.day_zero.month)
+      for this_month_elapsed in range(0, project_months_elapsed+1, 1):
          if this_month_elapsed in total_num_samples_received_by_month:
             num_samples_received_cumulative += total_num_samples_received_by_month[this_month_elapsed]
          if this_month_elapsed in total_num_lanes_sequenced_by_month:
@@ -391,10 +392,12 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self,institution,category,status):
+   def get_metadata(self,institution,category,status,download_base_url):
       """
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
+      Also pass the base URL for the download.  The complete download URL for each lane is this
+      base URL with the lane ID appended.
       
       Returns metadata as CSV
       """
@@ -404,8 +407,12 @@ class MonocleData:
          
       # get list of lane IDs for this combo of institution/category/status
       lane_id_list = []
+      sample_id_to_lanes = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
+         sample_id_to_lanes[this_sample_id] = []
+         
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
+            sample_id_to_lanes[this_sample_id].append(this_lane['id'])
             
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
                # lane completed sequencing, though possibly failed
@@ -452,10 +459,17 @@ class MonocleData:
             if reading_the_first_row:
                headings_csv_strings.append( '"{}"'.format(this_row[this_column]['name']) )
             this_row_csv_strings.append( '"{}"'.format(this_row[this_column]['value']) )
+         # download links are an extra column added by this function
+         headings_csv_strings.append( '"Download link"' )
+         download_links = []
+         for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
+            download_links.append('/'.join([download_base_url, urllib.parse.quote(this_lane_id), '']))
+         this_row_csv_strings.append( '"{}"'.format(" ".join(download_links)) )
          # add headings to CSV if this is the first row
          if reading_the_first_row:
             csv.append( ','.join(headings_csv_strings) )
             reading_the_first_row = False
+         # add this row to the main list of CSV rows
          csv.append( ','.join(this_row_csv_strings) )
       # CSV as one string
       csv_giant_string = "\n".join(csv)
