@@ -17,3 +17,9 @@ values ('The Chinese University of Hong Kong', 'China [Hong Kong]', 22.419722, 1
 
 insert into api_institution (name, country, latitude, longitude)
 values ('Wellcome Sanger Institute', 'United Kingdom', 52.083333, 0.183333);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Universidade Federal de Minas Gerais', 'Brazil', -19.869089, -43.966383);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Universidade Estadual de Londrina', 'Brazil', -23.325303, -51.199978);
