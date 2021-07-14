@@ -38,7 +38,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(250, 250, 250, .7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,6 +48,7 @@
 .content {
   background: #fff;
   border-radius: 3px;
+  box-shadow: 0 .2rem .4rem rgba(48 ,55 ,66, .3);
   max-height: 98vh;
   overflow-y: auto;
   max-width: 40rem;
@@ -57,16 +58,16 @@
 
 .close-icon-btn {
   position: absolute;
-  top: .2rem;
-  right: .4rem;
+  top: .3rem;
+  right: .6rem;
   background: rgba(0, 0, 0, 0);
   border-radius: 50%;
   color: gray;
   font-size: .9rem;
   margin: 0;
   padding: 0;
-  height: 1.25rem;
-  width: 1.25rem;
+  height: 1.3rem;
+  width: 1.3rem;
 }
 .close-icon-btn:hover {
   color: black;
