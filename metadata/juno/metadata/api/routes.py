@@ -103,13 +103,13 @@ def get_samples(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_samples_for_study_id(study_id: int, dao: SequencingDatabaseService):
+def get_institutions(dao: MonocleDatabaseService):
 
-    samples = dao.get_samples_for_study_id(study_id)
+    institutions = dao.get_institutions()
 
-    result = convert_to_json({'samples': samples})
+    result = convert_to_json({'institutions': institutions})
 
-    if len(samples) > 0:
-        return result
+    if len(institutions) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
