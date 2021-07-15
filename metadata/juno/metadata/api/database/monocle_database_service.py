@@ -9,12 +9,12 @@ class MonocleDatabaseService(ABC):
 
     @abstractmethod
     def get_institution_names(self) -> List[Institution]:
-        """ Return a list of institutions """
+        """ Return a list of institutions, names only """
         pass
 
     @abstractmethod
     def get_samples(self) -> List[Institution]:
-        """ Return a list of institutions """
+        """ Return a list of samples """
         pass
 
     @abstractmethod

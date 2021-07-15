@@ -75,27 +75,30 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                type: array
+                items:
+                  type: string
         404:
-          description: "No data could be found for the given download key"
+          description: "Institutions could not be gathered from database"
 
   /samples:
     post:
       operationId: metadata.api.routes.get_samples
       summary: "Gather all sample records"
-      200:
-        description: "The sample result set"
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sample:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/Metadata"
-        404:
-          description: "No data could be found for the given download key"
+      responses:
+        200:
+          description: "The sample result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sample:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metadata"
+          404:
+            description: "No data could be found for the given institutions"
 
 
 components:

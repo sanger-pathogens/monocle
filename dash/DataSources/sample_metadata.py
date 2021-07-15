@@ -80,7 +80,7 @@ class Monocle_Client:
         logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response, required_keys=[self.config['findById_key']])
+        results = self.parse_response(response)
         return results[self.config['institutions']]
 
     def samples(self):
@@ -89,7 +89,7 @@ class Monocle_Client:
             "{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response, required_keys=[self.config['findByIds_key']])
+        results = self.parse_response(response)
         return results[self.config['samples']]
 
     def make_request(self, endpoint, post_data=None):
