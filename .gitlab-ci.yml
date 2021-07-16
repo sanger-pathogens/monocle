@@ -12,7 +12,6 @@ variables:
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
-  FRONTEND_UNIT_TEST_IMAGE: "node:alpine"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
     
@@ -120,20 +119,15 @@ Metadata unit tests:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
     
-# front end test requires special unit test image, because the service image
-# doesn't include npm
 Front end unit tests:
   stage: test
   only:
     - branches
   tags:
     - openstack-autoscale-theta
-  image: "${CI_REGISTRY_IMAGE}/${FRONTEND_UNIT_TEST_IMAGE}"
+  image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - cd "${FRONTEND_CONTEXT}"
-    - npm set audit false
-    - npm config set fetch-timeout 1000000
-    - npm install
+    - cd /app
   script:
     - npm test
 

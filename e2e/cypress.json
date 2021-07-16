@@ -1,9 +1,0 @@
-{
-  "baseUrl": "http://localhost:3001/",
-  "pluginsFile": "plugins/index.js",
-  "supportFile": false,
-  "integrationFolder": "integration",
-  "fixturesFolder": "fixtures",
-  "chromeWebSecurity": false,
-  "experimentalSourceRewriting": false
-}

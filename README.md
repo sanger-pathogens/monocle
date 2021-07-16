@@ -4,18 +4,13 @@ Monocle is an exploration tool for data from the [Juno project](https://www.gbsg
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
 [![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle)
 
-UI
-
-[![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-app/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-app)
-
-API
-
-[![Docker Repository on Quay](https://quay.io/repository/sangerpathogens/monocle-api/status "Docker Repository on Quay")](https://quay.io/repository/sangerpathogens/monocle-api)
-
 ## Components
-There are currently three components:
-- User Interface (`ui` directory; a React application)
-- GraphQL API (`api` directory; a Django+Graphene application)
+The components include:
+
+- An NGINX proxy server
+- User Interface (`frontend` directory; a _Svelte_ application)
+- OpenAPI web services (`dash-api` directory; a Python _Connexion_ application)
+- OpenLDAP service
 - MySQL database (on a host managed by the Service Desk DBA team)
 
 There is a further README in each directory with more detailed information.
@@ -24,10 +19,6 @@ There is a further README in each directory with more detailed information.
 Monocle is available internally to Sanger at the following addresses:
 - `prod`: [http://monocle.pam.sanger.ac.uk/](http://monocle.pam.sanger.ac.uk/)
 - `dev`: [http://monocle.dev.pam.sanger.ac.uk/](http://monocle.dev.pam.sanger.ac.uk/) (likely to be broken)
-
-User accounts for testing functionaly are set up (with very strong passwords!) for:
-- admin@sanger.ac.uk
-- collaborator@globe.com
 
 This project is early in development, so subject to change, but the current release and deploy process is described below.
 
@@ -40,7 +31,15 @@ Note: `<version>` should conform to [semver](https://semver.org/).
 
 ### Deployment
 
-Wait until the `docker_build` and `docker_push` stages of ther CI pipeline have completed.
+#### Secrets
+
+The procedures for storing and deploying secrets and other configurartion
+specific to the individual deployments of Monocle are privately documented.  The
+end product of these proecures is to provide the following files:
+- `mlwh-api.yml` for the Sanger MLWH API
+- `my.cnf` for database connection
+- `openldap-env.yaml` for OpenLDAP
+
 
 #### LDAP data backup
 
@@ -58,6 +57,8 @@ outdated entries.  This is really quite high up the list of things you don't wan
 
 #### Deploying a release
 
+Wait until the CI pipeline has completed.
+
 Run:
 ```
 ./deploy.sh -e <prod|dev> -v <version e.g. 0.1.1> -u <remote user> -h <host address>
@@ -71,21 +72,8 @@ Notes:
 - There are currently deployments on OpenStack VMs in the `pathogen-dev` and `pathogen-prod` tenants.
 - It is recommended to deploy to `dev`, check behaviour, then deploy to `prod`.
 
-#### Access control problems
-
-If you have made any change to LDAP configuration (these may be in in `openldap-env.yaml`, or docker-compose or NGINX proxy rules)
-then you may find that you are denied access.
-
-Before deployment, you will have exported group and user accounts from LDAP as an LDIF file.   (If not,
-roll back to the previous release and so so.)
-
-Stop the service, then back up and delete the subdirectories
-`openldap-data` and `phpldapadmin-data` on the machine you are running the service on.  Then restart the service.
-This will recreate these directories, and configure the LDAP service with the correct base DN and readonly user account
-from your config files.   There will be no groups or user accounts in the LDAP service, so log in as `admin` at `/ldap-admin'
-(the password is in your `openldap-env.yaml` file) and import the LDIF file you saved earlier.
-
 #### Database release requirements
+
 If database changes are to be deployed, then the following is required:
 - A locally installed mysql client on the deployment machine.
 - Release SQL should be defined in a `database/releases/<version>/release.sql` file.
@@ -122,29 +110,33 @@ for your latest commit (as in the example above).  The CI pipelines will build i
 followed by the short commit SHA (8 chars in gitlab).   Currently `deploy.sh` will deploy to the designated users' home
 directory, so you will want to create a new user on your development box.
 
-## Development
 
-### Setup
-Read about setting up the [ui](ui/README.md) and [api](api/README.md) separately.
+### Recovering from access control problems following deployment
+
+If you have made changes to LDAP configuration that are incompatible with the
+data stored by your LDAP service, this could result in being denied access. This
+is most likely to occur if you have updated `openldap-env.yaml`, but there is
+configuration related to OpenLDAP in `docker-compose.yml` and
+`nginx.proxy.conf`.
+
+Before deployment, you will have exported group and user accounts from LDAP as
+an LDIF file (see "LDAP data backup" above).   (If not, roll back to the previous
+release and so so.)
+
+Stop the service, then back up and delete the subdirectories `openldap-data` and
+`phpldapadmin-data` on the machine you are running the service on.  Then restart
+the service. This will recreate these directories, and configure the LDAP
+service with the correct base DN and readonly user account from your config
+files.   There will be no groups or user accounts in the LDAP service, so log in
+as `admin` at `/ldap-admin' (the password is in your `openldap-env.yaml` file)
+and import the LDIF file you saved earlier.
+
 
 ## Data
-In production, the real data files are loaded from an S3 bucket, which is synced from farm5. If you have Sanger credentials, see the companion gitlab repo [monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
 
-For development and testing, lightweight mock data for a single lane is used. See the `mock-data` directory within the repo.
+In production, the real data files are loaded from an S3 bucket, which is synced from farm5.
+If you have Sanger credentials, see the companion gitlab repo
+[monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
 
-## Testing
-There are currently:
-- integration tests in the `e2e` directory
-- unit tests in the `api` directory
-
-To run the integration tests, add [cypress](https://www.cypress.io/) with `yarn global add cypress` (first time only), then run:
-```
-# build images
-docker-compose -f docker-compose.e2e.yml up --build -d
-
-# run (in e2e dir as cypress root)
-cd e2e
-cypress run
-```
-
-Further information on each can be found in the relevant directory.
+For development and testing, lightweight mock data for a single lane is used. See 
+the `mock-data` directory within the repo.

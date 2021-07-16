@@ -287,10 +287,9 @@ then
     # copy production compose file (template)
     scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
-    # copy production nginx config (for proxy and ui), metadata api config
+    # copy production nginx config and metadata api config
     # (may want to remove from git long term)
     scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
-    scp -o ControlPath=%C ui/nginx.prod.ui.conf        $REMOTE_USER@$REMOTE_HOST:~/nginx.ui.conf
     scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
@@ -315,7 +314,7 @@ then
         sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
-        chmod 644 nginx.proxy.conf nginx.ui.conf metadata-api.json
+        chmod 644 nginx.proxy.conf metadata-api.json
         echo "Pulling ${docker_tag} docker images..."
         docker-compose pull
 EOF

@@ -1,37 +1,48 @@
 {
-  "name": "svelte-app",
-  "version": "1.0.0",
-  "private": true,
+  "name": "Monocle frontend",
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "start": "sirv public --no-clear",
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview",
     "test": "jest src",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "lint": "eslint --ignore-path .gitignore ."
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.4",
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-node-resolve": "^11.0.0",
+    "@babel/preset-env": "^7.14.7",
+    "@sveltejs/adapter-node": "^1.0.0-next.27",
+    "@sveltejs/kit": "next",
     "@testing-library/svelte": "^3.0.3",
-    "babel-jest": "^27.0.2",
-    "jest": "^27.0.4",
-    "rollup": "^2.3.4",
-    "rollup-plugin-css-only": "^3.1.0",
-    "rollup-plugin-livereload": "^2.0.0",
-    "rollup-plugin-svelte": "^7.0.0",
-    "rollup-plugin-terser": "^7.0.0",
-    "svelte": "^3.0.0",
+    "babel-jest": "^27.0.6",
+    "eslint": "^7.22.0",
+    "eslint-plugin-svelte3": "^3.2.0",
+    "frappe-charts": "^1.6.2",
+    "jest": "^27.0.6",
+    "svelte": "^3.34.0",
     "svelte-jester": "^1.7.0"
   },
-  "dependencies": {
-    "sirv-cli": "^1.0.0"
-  },
+  "_id": "Monocle frontend@0.0.1",
   "jest": {
-    "testEnvironment" : "jsdom",
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "./scripts/jest/mockBrowser.js"
+    ],
     "transform": {
       "^.+\\.js$": "babel-jest",
       "^.+\\.svelte$": "svelte-jester"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/",
+      ".svelte-kit/"
+    ],
+    "moduleNameMapper": {
+      "^\\$lib(.*)$": "<rootDir>/src/lib$1",
+      "^\\$app(.*)$": [
+        "<rootDir>/.svelte-kit/dev/runtime/app$1",
+        "<rootDir>/.svelte-kit/build/runtime/app$1"
+      ]
     },
     "moduleFileExtensions": [
       "js",
