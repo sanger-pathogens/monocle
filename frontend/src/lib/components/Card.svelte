@@ -12,6 +12,6 @@ article {
   margin: 0 .5rem .9rem;
   padding: 1rem;
   min-width: 20rem;
-  max-width: 25rem;
+  max-width: 24rem;
 }
 </style>

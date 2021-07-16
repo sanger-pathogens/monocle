@@ -15,8 +15,8 @@
 
   {#if batches.received}
     <BatchStatus {batches} />
-    <SequencingStatus {sequencingStatus} />
-    <PipelineStatus {pipelineStatus} />
+    <SequencingStatus {sequencingStatus} {institutionName} />
+    <PipelineStatus {pipelineStatus} {institutionName} />
   {:else}
     <p>No samples received</p>
   {/if}

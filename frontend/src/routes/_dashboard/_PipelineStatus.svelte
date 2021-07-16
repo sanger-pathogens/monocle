@@ -1,8 +1,10 @@
 <script>
   import Card from "$lib/components/Card.svelte";
+  import DownloadButtons from "./_DownloadButtons.svelte";
   import FailMessages from "./_FailMessages.svelte";
   import StatusChart from "./_StatusChart.svelte";
 
+  export let institutionName;
   export let pipelineStatus = {};
 
   const CHART_LABELS = ["Waiting", "Running", "Succeeded", "Failed"];
@@ -38,6 +40,13 @@
       labels={CHART_LABELS}
       values={[waiting, running, succeeded, failed]}
       includesRunning={true}
+    />
+
+    <DownloadButtons
+      {institutionName}
+      {succeeded}
+      {failed}
+      isPipeline={true}
     />
   
     <FailMessages

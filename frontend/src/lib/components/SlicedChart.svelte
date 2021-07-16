@@ -40,6 +40,7 @@
 
 <style>
 .container {
+  margin-bottom: .9rem;
   min-height: var(--initial-height);
 }
 </style>

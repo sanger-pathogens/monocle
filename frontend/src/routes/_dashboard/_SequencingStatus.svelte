@@ -1,8 +1,10 @@
 <script>
   import Card from "$lib/components/Card.svelte";
+  import DownloadButtons from "./_DownloadButtons.svelte";
   import FailMessages from "./_FailMessages.svelte";
   import StatusChart from "./_StatusChart.svelte";
 
+  export let institutionName;
   export let sequencingStatus = {};
 
   const CHART_LABELS = ["Pending", "Succeeded", "Failed"];
@@ -26,6 +28,12 @@
   <StatusChart
     labels={CHART_LABELS}
     values={[pending, succeeded, failed]}
+  />
+
+  <DownloadButtons
+    {institutionName}
+    {succeeded}
+    {failed}
   />
 
   <FailMessages
