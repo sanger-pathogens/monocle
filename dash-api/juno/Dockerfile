@@ -22,4 +22,4 @@ COPY     . /app
 ENV      PYTHONPATH "${PYTHONPATH}:./dash/api/service"
 
 EXPOSE   80
-CMD      ["gunicorn", "-w 1", "-b :80", "dash.wsgi"]
+CMD      ["gunicorn", "-w 2", "-b :80", "dash.wsgi"]
