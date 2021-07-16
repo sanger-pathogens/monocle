@@ -10,8 +10,9 @@ Install other dependencies:
 cd frontend
 npm install
 ```
+## Development
 
-## Running locally
+### Running locally
 
 Start a development server:
 
@@ -25,7 +26,7 @@ or start the server and automatically open the app in a new browser tab:
 npm run dev -- --open
 ```
 
-## Running tests
+### Running tests
 
 ```bash
 npm test
@@ -36,7 +37,15 @@ or in the watch mode:
 npm run test:watch
 ```
 
-## Building
+### Icons
+
+Icon components live in `src/lib/components/icon/`.
+
+If you need to add a new icon, for consistency search for it in
+[Octicons](https://primer.style/octicons/) and only look elsewhere (or make your own!) if no
+suitable icons are found.
+
+### Previewing production build
 
 ```bash
 npm run build
@@ -44,4 +53,3 @@ npm run build
 
 You can preview the built app with `npm run preview`. (This should _not_ be used
 to serve the app in production, which is done by a [SvelteKit adapter](https://kit.svelte.dev/docs#adapters) (the [Node adapter](https://github.com/sveltejs/kit/tree/master/packages/adapter-node) in our case).)
-

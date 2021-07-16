@@ -1,8 +1,3 @@
-<script>
-  export let style = '';
-</script>
-
-
 <article>
   <slot></slot>
 </article>
