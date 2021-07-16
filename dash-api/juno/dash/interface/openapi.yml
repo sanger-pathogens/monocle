@@ -158,7 +158,7 @@ paths:
             type: string
             minLength: 1
             maxLength: 256
-            pattern: ^[a-zA-Z0-9à-úÀ-Ú _-']*$
+            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-']*$
         - in: query
           name: category
           description: "The category to be downloaded: sequencing or pipeline."
