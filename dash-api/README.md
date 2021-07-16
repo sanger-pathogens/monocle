@@ -28,3 +28,10 @@ The swagger UI can then be accessed on:
 ```
 http://0.0.0.0/ui/
 ```
+
+# Adding a new endpoint
+Follow these steps:
+* Define the endpoint input/output schema in the *api/interface/openapi.yml* definition file.
+* Create a handler method in the *api/routes.py* module. The *operationId* property in the open api definition should point at the handler method [with full package path].
+* Currently routes handler methods access backend code for the ServiceFactory class.
+* Test the endpoint using Swagger UI as above.
