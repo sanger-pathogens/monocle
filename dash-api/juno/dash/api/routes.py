@@ -10,7 +10,7 @@ logger = logging.getLogger()
 HTTP_SUCCEEDED_STATUS = 200
 
 # Testing only
-ServiceFactory.TEST_MODE = True
+ServiceFactory.TEST_MODE = False
 
 
 def get_batches():
