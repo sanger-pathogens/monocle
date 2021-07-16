@@ -12,4 +12,4 @@ drop table auth_permission;
 --
 -- Update the database version
 --
-CALL update_database_version('???', 'Removed all redundant tables');
+CALL update_database_version('TODO', 'Removed all redundant tables');
