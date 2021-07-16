@@ -67,9 +67,14 @@ services:
     tmpfs:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
+    volumes:
+      - data:/app/monocle_juno
+      - ./my.cnf:/app/my.cnf
+      - ./mlwh-api.yml:/app/mlwh-api.yml
+      - ./openldap-env.yaml:/app/openldap-env.yaml
     environment:
       - ENABLE_SWAGGER_UI=false
-      - API_TEST_MODE=false
+      - LOG_LEVEL=INFO
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>

@@ -1,0 +1,6 @@
+[client]
+host = fake-db-host.internal.sanger.ac.uk
+port = 3487
+database = monocle_fake_db_name
+password = "fake_password incl chars >< that (need) .,;:' to be escaped"
+default-character-set = utf8

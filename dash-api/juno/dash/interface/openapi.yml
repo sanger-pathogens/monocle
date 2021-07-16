@@ -2,20 +2,401 @@ openapi: '3.0.0'
 info:
   title: "Monocle Dashboard API"
   version: "0.0.1"
-  description: "A REST API service used by the Monocle dashboard"
+  description: "A REST API service used by the Monocle dashboard."
   contact:
     email: "path-help@sanger.ac.uk"
 
 servers:
-  - url: /
+  - url: /dashboard-api
     description: Context path
 
 paths:
-  /helloworld:
-    post:
-      operationId: dash.api.routes.hello_world
-      summary: "Dummy test method"
+  /get_batches:
+    get:
+      operationId: dash.api.routes.get_batches
+      summary: "Return information on batches delivered, keyed by institution id."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
       responses:
         200:
-          description: "Success"
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  batches:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionBatchSummary"
+        403:
+          description: "Authorization information is missing or invalid."
 
+  /sequencing_status_summary:
+    get:
+      operationId: dash.api.routes.sequencing_status_summary
+      summary: "Return information on sample/lane sequencing status, keyed by institution id."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sequencing_status:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionSequencingStatus"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /pipeline_status_summary:
+    get:
+      operationId: dash.api.routes.pipeline_status_summary
+      summary: "Return information on sample/lane pipeline status, keyed by institution id."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sequencing_status:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionPipelineStatus"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /get_progress:
+    get:
+      operationId: dash.api.routes.get_progress
+      summary: "Return the information necessary for plotting the project sample progress graph."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: "The operation was successful. The following data format will be returned..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  progress_graph:
+                    $ref: "#/components/schemas/ProjectProgress"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /get_institutions:
+    get:
+      operationId: dash.api.routes.get_institutions
+      summary: "Return a list of institutions."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  institutions:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/Institution"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /get_metadata_for_download:
+    get:
+      operationId: dash.api.routes.get_metadata_for_download
+      summary: "The operation was successful. The following data format will be returned..."
+      parameters:
+        - in: header
+          name: X-Remote-User
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: institution
+          description: "The institution name."
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-']*$
+        - in: query
+          name: category
+          description: "The category to be downloaded: sequencing or pipeline."
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 20
+            pattern: ^[a-zA-Z]*$
+        - in: query
+          name: status
+          description: "The status type to be downloaded: successful or failed."
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 20
+            pattern: ^[a-zA-Z]*$
+      responses:
+        200:
+          description: "The operation was successful."
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        403:
+          description: "Authorization information is missing or invalid."
+
+components:
+  schemas:
+
+    UserInstitution:
+      type: object
+      required:
+        - "inst_id"
+        - "inst_name"
+      properties:
+        inst_id:
+          type: string
+          description: "The id of the institution."
+        inst_name:
+          type: string
+          description: "The name of the institution."
+
+    Institution:
+      type: object
+      required:
+        - name
+        - db_key
+      properties:
+        name:
+          type: string
+          description: "The name of the institution."
+        db_key:
+          type: string
+          description: "The id of the institution."
+
+    ProjectProgress:
+      type: object
+      required:
+        - title
+        - data
+        - x_col_key
+        - y_cols_keys
+        - x_label
+        - y_label
+      properties:
+        title:
+          type: string
+          description: "Progress graph title."
+        data:
+          $ref: "#/components/schemas/ProjectProgressData"
+        x_col_key:
+          type: string
+          description: "Progress graph x axis key."
+        x_label:
+          type: string
+          description: "Progress graph x axis label."
+        y_cols_keys:
+          type: array
+          items:
+            type: string
+            description: "Progress graph y axis keys."
+        y_label:
+          type: string
+          description: "Progress graph y axis label."
+
+    ProjectProgressData:
+      type: object
+      required:
+        - "date"
+        - "samples received"
+        - "samples sequenced"
+      description: "Progress graph data."
+      properties:
+        date:
+          type: array
+          items:
+            description: "The batch date."
+            example: "Jan 2019"
+            type: string
+        samples received:
+          type: array
+          items:
+            description: "The number of samples received for the batch."
+            example: 300
+            type: string
+        samples sequenced:
+          type: array
+          items:
+            description: "The number of samples sequenced for the batch."
+            example: 200
+            type: string
+
+    InstitutionBatchSummary:
+      type: object
+      required:
+        - expected
+        - received
+        - deliveries
+      description: "Sample batch information for an institution."
+      properties:
+        expected:
+          description: "The number of samples expected."
+          example: 200
+          type: integer
+        received:
+          description: "The number of samples received."
+          example: 200
+          type: integer
+        deliveries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Batch"
+          description: "Information on all batches delivered."
+
+    Batch:
+      type: object
+      required:
+        - name
+        - date
+        - number
+      description: "Sample batch information."
+      properties:
+        name:
+          description: "The batch name."
+          example: "Batch 1"
+          type: string
+        date:
+          description: "The delivery date."
+          example: "2019-09-18"
+          type: string
+        number:
+          description: "The batch sample size."
+          example: 200
+          type: integer
+
+    InstitutionSequencingStatus:
+      type: object
+      required:
+        - received
+        - completed
+        - success
+        - failed
+        - fail_messages
+      description: "Sequencing status summary information for an institution."
+      properties:
+        received:
+          description: "The number of lanes received."
+          example: 400
+          type: integer
+        completed:
+          description: "The number of lanes that have completed sequencing, whether pass or fail."
+          example: 300
+          type: integer
+        success:
+          description: "The number of lanes that have successfully completed sequencing."
+          example: 298
+          type: integer
+        failed:
+          description: "The number of lanes that have failed sequencing."
+          example: 2
+          type: integer
+        fail_messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailureInformation"
+          description: "Error information on all sequencing failures."
+
+    InstitutionPipelineStatus:
+      type: object
+      required:
+        - running
+        - completed
+        - success
+        - failed
+        - fail_messages
+      description: "Pathogen pipelines status summary information for an institution."
+      properties:
+        running:
+          description: "The number of lanes currently running."
+          example: 400
+          type: integer
+        completed:
+          description: "The number of lanes that have completed pipelines, whether pass or fail."
+          example: 300
+          type: integer
+        success:
+          description: "The number of lanes that have successfully completed pipeline runs."
+          example: 298
+          type: integer
+        failed:
+          description: "The number of lanes that have failed their pipeline runs."
+          example: 2
+          type: integer
+        fail_messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailureInformation"
+          description: "Error information on all pipeline failures."
+
+    FailureInformation:
+      type: object
+      required:
+        - lane
+        - stage
+        - issue
+      properties:
+        lane:
+          description: "The failed lane id."
+          example: "31741_3#378"
+          type: string
+        stage:
+          description: "The name of QC stage where issues was detected."
+          example: "qc_lib"
+          type: string
+        issue:
+          description: "The associated error message."
+          example: "Error message"
+          type: string

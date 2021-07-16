@@ -1,8 +1,11 @@
-my.cnf*
+**/my.cnf*
 config.json
-openldap-*.yaml
+**/openldap-env.yaml
 mlwh-*.yml
 .git
 **/__pycache__
 **/.pytest_cache
 **/.DS_Store
+# use `data/` in local development environment to hold example data
+# (in production the workdir in the dash container is `/dash`, and the s3 bucket is mounted as `/dash/data`)
+data
