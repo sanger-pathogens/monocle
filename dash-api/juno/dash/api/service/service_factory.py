@@ -1,3 +1,4 @@
+import logging
 from dash.api.service.monocleclient import MonocleUser, MonocleData
 
 
@@ -13,12 +14,13 @@ class DataService(MonocleData):
 
     def __init__(self, username: str, set_up: bool = True):
         MonocleData.__init__(self, set_up)
-        user_service = MonocleUser(username)
-        self.user_record = user_service.load_user_record(self, authenticated_username)
+        user = MonocleUser(username)
+        # Setting this record will enforce data filtering by user
+        self.user_record = user.record
 
 
 class TestDataService(MonocleData):
-    """ Wrapper class for MonocleData testing """
+    """ Wrapper class for MonocleData testing, which does not do user checking """
 
     def __init__(self, set_up: bool = True):
         MonocleData.__init__(self, set_up)
