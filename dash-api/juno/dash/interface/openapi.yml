@@ -7,7 +7,7 @@ info:
     email: "path-help@sanger.ac.uk"
 
 servers:
-  - url: /api
+  - url: /dashboard-api
     description: Context path
 
 paths:
