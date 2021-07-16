@@ -34,7 +34,7 @@ class TestRoutes(unittest.TestCase):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_samples = MagicMock(return_value=[''])
+        fakeDB.get_samples = MagicMock(return_value=[])
         under_test = mar.get_samples(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
@@ -56,7 +56,7 @@ class TestRoutes(unittest.TestCase):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_institutions = MagicMock(return_value=[''])
+        fakeDB.get_institutions = MagicMock(return_value=[])
         under_test = mar.get_institutions(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
@@ -78,7 +78,7 @@ class TestRoutes(unittest.TestCase):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_institution_names = MagicMock(return_value=[''])
+        fakeDB.get_institution_names = MagicMock(return_value=[])
         under_test = mar.get_institution_names(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
