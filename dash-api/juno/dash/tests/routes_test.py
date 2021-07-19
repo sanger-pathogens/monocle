@@ -29,6 +29,27 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'user_service')
+    def test_get_user_details(self, user_service_mock, username_mock, resp_mock):
+        # Given
+        user_service_mock.return_value.get_user_details.return_value = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_user_details()
+        # Then
+        user_service_mock.assert_called_once_with(self.TEST_USER)
+        user_service_mock.return_value.get_user_details.assert_called_once()
+        resp_mock.assert_called_once_with(
+            {
+                'user_details': self.SERVICE_CALL_RETURN_DATA
+            }
+        )
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 1)
+        self.assertEqual(result[1], 200)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'data_service')
     def test_get_batches(self, data_service_mock, username_mock, resp_mock):
         # Given

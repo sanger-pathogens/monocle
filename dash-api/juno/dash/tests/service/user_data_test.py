@@ -14,7 +14,8 @@ class MonocleUserDataTest(TestCase):
    # in UserData object variable config (dict of config parames) the OpenLDAP params are stored using this key:
    openldap_config_key  = 'openldap'
    expected_config_str  = ['openldap_config', 'ldap_url', 'users_obj', 'groups_obj', 'username_attr',
-                           'uid_attr', 'membership_attr', 'gid_attr', 'inst_id_attr', 'inst_name_attr']
+                           'uid_attr', 'membership_attr', 'gid_attr', 'inst_id_attr', 'inst_name_attr',
+                           'employee_type_attr']
    expected_ldap_str    = ['LDAP_ORGANISATION', 'LDAP_DOMAIN', 'LDAP_ADMIN_PASSWORD', 'LDAP_CONFIG_PASSWORD', 'LDAP_READONLY_USER_USERNAME',
                            'LDAP_READONLY_USER_PASSWORD', 'MONOCLE_LDAP_BASE_DN', 'MONOCLE_LDAP_BIND_DN', 'MONOCLE_LDAP_BIND_PASSWORD']
    expected_ldap_bool   = ['LDAP_READONLY_USER']
@@ -28,9 +29,22 @@ class MonocleUserDataTest(TestCase):
                                              'objectClass': [b'inetOrgPerson', b'posixAccount', b'top'],
                                              'sn': [b'mock_user_sanger_ac_uk'],
                                              'uid': [b'mock_user'],
-                                             'uidNumber': [b'1000']
+                                             'uidNumber': [b'1000'],
+                                             'employeeType': [b'admin']
                                              }
                                           )
+   mock_ldap_result_user_no_type = ('cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
+                                           {'cn': [b'mock_user_sanger_ac_uk'],
+                                            'gidNumber': [b'501'],
+                                            'homeDirectory': [b'/home/users/tmock_user_sanger_ac_uk'],
+                                            'mail': [b'mock_user@sanger.ac.uk'],
+                                            'o': [b'501', b'502'],
+                                            'objectClass': [b'inetOrgPerson', b'posixAccount', b'top'],
+                                            'sn': [b'mock_user_sanger_ac_uk'],
+                                            'uid': [b'mock_user'],
+                                            'uidNumber': [b'1000']
+                                            }
+                                           )
    mock_ldap_result_user_no_o       =  (  'cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
                                           {  'cn': [b'mock_user_sanger_ac_uk'],
                                              'gidNumber': [b'501'],
@@ -177,11 +191,23 @@ class MonocleUserDataTest(TestCase):
       # data structure
       self.assertIsInstance( user_details,                              type({'a': 'dict'})  )
       self.assertIsInstance( user_details['username'],                  type('a string')     )
+      self.assertIsInstance( user_details['type'],                      type('a string'))
       self.assertIsInstance( user_details['memberOf'],                  type(['a', 'list'])  )
       self.assertIsInstance( user_details['memberOf'][0],               type({'a': 'dict'})  )
       self.assertIsInstance( user_details['memberOf'][0]['inst_id'],    type('a string')     )
       self.assertIsInstance( user_details['memberOf'][0]['inst_name'],  type('a string')     )
       # data values
       self.assertEqual( 'mock_user',                  user_details['username']                  )
+      self.assertEqual( 'admin',                      user_details['type'])
       self.assertEqual( 'WelSanIns',                  user_details['memberOf'][0]['inst_id']    )
       self.assertEqual( 'Wellcome Sanger Institute',  user_details['memberOf'][0]['inst_name']  )
+
+   @patch.object(UserData, 'ldap_search_group_by_gid')
+   @patch.object(UserData, 'ldap_search_user_by_username')
+   def test_get_user_details_no_employee_type(self, mock_user_query, mock_group_query):
+      mock_user_query.return_value = self.mock_ldap_result_user_no_type
+      mock_group_query.return_value = self.mock_ldap_result_group
+      user_details = self.userdata.get_user_details('mock_user')
+      self.assertEqual('mock_user', user_details['username'])
+      with self.assertRaises(KeyError) as raises:
+         res = user_details['type']

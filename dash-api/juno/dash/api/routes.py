@@ -9,8 +9,18 @@ logger = logging.getLogger()
 
 HTTP_SUCCEEDED_STATUS = 200
 
+
 # Testing only
 ServiceFactory.TEST_MODE = False
+
+
+def get_user_details():
+    """ Given a username retrieve all details for that user """
+    data = ServiceFactory.user_service(get_authenticated_username(request)).get_user_details()
+    response_dict = {
+        'user_details': data
+    }
+    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
 
 
 def get_batches():
