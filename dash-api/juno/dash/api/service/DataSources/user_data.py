@@ -25,7 +25,7 @@ class UserData:
                                        'membership_attr',
                                        'gid_attr',
                                        'inst_id_attr',
-                                       'inst_name_attr',
+                                       'inst_name_attr'
                                        ]
 
    required_openldap_params      = [   'MONOCLE_LDAP_BASE_DN',
@@ -135,6 +135,15 @@ class UserData:
       if len(org_gids) < 1:
          logging.error("The username {} is not associated with any organisations (full attributes: {})".format(username,user_attr))
          raise UserDataError("username {} has no organisation attribute values ".format(username))
+
+      try:
+         # Try to get optional employee type attribute
+         employee_type = user_attr[self.config['employee_type_attr']][0].decode('UTF-8')
+         if employee_type:
+            user_details['type'] = employee_type
+      except Exception:
+         pass
+
       for this_gid in org_gids:
          ldap_group_rec = self.ldap_search_group_by_gid(this_gid)
          if ldap_group_rec is None:

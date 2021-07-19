@@ -11,6 +11,30 @@ servers:
     description: Context path
 
 paths:
+  /get_user_details:
+    get:
+      operationId: dash.api.routes.get_user_details
+      summary: "Return all details for a user"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Basic authentication header."
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: "The operation was successful. A user details record is returned."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_details:
+                    $ref: "#/components/schemas/UserData"
+        403:
+          description: "Authorization information is missing or invalid."
+
   /get_batches:
     get:
       operationId: dash.api.routes.get_batches
@@ -400,3 +424,21 @@ components:
           description: "The associated error message."
           example: "Error message"
           type: string
+
+    UserData:
+      type: object
+      required:
+        - "username"
+        - "memberOf"
+      properties:
+        username:
+          type: string
+          description: "The username for this user"
+        type:
+          type: string
+          description: "Optional employee user type field, e.g. admin"
+        memberOf:
+          type: array
+          description: "A list of institutions for which the user is a member"
+          items:
+            $ref: "#/components/schemas/UserInstitution"

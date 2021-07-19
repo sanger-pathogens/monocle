@@ -1,4 +1,3 @@
-import logging
 from dash.api.service.monocleclient import MonocleUser, MonocleData
 
 
@@ -7,6 +6,10 @@ class UserService(MonocleUser):
 
     def __init__(self, authenticated_username=None, set_up=True):
         MonocleUser.__init__(self, authenticated_username, set_up)
+
+    @property
+    def user_details(self):
+        return self.record
 
 
 class DataService(MonocleData):
