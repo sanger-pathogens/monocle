@@ -1,8 +1,8 @@
 <script>
   import Card from "$lib/components/Card.svelte";
-  import DownloadButtons from "./_DownloadButtons.svelte";
-  import FailMessages from "./_FailMessages.svelte";
-  import StatusChart from "./_StatusChart.svelte";
+  import DownloadButtons from "../_DownloadButtons.svelte";
+  import FailMessages from "../_FailMessages.svelte";
+  import StatusChart from "../_StatusChart.svelte";
 
   export let institutionName;
   export let pipelineStatus = {};

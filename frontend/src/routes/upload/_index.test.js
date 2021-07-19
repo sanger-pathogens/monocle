@@ -3,7 +3,7 @@ import { goto } from '$app/navigation';
 import UploadingPage from "./index.svelte";
 
 // Mocking this module for the whole file is a workaround
-// for Jest's not understanding SvelteKit's $app modules.
+// for Jest's not parsing SvelteKit's $app modules.
 jest.mock('$app/navigation', () => ({
   goto: jest.fn()
 }));

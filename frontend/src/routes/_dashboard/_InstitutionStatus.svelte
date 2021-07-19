@@ -1,7 +1,7 @@
 <script>
-  import BatchStatus from "./_BatchStatus.svelte";
-  import SequencingStatus from "./_SequencingStatus.svelte";
-  import PipelineStatus from "./_PipelineStatus.svelte";
+  import BatchStatus from "./_status-panes/_BatchStatus.svelte";
+  import SequencingStatus from "./_status-panes/_SequencingStatus.svelte";
+  import PipelineStatus from "./_status-panes/_PipelineStatus.svelte";
 
   export let institutionName;
   export let batches;
