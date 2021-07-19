@@ -25,6 +25,7 @@
 }
 
 main {
+  box-sizing:border-box;
   margin: 2rem auto;
   padding-left: 0.8rem;
   padding-right: 0.8rem;

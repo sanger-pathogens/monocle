@@ -1,8 +1,8 @@
 <script>
-  import Card from "$lib/components/Card.svelte";
   import DownloadButtons from "../_DownloadButtons.svelte";
   import FailMessages from "../_FailMessages.svelte";
   import StatusChart from "../_StatusChart.svelte";
+  import StatusPane from "./_StatusPane.svelte";
 
   export let institutionName;
   export let sequencingStatus = {};
@@ -16,7 +16,7 @@
 </script>
 
 
-<Card>
+<StatusPane>
   <h4>
     {#if pending}
       <code>{completed}</code> of <code>{received}</code> Samples Sequenced
@@ -40,5 +40,5 @@
     {failures}
     title={FAIL_MESSAGES_TITLE}
   />
-</Card>
+</StatusPane>
 

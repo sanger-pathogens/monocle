@@ -1,7 +1,7 @@
 <script>
-  import Card from "$lib/components/Card.svelte";
   import DownloadButtons from "../_DownloadButtons.svelte";
   import FailMessages from "../_FailMessages.svelte";
+  import StatusPane from "./_StatusPane.svelte";
   import StatusChart from "../_StatusChart.svelte";
 
   export let institutionName;
@@ -22,7 +22,7 @@
 </script>
 
 
-<Card>
+<StatusPane>
   {#if sequencedSuccess === 0}
     <h4>
       No Pipelines Started
@@ -54,5 +54,5 @@
       title={FAIL_MESSAGES_TITLE}
     />
   {/if}
-</Card>
+</StatusPane>
 

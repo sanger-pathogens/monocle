@@ -1,11 +1,11 @@
 <script>
-  import Card from "$lib/components/Card.svelte";
+  import StatusPane from "./_StatusPane.svelte";
 
   export let batches;
 </script>
 
 
-<Card>
+<StatusPane>
   <h4>
     <code>{batches.received}</code> Sample{batches.received === 1 ? "" : "s"} Received
   </h4>
@@ -24,7 +24,7 @@
       </tr>
     {/each}
   </table>
-</Card>
+</StatusPane>
 
 
 <style>
