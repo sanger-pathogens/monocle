@@ -32,13 +32,12 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'user_service')
     def test_get_user_details(self, user_service_mock, username_mock, resp_mock):
         # Given
-        user_service_mock.return_value.get_user_details.return_value = self.SERVICE_CALL_RETURN_DATA
+        user_service_mock.return_value.user_details = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         # When
         result = get_user_details()
         # Then
         user_service_mock.assert_called_once_with(self.TEST_USER)
-        user_service_mock.return_value.get_user_details.assert_called_once()
         resp_mock.assert_called_once_with(
             {
                 'user_details': self.SERVICE_CALL_RETURN_DATA

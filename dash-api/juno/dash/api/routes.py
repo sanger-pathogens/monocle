@@ -16,7 +16,7 @@ ServiceFactory.TEST_MODE = False
 
 def get_user_details():
     """ Given a username retrieve all details for that user """
-    data = ServiceFactory.user_service(get_authenticated_username(request)).get_user_details()
+    data = ServiceFactory.user_service(get_authenticated_username(request)).user_details
     response_dict = {
         'user_details': data
     }
