@@ -22,7 +22,7 @@
 </script>
 
 
-<StatusPane>
+<StatusPane grow>
   {#if sequencedSuccess === 0}
     <h4>
       No Pipelines Started

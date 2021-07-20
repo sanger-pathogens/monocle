@@ -16,7 +16,7 @@
 </script>
 
 
-<StatusPane>
+<StatusPane grow>
   <h4>
     {#if pending}
       <code>{completed}</code> of <code>{received}</code> Samples Sequenced

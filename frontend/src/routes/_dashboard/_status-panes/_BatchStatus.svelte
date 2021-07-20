@@ -28,4 +28,7 @@
 
 
 <style>
+table {
+  max-width: 21rem;
+}
 </style>
