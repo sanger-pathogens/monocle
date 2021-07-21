@@ -12,8 +12,10 @@ from metadata.api.model.metadata import Metadata
 class TestUploadHandler(unittest.TestCase):
     """ Unit tests for the UploadHandler class """
 
-    TEST_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.xlsx'
-    TEST_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.xlsx'
+    TEST_EXCEL_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.xlsx'
+    TEST_EXCEL_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.xlsx'
+    TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.csv'
+    TEST_CSV_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.csv'
     CONFIG_FILE_PATH = 'config.json'
 
     def display_errors(self, test_method, errors: List[str]) -> None:
@@ -39,10 +41,8 @@ class TestUploadHandler(unittest.TestCase):
 
             self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
-    def test_load_with_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
-        # self.display_errors('test_load_with_validation_errors', validation_errors)
-
+    def __check_validation_errors(self, validation_errors: List[str]):
+        """ Assert validation errors are correct """
         self.assertEqual(len(validation_errors), 66)
 
         self.assertTrue(
@@ -194,14 +194,41 @@ class TestUploadHandler(unittest.TestCase):
         self.assertTrue(
             '{row: 58, column: "Public_Name"}: "CD_XX_EW00056TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" field length is greater than 256 characters' in validation_errors)
 
-    def test_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+    def test_allowed_file_types(self):
+        self.assertIsNotNone(self.under_test.allowed_file_types())
+        self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['csv','xlsx']))
+
+    def test_is_valid_file_type(self):
+        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_EXCEL_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertFalse(UploadHandler.is_valid_file_type('foo'))
+        self.assertFalse(UploadHandler.is_valid_file_type(None))
+        self.assertFalse(UploadHandler.is_valid_file_type(''))
+
+    def test_excel_load_with_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_EXCEL_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        # self.display_errors('test_excel_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
+
+    def test_csv_load_with_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
+
+    def test_excel_load_with_no_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_EXCEL_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        # self.display_errors('test_load_with_no_validation_errors', validation_errors)
+
+        self.assertEqual(len(validation_errors), 0)
+
+    def test_csv_load_with_no_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         # self.display_errors('test_load_with_no_validation_errors', validation_errors)
 
         self.assertEqual(len(validation_errors), 0)
 
     def test_parse(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        validation_errors = self.under_test.load(glob.glob(self.TEST_EXCEL_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         # self.display_errors('test_parse', validation_errors)
 
         self.assertEqual(len(validation_errors), 0)
@@ -279,6 +306,6 @@ class TestUploadHandler(unittest.TestCase):
             self.under_test.store()
 
     def test_store(self) -> None:
-        self.under_test.load(glob.glob(self.TEST_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        self.under_test.load(glob.glob(self.TEST_EXCEL_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         self.under_test.store()
         self.dao_mock.update_sample_metadata.assert_called_once()
