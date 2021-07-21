@@ -53,8 +53,8 @@ class UploadHandler:
                 suffix = file.split('.')[-1]
                 if suffix in UploadHandler.allowed_file_types():
                     valid = True
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(str(e))
 
         return valid
 
