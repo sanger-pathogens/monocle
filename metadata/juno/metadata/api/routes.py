@@ -14,8 +14,6 @@ HTTP_BAD_REQUEST_STATUS = 400
 HTTP_NOT_FOUND_STATUS = 404
 HTTP_SUCCEEDED_STATUS = 200
 
-UPLOAD_EXTENSION = '.xlsx'
-
 
 @inject
 def update_sample_metadata(body: list, upload_handler: UploadHandler):
@@ -28,18 +26,16 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
         logger.error('Missing upload spreadsheet file in request')
         return 'Missing spreadsheet file', HTTP_BAD_REQUEST_STATUS
 
-    # Check the extension...
-    # TODO File extensions should be externalised to config
-    if uploaded_file.filename:
-        file_ext = os.path.splitext(uploaded_file.filename)[1]
-        if file_ext != UPLOAD_EXTENSION:
-            logger.error('Upload file does not have the correct extension: {}'.format(file_ext))
-            return 'The upload file must be an Excel spreadsheet {} file'.format(UPLOAD_EXTENSION), \
-                   HTTP_BAD_REQUEST_STATUS
-
     logger.info('Uploading spreadsheet {}...'.format(uploaded_file.filename))
 
-    spreadsheet_file = '/tmp/{}.{}'.format(str(uuid.uuid4()), UPLOAD_EXTENSION)
+    # Check the extension...
+    if not upload_handler.is_valid_file_type(uploaded_file.filename):
+        logger.error('Upload file {} does not have a valid extension, expected one of {}'.format(
+            uploaded_file.filename, upload_handler.allowed_file_types()))
+        return 'The upload file must be one of the following formats: {}'.format(upload_handler.allowed_file_types()), \
+               HTTP_BAD_REQUEST_STATUS
+
+    spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
     uploaded_file.save(spreadsheet_file)
 
     try:

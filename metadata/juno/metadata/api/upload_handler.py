@@ -22,6 +22,12 @@ class _StringLengthValidation(CustomElementValidation):
 class UploadHandler:
     """ Handle processing of upload spreadsheets """
 
+    # Allowed file formats
+    file_types = {
+        'xlsx': getattr(pandas, 'read_excel'),
+        'csv' : getattr(pandas, 'read_csv')
+    }
+
     @property
     def data_frame(self):
         return self.__df
@@ -32,6 +38,25 @@ class UploadHandler:
         self.__spreadsheet_def = in_def
         self.__do_validation = do_validation
         self.__institutions = None
+
+    @staticmethod
+    def allowed_file_types() -> List[str]:
+        """ Return a list of allowed file type extensions """
+        return [str(key) for key in UploadHandler.file_types.keys()]
+
+    @staticmethod
+    def is_valid_file_type(file: str) -> bool:
+        """ Check if we can process this file type """
+        valid = False
+        try:
+            if file and '.' in file:
+                suffix = file.split('.')[-1]
+                if suffix in UploadHandler.allowed_file_types():
+                    valid = True
+        except Exception:
+            pass
+
+        return valid
 
     def get_cell_value(self, column_key: str, row):
         """
@@ -125,14 +150,20 @@ class UploadHandler:
         """
         errors = []
 
-        logger.info("Loading spreadsheet...")
+        logger.info('Loading spreadsheet {}...'.format(file_path))
 
-        data = pandas.read_excel(file_path, dtype=str, header=self.__spreadsheet_def.header_row_position)
+        # Belt and braces file type check
+        if not self.is_valid_file_type(file_path):
+            raise RuntimeError('Not an allowed file type')
+
+        # Load the data to a data frame
+        suffix = file_path.split(".")[-1]
+        data = self.file_types[suffix](file_path, dtype=str, header=self.__spreadsheet_def.header_row_position)
         data.fillna('', inplace=True)
 
         # Display spreadsheet contents for debugging if required
         # for key, value in data.iterrows():
-        #    logger.debug("{} {}".format(key, value))
+        #     logger.debug("{} {}".format(key, value))
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
