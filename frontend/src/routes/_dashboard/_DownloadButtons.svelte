@@ -7,6 +7,8 @@
   export let isPipeline = false;
 
   const PANE_TYPE = isPipeline ? "pipeline" : "sequencing";
+  const URL_FAIL = encodeURI(`/download/${institutionName}/${PANE_TYPE}/failed`);
+  const URL_SUCCESS = encodeURI(`/download/${institutionName}/${PANE_TYPE}/successful`);
 
   let titleDownloadSucceeded = isPipeline ?
     (succeeded && `Download ${succeeded} samples successfully processed through the pipeline`)
@@ -23,7 +25,7 @@
     class="compact light"
     aria-label={titleDownloadSucceeded}
     title={titleDownloadSucceeded}
-    href="/download/{institutionName}/{PANE_TYPE}/successful"
+    href={URL_SUCCESS}
     download
     target="_blank"
     rel="external"
@@ -41,7 +43,7 @@
     class="compact light"
     aria-label={titleDownloadFailed}
     title={titleDownloadFailed}
-    href="/download/{institutionName}/{PANE_TYPE}/failed"
+    href={URL_FAIL}
     download
     target="_blank"
     rel="external"

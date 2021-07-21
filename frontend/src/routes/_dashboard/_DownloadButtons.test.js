@@ -9,12 +9,12 @@ describe.each([
   [
     "succeeded",
     `Download ${NUM_DONE} successfully sequenced samples`,
-    `/download/${INSTITUTION}/sequencing/successful`
+    encodeURI(`/download/${INSTITUTION}/sequencing/successful`)
   ],
   [
     "failed",
     `Download ${NUM_DONE} samples that failed sequencing`,
-    `/download/${INSTITUTION}/sequencing/failed`
+    encodeURI(`/download/${INSTITUTION}/sequencing/failed`)
   ]
 ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {
   it("is displayed", () => {
@@ -59,12 +59,12 @@ describe("pipeline", () => {
     [
       "succeeded",
       `Download ${NUM_DONE} samples successfully processed through the pipeline`,
-      `/download/${INSTITUTION}/pipeline/successful`
+      encodeURI(`/download/${INSTITUTION}/pipeline/successful`)
     ],
     [
       "failed",
       `Download ${NUM_DONE} samples that failed processing through the pipeline`,
-      `/download/${INSTITUTION}/pipeline/failed`
+      encodeURI(`/download/${INSTITUTION}/pipeline/failed`)
     ]
   ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {
     it("is displayed", () => {
