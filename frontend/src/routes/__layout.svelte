@@ -33,6 +33,15 @@ main {
   max-width: 100%;
 }
 
+:global([role=dialog] .content > h1),
+:global([role=dialog] .content > h2),
+:global([role=dialog] .content > h3),
+:global([role=dialog] .content > h4),
+:global([role=dialog] .content > h5),
+:global([role=dialog] .content > h6) {
+  font-size: 1.1rem;
+}
+
 :global(button.light) {
   background: var(--background-body);
   border: 1px solid var(--background);
