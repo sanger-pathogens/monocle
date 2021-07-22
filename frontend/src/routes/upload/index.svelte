@@ -1,16 +1,22 @@
 <script>
-  import { goto } from '$app/navigation';
+  import Dialog from "$lib/components/Dialog.svelte";
   import MetadataUploader from "./_MetadataUploader.svelte";
 
-  function redirectToDashboard() {
-    goto("/");
+  let uploadSuccessDialogOpen;
+
+  function openDialog() {
+    uploadSuccessDialogOpen = true;
   }
 </script>
 
 
 <h2>Metadata Uploading</h2>
-<MetadataUploader on:uploadSuccess={redirectToDashboard} />
 
+<MetadataUploader on:uploadSuccess={openDialog} />
 
-<style>
-</style>
+<Dialog bind:isOpen={uploadSuccessDialogOpen}>
+  <h3>Upload success</h3>
+
+  <p>All metadata were successfully uploaded.</p>
+  <p>You can <a href="/">go to dashboard</a> or stay on this page.</p>
+</Dialog>

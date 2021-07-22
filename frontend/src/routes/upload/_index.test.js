@@ -1,30 +1,29 @@
 import { fireEvent, render } from "@testing-library/svelte";
-import { goto } from '$app/navigation';
 import UploadingPage from "./index.svelte";
 
-// Mocking this module for the whole file is a workaround
-// for Jest's not parsing SvelteKit's $app modules.
-jest.mock('$app/navigation', () => ({
-  goto: jest.fn()
-}));
-
 it("renders the metadata uploading component", () => {
-  const { getByText } = render(UploadingPage);
+  const { getByRole, getByText } = render(UploadingPage);
 
   expect(getByText("Select or drag and drop your Excel files with sample metadata:"))
     .toBeDefined();
-  expect(getByText("Upload"))
+  expect(getByRole("button", { name: "Upload" }))
     .toBeDefined();
 });
 
-it("redirects to the dashboard page on the upload success event", async () => {
-  const { container } = render(UploadingPage);
+it("shows the dialog on the upload success event", async () => {
+  const DIALOG_TITLE = "Upload success";
+  const ROLE_DIALOG = "dialog";
 
-  expect(goto).not.toHaveBeenCalled();
+  const { container, queryByRole } = render(UploadingPage);
+
+  expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE }))
+    .toBeNull();
 
   await fireEvent.submit(container.querySelector("form"));
 
-  expect(goto).toHaveBeenCalledTimes(1);
-  expect(goto).toHaveBeenCalledWith("/");
+  expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE }))
+    .toBeDefined();
+  expect(queryByRole("link", { name: "go to dashboard" }))
+    .toBeDefined();
 });
 
