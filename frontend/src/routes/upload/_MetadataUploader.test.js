@@ -16,11 +16,11 @@ it("enables the upload button only when the input has a file", async () => {
     .toBeFalsy();
 });
 
-it("accepts only .xslx files", () => {
+it("accepts only .csv files", () => {
   const { container } = render(MetadataUploader);
   
   expect(container.querySelector("input[type=file]").accept)
-    .toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    .toBe(".csv,text/csv");
 });
 
 describe("file uploading", () => {

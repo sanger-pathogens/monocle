@@ -3,7 +3,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import ValidationErrorList from "./_ValidationErrorList.svelte";
 
-  const FILE_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const FILE_TYPE_CSV = ".csv,text/csv";
   const UPLOAD_API_URL = "/metadata/upload";
 
   export let files = [];
@@ -94,7 +94,7 @@
 		<input
 			bind:files
 			type="file"
-			accept={FILE_TYPE_EXCEL}
+			accept={FILE_TYPE_CSV}
 			multiple
 		>
 		
