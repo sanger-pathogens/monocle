@@ -30,7 +30,11 @@
 </script>
 
 
-<div bind:this={chartElement} class="container"></div>
+<div
+  bind:this={chartElement}
+  style="--initial-height: {height}px"
+  class="container"
+></div>
 
 
 <style>
@@ -41,6 +45,7 @@
 
 .container {
   margin: 0 auto;
+  min-height: var(--initial-height);
   max-width: 50rem;
 }
 </style>
