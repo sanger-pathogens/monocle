@@ -9,7 +9,7 @@
   export let labels = [];
   export let values = [];
   export let colors = undefined;
-  export let height = undefined;
+  export let height = 240;
 
   const chartOptions = {
     title,
@@ -31,9 +31,17 @@
 </script>
 
 
-<div bind:this={chartElement}></div>
+<div
+  bind:this={chartElement}
+  style="--initial-height: {height}px"
+  class="container"
+></div>
 
 
 <style>
+.container {
+  margin-bottom: .9rem;
+  min-height: var(--initial-height);
+}
 </style>
 

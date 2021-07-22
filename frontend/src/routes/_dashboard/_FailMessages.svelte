@@ -9,7 +9,7 @@
 
 
 {#if failures.length}
-  <button on:click={() => dialogOpen = true} class="light">
+  <button on:click={() => dialogOpen = true} class="compact light">
     Show fail messages
   </button>
 
@@ -34,11 +34,6 @@
 
 
 <style>
-button {
-  display: block;
-  margin: .9rem 0 0;
-}
-
 .fail-msg-column {
   width: 48%;
 }
