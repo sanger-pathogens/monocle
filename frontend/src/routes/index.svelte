@@ -3,7 +3,7 @@
 	// It can run both during server-side rendering and in the client. See https://kit.svelte.dev/docs#loading.
 	export async function load({ fetch }) {
 		const { institution_status: institutionStatus, progress_graph: projectProgress } =
-			await fetch("/legacy_dashboard/data/summary/")
+			await fetch("http://monocle.dev.pam.sanger.ac.uk/legacy_dashboard/data/summary/")
 				.then((response) => response.json());
 
 		return {

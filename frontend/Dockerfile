@@ -16,6 +16,7 @@ RUN npm run build
 # ---------- production runtime ----------
 FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.4.2-alpine3.14
 
+ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=builder /app .
 COPY . .

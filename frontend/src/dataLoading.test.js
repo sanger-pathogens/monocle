@@ -13,7 +13,8 @@ describe("loading user role", () => {
     loadUserRole(fetch);
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
+    expect(fetch).toHaveBeenCalledWith(
+      "http://monocle.dev.pam.sanger.ac.uk/dashboard-api/get_user_details");
   });
 
   it("returns the user role from the response", async () => {
