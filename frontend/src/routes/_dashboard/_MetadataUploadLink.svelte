@@ -5,7 +5,7 @@
   const LINK_TITLE = "Upload metadata";
   const ROLE_ADMIN = "admin";
 
-  const isAdmin = $session?.user?.role === ROLE_ADMIN;
+  $: isAdmin = $session?.user?.role === ROLE_ADMIN;
 </script>
 
 
