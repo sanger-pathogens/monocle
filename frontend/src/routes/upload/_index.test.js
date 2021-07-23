@@ -2,10 +2,10 @@ import { fireEvent, render } from "@testing-library/svelte";
 import UploadingPage from "./index.svelte";
 
 it("renders the metadata uploading component", () => {
-  const { getByRole, getByText } = render(UploadingPage);
+  const { container, getByRole } = render(UploadingPage);
 
-  expect(getByText("Select or drag and drop your Excel files with sample metadata:"))
-    .toBeDefined();
+  expect(container.querySelector("p").textContent)
+    .toBe("Select or drag and drop your .csv files with sample metadata:");
   expect(getByRole("button", { name: "Upload" }))
     .toBeDefined();
 });
