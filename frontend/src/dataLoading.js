@@ -35,11 +35,6 @@ export function getProjectProgress(fetch) {
     });
 }
 
-export function getUserRole(fetch) {
-  return fetchDashboardResource("get_user_details", "user_details", fetch)
-    .then((userDetails) => userDetails?.type);
-}
-
 function getProjectProgressData(fetch) {
   return fetchDashboardResource(
     "get_progress", "progress_graph", fetch);

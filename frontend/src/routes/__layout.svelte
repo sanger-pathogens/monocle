@@ -1,24 +1,6 @@
-<script context="module">
-  import { getUserRole } from "../dataLoading.js";
-
-  export async function load({ fetch }) {
-    const userRole = await getUserRole(fetch);
-    return { props: { userRole } }
-  }
-</script>
-
 <script>
-  import { onMount } from "svelte";
-  import { session } from "$app/stores";
   import Header from '$lib/components/layout/Header.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
-
-  export let userRole;
-
-  // The session store can be set only in the browser. Hence we set it on component mount.
-  onMount(() => {
-    session.set({ user: { role: userRole } });
-  });
 </script>
 
 

@@ -1,12 +1,10 @@
 import {
   MONOCLE_URL,
   getInstitutionStatus,
-  getProjectProgress,
-  getUserRole
+  getProjectProgress
 } from "./dataLoading.js";
 
 const DASHBOARD_API_URL = `${MONOCLE_URL}/dashboard-api`;
-const USER_ROLE = "support";
 
 const fetch = jest.fn();
 
@@ -57,17 +55,6 @@ describe.each([
       ],
       dates: "21.08.21"
     }
-  },
-  {
-    fnName: "getUserRole",
-    getResource: getUserRole,
-    expectedEndpoints: ["get_user_details"],
-    payload: {
-      user_details: {
-        type: USER_ROLE,
-      }
-    },
-    expectedResult: USER_ROLE
   }
 ])("$fnName", ({ getResource, expectedEndpoints, payload, expectedResult }) => {
   it("fetches the data from the correct endpoints", async () => {
@@ -91,51 +78,5 @@ describe.each([
     const result = await getResource(fetch);
 
     expect(result).toEqual(expectedResult);
-  });
-});
-
-describe("`getUserRole` returns `undefined`", () => {
-  it("when the type field from user details is missing", async () => {
-    fetch.mockImplementation(() => Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(
-        { user_details: {} })
-    }));
-
-    const userRole = await getUserRole(fetch);
-
-    expect(userRole).toBeUndefined();
-  });
-
-  it("when user details are missing", async () => {
-    fetch.mockImplementation(() => Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve({})
-    }));
-
-    const userRole = await getUserRole(fetch);
-
-    expect(userRole).toBeUndefined();
-  });
-
-  it("when the fetch request rejects", async () => {
-    fetch.mockImplementation(() => Promise.resolve({
-      ok: true,
-      json: () => Promise.reject()
-    }));
-
-    const userRole = await getUserRole(fetch);
-
-    expect(userRole).toBeUndefined();
-  });
-
-  it("when the fetch request rejects", async () => {
-    fetch.mockImplementation(() => Promise.resolve({
-      ok: false
-    }));
-
-    const userRole = await getUserRole(fetch);
-
-    expect(userRole).toBeUndefined();
   });
 });
