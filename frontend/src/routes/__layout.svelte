@@ -1,8 +1,8 @@
 <script context="module">
-  import { loadUserRole } from "./_dataLoading.js";
+  import { getUserRole } from "../dataLoading.js";
 
   export async function load({ fetch }) {
-    const userRole = await loadUserRole(fetch);
+    const userRole = await getUserRole(fetch);
     return { props: { userRole } }
   }
 </script>
