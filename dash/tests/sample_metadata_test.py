@@ -9,9 +9,9 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 class SampleMetadataTest(TestCase):
 
-   test_config       = 'mock_data/data_sources.yml' # ADD TEST PATH BEFORE DEPLOYMENT
-   bad_config        = 'mock_data/data_sources_bad.yml'
-   bad_db_cnf        = 'mock_data/bad.cnf'
+   test_config       = 'tests/mock_data/data_sources.yml' # ADD TEST PATH BEFORE DEPLOYMENT
+   bad_config        = 'tests/mock_data/data_sources_bad.yml'
+   bad_db_cnf        = 'tests/mock_data/bad.cnf'
    bad_api_host      = 'http://no.such.host/'
    bad_api_endpoint  = '/no/such/endpoint'
    genuine_api_host  = 'http://metadata_api.dev.pam.sanger.ac.uk/'
@@ -59,10 +59,6 @@ class SampleMetadataTest(TestCase):
          endpoint = self.bad_api_endpoint + self.expected_sample_ids[0]
          doomed.make_request(endpoint)
 
-   # this test case exists to ensure the unit tests fail, whilst still incomplete
-   # we need to make sure nobody sees unit tests completing OK and thinks the tests are OK
-   def test_DELIBERATELY_SETTING_UP_FAILED_TEST_BECAUSE_THESE_UNIT_TESTS_NOT_COMPLETED(self):
-      self.assetEqual(True,False)
 
    #require equivalents of the following tests from monocledb:
 

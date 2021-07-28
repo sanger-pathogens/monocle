@@ -187,8 +187,7 @@ class MonocleDataTest(TestCase):
 
    def setUp(self):
       # mock moncoledb
-      self.monocle_data.sample_metadata = SampleMetadata(set_up=False)
-      self.monocle_data.sample_metadata.set_up(self.test_config)
+      self.monocle_data.sample_metadata = SampleMetadata()
       self.monocle_data.updated = self.mock_data_updated
 
       # mock sequencing_status
