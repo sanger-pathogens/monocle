@@ -1,16 +1,3 @@
-monocledb:
-   cnf_file                   :  'tests/mock_data/mock.cnf'
-   institution_table          :  'api_institution'
-   institution_table_inst_key :  'name'
-   sample_table_inst_key      :  'submitting_institution_id'
-   sample_table_lane_id_field :  'lane_id'
-   sample_table_fields        :  
-                                 - 'sample_table_lane_id_field'
-                                 - 'sample_id'
-                                 - 'public_name'
-                                 - 'host_status'
-                                 - 'serotype'
-                                 - 'submitting_institution_id'
 monocle_metadata_api:
    base_url          : 'http://fake-container'
    swagger           : '/metadata/ui/'
