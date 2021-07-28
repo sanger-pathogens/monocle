@@ -90,7 +90,7 @@ class Monocle_Client:
             "{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response)
+        results = self.parse_response(response,required_keys=['sample'])
         return results[self.config['samples']]
 
     def make_request(self, endpoint, post_data=None):

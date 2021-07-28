@@ -88,5 +88,5 @@ class SampleMetadataTest(TestCase):
    def test_reject_bad_get_sample_response(self, mock_request):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_get_sample
-         self.sample_metadata.get_sample(self.expected_sample_ids[0])
+         self.sample_metadata.get_samples(self.expected_sample_ids[0])
 
