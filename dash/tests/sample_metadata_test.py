@@ -20,6 +20,25 @@ class SampleMetadataTest(TestCase):
                                        {  "does": "not matter what appears here"
                                        }
                                     }"""
+                                    
+   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sample_id":"fake_sample_id", "public_name":"fake_name",
+                                                "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
+                                                "submitting_institution_id": "Ministry of Health, Central laboratories", "id": "an_id"},
+                                             {  "lane_id": "fake_lane_1#124", "sample_id":"fake_sample_id", "public_name":"fake_name",
+                                                "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
+                                                "submitting_institution_id": "National Reference Laboratories", "id": "an_id"},
+                                             {  "lane_id": "fake_lane_1#125", "sample_id":"fake_sample_id", "public_name":"fake_name",
+                                                "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
+                                                "submitting_institution_id": "The Chinese University of Hong Kong", "id": "an_id"}
+                                             ]
+                              }"""
+
+   mock_institution_names = """{ "institutions":   [  "Ministry of Health, Central laboratories",
+                                                      "National Reference Laboratories",
+                                                      "The Chinese University of Hong Kong"
+                                                      ]
+                                 }"""
+                     
 
    expected_sample_ids = ['5903STDY8059053', '5903STDY8059055']
    expected_institution_names = ['Ministry of Health, Central laboratories', 'National Reference Laboratories', 'The Chinese University of Hong Kong']
@@ -62,21 +81,17 @@ class SampleMetadataTest(TestCase):
 
    #require equivalents of the following tests from monocledb:
 
-   @patch('DataSources.sample_metadata.Monocle_Client.institutions')
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_institution_names(self,mock_query):
-      mock_query.return_value = self.expected_institution_names
+      mock_query.return_value = self.mock_institution_names
       names = self.sample_metadata.get_institution_names()
       self.assertIsInstance(names, type(['a list']))
       for expected in self.expected_institution_names:
          self.assertTrue(expected in names, msg="expected institution name '{}' not found in institution names".format(expected))
 
-   @patch('DataSources.sample_metadata.Monocle_Client.samples')
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_samples(self,mock_query):
-      mock_query.return_value = [   {'lane_id': 'fake_lane_1#123', 'sample_id':'fake_sample_id', 'public_name':'fake_name',
-                                     'disease_name':'fake disease', 'serotype': 'fake_serotype', 'host_status': 'unknown',
-                                     'submitting_institution_id': n, 'id': 'an_id'}
-                                    for n in self.expected_institution_names
-                                    ]
+      mock_query.return_value = self.mock_get_samples
       samples = self.sample_metadata.get_samples()
       self.assertIsInstance(samples, type(['a list']))
       for this_sample in samples:

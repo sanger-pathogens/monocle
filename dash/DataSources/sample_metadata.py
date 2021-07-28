@@ -60,6 +60,8 @@ class Monocle_Client:
                               'swagger',
                               'institutions',
                               'samples',
+                              'institutions_key',
+                              'samples_key',
                               ]
 
     def __init__(self, set_up=True):
@@ -81,8 +83,8 @@ class Monocle_Client:
         logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response)
-        return results[self.config['institutions']]
+        results = self.parse_response(response,required_keys=[self.config['institutions_key']])
+        return results[self.config['institutions_key']]
 
     def samples(self):
         endpoint = self.config['samples']
@@ -90,8 +92,8 @@ class Monocle_Client:
             "{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response,required_keys=['sample'])
-        return results[self.config['samples']]
+        results = self.parse_response(response,required_keys=[self.config['samples_key']])
+        return results[self.config['samples_key']]
 
     def make_request(self, endpoint, post_data=None):
         request_url = self.config['base_url'] + endpoint
