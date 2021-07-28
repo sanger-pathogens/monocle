@@ -76,8 +76,9 @@ class SampleMetadataTest(TestCase):
 
    @patch('DataSources.sample_metadata.Monocle_Client.samples')
    def test_samples(self,mock_query):
-      mock_query.return_value = [   {'lane_id': 'fake_lane_1#123', 'sample_id':'fake_sample_id', 'institution_name':'fake_name',
-                                     'disease_name':'fake disease', 'serotype': 'fake_serotype', 'id':n}
+      mock_query.return_value = [   {'lane_id': 'fake_lane_1#123', 'sample_id':'fake_sample_id', 'public_name':'fake_name',
+                                     'disease_name':'fake disease', 'serotype': 'fake_serotype', 'host_status': 'unknown',
+                                     'submitting_institution_id': n, 'id': 'an_id'}
                                     for n in self.expected_institution_names
                                     ]
       samples = self.sample_metadata.get_samples()
