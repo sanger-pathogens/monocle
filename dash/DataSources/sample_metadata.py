@@ -35,9 +35,10 @@ class SampleMetadata:
         results_list = self.monocle_client.samples()
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
         # turn results list into dict keys on the sample IDs
-        results_by_sample_id = {}
+        results_by_sample_id = []
         for this_result in results_list:
-            results_by_sample_id[this_result.pop('id')] = this_result
+            this_result.pop('id')
+            results_by_sample_id.append(this_result)
         if institutions:
             for result in results_by_sample_id:
                 if result['submitting_institution'] not in institutions:

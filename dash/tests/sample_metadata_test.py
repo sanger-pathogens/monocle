@@ -74,17 +74,18 @@ class SampleMetadataTest(TestCase):
       for expected in self.expected_institution_names:
          self.assertTrue(expected in names, msg="expected institution name '{}' not found in institution names".format(expected))
 
-   # @patch('DataSources.sample_metadata.Monocle_Client.samples')
-   # def test_samples(self,mock_query):
-   #    mock_query.return_value = [   ['fake_lane_1#123', 'fake_sample_id', 'fake_name', 'fake disease', 'fake_serotype', n]
-   #                                  for n in self.expected_institution_names
-   #                                  ]
-   #    samples = self.db.get_samples()
-   #    self.assertIsInstance(samples, type(['a list']))
-   #    for this_sample in samples:
-   #       for required in self.required_sample_dict_keys:
-   #          self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
-   #          self.assertIsInstance(this_sample[required], type('a string'), msg="sample item {} should be a string".format(required))
+   @patch('DataSources.sample_metadata.Monocle_Client.samples')
+   def test_samples(self,mock_query):
+      mock_query.return_value = [   {'lane_id': 'fake_lane_1#123', 'sample_id':'fake_sample_id', 'institution_name':'fake_name',
+                                     'disease_name':'fake disease', 'serotype': 'fake_serotype', 'id':n}
+                                    for n in self.expected_institution_names
+                                    ]
+      samples = self.sample_metadata.get_samples()
+      self.assertIsInstance(samples, type(['a list']))
+      for this_sample in samples:
+         for required in self.required_sample_dict_keys:
+            self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
+            self.assertIsInstance(this_sample[required], type('a string'), msg="sample item {} should be a string".format(required))
 
    @patch.object(Monocle_Client, 'make_request')
    def test_reject_bad_get_sample_response(self, mock_request):
