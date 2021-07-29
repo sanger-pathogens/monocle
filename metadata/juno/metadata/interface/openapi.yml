@@ -79,7 +79,7 @@ paths:
                 properties:
                   institutions:
                     type: array
-                      items: string
+                    items: string
         404:
           description: "Institutions could not be gathered from database"
 
