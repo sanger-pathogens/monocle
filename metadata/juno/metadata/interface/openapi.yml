@@ -79,7 +79,8 @@ paths:
                 properties:
                   institutions:
                     type: array
-                    items: string
+                    items:
+                      $ref: "#/components/schemas/Institutions"
         404:
           description: "Institutions could not be gathered from database"
 
@@ -141,7 +142,16 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
-
+          
+    Institutions:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        #maxLength: 255
+        #pattern: '^[a-zA-Z0-9]*$'
+      minItems: 1
+      
     Metadata:
       type: object
       required:
