@@ -95,7 +95,7 @@ def get_samples(dao: MonocleDatabaseService):
     """ Download all samples and their metadata from the database """
     samples = dao.get_samples()
 
-    result = convert_to_json({'download': samples})
+    result = convert_to_json({'samples': samples})
 
     if len(samples) > 0:
         return result, HTTP_SUCCEEDED_STATUS
