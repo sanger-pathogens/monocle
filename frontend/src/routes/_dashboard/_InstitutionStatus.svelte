@@ -33,7 +33,7 @@
 article {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 article:not(:first-of-type) {
