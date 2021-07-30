@@ -1,8 +1,14 @@
 import { render } from "@testing-library/svelte";
+import { setContext } from "svelte";
 import InstitutionStatus from "./_InstitutionStatus.svelte";
 
 const INSTITUTION_NAME = "Welfare Biology Research Institute";
 const ROLE_HEADING = "heading";
+
+jest.mock("svelte", () => ({
+  ...jest.requireActual("svelte"),
+  setContext: jest.fn()
+}));
 
 it("displays an institution name", () => {
   const { getByRole } = render(InstitutionStatus, {
@@ -14,6 +20,17 @@ it("displays an institution name", () => {
 
   expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
     .toBeDefined();
+});
+
+it("puts an institution's name into context", () => {
+  render(InstitutionStatus, {
+    institutionName: INSTITUTION_NAME,
+    batches: { received: 42, deliveries: [] },
+    sequencingStatus: {},
+    pipelineStatus: {}
+  });
+
+  expect(setContext).toHaveBeenCalledWith("institutionName", INSTITUTION_NAME);
 });
 
 it("displays only an institution name and a short message when no samples received", () => {

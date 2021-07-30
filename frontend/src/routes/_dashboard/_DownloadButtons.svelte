@@ -1,14 +1,15 @@
 <script>
+  import { getContext } from "svelte";
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
 
-  export let institutionName;
   export let succeeded = 0;
   export let failed = 0;
   export let isPipeline = false;
 
+  const INSTITUTION_NAME = getContext("institutionName");
   const PANE_TYPE = isPipeline ? "pipeline" : "sequencing";
-  const URL_FAIL = encodeURI(`/download/${institutionName}/${PANE_TYPE}/failed`);
-  const URL_SUCCESS = encodeURI(`/download/${institutionName}/${PANE_TYPE}/successful`);
+  const URL_FAIL = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/failed`);
+  const URL_SUCCESS = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/successful`);
 
   let titleDownloadSucceeded = isPipeline ?
     (succeeded && `Download ${succeeded} samples successfully processed through the pipeline`)

@@ -1,4 +1,5 @@
 <script>
+  import { setContext } from "svelte";
   import BatchStatus from "./_status-panes/_BatchStatus.svelte";
   import SequencingStatus from "./_status-panes/_SequencingStatus.svelte";
   import PipelineStatus from "./_status-panes/_PipelineStatus.svelte";
@@ -7,6 +8,9 @@
   export let batches;
   export let sequencingStatus;
   export let pipelineStatus;
+
+  // Svelte's context is like a store but available only to a component and its descendants.
+  setContext("institutionName", institutionName);
 </script>
 
 
@@ -15,8 +19,8 @@
 
   {#if batches.received}
     <BatchStatus {batches} />
-    <SequencingStatus {sequencingStatus} {institutionName} />
-    <PipelineStatus {pipelineStatus} {institutionName} />
+    <SequencingStatus {sequencingStatus} />
+    <PipelineStatus {pipelineStatus} />
   {:else}
     <p>No samples received</p>
   {/if}
