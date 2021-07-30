@@ -43,14 +43,26 @@
 
     <DownloadButtons
       {succeeded}
-      {failed}
       isPipeline={true}
     />
   
-    <FailMessages
-      {failures}
-      title={FAIL_MESSAGES_TITLE}
-    />
+    {#if failed > 0}
+      <FailMessages
+        {failures}
+        title={FAIL_MESSAGES_TITLE}
+      >
+        <DownloadButtons
+          {failed}
+          isPipeline={true}
+          style="float: right"
+        />
+      </FailMessages>
+    {:else}
+      <FailMessages
+        {failures}
+        title={FAIL_MESSAGES_TITLE}
+      />
+    {/if}
   {/if}
 </StatusPane>
 

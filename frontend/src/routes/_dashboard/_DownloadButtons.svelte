@@ -5,12 +5,14 @@
   export let succeeded = 0;
   export let failed = 0;
   export let isPipeline = false;
+  export let style = "";
 
   const INSTITUTION_NAME = getContext("institutionName");
   const PANE_TYPE = isPipeline ? "pipeline" : "sequencing";
   const URL_FAIL = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/failed`);
   const URL_SUCCESS = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/successful`);
 
+  const onlyFailedButton = !succeeded;
   let titleDownloadSucceeded = isPipeline ?
     (succeeded && `Download ${succeeded} samples successfully processed through the pipeline`)
     : (succeeded && `Download ${succeeded} successfully sequenced samples`);
@@ -20,7 +22,7 @@
 </script>
 
 
-{#if succeeded > 0}
+{#if !onlyFailedButton}
   <a
     role="button"
     class="compact light"
@@ -30,6 +32,7 @@
     download
     target="_blank"
     rel="external"
+    {style}
   >
     Download succeeded
     <DownloadIcon
@@ -41,15 +44,16 @@
 {#if failed > 0}
   <a
     role="button"
-    class="compact light"
+    class="light {onlyFailedButton ? "" : "compact"}"
     aria-label={titleDownloadFailed}
     title={titleDownloadFailed}
     href={URL_FAIL}
     download
     target="_blank"
     rel="external"
+    {style}
   >
-    Download failed
+    {onlyFailedButton ? "Download" : "Download failed"}
     <DownloadIcon
       color="#ff5858"
     />

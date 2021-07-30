@@ -57,6 +57,14 @@ describe.each([
   });
 });
 
+it("has shorter button text if only the failed download button is displayed", () => {
+  const { getByRole } = render(DownloadButtons, {
+    failed: NUM_DONE
+  });
+
+  expect(getByRole(ROLE_BUTTON).textContent).toBe("Download ");
+});
+
 describe("pipeline", () => {
   describe.each([
     [
