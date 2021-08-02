@@ -87,9 +87,9 @@
 </script>
 
 
-<p id="uploading-description">Select or drag and drop your files with tab-separated sample metadata (<code>.tab</code>, <code>.tsv</code>, and <code>.txt</code> extensions are supported):</p>
+<p id="metadata-uploading-description">Select or drag and drop your files with tab-separated sample metadata (<code>.tab</code>, <code>.tsv</code>, and <code>.txt</code> extensions are supported):</p>
 
-<form on:submit|preventDefault={onFileSubmit} aria-labelledby="uploading-description">
+<form on:submit|preventDefault={onFileSubmit} aria-labelledby="metadata-uploading-description">
 	<fieldset disabled={uploading}>
 		<input
 			bind:files
