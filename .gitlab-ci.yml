@@ -69,7 +69,7 @@ Dashboard unit tests:
     - coverage html
   artifacts:
     paths:
-      - htmlcov
+      - ${DASH_CONTEXT}/htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
