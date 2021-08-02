@@ -66,10 +66,10 @@ Dashboard unit tests:
   script:
     - ./unittests.sh
     - coverage report --fail-under 90
-    - coverage html -d coverage_html
+    - coverage html
   artifacts:
     paths:
-      - coverage_html/index.html
+      - htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
