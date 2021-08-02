@@ -87,9 +87,9 @@
 </script>
 
 
-<p id="uploading-description">Select or drag and drop your <code>.csv</code> files with sample metadata:</p>
+<p id="metadata-uploading-description">Select or drag and drop your <code>.csv</code> files with sample metadata:</p>
 
-<form on:submit|preventDefault={onFileSubmit} aria-labelledby="uploading-description">
+<form on:submit|preventDefault={onFileSubmit} aria-labelledby="metadata-uploading-description">
 	<fieldset disabled={uploading}>
 		<input
 			bind:files

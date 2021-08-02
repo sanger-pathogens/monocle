@@ -10,7 +10,7 @@
 </script>
 
 
-<h2>Metadata Uploading</h2>
+<h2>Metadata uploading</h2>
 
 <MetadataUploader on:uploadSuccess={openDialog} />
 
