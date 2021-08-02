@@ -109,7 +109,7 @@ Data view unit tests:
     - cd data_view
   script:
     - ./unittests.sh
-    - coverage html --fail-under 90
+    - coverage html --fail-under 25
   allow_failure: true
   artifacts:
     paths:
