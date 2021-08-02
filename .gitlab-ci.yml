@@ -65,8 +65,9 @@ Dashboard unit tests:
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage html
     - coverage report --fail-under 90
+    - coverage html
+  allow_failure: true
   artifacts:
     paths:
       - ${DASH_CONTEXT}/htmlcov
@@ -88,8 +89,9 @@ Dashboard API unit tests:
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage html
     - coverage report --fail-under 90
+    - coverage html
+  allow_failure: true
   artifacts:
     paths:
       - ${DASH_API_CONTEXT}/juno/htmlcov
@@ -109,8 +111,9 @@ Data view unit tests:
     - cd data_view
   script:
     - ./unittests.sh
-    - coverage html
     - coverage report --fail-under 90
+    - coverage html
+  allow_failure: true
   artifacts:
     paths:
       - data_view/htmlcov
@@ -129,8 +132,9 @@ Metadata unit tests:
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage html
     - coverage report --fail-under 90
+    - coverage html
+  allow_failure: true
   artifacts:
     paths:
       - ${METADATA_CONTEXT}/juno/htmlcov
