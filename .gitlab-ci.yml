@@ -4,8 +4,8 @@ stages:
   - build
   - test
   - docker_tags_for_merges_and_releases
-  
-  
+
+
 variables:
   DASH_CONTEXT:             "dash"
   DASH_API_CONTEXT:         "dash-api"
@@ -14,7 +14,7 @@ variables:
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-    
+
 # at every git push, build docker images in subdirectories in DOCKER_BUILD_LIST
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
@@ -51,7 +51,7 @@ Docker builds:
             docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
-         
+
 Dashboard unit tests:
   stage: test
   only:
@@ -65,6 +65,7 @@ Dashboard unit tests:
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
+    - coverage report --fail-under 90
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
@@ -87,7 +88,7 @@ Dashboard API unit tests:
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
-    
+
 Data view unit tests:
   stage: test
   only:
@@ -100,7 +101,7 @@ Data view unit tests:
   script:
     - ./unittests.sh
 
-    
+
 Metadata unit tests:
   stage: test
   only:
@@ -118,7 +119,7 @@ Metadata unit tests:
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
-    
+
 Front end unit tests:
   stage: test
   only:
@@ -171,7 +172,7 @@ Docker tags for merge:
             docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
 
-         
+
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
 Docker tags for release:
   variables:
