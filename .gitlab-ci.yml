@@ -66,8 +66,8 @@ Dashboard unit tests:
   script:
     - ./unittests.sh
     - coverage html --fail-under 90
-  allow_failure: true
   artifacts:
+    when: always
     paths:
       - ${DASH_CONTEXT}/htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -89,8 +89,8 @@ Dashboard API unit tests:
   script:
     - ./unittests.sh
     - coverage html --fail-under 90
-  allow_failure: true
   artifacts:
+    when: always
     paths:
       - ${DASH_API_CONTEXT}/juno/htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -109,9 +109,9 @@ Data view unit tests:
     - cd data_view
   script:
     - ./unittests.sh
-    - coverage html --fail-under 25
-  allow_failure: true
+    - coverage html --fail-under 90
   artifacts:
+    when: always
     paths:
       - data_view/htmlcov
 
@@ -130,8 +130,8 @@ Metadata unit tests:
   script:
     - ./unittests.sh
     - coverage html --fail-under 90
-  allow_failure: true
   artifacts:
+    when: always
     paths:
       - ${METADATA_CONTEXT}/juno/htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
