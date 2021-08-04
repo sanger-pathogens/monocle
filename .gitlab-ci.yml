@@ -147,9 +147,10 @@ Front end unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
+    - npm install --save-dev jest
     - cd /app
   script:
-    - npm test
+    - jest --collect-coverage
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
