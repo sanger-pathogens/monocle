@@ -65,7 +65,8 @@ Dashboard unit tests:
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage html --fail-under 90
+    - coverage report --fail-under 90
+    - coverage html
   artifacts:
     when: always
     paths:
@@ -88,7 +89,8 @@ Dashboard API unit tests:
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage html --fail-under 90
+    - coverage report --fail-under 90
+    - coverage html
   artifacts:
     when: always
     paths:
@@ -109,7 +111,8 @@ Data view unit tests:
     - cd data_view
   script:
     - ./unittests.sh
-    - coverage html --fail-under 25
+    - coverage report --fail-under 25
+    - coverage html
   artifacts:
     when: always
     paths:
@@ -129,7 +132,8 @@ Metadata unit tests:
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage html --fail-under 90
+    - coverage report --fail-under 90
+    - coverage html
   artifacts:
     when: always
     paths:
