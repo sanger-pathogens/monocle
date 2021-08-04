@@ -1,40 +1,38 @@
 <script>
-  let files;
-  let uploading;
+  import DataUploader from "$lib/components/data-upload/DataUploader.svelte";
+  import Dialog from "$lib/components/Dialog.svelte";
+
+  const DESCRIPTION_ELEMENT_ID = "in-silico-uploading-description";
+
+  let uploadSuccessDialogOpen;
+
+  function openDialog() {
+    uploadSuccessDialogOpen = true;
+  }
 </script>
 
 
-<h2>In-silico data uploading</h2>
+<h2>In silico data upload</h2>
 
-<p id="in-silico-uploading-description">Select or drag and drop your files with <em>in-silico</em> data:</p>
+<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with <em>in silico</em> data:</p>
 
-<form on:submit|preventDefault={() => {}} aria-labelledby="in-silico-uploading-description">
-	<fieldset disabled={uploading}>
-		<input
-			bind:files
-			type="file"
-			multiple
-		>
-		
-		<button type="submit" disabled={!files || files.length === 0}>
-			Upload
-		</button>
-	</fieldset>
-</form>
+<DataUploader
+  ariaLabelledby={DESCRIPTION_ELEMENT_ID}
+  uploadUrl="/in-silico/upload"
+  on:uploadSuccess={openDialog}
+/>
+
+<Dialog bind:isOpen={uploadSuccessDialogOpen}>
+  <h3>Upload success</h3>
+
+  <p>All <em>in silico</em> data were successfully uploaded.</p>
+  <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
+</Dialog>
 
 
 <style>
-form, p {
+p {
   text-align: center;
 }
-
-fieldset {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-input[type=file] {
-  margin: 1rem 0 2rem;
-}
 </style>
+

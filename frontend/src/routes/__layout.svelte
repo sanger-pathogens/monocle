@@ -17,7 +17,8 @@
 
   // The session store can be set only in the browser. Hence we set it on component mount.
   onMount(() => {
-    session.set({ user: { role: userRole } });
+    //FIXME: will be fixed in `feature/replace-legacy-api-on-frontend` branch.
+    //session.set({ user: { role: userRole } });
   });
 </script>
 
