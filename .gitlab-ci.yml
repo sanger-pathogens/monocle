@@ -109,7 +109,7 @@ Data view unit tests:
     - cd data_view
   script:
     - ./unittests.sh
-    - coverage html --fail-under 90
+    - coverage html --fail-under 25
   artifacts:
     when: always
     paths:
@@ -149,7 +149,11 @@ Front end unit tests:
   before_script:
     - cd /app
   script:
-    - jest --collectCoverage
+    - npm run test:coverage # Coverage thresholds in package.json
+  artifacts:
+    when: always
+    paths:
+      - ${FRONTEND_CONTEXT}/app/coverage/lcov-report
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
