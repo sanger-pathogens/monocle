@@ -47,6 +47,8 @@
     "moduleFileExtensions": [
       "js",
       "svelte"
-    ]
+    ],
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"]
   }
 }
