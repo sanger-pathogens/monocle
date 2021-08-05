@@ -4,7 +4,6 @@
   import StatusChart from "../_StatusChart.svelte";
   import StatusPane from "./_StatusPane.svelte";
 
-  export let institutionName;
   export let sequencingStatus = {};
 
   const CHART_LABELS = ["Pending", "Succeeded", "Failed"];
@@ -30,15 +29,20 @@
     values={[pending, succeeded, failed]}
   />
 
-  <DownloadButtons
-    {institutionName}
-    {succeeded}
-    {failed}
-  />
+  <DownloadButtons {succeeded} />
 
-  <FailMessages
-    {failures}
-    title={FAIL_MESSAGES_TITLE}
-  />
+  {#if failed > 0}
+    <FailMessages
+      {failures}
+      title={FAIL_MESSAGES_TITLE}
+    >
+      <DownloadButtons {failed} style="float: right" />
+    </FailMessages>
+  {:else}
+    <FailMessages
+      {failures}
+      title={FAIL_MESSAGES_TITLE}
+    />
+  {/if}
 </StatusPane>
 
