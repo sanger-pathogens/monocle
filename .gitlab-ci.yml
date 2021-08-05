@@ -67,6 +67,7 @@ Dashboard unit tests:
     - ./unittests.sh
     - coverage report --fail-under 90
     - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
@@ -91,6 +92,7 @@ Dashboard API unit tests:
     - ./unittests.sh
     - coverage report --fail-under 90
     - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
@@ -113,6 +115,7 @@ Data view unit tests:
     - ./unittests.sh
     - coverage report --fail-under 25
     - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
@@ -134,6 +137,7 @@ Metadata unit tests:
     - ./unittests.sh
     - coverage report --fail-under 90
     - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
