@@ -158,7 +158,7 @@ Front end unit tests:
     - cd /app
   script:
     - npm run test:coverage # Coverage thresholds in package.json
-  coverage: \^Statements\s*:\s*([^%]+)\
+  coverage: /^Statements\s*:\s*([^%]+)/
   artifacts:
     when: always
     paths:
