@@ -5,7 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 pytest = "*"
-coverage = "5.5"
 
 [packages]
 pyyaml = "*"
@@ -22,6 +21,7 @@ openpyxl="*"
 numpy="*"
 pandas-schema="*"
 'connexion[swagger-ui]' = "*"
+coverage = "5.5"
 
 [requires]
 python_version = "3.7"
