@@ -4,7 +4,7 @@ WORKDIR /app
 
 # install dependencies
 COPY Pipfile Pipfile.lock /app/
-RUN pip install pipenv coverage==5.5 \
+RUN pip install pipenv \
     && pipenv install --system --ignore-pipfile
 
 # add rest of code
