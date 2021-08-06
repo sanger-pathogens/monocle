@@ -14,7 +14,8 @@ RUN      pip install flask==1.1.2                     \
                   python-dateutil==2.8.1              \
                   'connexion[swagger-ui]'             \
                   mysqlclient==2.0.1                  \
-                  SQLAlchemy==1.3.23
+                  SQLAlchemy==1.3.23                  \
+                  coverage==5.5
 
 COPY     . /app
 

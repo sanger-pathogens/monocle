@@ -2,4 +2,4 @@
 
 export PYTHONPATH=$(pwd)'/../dash'
 
-python3 -m unittest discover -v -s ./tests -p '*_test.py'
+coverage run -m unittest discover -v -s ./tests -p '*_test.py'

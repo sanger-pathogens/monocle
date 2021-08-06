@@ -1,8 +1,8 @@
 # Monocle
 Monocle is an exploration tool for data from the [Juno project](https://www.gbsgen.net/). It is early in development, so may be renamed and **should currently be considered unstable**.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)  
-[![codecov](https://codecov.io/gh/sanger-pathogens/monocle/branch/master/graph/badge.svg)](https://codecov.io/gh/sanger-pathogens/monocle)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)
+[![coverage report](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle/badges/master/coverage.svg)](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle/-/commits/master)
 
 ## Components
 The components include:
@@ -138,5 +138,5 @@ In production, the real data files are loaded from an S3 bucket, which is synced
 If you have Sanger credentials, see the companion gitlab repo
 [monocle-farm5](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-farm5).
 
-For development and testing, lightweight mock data for a single lane is used. See 
+For development and testing, lightweight mock data for a single lane is used. See
 the `mock-data` directory within the repo.
