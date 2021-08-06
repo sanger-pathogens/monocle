@@ -24,8 +24,9 @@ class UploadHandler:
 
     # Allowed file formats
     file_types = {
-        'xlsx': getattr(pandas, 'read_excel'),
-        'csv' : getattr(pandas, 'read_csv')
+        'tab' : getattr(pandas, 'read_csv'),
+        'tsv' : getattr(pandas, 'read_csv'),
+        'txt' : getattr(pandas, 'read_csv')
     }
 
     @property
@@ -158,7 +159,12 @@ class UploadHandler:
 
         # Load the data to a data frame
         suffix = file_path.split(".")[-1]
-        data = self.file_types[suffix](file_path, dtype=str, header=self.__spreadsheet_def.header_row_position)
+        data = self.file_types[suffix](
+            file_path,
+            dtype=str,
+            sep='\t',
+            header=self.__spreadsheet_def.header_row_position
+        )
         data.fillna('', inplace=True)
 
         # Display spreadsheet contents for debugging if required
