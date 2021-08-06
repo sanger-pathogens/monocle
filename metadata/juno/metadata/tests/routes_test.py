@@ -11,6 +11,10 @@ class TestRoutes(unittest.TestCase):
         # TODO Add this test
         pass
 
+    def test_update_in_silico_data(self):
+        # TODO Add this test
+        pass
+
     @patch('metadata.api.download_handler.DownloadHandler')
     def test_get_download_metadata(self, download_handler_mock):
         # TODO Add this test
