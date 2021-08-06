@@ -132,7 +132,7 @@ Metadata unit tests:
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
     # - pip install codecov
-    - cd "${METADATA_CONTEXT}/juno"
+    - cd /app
   script:
     - ./unittests.sh
     - coverage report --fail-under 90
@@ -141,7 +141,7 @@ Metadata unit tests:
   artifacts:
     when: always
     paths:
-      - ${METADATA_CONTEXT}/juno/htmlcov
+      - /app/juno/htmlcov
   # codecov temporarily disabled 2021-04-15 after security breach notice
   # after_script:
     # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
