@@ -5,7 +5,7 @@ it("renders the metadata uploading component", () => {
   const { container, getByRole } = render(UploadingPage);
 
   expect(container.querySelector("p").textContent)
-    .toBe("Select or drag and drop your .csv files with sample metadata:");
+    .toBe("Select or drag and drop your files with tab-separated sample metadata (.tab, .tsv, and .txt extensions are supported):");
   expect(getByRole("button", { name: "Upload" }))
     .toBeDefined();
 });
