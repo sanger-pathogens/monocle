@@ -11,10 +11,10 @@ servers:
     description: Context path
 
 paths:
-  /upload:
+  /metadata-upload:
     post:
       operationId: metadata.api.routes.update_sample_metadata
-      summary: "Upload a new Excel spreadsheet of metadata"
+      summary: "Upload a new tab-delimited file of metadata"
       requestBody:
         content:
           multipart/form-data:
@@ -28,7 +28,32 @@ paths:
         200:
           description: "The upload succeeded"
         400:
-          description: "The spreadsheet has not passed validation"
+          description: "The file has not passed validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    $ref: "#/components/schemas/ValidationErrors"
+  /in-silico-upload:
+    post:
+      operationId: metadata.api.routes.update_in_silico_data
+      summary: "Upload a new tab-delimited file of in silico data"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                spreadsheet:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: "The upload succeeded"
+        400:
+          description: "The file has not passed validation"
           content:
             application/json:
               schema:
@@ -289,4 +314,3 @@ components:
           $ref: "#/components/schemas/DownloadField"
         linezolid_method:
           $ref: "#/components/schemas/DownloadField"
-
