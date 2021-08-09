@@ -51,6 +51,12 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
 
 
 @inject
+def update_in_silico_data(body: list, upload_handler: UploadHandler):
+    # TODO - add the in silico data to existing metadata in the database
+    pass
+
+
+@inject
 def compare_sample_metadata(body: list):
     # TODO do we need to compare before we update the db? TBD
     pass

@@ -1,12 +1,13 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import ValidationErrorList from "./_ValidationErrorList.svelte";
+  import ValidationErrorList from "./ValidationErrorList.svelte";
 
-  const FILE_TYPE_CSV = ".csv,text/csv";
-  const UPLOAD_API_URL = "/metadata/upload";
+  const FILE_TYPE = "text/plain,.txt,text/tab-separated-values,.tsv,.tab";
 
+  export let ariaLabelledby = undefined;
   export let files = [];
+  export let uploadUrl;
 
   const dispatch = createEventDispatcher();
   let uploading = false;
@@ -36,7 +37,7 @@
   function uploadFile(file) {
     const formData = new FormData();
     formData.append("spreadsheet", file);
-    return fetch(UPLOAD_API_URL, {
+    return fetch(uploadUrl, {
       method: "POST",
       body: formData
     })
@@ -87,14 +88,12 @@
 </script>
 
 
-<p id="uploading-description">Select or drag and drop your <code>.csv</code> files with sample metadata:</p>
-
-<form on:submit|preventDefault={onFileSubmit} aria-labelledby="uploading-description">
+<form on:submit|preventDefault={onFileSubmit} aria-labelledby={ariaLabelledby || null}>
 	<fieldset disabled={uploading}>
 		<input
 			bind:files
 			type="file"
-			accept={FILE_TYPE_CSV}
+			accept={FILE_TYPE}
 			multiple
 		>
 		
@@ -114,7 +113,7 @@
 
 
 <style>
-form, p {
+form {
   text-align: center;
 }
 

@@ -1,5 +1,5 @@
 import { render } from "@testing-library/svelte";
-import ValidationErrorList from "./_ValidationErrorList.svelte";
+import ValidationErrorList from "./ValidationErrorList.svelte";
 
 it("is hidden when no errors are given", () => {
   const { container } = render(ValidationErrorList);
@@ -9,9 +9,9 @@ it("is hidden when no errors are given", () => {
 
 describe("w/ errors", () => {
   const VALIDATION_ERRORS = [{
-    fileName: "metadata.xlsx", errorMessages: ["some error"]
+    fileName: "metadata.txt", errorMessages: ["some error"]
   }, {
-    fileName: "metadata-w-multiple-errors.xlsx", errorMessages: ["invalid", "invalid i think"]
+    fileName: "metadata-w-multiple-errors.txt", errorMessages: ["invalid", "invalid i think"]
   }];
 
   it("shows the intro text", () => {
@@ -24,7 +24,7 @@ describe("w/ errors", () => {
   it("shows the list of errors", () => {
     const { container, queryAllByText, queryByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
   
-    expect(queryAllByText(/\.xlsx/)).toHaveLength(VALIDATION_ERRORS.length);
+    expect(queryAllByText(/\.txt/)).toHaveLength(VALIDATION_ERRORS.length);
     expect(container.querySelectorAll("li")).toHaveLength(3);
     expect(queryByText("some error")).toBeDefined();
     expect(queryByText("invalid")).toBeDefined();
