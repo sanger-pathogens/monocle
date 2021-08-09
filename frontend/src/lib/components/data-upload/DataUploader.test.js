@@ -103,9 +103,9 @@ describe("file uploading", () => {
 
     validationErrorElements = queryAllByText(validationError);
     expect(validationErrorElements).toHaveLength(0);
-    
+
     fireEvent.submit(container.querySelector("form"));
-    
+
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(FILES.length);
       validationErrorElements = queryAllByText(validationError);
@@ -123,14 +123,38 @@ describe("file uploading", () => {
       Promise.reject(error)
     );
     global.alert = jest.fn();
-    
+
     fireEvent.submit(container.querySelector("form"));
-    
+
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
       expect(alert).toHaveBeenCalledTimes(1);
       expect(alert).toHaveBeenCalledWith(
         `Upload error: ${error.message}\nPlease try again and contact us if the problem persists.`
+      );
+    });
+  });
+
+  it("displays a server error", async () => {
+    const { container, queryAllByText } = render(DataUploader, {
+      files: FILES,
+      uploadUrl: UPLOAD_URL
+    });
+    const serverError = { detail: "error description" };
+    global.fetch = jest.fn(() => Promise.resolve({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve(serverError)
+    }));
+    global.alert = jest.fn();
+
+    fireEvent.submit(container.querySelector("form"));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(alert).toHaveBeenCalledTimes(1);
+      expect(alert).toHaveBeenCalledWith(
+        `Upload error: ${serverError.detail}\nPlease try again and contact us if the problem persists.`
       );
     });
   });
@@ -142,11 +166,11 @@ describe("the loading indicator", () => {
   it("shown when uploading is in progress", async () => {
     const { container, queryByLabelText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
     const loadingIndicator = queryByLabelText(LOADING_LABEL_TEXT);
-  
+
     expect(loadingIndicator).toBeNull();
-      
+
     await fireEvent.submit(container.querySelector("form"));
-    
+
     expect(loadingIndicator).toBeDefined();
   });
 
@@ -156,11 +180,11 @@ describe("the loading indicator", () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({ ok: true })
     );
-  
+
     expect(loadingIndicator).toBeNull();
-      
+
     fireEvent.submit(container.querySelector("form"));
-    
+
     await waitFor(() =>
       expect(loadingIndicator).toBeNull()
     );

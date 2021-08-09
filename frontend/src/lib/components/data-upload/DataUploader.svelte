@@ -49,6 +49,10 @@
                 console.log(`JSON parsing error: ${err}`);
                 return Promise.reject(response.statusText);
               })
+              .then((payload) => response.status === 500 ?
+                Promise.reject(payload.detail || payload.title)
+                : Promise.resolve(payload)
+              )
             : Promise.reject(response.statusText);
         }
       });
@@ -63,7 +67,7 @@
   }
 
   function onUploadError(err) {
-    const uploadError = err ? (`Upload error: ${err.message || err}`) : "Upload error";
+    const uploadError = err ? (`Upload error: ${err.message || err}`) : "Upload error.";
     alert(`${uploadError}\nPlease try again and contact us if the problem persists.`);
   }
 
