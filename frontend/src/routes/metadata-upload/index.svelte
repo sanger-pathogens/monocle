@@ -18,7 +18,7 @@
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/metadata/upload"
+  uploadUrl="/metadata/metadata-upload"
   on:uploadSuccess={openDialog}
 />
 

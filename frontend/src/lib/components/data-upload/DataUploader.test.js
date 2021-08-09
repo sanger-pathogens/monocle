@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import DataUploader from "./DataUploader.svelte";
 
 const FILE = "file";
-const UPLOAD_URL = "/data/upload";
+const UPLOAD_URL = "/data";
 
 it("enables the upload button only when the input has a file", async () => {
   const { component, getByText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
