@@ -7,6 +7,8 @@ stages:
 variables:
   DASH_CONTEXT:             "dash"
   DASH_API_CONTEXT:         "dash-api"
+  # note there is no docker build associated with DATA_VIEW_CONTEXT
+  DATA_VIEW_CONTEXT:        "data_view"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
@@ -98,10 +100,10 @@ Data view unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - cd data_view
+    - cd "${DATA_VIEW_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 25
+    - coverage report --fail-under 60 $(find . -name '*.py')
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
