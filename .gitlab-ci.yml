@@ -1,5 +1,3 @@
-# codecov removed 2021-04-15 after security breach notice
-
 stages:
   - build
   - test
@@ -60,8 +58,6 @@ Dashboard unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
@@ -72,9 +68,6 @@ Dashboard unit tests:
     when: always
     paths:
       - ${DASH_CONTEXT}/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Dashboard API unit tests:
@@ -85,8 +78,6 @@ Dashboard API unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
@@ -97,9 +88,6 @@ Dashboard API unit tests:
     when: always
     paths:
       - ${DASH_API_CONTEXT}/juno/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Data view unit tests:
@@ -130,8 +118,6 @@ Metadata unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
@@ -142,9 +128,6 @@ Metadata unit tests:
     when: always
     paths:
       - ${METADATA_CONTEXT}/juno/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Front end unit tests:
