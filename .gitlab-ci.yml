@@ -1,5 +1,3 @@
-# codecov removed 2021-04-15 after security breach notice
-
 stages:
   - build
   - test
@@ -9,6 +7,8 @@ stages:
 variables:
   DASH_CONTEXT:             "dash"
   DASH_API_CONTEXT:         "dash-api"
+  # note there is no docker build associated with DATA_VIEW_CONTEXT
+  DATA_VIEW_CONTEXT:        "data_view"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
@@ -60,21 +60,16 @@ Dashboard unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 90
+    - coverage report --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
       - ${DASH_CONTEXT}/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Dashboard API unit tests:
@@ -85,21 +80,16 @@ Dashboard API unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 90
+    - coverage report --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
       - ${DASH_API_CONTEXT}/juno/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Data view unit tests:
@@ -110,10 +100,10 @@ Data view unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - cd data_view
+    - cd "${DATA_VIEW_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 25
+    - coverage report --fail-under 60
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
@@ -130,21 +120,16 @@ Metadata unit tests:
     - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 90
+    - coverage report --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
     when: always
     paths:
       - ${METADATA_CONTEXT}/juno/htmlcov
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
 
 
 Front end unit tests:
