@@ -103,7 +103,7 @@ Data view unit tests:
     - cd "${DATA_VIEW_CONTEXT}"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 60 $(find . -name '*.py')
+    - coverage report --fail-under 60
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
