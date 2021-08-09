@@ -198,7 +198,7 @@ class TestUploadHandler(unittest.TestCase):
 
     def test_allowed_file_types(self):
         self.assertIsNotNone(self.under_test.allowed_file_types())
-        self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['csv', 'tab', 'tsv', 'txt', 'xlsx']))
+        self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab', 'tsv', 'txt']))
 
     def test_is_valid_file_type(self):
         self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
