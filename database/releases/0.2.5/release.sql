@@ -26,4 +26,4 @@ values ('Public Health England', 'UK', 51.5018, -0.1091);
 --
 -- Update the database version
 --
-CALL update_database_version('0.2.2', '7 new institutions');
+CALL update_database_version('0.2.5', '7 new institutions');
