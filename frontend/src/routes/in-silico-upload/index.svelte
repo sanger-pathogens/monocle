@@ -18,7 +18,7 @@
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/in-silico/upload"
+  uploadUrl="/metadata/in-silico-upload"
   on:uploadSuccess={openDialog}
 />
 
