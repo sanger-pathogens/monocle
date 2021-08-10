@@ -20,7 +20,7 @@ variables:
 Docker builds:
   stage: build
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -57,7 +57,7 @@ Dashboard unit tests:
   only:
     - branches
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -75,7 +75,7 @@ Dashboard API unit tests:
   only:
     - branches
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -93,7 +93,7 @@ Data view unit tests:
   only:
     - branches
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd data_view
@@ -106,7 +106,7 @@ Metadata unit tests:
   only:
     - branches
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     # codecov temporarily disabled 2021-04-15 after security breach notice
@@ -124,7 +124,7 @@ Front end unit tests:
   only:
     - branches
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd /app
@@ -142,7 +142,7 @@ Docker tags for merge:
   only:
     - master
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -181,7 +181,7 @@ Docker tags for release:
   only:
     - tags
   tags:
-    - openstack-autoscale-theta
+    - gitlab-bastion-host-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
