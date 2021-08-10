@@ -155,7 +155,7 @@ class UploadHandler:
 
         # Belt and braces file type check
         if not self.is_valid_file_type(file_path):
-            raise RuntimeError('Not an allowed file type')
+            raise RuntimeError('Not an allowed file extension')
 
         # Load the data to a data frame
         suffix = file_path.split(".")[-1]
