@@ -25,7 +25,7 @@ class InSilicoData:
     LSAC: str
     MEFA: str
     MPHC: str
-    MRSA: str
+    MSRA: str
     MSRD: str
     PARC: str
     RPOBGBS_1: str
