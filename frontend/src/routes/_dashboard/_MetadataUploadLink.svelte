@@ -13,7 +13,7 @@
   <a
     aria-label={LINK_TITLE}
     title={LINK_TITLE}
-    href="/upload"
+    href="/metadata-upload"
   >
     <UploadIcon
       color="rgba(0,0,0,.5)"
