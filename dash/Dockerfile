@@ -15,8 +15,7 @@ RUN      pip install dash==1.19.0                        \
                      pandas==1.2.2                       \
                      python-ldap==3.3.1                  \
                      PyYAML==5.3.1                       \
-                     SQLAlchemy==1.3.23                  \
-                     coverage==5.5
+                     SQLAlchemy==1.3.23
 
 COPY     . /dash
 
