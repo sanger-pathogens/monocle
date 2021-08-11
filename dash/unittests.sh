@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 PYTHONPATH='.'
-python3 -m unittest discover -v -s tests -p '*_test.py'
+coverage run --source DataSources,MonocleDash --omit MonocleDash/components.py -m unittest discover -v -s tests -p '*_test.py'
