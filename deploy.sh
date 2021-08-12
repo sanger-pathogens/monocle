@@ -24,7 +24,7 @@ usage() {
                         from version number (set by \`--version\`)
        -t --tag         docker images tag; overrides tag derived from version
                         number (set by \`--version\`)
-       -c --conn-file   a database connection file, required for a database release
+       -c --conn-file   full path to database connection file, required for a database release
 
        (There is no option to set the public domain for the service, as
        that feature is reserved for the production environment.)
