@@ -79,7 +79,7 @@ services:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>
     expose:
-       - "80"
+       - "5000"
     restart: unless-stopped
     security_opt:
        - no-new-privileges
