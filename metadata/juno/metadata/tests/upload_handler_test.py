@@ -7,6 +7,7 @@ from metadata.lib.upload_handler import UploadHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.in_silico_data import InSilicoData
 
 
 class TestUploadHandler(unittest.TestCase):
@@ -240,7 +241,7 @@ class TestUploadHandler(unittest.TestCase):
 
         self.assertEqual(len(validation_errors), 0)
 
-    def test_parse(self) -> None:
+    def test_parse_metadata(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         # self.display_errors('test_parse', validation_errors)
 
@@ -496,3 +497,28 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
         #self.display_errors('test_txt_load_with_no_validation_errors', validation_errors)
         self.assertEqual(len(validation_errors), 0)
+
+    def test_parse_in_silico_data(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
+        #self.display_errors('test_parse_in_silico_data', validation_errors)
+
+        self.assertEqual(len(validation_errors), 0)
+
+        expected_results = [
+            InSilicoData(lane_id='50000_2#282', cps_type='III', ST='ST-I', adhP='15', pheS='8', atr='4', glnA='4', sdhA='22', glcK='1', tkt='9',
+                twenty_three_S1='pos', twenty_three_S3='pos', CAT='neg', ERMB='neg', ERMT='neg', FOSA='neg', GYRA='pos', LNUB='neg',
+                LSAC='neg', MEFA='neg', MPHC='neg', MSRA='neg', MSRD='neg', PARC='pos', RPOBGBS_1='neg', RPOBGBS_2='neg', RPOBGBS_3='neg',
+                RPOBGBS_4='neg', SUL2='neg', TETB='neg', TETL='neg', TETM='pos', TETO='neg', TETS='neg', ALP1='neg', ALP23='neg', ALPHA='neg',
+                HVGA='pos', PI1='pos', PI2A1='neg', PI2A2='neg', PI2B='pos', RIB='pos', SRR1='neg', SRR2='pos', GYRA_variant='*', PARC_variant='*'),
+            InSilicoData(lane_id='50000_2#287', cps_type='III', ST='ST-2', adhP='3', pheS='11', atr='0', glnA='16', sdhA='14', glcK='31', tkt='6',
+                twenty_three_S1='pos', twenty_three_S3='pos', CAT='neg', ERMB='neg', ERMT='neg', FOSA='neg', GYRA='pos', LNUB='neg',
+                LSAC='neg', MEFA='neg', MPHC='neg', MSRA='neg', MSRD='neg', PARC='pos', RPOBGBS_1='neg', RPOBGBS_2='neg', RPOBGBS_3='neg',
+                RPOBGBS_4='neg', SUL2='neg', TETB='neg', TETL='neg', TETM='pos', TETO='neg', TETS='neg', ALP1='neg', ALP23='neg', ALPHA='neg',
+                HVGA='pos', PI1='pos', PI2A1='neg', PI2A2='neg', PI2B='pos', RIB='pos', SRR1='neg', SRR2='pos', GYRA_variant='GYRA-T78Q,L55A', PARC_variant='PARC-Q17S')]
+
+        samples = self.under_test.parse_in_silico_data()
+        self.assertEqual(len(samples), len(expected_results))
+
+        for idx in range(0, len(expected_results)-1):
+            #print(samples[idx])
+            self.assertEqual(samples[idx], expected_results[idx])
