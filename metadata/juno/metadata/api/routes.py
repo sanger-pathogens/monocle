@@ -4,7 +4,7 @@ import os
 import connexion
 from flask import jsonify
 from injector import inject
-from metadata.api.upload_handler import UploadHandler
+from metadata.lib.upload_handler import UploadHandler
 from metadata.api.download_handler import DownloadHandler
 
 
@@ -43,7 +43,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
         if len(validation_errors) > 0:
             return jsonify({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
-            upload_handler.store()
+            upload_handler.store_metadata()
     finally:
         os.remove(spreadsheet_file)
 

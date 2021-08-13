@@ -186,7 +186,7 @@ class UploadHandler:
         self.__df = pandas.DataFrame(data)
         return errors
 
-    def parse(self) -> List[Metadata]:
+    def parse_metadata(self) -> List[Metadata]:
         """ Parse the data frame into dataclasses """
         results = []
         for _, row in self.__df.iterrows():
@@ -254,9 +254,9 @@ class UploadHandler:
             results.append(metadata)
         return results
 
-    def store(self):
+    def store_metadata(self):
         if self.__df is not None:
             logger.info("Storing spreadsheet...")
-            self.__dao.update_sample_metadata(self.parse())
+            self.__dao.update_sample_metadata(self.parse_metadata())
         else:
             raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")

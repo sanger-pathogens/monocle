@@ -1,0 +1,371 @@
+{
+  "MAX_CONTENT_LENGTH": 1048576,
+  "logging_config": {
+    "version": 1,
+    "formatters": {
+      "default": {
+        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+      }
+    },
+    "handlers": {
+      "wsgi": {
+        "class": "logging.StreamHandler",
+        "stream": "ext://flask.logging.wsgi_errors_stream",
+        "formatter": "default"
+      }
+    },
+    "flask_cors": {
+      "level": "DEBUG",
+      "handlers": [
+        "wsgi"
+      ]
+    },
+    "root": {
+      "level": "DEBUG",
+      "handlers": [
+        "wsgi"
+      ]
+    }
+  },
+  "monocle_database_config_file": "my.cnf",
+  "cors": {
+    "regex": [
+      "http://localhost:*",
+      "http://127.0.0.1:*",
+      "http://0.0.0.0:*"
+    ]
+  },
+  "spreadsheet_header_row_position": 0,
+  "upload_validation_enabled": true,
+  "spreadsheet_definition": {
+    "lane_id": {
+      "title": "Sample_id",
+      "mandatory": true,
+      "max_length": 256,
+      "regex": "^\\d+_\\d+#\\d+$",
+      "regex_validation_message": "contains illegal characters"
+    },
+    "cps_type": {
+      "title": "cps_type",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^[0-9a-zA-Z_\\-]+$",
+      "regex_validation_message": "contains illegal characters"
+    },
+    "ST": {
+      "title": "ST",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^[0-9a-zA-Z_\\-]+$",
+      "regex_validation_message": "contains illegal characters"
+    },
+    "adhP": {
+      "title": "adhP",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "pheS": {
+      "title": "pheS",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "atr": {
+      "title": "atr",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "glnA": {
+      "title": "glnA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "sdhA": {
+      "title": "sdhA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "glcK": {
+      "title": "glcK",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "tkt": {
+      "title": "tkt",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^\\d+$",
+      "regex_validation_message": "must be a whole positive number"
+    },
+    "twenty_three_S1": {
+      "title": "23S1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "twenty_three_S3": {
+      "title": "23S3",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "CAT": {
+      "title": "CAT",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "ERMB": {
+      "title": "ERMB",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "ERMT": {
+      "title": "ERMT",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "FOSA": {
+      "title": "FOSA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "GYRA": {
+      "title": "GYRA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "LNUB": {
+      "title": "LNUB",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "LSAC": {
+      "title": "LSAC",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "MEFA": {
+      "title": "MEFA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "MPHC": {
+      "title": "MPHC",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "MSRA": {
+      "title": "MSRA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "MSRD": {
+      "title": "MSRD",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "PARC": {
+      "title": "PARC",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "RPOBGBS_1": {
+      "title": "RPOBGBS-1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "RPOBGBS_2": {
+      "title": "RPOBGBS-2",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "RPOBGBS_3": {
+      "title": "RPOBGBS-3",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "RPOBGBS_4": {
+      "title": "RPOBGBS-4",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "SUL2": {
+      "title": "SUL2",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "TETB": {
+      "title": "TETB",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "TETL": {
+      "title": "TETL",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "TETM": {
+      "title": "TETM",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "TETO": {
+      "title": "TETO",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "TETS": {
+      "title": "TETS",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "ALP1": {
+      "title": "ALP1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "ALP23": {
+      "title": "ALP23",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "ALPHA": {
+      "title": "ALPHA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "HVGA": {
+      "title": "HVGA",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "PI1": {
+      "title": "PI1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "PI2A1": {
+      "title": "PI2A1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "PI2A2": {
+      "title": "PI2A2",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "PI2B": {
+      "title": "PI2B",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "RIB": {
+      "title": "RIB",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "SRR1": {
+      "title": "SRR1",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "SRR2": {
+      "title": "SRR2",
+      "mandatory": true,
+      "max_length": 20,
+      "regex": "^(pos|neg|NA)+$",
+      "regex_validation_message": "must be pos, neg or NA"
+    },
+    "GYRA_variant": {
+      "title": "GYRA_variant",
+      "mandatory": true,
+      "max_length": 100,
+      "regex": "^[0-9a-zA-Z_\\-\\,*]+$",
+      "regex_validation_message": "contains illegal characters"
+    },
+    "PARC_variant": {
+      "title": "PARC_variant",
+      "mandatory": true,
+      "max_length": 100,
+      "regex": "^[0-9a-zA-Z_\\-\\,*]+$",
+      "regex_validation_message": "contains illegal characters"
+    }
+  }
+}
