@@ -316,3 +316,10 @@ class UploadHandler:
                                 PARC_variant=self.get_cell_value('PARC_variant', row))
             results.append(in_silico_data)
         return results
+
+    def store_in_silico(self):
+        if self.__df is not None:
+            logger.info("Storing spreadsheet...")
+            self.__dao.update_sample_metadata(self.parse_in_silico_data())
+        else:
+            raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")

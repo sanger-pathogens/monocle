@@ -315,11 +315,11 @@ class TestUploadHandler(unittest.TestCase):
             # print(samples[idx])
             self.assertEqual(samples[idx], expected_results[idx])
 
-    def test_store_nothing_loaded(self) -> None:
+    def test_store_metadata_nothing_loaded(self) -> None:
         with self.assertRaises(RuntimeError):
             self.under_test.store_metadata()
 
-    def test_store(self) -> None:
+    def test_store_metadata(self) -> None:
         self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         self.under_test.store_metadata()
         self.dao_mock.update_sample_metadata.assert_called_once()
@@ -478,7 +478,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         #self.display_errors('test_tab_load_with_no_validation_errors', validation_errors)
         self.assertEqual(len(validation_errors), 0)
 
-    def test_tab_load_with_validation_errors(self) -> None:
+    def test_tsv_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TSV_WITH_VALIDATION_ERRORS, recursive=True)[0])
         #self.display_errors('test_tab_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
@@ -522,3 +522,12 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         for idx in range(0, len(expected_results)-1):
             #print(samples[idx])
             self.assertEqual(samples[idx], expected_results[idx])
+
+    def test_store_in_silico_nothing_loaded(self) -> None:
+        with self.assertRaises(RuntimeError):
+            self.under_test.store_in_silico()
+
+    def test_store_in_silico(self) -> None:
+        self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
+        self.under_test.store_in_silico()
+        self.dao_mock.update_sample_metadata.assert_called_once()
