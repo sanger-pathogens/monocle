@@ -1,8 +1,8 @@
 from   unittest                     import TestCase
 from   unittest.mock                import patch
 from   urllib.error  import URLError
-from   dash.api.service.DataSources.sample_metadata  import SampleMetadata, Monocle_Client
-from   dash.api.service.DataSources.sample_metadata  import ProtocolError
+from   DataSources.sample_metadata  import SampleMetadata, Monocle_Client
+from   DataSources.sample_metadata  import ProtocolError
 
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
