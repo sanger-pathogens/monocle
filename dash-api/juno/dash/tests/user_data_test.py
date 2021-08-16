@@ -1,16 +1,16 @@
 from   unittest               import TestCase
 from   unittest.mock          import patch
 from   ldap                   import SERVER_DOWN
-from   DataSources.user_data  import UserData, UserDataError
+from   dash.api.service.DataSources.user_data  import UserData, UserDataError
 
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class MonocleUserDataTest(TestCase):
 
-   test_config          = 'tests/mock_data/data_sources.yml'
-   bad_config           = 'tests/mock_data/data_sources_bad.yml'
-   bad_openldap_config  = 'tests/mock_data/openldap-bad.yaml'
+   test_config          = 'dash/tests/mock_data/data_sources.yml'
+   bad_config           = 'dash/tests/mock_data/data_sources_bad.yml'
+   bad_openldap_config  = 'dash/tests/mock_data/openldap-bad.yaml'
    # in UserData object variable config (dict of config parames) the OpenLDAP params are stored using this key:
    openldap_config_key  = 'openldap'
    expected_config_str  = ['openldap_config', 'ldap_url', 'users_obj', 'groups_obj', 'username_attr',

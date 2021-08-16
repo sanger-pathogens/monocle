@@ -1,17 +1,17 @@
 from   unittest                     import TestCase
 from   unittest.mock                import patch
 from   urllib.error  import URLError
-from   DataSources.sample_metadata  import SampleMetadata, Monocle_Client
-from   DataSources.sample_metadata  import ProtocolError
+from   dash.api.service.DataSources.sample_metadata  import SampleMetadata, Monocle_Client
+from   dash.api.service.DataSources.sample_metadata  import ProtocolError
 
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class SampleMetadataTest(TestCase):
 
-   test_config       = 'tests/mock_data/data_sources.yml' # ADD TEST PATH BEFORE DEPLOYMENT
-   bad_config        = 'tests/mock_data/data_sources_bad.yml'
-   bad_db_cnf        = 'tests/mock_data/bad.cnf'
+   test_config       = 'dash/tests/mock_data/data_sources.yml' # ADD TEST PATH BEFORE DEPLOYMENT
+   bad_config        = 'dash/tests/mock_data/data_sources_bad.yml'
+   bad_db_cnf        = 'dash/tests/mock_data/bad.cnf'
    bad_api_host      = 'http://no.such.host/'
    bad_api_endpoint  = '/no/such/endpoint'
    genuine_api_host  = 'http://metadata_api.dev.pam.sanger.ac.uk/'

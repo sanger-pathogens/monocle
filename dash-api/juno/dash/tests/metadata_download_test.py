@@ -1,17 +1,17 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
 from   urllib.error  import URLError
-from   DataSources.metadata_download  import MetadataDownload
-from   DataSources.metadata_download  import Monocle_Download_Client
-from   DataSources.metadata_download  import ProtocolError
+from   dash.api.service.DataSources.metadata_download  import MetadataDownload
+from   dash.api.service.DataSources.metadata_download  import Monocle_Download_Client
+from   dash.api.service.DataSources.metadata_download  import ProtocolError
 
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class MetadataDownloadTest(TestCase):
 
-   test_config             = 'tests/mock_data/data_sources.yml'
-   bad_config              = 'tests/mock_data/data_sources_bad.yml'
+   test_config             = 'dash/tests/mock_data/data_sources.yml'
+   bad_config              = 'dash/tests/mock_data/data_sources_bad.yml'
    genuine_api_host        = 'http://metadata-api/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'

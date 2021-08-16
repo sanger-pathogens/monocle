@@ -2,19 +2,19 @@ from   pandas     import DataFrame, errors
 import logging
 from   unittest   import TestCase
 
-from   DataSources.pipeline_status  import PipelineStatus, PipelineStatusDataError
+from   dash.api.service.DataSources.pipeline_status  import PipelineStatus, PipelineStatusDataError
 
 # this helps to supress messages that may crop up with using TestCase.assertRaises()
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class PipelineStatusTest(TestCase):
 
-   test_config          = 'tests/mock_data/data_sources.yml'
-   bad_config           = 'tests/mock_data/data_sources_bad.yml'
-   test_csv_file        = 'tests/mock_data/s3/status/pipelines.csv'
-   bad_csv_file         = 'tests/mock_data/s3/status/pipelines_bad.csv'
-   missing_col_csv_file = 'tests/mock_data/s3/status/pipelines_9_cols.csv'
-   empty_csv_file       = 'tests/mock_data/s3/status/pipelines_empty.csv'
+   test_config          = 'dash/tests/mock_data/data_sources.yml'
+   bad_config           = 'dash/tests/mock_data/data_sources_bad.yml'
+   test_csv_file        = 'dash/tests/mock_data/s3/status/pipelines.csv'
+   bad_csv_file         = 'dash/tests/mock_data/s3/status/pipelines_bad.csv'
+   missing_col_csv_file = 'dash/tests/mock_data/s3/status/pipelines_9_cols.csv'
+   empty_csv_file       = 'dash/tests/mock_data/s3/status/pipelines_empty.csv'
    
    # these lane IDs should be picked from test_csv_file as examples of various states
    mock_missing_lane_id       = 'no_such#lane'

@@ -2,16 +2,16 @@ from   unittest      import TestCase
 from   unittest.mock import patch
 from   datetime      import datetime
 
-from   DataSources.sample_metadata     import SampleMetadata
-from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
-from   DataSources.pipeline_status     import PipelineStatus
-from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
-from   DataSources.user_data           import UserData
-from   MonocleDash.monocleclient       import MonocleUser, MonocleData
+from   dash.api.service.DataSources.sample_metadata     import SampleMetadata
+from   dash.api.service.DataSources.sequencing_status   import SequencingStatus, MLWH_Client
+from   dash.api.service.DataSources.pipeline_status     import PipelineStatus
+from   dash.api.service.DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
+from   dash.api.service.DataSources.user_data           import UserData
+from   dash.api.service.MonocleDash.monocleclient       import MonocleUser, MonocleData
 
 class MonocleUserTest(TestCase):
    
-   test_config             = 'tests/mock_data/data_sources.yml'
+   test_config             = 'dash/tests/mock_data/data_sources.yml'
    mock_ldap_result_user   = (   'cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
                                  {  'cn': [b'mock_user_sanger_ac_uk'],
                                     'gidNumber': [b'501'],
@@ -60,7 +60,7 @@ class MonocleUserTest(TestCase):
  
 class MonocleDataTest(TestCase):
 
-   test_config = 'tests/mock_data/data_sources.yml'
+   test_config = 'dash/tests/mock_data/data_sources.yml'
 
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")

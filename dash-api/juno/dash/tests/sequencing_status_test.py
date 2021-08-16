@@ -1,17 +1,17 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
 from   urllib.error  import URLError
-from   DataSources.sequencing_status  import SequencingStatus
-from   DataSources.sequencing_status  import MLWH_Client
-from   DataSources.sequencing_status  import ProtocolError
+from   dash.api.service.DataSources.sequencing_status  import SequencingStatus
+from   dash.api.service.DataSources.sequencing_status  import MLWH_Client
+from   dash.api.service.DataSources.sequencing_status  import ProtocolError
 
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
 class SequencingStatusTest(TestCase):
 
-   test_config             = 'tests/mock_data/data_sources.yml'
-   bad_config              = 'tests/mock_data/data_sources_bad.yml'
+   test_config             = 'dash/tests/mock_data/data_sources.yml'
+   bad_config              = 'dash/tests/mock_data/data_sources_bad.yml'
    genuine_api_host        = 'http://mlwh_api.dev.pam.sanger.ac.uk/'
    bad_api_host            = 'http://no.such.host/'
    bad_api_endpoint        = '/no/such/endpoint'
