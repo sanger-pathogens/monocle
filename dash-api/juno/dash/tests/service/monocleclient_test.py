@@ -2,7 +2,7 @@ from   unittest      import TestCase
 from   unittest.mock import patch
 from   datetime      import datetime
 
-from   DataSources.monocledb           import MonocleDB
+from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
 from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
 from   DataSources.pipeline_status     import PipelineStatus
 from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
@@ -182,13 +182,14 @@ class MonocleDataTest(TestCase):
 "fake_sample_id_1","","whatevs","fake_lane_id_1","https://fake.host/any/path/fake_lane_id_1/"'''
 
    # create MonocleData object outside setUp() to avoid creating multipe instances
-   # this means we use cahced data rather than making multiple patched queries to MonocleDB etc.
+   # this means we use cahced data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
 
    def setUp(self):
       # mock moncoledb
-      self.monocle_data.monocledb = MonocleDB(set_up=False)
-      self.monocle_data.monocledb.set_up(self.test_config)
+      self.monocle_data.sample_metadata = SampleMetadata(set_up=False)
+      self.monocle_data.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+      self.monocle_data.sample_metadata.monocle_client.set_up(self.test_config)
       self.monocle_data.updated = self.mock_data_updated
 
       # mock sequencing_status
@@ -207,8 +208,8 @@ class MonocleDataTest(TestCase):
    def test_init(self):
       self.assertIsInstance(self.monocle_data, MonocleData)
 
-   @patch.object(MonocleDB,         'get_institution_names')
-   @patch.object(MonocleDB,         'get_samples')
+   @patch.object(SampleMetadata,    'get_institution_names')
+   @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
       mock_institution_query.return_value = self.mock_institutions
