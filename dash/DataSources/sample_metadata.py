@@ -34,19 +34,24 @@ class SampleMetadata:
         """
         results_list = self.monocle_client.samples()
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
-        # turn results list into dict keys on the sample IDs
-        results_by_sample_id = []
+        samples = []
         for this_result in results_list:
-            this_result.pop('id')
-            results_by_sample_id.append(this_result)
-        if institutions:
-            for result in results_by_sample_id:
-                if result['submitting_institution'] not in institutions:
-                    results_by_sample_id.pop(result)
-        if exclude_lane_id:
-            for result in results_by_sample_id:
-                result.pop('lane_id', None)
-        return results_by_sample_id
+            if institutions is None or this_result['submitting_institution'] in institutions:
+               # for historical reasons, get_samples() should return a list of dicts in the following form
+               # TODO just return `results_list` and tweak the code that calls get_samples(); it should
+               #      only require that the use of the old keys `sample_id` and `submitting_institution_id`
+               #      is replaced with 'sanger_sample_id' and 'submitting_institution', respectively
+               this_sample = {'sample_id'                   : this_result['sanger_sample_id'],
+                              'submitting_institution_id'   : this_result['submitting_institution'],
+                              'public_name'                 : this_result['public_name'],
+                              'host_status'                 : this_result['host_status'],
+                              'serotype'                    : this_result['serotype']
+                              }
+               if not exclude_lane_id:
+                  this_sample['lane_id'] = this_result['lane_id']
+               logging.warning("result: {}".format(this_sample))
+               samples.append( this_sample )
+        return samples
 
 
 class ProtocolError(Exception):

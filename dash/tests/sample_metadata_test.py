@@ -21,15 +21,15 @@ class SampleMetadataTest(TestCase):
                                        }
                                     }"""
                                     
-   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sample_id":"fake_sample_id", "public_name":"fake_name",
+   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution_id": "Ministry of Health, Central laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#124", "sample_id":"fake_sample_id", "public_name":"fake_name",
+                                                "submitting_institution": "Ministry of Health, Central laboratories", "id": "an_id"},
+                                             {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution_id": "National Reference Laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#125", "sample_id":"fake_sample_id", "public_name":"fake_name",
+                                                "submitting_institution": "National Reference Laboratories", "id": "an_id"},
+                                             {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution_id": "The Chinese University of Hong Kong", "id": "an_id"}
+                                                "submitting_institution": "The Chinese University of Hong Kong", "id": "an_id"}
                                              ]
                               }"""
 
