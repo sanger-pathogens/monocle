@@ -6,6 +6,7 @@ from flask import jsonify
 from injector import inject
 from metadata.lib.upload_handler import UploadHandler
 from metadata.api.download_handler import DownloadHandler
+from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
 
 logger = logging.getLogger()
@@ -14,6 +15,10 @@ HTTP_BAD_REQUEST_STATUS = 400
 HTTP_NOT_FOUND_STATUS = 404
 HTTP_SUCCEEDED_STATUS = 200
 
+UPLOAD_EXTENSION = '.xlsx'
+
+def convert_to_json(samples):
+    return jsonify(samples)
 
 @inject
 def update_sample_metadata(body: list, upload_handler: UploadHandler):
@@ -41,7 +46,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
     try:
         validation_errors = upload_handler.load(spreadsheet_file)
         if len(validation_errors) > 0:
-            return jsonify({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
+            return convert_to_json({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
             upload_handler.store_metadata()
     finally:
@@ -72,9 +77,45 @@ def get_download_metadata(body: list, download_handler: DownloadHandler):
         logger.error(str(ve))
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
-    result = jsonify({'download': download_handler.create_download_response(metadata_list)})
+    result = convert_to_json({'download': download_handler.create_download_response(metadata_list)})
 
     if len(metadata_list) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_institution_names(dao: MonocleDatabaseService):
+    """ Download all institution names from the database """
+    institutions = dao.get_institution_names()
+
+    result = convert_to_json({'institutions': institutions})
+
+    if len(institutions) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_samples(dao: MonocleDatabaseService):
+    """ Download all samples and their metadata from the database """
+    samples = dao.get_samples()
+
+    result = convert_to_json({'samples': samples})
+
+    if len(samples) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_institutions(dao: MonocleDatabaseService):
+
+    institutions = dao.get_institutions()
+
+    result = convert_to_json({'institutions': institutions})
+
+    if len(institutions) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS

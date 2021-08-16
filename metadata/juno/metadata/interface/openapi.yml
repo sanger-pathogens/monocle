@@ -90,6 +90,44 @@ paths:
         404:
           description: "No data could be found for the given download key"
 
+  /institutions:
+    get:
+      operationId: metadata.api.routes.get_institution_names
+      summary: "Gather the names for all institutions"
+      responses:
+        200:
+          description: "The institution result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  institutions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Institutions"
+        404:
+          description: "Institutions could not be gathered from database"
+
+  /samples:
+    get:
+      operationId: metadata.api.routes.get_samples
+      summary: "Gather all sample records"
+      responses:
+        200:
+          description: "The sample result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  samples:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Metadata"
+        404:
+          description: "No data could be found for the given institutions"
+
 
 components:
   schemas:
@@ -129,7 +167,16 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
-
+          
+    Institutions:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        #maxLength: 255
+        #pattern: '^[a-zA-Z0-9]*$'
+      minItems: 1
+      
     Metadata:
       type: object
       required:

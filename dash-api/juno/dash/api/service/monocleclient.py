@@ -4,7 +4,7 @@ from   dateutil.relativedelta import relativedelta
 import logging
 import urllib.parse
 
-import DataSources.monocledb
+import DataSources.sample_metadata
 import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
@@ -58,7 +58,7 @@ class MonocleData:
       # only set to False if you know what you're doing
       if set_up:
          self.updated                     = datetime.now()
-         self.monocledb                   = DataSources.monocledb.MonocleDB()
+         self.sample_metadata             = DataSources.sample_metadata.SampleMetadata()
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
@@ -131,7 +131,7 @@ class MonocleData:
       """
       if self.institutions_data is not None:
          return self.institutions_data
-      names = self.monocledb.get_institution_names()
+      names = self.sample_metadata.get_institution_names()
       if self.user_record is not None:
          user_memberships = [ inst['inst_id'] for inst in self.user_record['memberOf'] ]
          logging.info("user {} is a member of {}".format( self.user_record['username'],user_memberships))
@@ -176,7 +176,7 @@ class MonocleData:
       if self.samples_data is not None:
          return self.samples_data
       institutions_data = self.get_institutions()
-      all_juno_samples = self.monocledb.get_samples()
+      all_juno_samples = self.sample_metadata.get_samples()
       samples = { i:[] for i in list(self.institutions_data.keys()) }
       for this_sample in all_juno_samples:
          try:
