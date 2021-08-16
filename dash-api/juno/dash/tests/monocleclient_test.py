@@ -7,7 +7,7 @@ from   dash.api.service.DataSources.sequencing_status   import SequencingStatus,
 from   dash.api.service.DataSources.pipeline_status     import PipelineStatus
 from   dash.api.service.DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
 from   dash.api.service.DataSources.user_data           import UserData
-from   dash.api.service.MonocleDash.monocleclient       import MonocleUser, MonocleData
+from   dash.api.service.monocleclient                   import MonocleUser, MonocleData
 
 class MonocleUserTest(TestCase):
    
