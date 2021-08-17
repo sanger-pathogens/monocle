@@ -6,8 +6,8 @@ from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
 from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
 from   DataSources.pipeline_status     import PipelineStatus
 from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
-from   DataSources.user_data           import UserData
-from   monocleclient                   import MonocleUser, MonocleData
+from   DataSources.user_data           import UserData as UD
+from   service_factory                 import UserData, MonocleData
 
 class MonocleUserTest(TestCase):
    
@@ -33,14 +33,14 @@ class MonocleUserTest(TestCase):
                                  )
 
    def setUp(self):
-      self.user = MonocleUser(set_up=False)
+      self.user = UserData(set_up=False)
       self.user.user_data.set_up(self.test_config)
 
    def test_init(self):
-      self.assertIsInstance(self.user, MonocleUser)
+      self.assertIsInstance(self.user, UserData)
 
-   @patch.object(UserData, 'ldap_search_group_by_gid')
-   @patch.object(UserData, 'ldap_search_user_by_username')
+   @patch.object(UD, 'ldap_search_group_by_gid')
+   @patch.object(UD, 'ldap_search_user_by_username')
    def test_load_user_record(self,mock_user_query,mock_group_query):
       mock_user_query.return_value  = self.mock_ldap_result_user
       mock_group_query.return_value = self.mock_ldap_result_group
