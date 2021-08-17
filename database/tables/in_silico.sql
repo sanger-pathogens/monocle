@@ -1,5 +1,5 @@
 # **************************************************************
-# The api_in_silico table.
+# The in_silico table.
 # **************************************************************
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -10,10 +10,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-DROP TABLE IF EXISTS `api_in_silico`;
+DROP TABLE IF EXISTS `in_silico`;
 
-CREATE TABLE `api_in_silico` (
-  `lane_id` varchar(256) DEFAULT NULL,
+CREATE TABLE `in_silico` (
+  `lane_id` varchar(256) NOT NULL,
   `gbs_typer_serotype` varchar(256),
   `MLST` varchar(256),
   `adhP` int(11) DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `api_in_silico` (
   `LNUB` varchar(30),
   `LSAC` varchar(30),
   `MEFA` varchar(30),
-  `MPHC` varchar(30)),
+  `MPHC` varchar(30),
   `MSRA` varchar(30),
   `MSRD` varchar(30),
   `PARC` varchar(30),
@@ -59,7 +59,7 @@ CREATE TABLE `api_in_silico` (
   `SRR1` varchar(30),
   `SRR2` varchar(30),
   `GYRA_variant` varchar(256),
-  `PARC_variant` varchar(256)
+  `PARC_variant` varchar(256),
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
