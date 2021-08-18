@@ -10,6 +10,9 @@
 # - the MLWH API config file as `/dash/mlwh-api.yml`
 # - the script itself, in `/dash`
 # 
+# Network:
+# - must be attached to the Monocle docker network (see `docker-compose.yml`)
+# 
 # The s3 bucket is mounted as SAMPLE_DATA_PATH to that target of the symlinks
 # has the same path within the container as on the host machine.
 # 
@@ -24,6 +27,7 @@ docker run  -u `id -u`:`id -g` \
             --volume `pwd`/my.cnf:/dash/my.cnf \
             --volume `pwd`/mlwh-api.yml:/dash/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/dash/create_download_view_for_sample_data.py \
+            --network monocle_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG> \
             python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@ 
 
