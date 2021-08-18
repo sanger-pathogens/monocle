@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-# This runs `create_download_view_for_sample_data.py` inside a `monocle-dash` container
+# This runs `create_download_view_for_sample_data.py` inside a `monocle-dash-api` container
 # 
 # Volume mounts required are:
-# - the s3 bucket (source data) directory as `/dash/monocle_juno`
 # - the s3 bucket (source data) directory as SAMPLE_DATA_PATH
-# - the output directory as `/dash/monocle_juno_institution_view`
-# - the db config file as `/dash/my.cnf`
-# - the MLWH API config file as `/dash/mlwh-api.yml`
-# - the script itself, in `/dash`
+# - the output directory as `/app/monocle_juno_institution_view`
+# - the db config file as `/app/my.cnf`
+# - the MLWH API config file as `/app/mlwh-api.yml`
+# - the script itself, in `/app`
 # 
 # Network:
 # - must be attached to the Monocle docker network (see `docker-compose.yml`)
@@ -24,13 +23,13 @@ SAMPLE_DATA_PATH="${HOME}/monocle_juno"
 docker run  -u `id -u`:`id -g` \
             --rm \
             --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
-            --volume `pwd`/monocle_juno_institution_view:/dash/monocle_juno_institution_view  \
-            --volume `pwd`/my.cnf:/dash/my.cnf \
-            --volume `pwd`/mlwh-api.yml:/dash/mlwh-api.yml \
-            --volume `pwd`/create_download_view_for_sample_data.py:/dash/create_download_view_for_sample_data.py \
+            --volume `pwd`/monocle_juno_institution_view:/app/monocle_juno_institution_view  \
+            --volume `pwd`/my.cnf:/app/my.cnf \
+            --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
+            --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
             --network monocle_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
-            python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@ 
+            python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@
 
 # Add md5 checksum files to each lane after all the directories have been created.
 # Doing this here should ensure that any new lanes/data get md5 files added asap.
