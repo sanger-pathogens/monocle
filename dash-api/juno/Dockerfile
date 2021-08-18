@@ -22,5 +22,5 @@ COPY     . /app
 # Temp hack until we have a final version of the dash DataSources component available
 ENV      PYTHONPATH "${PYTHONPATH}:./dash/api/service"
 
-EXPOSE   80
-CMD      ["gunicorn", "-w 2", "-b :80", "dash.wsgi"]
+EXPOSE   5000
+CMD      ["gunicorn", "-w 2", "-b :5000", "dash.wsgi"]

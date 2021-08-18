@@ -55,8 +55,9 @@ services:
       - API_TEST_MODE=false
   dash-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
-      - "80"
+      - "5000"
     restart: unless-stopped
     security_opt:
       - no-new-privileges
