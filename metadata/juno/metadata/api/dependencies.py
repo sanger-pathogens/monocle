@@ -33,14 +33,24 @@ class MetadataApiModule(Module):
             return MonocleDatabaseServiceNoOpImpl(read_mock_database_connection_config(config))
 
     @provider
-    def upload_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
+    def upload_metadata_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
         do_validation = False
         try:
             do_validation = config['upload_validation_enabled']
         except KeyError:
             pass
-        upload_metadata_handler = UploadHandler(metadata_dao, read_spreadsheet_definition_config(config), do_validation)
+        upload_metadata_handler = UploadHandler(metadata_dao, read_spreadsheet_definition_config(config['metadata']), do_validation)
         return upload_metadata_handler
+
+    @provider
+    def upload_in_silico_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
+        do_validation = False
+        try:
+            do_validation = config['upload_validation_enabled']
+        except KeyError:
+            pass
+        upload_in_silico_handler = UploadHandler(metadata_dao, read_spreadsheet_definition_config(config['in_silico_data']), do_validation)
+        return upload_in_silico_handler
 
     @provider
     def download_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> DownloadHandler:

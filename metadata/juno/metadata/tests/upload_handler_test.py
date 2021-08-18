@@ -40,7 +40,7 @@ class TestUploadHandler(unittest.TestCase):
                 data = app_config_file.read()
                 self.config = json.loads(data)
                 self.test_spreadsheet_def = SpreadsheetDefinition(
-                    self.config['spreadsheet_header_row_position'], self.config['spreadsheet_definition'])
+                    self.config['metadata']['spreadsheet_header_row_position'], self.config['metadata']['spreadsheet_definition'])
             self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
@@ -334,7 +334,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
     TEST_TSV_WITH_NO_ERRORS = '**/valid_in_silico_data.tsv'
     TEST_TXT_WITH_VALIDATION_ERRORS = '**/validation_test_in_silico_data.txt'
     TEST_TXT_WITH_NO_ERRORS = '**/valid_in_silico_data.txt'
-    CONFIG_FILE_PATH = 'in_silico_data_config.json'
+    CONFIG_FILE_PATH = 'config.json'
 
     def display_errors(self, test_method, errors: List[str]) -> None:
         print('{} errors:'.format(test_method))
@@ -355,7 +355,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
                 data = app_config_file.read()
                 self.config = json.loads(data)
                 self.test_spreadsheet_def = SpreadsheetDefinition(
-                    self.config['spreadsheet_header_row_position'], self.config['spreadsheet_definition'])
+                    self.config['in_silico_data']['spreadsheet_header_row_position'], self.config['in_silico_data']['spreadsheet_definition'])
 
             self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
