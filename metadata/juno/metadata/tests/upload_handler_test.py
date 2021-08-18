@@ -3,7 +3,7 @@ from unittest.mock import patch
 import json
 import glob
 from typing import List
-from metadata.lib.upload_handler import UploadHandler
+from metadata.lib.upload_handler import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
@@ -41,7 +41,7 @@ class TestUploadHandler(unittest.TestCase):
                 self.config = json.loads(data)
                 self.test_spreadsheet_def = SpreadsheetDefinition(
                     self.config['metadata']['spreadsheet_header_row_position'], self.config['metadata']['spreadsheet_definition'])
-            self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
+            self.under_test = UploadMetadataHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
@@ -201,12 +201,12 @@ class TestUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab', 'tsv', 'txt']))
 
     def test_is_valid_file_type(self):
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertFalse(UploadHandler.is_valid_file_type('foo'))
-        self.assertFalse(UploadHandler.is_valid_file_type(None))
-        self.assertFalse(UploadHandler.is_valid_file_type(''))
+        self.assertTrue(UploadMetadataHandler.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertTrue(UploadMetadataHandler.is_valid_file_type(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertTrue(UploadMetadataHandler.is_valid_file_type(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertFalse(UploadMetadataHandler.is_valid_file_type('foo'))
+        self.assertFalse(UploadMetadataHandler.is_valid_file_type(None))
+        self.assertFalse(UploadMetadataHandler.is_valid_file_type(''))
 
     def test_tab_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
@@ -308,7 +308,7 @@ class TestUploadHandler(unittest.TestCase):
                  levofloxacin='', levofloxacin_method='', ciprofloxacin='', ciprofloxacin_method='', daptomycin='',
                  daptomycin_method='', vancomycin='', vancomycin_method='', linezolid='', linezolid_method='')]
 
-        samples = self.under_test.parse_metadata()
+        samples = self.under_test.parse()
         self.assertEqual(len(samples), len(expected_results))
 
         for idx in range(0, len(expected_results)-1):
@@ -317,11 +317,11 @@ class TestUploadHandler(unittest.TestCase):
 
     def test_store_metadata_nothing_loaded(self) -> None:
         with self.assertRaises(RuntimeError):
-            self.under_test.store_metadata()
+            self.under_test.store()
 
     def test_store_metadata(self) -> None:
         self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
-        self.under_test.store_metadata()
+        self.under_test.store()
         self.dao_mock.update_sample_metadata.assert_called_once()
 
 
@@ -357,7 +357,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
                 self.test_spreadsheet_def = SpreadsheetDefinition(
                     self.config['in_silico_data']['spreadsheet_header_row_position'], self.config['in_silico_data']['spreadsheet_definition'])
 
-            self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
+            self.under_test = UploadInSilicoHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
@@ -461,12 +461,12 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab','tsv','txt']))
 
     def test_is_valid_file_type(self):
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TAB_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TSV_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TXT_WITH_NO_ERRORS))
-        self.assertFalse(UploadHandler.is_valid_file_type('foo'))
-        self.assertFalse(UploadHandler.is_valid_file_type(None))
-        self.assertFalse(UploadHandler.is_valid_file_type(''))
+        self.assertTrue(UploadInSilicoHandler.is_valid_file_type(self.TEST_TAB_WITH_NO_ERRORS))
+        self.assertTrue(UploadInSilicoHandler.is_valid_file_type(self.TEST_TSV_WITH_NO_ERRORS))
+        self.assertTrue(UploadInSilicoHandler.is_valid_file_type(self.TEST_TXT_WITH_NO_ERRORS))
+        self.assertFalse(UploadInSilicoHandler.is_valid_file_type('foo'))
+        self.assertFalse(UploadInSilicoHandler.is_valid_file_type(None))
+        self.assertFalse(UploadInSilicoHandler.is_valid_file_type(''))
 
     def test_tab_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_WITH_VALIDATION_ERRORS, recursive=True)[0])
@@ -516,7 +516,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
                 RPOBGBS_4='neg', SUL2='neg', TETB='neg', TETL='neg', TETM='pos', TETO='neg', TETS='neg', ALP1='neg', ALP23='neg', ALPHA='neg',
                 HVGA='pos', PI1='pos', PI2A1='neg', PI2A2='neg', PI2B='pos', RIB='pos', SRR1='neg', SRR2='pos', GYRA_variant='GYRA-T78Q,L55A', PARC_variant='PARC-Q17S')]
 
-        samples = self.under_test.parse_in_silico_data()
+        samples = self.under_test.parse()
         self.assertEqual(len(samples), len(expected_results))
 
         for idx in range(0, len(expected_results)-1):
@@ -525,9 +525,9 @@ class TestInSilicoUploadHandler(unittest.TestCase):
 
     def test_store_in_silico_nothing_loaded(self) -> None:
         with self.assertRaises(RuntimeError):
-            self.under_test.store_in_silico()
+            self.under_test.store()
 
     def test_store_in_silico(self) -> None:
         self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
-        self.under_test.store_in_silico()
+        self.under_test.store()
         self.dao_mock.update_sample_metadata.assert_called_once()

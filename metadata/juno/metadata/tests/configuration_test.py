@@ -21,7 +21,7 @@ class TestConfiguration(unittest.TestCase):
         with open(self.CONFIG_FILE) as config_file:
             use_swagger_ui = True if os.environ.get('ENABLE_SWAGGER_UI', '').lower() == 'true' else False
             app_handle = connexion.FlaskApp(__name__, specification_dir='../interface', options={'swagger_ui': use_swagger_ui})
-            app_handle.add_api(self.OPEN_API_SPEC_FILE, strict_validation=True)
+            app_handle.add_api(self.OPEN_API_SPEC_FILE, strict_validation=False)
             app_handle.app.config.update(json.load(config_file))
             logging.config.dictConfig(app_handle.app.config.get('logging_config'))
             app_handle.app.config['JSON_SORT_KEYS'] = False

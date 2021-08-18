@@ -4,7 +4,7 @@ import os
 import connexion
 from flask import jsonify
 from injector import inject
-from metadata.lib.upload_handler import UploadHandler
+from metadata.lib.upload_handler import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.download_handler import DownloadHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
@@ -21,7 +21,7 @@ def convert_to_json(samples):
     return jsonify(samples)
 
 @inject
-def update_sample_metadata(body: list, upload_handler: UploadHandler):
+def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
     """ Upload a spreadsheet to the database """
     try:
         uploaded_file = connexion.request.files['spreadsheet']
@@ -56,7 +56,7 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
 
 
 @inject
-def update_in_silico_data(body: list, upload_handler: UploadHandler):
+def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
     """ Upload a in silico data to the database """
     try:
         uploaded_file = connexion.request.files['spreadsheet']
