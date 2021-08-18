@@ -22,6 +22,7 @@ SAMPLE_DATA_PATH="${HOME}/monocle_juno"
 
 # Using the -u option ensures that file/directories are owned by the application user rather than root
 docker run  -u `id -u`:`id -g` \
+            --rm \
             --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
             --volume `pwd`/monocle_juno_institution_view:/dash/monocle_juno_institution_view  \
             --volume `pwd`/my.cnf:/dash/my.cnf \
