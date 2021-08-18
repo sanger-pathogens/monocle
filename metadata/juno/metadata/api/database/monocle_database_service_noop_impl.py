@@ -1,5 +1,6 @@
 from typing import List
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.institution import Institution
@@ -27,6 +28,10 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
 
     def update_sample_metadata(self, metadata_list: List[Metadata]) -> None:
         """ Update sample metadata in the database """
+        pass
+
+    def update_lane_in_silico_data(self, in_silico_data_list: List[InSilicoData]) -> None:
+        """ Update sample in silico data in the database """
         pass
 
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
@@ -104,4 +109,3 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
             )
 
         return results
-

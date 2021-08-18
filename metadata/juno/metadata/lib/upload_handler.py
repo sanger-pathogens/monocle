@@ -6,6 +6,7 @@ from pandas_schema import Column, Schema
 from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, \
     MatchesPatternValidation, InRangeValidation, InListValidation, CustomElementValidation
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
@@ -258,5 +259,67 @@ class UploadHandler:
         if self.__df is not None:
             logger.info("Storing spreadsheet...")
             self.__dao.update_sample_metadata(self.parse_metadata())
+        else:
+            raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")
+
+    def parse_in_silico_data(self):
+        """ Parse in silico data into dataclass """
+        results = []
+        for _, row in self.__df.iterrows():
+            in_silico_data = InSilicoData(
+                                lane_id=self.get_cell_value('lane_id', row),
+                                cps_type=self.get_cell_value('cps_type', row),
+                                ST=self.get_cell_value('ST', row),
+                                adhP=self.get_cell_value('adhP', row),
+                                pheS=self.get_cell_value('pheS', row),
+                                atr=self.get_cell_value('atr', row),
+                                glnA=self.get_cell_value('glnA', row),
+                                sdhA=self.get_cell_value('sdhA', row),
+                                glcK=self.get_cell_value('glcK', row),
+                                tkt=self.get_cell_value('tkt', row),
+                                twenty_three_S1=self.get_cell_value('twenty_three_S1', row),
+                                twenty_three_S3=self.get_cell_value('twenty_three_S3', row),
+                                CAT=self.get_cell_value('CAT', row),
+                                ERMB=self.get_cell_value('ERMB', row),
+                                ERMT=self.get_cell_value('ERMT', row),
+                                FOSA=self.get_cell_value('FOSA', row),
+                                GYRA=self.get_cell_value('GYRA', row),
+                                LNUB=self.get_cell_value('LNUB', row),
+                                LSAC=self.get_cell_value('LSAC', row),
+                                MEFA=self.get_cell_value('MEFA', row),
+                                MPHC=self.get_cell_value('MPHC', row),
+                                MSRA=self.get_cell_value('MSRA', row),
+                                MSRD=self.get_cell_value('MSRD', row),
+                                PARC=self.get_cell_value('PARC', row),
+                                RPOBGBS_1=self.get_cell_value('RPOBGBS_1', row),
+                                RPOBGBS_2=self.get_cell_value('RPOBGBS_2', row),
+                                RPOBGBS_3=self.get_cell_value('RPOBGBS_3', row),
+                                RPOBGBS_4=self.get_cell_value('RPOBGBS_4', row),
+                                SUL2=self.get_cell_value('SUL2', row),
+                                TETB=self.get_cell_value('TETB', row),
+                                TETL=self.get_cell_value('TETL', row),
+                                TETM=self.get_cell_value('TETM', row),
+                                TETO=self.get_cell_value('TETO', row),
+                                TETS=self.get_cell_value('TETS', row),
+                                ALP1=self.get_cell_value('ALP1', row),
+                                ALP23=self.get_cell_value('ALP23', row),
+                                ALPHA=self.get_cell_value('ALPHA', row),
+                                HVGA=self.get_cell_value('HVGA', row),
+                                PI1=self.get_cell_value('PI1', row),
+                                PI2A1=self.get_cell_value('PI2A1', row),
+                                PI2A2=self.get_cell_value('PI2A2', row),
+                                PI2B=self.get_cell_value('PI2B', row),
+                                RIB=self.get_cell_value('RIB', row),
+                                SRR1=self.get_cell_value('SRR1', row),
+                                SRR2=self.get_cell_value('SRR2', row),
+                                GYRA_variant=self.get_cell_value('GYRA_variant', row),
+                                PARC_variant=self.get_cell_value('PARC_variant', row))
+            results.append(in_silico_data)
+        return results
+
+    def store_in_silico(self):
+        if self.__df is not None:
+            logger.info("Storing spreadsheet...")
+            self.__dao.update_sample_metadata(self.parse_in_silico_data())
         else:
             raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")

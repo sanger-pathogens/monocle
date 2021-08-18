@@ -57,8 +57,37 @@ def update_sample_metadata(body: list, upload_handler: UploadHandler):
 
 @inject
 def update_in_silico_data(body: list, upload_handler: UploadHandler):
-    # TODO - add the in silico data to existing metadata in the database
-    pass
+    """ Upload a in silico data to the database """
+    try:
+        uploaded_file = connexion.request.files['spreadsheet']
+        if not uploaded_file:
+            raise KeyError('No upload spreadsheet file found')
+    except KeyError:
+        logger.error('Missing upload spreadsheet file in request')
+        return 'Missing spreadsheet file', HTTP_BAD_REQUEST_STATUS
+
+    logger.info('Uploading spreadsheet {}...'.format(uploaded_file.filename))
+
+    # Check the extension...
+    if not upload_handler.is_valid_file_type(uploaded_file.filename):
+        logger.error('Upload file {} does not have a valid extension, expected one of {}'.format(
+            uploaded_file.filename, upload_handler.allowed_file_types()))
+        return 'The upload file must be one of the following formats: {}'.format(upload_handler.allowed_file_types()), \
+               HTTP_BAD_REQUEST_STATUS
+
+    spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
+    uploaded_file.save(spreadsheet_file)
+
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file)
+        if len(validation_errors) > 0:
+            return jsonify({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
+        else:
+            upload_handler.store_in_silico_data()
+    finally:
+        os.remove(spreadsheet_file)
+
+    return HTTP_SUCCEEDED_STATUS
 
 
 @inject

@@ -282,12 +282,128 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
         self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
 
+    def test_update_lane_in_silico_data(self) -> None:
+        in_silico_data_list = [TEST_LANE_1, TEST_LANE_2]
+        self.under_test.update_lane_in_silico_data(in_silico_data_list)
+        calls = [
+            call(
+                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_IN_SILICO_SQL,
+                lane_id='50000_2#282',
+                cps_type='III',
+                ST='ST-I',
+                adhP=15,
+                pheS=8,
+                atr=4,
+                glnA=4,
+                sdhA=22,
+                glcK=1,
+                tkt=9,
+                twenty_three_S1='pos',
+                twenty_three_S3='pos',
+                CAT='neg',
+                ERMB='neg',
+                ERMT='neg',
+                FOSA='neg',
+                GYRA='pos',
+                LNUB='neg',
+                LSAC='neg',
+                MEFA='neg',
+                MPHC='neg',
+                MSRA='neg',
+                MSRD='neg',
+                PARC='pos',
+                RPOBGBS_1='neg',
+                RPOBGBS_2='neg',
+                RPOBGBS_3='neg',
+                RPOBGBS_4='neg',
+                SUL2='neg',
+                TETB='neg',
+                TETL='neg',
+                TETM='pos',
+                TETO='neg',
+                TETS='neg',
+                ALP1='neg',
+                ALP23='neg',
+                ALPHA='neg',
+                HVGA='pos',
+                PI1='pos',
+                PI2A1='neg',
+                PI2A2='neg',
+                PI2B='pos',
+                RIB='pos',
+                SRR1='neg',
+                SRR2='pos',
+                GYRA_variant='*',
+                PARC_variant='*'
+            ),
+            call(
+                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_IN_SILICO_SQL,
+                lane_id='50000_2#287',
+                cps_type='III',
+                ST='ST-II',
+                adhP=3,
+                pheS=11,
+                atr=0,
+                glnA=16,
+                sdhA=14,
+                glcK=31,
+                tkt=6,
+                twenty_three_S1='pos',
+                twenty_three_S3='pos',
+                CAT='neg',
+                ERMB='neg',
+                ERMT='neg',
+                FOSA='neg',
+                GYRA='pos',
+                LNUB='neg',
+                LSAC='neg',
+                MEFA='neg',
+                MPHC='neg',
+                MSRA='neg',
+                MSRD='neg',
+                PARC='pos',
+                RPOBGBS_1='neg',
+                RPOBGBS_2='neg',
+                RPOBGBS_3='neg',
+                RPOBGBS_4='neg',
+                SUL2='neg',
+                TETB='neg',
+                TETL='neg',
+                TETM='pos',
+                TETO='neg',
+                TETS='neg',
+                ALP1='neg',
+                ALP23='neg',
+                ALPHA='neg',
+                HVGA='pos',
+                PI1='pos',
+                PI2A1='neg',
+                PI2A2='neg',
+                PI2B='pos',
+                RIB='pos',
+                SRR1='neg',
+                SRR2='pos',
+                GYRA_variant='GYRA-T78Q,L55A',
+                PARC_variant='PARC-Q17S'
+            )
+        ]
+
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+
     def test_update_sample_metadata_noinput(self) -> None:
         metadata_list = []
         self.under_test.update_sample_metadata(metadata_list)
         self.transactional_connection.get_connection.assert_not_called()
         metadata_list = None
         self.under_test.update_sample_metadata(metadata_list)
+        self.transactional_connection.get_connection.assert_not_called()
+
+    def test_update_lane_in_silico_data_noinput(self) -> None:
+        in_silic_data_list = []
+        self.under_test.update_sample_metadata(in_silic_data_list)
+        self.transactional_connection.get_connection.assert_not_called()
+        in_silic_data_list = None
+        self.under_test.update_sample_metadata(in_silic_data_list)
         self.transactional_connection.get_connection.assert_not_called()
 
     def test_get_download_metadata(self) -> None:

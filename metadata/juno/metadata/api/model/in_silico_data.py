@@ -7,13 +7,13 @@ class InSilicoData:
     lane_id: str
     cps_type: str
     ST: str
-    adhP: int
-    pheS: int
-    atr: int
-    glnA: int
-    sdhA: int
-    glcK: int
-    tkt: int
+    adhP: str
+    pheS: str
+    atr: str
+    glnA: str
+    sdhA: str
+    glcK: str
+    tkt: str
     twenty_three_S1: str
     twenty_three_S3: str
     CAT: str
