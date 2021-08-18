@@ -29,7 +29,7 @@ docker run  -u `id -u`:`id -g` \
             --volume `pwd`/mlwh-api.yml:/dash/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/dash/create_download_view_for_sample_data.py \
             --network monocle_default \
-            gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG> \
+            gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
             python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@ 
 
 # Add md5 checksum files to each lane after all the directories have been created.
