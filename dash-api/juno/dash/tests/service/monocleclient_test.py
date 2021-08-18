@@ -1,6 +1,9 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
 from   datetime      import datetime
+import logging
+from   os            import environ
+from   pathlib       import Path
 
 from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
 from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
@@ -61,6 +64,9 @@ class MonocleUserTest(TestCase):
 class MonocleDataTest(TestCase):
 
    test_config = 'dash/tests/mock_data/data_sources.yml'
+   mock_inst_view_dir      = 'dash/tests/mock_data/monocle_juno_institution_view'
+   # ensure mock_downloads_dir matches `data_download.web_dir` in the `test_config` file
+   mock_downloads_dir      = 'dash/tests/mock_data/monocle_juno_web_root/downloads'
 
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
@@ -182,8 +188,9 @@ class MonocleDataTest(TestCase):
 "fake_sample_id_1","","whatevs","fake_lane_id_1","https://fake.host/any/path/fake_lane_id_1/"'''
 
    # create MonocleData object outside setUp() to avoid creating multipe instances
-   # this means we use cahced data rather than making multiple patched queries to SampleMetadata etc.
+   # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
+   monocle_data.download_symlink_config = test_config
 
    def setUp(self):
       # mock moncoledb
@@ -191,7 +198,6 @@ class MonocleDataTest(TestCase):
       self.monocle_data.sample_metadata.monocle_client = Monocle_Client(set_up=False)
       self.monocle_data.sample_metadata.monocle_client.set_up(self.test_config)
       self.monocle_data.updated = self.mock_data_updated
-
       # mock sequencing_status
       self.monocle_data.sequencing_status_source = SequencingStatus(set_up=False)
       self.monocle_data.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
@@ -205,6 +211,7 @@ class MonocleDataTest(TestCase):
       # load mock data
       self.get_mock_data()
       
+ 
    def test_init(self):
       self.assertIsInstance(self.monocle_data, MonocleData)
 
@@ -250,6 +257,32 @@ class MonocleDataTest(TestCase):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
       
+   @patch.dict(environ, {"DATA_INSTITUTION_VIEW": mock_inst_view_dir}, clear=True)
+   def test_make_download_symlink(self):
+      # set up
+      Path(self.mock_inst_view_dir).mkdir(parents=True, exist_ok=True)
+      for mock_inst in self.mock_institutions:
+         Path(self.mock_inst_view_dir,self.monocle_data.institution_db_key_to_dict[mock_inst]).mkdir(exist_ok=True)
+      Path(self.mock_downloads_dir).mkdir(parents=True, exist_ok=True)
+      # tests
+      symlink = self.monocle_data.make_download_symlink(self.mock_institutions[0])
+      # TODO fix test below
+      #      `symlink` will have a URL path, summat like `files/downloads/4405b87791e547da8439bc73d073b2da`
+      #       the link on disk is `dash/tests/mock_data/monocle_juno_web_root/downloads/4405b87791e547da8439bc73d073b2da`
+      self.assertTrue( Path(symlink).is_symlink() )
+      # TODO add test that checks symlink points at `dash/tests/mock_data/monocle_juno_institution_view/FakOne`
+         
+      # tear down
+      def _rm_minus_r(this_path: Path):
+         for child in this_path.iterdir():
+            if child.is_file() or child.is_symlink():
+               child.unlink()
+            else:
+               _rm_minus_r(child)
+         this_path.rmdir()
+      _rm_minus_r(Path(self.mock_inst_view_dir))
+      _rm_minus_r(Path(self.mock_downloads_dir))
+     
    @patch.object(MetadataDownload,  'get_metadata')
    def test_get_metadata(self, mock_metadata_fetch):
       mock_metadata_fetch.return_value = self.mock_metadata

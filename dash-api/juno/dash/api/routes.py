@@ -8,7 +8,8 @@ from dash.api.exceptions import NotAuthorisedException
 logger = logging.getLogger()
 
 HTTP_SUCCEEDED_STATUS = 200
-
+HTTP_BAD_REQUEST_STATUS = 400
+HTTP_SERVER_ERROR_STATUS = 500
 
 # Testing only
 ServiceFactory.TEST_MODE = False
@@ -45,6 +46,11 @@ def get_progress():
     """ Get dashboard progress graph information """
     data = ServiceFactory.data_service(get_authenticated_username(request)).get_progress()
     progress_dict = dict()
+    # TODO check which of the following values are needed
+    #      `data` defintely required
+    #      the other values were originally returned by this function for
+    #      use in a plot.ly js graph drawing function, and may not be required
+    #      by the new dashboard
     progress_dict['title'] = 'Project Progress'
     progress_dict['data'] = data
     progress_dict['x_col_key'] = 'date'
@@ -77,18 +83,16 @@ def pipeline_status_summary():
 
 def get_metadata_for_download(institution: str, category: str, status: str):
     data_service = ServiceFactory.data_service(get_authenticated_username(request))
-    # TODO This needs completing - may need extra bits from monocledash etc
-    """
     institution_data = data_service.get_institutions()
     institution_names = [institution_data[i]['name'] for i in institution_data.keys()]
     if not institution in institution_names:
-        return download_parameter_error(
-            "Parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format(
-                '", "'.join(institution_names)))
-
-    institution_download_symlink_url_path = make_download_symlink(data, institution)
+        logging.error("Invalid request to /download: parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
+        return HTTP_BAD_REQUEST_STATUS
+    institution_download_symlink_url_path = data_service.make_download_symlink(institution)
     if institution_download_symlink_url_path is None:
-        return "Sample data are temporarily unavailable", 500
+        return HTTP_SERVER_ERROR_STATUS
+    # TODO This needs completing - may need extra bits from monocledash etc
+    """
     host_url = 'https://{}'.format(request.host)
     # TODO add correct port number
     # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances

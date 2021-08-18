@@ -2,7 +2,11 @@ from   collections            import defaultdict
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
+from   os                     import environ
+from   pathlib                import Path
 import urllib.parse
+import uuid
+import yaml
 
 import DataSources.sample_metadata
 import DataSources.metadata_download
@@ -62,6 +66,7 @@ class MonocleData:
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
+         self.download_symlink_config     = 'data_sources.yml'
 
    def get_progress(self):
       institutions_data = self.get_institutions()
@@ -475,6 +480,66 @@ class MonocleData:
       csv_giant_string = "\n".join(csv)
       return csv_giant_string
 
+   def make_download_symlink(self,target_institution):
+      """
+      Pass the institution name.
+      
+      This creates a symlink from the web server download directory to the
+      directory in which an institution's sample data (annotations,
+      assemblies, reads etc.) can be found.
+      
+      The symlink has a random name so only someone given the URL will be
+      able to access it.
+      
+      The symlink path (relative to web server document root) is returned.
+      """
+      download_config_section = 'data_download'
+      download_dir_param      = 'web_dir'
+      download_url_path       = 'url_path'
+      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
+      # get web server directory, and check it exists
+      if not Path(self.download_symlink_config).is_file():
+         return self.download_config_error("data source config file {} missing".format(self.download_symlink_config))
+      # read config, check required params
+      with open(self.download_symlink_config, 'r') as file:
+         data_sources = yaml.load(file, Loader=yaml.FullLoader)
+         if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
+            return self.download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_dir_param))
+         download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
+         if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
+            return self.download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_url_path))
+         download_url_path  = data_sources[download_config_section][download_url_path]
+      if not download_web_dir.is_dir():
+         return self.download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
+      logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
+      # get the "target" directory where the data for the institution is kept, and check it exists
+      # (Why an environment variable?  Because this can be set by docker-compose, and it is a path
+      # to a volume mount that is also set up by docker-compose.)
+      if data_inst_view_environ not in environ:
+         return self.download_config_error("environment variable {} is not set".format(data_inst_view_environ))
+      download_host_dir = Path(environ[data_inst_view_environ], self.institution_db_key_to_dict[target_institution])
+      if not download_host_dir.is_dir():
+         return self.download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
+      logging.debug('host data download dir = {}'.format(str(download_host_dir)))
+      # create a randomly named symlink to present to the user (do..while is just in case the path exists already)
+      while True:
+         random_name          = uuid.uuid4().hex
+         data_download_link   = Path(download_web_dir, random_name)
+         download_url_path    = '/'.join([download_url_path, random_name])
+         if not data_download_link.exists():
+            break
+      logging.debug('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
+      data_download_link.symlink_to(download_host_dir)
+      return download_url_path
+   
+   def download_config_error(self,message):
+      """
+      Call for errors occurring in make_download_symlink().
+      Pass error message, which is logged.
+      Always returns None.
+      """
+      logging.error("Invalid data download config: {}".format(message))
+      return None
 
    def institution_name_to_dict_key(self, name, existing_keys):
       """
