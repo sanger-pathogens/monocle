@@ -653,7 +653,7 @@ def download_button(app, alt_text, institution, category, status):
 
 def upload_button(app):
    icon_url    = app.get_asset_url("upload-icon.png")
-   upload_url  = '/upload/'
+   upload_url  = '/metadata-upload/'
    alt_text    = 'upload metadata'
    logging.debug("upload button: upload URL = {}, icon URL = {}, alt text = '{}'".format(upload_url, icon_url, alt_text))
    elements = [   
