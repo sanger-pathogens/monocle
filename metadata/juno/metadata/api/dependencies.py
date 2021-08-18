@@ -36,7 +36,7 @@ class MetadataApiModule(Module):
     def upload_metadata_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
         do_validation = False
         try:
-            do_validation = config['upload_validation_enabled']
+            do_validation = config['metadata']['upload_validation_enabled']
         except KeyError:
             pass
         upload_metadata_handler = UploadHandler(metadata_dao, read_spreadsheet_definition_config(config['metadata']), do_validation)
@@ -46,7 +46,7 @@ class MetadataApiModule(Module):
     def upload_in_silico_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadHandler:
         do_validation = False
         try:
-            do_validation = config['upload_validation_enabled']
+            do_validation = config['in_silico_data']['upload_validation_enabled']
         except KeyError:
             pass
         upload_in_silico_handler = UploadHandler(metadata_dao, read_spreadsheet_definition_config(config['in_silico_data']), do_validation)
