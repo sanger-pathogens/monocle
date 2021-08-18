@@ -54,4 +54,4 @@ class MetadataApiModule(Module):
 
     @provider
     def download_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> DownloadHandler:
-        return DownloadHandler(metadata_dao, read_spreadsheet_definition_config(config))
+        return DownloadHandler(metadata_dao, read_spreadsheet_definition_config(config['metadata']))
