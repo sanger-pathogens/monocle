@@ -48,7 +48,7 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
         if len(validation_errors) > 0:
             return convert_to_json({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
-            upload_handler.store_metadata()
+            upload_handler.store()
     finally:
         os.remove(spreadsheet_file)
 
@@ -83,7 +83,7 @@ def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
         if len(validation_errors) > 0:
             return jsonify({'errors': validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
-            upload_handler.store_in_silico_data()
+            upload_handler.store()
     finally:
         os.remove(spreadsheet_file)
 
