@@ -140,25 +140,25 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 FROM api_institution
                 ORDER BY name""")
 
-        SELECT_INSTITUTION_NAMES_SQL = text(""" \
-                    SELECT name
-                    FROM api_institution
-                    ORDER BY name""")
+    SELECT_INSTITUTION_NAMES_SQL = text(""" \
+                SELECT name
+                FROM api_institution
+                ORDER BY name""")
 
-        SELECT_ALL_SAMPLES_SQL = text(""" \
-                    SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
-                    age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                    ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
-                    cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
-                    ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
-                    collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
-                    disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
-                    host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
-                    linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
-                    selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
-                    vancomycin, vancomycin_method
-                    FROM api_sample
-                    ORDER BY sample_id""")
+    SELECT_ALL_SAMPLES_SQL = text(""" \
+                SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
+                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
+                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
+                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
+                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
+                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
+                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
+                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
+                vancomycin, vancomycin_method
+                FROM api_sample
+                ORDER BY sample_id""")
 
     DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
 
