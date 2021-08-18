@@ -488,6 +488,6 @@ class UploadInSilicoHandler:
     def store(self):
         if self.__df is not None:
             logger.info("Storing spreadsheet...")
-            self.__dao.update_sample_metadata(self.parse())
+            self.__dao.update_lane_in_silico_data(self.parse())
         else:
             raise RuntimeError("No spreadsheet is currently loaded. Unable to store.")

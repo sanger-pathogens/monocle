@@ -530,4 +530,4 @@ class TestInSilicoUploadHandler(unittest.TestCase):
     def test_store_in_silico(self) -> None:
         self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
         self.under_test.store()
-        self.dao_mock.update_sample_metadata.assert_called_once()
+        self.dao_mock.update_lane_in_silico_data.assert_called_once()
