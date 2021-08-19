@@ -529,7 +529,7 @@ class MonocleData:
          if not data_download_link.exists():
             break
       logging.debug('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
-      data_download_link.symlink_to(download_host_dir)
+      data_download_link.symlink_to(download_host_dir.absolute())
       return download_url_path
    
    def download_config_error(self,message):

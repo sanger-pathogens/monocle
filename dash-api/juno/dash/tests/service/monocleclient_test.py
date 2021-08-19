@@ -4,6 +4,7 @@ from   datetime      import datetime
 import logging
 from   os            import environ
 from   pathlib       import Path
+import yaml
 
 from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
 from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
@@ -64,9 +65,16 @@ class MonocleUserTest(TestCase):
 class MonocleDataTest(TestCase):
 
    test_config = 'dash/tests/mock_data/data_sources.yml'
-   mock_inst_view_dir      = 'dash/tests/mock_data/monocle_juno_institution_view'
-   # ensure mock_downloads_dir matches `data_download.web_dir` in the `test_config` file
-   mock_downloads_dir      = 'dash/tests/mock_data/monocle_juno_web_root/downloads'
+   with open(test_config, 'r') as file:
+      data_sources = yaml.load(file, Loader=yaml.FullLoader)
+      mock_url_path  = data_sources['data_download']['url_path']
+      mock_web_dir   = data_sources['data_download']['web_dir']
+   
+   # this is the path to the actual data directory, i.e. the target of the data download symlinks
+   mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
+   
+   # this has mock values for the environment variables set by docker-compose
+   mock_environment = {'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
 
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
@@ -257,31 +265,19 @@ class MonocleDataTest(TestCase):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
       
-   @patch.dict(environ, {"DATA_INSTITUTION_VIEW": mock_inst_view_dir}, clear=True)
+   @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
-      # set up
-      Path(self.mock_inst_view_dir).mkdir(parents=True, exist_ok=True)
-      for mock_inst in self.mock_institutions:
-         Path(self.mock_inst_view_dir,self.monocle_data.institution_db_key_to_dict[mock_inst]).mkdir(exist_ok=True)
-      Path(self.mock_downloads_dir).mkdir(parents=True, exist_ok=True)
-      # tests
-      symlink = self.monocle_data.make_download_symlink(self.mock_institutions[0])
-      # TODO fix test below
-      #      `symlink` will have a URL path, summat like `files/downloads/4405b87791e547da8439bc73d073b2da`
-      #       the link on disk is `dash/tests/mock_data/monocle_juno_web_root/downloads/4405b87791e547da8439bc73d073b2da`
-      self.assertTrue( Path(symlink).is_symlink() )
-      # TODO add test that checks symlink points at `dash/tests/mock_data/monocle_juno_institution_view/FakOne`
-         
-      # tear down
-      def _rm_minus_r(this_path: Path):
-         for child in this_path.iterdir():
-            if child.is_file() or child.is_symlink():
-               child.unlink()
-            else:
-               _rm_minus_r(child)
-         this_path.rmdir()
-      _rm_minus_r(Path(self.mock_inst_view_dir))
-      _rm_minus_r(Path(self.mock_downloads_dir))
+      test_inst_name = self.mock_institutions[0]
+      test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
+      self._symlink_test_setup(test_inst_key)
+      symlink_url_path  = self.monocle_data.make_download_symlink(test_inst_name)
+      symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
+      # test the symlink is actually a symlink, and that it points at the intended target
+      self.assertTrue( Path(symlink_disk_path).is_symlink() )
+      self.assertEqual( Path(self.mock_inst_view_dir, test_inst_key).absolute(),
+                        Path(symlink_disk_path).resolve()
+                        )
+      self._symlink_test_teardown()
      
    @patch.object(MetadataDownload,  'get_metadata')
    def test_get_metadata(self, mock_metadata_fetch):
@@ -289,3 +285,19 @@ class MonocleDataTest(TestCase):
       metadata = self.monocle_data.get_metadata(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
       self.assertEqual(self.expected_metadata, metadata)
       
+      
+   def _symlink_test_setup(self, mock_inst_key):
+      Path(self.mock_inst_view_dir,mock_inst_key).mkdir(parents=True, exist_ok=True)
+      Path(self.mock_web_dir).mkdir(parents=True, exist_ok=True)
+
+   def _symlink_test_teardown(self):
+      self._rm_minus_r(Path(self.mock_inst_view_dir))
+      self._rm_minus_r(Path(self.mock_web_dir))
+
+   def _rm_minus_r(self, this_path: Path):
+      for child in this_path.iterdir():
+         if child.is_file() or child.is_symlink():
+            child.unlink()
+         else:
+            self._rm_minus_r(child)
+      this_path.rmdir()
