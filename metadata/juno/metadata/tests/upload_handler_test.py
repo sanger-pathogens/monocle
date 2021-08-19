@@ -3,7 +3,7 @@ from unittest.mock import patch
 import json
 import glob
 from typing import List
-from metadata.lib.upload_handler import UploadMetadataHandler, UploadInSilicoHandler
+from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata

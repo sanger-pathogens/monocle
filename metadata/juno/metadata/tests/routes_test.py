@@ -12,14 +12,14 @@ class TestRoutes(unittest.TestCase):
 
     @patch('metadata.api.routes.os')
     @patch('connexion.request')
-    @patch('metadata.lib.upload_handler.UploadMetadataHandler')
+    @patch('metadata.api.upload_handlers.UploadMetadataHandler')
     def test_update_sample_metadata(self, mock_upload_handler, mock_connexion_request, mock_os):
         http_status = update_sample_metadata([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
     @patch('metadata.api.routes.os')
     @patch('connexion.request')
-    @patch('metadata.lib.upload_handler.UploadInSilicoHandler')
+    @patch('metadata.api.upload_handlers.UploadInSilicoHandler')
     def test_update_in_silico_data(self, mock_upload_handler, mock_connexion_request, mock_os):
         http_status = update_in_silico_data([], mock_upload_handler)
         self.assertEqual(http_status, 200)

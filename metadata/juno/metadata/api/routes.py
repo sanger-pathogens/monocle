@@ -4,7 +4,7 @@ import os
 import connexion
 from flask import jsonify
 from injector import inject
-from metadata.lib.upload_handler import UploadMetadataHandler, UploadInSilicoHandler
+from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.download_handler import DownloadHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 

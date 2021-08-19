@@ -3,7 +3,7 @@ import logging
 from flask import Config
 from injector import singleton, Module, provider
 from metadata.api.configuration import *
-from metadata.lib.upload_handler import UploadMetadataHandler, UploadInSilicoHandler
+from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.download_handler import DownloadHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, Connector
