@@ -152,8 +152,10 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'data_service')
+    # TODO need to mock response (jsonify not used, so can't mock call_jsonify)
     def test_get_metadata_for_download(self, data_service_mock, username_mock):
         # Given
+        data_service_mock.return_value.get_metadata_for_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_for_download('Fake Institution', 'pipeline', 'successful')
