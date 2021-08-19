@@ -49,7 +49,7 @@ class SampleMetadata:
                               }
                if not exclude_lane_id:
                   this_sample['lane_id'] = this_result['lane_id']
-               logging.warning("result: {}".format(this_sample))
+               logging.debug("result: {}".format(this_sample))
                samples.append( this_sample )
         return samples
 
