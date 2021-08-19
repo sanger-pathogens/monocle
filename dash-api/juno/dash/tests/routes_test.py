@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 from dash.api.service.service_factory import ServiceFactory
+from dash.api.service.monocleclient   import MonocleData
 from dash.api.exceptions import NotAuthorisedException
 from dash.api.routes import *
 
@@ -11,6 +12,7 @@ class TestRoutes(unittest.TestCase):
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
     SERVICE_CALL_RETURN_DATA = {'field1': 'value1'}
+    SERVICE_CALL_RETURN_CSV_DATA = '"foo", "bar"'
     TEST_USER = 'fbloggs'
 
     EXPECTED_PROGRESS_RESULTS = {
@@ -147,6 +149,15 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], 200)
+
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_metadata_for_download(self, data_service_mock, username_mock):
+        username_mock.return_value = self.TEST_USER
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        # TODO
+        # testing calling of get_metadata_for_download
+        # tried replicating mocks and tests as used for test_pipeline_status_summary() but doesn't work :-/
 
     def test_get_authenticated_username_nontest_mode(self):
         # Given

@@ -116,7 +116,6 @@ def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
     return jsonify(args)
 
-
 def get_authenticated_username(req_obj):
     """ Return the request authenticated user name or throw an UnauthorisedException if one is not present """
     username = None
