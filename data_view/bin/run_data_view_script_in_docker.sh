@@ -10,7 +10,8 @@
 # - the script itself, in `/app`
 # 
 # Network:
-# - must be attached to the Monocle docker network (see `docker-compose.yml`)
+# - must be attached to the Monocle docker network (see `docker-compose.yml`);
+#   docker compose names this after the user that starts it
 # 
 # The s3 bucket is mounted as SAMPLE_DATA_PATH to that target of the symlinks
 # has the same path within the container as on the host machine.
@@ -27,7 +28,7 @@ docker run  -u `id -u`:`id -g` \
             --volume `pwd`/my.cnf:/app/my.cnf \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
-            --network monocle_default \
+            --network <USER>_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
             python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@
 
