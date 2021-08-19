@@ -153,11 +153,15 @@ class TestRoutes(unittest.TestCase):
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'data_service')
     def test_get_metadata_for_download(self, data_service_mock, username_mock):
+        # Given
         username_mock.return_value = self.TEST_USER
+        # When
+        result = get_metadata_for_download('Fake Institution', 'pipeline', 'successful')
+        # Then
         data_service_mock.assert_called_once_with(self.TEST_USER)
-        # TODO
-        # testing calling of get_metadata_for_download
-        # tried replicating mocks and tests as used for test_pipeline_status_summary() but doesn't work :-/
+        data_service_mock.return_value.get_metadata_for_download.assert_called_once()
+        self.assertIsNotNone(result)
+        self.assertEqual(result, self.SERVICE_CALL_RETURN_CSV_DATA)
 
     def test_get_authenticated_username_nontest_mode(self):
         # Given
