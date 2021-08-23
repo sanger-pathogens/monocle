@@ -1,5 +1,19 @@
+<script>
+	export let midscreen = false;
+
+	const style = midscreen ?
+		"position: absolute; transform: translateX(-50%); left: 50vw; top: 37vh" :
+		undefined;
+</script>
+
+
 <!-- The markup and CSS are based on https://codepen.io/Bidji/pen/emajjq -->
-<div aria-label="uploading in progress" aria-live="polite" class="cssload-wrap">
+<div
+	aria-label="please wait"
+	aria-live="polite"
+	class="cssload-wrap"
+	{style}
+>
 	<div aria-hidden="true" class="cssload-container">
 		<span class="cssload-dots"></span>
 		<span class="cssload-dots"></span>

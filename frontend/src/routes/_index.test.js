@@ -1,6 +1,23 @@
-import { render } from "@testing-library/svelte";
-import { session } from '$app/stores';
+import { render, waitFor } from "@testing-library/svelte";
+import { session } from "$app/stores";
+import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
 import DashboardPage from "./index.svelte";
+
+const INSTITUTIONS = [{
+  name: "Center for Reducing Suffering",
+  key: "CRS",
+  batches: { received: 1, deliveries: [] },
+  sequencingStatus: {},
+  pipelineStatus: {}
+}, {
+  name: "Qualia Research Institute",
+  key: "QRI",
+  batches: { received: 42, deliveries: [] },
+  sequencingStatus: {},
+  pipelineStatus: {}
+}];
+
+global.fetch = () => {};
 
 // Mocking this module for the whole file is a workaround
 // for Jest's not parsing SvelteKit's $app modules.
@@ -9,48 +26,75 @@ jest.mock("$app/stores", async () => {
   return { session: writable() };
 });
 
-it("displays the project progress chart", () => {
-  const { getByText } = render(DashboardPage, { institutions: [] });
+jest.mock("../dataLoading.js", () => ({
+  getInstitutionStatus: jest.fn(() => Promise.resolve(INSTITUTIONS)),
+  getProjectProgress: () => Promise.resolve()
+}));
 
-  expect(getByText("Project Progress")).toBeDefined();
+it("shows the loading indicator", () => {
+  const { getByLabelText } = render(DashboardPage);
+
+  expect(getByLabelText("please wait")).toBeDefined();
 });
 
-it("displays the upload link", () => {
-  const { findByRole } = render(DashboardPage, { institutions: [] });
+it("shows an error message if data fetching rejects", async () => {
+  getInstitutionStatus.mockRejectedValueOnce();
 
-  expect(findByRole("link", { name: "Upload metadata" }))
-    .toBeDefined();
-});
+  const { getByText } = render(DashboardPage);
 
-it("displays status for each institution passed", () => {
-  const institutions = [{
-    name: "Center for Reducing Suffering",
-    key: "CRS",
-    batches: { received: 1, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  }, {
-    name: "Qualia Research Institute",
-    key: "QRI",
-    batches: { received: 42, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  }];
-
-  const { component, getByText } = render(DashboardPage, { institutions });
-
-  institutions.forEach(({ name }) => {
-    const institutionHeadingElement = getByText(name);
-    const institutionStatusPanes = institutionHeadingElement.parentElement
-      .querySelectorAll(":scope > article");
-    expect(institutionStatusPanes).toHaveLength(3);
+  await waitFor(() => {
+    expect(getByText("An unexpected error during page loading occured. Please try to reload the page."))
+      .toBeDefined();
   });
 });
 
-it("displays a message when no institutions passed", () => {
-  const { getByText } = render(DashboardPage, { institutions: [] });
+describe("after data fetching", () => {
+  it("hides the loading indicator", async () => {
+    const { queryByLabelText } = render(DashboardPage);
 
-  expect(getByText("No institutions found for this account", { exact: false }))
-    .toBeDefined();
+    await waitFor(() => {
+      expect(queryByLabelText("please wait")).toBeNull();
+    });
+  });
+
+  it("displays the project progress chart", async () => {
+    const { getByText } = render(DashboardPage);
+
+    await waitFor(() => {
+      expect(getByText("Project Progress")).toBeDefined();
+    });
+  });
+
+  it("displays the upload link", async () => {
+    const { findByRole } = render(DashboardPage);
+
+    await waitFor(() => {
+      expect(findByRole("link", { name: "Upload metadata" }))
+        .toBeDefined();
+    });
+  });
+
+  it("displays status for each institution", async () => {
+    const { component, getByText } = render(DashboardPage);
+
+    await waitFor(() => {
+      INSTITUTIONS.forEach(({ name }) => {
+        const institutionHeadingElement = getByText(name);
+        const institutionStatusPanes = institutionHeadingElement.parentElement
+          .querySelectorAll(":scope > article");
+        expect(institutionStatusPanes).toHaveLength(3);
+      });
+    });
+  });
+
+  it("displays a message when the list of institutions is empty", async () => {
+    getInstitutionStatus.mockResolvedValueOnce([]);
+
+    const { getByText } = render(DashboardPage);
+
+    await waitFor(() => {
+      expect(getByText("No institutions found for this account", { exact: false }))
+        .toBeDefined();
+    });
+  });
 });
-

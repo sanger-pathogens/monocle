@@ -1,7 +1,7 @@
 import { MONOCLE_URL } from "./dataLoading.js";
 import { getSession, serverFetch } from "./hooks.js";
 
-const DASHBOARD_API_INTERNAL_URL = "http://dash-api/dashboard-api/";
+const DASHBOARD_API_INTERNAL_URL = "http://dash-api:5000/dashboard-api/";
 
 global.fetch = jest.fn();
 

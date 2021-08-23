@@ -121,7 +121,7 @@ describe("file uploading", () => {
 });
 
 describe("the loading indicator", () => {
-  const LOADING_LABEL_TEXT = "uploading in progress";
+  const LOADING_LABEL_TEXT = "please wait";
 
   it("shown when uploading is in progress", async () => {
     const { container, queryByLabelText } = render(MetadataUploader);

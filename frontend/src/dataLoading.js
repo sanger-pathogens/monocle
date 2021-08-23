@@ -64,11 +64,12 @@ function fetchDashboardResource(endpoint, resourceKey, fetch) {
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => payload?.[resourceKey])
-    .catch((err) => (
+    .catch((err) => {
       console.log(
         `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}`
-      )
-    ));
+      );
+      return Promise.reject(err);
+    });
 }
 
 function collateInstitutionStatus({

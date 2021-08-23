@@ -1,10 +1,10 @@
 import { MONOCLE_URL } from "./dataLoading.js";
 
-const DASHBOARD_API_INTERNAL_URL = "http://dash-api/dashboard-api";
+const DASHBOARD_API_INTERNAL_URL = "http://dash-api:5000/dashboard-api";
 const DASHBOARD_API_URL = `${MONOCLE_URL}/dashboard-api`;
 
 export async function getSession() {
-	const userRole = await fetch(`${DASHBOARD_API_INTERNAL_URL}/get_user_details`)
+	const userRole = await fetch(`${DASHBOARD_API_URL}/get_user_details`)
 		.then((response) =>
 			response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
 		.then(({ user_details } = {}) => user_details?.type)

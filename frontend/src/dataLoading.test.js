@@ -57,9 +57,15 @@ describe.each([
     }
   }
 ])("$fnName", ({ getResource, expectedEndpoints, payload, expectedResult }) => {
+  beforeEach(() => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(payload)
+    });
+  });
+
   it("fetches the data from the correct endpoints", async () => {
     fetch.mockClear();
-    fetch.mockImplementation(() => Promise.resolve({ ok: false }));
 
     await getResource(fetch);
 
@@ -70,11 +76,6 @@ describe.each([
   });
 
   it("returns result in the correct format", async () => {
-    fetch.mockImplementation(() => Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(payload)
-    }));
-
     const result = await getResource(fetch);
 
     expect(result).toEqual(expectedResult);
