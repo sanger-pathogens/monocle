@@ -137,12 +137,18 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     }
-   mock_metadata              =  [  {  'sanger_sample_id':     {'order': 1, 'name': 'Sanger_Sample_ID',  'value': 'fake_sample_id_1'},
-                                       'some_other_column':    {'order': 2, 'name': 'Something_Made_Up', 'value': ''},
-                                       'another_fake_column':  {'order': 3, 'name': 'Also_Made_Up',      'value': 'whatevs'},
-                                       'lane_id':              {'order': 4, 'name': 'Lane_ID',           'value': 'fake_lane_id_1'},
-                                       }
-                                    ]
+   mock_metadata              =     '''{  "download": [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"},
+                                                            "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                },
+                                                            "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"         },
+                                                            "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"  }
+                                                            }
+                                                         ]
+                                                      }
+                                    '''
+
+   mock_download_host         =     'mock.host'
+   mock_download_path         =     'path/incl/mock/download/symlink'
+   mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
    
    # data we expect MonocleData method to return, given patched queries with the value above
    # the latest month included here must match the date provided by `mock_data_updated`
@@ -193,7 +199,14 @@ class MonocleDataTest(TestCase):
                                     }
 
    expected_metadata          =  '''"Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download link"
-"fake_sample_id_1","","whatevs","fake_lane_id_1","https://fake.host/any/path/fake_lane_id_1/"'''
+"fake_sample_id_1","","whatevs","fake_lane_id_1","'''+mock_download_url+'/fake_lane_id_1/"'
+
+   expected_metadata_download  = {  'success'   : True,
+                                    'headers'   : {   'Content-Type'          : 'text/csv; charset=UTF-8',
+                                                      'Content-Disposition'   : 'attachment; filename="FakeinstitutionOne_sequencing_successful.csv"'
+                                                      },
+                                    'content'   : expected_metadata
+                                    }
 
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
@@ -265,13 +278,23 @@ class MonocleDataTest(TestCase):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
-   def get_metadata_for_download(self):
-      # TODO needs actual test
-      pass
+   @patch.object(MonocleData,              'make_download_symlink')
+   @patch.object(Monocle_Download_Client,  'make_request')
+   def test_get_metadata_for_download(self, mock_metadata_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      mock_make_symlink.return_value   = self.mock_download_path
+      test_inst_name = self.mock_institutions[0]
+      test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
+      self._symlink_test_setup(test_inst_key)
+      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'Fake institution One', 'sequencing', 'successful')
+      self._symlink_test_teardown()
+      self.assertEqual(self.expected_metadata_download, metadata_download)
 
-   def test_metadata_as_csv(self):
-      # TODO needs actual test
-      pass
+   @patch.object(Monocle_Download_Client,  'make_request')
+   def test_metadata_as_csv(self, mock_metadata_fetch):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      metadata_as_csv = self.monocle_data.metadata_as_csv('Fake institution One', 'sequencing', 'successful', self.mock_download_url)
+      self.assertEqual(self.expected_metadata, metadata_as_csv)
       
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
@@ -286,13 +309,6 @@ class MonocleDataTest(TestCase):
                         Path(symlink_disk_path).resolve()
                         )
       self._symlink_test_teardown()
-     
-   @patch.object(MetadataDownload,  'get_metadata')
-   def test_get_metadata(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      metadata = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
-      self.assertEqual(self.expected_metadata, metadata)
-      
       
    def _symlink_test_setup(self, mock_inst_key):
       Path(self.mock_inst_view_dir,mock_inst_key).mkdir(parents=True, exist_ok=True)

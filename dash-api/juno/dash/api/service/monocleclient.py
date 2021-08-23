@@ -397,7 +397,7 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata_for_download(self, flask_request, institution, category, status):
+   def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
       Pass Flask request object, institution name, category ('sequencing' or 'pipeline')
       and status ('successful' or 'failed');
@@ -434,7 +434,7 @@ class MonocleData:
          return { 'success'   : False,
                   'error'     : 'internal',
                   }
-      host_url = 'https://{}'.format(flask_request.host)
+      host_url = 'https://{}'.format(download_hostname)
       # TODO add correct port number
       # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
       # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
@@ -587,14 +587,14 @@ class MonocleData:
       data_download_link.symlink_to(download_host_dir.absolute())
       return download_url_path
    
-      def _download_config_error(self,message):
-         """
-         Call for errors occurring in make_download_symlink().
-         Pass error message, which is logged.
-         Always returns None.
-         """
-         logging.error("Invalid data download config: {}".format(message))
-         return None
+   def _download_config_error(self,message):
+      """
+      Call for errors occurring in make_download_symlink().
+      Pass error message, which is logged.
+      Always returns None.
+      """
+      logging.error("Invalid data download config: {}".format(message))
+      return None
    
    def institution_name_to_dict_key(self, name, existing_keys):
       """

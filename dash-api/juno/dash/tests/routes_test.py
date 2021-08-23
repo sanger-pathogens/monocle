@@ -14,6 +14,7 @@ class TestRoutes(unittest.TestCase):
     SERVICE_CALL_RETURN_DATA = {'field1': 'value1'}
     SERVICE_CALL_RETURN_CSV_DATA = {'success': True, 'headers':{'foo': 'bar'}, 'content' : 'a,csv,string'}
     TEST_USER = 'fbloggs'
+    TEST_HOST_NAME = 'mock.host'
 
     EXPECTED_PROGRESS_RESULTS = {
         'progress_graph': {
@@ -152,11 +153,13 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.get_host_name')
     @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_for_download(self, data_service_mock, username_mock, resp_mock):
+    def test_get_metadata_for_download(self, data_service_mock, host_name_mock, username_mock, resp_mock):
         # Given
         data_service_mock.return_value.get_metadata_for_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
         username_mock.return_value = self.TEST_USER
+        host_name_mock.return_value = self.TEST_HOST_NAME
         # When
         result = get_metadata_for_download('Fake Institution', 'pipeline', 'successful')
         # Then
@@ -168,6 +171,12 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], 200)
+        
+    def test_get_host_name(self):
+        request_mock = Mock()
+        request_mock.host = self.TEST_HOST_NAME
+        hostname = get_host_name(request_mock)
+        self.assertEqual(hostname, self.TEST_HOST_NAME)
 
     def test_get_authenticated_username_nontest_mode(self):
         # Given
