@@ -264,6 +264,14 @@ class MonocleDataTest(TestCase):
    def test_pipeline_status_summary(self):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
+
+   def get_metadata_for_download(self):
+      # TODO needs actual test
+      pass
+
+   def test_metadata_as_csv(self):
+      # TODO needs actual test
+      pass
       
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
@@ -282,7 +290,7 @@ class MonocleDataTest(TestCase):
    @patch.object(MetadataDownload,  'get_metadata')
    def test_get_metadata(self, mock_metadata_fetch):
       mock_metadata_fetch.return_value = self.mock_metadata
-      metadata = self.monocle_data.get_metadata(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
+      metadata = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'pipeline', 'successful', 'https://fake.host/any/path')
       self.assertEqual(self.expected_metadata, metadata)
       
       

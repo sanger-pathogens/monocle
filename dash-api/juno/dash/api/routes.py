@@ -82,34 +82,23 @@ def pipeline_status_summary():
 
 
 def get_metadata_for_download(institution: str, category: str, status: str):
-    data_service = ServiceFactory.data_service(get_authenticated_username(request))
-    institution_data = data_service.get_institutions()
-    institution_names = [institution_data[i]['name'] for i in institution_data.keys()]
-    if not institution in institution_names:
-        logging.error("Invalid request to /download: parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
-        return HTTP_BAD_REQUEST_STATUS
-    institution_download_symlink_url_path = data_service.make_download_symlink(institution)
-    if institution_download_symlink_url_path is None:
-        return HTTP_SERVER_ERROR_STATUS
-    # TODO This needs completing - may need extra bits from monocledash etc
-    """
-    host_url = 'https://{}'.format(request.host)
-    # TODO add correct port number
-    # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
-    # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
-    download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
-    logging.info('Data download base URL = {}'.format(download_base_url))
-
-    csv_response_string = data_service.get_metadata(institution, category, status, download_base_url)
-    csv_response.headers[
-        'Content-Type'] = 'text/csv; charset=UTF-8'  # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
-    csv_response.headers['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(
-        "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
-        category,
-        status)
-    return csv_response
-    """
-    return HTTP_SUCCEEDED_STATUS
+   """
+   Get metadata as CSV for the user to download.
+   IMPORTANT: The other endpoints are all (at time of writing...) for consumption by the front end framework.
+   This endpiunt differs, we expect it to be reached by the user clicking on a link/button;  the browser
+   should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
+   """
+   csv_metadata_response = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(request, institution, category, status)
+   if not csv_metadata_response['success']:
+      if 'request' == csv_metadata_response['error']:
+         return HTTP_BAD_REQUEST_STATUS
+      else:
+         return HTTP_SERVER_ERROR_STATUS
+   else:
+      # TESTING ONLY
+      # returns JSON version of what we get from get_metadata_for_download()
+      # TODO: turn this into an actual response beased on the headers/content that were returned
+      return call_jsonify(csv_metadata_response), HTTP_SUCCEEDED_STATUS
 
 
 def call_jsonify(args) -> str:
