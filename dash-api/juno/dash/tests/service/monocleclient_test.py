@@ -243,9 +243,6 @@ class MonocleDataTest(TestCase):
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
-      # these calls will cache data in the object, so the mocked
-      # data can be retrieved by test case calls to these methods without
-      # neeeding to patch the underlying queries throughout the test code
       self.monocle_data.get_institutions()
       self.monocle_data.get_samples()
       self.monocle_data.get_sequencing_status()
@@ -285,9 +282,7 @@ class MonocleDataTest(TestCase):
       mock_make_symlink.return_value   = self.mock_download_path
       test_inst_name = self.mock_institutions[0]
       test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
-      self._symlink_test_setup(test_inst_key)
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'Fake institution One', 'sequencing', 'successful')
-      self._symlink_test_teardown()
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'make_request')
