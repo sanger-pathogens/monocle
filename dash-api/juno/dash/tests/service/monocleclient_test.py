@@ -208,6 +208,14 @@ class MonocleDataTest(TestCase):
                                     'content'   : expected_metadata
                                     }
 
+   expected_metadata_download_reject_missing  = {  'success'   : False ,
+                                                   'error'     : 'request'
+                                                   }
+
+   expected_metadata_download_error_response  = {  'success'   : False ,
+                                                   'error'     : 'internal'
+                                                   }
+   
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
@@ -280,17 +288,29 @@ class MonocleDataTest(TestCase):
    def test_get_metadata_for_download(self, mock_metadata_fetch, mock_make_symlink):
       mock_metadata_fetch.return_value = self.mock_metadata
       mock_make_symlink.return_value   = self.mock_download_path
-      test_inst_name = self.mock_institutions[0]
-      test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
-      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'Fake institution One', 'sequencing', 'successful')
+      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download, metadata_download)
+
+   @patch.object(Monocle_Download_Client,  'make_request')
+   def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
+      self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
+
+   @patch.object(MonocleData,              'make_download_symlink')
+   @patch.object(Monocle_Download_Client,  'make_request')
+   def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      mock_make_symlink.return_value   = None
+      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+      self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'make_request')
    def test_metadata_as_csv(self, mock_metadata_fetch):
       mock_metadata_fetch.return_value = self.mock_metadata
-      metadata_as_csv = self.monocle_data.metadata_as_csv('Fake institution One', 'sequencing', 'successful', self.mock_download_url)
+      metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       self.assertEqual(self.expected_metadata, metadata_as_csv)
-      
+
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
       test_inst_name = self.mock_institutions[0]
@@ -304,7 +324,7 @@ class MonocleDataTest(TestCase):
                         Path(symlink_disk_path).resolve()
                         )
       self._symlink_test_teardown()
-      
+
    def _symlink_test_setup(self, mock_inst_key):
       Path(self.mock_inst_view_dir,mock_inst_key).mkdir(parents=True, exist_ok=True)
       Path(self.mock_web_dir).mkdir(parents=True, exist_ok=True)
