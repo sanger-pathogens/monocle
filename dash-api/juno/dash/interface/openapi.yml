@@ -18,7 +18,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -42,7 +42,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -68,7 +68,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -94,7 +94,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -120,7 +120,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -144,7 +144,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -170,7 +170,7 @@ paths:
       parameters:
         - in: header
           name: X-Remote-User
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
