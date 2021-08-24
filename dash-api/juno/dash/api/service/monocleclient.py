@@ -441,14 +441,12 @@ class MonocleData:
       download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
       logging.info('Data download base URL = {}'.format(download_base_url))
 
-      csv_respone_headers = { 'Content-Type'          : 'text/csv; charset=UTF-8', # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
-                              'Content-Disposition'   : 'attachment; filename="{}_{}_{}.csv"'.format( "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
-                                                                                                      category,
-                                                                                                      status)
-                              }
+      csv_response_filename = '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
+                                                      category,
+                                                      status)
       csv_response_string = self.metadata_as_csv(institution, category, status, download_base_url)
       return   {  'success'   : True,
-                  'headers'   : csv_respone_headers,
+                  'filename'  : csv_response_filename,
                   'content'   : csv_response_string
                   }
 

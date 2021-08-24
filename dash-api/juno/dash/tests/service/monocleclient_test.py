@@ -202,9 +202,7 @@ class MonocleDataTest(TestCase):
 "fake_sample_id_1","","whatevs","fake_lane_id_1","'''+mock_download_url+'/fake_lane_id_1/"'
 
    expected_metadata_download  = {  'success'   : True,
-                                    'headers'   : {   'Content-Type'          : 'text/csv; charset=UTF-8',
-                                                      'Content-Disposition'   : 'attachment; filename="FakeinstitutionOne_sequencing_successful.csv"'
-                                                      },
+                                    'filename'  : 'FakeinstitutionOne_sequencing_successful.csv',
                                     'content'   : expected_metadata
                                     }
 

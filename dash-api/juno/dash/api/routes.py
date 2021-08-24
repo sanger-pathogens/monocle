@@ -87,14 +87,18 @@ def get_metadata_for_download(institution: str, category: str, status: str):
    This endpiunt differs, we expect it to be reached by the user clicking on a link/button;  the browser
    should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
    """
-   csv_metadata_response = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
-   if not csv_metadata_response['success']:
-      if 'request' == csv_metadata_response['error']:
+   metadata_for_download = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+   if not metadata_for_download['success']:
+      if 'request' == metadata_for_download['error']:
          return HTTP_BAD_REQUEST_STATUS
       else:
          return HTTP_SERVER_ERROR_STATUS
    else:
-      return Response( csv_metadata_response['content'], headers = csv_metadata_response['headers'] )
+      return Response(  metadata_for_download['content'],
+                        content_type   = 'text/csv; charset=UTF-8', # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
+                        headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(metadata_for_download['filename'])},
+                        status         = HTTP_SUCCEEDED_STATUS
+                        )
 
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
