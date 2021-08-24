@@ -163,7 +163,7 @@ paths:
         403:
           description: "Authorization information is missing or invalid."
 
-  /get_metadata_for_download:
+  /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download
       summary: "The operation was successful. The following data format will be returned..."
