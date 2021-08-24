@@ -11,7 +11,7 @@ import logging
 
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
-from dash.api.service.monocleclient import MonocleData
+from dash.api.service.service_factory import ServiceData
 
 INITIAL_DIR = Path().absolute()
 # directory in which the data files are located
@@ -110,8 +110,8 @@ def _create_symlink_to(path_to_file, symlink_name):
 
 def get_institutions(sample_metadata):
    name_to_id = {}
-   # set_up = False stops MonocleData instantiating lots of objects we don't need...
-   dashboard_data = MonocleData(set_up=False)
+   # set_up = False stops ServiceData instantiating lots of objects we don't need...
+   dashboard_data = ServiceData(set_up=False, structure_call=True)
    # ...but that means we need to gove it a SampleMetadata
    dashboard_data.sample_metadata = sample_metadata
    institutions = dashboard_data.get_institutions()

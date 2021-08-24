@@ -52,10 +52,17 @@ class DataService:
     # date from which progress is counted
     day_zero = datetime(2019, 9, 17)
 
-    def __init__(self, username, set_up=True):
-        user = UserService(username)
+    def __init__(self, username=None, set_up=True, structure_call=False):
+        if not structure_call:
+            if not username:
+                raise ValueError('Username must be supplied for correct record selection')
+            else:
+                user = UserService(username)
+                self.user_record = user.record
+        else:
+            self.user_record = None
+
         # Setting this record will enforce data filtering by user
-        self.user_record = user.record
         self.institutions_data = None
         self.samples_data = None
         self.sequencing_status_data = None
