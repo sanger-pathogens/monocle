@@ -163,7 +163,7 @@ paths:
         403:
           description: "Authorization information is missing or invalid."
 
-  /get_metadata_for_download/:
+  /get_metadata_for_download:
     get:
       operationId: dash.api.routes.get_metadata_for_download
       summary: "The operation was successful. The following data format will be returned..."
@@ -192,8 +192,8 @@ paths:
             minLength: 1
             maxLength: 20
             pattern: ^[a-zA-Z]*$
-        - in: query
-          name: path
+        - in: path
+          name: status
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
