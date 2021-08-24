@@ -1,6 +1,5 @@
 import logging
-from flask import request
-from flask import jsonify
+from flask import jsonify, request, Response
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.exceptions import NotAuthorisedException
 
@@ -95,11 +94,7 @@ def get_metadata_for_download(institution: str, category: str, status: str):
       else:
          return HTTP_SERVER_ERROR_STATUS
    else:
-      # TESTING ONLY
-      # returns JSON version of what we get from get_metadata_for_download()
-      # TODO: turn this into an actual response beased on the headers/content that were returned
-      return call_jsonify(csv_metadata_response), HTTP_SUCCEEDED_STATUS
-
+      return Response( csv_metadata_response['content'], headers = csv_metadata_response['headers'] )
 
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
