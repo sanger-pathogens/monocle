@@ -11,7 +11,7 @@ import logging
 
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
-from dash.api.service.service_factory import ServiceData
+from dash.api.service.service_factory import DataService
 
 INITIAL_DIR = Path().absolute()
 # directory in which the data files are located
