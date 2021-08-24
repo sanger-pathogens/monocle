@@ -63,7 +63,7 @@ class MonocleUserTest(TestCase):
 class MonocleDataTest(TestCase):
     test_config = 'dash/tests/mock_data/data_sources.yml'
 
-    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
+    # this is the mock date for the instantiation of DataService; it must match the latest month used in `expected_progress_data`
     # (because get_progeress() always returns date values up to "now")
     mock_data_updated = datetime(2021, 5, 15)
 
@@ -131,7 +131,7 @@ class MonocleDataTest(TestCase):
                       }
                      ]
 
-    # data we expect MonocleData method to return, given patched queries with the value above
+    # data we expect DataService method to return, given patched queries with the value above
     # the latest month included here must match the date provided by `mock_data_updated`
     expected_progress_data = {
         'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
@@ -187,9 +187,9 @@ class MonocleDataTest(TestCase):
     expected_metadata = '''"Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download link"
 "fake_sample_id_1","","whatevs","fake_lane_id_1","https://fake.host/any/path/fake_lane_id_1/"'''
 
-    # create MonocleData object outside setUp() to avoid creating multipe instances
+    # create DataService object outside setUp() to avoid creating multipe instances
     # this means we use cahced data rather than making multiple patched queries to SampleMetadata etc.
-    monocle_data = MonocleData(set_up=False)
+    monocle_data = DataService(set_up=False, structure_call=True)
 
     def setUp(self):
         # mock moncoledb
@@ -212,7 +212,7 @@ class MonocleDataTest(TestCase):
         self.get_mock_data()
 
     def test_init(self):
-        self.assertIsInstance(self.monocle_data, MonocleData)
+        self.assertIsInstance(self.monocle_data, DataService)
 
     @patch.object(SampleMetadata, 'get_institution_names')
     @patch.object(SampleMetadata, 'get_samples')
