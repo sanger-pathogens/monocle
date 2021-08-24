@@ -174,8 +174,8 @@ paths:
           required: false
           schema:
             type: string
-        - in: path
-          name: institution
+        - name: "institution"
+          in: path
           description: "The institution name."
           required: true
           schema:
@@ -183,8 +183,8 @@ paths:
             minLength: 1
             maxLength: 256
             pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-']*$
-        - in: path
-          name: category
+        - name: "category"
+          in: path
           description: "The category to be downloaded: sequencing or pipeline."
           required: true
           schema:
@@ -192,8 +192,8 @@ paths:
             minLength: 1
             maxLength: 20
             pattern: ^[a-zA-Z]*$
-        - in: path
-          name: status
+        - name: "status"
+          in: path
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
