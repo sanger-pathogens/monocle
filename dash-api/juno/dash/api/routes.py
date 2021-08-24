@@ -88,7 +88,7 @@ def get_metadata_for_download(institution: str, category: str, status: str):
    This endpiunt differs, we expect it to be reached by the user clicking on a link/button;  the browser
    should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
    """
-   csv_metadata_response = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(), institution, category, status)
+   csv_metadata_response = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
    if not csv_metadata_response['success']:
       if 'request' == csv_metadata_response['error']:
          return HTTP_BAD_REQUEST_STATUS
