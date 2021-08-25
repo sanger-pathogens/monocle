@@ -18,7 +18,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -42,7 +42,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -68,7 +68,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -94,7 +94,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -120,7 +120,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -144,7 +144,7 @@ paths:
       parameters:
         - name: X-Remote-User
           in: header
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
@@ -163,28 +163,28 @@ paths:
         403:
           description: "Authorization information is missing or invalid."
 
-  /get_metadata_for_download:
+  /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download
       summary: "The operation was successful. The following data format will be returned..."
       parameters:
         - in: header
           name: X-Remote-User
-          description: "Basic authentication header."
+          description: "Username."
           required: false
           schema:
             type: string
-        - in: query
-          name: institution
+        - name: "institution"
+          in: path
           description: "The institution name."
           required: true
           schema:
             type: string
             minLength: 1
             maxLength: 256
-            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-']*$
-        - in: query
-          name: category
+            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+        - name: "category"
+          in: path
           description: "The category to be downloaded: sequencing or pipeline."
           required: true
           schema:
@@ -192,8 +192,8 @@ paths:
             minLength: 1
             maxLength: 20
             pattern: ^[a-zA-Z]*$
-        - in: query
-          name: status
+        - name: "status"
+          in: path
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
