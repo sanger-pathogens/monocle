@@ -182,7 +182,7 @@ paths:
             type: string
             minLength: 1
             maxLength: 256
-            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-']*$
+            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;\.\(\)]*$
         - name: "category"
           in: path
           description: "The category to be downloaded: sequencing or pipeline."
