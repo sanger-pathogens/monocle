@@ -402,12 +402,10 @@ class MonocleData:
       and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
       
-      On success, returns headers and content for response
+      On success, returns content for response, with suggested filename
       
       {  'success'   : True,
-         'headers'   : {   'Content-Type'          : 'text/csv; charset=UTF-8',
-                           'Content-Disposition'   : 'attachment; filename="a_suggested_filename.csv"'
-                           },
+         'filename'  : 'the-institution-name_the-category_the-status.csv',
          'content'   : 'a,very,long,multi-line,CSV,string'
          }
          
