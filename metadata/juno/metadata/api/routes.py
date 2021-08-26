@@ -37,7 +37,7 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
     upload_handler.check_file_extension = True
 
     # Check the extension...
-    if upload_handler.check_file_extension and not upload_handler.is_valid_file_type(uploaded_file.filename):
+    if not upload_handler.is_valid_file_type(uploaded_file.filename):
         logger.error('Upload file {} does not have a valid extension, expected one of {}'.format(
             uploaded_file.filename, upload_handler.allowed_file_types()))
         return 'The upload file must be one of the following formats: {}'.format(upload_handler.allowed_file_types()), \
