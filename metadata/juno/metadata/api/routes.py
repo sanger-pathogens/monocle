@@ -33,8 +33,11 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
 
     logger.info('Uploading spreadsheet {}...'.format(uploaded_file.filename))
 
+    # check these file names for extensions
+    upload_handler.check_file_extension = True
+
     # Check the extension...
-    if not upload_handler.is_valid_file_type(uploaded_file.filename):
+    if upload_handler.check_file_extension and not upload_handler.is_valid_file_type(uploaded_file.filename):
         logger.error('Upload file {} does not have a valid extension, expected one of {}'.format(
             uploaded_file.filename, upload_handler.allowed_file_types()))
         return 'The upload file must be one of the following formats: {}'.format(upload_handler.allowed_file_types()), \
@@ -67,6 +70,9 @@ def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
         return 'Missing spreadsheet file', HTTP_BAD_REQUEST_STATUS
 
     logger.info('Uploading spreadsheet {}...'.format(uploaded_file.filename))
+
+    # do NOT check these file names for extensions
+    upload_handler.check_file_extension = False
 
     # Check the extension...
     if not upload_handler.is_valid_file_type(uploaded_file.filename):

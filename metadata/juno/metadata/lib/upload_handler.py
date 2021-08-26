@@ -20,7 +20,7 @@ class _StringLengthValidation(CustomElementValidation):
 
 class UploadHandler:
     """ Handle processing of upload spreadsheets """
-
+    
     # Allowed file formats
     file_types = {
         'tab' : getattr(pandas, 'read_csv'),
@@ -34,6 +34,8 @@ class UploadHandler:
         self.__spreadsheet_def = in_def
         self.__do_validation = do_validation
         self.__institutions = None
+        # validation will fail if file extension isn't as expected, when this flag is true
+        self.check_file_extension = True
 
     def data_frame(self):
         return self.__df
@@ -46,9 +48,13 @@ class UploadHandler:
         """ Return a list of allowed file type extensions """
         return [str(key) for key in UploadHandler.file_types.keys()]
 
-    @staticmethod
-    def is_valid_file_type(file: str) -> bool:
+    def is_valid_file_type(self, file: str) -> bool:
         """ Check if we can process this file type """
+        
+        # immediately return true if this check is disabled
+        if not self.check_file_extension:
+            return True
+        
         valid = False
         try:
             if file and '.' in file:
