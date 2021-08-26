@@ -202,18 +202,23 @@ class TestUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab', 'tsv', 'txt']))
 
     def test_is_valid_file_type(self):
+        # check that files without extensions are accpted if the file extantion check is enabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        self.under_test.check_file_extension = True
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS))
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS))
         self.assertFalse(self.under_test.is_valid_file_type('foo'))
         self.assertFalse(self.under_test.is_valid_file_type(None))
         self.assertFalse(self.under_test.is_valid_file_type(''))
+        self.under_test.check_file_extension = previous_check_file_extension_value
         
     def test_file_type_check_disabled_ok(self):
         # check that files without extensions are accpted if the file extantion check is disabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS))
-        self.under_test.check_file_extension = True
+        self.under_test.check_file_extension = previous_check_file_extension_value
                 
     def test_tab_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
@@ -469,18 +474,23 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab','tsv','txt']))
 
     def test_is_valid_file_type(self):
+        # check that files without extensions are accpted if the file extantion check is enabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        self.under_test.check_file_extension = True
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_WITH_NO_ERRORS))
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TSV_WITH_NO_ERRORS))
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TXT_WITH_NO_ERRORS))
         self.assertFalse(self.under_test.is_valid_file_type('foo'))
         self.assertFalse(self.under_test.is_valid_file_type(None))
         self.assertFalse(self.under_test.is_valid_file_type(''))
+        self.under_test.check_file_extension = previous_check_file_extension_value
         
     def test_file_type_check_disabled_ok(self):
         # check that files without extensions are accpted if the file extantion check is disabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_WITH_NO_ERRORS))
-        self.under_test.check_file_extension = True
+        self.under_test.check_file_extension = previous_check_file_extension_value
         
     def test_tab_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_WITH_VALIDATION_ERRORS, recursive=True)[0])
