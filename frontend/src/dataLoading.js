@@ -35,6 +35,11 @@ export function getProjectProgress(fetch) {
     });
 }
 
+export function getUserDetails(fetch) {
+  return fetchDashboardResource(
+    "get_user_details", "user_details", fetch);
+}
+
 function getProjectProgressData(fetch) {
   return fetchDashboardResource(
     "get_progress", "progress_graph", fetch);

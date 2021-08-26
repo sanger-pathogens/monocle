@@ -1,7 +1,8 @@
 import {
   MONOCLE_URL,
   getInstitutionStatus,
-  getProjectProgress
+  getProjectProgress,
+  getUserDetails
 } from "./dataLoading.js";
 
 const DASHBOARD_API_URL = `${MONOCLE_URL}/dashboard-api`;
@@ -54,6 +55,19 @@ describe.each([
         { name: "samples sequenced", values: 50}
       ],
       dates: "21.08.21"
+    }
+  },
+  {
+    fnName: "getUserDetails",
+    getResource: getUserDetails,
+    expectedEndpoints: ["get_user_details"],
+    payload: {
+      user_details: {
+        type: "support"
+      }
+    },
+    expectedResult: {
+      type: "support"
     }
   }
 ])("$fnName", ({ getResource, expectedEndpoints, payload, expectedResult }) => {

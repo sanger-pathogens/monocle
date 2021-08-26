@@ -1,6 +1,23 @@
 <script>
+  import { onMount } from "svelte";
+  import { getStores } from "$app/stores";
+  import { getUserDetails } from "../dataLoading.js";
   import Header from '$lib/components/layout/Header.svelte';
   import Footer from '$lib/components/layout/Footer.svelte';
+
+  const { session } = getStores();
+
+  onMount(() => {
+    getUserDetails(fetch)
+      .then(({ type: userRole } = {}) => {
+        if (userRole) {
+          session.set({ user: { role: userRole } });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  });
 </script>
 
 
