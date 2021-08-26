@@ -202,7 +202,7 @@ class TestUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab', 'tsv', 'txt']))
 
     def test_is_valid_file_type(self):
-        # check that files without extensions are accpted if the file extantion check is enabled
+        # check that file names are checked when file extension check is enabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = True
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
@@ -214,7 +214,7 @@ class TestUploadHandler(unittest.TestCase):
         self.under_test.check_file_extension = previous_check_file_extension_value
         
     def test_file_type_check_disabled_ok(self):
-        # check that files without extensions are accpted if the file extantion check is disabled
+        # check that files without extensions are accepted if the file extention check is disabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS))
@@ -474,7 +474,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab','tsv','txt']))
 
     def test_is_valid_file_type(self):
-        # check that files without extensions are accpted if the file extantion check is enabled
+        # check that file names are checked when file extension check is enabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = True
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_WITH_NO_ERRORS))
@@ -486,7 +486,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.under_test.check_file_extension = previous_check_file_extension_value
         
     def test_file_type_check_disabled_ok(self):
-        # check that files without extensions are accpted if the file extantion check is disabled
+        # check that files without extensions are accepted if the file extention check is disabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_WITH_NO_ERRORS))
