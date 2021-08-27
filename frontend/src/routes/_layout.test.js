@@ -29,3 +29,19 @@ it("stores a fetched user role in the session", async () => {
     expect(sessionStore.set).toHaveBeenCalledWith({ user: { role: USER_ROLE } });
   });
 });
+
+it("doesn't crash and logs an error when saving a user role fails", async () => {
+  const errorMessage = "some error";
+  fetch.mockRejectedValueOnce(errorMessage);
+  global.console.error = jest.fn();
+
+  const { getByRole } = render(Layout);
+
+  await waitFor(() => {
+    expect(getByRole("heading", { name: "Monocle" }))
+      .toBeDefined();
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(errorMessage);
+  });
+});
+
