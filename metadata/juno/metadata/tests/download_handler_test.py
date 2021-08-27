@@ -79,7 +79,7 @@ class TestDownloadHandler(unittest.TestCase):
         value_field_name = 'value'
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
-            sprd_def = SpreadsheetDefinition(2, data['spreadsheet_definition'])
+            sprd_def = SpreadsheetDefinition(2, data['metadata']['spreadsheet_definition'])
             handler = DownloadHandler(self.dao_mock, sprd_def)
             results = handler.create_download_response([TEST_SAMPLE_1, TEST_SAMPLE_2])
             self.assertIsNotNone(results)

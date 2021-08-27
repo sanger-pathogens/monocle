@@ -5,16 +5,19 @@
   export let title;
 
   let dialogOpen;
+  let hasFailureMessages = failures.length;
+  let hasNestedComponents = $$slots?.default;
 </script>
 
 
-{#if failures.length}
-  <button on:click={() => dialogOpen = true} class="compact light">
-    Show fail messages
+{#if hasFailureMessages || hasNestedComponents}
+  <button on:click={() => dialogOpen = true} class="light">
+    Show failed
   </button>
 
   <Dialog bind:isOpen={dialogOpen}>
     <h4>{title}</h4>
+
     <table>
       <tr>
         <th>lane</th>
@@ -29,11 +32,17 @@
         </tr>
       {/each}
     </table>
+
+    <slot></slot>
   </Dialog>
 {/if}
 
 
 <style>
+table {
+  margin-bottom: 1rem;
+}
+
 .fail-msg-column {
   width: 48%;
 }

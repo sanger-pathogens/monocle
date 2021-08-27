@@ -70,9 +70,9 @@ def read_mock_database_connection_config(config: Config) -> DbConnectionConfig:
 def read_spreadsheet_definition_config(config: Config) -> SpreadsheetDefinition:
     try:
         header_pos = int(config['spreadsheet_header_row_position'])
-        if header_pos <= 0:
+        if header_pos < 0:
             raise (ValueError())
     except ValueError:
-        raise(ValueError('spreadsheet_header_row_position value must be a positive integer'))
+        raise(ValueError('spreadsheet_header_row_position value must be 0 or a positive integer'))
 
     return SpreadsheetDefinition(header_pos, config['spreadsheet_definition'])

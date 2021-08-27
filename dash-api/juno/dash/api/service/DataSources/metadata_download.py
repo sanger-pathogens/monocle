@@ -36,7 +36,7 @@ class ProtocolError(Exception):
 class Monocle_Download_Client:
    
    data_sources_config     = 'data_sources.yml'
-   data_source             = 'monocle_download_api'
+   data_source             = 'monocle_metadata_api'
    required_config_params  = [   'base_url',
                                  'swagger',
                                  'download',
@@ -52,7 +52,7 @@ class Monocle_Download_Client:
          self.config  = data_sources[self.data_source]
       for required_param in self.required_config_params:
          if not required_param in self.config:
-            logging.error("data source config file {} does not provide the required paramter {}.{}".format(self.data_sources_config,self.data_source,required_param))
+            logging.error("data source config file {} does not provide the required parameter {}.{}".format(self.data_sources_config,self.data_source,required_param))
             raise KeyError
       
    def metadata(self, lane_id_list):

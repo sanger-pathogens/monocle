@@ -1,9 +1,15 @@
 import { render } from "@testing-library/svelte";
+import { getContext } from "svelte";
 import DownloadButtons from "./_DownloadButtons.svelte";
 
 const INSTITUTION = "Shulgin Academy";
 const NUM_DONE = 9;
 const ROLE_BUTTON = "button";
+
+jest.mock("svelte", () => ({
+  ...jest.requireActual("svelte"),
+  getContext: () => INSTITUTION
+}));
 
 describe.each([
   [
@@ -19,7 +25,6 @@ describe.each([
 ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {
   it("is displayed", () => {
     const { getByRole } = render(DownloadButtons, {
-      institutionName: INSTITUTION,
       succeeded: NUM_DONE,
       failed: NUM_DONE
     });
@@ -30,7 +35,6 @@ describe.each([
   
   it(`isn't displayed if the number of ${resultType} is 0`, () => {
     const { queryByRole } = render(DownloadButtons, {
-      institutionName: INSTITUTION,
       succeeded: 0,
       failed: 0
     });
@@ -41,7 +45,6 @@ describe.each([
   
   it("has the correct download URL and attributes", () => {
     const { getByRole } = render(DownloadButtons, {
-      institutionName: INSTITUTION,
       succeeded: NUM_DONE,
       failed: NUM_DONE
     });
@@ -52,6 +55,14 @@ describe.each([
     expect(button.getAttribute("target")).toBe("_blank");
     expect(button.getAttribute("rel")).toBe("external");
   });
+});
+
+it("has shorter button text if only the failed download button is displayed", () => {
+  const { getByRole } = render(DownloadButtons, {
+    failed: NUM_DONE
+  });
+
+  expect(getByRole(ROLE_BUTTON).textContent).toBe("Download ");
 });
 
 describe("pipeline", () => {
@@ -69,7 +80,6 @@ describe("pipeline", () => {
   ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {
     it("is displayed", () => {
       const { getByRole } = render(DownloadButtons, {
-        institutionName: INSTITUTION,
         succeeded: NUM_DONE,
         failed: NUM_DONE,
         isPipeline: true
@@ -81,7 +91,6 @@ describe("pipeline", () => {
     
     it(`isn't displayed if the number of ${resultType} is 0`, () => {
       const { queryByRole } = render(DownloadButtons, {
-        institutionName: INSTITUTION,
         succeeded: 0,
         failed: 0,
         isPipeline: true
@@ -93,7 +102,6 @@ describe("pipeline", () => {
     
     it("has the correct download URL and attributes", () => {
       const { getByRole } = render(DownloadButtons, {
-        institutionName: INSTITUTION,
         succeeded: NUM_DONE,
         failed: NUM_DONE,
         isPipeline: true

@@ -31,6 +31,6 @@ it.skip("has the correct URL", () => {
 
   const actualUploadURL = queryByRole(SEMANTIC_ROLE_LINK, { name: LINK_TITLE })
     .getAttribute("href");
-  expect(actualUploadURL).toBe("/upload");
+  expect(actualUploadURL).toBe("/metadata-upload");
 });
 

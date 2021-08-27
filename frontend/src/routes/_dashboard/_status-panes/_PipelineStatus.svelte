@@ -4,7 +4,6 @@
   import StatusPane from "./_StatusPane.svelte";
   import StatusChart from "../_StatusChart.svelte";
 
-  export let institutionName;
   export let pipelineStatus = {};
 
   const CHART_LABELS = ["Waiting", "Running", "Succeeded", "Failed"];
@@ -43,16 +42,27 @@
     />
 
     <DownloadButtons
-      {institutionName}
       {succeeded}
-      {failed}
       isPipeline={true}
     />
   
-    <FailMessages
-      {failures}
-      title={FAIL_MESSAGES_TITLE}
-    />
+    {#if failed > 0}
+      <FailMessages
+        {failures}
+        title={FAIL_MESSAGES_TITLE}
+      >
+        <DownloadButtons
+          {failed}
+          isPipeline={true}
+          style="float: right"
+        />
+      </FailMessages>
+    {:else}
+      <FailMessages
+        {failures}
+        title={FAIL_MESSAGES_TITLE}
+      />
+    {/if}
   {/if}
 </StatusPane>
 

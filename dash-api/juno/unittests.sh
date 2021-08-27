@@ -2,4 +2,4 @@
 
 # TODO This needs tidying up (along with package structure) - for the moment the dash backend modules/tests are hacked in while changes are still ongoing
 PYTHONPATH=".:./dash/api/service"
-python3 -m unittest discover -v -s . -p '*_test.py'
+coverage run --source '.' --omit 'dash/tests/*' -m unittest discover -v -s . -p '*_test.py'

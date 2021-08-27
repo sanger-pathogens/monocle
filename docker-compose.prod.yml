@@ -55,8 +55,9 @@ services:
       - API_TEST_MODE=false
   dash-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
-      - "80"
+      - "5000"
     restart: unless-stopped
     security_opt:
       - no-new-privileges
@@ -69,17 +70,23 @@ services:
       - "/tmp:rw,noexec,nosuid"
     volumes:
       - data:/app/monocle_juno
+      # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
+      - data_institution_view:/home/<USER>/monocle_juno_institution_view
+      - data_downloads:/app/monocle_juno_web_root/downloads
       - ./my.cnf:/app/my.cnf
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
     environment:
       - ENABLE_SWAGGER_UI=false
       - LOG_LEVEL=INFO
+      # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
+      - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+
   dash:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>
     expose:
-       - "80"
+       - "5000"
     restart: unless-stopped
     security_opt:
        - no-new-privileges

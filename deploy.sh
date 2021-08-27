@@ -24,7 +24,7 @@ usage() {
                         from version number (set by \`--version\`)
        -t --tag         docker images tag; overrides tag derived from version
                         number (set by \`--version\`)
-       -c --conn-file   a database connection file, required for a database release
+       -c --conn-file   full path to database connection file, required for a database release
 
        (There is no option to set the public domain for the service, as
        that feature is reserved for the production environment.)
@@ -305,12 +305,12 @@ then
         set -e
         echo "Setting configuration in docker-compose.yml..."
         sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
-        sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
-        sed -i -e "s/<USER_UID>/\$(id -u)/g" docker-compose.yml
-        sed -i -e "s/<USER_GID>/\$(id -g)/g" docker-compose.yml
+        sed -i -e "s/<USER>/${REMOTE_USER}/g"     docker-compose.yml run_data_view_script_in_docker.sh
+        sed -i -e "s/<USER_UID>/\$(id -u)/g"      docker-compose.yml
+        sed -i -e "s/<USER_GID>/\$(id -g)/g"      docker-compose.yml
         echo "Setting configuration in nginx.proxy.conf..."
-        sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
-        sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+        sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g"             nginx.proxy.conf
+        sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g"             nginx.proxy.conf
         sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml

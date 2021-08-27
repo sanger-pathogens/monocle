@@ -14,12 +14,13 @@ RUN      pip install flask==1.1.2                     \
                   python-dateutil==2.8.1              \
                   'connexion[swagger-ui]'             \
                   mysqlclient==2.0.1                  \
-                  SQLAlchemy==1.3.23
+                  SQLAlchemy==1.3.23                  \
+                  coverage==5.5
 
 COPY     . /app
 
 # Temp hack until we have a final version of the dash DataSources component available
 ENV      PYTHONPATH "${PYTHONPATH}:./dash/api/service"
 
-EXPOSE   80
-CMD      ["gunicorn", "-w 2", "-b :80", "dash.wsgi"]
+EXPOSE   5000
+CMD      ["gunicorn", "-w 2", "-b :5000", "dash.wsgi"]

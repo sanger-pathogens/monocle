@@ -1,5 +1,9 @@
 import unittest
 import tempfile
+import logging.config
+import connexion
+import os
+import json
 from flask import Config
 from metadata.api.configuration import *
 from metadata.api.model.db_connection_config import DbConnectionConfig
@@ -10,6 +14,21 @@ class TestConfiguration(unittest.TestCase):
     """ Test class for the configuration module """
 
     TEST_COL_NAME = 'a_column_name'
+    CONFIG_FILE = 'config.json'
+    OPEN_API_SPEC_FILE = 'openapi.yml'
+
+    def setUp(self) -> None:
+        with open(self.CONFIG_FILE) as config_file:
+            use_swagger_ui = True if os.environ.get('ENABLE_SWAGGER_UI', '').lower() == 'true' else False
+            app_handle = connexion.FlaskApp(__name__, specification_dir='../interface', options={'swagger_ui': use_swagger_ui})
+            app_handle.add_api(self.OPEN_API_SPEC_FILE, strict_validation=False)
+            app_handle.app.config.update(json.load(config_file))
+            logging.config.dictConfig(app_handle.app.config.get('logging_config'))
+            app_handle.app.config['JSON_SORT_KEYS'] = False
+            self.flask_config = app_handle.app.config
+
+    def test_flask_config(self):
+        config = read_spreadsheet_definition_config(self.flask_config['metadata'])
 
     def test_read_database_connection_config(self):
         with tempfile.NamedTemporaryFile('w+t') as tmp:

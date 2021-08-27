@@ -5,7 +5,7 @@
 
 import logging
 import pprint
-import DataSources.monocledb
+import DataSources.sample_metadata
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 import DataSources.user_data
@@ -14,14 +14,14 @@ logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='
 
 pp = pprint.PrettyPrinter(indent=3)
 
-monocledb = DataSources.monocledb.MonocleDB()      
+sample_metadata = DataSources.sample_metadata.SampleMetadata()
       
 print("\nInstitution names:\n")
-inst_list = monocledb.get_institution_names()
+inst_list = sample_metadata.get_institution_names()
 #pp.pprint( inst_list )
 
 print("\nSamples:\n")
-samples = monocledb.get_samples()
+samples = sample_metadata.get_samples()
 print("First 3 samples:")
 pp.pprint( samples[0:3] )
 

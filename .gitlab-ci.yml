@@ -1,20 +1,20 @@
-# codecov removed 2021-04-15 after security breach notice
-
 stages:
   - build
   - test
   - docker_tags_for_merges_and_releases
-  
-  
+
+
 variables:
   DASH_CONTEXT:             "dash"
   DASH_API_CONTEXT:         "dash-api"
+  # note there is no docker build associated with DATA_VIEW_CONTEXT
+  DATA_VIEW_CONTEXT:        "data_view"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-    
+
 # at every git push, build docker images in subdirectories in DOCKER_BUILD_LIST
 # push the images to the container registry  with the commit SHA-1 as the tag
 Docker builds:
@@ -51,7 +51,7 @@ Docker builds:
             docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
          done
 
-         
+
 Dashboard unit tests:
   stage: test
   only:
@@ -60,14 +60,16 @@ Dashboard unit tests:
     - autoscale-theta-legacy
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_CONTEXT}"
   script:
     - ./unittests.sh
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - coverage report --fail-under 85
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${DASH_CONTEXT}/htmlcov
 
 
 Dashboard API unit tests:
@@ -78,16 +80,18 @@ Dashboard API unit tests:
     - autoscale-theta-legacy
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - coverage report --fail-under 85
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${DASH_API_CONTEXT}/juno/htmlcov
 
-    
+
 Data view unit tests:
   stage: test
   only:
@@ -96,11 +100,18 @@ Data view unit tests:
     - autoscale-theta-legacy
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    - cd data_view
+    - cd "${DATA_VIEW_CONTEXT}"
   script:
     - ./unittests.sh
+    - coverage report --fail-under 60
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - data_view/htmlcov
 
-    
+
 Metadata unit tests:
   stage: test
   only:
@@ -109,16 +120,18 @@ Metadata unit tests:
     - autoscale-theta-legacy
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
-    # codecov temporarily disabled 2021-04-15 after security breach notice
-    # - pip install codecov
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-  # codecov temporarily disabled 2021-04-15 after security breach notice
-  # after_script:
-    # - codecov --commit "${CI_COMMIT_SHA}" --token "${CODECOV_TOKEN}" --required
+    - coverage report --fail-under 85
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${METADATA_CONTEXT}/juno/htmlcov
 
-    
+
 Front end unit tests:
   stage: test
   only:
@@ -129,7 +142,13 @@ Front end unit tests:
   before_script:
     - cd /app
   script:
-    - npm test
+    - npm run test:coverage # Coverage thresholds in package.json
+    - npm run test:summary
+  coverage: /^Branches\s*:\s*([^%]+)/
+  artifacts:
+    when: always
+    paths:
+      - /app/coverage/lcov-report
 
 
 # at every merge to master, tag the latest image builds as 'unstable'
@@ -171,7 +190,7 @@ Docker tags for merge:
             docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
 
-         
+
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
 Docker tags for release:
   variables:

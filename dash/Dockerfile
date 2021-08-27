@@ -15,9 +15,10 @@ RUN      pip install dash==1.19.0                        \
                      pandas==1.2.2                       \
                      python-ldap==3.3.1                  \
                      PyYAML==5.3.1                       \
-                     SQLAlchemy==1.3.23
+                     SQLAlchemy==1.3.23                  \
+                     coverage==5.5
 
 COPY     . /dash
 
-EXPOSE   80
-CMD      ["gunicorn", "-w 3", "-b :80", "wsgi:server"]
+EXPOSE   5000
+CMD      ["gunicorn", "-w 3", "-b :5000", "wsgi:server"]

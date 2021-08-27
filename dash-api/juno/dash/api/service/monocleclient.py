@@ -2,9 +2,13 @@ from   collections            import defaultdict
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
+from   os                     import environ
+from   pathlib                import Path
 import urllib.parse
+import uuid
+import yaml
 
-import DataSources.monocledb
+import DataSources.sample_metadata
 import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
@@ -58,10 +62,11 @@ class MonocleData:
       # only set to False if you know what you're doing
       if set_up:
          self.updated                     = datetime.now()
-         self.monocledb                   = DataSources.monocledb.MonocleDB()
+         self.sample_metadata             = DataSources.sample_metadata.SampleMetadata()
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
+         self.download_symlink_config     = 'data_sources.yml'
 
    def get_progress(self):
       institutions_data = self.get_institutions()
@@ -131,7 +136,7 @@ class MonocleData:
       """
       if self.institutions_data is not None:
          return self.institutions_data
-      names = self.monocledb.get_institution_names()
+      names = self.sample_metadata.get_institution_names()
       if self.user_record is not None:
          user_memberships = [ inst['inst_id'] for inst in self.user_record['memberOf'] ]
          logging.info("user {} is a member of {}".format( self.user_record['username'],user_memberships))
@@ -176,7 +181,7 @@ class MonocleData:
       if self.samples_data is not None:
          return self.samples_data
       institutions_data = self.get_institutions()
-      all_juno_samples = self.monocledb.get_samples()
+      all_juno_samples = self.sample_metadata.get_samples()
       samples = { i:[] for i in list(self.institutions_data.keys()) }
       for this_sample in all_juno_samples:
          try:
@@ -392,7 +397,60 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self,institution,category,status,download_base_url):
+   def get_metadata_for_download(self, download_hostname, institution, category, status):
+      """
+      Pass Flask request object, institution name, category ('sequencing' or 'pipeline')
+      and status ('successful' or 'failed');
+      this identifies the lanes for which metadata are required.
+      
+      On success, returns headers and content for response
+      
+      {  'success'   : True,
+         'headers'   : {   'Content-Type'          : 'text/csv; charset=UTF-8',
+                           'Content-Disposition'   : 'attachment; filename="a_suggested_filename.csv"'
+                           },
+         'content'   : 'a,very,long,multi-line,CSV,string'
+         }
+         
+      On failure, returns reasons ('request' or 'internal'; could extend in future if required??)
+      that can be used to provide suitable HTTP status.
+      
+      {  'success'   : False,
+         'error'     : 'request'
+         }
+
+      """
+      institution_data = self.get_institutions()
+      institution_names = [institution_data[i]['name'] for i in institution_data.keys()]
+      if not institution in institution_names:
+         logging.error("Invalid request to /download: parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
+         return { 'success'   : False,
+                  'error'     : 'request',
+                  }
+      
+      institution_download_symlink_url_path = self.make_download_symlink(institution)
+      if institution_download_symlink_url_path is None:
+         logging.error("Failed to create a symlink for data downloads.")
+         return { 'success'   : False,
+                  'error'     : 'internal',
+                  }
+      host_url = 'https://{}'.format(download_hostname)
+      # TODO add correct port number
+      # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
+      # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
+      download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
+      logging.info('Data download base URL = {}'.format(download_base_url))
+
+      csv_response_filename = '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
+                                                      category,
+                                                      status)
+      csv_response_string = self.metadata_as_csv(institution, category, status, download_base_url)
+      return   {  'success'   : True,
+                  'filename'  : csv_response_filename,
+                  'content'   : csv_response_string
+                  }
+
+   def metadata_as_csv(self,institution,category,status,download_base_url):
       """
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
@@ -475,7 +533,67 @@ class MonocleData:
       csv_giant_string = "\n".join(csv)
       return csv_giant_string
 
-
+   def make_download_symlink(self,target_institution):
+      """
+      Pass the institution name.
+      
+      This creates a symlink from the web server download directory to the
+      directory in which an institution's sample data (annotations,
+      assemblies, reads etc.) can be found.
+      
+      The symlink has a random name so only someone given the URL will be
+      able to access it.
+      
+      The symlink path (relative to web server document root) is returned.
+      """
+      download_config_section = 'data_download'
+      download_dir_param      = 'web_dir'
+      download_url_path       = 'url_path'
+      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
+      # get web server directory, and check it exists
+      if not Path(self.download_symlink_config).is_file():
+         return self._download_config_error("data source config file {} missing".format(self.download_symlink_config))
+      # read config, check required params
+      with open(self.download_symlink_config, 'r') as file:
+         data_sources = yaml.load(file, Loader=yaml.FullLoader)
+         if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
+            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_dir_param))
+         download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
+         if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
+            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_url_path))
+         download_url_path  = data_sources[download_config_section][download_url_path]
+      if not download_web_dir.is_dir():
+         return self._download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
+      logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
+      # get the "target" directory where the data for the institution is kept, and check it exists
+      # (Why an environment variable?  Because this can be set  by docker-compose, and it is a path
+      # to a volume mount that is also set up by docker-compose.)
+      if data_inst_view_environ not in environ:
+         return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
+      download_host_dir = Path(environ[data_inst_view_environ], self.institution_db_key_to_dict[target_institution])
+      if not download_host_dir.is_dir():
+         return self._download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
+      logging.debug('host data download dir = {}'.format(str(download_host_dir)))
+      # create a randomly named symlink to present to the user (do..while is just in case the path exists already)
+      while True:
+         random_name          = uuid.uuid4().hex
+         data_download_link   = Path(download_web_dir, random_name)
+         download_url_path    = '/'.join([download_url_path, random_name])
+         if not data_download_link.exists():
+            break
+      logging.debug('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
+      data_download_link.symlink_to(download_host_dir.absolute())
+      return download_url_path
+   
+   def _download_config_error(self,message):
+      """
+      Call for errors occurring in make_download_symlink().
+      Pass error message, which is logged.
+      Always returns None.
+      """
+      logging.error("Invalid data download config: {}".format(message))
+      return None
+   
    def institution_name_to_dict_key(self, name, existing_keys):
       """
       Private method that creates a shortened, all-alphanumeric version of the institution name
