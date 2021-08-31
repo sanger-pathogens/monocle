@@ -14,11 +14,12 @@
 
 <h2>In silico data upload</h2>
 
-<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with <em>in silico</em> data:</p>
+<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with tab-separated <em>in silico</em> data:</p>
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
   uploadUrl="/metadata/in-silico-upload"
+  accept="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
   on:uploadSuccess={openDialog}
 />
 
