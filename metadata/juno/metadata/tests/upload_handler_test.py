@@ -13,12 +13,13 @@ from metadata.api.model.in_silico_data import InSilicoData
 class TestUploadHandler(unittest.TestCase):
     """ Unit tests for the UploadHandler class """
 
-    TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.tab'
-    TEST_TAB_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.tab'
+    TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.csv'
+    TEST_CSV_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.csv'
     TEST_TSV_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.tsv'
     TEST_TSV_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.tsv'
     TEST_TXT_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.txt'
     TEST_TXT_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.txt'
+    TEST_NO_EXTENSION_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet'
     TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet'
     CONFIG_FILE_PATH = 'config.json'
 
@@ -204,24 +205,28 @@ class TestUploadHandler(unittest.TestCase):
     def test_is_valid_file_type(self):
         # check that file names are checked when file extension check is enabled
         previous_check_file_extension_value = self.under_test.check_file_extension
-        self.under_test.check_file_extension = True
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertFalse(self.under_test.is_valid_file_type('foo'))
-        self.assertFalse(self.under_test.is_valid_file_type(None))
-        self.assertFalse(self.under_test.is_valid_file_type(''))
+        self.under_test.check_file_extension = False
+        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertTrue(self.under_test.is_valid_file_type('foo'))
+        self.assertTrue(self.under_test.is_valid_file_type(None))
+        self.assertTrue(self.under_test.is_valid_file_type(''))
         self.under_test.check_file_extension = previous_check_file_extension_value
-        
+
     def test_file_type_check_disabled_ok(self):
         # check that files without extensions are accepted if the file extention check is disabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS))
         self.under_test.check_file_extension = previous_check_file_extension_value
-                
-    def test_tab_load_with_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+
+    def test_csv_load_with_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
         # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
 
@@ -235,10 +240,26 @@ class TestUploadHandler(unittest.TestCase):
         # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
 
-    def test_tab_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
-        # self.display_errors('test_load_with_no_validation_errors', validation_errors)
+    def test_no_extension_load_with_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_NO_EXTENSION_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
 
+    def test_csv_load_with_no_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_load_with_no_validation_errors', validation_errors)
         self.assertEqual(len(validation_errors), 0)
 
     def test_tsv_load_with_no_validation_errors(self) -> None:
@@ -253,8 +274,23 @@ class TestUploadHandler(unittest.TestCase):
 
         self.assertEqual(len(validation_errors), 0)
 
+    def test_no_extension_load_with_no_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
+
     def test_parse_metadata(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         # self.display_errors('test_parse', validation_errors)
 
         self.assertEqual(len(validation_errors), 0)
@@ -321,6 +357,8 @@ class TestUploadHandler(unittest.TestCase):
                  daptomycin_method='', vancomycin='', vancomycin_method='', linezolid='', linezolid_method='')]
 
         samples = self.under_test.parse()
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
         self.assertEqual(len(samples), len(expected_results))
 
         for idx in range(0, len(expected_results)-1):
@@ -332,9 +370,15 @@ class TestUploadHandler(unittest.TestCase):
             self.under_test.store()
 
     def test_store_metadata(self) -> None:
-        self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         self.under_test.store()
         self.dao_mock.update_sample_metadata.assert_called_once()
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
 
 
 class TestInSilicoUploadHandler(unittest.TestCase):
@@ -484,14 +528,14 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertFalse(self.under_test.is_valid_file_type(None))
         self.assertFalse(self.under_test.is_valid_file_type(''))
         self.under_test.check_file_extension = previous_check_file_extension_value
-        
+
     def test_file_type_check_disabled_ok(self):
         # check that files without extensions are accepted if the file extention check is disabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = False
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_WITH_NO_ERRORS))
         self.under_test.check_file_extension = previous_check_file_extension_value
-        
+
     def test_tab_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_WITH_VALIDATION_ERRORS, recursive=True)[0])
         #self.display_errors('test_tab_load_with_validation_errors', validation_errors)

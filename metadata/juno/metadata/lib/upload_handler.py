@@ -20,7 +20,7 @@ class _StringLengthValidation(CustomElementValidation):
 
 class UploadHandler:
     """ Handle processing of upload spreadsheets """
-    
+
     # Allowed file formats
     file_types = {
         'tab' : getattr(pandas, 'read_csv'),
@@ -36,6 +36,7 @@ class UploadHandler:
         self.__institutions = None
         # validation will fail if file extension isn't as expected, when this flag is true
         self.check_file_extension = True
+        self.file_delimiter = '\t'
 
     def data_frame(self):
         return self.__df
@@ -50,11 +51,11 @@ class UploadHandler:
 
     def is_valid_file_type(self, file: str) -> bool:
         """ Check if we can process this file type """
-        
+
         # immediately return true if this check is disabled
         if not self.check_file_extension:
             return True
-        
+
         valid = False
         try:
             if file and '.' in file:
@@ -165,13 +166,21 @@ class UploadHandler:
             raise RuntimeError('Not an allowed file extension')
 
         # Load the data to a data frame
-        suffix = file_path.split(".")[-1]
-        data = self.file_types[suffix](
-            file_path,
-            dtype=str,
-            sep='\t',
-            header=self.__spreadsheet_def.header_row_position
-        )
+        if self.check_file_extension:
+            suffix = file_path.split(".")[-1]
+            data = self.file_types[suffix](
+                file_path,
+                dtype=str,
+                sep=self.file_delimiter,
+                header=self.__spreadsheet_def.header_row_position
+            )
+        else:
+            data = pandas.read_csv(
+                file_path,
+                dtype=str,
+                sep=self.file_delimiter,
+                header=self.__spreadsheet_def.header_row_position
+            )
         data.fillna('', inplace=True)
 
         # Display spreadsheet contents for debugging if required
