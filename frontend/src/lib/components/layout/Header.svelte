@@ -51,7 +51,7 @@ nav {
   align-items: center;
   flex-wrap: wrap;
   margin: auto;
-  max-wigth: var(--bp-xl);
+  max-width: var(--bp-xl);
 }
 
 nav a {
