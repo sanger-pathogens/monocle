@@ -1,4 +1,5 @@
 import {
+  getBatches,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
@@ -9,6 +10,17 @@ const DASHBOARD_API_URL = "dashboard-api";
 const fetch = jest.fn();
 
 describe.each([
+  {
+    fnName: "getBatches",
+    getResource: getBatches,
+    expectedEndpoints: ["get_batches"],
+    payload: {
+      batches: {
+        some: "data",
+      }
+    },
+    expectedResult: { some: "data" }
+  },
   {
     fnName: "getInstitutionStatus",
     getResource: getInstitutionStatus,

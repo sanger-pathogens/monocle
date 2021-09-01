@@ -33,6 +33,11 @@ export function getProjectProgress(fetch) {
     });
 }
 
+//TODO use service workers to cache response
+export function getBatches(fetch) {
+  return fetchDashboardResource("get_batches", "batches", fetch);
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardResource(
     "get_user_details", "user_details", fetch);
@@ -46,10 +51,6 @@ function getProjectProgressData(fetch) {
 function getInstitutions(fetch) {
   return fetchDashboardResource(
     "get_institutions", "institutions", fetch);
-}
-
-function getBatches(fetch) {
-  return fetchDashboardResource("get_batches", "batches", fetch);
 }
 
 function getSequencingStatus(fetch) {
