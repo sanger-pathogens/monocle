@@ -14,7 +14,7 @@
 
 <h2>Metadata upload</h2>
 
-<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with tab-separated sample metadata (<code>.tab</code>, <code>.tsv</code>, and <code>.txt</code> extensions are supported):</p>
+<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your CSV files with sample metadata:</p>
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}

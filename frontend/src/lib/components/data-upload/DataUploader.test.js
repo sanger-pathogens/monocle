@@ -17,13 +17,6 @@ it("enables the upload button only when the input has a file", async () => {
     .toBeFalsy();
 });
 
-it("accepts only files w/ tab-separated-values extensions", () => {
-  const { container } = render(DataUploader, { uploadUrl: UPLOAD_URL });
-  
-  expect(container.querySelector("input[type=file]").accept)
-    .toBe("text/plain,.txt,text/tab-separated-values,.tsv,.tab");
-});
-
 describe("file uploading", () => {
   const FILES = [FILE, "another file"];
   
