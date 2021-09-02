@@ -1,11 +1,10 @@
 import {
-  MONOCLE_URL,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
 } from "./dataLoading.js";
 
-const DASHBOARD_API_URL = `${MONOCLE_URL}/dashboard-api`;
+const DASHBOARD_API_URL = "dashboard-api";
 
 const fetch = jest.fn();
 
