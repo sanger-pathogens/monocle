@@ -1,4 +1,3 @@
-import { MONOCLE_URL } from "./dataLoading.js";
 import { getSession, serverFetch } from "./hooks.js";
 
 const DASHBOARD_API_INTERNAL_URL = "http://dash-api:5000/dashboard-api/";
@@ -17,7 +16,7 @@ describe("serverFetch", () => {
   });
 
   it("replaces the dashboard API URL w/ the internal URL when a request is from the Monocle origin", async () => {
-    const request = { url: `${MONOCLE_URL}/dashboard-api/` };
+    const request = { url: "http://monocle.pam.sanger.ac.uk/dashboard-api/" };
 
     await serverFetch(request);
 
