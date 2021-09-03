@@ -2,27 +2,19 @@
 # The in_silico table.
 # **************************************************************
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
 DROP TABLE IF EXISTS `in_silico`;
 
 CREATE TABLE `in_silico` (
   `lane_id` varchar(256) NOT NULL,
   `gbs_typer_serotype` varchar(256),
   `MLST` varchar(256),
-  `adhP` varchar(30),
-  `pheS` varchar(30),
-  `atr` varchar(30),
-  `glnA` varchar(30),
-  `sdhA` varchar(30),
-  `glcK` varchar(30),
-  `tkt` varchar(30),
+  `adhP` int(11) DEFAULT NULL,
+  `pheS` int(11) DEFAULT NULL,
+  `atr` int(11) DEFAULT NULL,
+  `glnA` int(11) DEFAULT NULL,
+  `sdhA` int(11) DEFAULT NULL,
+  `glcK` int(11) DEFAULT NULL,
+  `tkt` int(11) DEFAULT NULL,
   `twenty_three_S1` varchar(30),
   `twenty_three_S3` varchar(30),
   `CAT` varchar(30),
@@ -62,11 +54,3 @@ CREATE TABLE `in_silico` (
   `PARC_variant` varchar(256),
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

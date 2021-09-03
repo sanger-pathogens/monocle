@@ -418,7 +418,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
-        self.assertEqual(len(validation_errors), 47)
+        self.assertEqual(len(validation_errors), 46)
 
         self.assertTrue(
             '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)
@@ -427,19 +427,19 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertTrue(
             '{row: 2, column: "ST"}: "ST=I" contains illegal characters' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "adhP"}: "abc" must be a whole positive number' in validation_errors)
+            '{row: 3, column: "adhP"}: "abc" must be a whole positive number and/or asterisk' in validation_errors)
+        #self.assertTrue(
+        #    '{row: 2, column: "pheS"}: "*" must be a whole positive number' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "pheS"}: "*" must be a whole positive number' in validation_errors)
+            '{row: 3, column: "atr"}: "0!" must be a whole positive number and/or asterisk' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "atr"}: "0!" must be a whole positive number' in validation_errors)
+            '{row: 3, column: "glnA"}: "1_6" must be a whole positive number and/or asterisk' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "glnA"}: "1_6" must be a whole positive number' in validation_errors)
+            '{row: 2, column: "sdhA"}: "2.2" must be a whole positive number and/or asterisk' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "sdhA"}: "2.2" must be a whole positive number' in validation_errors)
+            '{row: 2, column: "glcK"}: "" must be a whole positive number and/or asterisk' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "glcK"}: "" must be a whole positive number' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "tkt"}: "abc" must be a whole positive number' in validation_errors)
+            '{row: 3, column: "tkt"}: "abc" must be a whole positive number and/or asterisk' in validation_errors)
         self.assertTrue(
             '{row: 2, column: "23S1"}: "[pos]" must be pos, neg or NA' in validation_errors)
         self.assertTrue(
