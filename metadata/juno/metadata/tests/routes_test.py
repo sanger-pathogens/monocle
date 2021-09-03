@@ -24,7 +24,7 @@ class TestRoutes(unittest.TestCase):
         http_status = update_in_silico_data([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
-    @patch('metadata.api.download_handler.DownloadHandler')
+    @patch('metadata.api.download_handlers.DownloadMetadataHandler')
     def test_get_download_metadata(self, download_handler_mock):
         # TODO Add this test
         pass
