@@ -92,15 +92,11 @@
       },
       "county_state": {
         "title": "County/state",
-        "max_length": 200,
-        "regex": "^[0-9a-zA-Z\\'\\- ]+$",
-        "regex_validation_message": "contains illegal characters"
+        "max_length": 200
       },
       "city": {
         "title": "City",
-        "max_length": 200,
-        "regex": "^[0-9a-zA-Z\\'\\- ]+$",
-        "regex_validation_message": "contains illegal characters"
+        "max_length": 200
       },
       "submitting_institution": {
         "title": "Submitting_Institution",
