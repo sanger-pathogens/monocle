@@ -5,7 +5,7 @@ it("is rendered w/ the data upload form", () => {
   const { container, getByRole } = render(UploadingPage);
 
   expect(container.querySelector("p").textContent)
-    .toBe("Select or drag and drop your CSV files with sample metadata:");
+    .toBe("Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:");
   expect(getByRole("form")).toBeDefined();
 });
 
