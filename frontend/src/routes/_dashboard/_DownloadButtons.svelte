@@ -14,11 +14,11 @@
 
   const onlyFailedButton = !succeeded;
   let titleDownloadSucceeded = isPipeline ?
-    (succeeded && `Download ${succeeded} samples successfully processed through the pipeline`)
-    : (succeeded && `Download ${succeeded} successfully sequenced samples`);
+    (succeeded && `Download metadata for ${succeeded} samples successfully processed through the pipeline`)
+    : (succeeded && `Download metadata for ${succeeded} successfully sequenced samples`);
   let titleDownloadFailed = isPipeline ?
-    (failed && `Download ${failed} samples that failed processing through the pipeline`)
-    : (failed && `Download ${failed} samples that failed sequencing`);
+    (failed && `Download metadata for ${failed} samples that failed processing through the pipeline`)
+    : (failed && `Download metadata for ${failed} samples that failed sequencing`);
 </script>
 
 
@@ -34,7 +34,7 @@
     rel="external"
     {style}
   >
-    Download succeeded
+    Metadata for successful samples
     <DownloadIcon
       color="#98d85b"
     />
@@ -53,7 +53,7 @@
     rel="external"
     {style}
   >
-    {onlyFailedButton ? "Download" : "Download failed"}
+    {onlyFailedButton ? "Download" : "Metadata for failed samples"}
     <DownloadIcon
       color="#ff5858"
     />

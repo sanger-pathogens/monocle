@@ -56,12 +56,12 @@ it("displays the download button", () => {
     },
   });
 
-  expect(getByRole("button", { name: `Download ${succeeded} samples successfully processed through the pipeline` }))
+  expect(getByRole("button", { name: `Download metadata for ${succeeded} samples successfully processed through the pipeline` }))
     .toBeDefined();
 });
 
 it("displays the download failed button inside the failure messages dialog", async () => {
-  const downloadButtonText = `Download ${FAILED} samples that failed sequencing`;
+  const downloadButtonText = `Download metadata for ${FAILED} samples that failed sequencing`;
 
   const { queryByRole } = render(PipelineStatus, {
     pipelineStatus: {

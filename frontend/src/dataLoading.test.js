@@ -50,8 +50,8 @@ describe.each([
     },
     expectedResult: {
       datasets: [
-        { name: "samples received", values: 200 },
-        { name: "samples sequenced", values: 50}
+        { name: "received", values: 200 },
+        { name: "sequenced", values: 50}
       ],
       dates: "21.08.21"
     }
