@@ -28,7 +28,8 @@ services:
        # the download directory must have mode 331, so users can access files via their own download path, but cannot see other download paths
        - data_downloads:/usr/share/nginx/html/downloads
     depends_on:
-       - dash
+       - dash-api
+       - frontend
        - metadata-api
        - monocle-ldap
        - ldap-admin
@@ -81,34 +82,6 @@ services:
       - LOG_LEVEL=INFO
       # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
-
-  dash:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
-    user: <USER_UID>:<USER_GID>
-    expose:
-       - "5000"
-    restart: unless-stopped
-    security_opt:
-       - no-new-privileges
-    cap_drop:
-       - ALL
-    cap_add:
-       - NET_BIND_SERVICE
-    tmpfs:
-       - "/run:rw,noexec,nosuid"
-       - "/tmp:rw,noexec,nosuid"
-    volumes:
-       - data:/dash/monocle_juno
-       # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
-       - data_institution_view:/home/<USER>/monocle_juno_institution_view
-       - data_downloads:/dash/monocle_juno_web_root/downloads
-       - ./my.cnf:/dash/my.cnf
-       - ./mlwh-api.yml:/dash/mlwh-api.yml
-       - ./openldap-env.yaml:/dash/openldap-env.yaml
-    environment:
-       # this MUST be the same path as the mount point for data_institution_view
-       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
-       
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     expose:
