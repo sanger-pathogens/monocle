@@ -2,7 +2,6 @@ from flask import Response
 import unittest
 from unittest.mock import patch, Mock
 from dash.api.service.service_factory import ServiceFactory
-from dash.api.service.monocleclient   import MonocleData
 from dash.api.exceptions import NotAuthorisedException
 from dash.api.routes import *
 
