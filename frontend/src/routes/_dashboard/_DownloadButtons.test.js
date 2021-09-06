@@ -18,7 +18,7 @@ describe.each([
     encodeURI(`/download/${INSTITUTION}/sequencing/successful`)
   ],
   [
-    "failures",
+    "failed",
     `Download metadata for ${NUM_DONE} samples that failed sequencing`,
     encodeURI(`/download/${INSTITUTION}/sequencing/failed`)
   ]
@@ -73,7 +73,7 @@ describe("pipeline", () => {
       encodeURI(`/download/${INSTITUTION}/pipeline/successful`)
     ],
     [
-      "failures",
+      "failed",
       `Download metadata for ${NUM_DONE} samples that failed processing through the pipeline`,
       encodeURI(`/download/${INSTITUTION}/pipeline/failed`)
     ]

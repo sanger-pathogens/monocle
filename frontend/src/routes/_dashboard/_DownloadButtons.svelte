@@ -34,7 +34,7 @@
     rel="external"
     {style}
   >
-    Download successful
+    Metadata for successful samples
     <DownloadIcon
       color="#98d85b"
     />
@@ -53,7 +53,7 @@
     rel="external"
     {style}
   >
-    {onlyFailedButton ? "Download" : "Download failures"}
+    {onlyFailedButton ? "Download" : "Metadata for failed samples"}
     <DownloadIcon
       color="#ff5858"
     />
