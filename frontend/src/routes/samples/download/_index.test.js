@@ -104,4 +104,18 @@ describe("once batches are fetched", () => {
       });
     }
   });
+
+  it("displays the data type checkboxes w/ assemblies and annotations checked", async () => {
+    const { getByRole } = render(DownloadPage);
+
+    await waitFor(() => {
+      const roleCheckbox = "checkbox";
+      expect(getByRole(roleCheckbox, { name: "Assemblies" }).checked)
+        .toBeTruthy();
+      expect(getByRole(roleCheckbox, { name: "Annotations" }).checked)
+        .toBeTruthy();
+      expect(getByRole(roleCheckbox, { name: /^Reads / }).checked)
+        .toBeFalsy();
+    });
+  });
 });

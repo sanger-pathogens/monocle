@@ -84,6 +84,25 @@
         isMulti={true}
       />
     </fieldset>
+
+    <fieldset class="data-type-section">
+      <legend>Data type</legend>
+
+      <label>
+        <input type="checkbox" checked />
+        Assemblies
+      </label>
+
+      <label>
+        <input type="checkbox" checked />
+        Annotations
+      </label>
+
+      <label>
+        <input type="checkbox" />
+        Reads ( ⚠️ can increase the size drastically)
+      </label>
+    </fieldset>
   </form>
 
 {:catch error}
@@ -102,6 +121,13 @@ form {
 
 button {
   margin-bottom: 1rem;
+}
+
+.data-type-section {
+  display: flex;
+  flex-direction: column;
+  /* This prevents the checkbox labels from being clickable across all of the container's width. */
+  align-items: flex-start;
 }
 </style>
 
