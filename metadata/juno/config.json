@@ -50,14 +50,14 @@
         "title": "Supplier_Sample_Name",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[0-9a-zA-Z_]+$",
+        "regex": "^[0-9a-zA-Z\\-_\\.]+$",
         "regex_validation_message": "contains illegal characters"
       },
       "public_name": {
         "title": "Public_Name",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^[0-9a-zA-Z\\-_ ]+$",
+        "regex": "^[0-9a-zA-Z\\-_\\. ]+$",
         "regex_validation_message": "contains illegal characters"
       },
       "lane_id": {
