@@ -22,10 +22,10 @@ export function getProjectProgress(fetch) {
         return {
           dates: progressData.date,
           datasets: [{
-            name: "samples received",
+            name: "received",
             values: progressData["samples received"]
           }, {
-            name: "samples sequenced",
+            name: "sequenced",
             values: progressData["samples sequenced"]
           }]
         };
