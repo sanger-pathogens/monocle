@@ -55,24 +55,26 @@
 
 {:then batchList}
   <form>
-    <fieldset>
+    <fieldset class="batch-selection-section">
       <legend>Select batches</legend>
 
-      <button
-        type="button"
-        on:click={selectBatches}
-        class="compact light"
-      >
-        Select all
-      </button>
+      <div>
+        <button
+          type="button"
+          on:click={selectBatches}
+          class="compact light"
+        >
+          Select all
+        </button>
 
-      <button
-        type="button"
-        on:click={deselectBatches}
-        class="compact light"
-      >
-        Clear
-      </button>
+        <button
+          type="button"
+          on:click={deselectBatches}
+          class="compact light"
+        >
+          Clear
+        </button>
+      </div>
 
       <Select
         noOptionsMessage={"No batches"}
@@ -82,6 +84,7 @@
         showIndicator={true}
         isClearable={false}
         isMulti={true}
+        containerStyles="flex-grow: 1; order: -1"
       />
     </fieldset>
 
@@ -120,12 +123,28 @@ form {
 }
 
 button {
-  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.data-type-section, .batch-selection-section, .batch-selection-section > div {
+  display: flex;
+}
+
+.data-type-section, .batch-selection-section > div {
+  flex-direction: column;
+}
+
+.batch-selection-section > div {
+  flex-shrink: 0;
+  margin-left: .5rem;
+}
+
+.batch-selection-section {
+  align-items: flex-start;
+  margin-bottom: .9rem;
 }
 
 .data-type-section {
-  display: flex;
-  flex-direction: column;
   /* This prevents the checkbox labels from being clickable across all of the container's width. */
   align-items: flex-start;
 }
