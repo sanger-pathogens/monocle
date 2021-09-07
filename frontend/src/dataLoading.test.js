@@ -5,7 +5,7 @@ import {
   getUserDetails
 } from "./dataLoading.js";
 
-const DASHBOARD_API_URL = "dashboard-api";
+const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
 
