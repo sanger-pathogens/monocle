@@ -100,7 +100,7 @@
 			multiple
 		>
 		
-		<button type="submit" disabled={files.length === 0}>
+		<button type="submit" class="primary" disabled={files.length === 0}>
 			Upload
 		</button>
 	</fieldset>

@@ -62,7 +62,7 @@
         <button
           type="button"
           on:click={selectBatches}
-          class="compact light"
+          class="compact"
         >
           Select all
         </button>
@@ -70,7 +70,7 @@
         <button
           type="button"
           on:click={deselectBatches}
-          class="compact light"
+          class="compact"
         >
           Clear
         </button>
@@ -141,7 +141,7 @@ button {
 
 .batch-selection-section {
   align-items: flex-start;
-  margin-bottom: .9rem;
+  margin-bottom: 1rem;
 }
 
 .data-type-section {

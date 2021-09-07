@@ -25,7 +25,7 @@
 {#if !onlyFailedButton}
   <a
     role="button"
-    class="compact light"
+    class="compact"
     aria-label={titleDownloadSucceeded}
     title={titleDownloadSucceeded}
     href={URL_SUCCESS}
@@ -44,7 +44,7 @@
 {#if failed > 0}
   <a
     role="button"
-    class="light {onlyFailedButton ? "" : "compact"}"
+    class:compact={!onlyFailedButton}
     aria-label={titleDownloadFailed}
     title={titleDownloadFailed}
     href={URL_FAIL}
