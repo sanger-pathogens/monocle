@@ -44,3 +44,6 @@ values ('St George''s, University of London', 'UK', 51.426944, -0.174722);
 
 insert into api_institution (name, country, latitude, longitude)
 values ('Public Health England', 'UK', 51.5018, -0.1091);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Universidad de Caldas', 'Colombia', 5.057045, -75.492802);
