@@ -45,6 +45,10 @@
     }
     selectedBatches = allBatches;
   }
+
+  function onSubmit() {
+    confirm("You won't be able to change the parameters if you proceed.");
+  }
 </script>
 
 
@@ -54,9 +58,10 @@
   <LoadingIndicator />
 
 {:then batchList}
-  <form>
+  <form on:submit|preventDefault={onSubmit}>
+
     <fieldset class="batch-selection-section">
-      <legend>Select batches</legend>
+      <legend>Select batches to download</legend>
 
       <div>
         <button
@@ -103,9 +108,34 @@
 
       <label>
         <input type="checkbox" />
-        Reads ( ⚠️ can increase the size drastically)
+        Reads ( ⚠️ may increase the size drastically)
       </label>
     </fieldset>
+
+    <fieldset disabled={!selectedBatches}>
+      <legend>Split download</legend>
+      <select>
+        {#if selectedBatches}
+          <option selected>1 download of 200 GB (1 TB unzipped)</option>
+          <option>2 downloads, ~100 GB per download</option>
+          <option>4 downloads, ~50 GB per download</option>
+          <option>8 downloads, ~25 GB per download</option>
+          <option>16 downloads, ~12.5 GB per download</option>
+          <option>32 downloads, ~6.2 GB per download</option>
+          <option>64 downloads, ~3.1 GB per download</option>
+          <option>128 downloads, ~1.6 GB per download</option>
+          <option>256 downloads, ~0.8 GB per download</option>
+        {/if}
+      </select>
+    </fieldset>
+
+    <button
+      type="submit"
+      class="primary"
+      disabled={!selectedBatches}
+    >
+      Confirm
+    </button>
   </form>
 
 {:catch error}
@@ -124,6 +154,17 @@ form {
 
 button {
   flex-shrink: 0;
+}
+
+button[type=submit] {
+  display: block;
+  margin-top: 2.5rem;
+  margin-left: .9rem;
+}
+
+select {
+  min-width: 12rem;
+  max-width: 98%;
 }
 
 .data-type-section, .batch-selection-section, .batch-selection-section > div {
