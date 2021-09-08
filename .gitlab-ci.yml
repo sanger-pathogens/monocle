@@ -19,7 +19,7 @@ variables:
 Docker builds:
   stage: build
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -56,7 +56,7 @@ Dashboard API unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${DASH_API_CONTEXT}/juno"
@@ -76,7 +76,7 @@ Data view unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${DATA_VIEW_CONTEXT}"
@@ -96,7 +96,7 @@ Metadata unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${METADATA_CONTEXT}/juno"
@@ -116,7 +116,7 @@ Front end unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd /app
@@ -140,7 +140,7 @@ Docker tags for merge:
   only:
     - master
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -179,7 +179,7 @@ Docker tags for release:
   only:
     - tags
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
