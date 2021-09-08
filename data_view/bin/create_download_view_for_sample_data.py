@@ -11,7 +11,7 @@ import logging
 
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
-from dash.api.service.monocleclient import MonocleData
+from dash.api.service.data_services import MonocleData
 
 INITIAL_DIR = Path().absolute()
 # directory in which the data files are located
@@ -112,7 +112,7 @@ def get_institutions(sample_metadata):
    name_to_id = {}
    # set_up = False stops MonocleData instantiating lots of objects we don't need...
    dashboard_data = MonocleData(set_up=False)
-   # ...but that means we need to gove it a SampleMetadata
+   # ...but that means we need to give it a SampleMetadata
    dashboard_data.sample_metadata = sample_metadata
    institutions = dashboard_data.get_institutions()
    for this_institution_id in institutions.keys():

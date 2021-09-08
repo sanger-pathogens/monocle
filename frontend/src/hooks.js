@@ -1,6 +1,5 @@
-import { MONOCLE_URL } from "./dataLoading.js";
-
 const DASHBOARD_API_INTERNAL_URL = "http://dash-api:5000/dashboard-api";
+const MONOCLE_URL = "http://monocle.pam.sanger.ac.uk";
 const DASHBOARD_API_URL = `${MONOCLE_URL}/dashboard-api`;
 
 // This function allows us to modify a fetch request that happens in the `load` function

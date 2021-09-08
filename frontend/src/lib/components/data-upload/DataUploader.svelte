@@ -3,10 +3,9 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import ValidationErrorList from "./ValidationErrorList.svelte";
 
-  const FILE_TYPE = "text/plain,.txt,text/tab-separated-values,.tsv,.tab";
-
   export let ariaLabelledby = undefined;
   export let files = [];
+  export let accept = undefined;
   export let uploadUrl;
 
   const dispatch = createEventDispatcher();
@@ -97,7 +96,7 @@
 		<input
 			bind:files
 			type="file"
-			accept={FILE_TYPE}
+			{accept}
 			multiple
 		>
 		

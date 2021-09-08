@@ -1,5 +1,3 @@
-export const MONOCLE_URL = "http://monocle.dev.pam.sanger.ac.uk";
-
 export function getInstitutionStatus(fetch) {
   return Promise.all([
     getInstitutions(fetch),
@@ -24,10 +22,10 @@ export function getProjectProgress(fetch) {
         return {
           dates: progressData.date,
           datasets: [{
-            name: "samples received",
+            name: "received",
             values: progressData["samples received"]
           }, {
-            name: "samples sequenced",
+            name: "sequenced",
             values: progressData["samples sequenced"]
           }]
         };
@@ -65,7 +63,7 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardResource(endpoint, resourceKey, fetch) {
-  return fetch(`${MONOCLE_URL}/dashboard-api/${endpoint}`)
+  return fetch(`dashboard-api/${endpoint}`)
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => payload?.[resourceKey])

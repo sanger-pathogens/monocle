@@ -1,6 +1,5 @@
 import { render, waitFor } from "@testing-library/svelte";
 import { getStores } from "$app/stores";
-import { MONOCLE_URL } from "../dataLoading.js";
 import Layout from "./__layout.svelte";
 
 const USER_ROLE = "support";
@@ -22,7 +21,7 @@ it("stores a fetched user role in the session", async () => {
   render(Layout);
 
   expect(fetch).toHaveBeenCalledTimes(1);
-  expect(fetch).toHaveBeenCalledWith(`${MONOCLE_URL}/dashboard-api/get_user_details`);
+  expect(fetch).toHaveBeenCalledWith("dashboard-api/get_user_details");
   const sessionStore = getStores().session;
   await waitFor(() => {
     expect(sessionStore.set).toHaveBeenCalledTimes(1);
