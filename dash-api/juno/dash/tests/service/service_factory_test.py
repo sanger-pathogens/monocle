@@ -79,6 +79,15 @@ class MonocleDataTest(TestCase):
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
    mock_data_updated = datetime(2021,5,15)
+   
+   # mock user details; note they're not a meber of all the institutions, so an instance of MonocleData
+   # with this as .user_record should premit retrieval of data from this member's institututions only
+   mock_user_record  = {   'username'  : 'mock_username',
+                           'memberOf'  : [{  'inst_id':     'FakTwo',
+                                             'inst_name':   'Fake institution Two'
+                                             }
+                                          ],
+                           }
 
    # mock values for patching queries in DataSources modules
    mock_institutions          = [   'Fake institution One',
@@ -213,6 +222,10 @@ class MonocleDataTest(TestCase):
    expected_metadata_download_error_response  = {  'success'   : False ,
                                                    'error'     : 'internal'
                                                    }
+
+   # these are the data we expect when data is being filtered according to institution membership...
+   mock_user_inst_key = mock_user_record['memberOf'][0]['inst_id']
+   expected_institution_data_filtered_by_user  = {  mock_user_inst_key : expected_institution_data[mock_user_inst_key] }
    
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
@@ -258,16 +271,29 @@ class MonocleDataTest(TestCase):
       progress_data = self.monocle_data.get_progress()
       self.assertEqual(self.expected_progress_data, progress_data)
       
-   # TODO add test that checks this correctly filters by user membership
    def test_get_institutions(self):
       institution_data = self.monocle_data.get_institutions()
       self.assertEqual(self.expected_institution_data, institution_data)
-
-   # TODO add test that checks this bypasses user membership filter
-   def test_get_all_institutions_irrespective_of_user_membership(self):
+      
+   def test_user_memberships_filters_institutions(self):
+      # reload institution data filtered by user record
+      self.monocle_data.user_record       = self.mock_user_record
+      self.monocle_data.institutions_data = None
+      self.get_mock_data()
+      # check institution lists is filtered
+      filtered_institution_data = self.monocle_data.get_institutions()
+      self.assertEqual(self.expected_institution_data_filtered_by_user, filtered_institution_data)
+      # check we can still get unfiltered institution list when user membership filters are in play
       institution_data = self.monocle_data.get_all_institutions_irrespective_of_user_membership()
       self.assertEqual(self.expected_institution_data, institution_data)
-      
+      # test the progerss data includes all institutions, even when user membership filters are in play
+      progress_data = self.monocle_data.get_progress()
+      self.assertEqual(self.expected_progress_data, progress_data)
+      # restore institution data
+      self.monocle_data.user_record       = None
+      self.monocle_data.institutions_data = None
+      self.get_mock_data()
+            
    def test_get_samples(self):
       sample_data = self.monocle_data.get_samples()
       self.assertEqual(self.expected_sample_data, sample_data)
