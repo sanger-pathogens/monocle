@@ -250,6 +250,7 @@ class MonocleDataTest(TestCase):
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
       self.monocle_data.get_institutions()
+      self.monocle_data.get_all_institutions_irrespective_of_user_membership()
       self.monocle_data.get_samples()
       self.monocle_data.get_sequencing_status()
       
@@ -257,8 +258,14 @@ class MonocleDataTest(TestCase):
       progress_data = self.monocle_data.get_progress()
       self.assertEqual(self.expected_progress_data, progress_data)
       
+   # TODO add test that checks this correctly filters by user membership
    def test_get_institutions(self):
       institution_data = self.monocle_data.get_institutions()
+      self.assertEqual(self.expected_institution_data, institution_data)
+
+   # TODO add test that checks this bypasses user membership filter
+   def test_get_all_institutions_irrespective_of_user_membership(self):
+      institution_data = self.monocle_data.get_all_institutions_irrespective_of_user_membership()
       self.assertEqual(self.expected_institution_data, institution_data)
       
    def test_get_samples(self):
