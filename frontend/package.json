@@ -45,7 +45,8 @@
       "^\\$app(.*)$": [
         "<rootDir>/.svelte-kit/dev/runtime/app$1",
         "<rootDir>/.svelte-kit/build/runtime/app$1"
-      ]
+      ],
+      "\\.css$": "<rootDir>/__mocks__/style.js"
     },
     "moduleFileExtensions": [
       "js",
