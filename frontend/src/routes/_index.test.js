@@ -43,7 +43,7 @@ it("shows an error message if data fetching rejects", async () => {
   const { getByText } = render(DashboardPage);
 
   await waitFor(() => {
-    expect(getByText("An unexpected error during page loading occured. Please try to reload the page."))
+    expect(getByText("An unexpected error occured during page loading. Please try again by reloading the page."))
       .toBeDefined();
   });
 });

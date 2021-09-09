@@ -45,7 +45,7 @@
 	{/each}
 
 {:catch error}
-	<p>An unexpected error during page loading occured. Please try to reload the page.</p>
+	<p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}
 
