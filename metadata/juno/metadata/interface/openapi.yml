@@ -90,6 +90,35 @@ paths:
         404:
           description: "No data could be found for the given download key"
 
+  /download_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_download_in_silico_data
+      summary: "Download the in silico data for the given download keys"
+      requestBody:
+        description: "A list of 'sampleId:laneId' keys"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadKeys"
+              examples: "[\"5903STDY8059122:24936_2#76\", \"5903STDY8059054:24937_1#22\"]"
+      responses:
+        200:
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/InSilicoData"
+        400:
+          description: "Invalid arguments provided"
+        404:
+          description: "No data could be found for the given download key"
+
   /institutions:
     get:
       operationId: metadata.api.routes.get_institution_names
@@ -167,7 +196,7 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
-          
+
     Institutions:
       type: array
       items:
@@ -176,7 +205,7 @@ components:
         #maxLength: 255
         #pattern: '^[a-zA-Z0-9]*$'
       minItems: 1
-      
+
     Metadata:
       type: object
       required:
