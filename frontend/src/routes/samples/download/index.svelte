@@ -106,8 +106,8 @@
         Annotations
       </label>
 
-      <label>
-        <input type="checkbox" />
+      <label class="disabled">
+        <input type="checkbox" disabled />
         Reads ( ⚠️ may increase the size drastically)
       </label>
     </fieldset>
