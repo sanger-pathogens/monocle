@@ -49,7 +49,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
         self.assertIsNotNone(institutions)
         self.assertEqual(len(institutions), 0)
-        
+
     def test_get_institution_names(self) -> None:
         self.connection.execute.return_value = [
             dict(name='Institution1', country='Israel', latitude=20.0, longitude=30.0),
@@ -63,7 +63,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(len(names), 2)
         self.assertEqual(names[0], 'Institution1')
         self.assertEqual(names[1], 'Institution2')
-        
+
     def test_get_institution_names_noresults(self) -> None:
         self.connection.execute.return_value = []
         names = self.under_test.get_institution_names()
@@ -291,13 +291,13 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 lane_id='50000_2#282',
                 cps_type='III',
                 ST='ST-I',
-                adhP=15,
-                pheS=8,
-                atr=4,
-                glnA=4,
-                sdhA=22,
-                glcK=1,
-                tkt=9,
+                adhP='15',
+                pheS='8',
+                atr='4',
+                glnA='4',
+                sdhA='22',
+                glcK='1',
+                tkt='9',
                 twenty_three_S1='pos',
                 twenty_three_S3='pos',
                 CAT='neg',
@@ -341,13 +341,13 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 lane_id='50000_2#287',
                 cps_type='III',
                 ST='ST-II',
-                adhP=3,
-                pheS=11,
-                atr=0,
-                glnA=16,
-                sdhA=14,
-                glcK=31,
-                tkt=6,
+                adhP='3',
+                pheS='11',
+                atr='0',
+                glnA='16',
+                sdhA='14',
+                glcK='31',
+                tkt='6',
                 twenty_three_S1='pos',
                 twenty_three_S3='pos',
                 CAT='neg',

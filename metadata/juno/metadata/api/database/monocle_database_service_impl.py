@@ -445,13 +445,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     lane_id=self.convert_string(in_silico_data.lane_id),
                     cps_type=self.convert_string(in_silico_data.cps_type),
                     ST=self.convert_string(in_silico_data.ST),
-                    adhP=self.convert_int(in_silico_data.adhP),
-                    pheS=self.convert_int(in_silico_data.pheS),
-                    atr=self.convert_int(in_silico_data.atr),
-                    glnA=self.convert_int(in_silico_data.glnA),
-                    sdhA=self.convert_int(in_silico_data.sdhA),
-                    glcK=self.convert_int(in_silico_data.glcK),
-                    tkt=self.convert_int(in_silico_data.tkt),
+                    adhP=self.convert_string(in_silico_data.adhP),
+                    pheS=self.convert_string(in_silico_data.pheS),
+                    atr=self.convert_string(in_silico_data.atr),
+                    glnA=self.convert_string(in_silico_data.glnA),
+                    sdhA=self.convert_string(in_silico_data.sdhA),
+                    glcK=self.convert_string(in_silico_data.glcK),
+                    tkt=self.convert_string(in_silico_data.tkt),
                     twenty_three_S1=self.convert_string(in_silico_data.twenty_three_S1),
                     twenty_three_S3=self.convert_string(in_silico_data.twenty_three_S3),
                     CAT=self.convert_string(in_silico_data.CAT),
@@ -569,6 +569,74 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         vancomycin_method=row['vancomycin_method'],
                         linezolid=row['linezolid'],
                         linezolid_method=row['linezolid_method']
+                    )
+                )
+
+        return results
+
+    def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
+        """ Get download in silico data for given list of 'sample:lane' keys """
+
+        if len(keys) == 0:
+            return []
+
+        results = []
+        samples, lanes = self.split_keys(keys)
+        lane_ids = tuple(lanes)
+
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
+
+            for row in rs:
+                results.append(
+                    InSilicoData(
+                        lane_id=row['lane_id'],
+                        cps_type=row['cps_type'],
+                        ST=row['ST'],
+                        adhP=row['adhP'],
+                        pheS=row['pheS'],
+                        atr=row['atr'],
+                        glnA=row['glnA'],
+                        sdhA=row['sdhA'],
+                        glcK=row['glcK'],
+                        tkt=row['tkt'],
+                        twenty_three_S1=row['twenty_three_S1'],
+                        twenty_three_S3=row['twenty_three_S3'],
+                        CAT=row['CAT'],
+                        ERMB=row['ERMB'],
+                        ERMT=row['ERMT'],
+                        FOSA=row['FOSA'],
+                        GYRA=row['GYRA'],
+                        LNUB=row['LNUB'],
+                        LSAC=row['LSAC'],
+                        MEFA=row['MEFA'],
+                        MPHC=row['MPHC'],
+                        MSRA=row['MSRA'],
+                        MSRD=row['MSRD'],
+                        PARC=row['PARC'],
+                        RPOBGBS_1=row['RPOBGBS_1'],
+                        RPOBGBS_2=row['RPOBGBS_2'],
+                        RPOBGBS_3=row['RPOBGBS_3'],
+                        RPOBGBS_4=row['RPOBGBS_4'],
+                        SUL2=row['SUL2'],
+                        TETB=row['TETB'],
+                        TETL=row['TETL'],
+                        TETM=row['TETM'],
+                        TETO=row['TETO'],
+                        TETS=row['TETS'],
+                        ALP1=row['ALP1'],
+                        ALP23=row['ALP23'],
+                        ALPHA=row['ALPHA'],
+                        HVGA=row['HVGA'],
+                        PI1=row['PI1'],
+                        PI2A1=row['PI2A1'],
+                        PI2A2=row['PI2A2'],
+                        PI2B=row['PI2B'],
+                        RIB=row['RIB'],
+                        SRR1=row['SRR1'],
+                        SRR2=row['SRR2'],
+                        GYRA_variant=row['GYRA_variant'],
+                        PARC_variant=row['PARC_variant']
                     )
                 )
 

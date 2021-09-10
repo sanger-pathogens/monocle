@@ -5,7 +5,7 @@ import connexion
 from flask import jsonify
 from injector import inject
 from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
-from metadata.api.download_handler import DownloadHandler
+from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
 
@@ -109,7 +109,7 @@ def compare_sample_metadata(body: list):
 
 
 @inject
-def get_download_metadata(body: list, download_handler: DownloadHandler):
+def get_download_metadata(body: list, download_handler: DownloadMetadataHandler):
     """ Download sample metadata from the database """
     keys = body
     try:
@@ -121,6 +121,23 @@ def get_download_metadata(body: list, download_handler: DownloadHandler):
     result = convert_to_json({'download': download_handler.create_download_response(metadata_list)})
 
     if len(metadata_list) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_download_in_silico_data(body: list, download_handler: DownloadInSilicoHandler):
+    """ Download in silico data from the database """
+    keys = body
+    try:
+        in_silico_data_list = download_handler.read_download_in_silico_data(keys)
+    except ValueError as ve:
+        logger.error(str(ve))
+        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json({'download': download_handler.create_download_response(in_silico_data_list)})
+
+    if len(in_silico_data_list) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS

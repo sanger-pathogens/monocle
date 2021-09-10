@@ -503,50 +503,50 @@
         "title": "adhP",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "pheS": {
         "title": "pheS",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "atr": {
         "title": "atr",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "glnA": {
         "title": "glnA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "sdhA": {
         "title": "sdhA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "glcK": {
         "title": "glcK",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "tkt": {
         "title": "tkt",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^\\d+$",
-        "regex_validation_message": "must be a whole positive number"
+        "regex": "^[\\d*]+$",
+        "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "twenty_three_S1": {
         "title": "23S1",
