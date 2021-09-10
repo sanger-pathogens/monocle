@@ -4,6 +4,7 @@
   import InstitutionStatus from './_dashboard/_InstitutionStatus.svelte';
   import LineChart from '$lib/components/LineChart.svelte';
 	import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import InsilicoUploadLink from './_dashboard/_InsilicoUploadLink.svelte';
   import MetadataUploadLink from './_dashboard/_MetadataUploadLink.svelte';
 
 	let dashboardDataPromise = Promise.resolve();
@@ -21,7 +22,10 @@
 	<LoadingIndicator midscreen={true} />
 
 {:then [institutions = [], projectProgress = {}]}
-	<MetadataUploadLink />
+	<nav>
+		<MetadataUploadLink />
+		<InsilicoUploadLink style="margin-top: .3rem" />
+	</nav>
 
 	<LineChart
 		title="Project Progress"
@@ -41,7 +45,7 @@
 	{/each}
 
 {:catch error}
-	<p>An unexpected error during page loading occured. Please try to reload the page.</p>
+	<p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}
 
@@ -49,6 +53,23 @@
 <style>
 p {
 	text-align: center;
+}
+
+nav {
+	display: flex;
+	flex-direction: column;
+	margin-right: -0.8rem;
+
+	float: right;
+	position: sticky;
+	top: 1rem;
+	z-index: 9;
+}
+@media (min-width: 2000px) {
+	/* This pushes the menu w/ the upload buttoms further to the right for larger screens. */
+	nav {
+		margin-right: -8rem;
+	}
 }
 </style>
 

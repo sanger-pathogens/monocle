@@ -65,15 +65,18 @@ main {
 }
 
 :global(button.compact),
-:global([role=button].compact) {
+:global([role=button].compact),
+:global(input[type="button"].compact),
+:global(input[type="submit"].compact) {
   font-size: 0.95rem;
   padding: 0.5rem;
 }
 
-:global(button.light),
-:global([role=button].light) {
+:global(button.primary),
+:global([role=button].primary) {
   background: var(--background-body);
-  border: 1px solid var(--background);
-  font-weight: 100;
+  color: var(--juno-indigo);
+  border: 1px solid var(--juno-indigo);
+  font-weight: 300;
 }
 </style>

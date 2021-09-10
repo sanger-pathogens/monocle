@@ -22,15 +22,20 @@ export function getProjectProgress(fetch) {
         return {
           dates: progressData.date,
           datasets: [{
-            name: "samples received",
+            name: "received",
             values: progressData["samples received"]
           }, {
-            name: "samples sequenced",
+            name: "sequenced",
             values: progressData["samples sequenced"]
           }]
         };
       }
     });
+}
+
+//TODO use service workers to cache response
+export function getBatches(fetch) {
+  return fetchDashboardResource("get_batches", "batches", fetch);
 }
 
 export function getUserDetails(fetch) {
@@ -48,10 +53,6 @@ function getInstitutions(fetch) {
     "get_institutions", "institutions", fetch);
 }
 
-function getBatches(fetch) {
-  return fetchDashboardResource("get_batches", "batches", fetch);
-}
-
 function getSequencingStatus(fetch) {
   return fetchDashboardResource(
     "sequencing_status_summary", "sequencing_status", fetch);
@@ -63,7 +64,7 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardResource(endpoint, resourceKey, fetch) {
-  return fetch(`dashboard-api/${endpoint}`)
+  return fetch(`/dashboard-api/${endpoint}`)
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => payload?.[resourceKey])

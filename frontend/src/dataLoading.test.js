@@ -1,14 +1,26 @@
 import {
+  getBatches,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
 } from "./dataLoading.js";
 
-const DASHBOARD_API_URL = "dashboard-api";
+const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
 
 describe.each([
+  {
+    fnName: "getBatches",
+    getResource: getBatches,
+    expectedEndpoints: ["get_batches"],
+    payload: {
+      batches: {
+        some: "data",
+      }
+    },
+    expectedResult: { some: "data" }
+  },
   {
     fnName: "getInstitutionStatus",
     getResource: getInstitutionStatus,
@@ -50,8 +62,8 @@ describe.each([
     },
     expectedResult: {
       datasets: [
-        { name: "samples received", values: 200 },
-        { name: "samples sequenced", values: 50}
+        { name: "received", values: 200 },
+        { name: "sequenced", values: 50}
       ],
       dates: "21.08.21"
     }

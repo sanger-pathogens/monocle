@@ -16,23 +16,11 @@
     href="/metadata-upload"
   >
     <UploadIcon
-      color="rgba(0,0,0,.5)"
+      color="rgba(0,0,0,.35)"
       colorHover="black"
-      height={22}
-      width={22}
+      height={26}
+      width={26}
       style="padding: .4rem .4rem 0"
     />
   </a>
 {/if}
-
-
-<style>
-a {
-  float: right;
-  position: sticky;
-  top: 1rem;
-  right: .6rem;
-  z-index: 9;
-}
-</style>
-

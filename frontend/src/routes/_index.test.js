@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/svelte";
+import { render, waitFor, within } from "@testing-library/svelte";
 import { session } from "$app/stores";
 import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
 import DashboardPage from "./index.svelte";
@@ -43,7 +43,7 @@ it("shows an error message if data fetching rejects", async () => {
   const { getByText } = render(DashboardPage);
 
   await waitFor(() => {
-    expect(getByText("An unexpected error during page loading occured. Please try to reload the page."))
+    expect(getByText("An unexpected error occured during page loading. Please try again by reloading the page."))
       .toBeDefined();
   });
 });
@@ -65,13 +65,17 @@ describe("after data fetching", () => {
     });
   });
 
-  it("displays the upload link", async () => {
+  it("displays the menu w/ the upload links", async () => {
     const { findByRole } = render(DashboardPage);
 
-    await waitFor(() => {
-      expect(findByRole("link", { name: "Upload metadata" }))
-        .toBeDefined();
-    });
+    const uploadLinksContainer = await findByRole("navigation");
+
+    const metadataUploadLink = within(uploadLinksContainer)
+      .findByRole("link", { name: "Upload metadata" })
+    expect(metadataUploadLink).toBeDefined();
+    const insilicoUploadLink = within(uploadLinksContainer)
+      .findByRole("link", { name: "Upload in-silico data" })
+    expect(insilicoUploadLink).toBeDefined();
   });
 
   it("displays status for each institution", async () => {
