@@ -54,3 +54,4 @@ CREATE TABLE `in_silico` (
   `PARC_variant` varchar(256),
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CALL update_database_version('0.2.25', 'Drop and create new in silico table where all columns are type varchar');
