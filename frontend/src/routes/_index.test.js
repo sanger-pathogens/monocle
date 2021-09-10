@@ -17,8 +17,6 @@ const INSTITUTIONS = [{
   pipelineStatus: {}
 }];
 
-global.fetch = () => {};
-
 // Mocking this module for the whole file is a workaround
 // for Jest's not parsing SvelteKit's $app modules.
 jest.mock("$app/stores", async () => {

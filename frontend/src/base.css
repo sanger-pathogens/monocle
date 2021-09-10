@@ -264,8 +264,7 @@ button:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled,
-form.disabled,
-label.disabled {
+.disabled {
   cursor: not-allowed;
   opacity: .5;
   pointer-events: none;
@@ -308,7 +307,6 @@ input[type=range]:focus {
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 9.5px;
-  -webkit-transition: .2s;
   transition: .2s;
   background: #efefef;
   background: var(--background);
@@ -334,7 +332,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 input[type=range]::-moz-range-track {
   width: 100%;
   height: 9.5px;
-  -moz-transition: .2s;
   transition: .2s;
   background: #efefef;
   background: var(--background);
@@ -497,13 +494,6 @@ tbody tr:nth-child(2n) {
 ::-webkit-scrollbar-thumb:hover {
   background: #c4c4c4;
   background: var(--scrollbar-thumb-hover)
-}
-
-::-moz-selection {
-  background-color: #9e9e9e;
-  background-color: var(--selection);
-  color: #000;
-  color: var(--text-bright)
 }
 
 ::selection {

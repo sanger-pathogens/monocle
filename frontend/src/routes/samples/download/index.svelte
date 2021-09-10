@@ -1,13 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  // We need to import the source Svelte component because Jest doesn't recognise the compiled JS code provided by the library.
-  import Select from "svelte-select/src/Select.svelte";
-  import { getBatches } from "../../../dataLoading.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import BatchSelector from "./_BatchSelector.svelte";
+  import { getBatches } from "../../../dataLoading.js";
 
-  const groupBatchesBy = ({ institutionKey }) => institutionKey;
-
-  let allBatches;
+  let downloadLinksRequested;
   let batchesPromise = Promise.resolve();
   let selectedBatches = null;
 
@@ -30,24 +27,24 @@
     return {
       label: batchNameWithData,
       value: batchNameWithData,
-      institutionKey
+      group: institutionKey
     };
   }
 
-  function deselectBatches() {
-    selectedBatches = null;
-  }
-
-  async function selectBatches() {
-    if (!allBatches) {
-      const listOfBatches = await batchesPromise;
-      allBatches = listOfBatches.map(({ value }) => value);
-    }
-    selectedBatches = allBatches;
-  }
-
   function onSubmit() {
-    confirm("You won't be able to change the parameters if you proceed.");
+    downloadLinksRequested =
+      confirm("You won't be able to change the parameters if you proceed.");
+    if (downloadLinksRequested) {
+      fetch("FIXME")
+        .then((resp) => resp.ok && resp.json ?
+          resp.json() :
+          Promise.reject(`${resp.status} ${resp.statusText}`)
+        )
+        .catch((err) => {
+          downloadLinksRequested = false;
+          alert(`Error while generating a download link: ${err}.\nPlease try again.`);
+        });
+    }
   }
 </script>
 
@@ -58,84 +55,65 @@
   <LoadingIndicator />
 
 {:then batchList}
-  <form on:submit|preventDefault={onSubmit}>
-
-    <fieldset class="batch-selection-section">
-      <legend>Select batches to download</legend>
-
-      <div>
-        <button
-          type="button"
-          on:click={selectBatches}
-          class="compact"
-        >
-          Select all
-        </button>
-
-        <button
-          type="button"
-          on:click={deselectBatches}
-          class="compact"
-        >
-          Clear
-        </button>
-      </div>
-
-      <Select
-        noOptionsMessage={"No batches"}
-        bind:value={selectedBatches}
-        items={batchList}
-        groupBy={groupBatchesBy}
-        showIndicator={true}
-        isClearable={false}
-        isMulti={true}
-        containerStyles="flex-grow: 1; order: -1"
-      />
-    </fieldset>
-
-    <fieldset class="data-type-section">
-      <legend>Data type</legend>
-
-      <label>
-        <input type="checkbox" checked />
-        Assemblies
-      </label>
-
-      <label>
-        <input type="checkbox" checked />
-        Annotations
-      </label>
-
-      <label class="disabled">
-        <input type="checkbox" disabled />
-        Reads ( ⚠️ may increase the size drastically)
-      </label>
-    </fieldset>
-
-    <fieldset disabled={!selectedBatches}>
-      <legend>Split download</legend>
-      <select>
-        {#if selectedBatches}
-          <option selected>1 download of 200 GB (1 TB unzipped)</option>
-          <option>2 downloads, ~100 GB per download</option>
-          <option>4 downloads, ~50 GB per download</option>
-          <option>8 downloads, ~25 GB per download</option>
-          <option>16 downloads, ~12.5 GB per download</option>
-          <option>32 downloads, ~6.2 GB per download</option>
-          <option>64 downloads, ~3.1 GB per download</option>
-          <option>128 downloads, ~1.6 GB per download</option>
-          <option>256 downloads, ~0.8 GB per download</option>
-        {/if}
-      </select>
-    </fieldset>
-
-    <button
-      type="submit"
-      class="primary"
-      disabled={!selectedBatches}
+  <form on:submit|preventDefault={onSubmit} >
+    <fieldset
+      disabled={downloadLinksRequested}
+      class:disabled={downloadLinksRequested}
     >
-      Confirm
-    </button>
+
+      <fieldset class="batch-selection-section">
+        <legend>Select batches to download</legend>
+        <BatchSelector
+          bind:selectedBatches
+          {batchList}
+        />
+      </fieldset>
+
+      <fieldset class="data-type-section">
+        <legend>Data type</legend>
+
+        <label>
+          <input type="checkbox" checked />
+          Assemblies
+        </label>
+
+        <label>
+          <input type="checkbox" checked />
+          Annotations
+        </label>
+
+        <label class="disabled">
+          <input type="checkbox" disabled />
+          Reads ( ⚠️ may increase the size drastically)
+        </label>
+      </fieldset>
+
+      <fieldset disabled={!selectedBatches}>
+        <legend>Split download</legend>
+        <select>
+          {#if selectedBatches}
+            <option selected>1 download of 200 GB (1 TB unzipped)</option>
+            <option>2 downloads, ~100 GB per download</option>
+            <option>4 downloads, ~50 GB per download</option>
+            <option>8 downloads, ~25 GB per download</option>
+            <option>16 downloads, ~12.5 GB per download</option>
+            <option>32 downloads, ~6.2 GB per download</option>
+            <option>64 downloads, ~3.1 GB per download</option>
+            <option>128 downloads, ~1.6 GB per download</option>
+            <option>256 downloads, ~0.8 GB per download</option>
+          {/if}
+        </select>
+      </fieldset>
+
+      <button
+        type="submit"
+        class="primary"
+        disabled={!selectedBatches}
+      >
+        Confirm
+      </button>
+
+    </fieldset>
   </form>
 
 {:catch error}
@@ -145,15 +123,8 @@
 
 
 <style>
-form {
-  --multiItemActiveBG: transparent;
-  --multiItemActiveColor: var(--juno-indigo);
-  --multiSelectPadding: 0;
-  --multiSelectInputPadding: 0 0 0 .9rem;
-}
-
-button {
-  flex-shrink: 0;
+form > fieldset {
+  padding: 0;
 }
 
 button[type=submit] {
@@ -164,28 +135,22 @@ button[type=submit] {
 
 select {
   min-width: 12rem;
-  max-width: 98%;
-}
-
-.data-type-section, .batch-selection-section, .batch-selection-section > div {
-  display: flex;
-}
-
-.data-type-section, .batch-selection-section > div {
-  flex-direction: column;
-}
-
-.batch-selection-section > div {
-  flex-shrink: 0;
-  margin-left: .5rem;
+  max-width: 90%;
 }
 
 .batch-selection-section {
   align-items: flex-start;
   margin-bottom: 1rem;
 }
+@media (min-width: 480px) {
+  .batch-selection-section {
+    display: flex;
+  }
+}
 
 .data-type-section {
+  display: flex;
+  flex-direction: column;
   /* This prevents the checkbox labels from being clickable across all of the container's width. */
   align-items: flex-start;
 }

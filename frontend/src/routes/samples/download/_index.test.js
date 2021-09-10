@@ -2,8 +2,6 @@ import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { getBatches } from "../../../dataLoading.js";
 import DownloadPage from "./index.svelte";
 
-global.fetch = () => {};
-
 jest.mock("../../../dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
 }));

@@ -3,3 +3,5 @@ class ResizeObserver {
   unobserve() {}
 }
 global.ResizeObserver = ResizeObserver;
+
+global.fetch = () => {};
