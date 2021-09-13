@@ -5,6 +5,7 @@
   import { getBatches } from "../../../dataLoading.js";
 
   let downloadLinksRequested;
+  let downloadLink;
   let batchesPromise = Promise.resolve();
   let selectedBatches = null;
 
@@ -35,16 +36,26 @@
     downloadLinksRequested =
       confirm("You won't be able to change the parameters if you proceed.");
     if (downloadLinksRequested) {
-      fetch("FIXME")
-        .then((resp) => resp.ok && resp.json ?
-          resp.json() :
-          Promise.reject(`${resp.status} ${resp.statusText}`)
-        )
+      fetchDownloadLinks()
+        .then((downloadLinks = []) => {
+          downloadLink = downloadLinks[0];
+          if (!downloadLink) {
+            return Promise.reject("no download links returned from the server");
+          }
+        })
         .catch((err) => {
           downloadLinksRequested = false;
           alert(`Error while generating a download link: ${err}.\nPlease try again.`);
         });
     }
+  }
+
+  function fetchDownloadLinks() {
+    return fetch("FIXME")
+      .then((resp) => resp.ok && resp.json ?
+        resp.json() :
+        Promise.reject(`${resp.status} ${resp.statusText}`)
+      )
   }
 </script>
 
@@ -84,7 +95,7 @@
 
         <label class="disabled">
           <input type="checkbox" disabled />
-          Reads ( ⚠️ may increase the size drastically)
+          Reads (not available in the current version)
         </label>
       </fieldset>
 
@@ -116,6 +127,16 @@
     </fieldset>
   </form>
 
+  {#if downloadLink}
+    <a
+      href={downloadLink}
+      target="_blank"
+      class="download-link"
+      download
+    >
+      Download samples
+    </a>
+  {/if}
 {:catch error}
 	<p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
@@ -153,6 +174,11 @@ select {
   flex-direction: column;
   /* This prevents the checkbox labels from being clickable across all of the container's width. */
   align-items: flex-start;
+}
+
+.download-link {
+  display: inline-block;
+  margin: 2rem 0;
 }
 </style>
 
