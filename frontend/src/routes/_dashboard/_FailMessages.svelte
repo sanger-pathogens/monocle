@@ -11,7 +11,7 @@
 
 
 {#if hasFailureMessages || hasNestedComponents}
-  <button on:click={() => dialogOpen = true} class="light">
+  <button on:click={() => dialogOpen = true}>
     Show failed
   </button>
 

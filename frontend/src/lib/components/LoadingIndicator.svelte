@@ -1,6 +1,4 @@
 <script>
-	import { fade } from "svelte/transition";
-
 	export let midscreen = false;
 
 	const style = midscreen ?
@@ -14,7 +12,6 @@
 	aria-label="please wait"
 	aria-live="polite"
 	class="cssload-wrap"
-	out:fade={{duration: 140}}
 	{style}
 >
 	<div aria-hidden="true" class="cssload-container">

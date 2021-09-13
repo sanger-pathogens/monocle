@@ -33,6 +33,11 @@ export function getProjectProgress(fetch) {
     });
 }
 
+//TODO use service workers to cache response
+export function getBatches(fetch) {
+  return fetchDashboardResource("get_batches", "batches", fetch);
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardResource(
     "get_user_details", "user_details", fetch);
@@ -48,10 +53,6 @@ function getInstitutions(fetch) {
     "get_institutions", "institutions", fetch);
 }
 
-function getBatches(fetch) {
-  return fetchDashboardResource("get_batches", "batches", fetch);
-}
-
 function getSequencingStatus(fetch) {
   return fetchDashboardResource(
     "sequencing_status_summary", "sequencing_status", fetch);
@@ -63,7 +64,7 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardResource(endpoint, resourceKey, fetch) {
-  return fetch(`dashboard-api/${endpoint}`)
+  return fetch(`/dashboard-api/${endpoint}`)
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => payload?.[resourceKey])
