@@ -21,13 +21,20 @@ class MetadataDownload:
       self.dl_client = Monocle_Download_Client()
             
    def get_metadata(self, lane_id_list):
-      logging.debug("{}.request_metadata() called with {}".format(__class__.__name__,lane_id_list))
+      logging.debug("{}.get_metadata() called with {}".format(__class__.__name__,lane_id_list))
       results_list = self.dl_client.metadata(lane_id_list)
       assert ( isinstance(results_list, list) ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
-      logging.debug("{}.request_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
-      logging.info("{}.request_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
+      logging.debug("{}.get_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
       return results_list
 
+   def get_in_silico_data(self, lane_id_list):
+      logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__,lane_id_list))
+      results_list = self.dl_client.in_silico_data(lane_id_list)
+      assert ( isinstance(results_list, list) ), "Monocle_Download_Client.in_silico_data() was expected to return a list, not {}".format(type(results_list))
+      logging.debug("{}.get_in_silico_data() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__,len(results_list)))
+      return results_list
 
 class ProtocolError(Exception):
     pass
@@ -40,7 +47,9 @@ class Monocle_Download_Client:
    required_config_params  = [   'base_url',
                                  'swagger',
                                  'download',
-                                 'metadata_key'
+                                 'metadata_key',
+                                 'download_in_silico_data',
+                                 'in_silico_data_key'
                                  ]
    def __init__(self, set_up=True):
       if set_up:
@@ -62,6 +71,14 @@ class Monocle_Download_Client:
       logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
       results = self.parse_response(response, required_keys = [self.config['metadata_key']])
       return results[self.config['metadata_key']]
+   
+   def in_silico_data(self, lane_id_list):
+      endpoint = self.config['download']
+      logging.debug("{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
+      response = self.make_request( endpoint, post_data = lane_id_list )
+      logging.debug("{}.in_silico_data([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
+      results = self.parse_response(response, required_keys = [self.config['in_silico_data_key']])
+      return results[self.config['in_silico_data_key']]
 
    def make_request(self, endpoint, post_data=None):
       request_url       = self.config['base_url']+endpoint
