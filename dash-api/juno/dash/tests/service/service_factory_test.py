@@ -137,14 +137,17 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     }
-   mock_metadata              =     '''{  "download": [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"},
-                                                            "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                },
-                                                            "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"         },
-                                                            "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"  }
-                                                            }
-                                                         ]
-                                                      }
-                                    '''
+   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
+                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     }
+                                          }
+                                       ]
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_1"  },
+                                          "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                          "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                          }
+                                       ]
 
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
@@ -282,30 +285,38 @@ class MonocleDataTest(TestCase):
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download(self, mock_metadata_fetch, mock_make_symlink):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      mock_make_symlink.return_value   = self.mock_download_path
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
    @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_make_symlink):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      mock_make_symlink.return_value   = None
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      mock_make_symlink.return_value         = None
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
 
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_metadata_as_csv(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       self.assertEqual(self.expected_metadata, metadata_as_csv)
 
