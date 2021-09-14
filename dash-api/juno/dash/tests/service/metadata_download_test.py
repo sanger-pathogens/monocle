@@ -18,7 +18,7 @@ class MetadataDownloadTest(TestCase):
    # this pattern should match a container on the docker network
    base_url_regex          = '^http://[\w\-]+$'
    endpoint_regex          = '(/[\w\-\.]+)+'
-   # metadata and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
+   # metadta and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
    mock_download_param     = ['5903STDY8059053:31663_7#43']
    mock_bad_download       =  """{  "wrong key":
                                        {  "does": "not matter what appears here"
@@ -157,6 +157,110 @@ class MetadataDownloadTest(TestCase):
                                  "additional_metadata":        { "order": 61, "name": "Additional_metadata", "value": ""}
                                  }
 
+   mock_in_silico_data_download  =  """{  "download": [
+                                             {  "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+                                                "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
+                                                "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
+                                                "adhP":           {"order": 3,  "name": "adhP", "value": "3"},
+                                                "pheS":           {"order": 4,  "name": "pheS", "value": "11"},
+                                                "atr":            {"order": 5,  "name": "atr", "value": "0"},
+                                                "glnA":           {"order": 6,  "name": "glnA", "value": "16"},
+                                                "sdhA":           {"order": 7,  "name": "sdhA", "value": "14"},
+                                                "glcK":           {"order": 8,  "name": "glcK", "value": "31"},
+                                                "tkt":            {"order": 9,  "name": "tkt", "value": "6"},
+                                                "twenty_three_S1":{"order": 10, "name": "twenty_three_S1", "value": "pos"},
+                                                "twenty_three_S3":{"order": 11, "name": "twenty_three_S3", "value": "pos"},
+                                                "CAT":            {"order": 12, "name": "CAT", "value": "neg"},
+                                                "ERMB":        	{"order": 13, "name": "ERMB", "value": "neg"},
+                                                "ERMT":        	{"order": 14, "name": "ERMT", "value": "neg"},
+                                                "FOSA":        	{"order": 15, "name": "FOSA", "value": "neg"},
+                                                "GYRA":        	{"order": 16, "name": "GYRA", "value": "pos"},
+                                                "LNUB":        	{"order": 17, "name": "LNUB", "value": "neg"},
+                                                "LSAC":        	{"order": 18, "name": "LSAC", "value": "neg"},
+                                                "MEFA":        	{"order": 19, "name": "MEFA", "value": "neg"},
+                                                "MPHC":        	{"order": 20, "name": "MPHC", "value": "neg"},
+                                                "MSRA":        	{"order": 21, "name": "MSRA", "value": "neg"},
+                                                "MSRD":        	{"order": 22, "name": "MSRD", "value": "neg"},
+                                                "PARC":        	{"order": 23, "name": "PARC", "value": "pos"},
+                                                "RPOBGBS_1":   	{"order": 24, "name": "RPOBGBS_1", "value": "neg"},
+                                                "RPOBGBS_2":   	{"order": 25, "name": "RPOBGBS_2", "value": "neg"},
+                                                "RPOBGBS_3":   	{"order": 26, "name": "RPOBGBS_3", "value": "neg"},
+                                                "RPOBGBS_4":   	{"order": 27, "name": "RPOBGBS_4", "value": "neg"},
+                                                "SUL2":        	{"order": 28, "name": "SUL2", "value": "neg"},
+                                                "TETB": 				{"order": 29, "name": "TETB", "value": "neg"},
+                                                "TETL": 				{"order": 30, "name": "TETL", "value": "neg"},
+                                                "TETM": 				{"order": 31, "name": "TETM", "value": "pos"},
+                                                "TETO": 				{"order": 32, "name": "TETO", "value": "neg"},
+                                                "TETS": 				{"order": 33, "name": "TETS", "value": "neg"},
+                                                "ALP1": 				{"order": 34, "name": "ALP1", "value": "neg"},
+                                                "ALP23": 		   {"order": 35, "name": "ALP23", "value": "neg"},
+                                                "ALPHA":          {"order": 36, "name": "ALPHA", "value": "neg"},
+                                                "HVGA": 				{"order": 37, "name": "HVGA", "value": "pos"},
+                                                "PI1": 				{"order": 38, "name": "PI1", "value": "pos"},
+                                                "PI2A1": 		   {"order": 39, "name": "PI2A1", "value": "neg"},
+                                                "PI2A2": 		   {"order": 40, "name": "PI2A2", "value": "neg"},
+                                                "PI2B": 				{"order": 41, "name": "PI2B", "value": "pos"},
+                                                "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
+                                                "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
+                                                "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
+                                                "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                                "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                                }
+                                          ]
+                                       }"""
+
+   # these are the metadata as they should be returned by MetadataDownload.get_in_silicoPdata()
+   # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
+   expected_in_silico_data = {   "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+                                 "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
+                                 "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
+                                 "adhP":           {"order": 3,  "name": "adhP", "value": "3"},
+                                 "pheS":           {"order": 4,  "name": "pheS", "value": "11"},
+                                 "atr":            {"order": 5,  "name": "atr", "value": "0"},
+                                 "glnA":           {"order": 6,  "name": "glnA", "value": "16"},
+                                 "sdhA":           {"order": 7,  "name": "sdhA", "value": "14"},
+                                 "glcK":           {"order": 8,  "name": "glcK", "value": "31"},
+                                 "tkt":            {"order": 9,  "name": "tkt", "value": "6"},
+                                 "twenty_three_S1":{"order": 10, "name": "twenty_three_S1", "value": "pos"},
+                                 "twenty_three_S3":{"order": 11, "name": "twenty_three_S3", "value": "pos"},
+                                 "CAT":            {"order": 12, "name": "CAT", "value": "neg"},
+                                 "ERMB":        	{"order": 13, "name": "ERMB", "value": "neg"},
+                                 "ERMT":        	{"order": 14, "name": "ERMT", "value": "neg"},
+                                 "FOSA":        	{"order": 15, "name": "FOSA", "value": "neg"},
+                                 "GYRA":        	{"order": 16, "name": "GYRA", "value": "pos"},
+                                 "LNUB":        	{"order": 17, "name": "LNUB", "value": "neg"},
+                                 "LSAC":        	{"order": 18, "name": "LSAC", "value": "neg"},
+                                 "MEFA":        	{"order": 19, "name": "MEFA", "value": "neg"},
+                                 "MPHC":        	{"order": 20, "name": "MPHC", "value": "neg"},
+                                 "MSRA":        	{"order": 21, "name": "MSRA", "value": "neg"},
+                                 "MSRD":        	{"order": 22, "name": "MSRD", "value": "neg"},
+                                 "PARC":        	{"order": 23, "name": "PARC", "value": "pos"},
+                                 "RPOBGBS_1":   	{"order": 24, "name": "RPOBGBS_1", "value": "neg"},
+                                 "RPOBGBS_2":   	{"order": 25, "name": "RPOBGBS_2", "value": "neg"},
+                                 "RPOBGBS_3":   	{"order": 26, "name": "RPOBGBS_3", "value": "neg"},
+                                 "RPOBGBS_4":   	{"order": 27, "name": "RPOBGBS_4", "value": "neg"},
+                                 "SUL2":        	{"order": 28, "name": "SUL2", "value": "neg"},
+                                 "TETB": 				{"order": 29, "name": "TETB", "value": "neg"},
+                                 "TETL": 				{"order": 30, "name": "TETL", "value": "neg"},
+                                 "TETM": 				{"order": 31, "name": "TETM", "value": "pos"},
+                                 "TETO": 				{"order": 32, "name": "TETO", "value": "neg"},
+                                 "TETS": 				{"order": 33, "name": "TETS", "value": "neg"},
+                                 "ALP1": 				{"order": 34, "name": "ALP1", "value": "neg"},
+                                 "ALP23": 		   {"order": 35, "name": "ALP23", "value": "neg"},
+                                 "ALPHA":          {"order": 36, "name": "ALPHA", "value": "neg"},
+                                 "HVGA": 				{"order": 37, "name": "HVGA", "value": "pos"},
+                                 "PI1": 				{"order": 38, "name": "PI1", "value": "pos"},
+                                 "PI2A1": 		   {"order": 39, "name": "PI2A1", "value": "neg"},
+                                 "PI2A2": 		   {"order": 40, "name": "PI2A2", "value": "neg"},
+                                 "PI2B": 				{"order": 41, "name": "PI2B", "value": "pos"},
+                                 "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
+                                 "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
+                                 "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
+                                 "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                 "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                 }
+
+
    def setUp(self):
       self.download           = MetadataDownload(set_up=False)
       self.download.dl_client = Monocle_Download_Client(set_up=False)
@@ -217,3 +321,23 @@ class MetadataDownloadTest(TestCase):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_download
          self.download.get_metadata(self.mock_download_param[0])
+
+   @patch.object(Monocle_Download_Client, 'make_request')
+   def test_download_in_silico_data(self, mock_request):
+      mock_request.return_value = self.mock_in_silico_data_download
+      lanes = self.download.get_in_silico_data(self.mock_download_param)
+      # response should be list of dict
+      self.assertIsInstance(lanes, type(['a', 'list']))
+      this_lane = lanes[0]
+      self.assertIsInstance(this_lane, type({'a': 'dict'}))
+      # check all the expected keys are present
+      for expected_key in self.expected_in_silico_data.keys():
+         self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
+      # check data are correct
+      self.assertEqual(this_lane, self.expected_in_silico_data, msg="returned in silico data differ from expected data")
+
+   @patch.object(Monocle_Download_Client, 'make_request')
+   def test_reject_bad_download_in_silico_data_response(self, mock_request):
+      with self.assertRaises(ProtocolError):
+         mock_request.return_value = self.mock_bad_download
+         self.download.get_in_silico_data(self.mock_download_param[0])
