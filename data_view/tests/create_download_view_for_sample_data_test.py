@@ -6,7 +6,6 @@ from bin.create_download_view_for_sample_data import (
   create_download_view_for_sample_data
 )
 
-SAMPLE_IDS = ['a', 'b', 'c', 'd']
 DATA_DIR='/abs/path/data'
 INSTITUTION_NAME_TO_ID = {
   'Faculty of Pharmacy, Suez Canal University': 'FacPhaSueCanUni',
@@ -16,22 +15,40 @@ INSTITUTION_NAME_TO_ID = {
   'Universidade Federal do Rio de Janeiro': 'UniFedRioJan',
   'Wellcome Sanger Institute': 'WelSanIns'
 }
+SAMPLE_IDS = ['a', 'b', 'c', 'd']
+PUBLIC_NAMES = list(
+  map(lambda sample_id: sample_id * 2, SAMPLE_IDS))
 INSTITUTIONS = [{
   'name': 'National Reference Laboratories',
   'id': INSTITUTION_NAME_TO_ID['National Reference Laboratories'],
   'samples': [
-    {'sample_id': SAMPLE_IDS[0]},
-    {'sample_id': SAMPLE_IDS[1]}
+    {'public_name': PUBLIC_NAMES[0], 'sample_id': SAMPLE_IDS[0]},
+    {'public_name': PUBLIC_NAMES[1], 'sample_id': SAMPLE_IDS[1]}
   ]
 }, {
   'name': 'Wellcome Sanger Institute',
   'id': INSTITUTION_NAME_TO_ID['Wellcome Sanger Institute'],
   'samples': [
-    {'sample_id': SAMPLE_IDS[2]},
-    {'sample_id': SAMPLE_IDS[3]}
+    {'public_name': PUBLIC_NAMES[2], 'sample_id': SAMPLE_IDS[2]},
+    {'public_name': PUBLIC_NAMES[3], 'sample_id': SAMPLE_IDS[3]}
   ]
 }]
 LANES = ['x', 'y', 'z']
+SEQUENCING_STATUS_DATA = {
+  SAMPLE_IDS[0]: {
+    SAMPLE_IDS[0]:
+      {'lanes': [{'id': LANES[0]}, {'id': LANES[1]}]}
+  },
+  SAMPLE_IDS[1]: {},
+  SAMPLE_IDS[2]: {
+    SAMPLE_IDS[2]:
+      {'lanes': [{'id': LANES[2]}]}
+  },
+  SAMPLE_IDS[3]: {
+    SAMPLE_IDS[3]:
+      {'lanes': []}
+  },
+}
 
 class CreateDownloadViewForSampleDataTest(TestCase):
 
@@ -56,11 +73,11 @@ class CreateDownloadViewForSampleDataTest(TestCase):
     for institution in INSTITUTIONS:
       self.mkdir.assert_any_call(institution['id'])
 
-  def test_create_lane_folder_for_each_institute(self):
+  def test_create_public_name_folder_for_each_institute(self):
     create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
-    for lane in LANES:
-      self.mkdir.assert_any_call(lane)
+    for public_name in PUBLIC_NAMES:
+      self.mkdir.assert_any_call(public_name)
 
   def test_create_symlink_per_data_file(self):
     data_files = list(map(lambda lane: Path(f'{lane}.vcf'), LANES))
@@ -76,19 +93,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
       self.create_symlink_to.assert_any_call(data_file, data_file.name)
 
 def get_sequencing_status_data(sample_ids):
-  if sample_ids == SAMPLE_IDS[:2]:
-    return {
-      SAMPLE_IDS[0]:
-        {'lanes': [{'id': LANES[0]}, {'id': LANES[1]}]}
-    }
-  elif sample_ids == SAMPLE_IDS[2:4]:
-    return {
-      SAMPLE_IDS[2]:
-        {'lanes': [{'id': LANES[2]}]},
-      SAMPLE_IDS[3]:
-        {'lanes': []}
-    }
-  return {}
+  return SEQUENCING_STATUS_DATA[sample_ids[0]]
 
 class DB():
   def get_institution_names(self):
