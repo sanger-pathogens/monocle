@@ -139,11 +139,19 @@ class MonocleDataTest(TestCase):
                                     }
    mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+                                          # note use of `None`, which should end up in CSV as ""
+                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": None                 },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     },
+                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake_public_name_1" }
+                                          },
+                                       {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
+                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     }
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
+                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_1"  },
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_2"  },
                                           "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
@@ -201,8 +209,10 @@ class MonocleDataTest(TestCase):
                                     'FakTwo': {'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
-   expected_metadata          =  '''"Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download link"
-"fake_sample_id_1","","whatevs","fake_lane_id_1","'''+mock_download_url+'/fake_lane_id_1/"'
+   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","pos","neg","'''+mock_download_url+'''/fake%20public%20name%202"
+'''
 
    expected_metadata_download  = {  'success'   : True,
                                     'filename'  : 'FakeinstitutionOne_sequencing_successful.csv',
@@ -292,6 +302,7 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
