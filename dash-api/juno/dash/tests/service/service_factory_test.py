@@ -3,6 +3,7 @@ from   unittest.mock import patch
 from   datetime      import datetime
 import logging
 from   os            import environ
+from   pandas.errors import MergeError
 from   pathlib       import Path
 import yaml
 
@@ -157,6 +158,10 @@ class MonocleDataTest(TestCase):
                                           }
                                        ]
 
+   # these are invalid because the lane ID appears twice:  pandas merge should catch this in validation
+   mock_invalid_metadata      =     [  mock_metadata[0], mock_metadata[1], mock_metadata[0] ]
+   mock_invalid_in_silico_data =    [  mock_in_silico_data[0], mock_in_silico_data[0] ]
+
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
    mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
@@ -302,7 +307,7 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -330,6 +335,22 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       self.assertEqual(self.expected_metadata, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_invalid_metadata_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_invalid_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      with self.assertRaises(MergeError):
+         self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_invalid_in_silico_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_invalid_in_silico_data
+      with self.assertRaises(MergeError):
+         self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
