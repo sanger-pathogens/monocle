@@ -513,15 +513,13 @@ class MonocleData:
       
       # add download links to metadata DataFrame
       metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
-      # TODO reduce to DEBUG after testing
-      logging.warning("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
+      logging.debug("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
 
       # if there are any in silico data, these are merged into the metadata DataFrame
       in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lane_id_list))
       if len(in_silico_data) > 0:
          in_silico_data_df = pandas.DataFrame(in_silico_data)
-         # TODO reduce to DEBUG after testing
-         logging.warning("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
+         logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
          # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadta row
          # validate to ensure lane ID is unique in both dataframes
          metadata_df = metadata_df.merge(in_silico_data_df, on='Lane_ID', how='left', validate="one_to_one")
