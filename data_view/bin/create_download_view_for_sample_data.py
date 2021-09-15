@@ -54,6 +54,7 @@ def _get_public_names_with_lane_ids(institution, db):
     logging.warning(f'No public names found for {institution}')
     return {}
 
+  has_lanes = False
   public_names_to_lane_ids = {}
   for public_name, sample_id in public_names_to_sample_id.items():
     seq_data = _get_sequencing_status_data([sample_id])
@@ -61,14 +62,17 @@ def _get_public_names_with_lane_ids(institution, db):
     for sample in seq_data.keys():
       for lane in seq_data[sample]['lanes']:
         lane_ids_of_one_sample.append(lane['id'])
+        has_lanes = True
     if lane_ids_of_one_sample:
       logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
       public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
     else:
-      logging.warning(f'{institution}: No lanes found for "{public_name}"')
       # We add public names w/ no lanes, as we want to
       # create empty public name directories as well.
       public_names_to_lane_ids[public_name] = []
+
+  if not has_lanes:
+    logging.warning(f'No lanes found for {institution}')
 
   return public_names_to_lane_ids
 
