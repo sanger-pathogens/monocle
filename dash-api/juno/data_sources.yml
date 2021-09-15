@@ -9,11 +9,6 @@ monocle_metadata_api:
    samples_key       : 'samples'
    download_in_silico_data : '/metadata/download_in_silico_data'
    in_silico_data_key      : 'download'
-monocle_download_api:
-   base_url       : 'http://metadata-api'
-   swagger        : '/metadata/ui/'
-   download       : '/metadata/download'
-   metadata_key   : 'download'
 mlwh_rest_api:
    mlwh_api_config   : 'mlwh-api.yml'
    swagger           : '/sequencing/data/ui/'
@@ -39,4 +34,3 @@ monocle_ldap:
 data_download:
    web_dir           : 'monocle_juno_web_root/downloads'
    url_path          : 'files/downloads'
-   
