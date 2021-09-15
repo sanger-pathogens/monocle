@@ -73,7 +73,7 @@ class Monocle_Download_Client:
       return results[self.config['metadata_key']]
    
    def in_silico_data(self, lane_id_list):
-      endpoint = self.config['download']
+      endpoint = self.config['download_in_silico_data']
       logging.debug("{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
       response = self.make_request( endpoint, post_data = lane_id_list )
       logging.debug("{}.in_silico_data([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
