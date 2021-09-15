@@ -93,10 +93,12 @@
           Annotations
         </label>
 
+        <!-- To be done in a future version of Monocle.
         <label class="disabled">
-          <input type="checkbox" disabled />
-          Reads (not available in the current version)
+          <input type="checkbox" />
+          Reads ( ⚠️ may increase the size drastically)
         </label>
+        -->
       </fieldset>
 
       <fieldset disabled={!selectedBatches}>

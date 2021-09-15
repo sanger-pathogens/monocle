@@ -35,8 +35,8 @@ describe("once batches are fetched", () => {
     });
   });
 
-  it("displays the data type checkboxes w/ assemblies and annotations checked and reads disabled", async () => {
-    const { getByRole } = render(DownloadPage);
+  it("displays the data type checkboxes w/ assemblies and annotations checked", async () => {
+    const { getByRole, queryByRole } = render(DownloadPage);
 
     await waitFor(() => {
       const roleCheckbox = "checkbox";
@@ -44,9 +44,8 @@ describe("once batches are fetched", () => {
         .toBeTruthy();
       expect(getByRole(roleCheckbox, { name: "Annotations" }).checked)
         .toBeTruthy();
-      const readsCheckbox = getByRole(roleCheckbox, { name: /^Reads / });
-      expect(readsCheckbox.checked).toBeFalsy();
-      expect(readsCheckbox.disabled).toBeTruthy();
+      expect(queryByRole(roleCheckbox, { name: /^Reads / }))
+        .toBeNull();
     });
   });
 
