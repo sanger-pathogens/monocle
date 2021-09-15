@@ -157,6 +157,18 @@ class MonocleDataTest(TestCase):
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
                                        ]
+   # the return value when no in silico data are available
+   in_silico_data_available_not_available =  []
+   # this contains a bad lane ID, so it should be ignored and *not* merged into the metadata download
+   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",              "value": "this_is_a_bad_id"   },
+                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                   },
+                                                {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_2"  },
+                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                   }
+                                             ]
 
    # these are invalid because the lane ID appears twice:  pandas merge should catch this in validation
    mock_invalid_metadata      =     [  mock_metadata[0], mock_metadata[1], mock_metadata[0] ]
@@ -218,8 +230,7 @@ class MonocleDataTest(TestCase):
 "fake_public_name_1","fake_sample_id_1","","","","","'''+mock_download_url+'''/fake_public_name_1"
 "fake public name 2","fake_sample_id_2","","whatevs","pos","neg","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
-
-   expected_metadata_when_no_in_silico_data_available = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
+   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
 "fake_public_name_1","fake_sample_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
 "fake public name 2","fake_sample_id_2","","whatevs","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
@@ -345,9 +356,18 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_metadata_as_csv_when_no_in_silico_data_available(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
-      mock_in_silico_data_fetch.return_value = []
+      mock_in_silico_data_fetch.return_value = self.in_silico_data_available_not_available
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
-      self.assertEqual(self.expected_metadata_when_no_in_silico_data_available, metadata_as_csv)
+      self.assertEqual(self.expected_metadata_when_no_in_silico_data, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_when_in_silico_data_has_bad_lane_id(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data_bad_lane_id
+      metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata, metadata_as_csv))
+      self.assertEqual(self.expected_metadata, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')

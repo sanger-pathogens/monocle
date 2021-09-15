@@ -345,14 +345,8 @@ class MetadataDownloadTest(TestCase):
          
    @patch.object(urllib.request, 'urlopen')
    def test_download_in_silico_data__when_no_in_silico_data_available(self, mock_urlopen):
-      #from contextlib import suppress
-      #with suppress(AttributeError):
-      try:
-         mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')
-         lanes = self.download.get_in_silico_data(self.mock_download_param)
-         # response should be and empty list in case of a 404
-         self.assertIsInstance(lanes, type(['a', 'list']))
-         self.assertEqual(len(lanes), 0, msg="list was not empty as expected")
-      except Exception as e:
-         logging.error("caught {}".format(e))
-         pass
+      mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')
+      lanes = self.download.get_in_silico_data(self.mock_download_param)
+      # response should be and empty list in case of a 404
+      self.assertIsInstance(lanes, type(['a', 'list']))
+      self.assertEqual(len(lanes), 0, msg="list was not empty as expected")
