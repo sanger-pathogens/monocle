@@ -507,35 +507,43 @@ class MonocleData:
 
       logging.info("Found {} lanes from {} with {} status {}".format(len(lane_id_list),institution,category,status))
       
-      metadata,metadata_col_order             = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(lane_id_list))
-      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lane_id_list))
-      metadata_df       = pandas.DataFrame(metadata)
-      in_silico_data_df = pandas.DataFrame(in_silico_data)
+      # retrieve the sample metadata and load into DataFrame
+      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(lane_id_list))
+      metadata_df                   = pandas.DataFrame(metadata)
+      
       # add download links to metadata DataFrame
       metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
-      logging.debug("metadata DataFrame.head with links:\n{}".format(metadata_df.head()))
-      logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
-      
-      # merge in silico data into metadata dataframe
-      # left join:  all metadata rows
-      # validate to ensure lane ID is unique in both dataframes
-      merged_df = metadata_df.merge(in_silico_data_df, on='Lane_ID', how='left', validate="one_to_one")
-      
-      # get ordered columns for the CSV output:  metadata followed by in silico data columns
-      merged_col_order = metadata_col_order+in_silico_data_col_order
+      # TODO reduce to DEBUG after testing
+      logging.warning("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
+
+      # if there are any in silico data, these are merged into the metadata DataFrame
+      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lane_id_list))
+      if len(in_silico_data) > 0:
+         in_silico_data_df = pandas.DataFrame(in_silico_data)
+         # TODO reduce to DEBUG after testing
+         logging.warning("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
+         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadta row
+         # validate to ensure lane ID is unique in both dataframes
+         metadata_df = metadata_df.merge(in_silico_data_df, on='Lane_ID', how='left', validate="one_to_one")
+         del in_silico_data_df
+         # add silico data columns to the list
+         metadata_col_order = metadata_col_order+in_silico_data_col_order
+         
+      # list of columns in `metadata_col_order` defines the CSV output
+      # => we manipulate this to 
       # delete `Lane_ID` (meaningless to the user)
-      while 'Lane_ID' in merged_col_order:
-         merged_col_order.remove('Lane_ID')
+      while 'Lane_ID' in metadata_col_order:
+         metadata_col_order.remove('Lane_ID')
       # move public name to first column
-      while 'Public_Name' in merged_col_order:
-         merged_col_order.remove('Public_Name')
-      merged_col_order.insert(0,'Public_Name')
+      while 'Public_Name' in metadata_col_order:
+         metadata_col_order.remove('Public_Name')
+      metadata_col_order.insert(0,'Public_Name')
       # put download links in last column
-      merged_col_order.append('Download_Link')
+      metadata_col_order.append('Download_Link')
       
-      merged_csv = merged_df.to_csv(columns=merged_col_order, index=False, quoting=QUOTE_NONNUMERIC)
-      logging.debug("merged metadata and in silico data as CSV:\n{}".format(merged_csv))
-      return merged_csv
+      metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
+      logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))
+      return metadata_csv
       
    def _metadata_download_to_pandas_data(self, api_data):
       """

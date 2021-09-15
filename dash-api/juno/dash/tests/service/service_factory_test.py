@@ -219,6 +219,11 @@ class MonocleDataTest(TestCase):
 "fake public name 2","fake_sample_id_2","","whatevs","pos","neg","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
 
+   expected_metadata_when_no_in_silico_data_available = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","'''+mock_download_url+'''/fake%20public%20name%202"
+'''
+
    expected_metadata_download  = {  'success'   : True,
                                     'filename'  : 'FakeinstitutionOne_sequencing_successful.csv',
                                     'content'   : expected_metadata
@@ -335,6 +340,14 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       self.assertEqual(self.expected_metadata, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_when_no_in_silico_data_available(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = []
+      metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+      self.assertEqual(self.expected_metadata_when_no_in_silico_data_available, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')

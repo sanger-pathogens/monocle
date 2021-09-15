@@ -111,7 +111,7 @@ class Monocle_Download_Client:
          if 404 == e.code:
             logging.info("HTTP response status {} (no data found) during Monocle Download request {}".format(e.code,request_url))
          else:
-            logging.error("HTTP error during Monocle Download request {}".format(request_url))
+            logging.error("HTTP status {} during Monocle Download request {}".format(e.code,request_url))
          raise
       return response_as_string
 

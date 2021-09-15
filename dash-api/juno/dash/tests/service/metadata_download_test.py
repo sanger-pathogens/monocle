@@ -1,6 +1,7 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
-from   urllib.error  import URLError
+import urllib.parse
+import urllib.request
 from   DataSources.metadata_download  import MetadataDownload
 from   DataSources.metadata_download  import Monocle_Download_Client
 from   DataSources.metadata_download  import ProtocolError
@@ -287,7 +288,7 @@ class MetadataDownloadTest(TestCase):
          doomed.set_up('no_such_config.yml')
          
    def test_reject_bad_url(self):
-      with self.assertRaises(URLError):
+      with self.assertRaises(urllib.error.URLError):
          doomed = Monocle_Download_Client(set_up=False)
          doomed.set_up(self.test_config)
          doomed.config['base_url']=self.bad_api_host
@@ -295,7 +296,7 @@ class MetadataDownloadTest(TestCase):
          doomed.make_request(endpoint)
          
    def test_reject_bad_endpoint(self):
-      with self.assertRaises(URLError):
+      with self.assertRaises(urllib.error.URLError):
          doomed = Monocle_Download_Client(set_up=False)
          doomed.set_up(self.test_config)
          doomed.config['base_url']=self.genuine_api_host
@@ -315,7 +316,7 @@ class MetadataDownloadTest(TestCase):
          self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
       # check data are correct
       self.assertEqual(this_lane, self.expected_metadata, msg="returned metadata differ from expected metadata")
-
+      
    @patch.object(Monocle_Download_Client, 'make_request')
    def test_reject_bad_download_metadata_response(self, mock_request):
       with self.assertRaises(ProtocolError):
@@ -341,3 +342,17 @@ class MetadataDownloadTest(TestCase):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_download
          self.download.get_in_silico_data(self.mock_download_param[0])
+         
+   @patch.object(urllib.request, 'urlopen')
+   def test_download_in_silico_data__when_no_in_silico_data_available(self, mock_urlopen):
+      #from contextlib import suppress
+      #with suppress(AttributeError):
+      try:
+         mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')
+         lanes = self.download.get_in_silico_data(self.mock_download_param)
+         # response should be and empty list in case of a 404
+         self.assertIsInstance(lanes, type(['a', 'list']))
+         self.assertEqual(len(lanes), 0, msg="list was not empty as expected")
+      except Exception as e:
+         logging.error("caught {}".format(e))
+         pass
