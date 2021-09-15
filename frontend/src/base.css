@@ -240,6 +240,13 @@ input[type=submit] {
   padding-left: 21px
 }
 
+button:hover,
+[role=button]:hover,
+input[type=button]:hover,
+input[type=submit]:hover {
+  opacity: 0.8;
+}
+
 button:focus,
 [role=button]:focus,
 input:focus,
