@@ -18,12 +18,7 @@ class TestRoutes(unittest.TestCase):
 
     EXPECTED_PROGRESS_RESULTS = {
         'progress_graph': {
-            'title': 'Project Progress',
-            'data': SERVICE_CALL_RETURN_DATA,
-            'x_col_key': 'date',
-            'x_label': '',
-            'y_cols_keys': ['samples received', 'samples sequenced'],
-            'y_label': 'number of samples'
+            'data': SERVICE_CALL_RETURN_DATA
         }
     }
         

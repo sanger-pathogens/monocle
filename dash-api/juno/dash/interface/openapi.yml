@@ -244,32 +244,10 @@ components:
     ProjectProgress:
       type: object
       required:
-        - title
         - data
-        - x_col_key
-        - y_cols_keys
-        - x_label
-        - y_label
       properties:
-        title:
-          type: string
-          description: "Progress graph title."
         data:
           $ref: "#/components/schemas/ProjectProgressData"
-        x_col_key:
-          type: string
-          description: "Progress graph x axis key."
-        x_label:
-          type: string
-          description: "Progress graph x axis label."
-        y_cols_keys:
-          type: array
-          items:
-            type: string
-            description: "Progress graph y axis keys."
-        y_label:
-          type: string
-          description: "Progress graph y axis label."
 
     ProjectProgressData:
       type: object

@@ -44,20 +44,8 @@ def get_institutions():
 def get_progress():
     """ Get dashboard progress graph information """
     data = ServiceFactory.data_service(get_authenticated_username(request)).get_progress()
-    progress_dict = dict()
-    # TODO check which of the following values are needed
-    #      `data` defintely required
-    #      the other values were originally returned by this function for
-    #      use in a plot.ly js graph drawing function, and may not be required
-    #      by the new dashboard
-    progress_dict['title'] = 'Project Progress'
-    progress_dict['data'] = data
-    progress_dict['x_col_key'] = 'date'
-    progress_dict['x_label'] = ''
-    progress_dict['y_cols_keys'] = ['samples received', 'samples sequenced']
-    progress_dict['y_label'] = 'number of samples'
     response_dict = {
-        'progress_graph': progress_dict
+        'progress_graph': { 'data': data }
     }
     return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
 
