@@ -24,8 +24,12 @@ it("shows an error message if fetching batches rejects", async () => {
 });
 
 describe("once batches are fetched", () => {
+  const ANNOTATIONS_LABEL = "Annotations";
+  const ASSEMBLIES_LABEL = "Assemblies";
   const CONFIRM_BUTTON_LABEL = "Confirm";
+  const SELECT_ALL_BATCHES_LABEL = "Select all";
   const ROLE_BUTTON = "button";
+  const ROLE_CHECKBOX = "checkbox";
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(DownloadPage);
@@ -39,14 +43,37 @@ describe("once batches are fetched", () => {
     const { getByRole, queryByRole } = render(DownloadPage);
 
     await waitFor(() => {
-      const roleCheckbox = "checkbox";
-      expect(getByRole(roleCheckbox, { name: "Assemblies" }).checked)
+      expect(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL }).checked)
         .toBeTruthy();
-      expect(getByRole(roleCheckbox, { name: "Annotations" }).checked)
+      expect(getByRole(ROLE_CHECKBOX, { name: ANNOTATIONS_LABEL }).checked)
         .toBeTruthy();
-      expect(queryByRole(roleCheckbox, { name: /^Reads / }))
+      expect(queryByRole(ROLE_CHECKBOX, { name: /^Reads / }))
         .toBeNull();
     });
+  });
+
+  it("enables the confirm button only when a batch and a data type are selected", async () => {
+    const { findByRole, getByRole, queryByRole } = render(DownloadPage);
+    // Deselect data types:
+    let assembliesCheckbox = await findByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL });
+    fireEvent.click(assembliesCheckbox);
+    const annotationsCheckbox = getByRole(ROLE_CHECKBOX, { name: ANNOTATIONS_LABEL });
+    fireEvent.click(annotationsCheckbox);
+
+    let confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    expect(confirmButton.disabled).toBeTruthy();
+
+    const selectAllBtn = getByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+    await fireEvent.click(selectAllBtn);
+
+    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    expect(confirmButton.disabled).toBeTruthy();
+
+    assembliesCheckbox = getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL });
+    await fireEvent.click(assembliesCheckbox);
+
+    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    expect(confirmButton.disabled).toBeFalsy();
   });
 
   describe("batch selector", () => {
@@ -97,7 +124,7 @@ describe("once batches are fetched", () => {
 
       expectNoBatchesSelected(batchNamesWithData, queryByText);
 
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: "Select all" });
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
       fireEvent.click(selectAllBtn);
 
       await waitFor(() => {
@@ -112,21 +139,6 @@ describe("once batches are fetched", () => {
       expectNoBatchesSelected(batchNamesWithData, queryByText);
     });
 
-    it("enables the confirm button when a batch is selected", async () => {
-      const { findByRole, queryByRole } = render(DownloadPage);
-
-      await waitFor(() => {
-        expect(queryByRole(ROLE_BUTTON, { name: "Confirm" }))
-          .toBeNull();
-      });
-
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-      await fireEvent.click(selectAllBtn);
-
-      expect(queryByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL }))
-        .toBeDefined();
-    });
-
     function expectNoBatchesSelected(batchNamesWithData, queryByText) {
       batchNamesWithData.forEach((batchName) => {
         expect(queryByText(batchName)).toBeNull();
@@ -134,7 +146,7 @@ describe("once batches are fetched", () => {
     }
   });
 
-  describe("on clicking submit", () => {
+  describe("on form submit", () => {
     const DOWNLOAD_LINK_GENERATOR_ENDPOINT = "FIXME";
     const DOWNLOAD_URL = "fake-url";
 
@@ -148,13 +160,22 @@ describe("once batches are fetched", () => {
       global.fetch.mockClear();
     });
 
+    it("prevents submitting the form directly w/o clicking confirm if the form isn't valid", async () => {
+      const { findByRole } = render(DownloadPage);
+      global.confirm = jest.fn();
+
+      const form = await findByRole("form");
+      await fireEvent.submit(form);
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
     it("asks for confirmation", async () => {
       global.confirm = jest.fn(() => false);
-      const { findByRole } = render(DownloadPage);
+      const { findByRole, getByRole } = render(DownloadPage);
 
-      const confirmButton = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-      confirmButton.disabled = false;
-      fireEvent.click(confirmButton);
+      await selectBatchesAndConfirm(findByRole, getByRole);
 
       expect(confirm).toHaveBeenCalledTimes(1);
       expect(confirm).toHaveBeenCalledWith("You won't be able to change the parameters if you proceed.");
@@ -162,16 +183,14 @@ describe("once batches are fetched", () => {
 
     it("disables the form", async () => {
       let containerFieldset;
-      const { container, findByRole } = render(DownloadPage);
+      const { container, findByRole, getByRole } = render(DownloadPage);
 
       await waitFor(() => {
         containerFieldset = container.querySelector("form > fieldset");
         expect(containerFieldset.disabled).toBeFalsy();
       });
 
-      const confirmButton = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-      confirmButton.disabled = false;
-      await fireEvent.click(confirmButton);
+      await selectBatchesAndConfirm(findByRole, getByRole);
 
       expect(containerFieldset.disabled).toBeTruthy();
       expect(containerFieldset.classList.contains("disabled"))
@@ -181,9 +200,7 @@ describe("once batches are fetched", () => {
     it("requests and displays a download link", async () => {
       const { findByRole, getByRole } = render(DownloadPage);
 
-      const confirmButton = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-      confirmButton.disabled = false;
-      fireEvent.click(confirmButton);
+      await selectBatchesAndConfirm(findByRole, getByRole);
 
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith(DOWNLOAD_LINK_GENERATOR_ENDPOINT);
@@ -203,13 +220,11 @@ describe("once batches are fetched", () => {
       });
 
       it("when fetching download links fails", async () => {
-        const { findByRole } = render(DownloadPage);
+        const { findByRole, getByRole } = render(DownloadPage);
         const fetchError = "some error";
         global.fetch.mockRejectedValueOnce(fetchError);
 
-        const confirmButton = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-        confirmButton.disabled = false;
-        fireEvent.click(confirmButton);
+        await selectBatchesAndConfirm(findByRole, getByRole);
 
         await waitFor(() => {
           expect(alert).toHaveBeenCalledTimes(1);
@@ -219,15 +234,13 @@ describe("once batches are fetched", () => {
       });
 
       it("when no download links are returned from the server", async () => {
-        const { findByRole } = render(DownloadPage);
+        const { findByRole, getByRole } = render(DownloadPage);
         global.fetch.mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve()
         });
 
-        const confirmButton = await findByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
-        confirmButton.disabled = false;
-        fireEvent.click(confirmButton);
+        await selectBatchesAndConfirm(findByRole, getByRole);
 
         await waitFor(() => {
           expect(alert).toHaveBeenCalledTimes(1);
@@ -236,5 +249,12 @@ describe("once batches are fetched", () => {
         });
       });
     });
+
+    async function selectBatchesAndConfirm(findByRole, getByRole) {
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+      await fireEvent.click(selectAllBtn);
+      const confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
+      fireEvent.click(confirmButton);
+    }
   });
 });

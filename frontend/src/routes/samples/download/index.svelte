@@ -4,10 +4,19 @@
   import BatchSelector from "./_BatchSelector.svelte";
   import { getBatches } from "../../../dataLoading.js";
 
+  const PAGE_TITLE_ID = "bulk-download-title";
+
+  let formValues = {
+    annotationsChecked: true,
+    assembliesChecked: true
+  };
+  let batchesPromise = Promise.resolve();
   let downloadLinksRequested;
   let downloadLink;
-  let batchesPromise = Promise.resolve();
   let selectedBatches = null;
+
+  $: formValid = selectedBatches &&
+      (formValues.annotationsChecked || formValues.assembliesChecked);
 
   onMount(() => {
     batchesPromise = getBatches(fetch)
@@ -33,6 +42,11 @@
   }
 
   function onSubmit() {
+    if (!formValid) {
+      // Prevents submitting the form on Enter while the confirm btn is disabled.
+      return;
+    }
+
     downloadLinksRequested =
       confirm("You won't be able to change the parameters if you proceed.");
     if (downloadLinksRequested) {
@@ -60,13 +74,16 @@
 </script>
 
 
-<h2>Sample bulk download</h2>
+<h2 id={PAGE_TITLE_ID}>Sample bulk download</h2>
 
 {#await batchesPromise}
   <LoadingIndicator />
 
 {:then batchList}
-  <form on:submit|preventDefault={onSubmit} >
+  <form
+    aria-labelledby={PAGE_TITLE_ID}
+    on:submit|preventDefault={onSubmit}
+  >
     <fieldset
       disabled={downloadLinksRequested}
       class:disabled={downloadLinksRequested}
@@ -84,12 +101,18 @@
         <legend>Data type</legend>
 
         <label>
-          <input type="checkbox" checked />
+          <input
+            type="checkbox"
+            bind:checked={formValues.assembliesChecked}
+          />
           Assemblies
         </label>
 
         <label>
-          <input type="checkbox" checked />
+          <input
+            type="checkbox"
+            bind:checked={formValues.annotationsChecked}
+          />
           Annotations
         </label>
 
@@ -121,7 +144,7 @@
       <button
         type="submit"
         class="primary"
-        disabled={!selectedBatches}
+        disabled={!formValid}
       >
         Confirm
       </button>
