@@ -15,9 +15,16 @@ INSTITUTION_NAME_TO_ID = {
   'Universidade Federal do Rio de Janeiro': 'UniFedRioJan',
   'Wellcome Sanger Institute': 'WelSanIns'
 }
-SAMPLE_IDS = ['a', 'b', 'c', 'd']
+SAMPLE_IDS = ['a', 'b', 'c', 'd', 'e']
 PUBLIC_NAMES = list(
   map(lambda sample_id: sample_id * 2, SAMPLE_IDS))
+INSTITUTION_WITHOUT_LANES = {
+  'name': 'Laboratório Central do Estado do Paraná',
+  'id': INSTITUTION_NAME_TO_ID['Laboratório Central do Estado do Paraná'],
+  'samples': [
+    {'public_name': PUBLIC_NAMES[4], 'sample_id': SAMPLE_IDS[4]}
+  ]
+}
 INSTITUTIONS_WITH_PUBLIC_NAMES = [{
   'name': 'National Reference Laboratories',
   'id': INSTITUTION_NAME_TO_ID['National Reference Laboratories'],
@@ -32,7 +39,9 @@ INSTITUTIONS_WITH_PUBLIC_NAMES = [{
     {'public_name': PUBLIC_NAMES[2], 'sample_id': SAMPLE_IDS[2]},
     {'public_name': PUBLIC_NAMES[3], 'sample_id': SAMPLE_IDS[3]}
   ]
-}]
+},
+  INSTITUTION_WITHOUT_LANES
+]
 INSTITUTIONS_WITHOUT_PUBLIC_NAMES = [{
   'name': 'Universidade Federal do Rio de Janeiro',
   'id': INSTITUTION_NAME_TO_ID['Universidade Federal do Rio de Janeiro'],
@@ -54,6 +63,10 @@ SEQUENCING_STATUS_DATA = {
     SAMPLE_IDS[3]:
       {'lanes': []}
   },
+  SAMPLE_IDS[4]: {
+    SAMPLE_IDS[4]:
+      {'lanes': []}
+  }
 }
 
 class CreateDownloadViewForSampleDataTest(TestCase):
@@ -119,4 +132,6 @@ class DB():
       return INSTITUTIONS[0]['samples']
     elif institutions[0] == INSTITUTIONS[1]['name']:
       return INSTITUTIONS[1]['samples']
+    elif institutions[0] == INSTITUTIONS[2]['name']:
+      return INSTITUTIONS[2]['samples']
     return []
