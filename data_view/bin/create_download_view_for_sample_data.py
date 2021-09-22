@@ -73,7 +73,7 @@ def _get_public_names_with_lane_ids(institution, db):
         # create empty public name directories as well.
         public_names_to_lane_ids[public_name] = []
     except HTTPError as e:
-      logging.error('Failed to get sequence data for {}: {}'.format(public_name,repr(e)))
+      logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
   return public_names_to_lane_ids
 
