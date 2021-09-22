@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import os
 from os import path
 from pathlib import Path
+from urllib.error import HTTPError
 
 import argparse
 from sys import argv
@@ -57,19 +58,23 @@ def _get_public_names_with_lane_ids(institution, db):
   has_lanes = False
   public_names_to_lane_ids = {}
   for public_name, sample_id in public_names_to_sample_id.items():
-    seq_data = _get_sequencing_status_data([sample_id])
-    lane_ids_of_one_sample = []
-    for sample in seq_data.keys():
-      for lane in seq_data[sample]['lanes']:
-        lane_ids_of_one_sample.append(lane['id'])
-        has_lanes = True
-    if lane_ids_of_one_sample:
-      logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
-      public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
-    else:
-      # We add public names w/ no lanes, as we want to
-      # create empty public name directories as well.
-      public_names_to_lane_ids[public_name] = []
+    # MLWH API can be fragile: catch HTTP errors
+    try:
+      seq_data = _get_sequencing_status_data([sample_id])
+      lane_ids_of_one_sample = []
+      for sample in seq_data.keys():
+        for lane in seq_data[sample]['lanes']:
+          lane_ids_of_one_sample.append(lane['id'])
+      if lane_ids_of_one_sample:
+        logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+        public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
+      else:
+        logging.info(f'{institution}: No lanes found for "{public_name}"')
+        # We add public names w/ no lanes, as we want to
+        # create empty public name directories as well.
+        public_names_to_lane_ids[public_name] = []
+    except HTTPError as e:
+      logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
   if not has_lanes:
     logging.warning(f'No lanes found for {institution}')
