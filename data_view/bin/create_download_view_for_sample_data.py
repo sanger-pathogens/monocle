@@ -68,7 +68,7 @@ def _get_public_names_with_lane_ids(institution, db):
         logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
         public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
       else:
-        logging.warning(f'{institution}: No lanes found for "{public_name}"')
+        logging.info(f'{institution}: No lanes found for "{public_name}"')
         # We add public names w/ no lanes, as we want to
         # create empty public name directories as well.
         public_names_to_lane_ids[public_name] = []
