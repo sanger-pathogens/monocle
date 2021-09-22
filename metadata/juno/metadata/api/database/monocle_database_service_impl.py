@@ -164,7 +164,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     INSERT_OR_UPDATE_IN_SILICO_SQL = text(""" \
             INSERT INTO in_silico (
-                lane_id, gbs_typer_serotype, MLST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
+                lane_id, cps_type, MLST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
                 ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
             ) VALUES (
@@ -173,7 +173,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :GYRA_variant, :PARC_variant
             ) ON DUPLICATE KEY UPDATE
                 lane_id = :lane_id,
-                gbs_typer_serotype = :cps_type,
+                cps_type = :cps_type,
                 MLST = :ST,
                 adhP = :adhP,
                 pheS = :pheS,
@@ -223,7 +223,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     SELECT_LANES_IN_SILICO_SQL = text(""" \
             SELECT
-                lane_id, gbs_typer_serotype, MLST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
+                lane_id, cps_type, MLST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
                 ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
             FROM in_silico
