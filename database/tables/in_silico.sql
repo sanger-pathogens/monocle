@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `in_silico`;
 
 CREATE TABLE `in_silico` (
   `lane_id` varchar(256) NOT NULL,
-  `gbs_typer_serotype` varchar(256),
+  `cps_type` varchar(256),
   `MLST` varchar(256),
   `adhP` varchar(30),
   `pheS` varchar(30),

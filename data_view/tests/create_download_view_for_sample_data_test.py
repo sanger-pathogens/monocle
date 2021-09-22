@@ -6,7 +6,6 @@ from bin.create_download_view_for_sample_data import (
   create_download_view_for_sample_data
 )
 
-SAMPLE_IDS = ['a', 'b', 'c', 'd']
 DATA_DIR='/abs/path/data'
 INSTITUTION_NAME_TO_ID = {
   'Faculty of Pharmacy, Suez Canal University': 'FacPhaSueCanUni',
@@ -16,22 +15,59 @@ INSTITUTION_NAME_TO_ID = {
   'Universidade Federal do Rio de Janeiro': 'UniFedRioJan',
   'Wellcome Sanger Institute': 'WelSanIns'
 }
-INSTITUTIONS = [{
+SAMPLE_IDS = ['a', 'b', 'c', 'd', 'e']
+PUBLIC_NAMES = list(
+  map(lambda sample_id: sample_id * 2, SAMPLE_IDS))
+INSTITUTION_WITHOUT_LANES = {
+  'name': 'Laboratório Central do Estado do Paraná',
+  'id': INSTITUTION_NAME_TO_ID['Laboratório Central do Estado do Paraná'],
+  'samples': [
+    {'public_name': PUBLIC_NAMES[4], 'sample_id': SAMPLE_IDS[4]}
+  ]
+}
+INSTITUTIONS_WITH_PUBLIC_NAMES = [{
   'name': 'National Reference Laboratories',
   'id': INSTITUTION_NAME_TO_ID['National Reference Laboratories'],
   'samples': [
-    {'sample_id': SAMPLE_IDS[0]},
-    {'sample_id': SAMPLE_IDS[1]}
+    {'public_name': PUBLIC_NAMES[0], 'sample_id': SAMPLE_IDS[0]},
+    {'public_name': PUBLIC_NAMES[1], 'sample_id': SAMPLE_IDS[1]}
   ]
 }, {
   'name': 'Wellcome Sanger Institute',
   'id': INSTITUTION_NAME_TO_ID['Wellcome Sanger Institute'],
   'samples': [
-    {'sample_id': SAMPLE_IDS[2]},
-    {'sample_id': SAMPLE_IDS[3]}
+    {'public_name': PUBLIC_NAMES[2], 'sample_id': SAMPLE_IDS[2]},
+    {'public_name': PUBLIC_NAMES[3], 'sample_id': SAMPLE_IDS[3]}
   ]
+},
+  INSTITUTION_WITHOUT_LANES
+]
+INSTITUTIONS_WITHOUT_PUBLIC_NAMES = [{
+  'name': 'Universidade Federal do Rio de Janeiro',
+  'id': INSTITUTION_NAME_TO_ID['Universidade Federal do Rio de Janeiro'],
+  'samples': []
 }]
+INSTITUTIONS = INSTITUTIONS_WITH_PUBLIC_NAMES + INSTITUTIONS_WITHOUT_PUBLIC_NAMES
 LANES = ['x', 'y', 'z']
+SEQUENCING_STATUS_DATA = {
+  SAMPLE_IDS[0]: {
+    SAMPLE_IDS[0]:
+      {'lanes': [{'id': LANES[0]}, {'id': LANES[1]}]}
+  },
+  SAMPLE_IDS[1]: {},
+  SAMPLE_IDS[2]: {
+    SAMPLE_IDS[2]:
+      {'lanes': [{'id': LANES[2]}]}
+  },
+  SAMPLE_IDS[3]: {
+    SAMPLE_IDS[3]:
+      {'lanes': []}
+  },
+  SAMPLE_IDS[4]: {
+    SAMPLE_IDS[4]:
+      {'lanes': []}
+  }
+}
 
 class CreateDownloadViewForSampleDataTest(TestCase):
 
@@ -50,17 +86,19 @@ class CreateDownloadViewForSampleDataTest(TestCase):
     mkdir_patch = patch('bin.create_download_view_for_sample_data._mkdir')
     self.mkdir = mkdir_patch.start()
 
-  def test_create_folder_per_institute(self):
+  def test_create_folder_per_institute_with_public_name(self):
     create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
-    for institution in INSTITUTIONS:
+    for institution in INSTITUTIONS_WITH_PUBLIC_NAMES:
       self.mkdir.assert_any_call(institution['id'])
+    for institution in INSTITUTIONS_WITHOUT_PUBLIC_NAMES:
+      self.assert_mkdir_not_called_with(institution['id'])
 
-  def test_create_lane_folder_for_each_institute(self):
+  def test_create_public_name_folder_for_each_institute(self):
     create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID)
 
-    for lane in LANES:
-      self.mkdir.assert_any_call(lane)
+    for public_name in PUBLIC_NAMES:
+      self.mkdir.assert_any_call(public_name)
 
   def test_create_symlink_per_data_file(self):
     data_files = list(map(lambda lane: Path(f'{lane}.vcf'), LANES))
@@ -75,20 +113,15 @@ class CreateDownloadViewForSampleDataTest(TestCase):
       path_to_data_file = data_file.resolve()
       self.create_symlink_to.assert_any_call(data_file, data_file.name)
 
+  def assert_mkdir_not_called_with(self, institution_id):
+    try:
+        self.mkdir.assert_any_call(institution_id)
+    except AssertionError:
+        return
+    raise AssertionError(f'Expected `mkdir` to not have been called w/ "{institution_id}".')
+
 def get_sequencing_status_data(sample_ids):
-  if sample_ids == SAMPLE_IDS[:2]:
-    return {
-      SAMPLE_IDS[0]:
-        {'lanes': [{'id': LANES[0]}, {'id': LANES[1]}]}
-    }
-  elif sample_ids == SAMPLE_IDS[2:4]:
-    return {
-      SAMPLE_IDS[2]:
-        {'lanes': [{'id': LANES[2]}]},
-      SAMPLE_IDS[3]:
-        {'lanes': []}
-    }
-  return {}
+  return SEQUENCING_STATUS_DATA[sample_ids[0]]
 
 class DB():
   def get_institution_names(self):
@@ -99,4 +132,6 @@ class DB():
       return INSTITUTIONS[0]['samples']
     elif institutions[0] == INSTITUTIONS[1]['name']:
       return INSTITUTIONS[1]['samples']
+    elif institutions[0] == INSTITUTIONS[2]['name']:
+      return INSTITUTIONS[2]['samples']
     return []
