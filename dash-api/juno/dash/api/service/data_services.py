@@ -1,8 +1,10 @@
 from   collections            import defaultdict
+from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_ALL
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import logging
 from   os                     import environ
+import pandas
 from   pathlib                import Path
 import urllib.parse
 import uuid
@@ -402,6 +404,9 @@ class MonocleData:
       and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
       
+      *Note* this was originally written as a method for retrieving sample metadata, but the
+      in silico data are now also included so these can all be viewed in a single spreadsheet.
+      
       On success, returns content for response, with suggested filename
       
       {  'success'   : True,
@@ -454,6 +459,9 @@ class MonocleData:
       Also pass the base URL for the download.  The complete download URL for each lane is this
       base URL with the lane ID appended.
       
+      *Note* this was originally written as a method for retrieving sample metadata, but the
+      in silico data are now also included so these can all be viewed in a single spreadsheet.
+
       Returns metadata as CSV
       """
       sequencing_status_data = self.get_sequencing_status()
@@ -462,12 +470,9 @@ class MonocleData:
          
       # get list of lane IDs for this combo of institution/category/status
       lane_id_list = []
-      sample_id_to_lanes = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         sample_id_to_lanes[this_sample_id] = []
          
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
-            sample_id_to_lanes[this_sample_id].append(this_lane['id'])
             
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
                # lane completed sequencing, though possibly failed
@@ -499,37 +504,75 @@ class MonocleData:
                         want_this_lane = True
                if want_this_lane:
                   lane_id_list.append( ':'.join([this_sample_id,this_lane['id']]) )
-      
-      logging.info("Found {} lanes from {} with {} status {}".format(len(lane_id_list),institution,category,status))
-      # create list of CSV rows; each list item will be a single string of CSV values
-      csv = []
-      headings = []
-      reading_the_first_row = True
-      for this_row in self.metadata_source.get_metadata(lane_id_list):
-         this_row_csv_strings = []
-         headings_csv_strings = []
-         # sort columns according to value of dict item `order`
-         for this_column in sorted(this_row, key=lambda col: (this_row[col]['order'])):
-            # get the column headings, if this is the first row being read
-            if reading_the_first_row:
-               headings_csv_strings.append( '"{}"'.format(this_row[this_column]['name']) )
-            this_row_csv_strings.append( '"{}"'.format(this_row[this_column]['value']) )
-         # download links are an extra column added by this function
-         headings_csv_strings.append( '"Download link"' )
-         download_links = []
-         for this_lane_id in sample_id_to_lanes[this_row['sanger_sample_id']['value']]:
-            download_links.append('/'.join([download_base_url, urllib.parse.quote(this_lane_id), '']))
-         this_row_csv_strings.append( '"{}"'.format(" ".join(download_links)) )
-         # add headings to CSV if this is the first row
-         if reading_the_first_row:
-            csv.append( ','.join(headings_csv_strings) )
-            reading_the_first_row = False
-         # add this row to the main list of CSV rows
-         csv.append( ','.join(this_row_csv_strings) )
-      # CSV as one string
-      csv_giant_string = "\n".join(csv)
-      return csv_giant_string
 
+      logging.info("Found {} lanes from {} with {} status {}".format(len(lane_id_list),institution,category,status))
+      
+      # retrieve the sample metadata and load into DataFrame
+      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(lane_id_list))
+      metadata_df                   = pandas.DataFrame(metadata)
+      
+      # add download links to metadata DataFrame
+      metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
+      logging.debug("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
+
+      # if there are any in silico data, these are merged into the metadata DataFrame
+      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lane_id_list))
+      if len(in_silico_data) > 0:
+         in_silico_data_df = pandas.DataFrame(in_silico_data)
+         logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
+         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadta row
+         # validate to ensure lane ID is unique in both dataframes
+         metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
+         del in_silico_data_df
+         # add silico data columns to the list
+         metadata_col_order = metadata_col_order+in_silico_data_col_order
+         
+      # list of columns in `metadata_col_order` defines the CSV output
+      # => we manipulate this to 
+      # delete `Lane_ID` (meaningless to the user)
+      while 'Lane_ID' in metadata_col_order:
+         metadata_col_order.remove('Lane_ID')
+      # also delete Sample_id (which is what the lane ID is called in the in silico data)
+      while 'Sample_id' in metadata_col_order:
+         metadata_col_order.remove('Sample_id')
+      # move public name to first column
+      while 'Public_Name' in metadata_col_order:
+         metadata_col_order.remove('Public_Name')
+      metadata_col_order.insert(0,'Public_Name')
+      # put download links in last column
+      metadata_col_order.append('Download_Link')
+      
+      metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
+      logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))
+      return metadata_csv
+      
+   def _metadata_download_to_pandas_data(self, api_data):
+      """
+      Transforms data returned by MetadataDownload methods into a form that can be loaded by pandas
+      Something of this form:
+         {"order": 1, "name": "Sanger_Sample_ID",  "value": "a_sammple_id"   }
+         {"order": 2, "name": "Other_Field",       "value": "something_else" }
+      will become:
+         {"Sanger_Sample_ID": "a_sammple_id", "Other_Field": "something_else"}
+      and a list of hte column ordering is also created:
+         ["Sanger_Sample_ID", "Other_Field"]
+      Returns tuple: data_dict,column_order_list
+      """
+      pandas_data = []
+      col_order   = []
+      first_row   = True
+      for this_row in api_data:
+         pandas_row = {}
+         # get_metadata returns dicts incl. an item item `order` which should be used to sort columns
+         for this_column in sorted(this_row, key=lambda col: (this_row[col]['order'])):
+            if first_row:
+               col_order.append( this_row[this_column]['name'] )
+            # get_metadata returns dicts incl. items `name` and `value`for name & value of each column
+            pandas_row[this_row[this_column]['name']] = this_row[this_column]['value']
+         pandas_data.append( pandas_row )
+         first_row = False
+      return pandas_data,col_order
+   
    def make_download_symlink(self,target_institution):
       """
       Pass the institution name.
@@ -581,7 +624,7 @@ class MonocleData:
       logging.debug('creating symlink {} -> {}'.format(str(data_download_link),str(download_host_dir)))
       data_download_link.symlink_to(download_host_dir.absolute())
       return download_url_path
-   
+
    def _download_config_error(self,message):
       """
       Call for errors occurring in make_download_symlink().

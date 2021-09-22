@@ -100,7 +100,7 @@ def _create_public_name_dir_with_symlinks(public_name, lane_id, institution):
 
 
 def _get_data_files(lane_id):
-   
+
   data_files_for_this_lane = []
    
   with _cd(DATA_DIR):

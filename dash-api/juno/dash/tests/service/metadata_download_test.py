@@ -1,6 +1,7 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
-from   urllib.error  import URLError
+import urllib.parse
+import urllib.request
 from   DataSources.metadata_download  import MetadataDownload
 from   DataSources.metadata_download  import Monocle_Download_Client
 from   DataSources.metadata_download  import ProtocolError
@@ -18,389 +19,248 @@ class MetadataDownloadTest(TestCase):
    # this pattern should match a container on the docker network
    base_url_regex          = '^http://[\w\-]+$'
    endpoint_regex          = '(/[\w\-\.]+)+'
-   required_column_keys    = {'sanger_sample_id'            : type({'a': 'dict'}),
-                              'supplier_sample_name'        : type({'a': 'dict'}),
-                              'public_name'                 : type({'a': 'dict'}),
-                              'lane_id'                     : type({'a': 'dict'}),
-                              'study_name'                  : type({'a': 'dict'}),
-                              'study_ref'                   : type({'a': 'dict'}),
-                              'selection_random'            : type({'a': 'dict'}),
-                              'country'                     : type({'a': 'dict'}),
-                              'county_state'                : type({'a': 'dict'}),
-                              'city'                        : type({'a': 'dict'}),
-                              'submitting_institution'      : type({'a': 'dict'}),
-                              'collection_year'             : type({'a': 'dict'}),
-                              'collection_month'            : type({'a': 'dict'}),
-                              'collection_day'              : type({'a': 'dict'}),
-                              'host_species'                : type({'a': 'dict'}),
-                              'gender'                      : type({'a': 'dict'}),
-                              'age_group'                   : type({'a': 'dict'}),
-                              'age_years'                   : type({'a': 'dict'}),
-                              'age_months'                  : type({'a': 'dict'}),
-                              'age_weeks'                   : type({'a': 'dict'}),
-                              'age_days'                    : type({'a': 'dict'}),
-                              'host_status'                 : type({'a': 'dict'}),
-                              'disease_type'                : type({'a': 'dict'}),
-                              'disease_onset'               : type({'a': 'dict'}),
-                              'isolation_source'            : type({'a': 'dict'}),
-                              'serotype'                    : type({'a': 'dict'}),
-                              'serotype_method'             : type({'a': 'dict'}),
-                              'infection_during_pregnancy'  : type({'a': 'dict'}),
-                              'maternal_infection_type'     : type({'a': 'dict'}),
-                              'gestational_age_weeks'       : type({'a': 'dict'}),
-                              'birth_weight_gram'           : type({'a': 'dict'}),
-                              'apgar_score'                 : type({'a': 'dict'}),
-                              'ceftizoxime'                 : type({'a': 'dict'}),
-                              'ceftizoxime_method'          : type({'a': 'dict'}),
-                              'cefoxitin'                   : type({'a': 'dict'}),
-                              'cefoxitin_method'            : type({'a': 'dict'}),
-                              'cefotaxime'                  : type({'a': 'dict'}),
-                              'cefotaxime_method'           : type({'a': 'dict'}),
-                              'cefazolin'                   : type({'a': 'dict'}),
-                              'cefazolin_method'            : type({'a': 'dict'}),
-                              'ampicillin'                  : type({'a': 'dict'}),
-                              'ampicillin_method'           : type({'a': 'dict'}),
-                              'penicillin'                  : type({'a': 'dict'}),
-                              'penicillin_method'           : type({'a': 'dict'}),
-                              'erythromycin'                : type({'a': 'dict'}),
-                              'erythromycin_method'         : type({'a': 'dict'}),
-                              'clindamycin'                 : type({'a': 'dict'}),
-                              'clindamycin_method'          : type({'a': 'dict'}),
-                              'tetracycline'                : type({'a': 'dict'}),
-                              'tetracycline_method'         : type({'a': 'dict'}),
-                              'levofloxacin'                : type({'a': 'dict'}),
-                              'levofloxacin_method'         : type({'a': 'dict'}),
-                              'ciprofloxacin'               : type({'a': 'dict'}),
-                              'ciprofloxacin_method'        : type({'a': 'dict'}),
-                              'daptomycin'                  : type({'a': 'dict'}),
-                              'daptomycin_method'           : type({'a': 'dict'}),
-                              'vancomycin'                  : type({'a': 'dict'}),
-                              'vancomycin_method'           : type({'a': 'dict'}),
-                              'linezolid'                   : type({'a': 'dict'}),
-                              'linezolid_method'            : type({'a': 'dict'}),
-                              'additional_metadata'         : type({'a': 'dict'})      
-                              }
-   required_item_keys      = {'order'  : type(1),
-                              'name'   : type('a string'),
-                              'value'  : type('a string'),
-                              }
-   absent_sample_keys      = ['id']
-   expected_lane_id        = ['5903STDY8059053:31663_7#43']
+   # metadta and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
+   mock_download_param     = ['5903STDY8059053:31663_7#43']
    mock_bad_download       =  """{  "wrong key":
                                        {  "does": "not matter what appears here"
                                        }
                                     }"""
 
-   mock_download           =  """{  "download": [
-                                       {
-                                          "sanger_sample_id": {
-                                             "order": 1,
-                                             "name": "Sanger_Sample_ID",
-                                             "value": "5903STDY8059053"
-                                          },
-                                          "supplier_sample_name": {
-                                             "order": 2,
-                                             "name": "Supplier_Sample_Name",
-                                             "value": ""
-                                          },
-                                          "public_name": {
-                                             "order": 3,
-                                             "name": "Public_Name",
-                                             "value": "JN_HK_GBS1WT"
-                                          },
-                                          "lane_id": {
-                                             "order": 4,
-                                             "name": "Lane_ID",
-                                             "value": "31663_7#43"
-                                          },
-                                          "study_name": {
-                                             "order": 5,
-                                             "name": "Study_Name",
-                                             "value": ""
-                                          },
-                                          "study_ref": {
-                                             "order": 6,
-                                             "name": "Study_Reference",
-                                             "value": ""
-                                          },
-                                          "selection_random": {
-                                             "order": 7,
-                                             "name": "Selection_Random",
-                                             "value": ""
-                                          },
-                                          "country": {
-                                             "order": 8,
-                                             "name": "Country",
-                                             "value": ""
-                                          },
-                                          "county_state": {
-                                             "order": 9,
-                                             "name": "County / state",
-                                             "value": ""
-                                          },
-                                          "city": {
-                                             "order": 10,
-                                             "name": "City",
-                                             "value": ""
-                                          },
-                                          "submitting_institution": {
-                                             "order": 11,
-                                             "name": "Submitting_Institution",
-                                             "value": "The Chinese University of Hong Kong"
-                                          },
-                                          "collection_year": {
-                                             "order": 12,
-                                             "name": "Collection_year",
-                                             "value": ""
-                                          },
-                                          "collection_month": {
-                                             "order": 13,
-                                             "name": "Collection_month",
-                                             "value": ""
-                                          },
-                                          "collection_day": {
-                                             "order": 14,
-                                             "name": "Collection_day",
-                                             "value": ""
-                                          },
-                                          "host_species": {
-                                             "order": 15,
-                                             "name": "Host_species",
-                                             "value": ""
-                                          },
-                                          "gender": {
-                                             "order": 16,
-                                             "name": "Gender",
-                                             "value": ""
-                                          },
-                                          "age_group": {
-                                             "order": 17,
-                                             "name": "Age_group",
-                                             "value": ""
-                                          },
-                                          "age_years": {
-                                             "order": 18,
-                                             "name": "Age_years",
-                                             "value": ""
-                                          },
-                                          "age_months": {
-                                             "order": 19,
-                                             "name": "Age_months",
-                                             "value": ""
-                                          },
-                                          "age_weeks": {
-                                             "order": 20,
-                                             "name": "Age_weeks",
-                                             "value": ""
-                                          },
-                                          "age_days": {
-                                             "order": 21,
-                                             "name": "Age_days",
-                                             "value": ""
-                                          },
-                                          "host_status": {
-                                             "order": 22,
-                                             "name": "Host_status",
-                                             "value": "invasive"
-                                          },
-                                          "disease_type": {
-                                             "order": 23,
-                                             "name": "Disease_type",
-                                             "value": ""
-                                          },
-                                          "disease_onset": {
-                                             "order": 24,
-                                             "name": "Disease_onset",
-                                             "value": ""
-                                          },
-                                          "isolation_source": {
-                                             "order": 25,
-                                             "name": "Isolation_source",
-                                             "value": ""
-                                          },
-                                          "serotype": {
-                                             "order": 26,
-                                             "name": "Serotype",
-                                             "value": "III-1"
-                                          },
-                                          "serotype_method": {
-                                             "order": 27,
-                                             "name": "Serotype_method",
-                                             "value": ""
-                                          },
-                                          "infection_during_pregnancy": {
-                                             "order": 28,
-                                             "name": "Infection_during_pregnancy",
-                                             "value": ""
-                                          },
-                                          "maternal_infection_type": {
-                                             "order": 29,
-                                             "name": "Maternal_infection_type",
-                                             "value": ""
-                                          },
-                                          "gestational_age_weeks": {
-                                             "order": 30,
-                                             "name": "Gestational_age_weeks",
-                                             "value": ""
-                                          },
-                                          "birth_weight_gram": {
-                                             "order": 31,
-                                             "name": "Birthweight_gram",
-                                             "value": ""
-                                          },
-                                          "apgar_score": {
-                                             "order": 32,
-                                             "name": "Apgar_score",
-                                             "value": ""
-                                          },
-                                          "ceftizoxime": {
-                                             "order": 33,
-                                             "name": "Ceftizoxime",
-                                             "value": ""
-                                          },
-                                          "ceftizoxime_method": {
-                                             "order": 34,
-                                             "name": "Ceftizoxime_method",
-                                             "value": ""
-                                          },
-                                          "cefoxitin": {
-                                             "order": 35,
-                                             "name": "Cefoxitin",
-                                             "value": ""
-                                          },
-                                          "cefoxitin_method": {
-                                             "order": 36,
-                                             "name": "Cefoxitin_method",
-                                             "value": ""
-                                          },
-                                          "cefotaxime": {
-                                             "order": 37,
-                                             "name": "Cefotaxime",
-                                             "value": ""
-                                          },
-                                          "cefotaxime_method": {
-                                             "order": 38,
-                                             "name": "Cefotaxime_method",
-                                             "value": ""
-                                          },
-                                          "cefazolin": {
-                                             "order": 39,
-                                             "name": "Cefazolin",
-                                             "value": ""
-                                          },
-                                          "cefazolin_method": {
-                                             "order": 40,
-                                             "name": "Cefazolin_method",
-                                             "value": ""
-                                          },
-                                          "ampicillin": {
-                                             "order": 41,
-                                             "name": "Ampicillin",
-                                             "value": ""
-                                          },
-                                          "ampicillin_method": {
-                                             "order": 42,
-                                             "name": "Ampicillin_method",
-                                             "value": ""
-                                          },
-                                          "penicillin": {
-                                             "order": 43,
-                                             "name": "Penicillin",
-                                             "value": ""
-                                          },
-                                          "penicillin_method": {
-                                             "order": 44,
-                                             "name": "Penicillin_method",
-                                             "value": ""
-                                          },
-                                          "erythromycin": {
-                                             "order": 45,
-                                             "name": "Erythromycin",
-                                             "value": ""
-                                          },
-                                          "erythromycin_method": {
-                                             "order": 46,
-                                             "name": "Erythromycin_method",
-                                             "value": ""
-                                          },
-                                          "clindamycin": {
-                                             "order": 47,
-                                             "name": "Clindamycin",
-                                             "value": ""
-                                          },
-                                          "clindamycin_method": {
-                                             "order": 48,
-                                             "name": "Clindamycin_method",
-                                             "value": ""
-                                          },
-                                          "tetracycline": {
-                                             "order": 49,
-                                             "name": "Tetracycline",
-                                             "value": ""
-                                          },
-                                          "tetracycline_method": {
-                                             "order": 50,
-                                             "name": "Tetracycline_method",
-                                             "value": ""
-                                          },
-                                          "levofloxacin": {
-                                             "order": 51,
-                                             "name": "Levofloxacin",
-                                             "value": ""
-                                          },
-                                          "levofloxacin_method": {
-                                             "order": 52,
-                                             "name": "Levofloxacin_method",
-                                             "value": ""
-                                          },
-                                          "ciprofloxacin": {
-                                             "order": 53,
-                                             "name": "Ciprofloxacin",
-                                             "value": ""
-                                          },
-                                          "ciprofloxacin_method": {
-                                             "order": 54,
-                                             "name": "Ciprofloxacin_method",
-                                             "value": ""
-                                          },
-                                          "daptomycin": {
-                                             "order": 55,
-                                             "name": "Daptomycin",
-                                             "value": ""
-                                          },
-                                          "daptomycin_method": {
-                                             "order": 56,
-                                             "name": "Daptomycin_method",
-                                             "value": ""
-                                          },
-                                          "vancomycin": {
-                                             "order": 57,
-                                             "name": "Vancomycin",
-                                             "value": ""
-                                          },
-                                          "vancomycin_method": {
-                                             "order": 58,
-                                             "name": "Vancomycin_method",
-                                             "value": ""
-                                          },
-                                          "linezolid": {
-                                             "order": 59,
-                                             "name": "Linezolid",
-                                             "value": ""
-                                          },
-                                          "linezolid_method": {
-                                             "order": 60,
-                                             "name": "Linezolid_method",
-                                             "value": ""
-                                          },
-                                          "additional_metadata": {
-                                             "order": 61,
-                                             "name": "Additional_metadata",
-                                             "value": ""
+   # metadata as returned by the metadata API /download endpoint
+   mock_metadata_download  =  """{  "download": [
+                                       {  "sanger_sample_id":           { "order": 1, "name": "Sanger_Sample_ID", "value": "5903STDY8059053"},
+                                          "supplier_sample_name":       { "order": 2, "name": "Supplier_Sample_Name", "value": ""},
+                                          "public_name":                { "order": 3, "name": "Public_Name", "value": "JN_HK_GBS1WT"},
+                                          "lane_id":                    { "order": 4, "name": "Lane_ID", "value": "31663_7#43"},
+                                          "study_name":                 { "order": 5, "name": "Study_Name", "value": ""},
+                                          "study_ref":                  { "order": 6, "name": "Study_Reference", "value": ""},
+                                          "selection_random":           { "order": 7, "name": "Selection_Random", "value": ""},
+                                          "country":                    { "order": 8, "name": "Country", "value": ""},
+                                          "county_state":               { "order": 9, "name": "County / state", "value": ""},
+                                          "city":                       { "order": 10, "name": "City", "value": ""},
+                                          "submitting_institution":     { "order": 11, "name": "Submitting_Institution", "value": "The Chinese University of Hong Kong"},
+                                          "collection_year":            { "order": 12, "name": "Collection_year", "value": ""},
+                                          "collection_month":           { "order": 13, "name": "Collection_month", "value": ""},
+                                          "collection_day":             { "order": 14, "name": "Collection_day", "value": ""},
+                                          "host_species":               { "order": 15, "name": "Host_species", "value": ""},
+                                          "gender":                     { "order": 16, "name": "Gender", "value": ""},
+                                          "age_group":                  { "order": 17, "name": "Age_group", "value": ""},
+                                          "age_years":                  { "order": 18, "name": "Age_years", "value": ""},
+                                          "age_months":                 { "order": 19, "name": "Age_months", "value": ""},
+                                          "age_weeks":                  { "order": 20, "name": "Age_weeks", "value": ""},
+                                          "age_days":                   { "order": 21, "name": "Age_days", "value": ""},
+                                          "host_status":                { "order": 22, "name": "Host_status", "value": "invasive"},
+                                          "disease_type":               { "order": 23, "name": "Disease_type", "value": ""},
+                                          "disease_onset":              { "order": 24, "name": "Disease_onset", "value": ""},
+                                          "isolation_source":           { "order": 25, "name": "Isolation_source", "value": ""},
+                                          "serotype":                   { "order": 26, "name": "Serotype", "value": "III-1"},
+                                          "serotype_method":            { "order": 27, "name": "Serotype_method", "value": ""},
+                                          "infection_during_pregnancy": { "order": 28, "name": "Infection_during_pregnancy", "value": ""},
+                                          "maternal_infection_type":    { "order": 29, "name": "Maternal_infection_type", "value": ""},
+                                          "gestational_age_weeks":      { "order": 30, "name": "Gestational_age_weeks", "value": ""},
+                                          "birth_weight_gram":          { "order": 31, "name": "Birthweight_gram", "value": ""},
+                                          "apgar_score":                { "order": 32, "name": "Apgar_score", "value": ""},
+                                          "ceftizoxime":                { "order": 33, "name": "Ceftizoxime", "value": ""},
+                                          "ceftizoxime_method":         { "order": 34, "name": "Ceftizoxime_method", "value": ""},
+                                          "cefoxitin":                  { "order": 35, "name": "Cefoxitin", "value": ""},
+                                          "cefoxitin_method":           { "order": 36, "name": "Cefoxitin_method", "value": ""},
+                                          "cefotaxime":                 { "order": 37, "name": "Cefotaxime", "value": ""},
+                                          "cefotaxime_method":          { "order": 38, "name": "Cefotaxime_method", "value": ""},
+                                          "cefazolin":                  { "order": 39, "name": "Cefazolin", "value": ""},
+                                          "cefazolin_method":           { "order": 40, "name": "Cefazolin_method", "value": ""},
+                                          "ampicillin":                 { "order": 41, "name": "Ampicillin", "value": ""},
+                                          "ampicillin_method":          { "order": 42, "name": "Ampicillin_method", "value": ""},
+                                          "penicillin":                 { "order": 43, "name": "Penicillin", "value": ""},
+                                          "penicillin_method":          { "order": 44, "name": "Penicillin_method", "value": ""},
+                                          "erythromycin":               { "order": 45, "name": "Erythromycin", "value": ""},
+                                          "erythromycin_method":        { "order": 46, "name": "Erythromycin_method", "value": ""},
+                                          "clindamycin":                { "order": 47, "name": "Clindamycin", "value": ""},
+                                          "clindamycin_method":         { "order": 48, "name": "Clindamycin_method", "value": ""},
+                                          "tetracycline":               { "order": 49, "name": "Tetracycline", "value": ""},
+                                          "tetracycline_method":        { "order": 50, "name": "Tetracycline_method", "value": ""},
+                                          "levofloxacin":               { "order": 51, "name": "Levofloxacin", "value": ""},
+                                          "levofloxacin_method":        { "order": 52, "name": "Levofloxacin_method", "value": ""},
+                                          "ciprofloxacin":              { "order": 53, "name": "Ciprofloxacin", "value": ""},
+                                          "ciprofloxacin_method":       { "order": 54, "name": "Ciprofloxacin_method", "value": ""},
+                                          "daptomycin":                 { "order": 55, "name": "Daptomycin", "value": ""},
+                                          "daptomycin_method":          { "order": 56, "name": "Daptomycin_method", "value": ""},
+                                          "vancomycin":                 { "order": 57, "name": "Vancomycin", "value": ""},
+                                          "vancomycin_method":          { "order": 58, "name": "Vancomycin_method", "value": ""},
+                                          "linezolid":                  { "order": 59, "name": "Linezolid", "value": ""},
+                                          "linezolid_method":           { "order": 60, "name": "Linezolid_method", "value": ""},
+                                          "additional_metadata":        { "order": 61, "name": "Additional_metadata", "value": ""}
                                           }
-                                       }
                                     ]
                                  }"""
+
+   # these are the metadata as they should be returned by MetadataDownload.get_metadata()
+   # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
+   expected_metadata       =  {  "sanger_sample_id":           { "order": 1, "name": "Sanger_Sample_ID", "value": "5903STDY8059053"},
+                                 "supplier_sample_name":       { "order": 2, "name": "Supplier_Sample_Name", "value": ""},
+                                 "public_name":                { "order": 3, "name": "Public_Name", "value": "JN_HK_GBS1WT"},
+                                 "lane_id":                    { "order": 4, "name": "Lane_ID", "value": "31663_7#43"},
+                                 "study_name":                 { "order": 5, "name": "Study_Name", "value": ""},
+                                 "study_ref":                  { "order": 6, "name": "Study_Reference", "value": ""},
+                                 "selection_random":           { "order": 7, "name": "Selection_Random", "value": ""},
+                                 "country":                    { "order": 8, "name": "Country", "value": ""},
+                                 "county_state":               { "order": 9, "name": "County / state", "value": ""},
+                                 "city":                       { "order": 10, "name": "City", "value": ""},
+                                 "submitting_institution":     { "order": 11, "name": "Submitting_Institution", "value": "The Chinese University of Hong Kong"},
+                                 "collection_year":            { "order": 12, "name": "Collection_year", "value": ""},
+                                 "collection_month":           { "order": 13, "name": "Collection_month", "value": ""},
+                                 "collection_day":             { "order": 14, "name": "Collection_day", "value": ""},
+                                 "host_species":               { "order": 15, "name": "Host_species", "value": ""},
+                                 "gender":                     { "order": 16, "name": "Gender", "value": ""},
+                                 "age_group":                  { "order": 17, "name": "Age_group", "value": ""},
+                                 "age_years":                  { "order": 18, "name": "Age_years", "value": ""},
+                                 "age_months":                 { "order": 19, "name": "Age_months", "value": ""},
+                                 "age_weeks":                  { "order": 20, "name": "Age_weeks", "value": ""},
+                                 "age_days":                   { "order": 21, "name": "Age_days", "value": ""},
+                                 "host_status":                { "order": 22, "name": "Host_status", "value": "invasive"},
+                                 "disease_type":               { "order": 23, "name": "Disease_type", "value": ""},
+                                 "disease_onset":              { "order": 24, "name": "Disease_onset", "value": ""},
+                                 "isolation_source":           { "order": 25, "name": "Isolation_source", "value": ""},
+                                 "serotype":                   { "order": 26, "name": "Serotype", "value": "III-1"},
+                                 "serotype_method":            { "order": 27, "name": "Serotype_method", "value": ""},
+                                 "infection_during_pregnancy": { "order": 28, "name": "Infection_during_pregnancy", "value": ""},
+                                 "maternal_infection_type":    { "order": 29, "name": "Maternal_infection_type", "value": ""},
+                                 "gestational_age_weeks":      { "order": 30, "name": "Gestational_age_weeks", "value": ""},
+                                 "birth_weight_gram":          { "order": 31, "name": "Birthweight_gram", "value": ""},
+                                 "apgar_score":                { "order": 32, "name": "Apgar_score", "value": ""},
+                                 "ceftizoxime":                { "order": 33, "name": "Ceftizoxime", "value": ""},
+                                 "ceftizoxime_method":         { "order": 34, "name": "Ceftizoxime_method", "value": ""},
+                                 "cefoxitin":                  { "order": 35, "name": "Cefoxitin", "value": ""},
+                                 "cefoxitin_method":           { "order": 36, "name": "Cefoxitin_method", "value": ""},
+                                 "cefotaxime":                 { "order": 37, "name": "Cefotaxime", "value": ""},
+                                 "cefotaxime_method":          { "order": 38, "name": "Cefotaxime_method", "value": ""},
+                                 "cefazolin":                  { "order": 39, "name": "Cefazolin", "value": ""},
+                                 "cefazolin_method":           { "order": 40, "name": "Cefazolin_method", "value": ""},
+                                 "ampicillin":                 { "order": 41, "name": "Ampicillin", "value": ""},
+                                 "ampicillin_method":          { "order": 42, "name": "Ampicillin_method", "value": ""},
+                                 "penicillin":                 { "order": 43, "name": "Penicillin", "value": ""},
+                                 "penicillin_method":          { "order": 44, "name": "Penicillin_method", "value": ""},
+                                 "erythromycin":               { "order": 45, "name": "Erythromycin", "value": ""},
+                                 "erythromycin_method":        { "order": 46, "name": "Erythromycin_method", "value": ""},
+                                 "clindamycin":                { "order": 47, "name": "Clindamycin", "value": ""},
+                                 "clindamycin_method":         { "order": 48, "name": "Clindamycin_method", "value": ""},
+                                 "tetracycline":               { "order": 49, "name": "Tetracycline", "value": ""},
+                                 "tetracycline_method":        { "order": 50, "name": "Tetracycline_method", "value": ""},
+                                 "levofloxacin":               { "order": 51, "name": "Levofloxacin", "value": ""},
+                                 "levofloxacin_method":        { "order": 52, "name": "Levofloxacin_method", "value": ""},
+                                 "ciprofloxacin":              { "order": 53, "name": "Ciprofloxacin", "value": ""},
+                                 "ciprofloxacin_method":       { "order": 54, "name": "Ciprofloxacin_method", "value": ""},
+                                 "daptomycin":                 { "order": 55, "name": "Daptomycin", "value": ""},
+                                 "daptomycin_method":          { "order": 56, "name": "Daptomycin_method", "value": ""},
+                                 "vancomycin":                 { "order": 57, "name": "Vancomycin", "value": ""},
+                                 "vancomycin_method":          { "order": 58, "name": "Vancomycin_method", "value": ""},
+                                 "linezolid":                  { "order": 59, "name": "Linezolid", "value": ""},
+                                 "linezolid_method":           { "order": 60, "name": "Linezolid_method", "value": ""},
+                                 "additional_metadata":        { "order": 61, "name": "Additional_metadata", "value": ""}
+                                 }
+
+   mock_in_silico_data_download  =  """{  "download": [
+                                             {  "lane_id":        {"order": 0,  "name": "Sample_id", "value": "50000_2#287"},
+                                                "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
+                                                "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
+                                                "adhP":           {"order": 3,  "name": "adhP", "value": "3"},
+                                                "pheS":           {"order": 4,  "name": "pheS", "value": "11"},
+                                                "atr":            {"order": 5,  "name": "atr", "value": "0"},
+                                                "glnA":           {"order": 6,  "name": "glnA", "value": "16"},
+                                                "sdhA":           {"order": 7,  "name": "sdhA", "value": "14"},
+                                                "glcK":           {"order": 8,  "name": "glcK", "value": "31"},
+                                                "tkt":            {"order": 9,  "name": "tkt", "value": "6"},
+                                                "twenty_three_S1":{"order": 10, "name": "twenty_three_S1", "value": "pos"},
+                                                "twenty_three_S3":{"order": 11, "name": "twenty_three_S3", "value": "pos"},
+                                                "CAT":            {"order": 12, "name": "CAT", "value": "neg"},
+                                                "ERMB":        	{"order": 13, "name": "ERMB", "value": "neg"},
+                                                "ERMT":        	{"order": 14, "name": "ERMT", "value": "neg"},
+                                                "FOSA":        	{"order": 15, "name": "FOSA", "value": "neg"},
+                                                "GYRA":        	{"order": 16, "name": "GYRA", "value": "pos"},
+                                                "LNUB":        	{"order": 17, "name": "LNUB", "value": "neg"},
+                                                "LSAC":        	{"order": 18, "name": "LSAC", "value": "neg"},
+                                                "MEFA":        	{"order": 19, "name": "MEFA", "value": "neg"},
+                                                "MPHC":        	{"order": 20, "name": "MPHC", "value": "neg"},
+                                                "MSRA":        	{"order": 21, "name": "MSRA", "value": "neg"},
+                                                "MSRD":        	{"order": 22, "name": "MSRD", "value": "neg"},
+                                                "PARC":        	{"order": 23, "name": "PARC", "value": "pos"},
+                                                "RPOBGBS_1":   	{"order": 24, "name": "RPOBGBS_1", "value": "neg"},
+                                                "RPOBGBS_2":   	{"order": 25, "name": "RPOBGBS_2", "value": "neg"},
+                                                "RPOBGBS_3":   	{"order": 26, "name": "RPOBGBS_3", "value": "neg"},
+                                                "RPOBGBS_4":   	{"order": 27, "name": "RPOBGBS_4", "value": "neg"},
+                                                "SUL2":        	{"order": 28, "name": "SUL2", "value": "neg"},
+                                                "TETB": 				{"order": 29, "name": "TETB", "value": "neg"},
+                                                "TETL": 				{"order": 30, "name": "TETL", "value": "neg"},
+                                                "TETM": 				{"order": 31, "name": "TETM", "value": "pos"},
+                                                "TETO": 				{"order": 32, "name": "TETO", "value": "neg"},
+                                                "TETS": 				{"order": 33, "name": "TETS", "value": "neg"},
+                                                "ALP1": 				{"order": 34, "name": "ALP1", "value": "neg"},
+                                                "ALP23": 		   {"order": 35, "name": "ALP23", "value": "neg"},
+                                                "ALPHA":          {"order": 36, "name": "ALPHA", "value": "neg"},
+                                                "HVGA": 				{"order": 37, "name": "HVGA", "value": "pos"},
+                                                "PI1": 				{"order": 38, "name": "PI1", "value": "pos"},
+                                                "PI2A1": 		   {"order": 39, "name": "PI2A1", "value": "neg"},
+                                                "PI2A2": 		   {"order": 40, "name": "PI2A2", "value": "neg"},
+                                                "PI2B": 				{"order": 41, "name": "PI2B", "value": "pos"},
+                                                "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
+                                                "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
+                                                "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
+                                                "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                                "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                                }
+                                          ]
+                                       }"""
+
+   # these are the metadata as they should be returned by MetadataDownload.get_in_silicoPdata()
+   # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
+   expected_in_silico_data = {   "lane_id":        {"order": 0,  "name": "Sample_id", "value": "50000_2#287"},
+                                 "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
+                                 "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
+                                 "adhP":           {"order": 3,  "name": "adhP", "value": "3"},
+                                 "pheS":           {"order": 4,  "name": "pheS", "value": "11"},
+                                 "atr":            {"order": 5,  "name": "atr", "value": "0"},
+                                 "glnA":           {"order": 6,  "name": "glnA", "value": "16"},
+                                 "sdhA":           {"order": 7,  "name": "sdhA", "value": "14"},
+                                 "glcK":           {"order": 8,  "name": "glcK", "value": "31"},
+                                 "tkt":            {"order": 9,  "name": "tkt", "value": "6"},
+                                 "twenty_three_S1":{"order": 10, "name": "twenty_three_S1", "value": "pos"},
+                                 "twenty_three_S3":{"order": 11, "name": "twenty_three_S3", "value": "pos"},
+                                 "CAT":            {"order": 12, "name": "CAT", "value": "neg"},
+                                 "ERMB":        	{"order": 13, "name": "ERMB", "value": "neg"},
+                                 "ERMT":        	{"order": 14, "name": "ERMT", "value": "neg"},
+                                 "FOSA":        	{"order": 15, "name": "FOSA", "value": "neg"},
+                                 "GYRA":        	{"order": 16, "name": "GYRA", "value": "pos"},
+                                 "LNUB":        	{"order": 17, "name": "LNUB", "value": "neg"},
+                                 "LSAC":        	{"order": 18, "name": "LSAC", "value": "neg"},
+                                 "MEFA":        	{"order": 19, "name": "MEFA", "value": "neg"},
+                                 "MPHC":        	{"order": 20, "name": "MPHC", "value": "neg"},
+                                 "MSRA":        	{"order": 21, "name": "MSRA", "value": "neg"},
+                                 "MSRD":        	{"order": 22, "name": "MSRD", "value": "neg"},
+                                 "PARC":        	{"order": 23, "name": "PARC", "value": "pos"},
+                                 "RPOBGBS_1":   	{"order": 24, "name": "RPOBGBS_1", "value": "neg"},
+                                 "RPOBGBS_2":   	{"order": 25, "name": "RPOBGBS_2", "value": "neg"},
+                                 "RPOBGBS_3":   	{"order": 26, "name": "RPOBGBS_3", "value": "neg"},
+                                 "RPOBGBS_4":   	{"order": 27, "name": "RPOBGBS_4", "value": "neg"},
+                                 "SUL2":        	{"order": 28, "name": "SUL2", "value": "neg"},
+                                 "TETB": 				{"order": 29, "name": "TETB", "value": "neg"},
+                                 "TETL": 				{"order": 30, "name": "TETL", "value": "neg"},
+                                 "TETM": 				{"order": 31, "name": "TETM", "value": "pos"},
+                                 "TETO": 				{"order": 32, "name": "TETO", "value": "neg"},
+                                 "TETS": 				{"order": 33, "name": "TETS", "value": "neg"},
+                                 "ALP1": 				{"order": 34, "name": "ALP1", "value": "neg"},
+                                 "ALP23": 		   {"order": 35, "name": "ALP23", "value": "neg"},
+                                 "ALPHA":          {"order": 36, "name": "ALPHA", "value": "neg"},
+                                 "HVGA": 				{"order": 37, "name": "HVGA", "value": "pos"},
+                                 "PI1": 				{"order": 38, "name": "PI1", "value": "pos"},
+                                 "PI2A1": 		   {"order": 39, "name": "PI2A1", "value": "neg"},
+                                 "PI2A2": 		   {"order": 40, "name": "PI2A2", "value": "neg"},
+                                 "PI2B": 				{"order": 41, "name": "PI2B", "value": "pos"},
+                                 "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
+                                 "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
+                                 "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
+                                 "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                 "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                 }
+
 
    def setUp(self):
       self.download           = MetadataDownload(set_up=False)
@@ -426,47 +286,67 @@ class MetadataDownloadTest(TestCase):
       with self.assertRaises(FileNotFoundError):
          doomed = Monocle_Download_Client(set_up=False)
          doomed.set_up('no_such_config.yml')
+         
+   def test_reject_bad_url(self):
+      with self.assertRaises(urllib.error.URLError):
+         doomed = Monocle_Download_Client(set_up=False)
+         doomed.set_up(self.test_config)
+         doomed.config['base_url']=self.bad_api_host
+         endpoint = doomed.config['download']+self.mock_download_param[0]
+         doomed.make_request(endpoint)
+         
+   def test_reject_bad_endpoint(self):
+      with self.assertRaises(urllib.error.URLError):
+         doomed = Monocle_Download_Client(set_up=False)
+         doomed.set_up(self.test_config)
+         doomed.config['base_url']=self.genuine_api_host
+         endpoint = self.bad_api_endpoint+self.mock_download_param[0]
+         doomed.make_request(endpoint)
  
    @patch.object(Monocle_Download_Client, 'make_request')
-   def test_download(self, mock_request):
-      mock_request.return_value = self.mock_download
-      lanes = self.download.get_metadata(self.expected_lane_id)
+   def test_download_metadata(self, mock_request):
+      mock_request.return_value = self.mock_metadata_download
+      lanes = self.download.get_metadata(self.mock_download_param)
       # response should be list of dict
       self.assertIsInstance(lanes, type(['a', 'list']))
       this_lane = lanes[0]
       self.assertIsInstance(this_lane, type({'a': 'dict'}))
-      # check items (metadata columns) that we expect to see
-      for req_col_key in self.required_column_keys.keys():
-         # check the  item is present
-         self.assertTrue(req_col_key in this_lane, msg="required key '{}' not found in lane dict".format(req_col_key))
-         # check the item is the right type
-         this_lane_item = this_lane[req_col_key]
-         self.assertIsInstance(this_lane_item, self.required_column_keys[req_col_key], msg="lane item '{}' is the wrong type".format(req_col_key))
-         # now check for the contents we expect to find within each item 
-         for req_item_key in self.required_item_keys.keys():
-            # check contents present
-            self.assertTrue(req_item_key in this_lane_item, msg="required key '{}' not found in lane item dict".format(req_item_key))
-            # check content is the right type
-            self.assertIsInstance(this_lane_item[req_item_key], self.required_item_keys[req_item_key], msg="lane item '{}' is the wrong type".format(req_item_key))
-
+      # check all the expected keys are present
+      for expected_key in self.expected_metadata.keys():
+         self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
+      # check data are correct
+      self.assertEqual(this_lane, self.expected_metadata, msg="returned metadata differ from expected metadata")
+      
    @patch.object(Monocle_Download_Client, 'make_request')
-   def test_reject_bad_download_response(self, mock_request):
+   def test_reject_bad_download_metadata_response(self, mock_request):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_download
-         self.download.get_metadata(self.expected_lane_id[0])
+         self.download.get_metadata(self.mock_download_param[0])
 
-   def test_reject_bad_url(self):
-      with self.assertRaises(URLError):
-         doomed = Monocle_Download_Client(set_up=False)
-         doomed.set_up(self.test_config)
-         doomed.config['base_url']=self.bad_api_host
-         endpoint = doomed.config['download']+self.expected_lane_id[0]
-         doomed.make_request(endpoint)
+   @patch.object(Monocle_Download_Client, 'make_request')
+   def test_download_in_silico_data(self, mock_request):
+      mock_request.return_value = self.mock_in_silico_data_download
+      lanes = self.download.get_in_silico_data(self.mock_download_param)
+      # response should be list of dict
+      self.assertIsInstance(lanes, type(['a', 'list']))
+      this_lane = lanes[0]
+      self.assertIsInstance(this_lane, type({'a': 'dict'}))
+      # check all the expected keys are present
+      for expected_key in self.expected_in_silico_data.keys():
+         self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
+      # check data are correct
+      self.assertEqual(this_lane, self.expected_in_silico_data, msg="returned in silico data differ from expected data")
+
+   @patch.object(Monocle_Download_Client, 'make_request')
+   def test_reject_bad_download_in_silico_data_response(self, mock_request):
+      with self.assertRaises(ProtocolError):
+         mock_request.return_value = self.mock_bad_download
+         self.download.get_in_silico_data(self.mock_download_param[0])
          
-   def test_reject_bad_endpoint(self):
-      with self.assertRaises(URLError):
-         doomed = Monocle_Download_Client(set_up=False)
-         doomed.set_up(self.test_config)
-         doomed.config['base_url']=self.genuine_api_host
-         endpoint = self.bad_api_endpoint+self.expected_lane_id[0]
-         doomed.make_request(endpoint)
+   @patch.object(urllib.request, 'urlopen')
+   def test_download_in_silico_data__when_no_in_silico_data_available(self, mock_urlopen):
+      mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')
+      lanes = self.download.get_in_silico_data(self.mock_download_param)
+      # response should be and empty list in case of a 404
+      self.assertIsInstance(lanes, type(['a', 'list']))
+      self.assertEqual(len(lanes), 0, msg="list was not empty as expected")

@@ -3,6 +3,7 @@ from   unittest.mock import patch
 from   datetime      import datetime
 import logging
 from   os            import environ
+from   pandas.errors import MergeError
 from   pathlib       import Path
 import yaml
 
@@ -99,7 +100,7 @@ class MonocleDataTest(TestCase):
                                                                            }
                                                                         ]
                                                             },
-                                    'fake_sample_id_2': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
+                                    'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
                                                             'lanes': [  {  'id': 'fake_lane_id_2',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
@@ -116,7 +117,7 @@ class MonocleDataTest(TestCase):
                                                                            }
                                                                         ]
                                                             },
-                                    'fake_sample_id_3': {   'mock data': 'anything', 'creation_datetime': '2020-11-16T16:43:04Z',
+                                    'fake_sample_id_2': {   'mock data': 'anything', 'creation_datetime': '2020-11-16T16:43:04Z',
                                                             'lanes': [  {  'id': 'fake_lane_id_4',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
@@ -126,7 +127,7 @@ class MonocleDataTest(TestCase):
                                                                            }
                                                                         ]
                                                             },
-                                    'fake_sample_id_4': {   'mock data': 'anything', 'creation_datetime': '2021-05-02T10:31:49Z',
+                                    'fake_sample_id_3': {   'mock data': 'anything', 'creation_datetime': '2021-05-02T10:31:49Z',
                                                             'lanes': [  {  'id': 'fake_lane_id_5',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
@@ -136,15 +137,58 @@ class MonocleDataTest(TestCase):
                                                                            }
                                                                         ]
                                                             },
+                                    'fake_sample_id_4': {   'mock data': 'anything', 'creation_datetime': '2021-05-02T14:07:23Z',
+                                                            'lanes': [  {  'id': 'fake_lane_id_6',
+                                                                           'qc_lib': 1,
+                                                                           'qc_seq': 1,
+                                                                           'run_status': 'qc complete',
+                                                                           'qc_started': 1,
+                                                                           'qc_complete_datetime': 'any string will do',
+                                                                           }
+                                                                        ]
+                                                            },
                                     }
-   mock_metadata              =     '''{  "download": [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"},
-                                                            "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                },
-                                                            "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"         },
-                                                            "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"  }
-                                                            }
-                                                         ]
-                                                      }
-                                    '''
+   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
+                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+                                          # note use of `None`, which should end up in CSV as ""
+                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": None                 },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     },
+                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake_public_name_1" }
+                                          },
+                                       {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
+                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
+                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake_public_name_1" }
+                                          },
+                                       {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
+                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_3"     },
+                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
+                                          }
+                                       ]
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
+                                          "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                          "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                          }
+                                       ]
+   # the return value when no in silico data are available
+   in_silico_data_available_not_available =  []
+   # this contains a bad lane ID, so it should be ignored and *not* merged into the metadata download
+   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "this_is_a_bad_id"   },
+                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                   },
+                                                {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
+                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                   }
+                                             ]
+
+   # these are invalid because the lane ID appears twice:  pandas merge should catch this in validation
+   mock_invalid_metadata      =     [  mock_metadata[0], mock_metadata[1], mock_metadata[0] ]
+   mock_invalid_in_silico_data =    [  mock_in_silico_data[0], mock_in_silico_data[0] ]
 
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
@@ -152,12 +196,12 @@ class MonocleDataTest(TestCase):
    
    # data we expect MonocleData method to return, given patched queries with the value above
    # the latest month included here must match the date provided by `mock_data_updated`
-   expected_progress_data     = {   'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
+   expected_progress_data     =  {  'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
                                              'Apr 2020', 'May 2020', 'Jun 2020', 'Jul 2020', 'Aug 2020', 'Sep 2020', 'Oct 2020',
                                              'Nov 2020', 'Dec 2020', 'Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021'],
-                                    'samples received':  [2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8],
+                                    'samples received':  [0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 8],
                                     'samples sequenced': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                                    }
+                                    }                                                                                                                       
    
    expected_institution_data  = {   'FakOne' : {'name': 'Fake institution One', 'db_key': 'Fake institution One'},
                                     'FakTwo' : {'name': 'Fake institution Two', 'db_key': 'Fake institution Two'},
@@ -168,27 +212,25 @@ class MonocleDataTest(TestCase):
    expected_seq_status        = {   'FakOne': mock_seq_status,
                                     'FakTwo': mock_seq_status
                                     }
-   expected_batches           = {   'FakOne': { 'expected': 2, 'received': 4, 'deliveries': [   {'name': 'Batch 1', 'date': '2019-09-13', 'number': 1},
-                                                                                                {'name': 'Batch 2', 'date': '2020-04-29', 'number': 1},
-                                                                                                {'name': 'Batch 3', 'date': '2020-11-16', 'number': 1},
-                                                                                                {'name': 'Batch 4', 'date': '2021-05-02', 'number': 1}
+   expected_batches           = {   'FakOne': { 'expected': 2, 'received': 4, 'deliveries':  [ {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
+                                                                                                {'name': 'Batch 2', 'date': '2020-11-16', 'number': 1},
+                                                                                                {'name': 'Batch 3', 'date': '2021-05-02', 'number': 2}
                                                                                                 ]
                                                 },
-                                    'FakTwo': { 'expected': 2, 'received': 4, 'deliveries': [   {'name': 'Batch 1', 'date': '2019-09-13', 'number': 1},
-                                                                                                {'name': 'Batch 2', 'date': '2020-04-29', 'number': 1},
-                                                                                                {'name': 'Batch 3', 'date': '2020-11-16', 'number': 1},
-                                                                                                {'name': 'Batch 4', 'date': '2021-05-02', 'number': 1}
+                                    'FakTwo': {'expected': 2, 'received': 4, 'deliveries':   [  {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
+                                                                                                {'name': 'Batch 2', 'date': '2020-11-16', 'number': 1},
+                                                                                                {'name': 'Batch 3', 'date': '2021-05-02', 'number': 2}
                                                                                                 ]
                                                 }
                                     }
    expected_seq_summary       =  {  'FakOne': { 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_2)', 'stage': 'sequencing',
+                                                'fail_messages': [  {   'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 },
                                     'FakTwo': { 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_2)', 'stage': 'sequencing',
+                                                'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
@@ -198,8 +240,17 @@ class MonocleDataTest(TestCase):
                                     'FakTwo': {'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
-   expected_metadata          =  '''"Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download link"
-"fake_sample_id_1","","whatevs","fake_lane_id_1","'''+mock_download_url+'/fake_lane_id_1/"'
+   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","pos","neg","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","","","'''+mock_download_url+'''/fake%20public%20name%202"
+'''
+
+   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","'''+mock_download_url+'''/fake%20public%20name%202"
+'''
 
    expected_metadata_download  = {  'success'   : True,
                                     'filename'  : 'FakeinstitutionOne_sequencing_successful.csv',
@@ -275,6 +326,7 @@ class MonocleDataTest(TestCase):
     
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
       self.assertEqual(self.expected_seq_summary, seq_status_summary)
       
    def test_pipeline_status_summary(self):
@@ -282,32 +334,74 @@ class MonocleDataTest(TestCase):
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download(self, mock_metadata_fetch, mock_make_symlink):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      mock_make_symlink.return_value   = self.mock_download_path
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
    @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_make_symlink):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      mock_make_symlink.return_value   = None
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      mock_make_symlink.return_value         = None
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
       self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
 
-   @patch.object(Monocle_Download_Client,  'make_request')
-   def test_metadata_as_csv(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       self.assertEqual(self.expected_metadata, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_when_no_in_silico_data_available(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.in_silico_data_available_not_available
+      metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+      self.assertEqual(self.expected_metadata_when_no_in_silico_data, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_when_in_silico_data_has_bad_lane_id(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data_bad_lane_id
+      metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata, metadata_as_csv))
+      self.assertEqual(self.expected_metadata, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_invalid_metadata_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_invalid_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      with self.assertRaises(MergeError):
+         self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_metadata_as_csv_invalid_in_silico_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_invalid_in_silico_data
+      with self.assertRaises(MergeError):
+         self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):

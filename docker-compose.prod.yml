@@ -52,7 +52,8 @@ services:
       - ./metadata-api.json:/app/config.json
       - ./my.cnf:/app/my.cnf
     environment:
-      - ENABLE_SWAGGER_UI=false
+      # if ENABLE_SWAGGER_UI is true the UI should be available at /metadata/ui/ (see nginx.prod.proxy.conf)
+      - ENABLE_SWAGGER_UI=true
       - API_TEST_MODE=false
   dash-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG>"
@@ -78,8 +79,9 @@ services:
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
     environment:
-      - ENABLE_SWAGGER_UI=false
-      - LOG_LEVEL=INFO
+      # if ENABLE_SWAGGER_UI is true the UI should be available at /dashboard-api/ui/ (see nginx.prod.proxy.conf)
+      - ENABLE_SWAGGER_UI=true
+      - LOG_LEVEL=WARNING
       # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
   frontend:
