@@ -26,50 +26,68 @@ def create_download_view_for_sample_data(db, institution_name_to_id):
   
   else:
     for institution in institutions:
-      lane_ids = _get_lane_ids(institution, db)
+      public_names_to_lane_ids = _get_public_names_with_lane_ids(institution, db)
   
-      with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
+      with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
   
-        if lane_ids:
+        if public_names_to_lane_ids:
           institution_readable_id = institution_name_to_id[institution]
           _mkdir(institution_readable_id)
   
           with _cd(institution_readable_id):
-            for lane_id in lane_ids:
-              _create_lane_dir_with_symlinks(lane_id, institution)
-      
+            for public_name, lane_ids in public_names_to_lane_ids.items():
+              for lane_id in lane_ids:
+                _create_public_name_dir_with_symlinks(
+                  public_name, lane_id, institution)
+              if not lane_ids:
+                logging.debug(f'Creating empty directory "{public_name}" for {institution}.')
+                _mkdir(public_name)
 
 
-def _get_lane_ids(institution, db):
-  sample_ids = [ sample['sample_id'] for sample in db.get_samples(institutions=[institution]) ]
-  logging.info("{}: {} samples".format(institution,len(sample_ids)))
-  if not sample_ids:
-    logging.warning(f'No sample found for {institution}')
-    return []
-  seq_data = _get_sequencing_status_data(sample_ids)
-  # this list contains all the lanes for sampels from this institution
-  # (we don't need to know which lanes came from each sample originally)
-  all_lanes = []
-  for this_sample in seq_data.keys():
-    for this_lane in seq_data[this_sample]['lanes']:
-       all_lanes.append(this_lane['id'])
-  logging.info("{}: {} lanes".format(institution,len(all_lanes)))
-  if 0 == len(all_lanes):
+def _get_public_names_with_lane_ids(institution, db):
+  public_names_to_sample_id = {
+    sample["public_name"]: sample["sample_id"] for sample in db.get_samples(institutions=[institution])}
+
+  logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
+
+  if not public_names_to_sample_id:
+    logging.warning(f'No public names found for {institution}')
+    return {}
+
+  has_lanes = False
+  public_names_to_lane_ids = {}
+  for public_name, sample_id in public_names_to_sample_id.items():
+    seq_data = _get_sequencing_status_data([sample_id])
+    lane_ids_of_one_sample = []
+    for sample in seq_data.keys():
+      for lane in seq_data[sample]['lanes']:
+        lane_ids_of_one_sample.append(lane['id'])
+        has_lanes = True
+    if lane_ids_of_one_sample:
+      logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+      public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
+    else:
+      # We add public names w/ no lanes, as we want to
+      # create empty public name directories as well.
+      public_names_to_lane_ids[public_name] = []
+
+  if not has_lanes:
     logging.warning(f'No lanes found for {institution}')
-  return all_lanes
+
+  return public_names_to_lane_ids
 
 
 def _get_sequencing_status_data(sample_ids):
   return SequencingStatus().get_multiple_samples(sample_ids)
 
 
-def _create_lane_dir_with_symlinks(lane_id, institution):
+def _create_public_name_dir_with_symlinks(public_name, lane_id, institution):
   data_files = _get_data_files(lane_id)
 
-  logging.debug(f'Creating directory {lane_id} for lane {lane_id} for {institution}.')
-  _mkdir(lane_id)
+  logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution}.')
+  _mkdir(public_name)
 
-  with _cd(lane_id):
+  with _cd(public_name):
     directory_containing_symlinks = Path().absolute()
     logging.debug(f'Creating symlinks in {directory_containing_symlinks} for lane {lane_id} for {institution}.')
     for data_file in data_files:
