@@ -522,7 +522,7 @@ class MonocleData:
          logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
          # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadta row
          # validate to ensure lane ID is unique in both dataframes
-         metadata_df = metadata_df.merge(in_silico_data_df, on='Lane_ID', how='left', validate="one_to_one")
+         metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
          del in_silico_data_df
          # add silico data columns to the list
          metadata_col_order = metadata_col_order+in_silico_data_col_order
@@ -532,6 +532,9 @@ class MonocleData:
       # delete `Lane_ID` (meaningless to the user)
       while 'Lane_ID' in metadata_col_order:
          metadata_col_order.remove('Lane_ID')
+      # also delete Sample_id (which is what the lane ID is called in the in silico data)
+      while 'Sample_id' in metadata_col_order:
+         metadata_col_order.remove('Sample_id')
       # move public name to first column
       while 'Public_Name' in metadata_col_order:
          metadata_col_order.remove('Public_Name')

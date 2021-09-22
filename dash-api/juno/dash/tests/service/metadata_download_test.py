@@ -159,7 +159,7 @@ class MetadataDownloadTest(TestCase):
                                  }
 
    mock_in_silico_data_download  =  """{  "download": [
-                                             {  "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+                                             {  "lane_id":        {"order": 0,  "name": "Sample_id", "value": "50000_2#287"},
                                                 "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
                                                 "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
                                                 "adhP":           {"order": 3,  "name": "adhP", "value": "3"},
@@ -212,7 +212,7 @@ class MetadataDownloadTest(TestCase):
 
    # these are the metadata as they should be returned by MetadataDownload.get_in_silicoPdata()
    # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
-   expected_in_silico_data = {   "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+   expected_in_silico_data = {   "lane_id":        {"order": 0,  "name": "Sample_id", "value": "50000_2#287"},
                                  "cps_type":       {"order": 1,  "name": "cps_type", "value": "III"},
                                  "ST":             {"order": 2,  "name": "ST", "value": "ST-II"},
                                  "adhP":           {"order": 3,  "name": "adhP", "value": "3"},

@@ -168,7 +168,7 @@ class MonocleDataTest(TestCase):
                                           "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_2"  },
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
                                           "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
@@ -176,11 +176,11 @@ class MonocleDataTest(TestCase):
    # the return value when no in silico data are available
    in_silico_data_available_not_available =  []
    # this contains a bad lane ID, so it should be ignored and *not* merged into the metadata download
-   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Lane_ID",              "value": "this_is_a_bad_id"   },
+   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "this_is_a_bad_id"   },
                                                    "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                                    "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                                    },
-                                                {  "lane_id":                 {"order": 1, "name": "Lane_ID",                 "value": "fake_lane_id_2"  },
+                                                {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
                                                    "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                                    "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                                    }
