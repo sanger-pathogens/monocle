@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import os
 from os import path
 from pathlib import Path
+from urllib.error import HTTPError
 
 import argparse
 from sys import argv
@@ -71,8 +72,8 @@ def _get_public_names_with_lane_ids(institution, db):
         # We add public names w/ no lanes, as we want to
         # create empty public name directories as well.
         public_names_to_lane_ids[public_name] = []
-    except urllib.error.HTTPError as e:
-      logger.error('Failed to get sequence data for {}: {}'.format(public_name,repr(e)))
+    except HTTPError as e:
+      logging.error('Failed to get sequence data for {}: {}'.format(public_name,repr(e)))
 
   return public_names_to_lane_ids
 
