@@ -240,16 +240,16 @@ class MonocleDataTest(TestCase):
                                     'FakTwo': {'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
-   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","","","'''+mock_download_url+'''/fake_public_name_1"
-"fake_public_name_1","fake_sample_id_1","","whatevs","pos","neg","'''+mock_download_url+'''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","","","'''+mock_download_url+'''/fake%20public%20name%202"
+   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","fake_lane_id_2","pos","neg","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_3","","","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
 
-   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
-"fake_public_name_1","fake_sample_id_1","","whatevs","'''+mock_download_url+'''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","'''+mock_download_url+'''/fake%20public%20name%202"
+   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","fake_lane_id_2","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_3","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
 
    expected_metadata_download  = {  'success'   : True,
@@ -331,6 +331,7 @@ class MonocleDataTest(TestCase):
       
    def test_pipeline_status_summary(self):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    @patch.object(MonocleData,              'make_download_symlink')
@@ -341,7 +342,7 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')

@@ -528,11 +528,7 @@ class MonocleData:
          metadata_col_order = metadata_col_order+in_silico_data_col_order
          
       # list of columns in `metadata_col_order` defines the CSV output
-      # => we manipulate this to 
-      # delete `Lane_ID` (meaningless to the user)
-      while 'Lane_ID' in metadata_col_order:
-         metadata_col_order.remove('Lane_ID')
-      # also delete Sample_id (which is what the lane ID is called in the in silico data)
+      # remove delete Sample_id -- this is a dupliacte of Lane_ID
       while 'Sample_id' in metadata_col_order:
          metadata_col_order.remove('Sample_id')
       # move public name to first column
