@@ -90,25 +90,15 @@ class MonocleDataTest(TestCase):
                                     {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two'},
                                     {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two'}
                                     ]
-   mock_seq_status            = {   'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2019-09-13T08:11:23Z',
+   mock_seq_status            = {   'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
                                                             'lanes': [  {  'id': 'fake_lane_id_1',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
                                                                            'run_status': 'qc complete',
                                                                            'qc_started': 1,
                                                                            'qc_complete_datetime': 'any string will do',
-                                                                           }
-                                                                        ]
-                                                            },
-                                    'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
-                                                            'lanes': [  {  'id': 'fake_lane_id_2',
-                                                                           'qc_lib': 1,
-                                                                           'qc_seq': 1,
-                                                                           'run_status': 'qc complete',
-                                                                           'qc_started': 1,
-                                                                           'qc_complete_datetime': 'any string will do',
                                                                            },
-                                                                        {  'id': 'fake_lane_id_3',
+                                                                        {  'id': 'fake_lane_id_2',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 0,
                                                                            'run_status': 'qc complete',
@@ -118,7 +108,7 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     'fake_sample_id_2': {   'mock data': 'anything', 'creation_datetime': '2020-11-16T16:43:04Z',
-                                                            'lanes': [  {  'id': 'fake_lane_id_4',
+                                                            'lanes': [  {  'id': 'fake_lane_id_3',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
                                                                            'run_status': 'qc complete',
@@ -128,7 +118,7 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     'fake_sample_id_3': {   'mock data': 'anything', 'creation_datetime': '2021-05-02T10:31:49Z',
-                                                            'lanes': [  {  'id': 'fake_lane_id_5',
+                                                            'lanes': [  {  'id': 'fake_lane_id_4',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
                                                                            'run_status': 'qc complete',
@@ -138,7 +128,7 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     'fake_sample_id_4': {   'mock data': 'anything', 'creation_datetime': '2021-05-02T14:07:23Z',
-                                                            'lanes': [  {  'id': 'fake_lane_id_6',
+                                                            'lanes': [  {  'id': 'fake_lane_id_5',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
                                                                            'run_status': 'qc complete',
@@ -224,13 +214,13 @@ class MonocleDataTest(TestCase):
                                                 }
                                     }
    expected_seq_summary       =  {  'FakOne': { 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [  {   'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
+                                                'fail_messages': [  {   'lane': 'fake_lane_id_2 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 },
                                     'FakTwo': { 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
+                                                'fail_messages': [   {  'lane': 'fake_lane_id_2 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
@@ -240,16 +230,16 @@ class MonocleDataTest(TestCase):
                                     'FakTwo': {'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
-   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","","","'''+mock_download_url+'''/fake_public_name_1"
-"fake_public_name_1","fake_sample_id_1","","whatevs","pos","neg","'''+mock_download_url+'''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","","","'''+mock_download_url+'''/fake%20public%20name%202"
+   expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","fake_lane_id_2","pos","neg","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_3","","","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
 
-   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","'''+mock_download_url+'''/fake_public_name_1"
-"fake_public_name_1","fake_sample_id_1","","whatevs","'''+mock_download_url+'''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","'''+mock_download_url+'''/fake%20public%20name%202"
+   expected_metadata_when_no_in_silico_data = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download_Link"
+"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1","'''+mock_download_url+'''/fake_public_name_1"
+"fake_public_name_1","fake_sample_id_1","","whatevs","fake_lane_id_2","'''+mock_download_url+'''/fake_public_name_1"
+"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_3","'''+mock_download_url+'''/fake%20public%20name%202"
 '''
 
    expected_metadata_download  = {  'success'   : True,
@@ -326,11 +316,12 @@ class MonocleDataTest(TestCase):
     
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
       self.assertEqual(self.expected_seq_summary, seq_status_summary)
       
    def test_pipeline_status_summary(self):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    @patch.object(MonocleData,              'make_download_symlink')
@@ -341,7 +332,7 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
