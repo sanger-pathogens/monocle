@@ -20,7 +20,7 @@ RUN      pip install flask==1.1.2                     \
 COPY     . /app
 
 # Temp hack until we have a final version of the dash DataSources component available
-ENV      PYTHONPATH "${PYTHONPATH}:./dash/api/service"
+ENV      PYTHONPATH "${PYTHONPATH}:./dash/api:./dash/api/service"
 
 EXPOSE   5000
 CMD      ["gunicorn", "-w 2", "-b :5000", "dash.wsgi"]

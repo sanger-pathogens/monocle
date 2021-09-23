@@ -114,7 +114,8 @@ paths:
           description: "Authorization information is missing or invalid."
 
   /bulk_download_info:
-    get: operationId: dash.api.routes.bulk_download_info
+    get:
+      operationId: dash.api.routes.bulk_download_info
       summary: "Return information on expected bulk download based on selected batches and data types"
       parameters:
         - name: X-Remote-User

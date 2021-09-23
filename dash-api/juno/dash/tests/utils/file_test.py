@@ -1,9 +1,9 @@
 from unittest      import TestCase
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, Mock
 from pathlib       import Path
 from zipfile       import ZipFile, ZIP_LZMA
 
-from file import zip_files, WRITE_MODE
+from utils.file import format_file_size, zip_files, WRITE_MODE
 
 FILES = ['a_file.txt', 'another_file.fastq']
 BASENAME = 'batches'
@@ -15,6 +15,34 @@ class TestFileUtil(TestCase):
 
   def tearDown(self):
     self.ZipFileMock.reset_mock()
+
+  def test_format_file_size_by_calling_correct_cli_program(self):
+    bytes = 9499499443
+    call_cli = Mock()
+
+    format_file_size(bytes, call_cli)
+
+    call_cli.assert_called_once_with(
+      ['numfmt', '--to=iec', '--suffix=B', str(bytes)],
+      encoding='UTF-8')
+
+  def test_format_file_size_strips_newlines_and_spaces_from_the_end(self):
+    call_cli = Mock()
+    expected = '3 TB'
+    call_cli.return_value = f'{expected} \n\n'
+
+    actual = format_file_size(123, call_cli)
+
+    self.assertEqual(actual, expected)
+
+  def test_format_file_size_returns_bytes_as_string_if_calling_cli_fails(self):
+    bytes = 9499499443
+    call_cli = Mock()
+    call_cli.side_effect = Exception('some error')
+
+    actual = format_file_size(bytes, call_cli)
+
+    self.assertEqual(actual, f'{bytes} B')
 
   def test_zip_files(self):
     zipfile_instance = self.ZipFileMock.return_value

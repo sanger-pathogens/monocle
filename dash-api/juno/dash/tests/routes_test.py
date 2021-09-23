@@ -1,4 +1,6 @@
 from flask import Response
+from http import HTTPStatus
+import json
 import unittest
 from unittest.mock import patch, Mock
 from dash.api.service.service_factory import ServiceFactory
@@ -22,7 +24,6 @@ class TestRoutes(unittest.TestCase):
         }
     }
         
-    EXPECTED_CSV_STATUS_CODE     = 200
     EXPECTED_CSV_CONTENT_TYPE    = 'text/csv; charset=UTF-8'
     EXPECTED_CONTENT_DISPOSITION = 'attachment; filename="{}"'.format(SERVICE_CALL_RETURN_CSV_DATA['filename'])
 
@@ -47,7 +48,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 1)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -68,7 +69,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -89,7 +90,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -106,7 +107,7 @@ class TestRoutes(unittest.TestCase):
         resp_mock.assert_called_once_with(self.EXPECTED_PROGRESS_RESULTS)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -127,7 +128,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -148,7 +149,29 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_bulk_download_info(self, data_service_mock, username_mock, resp_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        assemblies = False
+        annotations = True
+        expected_payload = 'paylod'
+        data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = bulk_download_info(batches, assemblies, annotations)
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        data_service_mock.return_value.get_bulk_download_info.assert_called_once_with(
+            batches, assemblies=assemblies, annotations=annotations, reads=False)
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
@@ -164,7 +187,7 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.assert_called_once_with(self.TEST_USER)
         data_service_mock.return_value.get_metadata_for_download.assert_called_once()
         self.assertIsInstance(result, type(Response('any content will do')))
-        self.assertEqual(result.status_code,                    self.EXPECTED_CSV_STATUS_CODE)
+        self.assertEqual(result.status_code,                    HTTPStatus.OK)
         self.assertEqual(result.content_type,                   self.EXPECTED_CSV_CONTENT_TYPE)
         self.assertEqual(result.headers['Content-Disposition'], self.EXPECTED_CONTENT_DISPOSITION)
         

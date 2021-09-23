@@ -34,3 +34,7 @@ monocle_ldap:
 data_download:
    web_dir           : 'dash/tests/mock_data/monocle_juno_web_root/downloads'
    url_path          : 'files/downloads'
+lane_dir:
+   assemblies        : 'dash/tests/mock_data/monocle_juno/assemblies'
+   annotations       : 'dash/tests/mock_data/monocle_juno/annotations'
+   reads             : 'dash/tests/mock_data/monocle_juno/reads'

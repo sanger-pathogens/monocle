@@ -2,13 +2,12 @@ import logging
 from flask import jsonify, request, Response
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.exceptions import NotAuthorisedException
+from datetime import datetime
+from http import HTTPStatus
+from typing import List
 
 
 logger = logging.getLogger()
-
-HTTP_SUCCEEDED_STATUS = 200
-HTTP_BAD_REQUEST_STATUS = 400
-HTTP_SERVER_ERROR_STATUS = 500
 
 # Testing only
 ServiceFactory.TEST_MODE = False
@@ -20,7 +19,7 @@ def get_user_details():
     response_dict = {
         'user_details': data
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_batches():
@@ -29,7 +28,7 @@ def get_batches():
     response_dict = {
         'batches': data
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_institutions():
@@ -38,7 +37,7 @@ def get_institutions():
     response_dict = {
         'institutions': data
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_progress():
@@ -47,7 +46,7 @@ def get_progress():
     response_dict = {
         'progress_graph': { 'data': data }
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def sequencing_status_summary():
@@ -56,7 +55,7 @@ def sequencing_status_summary():
     response_dict = {
         'sequencing_status': data
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def pipeline_status_summary():
@@ -65,7 +64,18 @@ def pipeline_status_summary():
     response_dict = {
         'pipeline_status': data
     }
-    return call_jsonify(response_dict), HTTP_SUCCEEDED_STATUS
+    return call_jsonify(response_dict), HTTPStatus.OK
+
+
+def bulk_download_info(batches: List[str], assemblies: bool = False, annotations: bool = False, reads: bool = False):
+    """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
+    return call_jsonify(
+        ServiceFactory.data_service(get_authenticated_username(request)).get_bulk_download_info(
+            batches,
+            assemblies=assemblies,
+            annotations=annotations,
+            reads=reads)
+    ), HTTPStatus.OK
 
 
 def get_metadata_for_download(institution: str, category: str, status: str):
@@ -78,22 +88,25 @@ def get_metadata_for_download(institution: str, category: str, status: str):
    metadata_for_download = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
    if not metadata_for_download['success']:
       if 'request' == metadata_for_download['error']:
-         return HTTP_BAD_REQUEST_STATUS
+         return HTTPStatus.BAD_REQUEST
       else:
-         return HTTP_SERVER_ERROR_STATUS
+         return HTTPStatus.INTERNAL_SERVER_ERROR
    else:
       return Response(  metadata_for_download['content'],
                         content_type   = 'text/csv; charset=UTF-8', # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??
                         headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(metadata_for_download['filename'])},
-                        status         = HTTP_SUCCEEDED_STATUS
+                        status         = HTTPStatus.OK
                         )
+
 
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
     return jsonify(args)
 
+
 def get_host_name(req_obj):
    return req_obj.host
+
 
 def get_authenticated_username(req_obj):
     """ Return the request authenticated user name or throw an UnauthorisedException if one is not present """

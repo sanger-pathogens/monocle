@@ -15,6 +15,20 @@ import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 import DataSources.user_data
+from utils.file               import format_file_size
+
+FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
+# format of timestamp returned in MLWH queries
+FORMAT_MLWH_DATETIME = f'{FORMAT_DATE}T%H:%M:%S%z'
+LANE_DIR_CONFIG = 'lane_dir'
+ASSEMBLY_CONFIG_SUBSECTION = 'assemblies'
+ANNOTATION_CONFIG_SUBSECTION = 'annotations'
+READS_CONFIG_SUBSECTION = 'reads'
+ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
+ANNOTATION_FILE_SUFFIX = '.spades.gff'
+READS_FILE_SUFFIXES = ('_1.fastq.gz', '_2.fastq.gz')
+#FIXME: estimate the factor from a wider range of real-world files.
+ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
 
 class MonocleUser:
    """
@@ -47,9 +61,6 @@ class MonocleData:
                               'qc_seq':   'sequencing',
                               }
   
-   # format of timestamp returned in MLWH queries
-   mlwh_datetime_fmt    = '%Y-%m-%dT%H:%M:%S%z'
-   
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
@@ -67,7 +78,7 @@ class MonocleData:
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
-         self.download_symlink_config     = 'data_sources.yml'
+         self.data_source_config          = 'data_sources.yml'
 
    def get_progress(self):
       institutions_data = self.get_institutions()
@@ -124,7 +135,7 @@ class MonocleData:
       a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
       is provided.
       
-      ***IMPORTANT***
+      ***IMPORTANT / FIXME***
       Institution IDs (`cn`) are now in LDAP, as are their names.
       We need to stop reading institutions from monocledb, and read the names and IDs from LDAP
       The IDs from LDAP will be used as the dict keys in the code in this module, and we can
@@ -239,7 +250,7 @@ class MonocleData:
       """
       Pass dict of institutions. Returns dict with details of batches delivered.
       
-      TO DO:  find out a way to get the genuine total number of expected samples for each institution
+      TODO:  find out a way to get the genuine total number of expected samples for each institution
       """ 
       samples = self.get_samples()
       institutions_data       = self.get_institutions()
@@ -292,7 +303,7 @@ class MonocleData:
          institution_2...
          }
 
-      TO DO:  improve 'failed' dict 'issue' strings
+      TODO:  improve 'failed' dict 'issue' strings
       """
       institutions_data = self.get_institutions()
       sequencing_status_data = self.get_sequencing_status()
@@ -356,7 +367,7 @@ class MonocleData:
       data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
       are handled in this class.
          
-      TO DO:  decide what to do about about 'failed' dict 'issue' strings
+      TODO:  decide what to do about about 'failed' dict 'issue' strings
       """
       institutions_data = self.get_institutions()
       sequencing_status_data = self.get_sequencing_status()
@@ -397,6 +408,35 @@ class MonocleData:
                else:
                   status[this_institution]['running'] += 1
       return status
+
+   def get_bulk_download_info(self, batches, **kwargs):
+      """
+      Pass a list of batch dates and accepts a boolean flag per assembly, annotation, and reads types of lane files.
+      Returns a dict w/ a summary for an expected sample bulk download.
+
+      {
+         num_samples: <int>,
+         size: <str>,
+         size_zipped: <str>
+      }
+      """
+      sample_ids = self.sample_metadata.get_sample_ids()
+      samples_by_id = self.sequencing_status_source.get_multiple_samples(sample_ids)
+      samples_from_requested_batches = [
+         sample for _sample_id, sample in samples_by_id.items()
+         if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in set(batches)
+      ]
+      lane_files_size = self.get_byte_size_of_lane_files(
+         samples_from_requested_batches,
+         assemblies=kwargs.get('assemblies', False),
+         annotations=kwargs.get('annotations', False),
+         reads=kwargs.get('reads', False))
+
+      return {
+         'num_samples': len(samples_from_requested_batches),
+         'size': format_file_size(lane_files_size),
+         'size_zipped': format_file_size(lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
+      }
 
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
@@ -569,7 +609,7 @@ class MonocleData:
          first_row = False
       return pandas_data,col_order
    
-   def make_download_symlink(self,target_institution):
+   def make_download_symlink(self, target_institution):
       """
       Pass the institution name.
       
@@ -587,16 +627,16 @@ class MonocleData:
       download_url_path       = 'url_path'
       data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
       # get web server directory, and check it exists
-      if not Path(self.download_symlink_config).is_file():
-         return self._download_config_error("data source config file {} missing".format(self.download_symlink_config))
+      if not Path(self.data_source_config).is_file():
+         return self._download_config_error("data source config file {} missing".format(self.data_source_config))
       # read config, check required params
-      with open(self.download_symlink_config, 'r') as file:
+      with open(self.data_source_config, 'r') as file:
          data_sources = yaml.load(file, Loader=yaml.FullLoader)
          if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_dir_param))
+            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config,download_config_section,download_dir_param))
          download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
          if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_url_path))
+            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config,download_config_section,download_url_path))
          download_url_path  = data_sources[download_config_section][download_url_path]
       if not download_web_dir.is_dir():
          return self._download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
@@ -621,15 +661,6 @@ class MonocleData:
       data_download_link.symlink_to(download_host_dir.absolute())
       return download_url_path
 
-   def _download_config_error(self,message):
-      """
-      Call for errors occurring in make_download_symlink().
-      Pass error message, which is logged.
-      Always returns None.
-      """
-      logging.error("Invalid data download config: {}".format(message))
-      return None
-   
    def institution_name_to_dict_key(self, name, existing_keys):
       """
       Private method that creates a shortened, all-alphanumeric version of the institution name
@@ -652,10 +683,8 @@ class MonocleData:
       samples_received              = sequencing_status_data[institution].keys()
       num_samples_received_by_date  = defaultdict(int)
       for this_sample_id in samples_received:
-         # get date in ISO8601 format (YYYY-MM-DD)
-         received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
-                                             self.mlwh_datetime_fmt
-                                             ).strftime( '%Y-%m-%d' )
+         received_date = self.convert_mlwh_datetime_stamp_to_date_stamp(
+            sequencing_status_data[institution][this_sample_id]['creation_datetime'])
          num_samples_received_by_date[received_date] += 1
       return num_samples_received_by_date
    
@@ -670,7 +699,105 @@ class MonocleData:
             # get timestamp for completion (some lanes may not have one yet)
             if 'complete_datetime' in this_lane:
                this_lane['complete_datetime']
-               # get date in ISO8601 format (YYYY-MM-DD)
-               sequenced_date = datetime.strptime( this_lane['complete_datetime'], self.mlwh_datetime_fmt ).strftime( '%Y-%m-%d' )
+               sequenced_date = self.convert_mlwh_datetime_stamp_to_date_stamp(
+                  this_lane['complete_datetime'])
                num_lanes_sequenced_by_date[sequenced_date] += 1
       return num_lanes_sequenced_by_date
+
+   def convert_mlwh_datetime_stamp_to_date_stamp(self, datetime_stamp):
+      return datetime.strptime(datetime_stamp,
+         FORMAT_MLWH_DATETIME
+      ).strftime( FORMAT_DATE )
+
+   def get_byte_size_of_lane_files(self, samples, **kwargs):
+      try:
+         assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
+            assemblies=kwargs.get('assemblies', False),
+            annotations=kwargs.get('annotations', False),
+            reads=kwargs.get('reads', False))
+      except:
+         return 0
+
+      else:
+         return self._get_byte_size_of_lane_files(samples,
+            assembly_lanes_path=assembly_lanes_path,
+            annotation_lanes_path=annotation_lanes_path,
+            read_lanes_path=read_lanes_path)
+
+   def get_lane_dir_paths(self, **kwargs):
+      if not Path(self.data_source_config).is_file():
+         logging.error(f'Data source config file {self.data_source_config} missing')
+         return
+
+      with open(self.data_source_config, 'r') as data_source_config_file:
+         data_sources = yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      lane_file_config = data_sources[LANE_DIR_CONFIG]
+      if not lane_file_config:
+         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config}')
+         return
+
+      assembly_lanes_path = None
+      annotation_lanes_path = None
+      reads_lanes_path = None
+      if kwargs.get('assemblies', False):
+         assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
+         if not assembly_lanes_path:
+            logging.error(
+               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+      if kwargs.get('annotations', False):
+         annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
+         if not annotation_lanes_path:
+            logging.error(
+               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+      if kwargs.get('reads', False):
+         reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
+         if not reads_lanes_path:
+            logging.error(
+               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+
+      return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
+
+   def _get_byte_size_of_lane_files(self, samples, **kwargs):
+      total_size = 0
+      assembly_lanes_path = kwargs.get('assembly_lanes_path')
+      annotation_lanes_path = kwargs.get('annotation_lanes_path')
+      reads_lanes_path = kwargs.get('reads_lanes_path')
+      for sample in samples:
+         for lane in sample['lanes']:
+            lane_id = lane['id']
+            if assembly_lanes_path:
+               try:
+                  total_size = total_size + self._get_file_size(
+                     Path(assembly_lanes_path, f'{lane_id}{ASSEMBLY_FILE_SUFFIX}'))
+               except OSError as err:
+                  logging.warning(f'Failed to open assembly file for lane {lane_id}: {err}')
+            if annotation_lanes_path:
+               try:
+                  total_size = total_size + self._get_file_size(
+                     Path(annotation_lanes_path, f'{lane_id}{ANNOTATION_FILE_SUFFIX}'))
+               except OSError as err:
+                  logging.warning(f'Failed to open annotation file for lane {lane_id}: {err}')
+            if reads_lanes_path:
+               try:
+                  for file_suffix in READS_FILE_SUFFIXES:
+                     total_size = total_size + self._get_file_size(
+                        Path(reads_lanes_path, f'{lane_id}{file_suffix}'))
+               except OSError as err:
+                  logging.warning(f'Failed to open reads file for lane {lane_id}: {err}')
+
+      return total_size
+
+   def _get_file_size(self, path_instance):
+      return path_instance.stat().st_size
+
+   def _download_config_error(self, message):
+      """
+      Call for errors occurring in make_download_symlink().
+      Pass error message, which is logged.
+      Always returns None.
+      """
+      logging.error("Invalid data download config: {}".format(message))
+      return None

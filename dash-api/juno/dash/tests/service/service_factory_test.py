@@ -12,7 +12,8 @@ from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
 from   DataSources.pipeline_status     import PipelineStatus
 from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data           import UserData
-from   data_services                   import MonocleUser, MonocleData
+from   data_services                   import MonocleUser, MonocleData, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
+from   utils.file                      import format_file_size
 
 class MonocleUserTest(TestCase):
    
@@ -67,7 +68,7 @@ class MonocleDataTest(TestCase):
 
    test_config = 'dash/tests/mock_data/data_sources.yml'
    with open(test_config, 'r') as file:
-      data_sources = yaml.load(file, Loader=yaml.FullLoader)
+      data_sources   = yaml.load(file, Loader=yaml.FullLoader)
       mock_url_path  = data_sources['data_download']['url_path']
       mock_web_dir   = data_sources['data_download']['web_dir']
    
@@ -258,7 +259,7 @@ class MonocleDataTest(TestCase):
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
-   monocle_data.download_symlink_config = test_config
+   monocle_data.data_source_config = test_config
 
    def setUp(self):
       # mock moncoledb
@@ -286,7 +287,11 @@ class MonocleDataTest(TestCase):
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
-   def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+   def get_mock_data(self,
+         mock_seq_samples_query,
+         mock_db_sample_query,
+         mock_institution_query
+      ):
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
@@ -296,6 +301,7 @@ class MonocleDataTest(TestCase):
       
    def test_get_progress(self):
       progress_data = self.monocle_data.get_progress()
+
       self.assertEqual(self.expected_progress_data, progress_data)
       
    def test_get_institutions(self):
@@ -304,25 +310,52 @@ class MonocleDataTest(TestCase):
       
    def test_get_samples(self):
       sample_data = self.monocle_data.get_samples()
+
       self.assertEqual(self.expected_sample_data, sample_data)
       
    def test_get_sequencing_status(self):
       seq_status_data = self.monocle_data.get_sequencing_status()
+
       self.assertEqual(self.expected_seq_status, seq_status_data)
            
    def test_get_batches(self):
       batches_data = self.monocle_data.get_batches()
+
       self.assertEqual(self.expected_batches, batches_data)
     
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+
       self.assertEqual(self.expected_seq_summary, seq_status_summary)
       
    def test_pipeline_status_summary(self):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
+
+   @patch.object(SampleMetadata,           'get_sample_ids')
+   @patch.object(SequencingStatus,         'get_multiple_samples')
+   @patch.object(MonocleData,              '_get_file_size')
+   def test_get_bulk_download_info(self, get_file_size_mock, get_multiple_samples_mock, get_sample_ids_mock):
+      get_sample_ids_mock.return_value = []
+      get_multiple_samples_mock.return_value = self.mock_seq_status
+      batches = ['2020-04-29', '2020-11-16']
+      file_size = 420024
+      get_file_size_mock.return_value = file_size
+
+      bulk_download_info = self.monocle_data.get_bulk_download_info(
+         batches, assemblies=True, annotations=False)
+
+      expected_num_samples = len(batches)
+      num_lanes = 3
+      expected_byte_size = file_size * num_lanes
+      self.assertEqual({
+         'num_samples': expected_num_samples,
+         'size': format_file_size(expected_byte_size),
+         'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
+      }, bulk_download_info)
 
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -340,7 +373,9 @@ class MonocleDataTest(TestCase):
    def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
+
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
    @patch.object(MonocleData,              'make_download_symlink')
@@ -350,7 +385,9 @@ class MonocleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = None
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+
       self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -358,7 +395,9 @@ class MonocleDataTest(TestCase):
    def test_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+
       self.assertEqual(self.expected_metadata, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -399,7 +438,9 @@ class MonocleDataTest(TestCase):
       test_inst_name = self.mock_institutions[0]
       test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
       self._symlink_test_setup(test_inst_key)
+
       symlink_url_path  = self.monocle_data.make_download_symlink(test_inst_name)
+
       symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
       # test the symlink is actually a symlink, and that it points at the intended target
       self.assertTrue( Path(symlink_disk_path).is_symlink() )

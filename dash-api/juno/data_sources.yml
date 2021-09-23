@@ -34,3 +34,7 @@ monocle_ldap:
 data_download:
    web_dir           : 'monocle_juno_web_root/downloads'
    url_path          : 'files/downloads'
+lane_dir:
+   assemblies        : 'monocle_juno/assemblies'
+   annotations       : 'monocle_juno/annotations'
+   reads             : 'monocle_juno/reads'

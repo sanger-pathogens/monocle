@@ -4,6 +4,7 @@ from   urllib.error  import URLError
 from   DataSources.sample_metadata  import SampleMetadata, Monocle_Client
 from   DataSources.sample_metadata  import ProtocolError
 
+import json
 import logging
 logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='CRITICAL')
 
@@ -21,13 +22,13 @@ class SampleMetadataTest(TestCase):
                                        }
                                     }"""
                                     
-   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id_1", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "Ministry of Health, Central laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+                                             {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id_2", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "National Reference Laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+                                             {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id_3", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "The Chinese University of Hong Kong", "id": "an_id"}
                                              ]
@@ -104,4 +105,31 @@ class SampleMetadataTest(TestCase):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_get_sample
          self.sample_metadata.get_samples(self.expected_sample_ids[0])
+
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_get_sample_ids(self, mock_query):
+      mock_query.return_value = self.mock_get_samples
+
+      actual_sample_ids = self.sample_metadata.get_sample_ids()
+
+      expected_sample_ids = ['fake_sample_id_1', 'fake_sample_id_2', 'fake_sample_id_3']
+      self.assertEqual(len(actual_sample_ids), len(expected_sample_ids))
+      for actual_sample_id in actual_sample_ids:
+         self.assertTrue(actual_sample_id in expected_sample_ids)
+
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_get_sample_ids_only_for_requested_institutions(self, mock_query):
+      mock_query.return_value = self.mock_get_samples
+      expected_institutions = self.expected_institution_names[:2]
+
+      actual_sample_ids = self.sample_metadata.get_sample_ids(
+         expected_institutions)
+
+      samples = json.loads( self.mock_get_samples )['samples']
+      actual_institutions = [
+         sample['submitting_institution'] for sample in samples
+         if sample['submitting_institution'] in expected_institutions]
+      self.assertEqual(len(actual_institutions), len(expected_institutions))
+      for actual_institution in actual_institutions:
+         self.assertTrue(actual_institution in expected_institutions)
 
