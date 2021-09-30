@@ -166,11 +166,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             INSERT INTO in_silico (
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
-                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
+                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant, twenty_three_S3_variant, GYRA_variant, PARC_variant,
+                RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             ) VALUES (
                 :lane_id, :cps_type, :ST, :adhP, :pheS, :atr, :glnA, :sdhA, :glcK, :tkt, :twenty_three_S1, :twenty_three_S3, :CAT, :ERMB, :ERMT, :FOSA, :GYRA, :LNUB,
                 :LSAC, :MEFA, :MPHC, :MSRA, :MSRD, :PARC, :RPOBGBS_1, :RPOBGBS_2, :RPOBGBS_3, :RPOBGBS_4, :SUL2, :TETB, :TETL, :TETM, :TETO, :TETS,
-                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :GYRA_variant, :PARC_variant
+                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :twenty_three_S1_variant, :twenty_three_S3_variant, :GYRA_variant, :PARC_variant
+                :RPOBGBS_1_variant, :RPOBGBS_2_variant, :RPOBGBS_3_variant, :RPOBGBS_4_variant
             ) ON DUPLICATE KEY UPDATE
                 lane_id = :lane_id,
                 cps_type = :cps_type,
@@ -217,8 +219,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 RIB = :RIB,
                 SRR1 = :SRR1,
                 SRR2 = :SRR2,
+                twenty_three_S1_variant = :twenty_three_S1_variant,
+                twenty_three_S3_variant = :twenty_three_S3_variant,
                 GYRA_variant = :GYRA_variant,
-                PARC_variant = :PARC_variant
+                PARC_variant = :PARC_variant,
+                RPOBGBS_1_variant = :RPOBGBS_1_variant,
+                RPOBGBS_2_variant = :RPOBGBS_2_variant,
+                RPOBGBS_3_variant = :RPOBGBS_3_variant,
+                RPOBGBS_4_variant = :RPOBGBS_4_variant
             """)
 
     SELECT_LANES_IN_SILICO_SQL = text(""" \

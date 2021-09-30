@@ -1,3 +1,3 @@
-Sample_id	cps_type	ST	adhP	pheS	atr	glnA	sdhA	glcK	tkt	23S1	23S3	CAT	ERMB	ERMT	FOSA	GYRA	LNUB	LSAC	MEFA	MPHC	MSRA	MSRD	PARC	RPOBGBS-1	RPOBGBS-2	RPOBGBS-3	RPOBGBS-4	SUL2	TETB	TETL	TETM	TETO	TETS	ALP1	ALP23	ALPHA	HVGA	PI1	PI2A1	PI2A2	PI2B	RIB	SRR1	SRR2	GYRA_variant	PARC_variant
-ZZZ;;{}{}{[[STUDY	III	ST=I	15	*	4	4	2.2	NA	9	[pos]	pos	-	neg	0	neg	+	neg	''	neg	''	neg	''	pos	''	neg	''	neg	''	neg	''	pos	''	neg	''	neg	''	pos	''	neg	''	pos	''	neg	''	*	''
-50000_2#287	@	ST-II	abc	11	0!	1_6	14	31	abc	pos	*	neg	_	neg	''	pos	''	neg	''	neg	''	pos	''	neg	''	neg	''	neg	''	neg	''	neg	''	neg	''	neg	''	pos	''	neg	''	pos	''	pos	''	*
+Sample_id	cps_type	ST	adhP	pheS	atr	glnA	sdhA	glcK	tkt	23S1	23S3	CAT	ERMB	ERMT	FOSA	GYRA	LNUB	LSAC	MEFA	MPHC	MSRA	MSRD	PARC	RPOBGBS-1	RPOBGBS-2	RPOBGBS-3	RPOBGBS-4	SUL2	TETB	TETL	TETM	TETO	TETS	ALP1	ALP23	ALPHA	HVGA	PI1	PI2A1	PI2A2	PI2B	RIB	SRR1	SRR2	23S1_variant	23S3_variant	GYRA_variant	PARC_variant	RPOBGBS-1_variant	RPOBGBS-2_variant	RPOBGBS-3_variant	RPOBGBS-4_variant
+ZZZ;;{}{}{[[STUDY	III	ST=I	15	*	4	4	2.2	.	9	[pos]	pos	-	neg	0	neg	+	neg	''	neg	''	neg	''	pos	''	neg	''	neg	''	neg	''	pos	''	neg	''	neg	''	pos	''	neg	''	pos	''	neg	''	*	*	*	*	*	*	*	*
+50000_2#287	@	ST-II	abc	11	0!	1_6	14	31	abc	pos	*	neg	_	neg	''	pos	''	neg	''	neg	''	pos	''	neg	''	neg	''	neg	''	neg	''	neg	''	neg	''	neg	''	pos	''	neg	''	pos	''	pos	''	''	*	*	*	*	*	*

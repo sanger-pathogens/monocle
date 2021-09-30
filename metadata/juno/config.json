@@ -489,322 +489,364 @@
         "title": "cps_type",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[0-9a-zA-Z_\\-]+$",
+        "regex": "^(^$|[0-9a-zA-Z_\\-])+$",
         "regex_validation_message": "contains illegal characters"
       },
       "ST": {
         "title": "ST",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[0-9a-zA-Z_\\-]+$",
+        "regex": "^(^$|[0-9a-zA-Z_\\-*])+$",
         "regex_validation_message": "contains illegal characters"
       },
       "adhP": {
         "title": "adhP",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "pheS": {
         "title": "pheS",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "atr": {
         "title": "atr",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "glnA": {
         "title": "glnA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "sdhA": {
         "title": "sdhA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "glcK": {
         "title": "glcK",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "tkt": {
         "title": "tkt",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[\\d*]+$",
+        "regex": "^(^$|[\\d*])+$",
         "regex_validation_message": "must be a whole positive number and/or asterisk"
       },
       "twenty_three_S1": {
         "title": "23S1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "twenty_three_S3": {
         "title": "23S3",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "CAT": {
         "title": "CAT",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "ERMB": {
         "title": "ERMB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "ERMT": {
         "title": "ERMT",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "FOSA": {
         "title": "FOSA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "GYRA": {
         "title": "GYRA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "LNUB": {
         "title": "LNUB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "LSAC": {
         "title": "LSAC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "MEFA": {
         "title": "MEFA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "MPHC": {
         "title": "MPHC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "MSRA": {
         "title": "MSRA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "MSRD": {
         "title": "MSRD",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "PARC": {
         "title": "PARC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "RPOBGBS_1": {
         "title": "RPOBGBS-1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "RPOBGBS_2": {
         "title": "RPOBGBS-2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "RPOBGBS_3": {
         "title": "RPOBGBS-3",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "RPOBGBS_4": {
         "title": "RPOBGBS-4",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "SUL2": {
         "title": "SUL2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "TETB": {
         "title": "TETB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "TETL": {
         "title": "TETL",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "TETM": {
         "title": "TETM",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "TETO": {
         "title": "TETO",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "TETS": {
         "title": "TETS",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "ALP1": {
         "title": "ALP1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "ALP23": {
         "title": "ALP23",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "ALPHA": {
         "title": "ALPHA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "HVGA": {
         "title": "HVGA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "PI1": {
         "title": "PI1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "PI2A1": {
         "title": "PI2A1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "PI2A2": {
         "title": "PI2A2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "PI2B": {
         "title": "PI2B",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "RIB": {
         "title": "RIB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "SRR1": {
         "title": "SRR1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
       },
       "SRR2": {
         "title": "SRR2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(pos|neg|NA)+$",
-        "regex_validation_message": "must be pos, neg or NA"
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos and neg"
+      },
+      "23S1_variant": {
+        "title": "23S1_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
+      },
+      "23S3_variant": {
+        "title": "23S3_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
       },
       "GYRA_variant": {
         "title": "GYRA_variant",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^[0-9a-zA-Z_\\-\\,*]+$",
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
         "regex_validation_message": "contains illegal characters"
       },
       "PARC_variant": {
         "title": "PARC_variant",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^[0-9a-zA-Z_\\-\\,*]+$",
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
+      },
+      "RPOBGBS-1_variant": {
+        "title": "RPOBGBS-1_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
+      },
+      "RPOBGBS-2_variant": {
+        "title": "RPOBGBS-2_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
+      },
+      "RPOBGBS-3_variant": {
+        "title": "RPOBGBS-3_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
+        "regex_validation_message": "contains illegal characters"
+      },
+      "RPOBGBS-4_variant": {
+        "title": "RPOBGBS-4_variant",
+        "mandatory": true,
+        "max_length": 100,
+        "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
         "regex_validation_message": "contains illegal characters"
       }
     }
