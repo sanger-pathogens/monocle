@@ -62,10 +62,10 @@ CREATE TABLE `in_silico` (
   `23S3_variant` varchar(256),
   `GYRA_variant` varchar(256),
   `PARC_variant` varchar(256),
-  `RPOBGBS-1_variant` varchar(256),
-  `RPOBGBS-2_variant` varchar(256),
-  `RPOBGBS-3_variant` varchar(256),
-  `RPOBGBS-4_variant` varchar(256),
+  `RPOBGBS_1_variant` varchar(256),
+  `RPOBGBS_2_variant` varchar(256),
+  `RPOBGBS_3_variant` varchar(256),
+  `RPOBGBS_4_variant` varchar(256),
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
