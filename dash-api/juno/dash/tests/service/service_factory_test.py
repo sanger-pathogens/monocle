@@ -357,6 +357,32 @@ class MonocleDataTest(TestCase):
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
 
+   def test_get_lane_files(self):
+      samples = list( self.mock_seq_status.values() )
+
+      lane_files = self.monocle_data.get_lane_files(
+         samples, assemblies=True, annotations=False)
+
+      expected_lane_files = [
+         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_1.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_2.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_3.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_4.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_5.contigs_spades.fa'
+      ]
+      actual = list( map(lambda file: str(file), lane_files) )
+      self.assertEqual(expected_lane_files, actual)
+
+   @patch.object(MonocleData,              'get_lane_dir_paths')
+   def test_get_lane_files_returns_empty_list_if_lane_dir_cannot_be_found(self, get_lane_dir_paths_mock):
+      get_lane_dir_paths_mock.side_effect = Exception('some error')
+      samples = list( self.mock_seq_status.values() )
+
+      actual_lane_files = self.monocle_data.get_lane_files(
+         samples, assemblies=True, annotations=False)
+
+      self.assertEqual([], actual_lane_files)
+
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')

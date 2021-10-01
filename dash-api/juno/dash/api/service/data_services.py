@@ -2,6 +2,7 @@ from   collections            import defaultdict
 from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_ALL
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
+from functools                import reduce
 import logging
 from   os                     import environ
 import pandas
@@ -411,7 +412,7 @@ class MonocleData:
 
    def get_bulk_download_info(self, batches, **kwargs):
       """
-      Pass a list of batch dates and accepts a boolean flag per assembly, annotation, and reads types of lane files.
+      Pass a list of batch dates and an optional boolean flag per assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
 
       {
@@ -426,17 +427,97 @@ class MonocleData:
          sample for _sample_id, sample in samples_by_id.items()
          if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in set(batches)
       ]
-      lane_files_size = self.get_byte_size_of_lane_files(
+      lane_files = self.get_lane_files(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
          annotations=kwargs.get('annotations', False),
          reads=kwargs.get('reads', False))
+      lane_files_size = reduce(
+         lambda accum, file: accum + self._get_file_size(file),
+         lane_files,
+         0)
 
       return {
          'num_samples': len(samples_from_requested_batches),
          'size': format_file_size(lane_files_size),
          'size_zipped': format_file_size(lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
+
+   def get_lane_files(self, samples, **kwargs):
+      """
+      Pass a list of samples and an optional boolean flag per assembly, annotation, and reads types of lane files.
+      Returns a list of file names for lanes corresponding to the parameters.
+      """
+      try:
+         assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
+            assemblies=kwargs.get('assemblies', False),
+            annotations=kwargs.get('annotations', False),
+            reads=kwargs.get('reads', False))
+      except:
+         return []
+
+      else:
+         return self._get_lane_files(samples,
+            assembly_lanes_path=assembly_lanes_path,
+            annotation_lanes_path=annotation_lanes_path,
+            read_lanes_path=read_lanes_path)
+
+   def get_lane_dir_paths(self, **kwargs):
+      if not Path(self.data_source_config).is_file():
+         logging.error(f'Data source config file {self.data_source_config} missing')
+         return
+
+      with open(self.data_source_config, 'r') as data_source_config_file:
+         data_sources = yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      lane_file_config = data_sources[LANE_DIR_CONFIG]
+      if not lane_file_config:
+         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config}')
+         return
+
+      assembly_lanes_path = None
+      annotation_lanes_path = None
+      reads_lanes_path = None
+      if kwargs.get('assemblies', False):
+         assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
+         if not assembly_lanes_path:
+            logging.error(
+               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+      if kwargs.get('annotations', False):
+         annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
+         if not annotation_lanes_path:
+            logging.error(
+               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+      if kwargs.get('reads', False):
+         reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
+         if not reads_lanes_path:
+            logging.error(
+               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+            return
+
+      return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
+
+   def _get_lane_files(self, samples, **kwargs):
+      lane_files = []
+      assembly_lanes_path = kwargs.get('assembly_lanes_path')
+      annotation_lanes_path = kwargs.get('annotation_lanes_path')
+      reads_lanes_path = kwargs.get('reads_lanes_path')
+      for sample in samples:
+         for lane in sample['lanes']:
+            lane_id = lane['id']
+            if assembly_lanes_path:
+               lane_files.append(
+                  Path(assembly_lanes_path, f'{lane_id}{ASSEMBLY_FILE_SUFFIX}'))
+            if annotation_lanes_path:
+               lane_files.append(
+                  Path(annotation_lanes_path, f'{lane_id}{ANNOTATION_FILE_SUFFIX}'))
+            if reads_lanes_path:
+               for file_suffix in READS_FILE_SUFFIXES:
+                  lane_files.append(
+                     Path(reads_lanes_path, f'{lane_id}{file_suffix}'))
+
+      return lane_files
 
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
@@ -709,89 +790,12 @@ class MonocleData:
          FORMAT_MLWH_DATETIME
       ).strftime( FORMAT_DATE )
 
-   def get_byte_size_of_lane_files(self, samples, **kwargs):
-      try:
-         assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
-            assemblies=kwargs.get('assemblies', False),
-            annotations=kwargs.get('annotations', False),
-            reads=kwargs.get('reads', False))
-      except:
-         return 0
-
-      else:
-         return self._get_byte_size_of_lane_files(samples,
-            assembly_lanes_path=assembly_lanes_path,
-            annotation_lanes_path=annotation_lanes_path,
-            read_lanes_path=read_lanes_path)
-
-   def get_lane_dir_paths(self, **kwargs):
-      if not Path(self.data_source_config).is_file():
-         logging.error(f'Data source config file {self.data_source_config} missing')
-         return
-
-      with open(self.data_source_config, 'r') as data_source_config_file:
-         data_sources = yaml.load(data_source_config_file, Loader=yaml.FullLoader)
-      lane_file_config = data_sources[LANE_DIR_CONFIG]
-      if not lane_file_config:
-         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config}')
-         return
-
-      assembly_lanes_path = None
-      annotation_lanes_path = None
-      reads_lanes_path = None
-      if kwargs.get('assemblies', False):
-         assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
-         if not assembly_lanes_path:
-            logging.error(
-               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
-            return
-      if kwargs.get('annotations', False):
-         annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
-         if not annotation_lanes_path:
-            logging.error(
-               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
-            return
-      if kwargs.get('reads', False):
-         reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
-         if not reads_lanes_path:
-            logging.error(
-               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
-            return
-
-      return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
-
-   def _get_byte_size_of_lane_files(self, samples, **kwargs):
-      total_size = 0
-      assembly_lanes_path = kwargs.get('assembly_lanes_path')
-      annotation_lanes_path = kwargs.get('annotation_lanes_path')
-      reads_lanes_path = kwargs.get('reads_lanes_path')
-      for sample in samples:
-         for lane in sample['lanes']:
-            lane_id = lane['id']
-            if assembly_lanes_path:
-               try:
-                  total_size = total_size + self._get_file_size(
-                     Path(assembly_lanes_path, f'{lane_id}{ASSEMBLY_FILE_SUFFIX}'))
-               except OSError as err:
-                  logging.warning(f'Failed to open assembly file for lane {lane_id}: {err}')
-            if annotation_lanes_path:
-               try:
-                  total_size = total_size + self._get_file_size(
-                     Path(annotation_lanes_path, f'{lane_id}{ANNOTATION_FILE_SUFFIX}'))
-               except OSError as err:
-                  logging.warning(f'Failed to open annotation file for lane {lane_id}: {err}')
-            if reads_lanes_path:
-               try:
-                  for file_suffix in READS_FILE_SUFFIXES:
-                     total_size = total_size + self._get_file_size(
-                        Path(reads_lanes_path, f'{lane_id}{file_suffix}'))
-               except OSError as err:
-                  logging.warning(f'Failed to open reads file for lane {lane_id}: {err}')
-
-      return total_size
-
    def _get_file_size(self, path_instance):
-      return path_instance.stat().st_size
+      try:
+         return path_instance.stat().st_size
+      except OSError as err:
+         logging.error(f'Failed to open file {path_instance}: {err}')
+         return 0
 
    def _download_config_error(self, message):
       """
