@@ -129,20 +129,34 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - batches
-              properties:
-                batches:
-                  type: array
-                  items:
-                    type: string
-                assemblies:
-                  type: boolean
-                annotations:
-                  type: boolean
-                reads:
-                  type: boolean
+              $ref: "#/components/schemas/BulkDownloadInput"
+      responses:
+        200:
+          description: "The operation was successful. The following data format will be returned..."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadInfo"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /bulk_download_urls:
+    get:
+      operationId: dash.api.routes.bulk_download_urls
+      summary: "Return download links corresponding to selected batches and data types"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkDownloadInput"
       responses:
         200:
           description: "The operation was successful. The following data format will be returned..."
@@ -280,6 +294,22 @@ components:
         db_key:
           type: string
           description: "The id of the institution."
+
+    BulkDownloadInput:
+      type: object
+        required:
+          - batches
+        properties:
+          batches:
+            type: array
+            items:
+              type: string
+          assemblies:
+            type: boolean
+          annotations:
+            type: boolean
+          reads:
+            type: boolean
 
     DownloadInfo:
       type: object
