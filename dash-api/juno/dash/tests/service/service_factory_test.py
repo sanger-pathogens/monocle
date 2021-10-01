@@ -15,6 +15,8 @@ from   DataSources.user_data           import UserData
 from   data_services                   import MonocleUser, MonocleData, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                      import format_file_size
 
+BATCH_DATES = ['2020-04-29', '2020-11-16']
+
 class MonocleUserTest(TestCase):
    
    test_config             = 'dash/tests/mock_data/data_sources.yml'
@@ -341,14 +343,13 @@ class MonocleDataTest(TestCase):
    def test_get_bulk_download_info(self, get_file_size_mock, get_multiple_samples_mock, get_sample_ids_mock):
       get_sample_ids_mock.return_value = []
       get_multiple_samples_mock.return_value = self.mock_seq_status
-      batches = ['2020-04-29', '2020-11-16']
       file_size = 420024
       get_file_size_mock.return_value = file_size
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
-         batches, assemblies=True, annotations=False)
+         BATCH_DATES, assemblies=True, annotations=False)
 
-      expected_num_samples = len(batches)
+      expected_num_samples = len(BATCH_DATES)
       num_lanes = 3
       expected_byte_size = file_size * num_lanes
       self.assertEqual({
@@ -356,6 +357,17 @@ class MonocleDataTest(TestCase):
          'size': format_file_size(expected_byte_size),
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
+
+   @patch.object(SampleMetadata,           'get_sample_ids')
+   @patch.object(SequencingStatus,         'get_multiple_samples')
+   def test_get_samples_from_batches(self, get_multiple_samples_mock, get_sample_ids_mock):
+      get_sample_ids_mock.return_value = []
+      get_multiple_samples_mock.return_value = self.mock_seq_status
+
+      actual_samples = self.monocle_data.get_samples_from_batches(BATCH_DATES)
+
+      expected_samples = [self.mock_seq_status['fake_sample_id_1'], self.mock_seq_status['fake_sample_id_2']]
+      self.assertEqual(expected_samples, actual_samples)
 
    def test_get_lane_files(self):
       samples = list( self.mock_seq_status.values() )

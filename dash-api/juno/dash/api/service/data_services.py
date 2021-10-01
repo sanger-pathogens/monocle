@@ -421,12 +421,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      sample_ids = self.sample_metadata.get_sample_ids()
-      samples_by_id = self.sequencing_status_source.get_multiple_samples(sample_ids)
-      samples_from_requested_batches = [
-         sample for _sample_id, sample in samples_by_id.items()
-         if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in set(batches)
-      ]
+      samples_from_requested_batches = self.get_samples_from_batches(batches)
       lane_files = self.get_lane_files(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -442,6 +437,23 @@ class MonocleData:
          'size': format_file_size(lane_files_size),
          'size_zipped': format_file_size(lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
+
+   def get_samples_from_batches(self, batches):
+      """
+      Pass a list of batch dates.
+      Returns a list of samples from the batches.
+      """
+      if len(batches) == 0:
+         logging.debug(f'{__class__.__name__}.get_samples_from_batches(): The list of batches is empty.')
+         return []
+
+      sample_ids = self.sample_metadata.get_sample_ids()
+      samples_by_id = self.sequencing_status_source.get_multiple_samples(sample_ids)
+      unique_batch_dates = set(batches)
+      return [
+         sample for _sample_id, sample in samples_by_id.items()
+         if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in unique_batch_dates
+      ]
 
    def get_lane_files(self, samples, **kwargs):
       """
