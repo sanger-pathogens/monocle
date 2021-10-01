@@ -6,7 +6,7 @@ ALTER TABLE `in_silico`
 ADD COLUMN `23S1_variant` varchar(256) AFTER `SRR2`;
 
 ALTER TABLE `in_silico`
-ADD COLUMN `23S3_variant` varchar(256) AFTER `23S1_variant`,
+ADD COLUMN `23S3_variant` varchar(256) AFTER `23S1_variant`;
 
 ALTER TABLE `in_silico`
 ADD COLUMN `RPOBGBS-1_variant` varchar(256),
