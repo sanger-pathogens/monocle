@@ -173,6 +173,51 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch('dash.api.routes.uuid4')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_bulk_download_urls(self,
+            data_service_mock,
+            uuid4_mock,
+            zip_files_mock,
+            username_mock,
+            resp_mock
+        ):
+        # Given
+        batches = ['2020-09-04', '2021-01-30']
+        assemblies = False
+        annotations = True
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        data_service_mock.return_value.get_samples_from_batches.return_value = samples
+        uuid_hex = '123'
+        uuid4_mock.return_value.hex = uuid_hex
+        zip_file_basename = f'{"_".join(batches)}__{uuid_hex}'
+        zip_file_location = 'some/dir'
+        data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
+        download_symlink = 'downloads/'
+        data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        lane_files = ['lane file', 'another lane file']
+        data_service_mock.return_value.get_lane_files.return_value = lane_files
+        expected_payload = {
+            'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
+        }
+        # When
+        result = bulk_download_urls(batches, assemblies, annotations)
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_called_once_with(
+            lane_files,
+            basename=zip_file_basename,
+            location=zip_file_location)
+        data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
     @patch.object(ServiceFactory, 'data_service')

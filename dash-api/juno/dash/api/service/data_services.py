@@ -8,7 +8,7 @@ from   os                     import environ
 import pandas
 from   pathlib                import Path
 import urllib.parse
-import uuid
+from uuid import uuid4
 import yaml
 
 import DataSources.sample_metadata
@@ -21,6 +21,10 @@ from utils.file               import format_file_size
 FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f'{FORMAT_DATE}T%H:%M:%S%z'
+READ_MODE = 'r'
+#FIXME: estimate the factor from a wider range of real-world files.
+ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
+
 LANE_DIR_CONFIG = 'lane_dir'
 ASSEMBLY_CONFIG_SUBSECTION = 'assemblies'
 ANNOTATION_CONFIG_SUBSECTION = 'annotations'
@@ -28,8 +32,6 @@ READS_CONFIG_SUBSECTION = 'reads'
 ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
 ANNOTATION_FILE_SUFFIX = '.spades.gff'
 READS_FILE_SUFFIXES = ('_1.fastq.gz', '_2.fastq.gz')
-#FIXME: estimate the factor from a wider range of real-world files.
-ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
 
 class MonocleUser:
    """
@@ -79,7 +81,7 @@ class MonocleData:
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
-         self.data_source_config          = 'data_sources.yml'
+         self.data_source_config_name     = 'data_sources.yml'
 
    def get_progress(self):
       institutions_data = self.get_institutions()
@@ -475,15 +477,14 @@ class MonocleData:
             read_lanes_path=read_lanes_path)
 
    def get_lane_dir_paths(self, **kwargs):
-      if not Path(self.data_source_config).is_file():
-         logging.error(f'Data source config file {self.data_source_config} missing')
+      if not Path(self.data_source_config_name).is_file():
+         logging.error(f'Data source config file {self.data_source_config_name} missing')
          return
 
-      with open(self.data_source_config, 'r') as data_source_config_file:
-         data_sources = yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      data_sources = self._load_data_source_config()
       lane_file_config = data_sources[LANE_DIR_CONFIG]
       if not lane_file_config:
-         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config}')
+         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config_name}')
          return
 
       assembly_lanes_path = None
@@ -493,19 +494,19 @@ class MonocleData:
          assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
          if not assembly_lanes_path:
             logging.error(
-               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
             return
       if kwargs.get('annotations', False):
          annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
          if not annotation_lanes_path:
             logging.error(
-               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
             return
       if kwargs.get('reads', False):
          reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
          if not reads_lanes_path:
             logging.error(
-               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config}')
+               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
             return
 
       return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
@@ -530,6 +531,13 @@ class MonocleData:
                      Path(reads_lanes_path, f'{lane_id}{file_suffix}'))
 
       return lane_files
+
+   def get_zip_download_location(self):
+      data_source_config = self._load_data_source_config()
+      try:
+          return data_source_config['data_download']['cross_institution_dir']
+      except KeyError as err:
+          return self._download_config_error(err)
 
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
@@ -702,13 +710,13 @@ class MonocleData:
          first_row = False
       return pandas_data,col_order
    
-   def make_download_symlink(self, target_institution):
+   def make_download_symlink(self, target_institution=None, **kwargs):
       """
       Pass the institution name.
       
       This creates a symlink from the web server download directory to the
       directory in which an institution's sample data (annotations,
-      assemblies, reads etc.) can be found.
+      assemblies, reads etc.) or a cross-institution sample ZIP file can be found.
       
       The symlink has a random name so only someone given the URL will be
       able to access it.
@@ -720,32 +728,32 @@ class MonocleData:
       download_url_path       = 'url_path'
       data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
       # get web server directory, and check it exists
-      if not Path(self.data_source_config).is_file():
-         return self._download_config_error("data source config file {} missing".format(self.data_source_config))
+      if not Path(self.data_source_config_name).is_file():
+         return self._download_config_error("data source config file {} missing".format(self.data_source_config_name))
       # read config, check required params
-      with open(self.data_source_config, 'r') as file:
-         data_sources = yaml.load(file, Loader=yaml.FullLoader)
-         if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config,download_config_section,download_dir_param))
-         download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
-         if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config,download_config_section,download_url_path))
-         download_url_path  = data_sources[download_config_section][download_url_path]
+      data_sources = self._load_data_source_config()
+      if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_dir_param))
+      download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
+      if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_url_path))
+      download_url_path  = data_sources[download_config_section][download_url_path]
       if not download_web_dir.is_dir():
          return self._download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
       logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
       # get the "target" directory where the data for the institution is kept, and check it exists
-      # (Why an environment variable?  Because this can be set  by docker-compose, and it is a path
+      # (Why an environment variable? Because this can be set by docker-compose, and it is a path
       # to a volume mount that is also set up by docker-compose.)
       if data_inst_view_environ not in environ:
          return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
-      download_host_dir = Path(environ[data_inst_view_environ], self.institution_db_key_to_dict[target_institution])
+      child_dir = 'downloads' if kwargs.get('cross_institution') else self.institution_db_key_to_dict[target_institution]
+      download_host_dir = Path(environ[data_inst_view_environ], child_dir)
       if not download_host_dir.is_dir():
          return self._download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
       logging.debug('host data download dir = {}'.format(str(download_host_dir)))
       # create a randomly named symlink to present to the user (do..while is just in case the path exists already)
       while True:
-         random_name          = uuid.uuid4().hex
+         random_name          = uuid4().hex
          data_download_link   = Path(download_web_dir, random_name)
          download_url_path    = '/'.join([download_url_path, random_name])
          if not data_download_link.exists():
@@ -808,6 +816,10 @@ class MonocleData:
       except OSError as err:
          logging.error(f'Failed to open file {path_instance}: {err}')
          return 0
+
+   def _load_data_source_config(self):
+      with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
+         return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
 
    def _download_config_error(self, message):
       """

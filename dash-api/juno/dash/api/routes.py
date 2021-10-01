@@ -1,10 +1,13 @@
 import logging
 from flask import jsonify, request, Response
-from dash.api.service.service_factory import ServiceFactory
-from dash.api.exceptions import NotAuthorisedException
 from datetime import datetime
 from http import HTTPStatus
 from typing import List
+from uuid import uuid4
+
+from dash.api.service.service_factory import ServiceFactory
+from dash.api.exceptions import NotAuthorisedException
+from utils.file import format_file_size, zip_files, ZIP_SUFFIX
 
 
 logger = logging.getLogger()
@@ -76,6 +79,29 @@ def bulk_download_info(batches: List[str], assemblies: bool = False, annotations
             annotations=annotations,
             reads=reads)
     ), HTTPStatus.OK
+
+
+def bulk_download_urls(batches: List[str], assemblies: bool = False, annotations: bool = False, reads: bool = False):
+    """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
+    monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
+    samples = monocle_data.get_samples_from_batches(batches)
+    lane_files = monocle_data.get_lane_files(
+        samples,
+        assemblies=assemblies,
+        annotations=annotations,
+        reads=reads)
+    zip_file_basename = f'{"_".join(batches)}__{uuid4().hex}'
+    zip_files(
+        lane_files,
+        basename=zip_file_basename,
+        location=monocle_data.get_zip_download_location())
+    zip_file_url = '/'.join([
+        monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
+        zip_file_basename + ZIP_SUFFIX])
+
+    return call_jsonify({
+        'download_urls': [zip_file_url]
+    }), HTTPStatus.OK
 
 
 def get_metadata_for_download(institution: str, category: str, status: str):

@@ -261,7 +261,7 @@ class MonocleDataTest(TestCase):
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
-   monocle_data.data_source_config = test_config
+   monocle_data.data_source_config_name = test_config
 
    def setUp(self):
       # mock moncoledb
@@ -483,6 +483,21 @@ class MonocleDataTest(TestCase):
       # test the symlink is actually a symlink, and that it points at the intended target
       self.assertTrue( Path(symlink_disk_path).is_symlink() )
       self.assertEqual( Path(self.mock_inst_view_dir, test_inst_key).absolute(),
+                        Path(symlink_disk_path).resolve()
+                        )
+      self._symlink_test_teardown()
+
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_make_download_symlink_cross_institution(self):
+      cross_institution_dir = 'downloads'
+      self._symlink_test_setup(cross_institution_dir)
+
+      symlink_url_path  = self.monocle_data.make_download_symlink(cross_institution=True)
+
+      symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
+      # test the symlink is actually a symlink, and that it points at the intended target
+      self.assertTrue( Path(symlink_disk_path).is_symlink() )
+      self.assertEqual( Path(self.mock_inst_view_dir, cross_institution_dir).absolute(),
                         Path(symlink_disk_path).resolve()
                         )
       self._symlink_test_teardown()
