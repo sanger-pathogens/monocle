@@ -166,11 +166,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             INSERT INTO in_silico (
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
-                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
+                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant, twenty_three_S3_variant, GYRA_variant, PARC_variant,
+                RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             ) VALUES (
                 :lane_id, :cps_type, :ST, :adhP, :pheS, :atr, :glnA, :sdhA, :glcK, :tkt, :twenty_three_S1, :twenty_three_S3, :CAT, :ERMB, :ERMT, :FOSA, :GYRA, :LNUB,
                 :LSAC, :MEFA, :MPHC, :MSRA, :MSRD, :PARC, :RPOBGBS_1, :RPOBGBS_2, :RPOBGBS_3, :RPOBGBS_4, :SUL2, :TETB, :TETL, :TETM, :TETO, :TETS,
-                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :GYRA_variant, :PARC_variant
+                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :twenty_three_S1_variant, :twenty_three_S3_variant, :GYRA_variant, :PARC_variant,
+                :RPOBGBS_1_variant, :RPOBGBS_2_variant, :RPOBGBS_3_variant, :RPOBGBS_4_variant
             ) ON DUPLICATE KEY UPDATE
                 lane_id = :lane_id,
                 cps_type = :cps_type,
@@ -217,15 +219,22 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 RIB = :RIB,
                 SRR1 = :SRR1,
                 SRR2 = :SRR2,
+                twenty_three_S1_variant = :twenty_three_S1_variant,
+                twenty_three_S3_variant = :twenty_three_S3_variant,
                 GYRA_variant = :GYRA_variant,
-                PARC_variant = :PARC_variant
+                PARC_variant = :PARC_variant,
+                RPOBGBS_1_variant = :RPOBGBS_1_variant,
+                RPOBGBS_2_variant = :RPOBGBS_2_variant,
+                RPOBGBS_3_variant = :RPOBGBS_3_variant,
+                RPOBGBS_4_variant = :RPOBGBS_4_variant
             """)
 
     SELECT_LANES_IN_SILICO_SQL = text(""" \
             SELECT
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
-                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
+                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant, twenty_three_S3_variant, GYRA_variant, PARC_variant,
+                RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             FROM in_silico
             WHERE
                 lane_id IN :lanes""")
@@ -487,8 +496,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     RIB=self.convert_string(in_silico_data.RIB),
                     SRR1=self.convert_string(in_silico_data.SRR1),
                     SRR2=self.convert_string(in_silico_data.SRR2),
+                    twenty_three_S1_variant=self.convert_string(in_silico_data.twenty_three_S1_variant),
+                    twenty_three_S3_variant=self.convert_string(in_silico_data.twenty_three_S1_variant),
                     GYRA_variant=self.convert_string(in_silico_data.GYRA_variant),
-                    PARC_variant=self.convert_string(in_silico_data.PARC_variant)
+                    PARC_variant=self.convert_string(in_silico_data.PARC_variant),
+                    RPOBGBS_1_variant=self.convert_string(in_silico_data.RPOBGBS_1_variant),
+                    RPOBGBS_2_variant=self.convert_string(in_silico_data.RPOBGBS_2_variant),
+                    RPOBGBS_3_variant=self.convert_string(in_silico_data.RPOBGBS_3_variant),
+                    RPOBGBS_4_variant=self.convert_string(in_silico_data.RPOBGBS_4_variant)
                 )
 
         logger.info("update_lane_in_silico_data completed")
@@ -635,8 +650,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         RIB=row['RIB'],
                         SRR1=row['SRR1'],
                         SRR2=row['SRR2'],
+                        twenty_three_S1_variant=row['twenty_three_S1_variant'],
+                        twenty_three_S3_variant=row['twenty_three_S3_variant'],
                         GYRA_variant=row['GYRA_variant'],
-                        PARC_variant=row['PARC_variant']
+                        PARC_variant=row['PARC_variant'],
+                        RPOBGBS_1_variant=row['RPOBGBS_1_variant'],
+                        RPOBGBS_2_variant=row['RPOBGBS_2_variant'],
+                        RPOBGBS_3_variant=row['RPOBGBS_3_variant'],
+                        RPOBGBS_4_variant=row['RPOBGBS_4_variant']
                     )
                 )
 

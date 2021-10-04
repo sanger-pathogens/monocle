@@ -333,8 +333,14 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 RIB='pos',
                 SRR1='neg',
                 SRR2='pos',
+                twenty_three_S1_variant = None,
+                twenty_three_S3_variant = None,
                 GYRA_variant='*',
-                PARC_variant='*'
+                PARC_variant='*',
+                RPOBGBS_1_variant = None,
+                RPOBGBS_2_variant = None,
+                RPOBGBS_3_variant = None,
+                RPOBGBS_4_variant = None
             ),
             call(
                 MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_IN_SILICO_SQL,
@@ -383,8 +389,14 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 RIB='pos',
                 SRR1='neg',
                 SRR2='pos',
+                twenty_three_S1_variant = None,
+                twenty_three_S3_variant = None,
                 GYRA_variant='GYRA-T78Q,L55A',
-                PARC_variant='PARC-Q17S'
+                PARC_variant='PARC-Q17S',
+                RPOBGBS_1_variant = None,
+                RPOBGBS_2_variant = None,
+                RPOBGBS_3_variant = None,
+                RPOBGBS_4_variant = None
             )
         ]
 

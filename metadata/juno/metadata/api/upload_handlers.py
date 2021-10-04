@@ -138,8 +138,14 @@ class UploadInSilicoHandler(UploadHandler):
                                 RIB=self.get_cell_value('RIB', row),
                                 SRR1=self.get_cell_value('SRR1', row),
                                 SRR2=self.get_cell_value('SRR2', row),
+                                twenty_three_S1_variant=self.get_cell_value('twenty_three_S1_variant', row),
+                                twenty_three_S3_variant=self.get_cell_value('twenty_three_S1_variant', row),
                                 GYRA_variant=self.get_cell_value('GYRA_variant', row),
-                                PARC_variant=self.get_cell_value('PARC_variant', row))
+                                PARC_variant=self.get_cell_value('PARC_variant', row),
+                                RPOBGBS_1_variant=self.get_cell_value('RPOBGBS_1_variant', row),
+                                RPOBGBS_2_variant=self.get_cell_value('RPOBGBS_2_variant', row),
+                                RPOBGBS_3_variant=self.get_cell_value('RPOBGBS_3_variant', row),
+                                RPOBGBS_4_variant=self.get_cell_value('RPOBGBS_4_variant', row))
             results.append(in_silico_data)
         return results
 
