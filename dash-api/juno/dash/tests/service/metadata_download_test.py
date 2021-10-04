@@ -204,8 +204,14 @@ class MetadataDownloadTest(TestCase):
                                                 "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
                                                 "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
                                                 "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
-                                                "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
-                                                "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                                "twenty_three_S1_variant": {"order": 45, "name": "twenty_three_S1_variant", "value": ""},
+                                                "twenty_three_S3_variant": {"order": 46, "name": "twenty_three_S1_variant", "value": ""},
+                                                "GYRA_variant":   {"order": 47, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                                "PARC_variant":   {"order": 48, "name": "PARC_variant", "value": "PARC-Q17S"},
+                                                "RPOBGBS_1_variant": {"order": 49, "name": "RPOBGBS_1_variant", "value": ""},
+                                                "RPOBGBS_2_variant": {"order": 50, "name": "RPOBGBS_2_variant", "value": ""},
+                                                "RPOBGBS_3_variant": {"order": 51, "name": "RPOBGBS_3_variant", "value": ""},
+                                                "RPOBGBS_4_variant": {"order": 52, "name": "RPOBGBS_4_variant", "value": ""}
                                                 }
                                           ]
                                        }"""
@@ -257,8 +263,14 @@ class MetadataDownloadTest(TestCase):
                                  "RIB": 				{"order": 42, "name": "RIB", "value": "pos"},
                                  "SRR1": 				{"order": 43, "name": "SRR1", "value": "neg"},
                                  "SRR2": 				{"order": 44, "name": "SRR2", "value": "pos"},
-                                 "GYRA_variant":   {"order": 45, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
-                                 "PARC_variant":   {"order": 46, "name": "PARC_variant", "value": "PARC-Q17S"}
+                                 "twenty_three_S1_variant": {"order": 45, "name": "twenty_three_S1_variant", "value": ""},
+                                 "twenty_three_S3_variant": {"order": 46, "name": "twenty_three_S1_variant", "value": ""},
+                                 "GYRA_variant":   {"order": 47, "name": "GYRA_variant", "value": "GYRA-T78Q,L55A"},
+                                 "PARC_variant":   {"order": 48, "name": "PARC_variant", "value": "PARC-Q17S"},
+                                 "RPOBGBS_1_variant": {"order": 49, "name": "RPOBGBS_1_variant", "value": ""},
+                                 "RPOBGBS_2_variant": {"order": 50, "name": "RPOBGBS_2_variant", "value": ""},
+                                 "RPOBGBS_3_variant": {"order": 51, "name": "RPOBGBS_3_variant", "value": ""},
+                                 "RPOBGBS_4_variant": {"order": 52, "name": "RPOBGBS_4_variant", "value": ""}
                                  }
 
 
@@ -270,23 +282,23 @@ class MetadataDownloadTest(TestCase):
    def test_init(self):
       self.assertIsInstance(self.download,            MetadataDownload)
       self.assertIsInstance(self.download.dl_client,  Monocle_Download_Client)
-            
+
    def test_init_values(self):
       self.assertRegex(self.download.dl_client.config['base_url'],   self.base_url_regex)
       self.assertRegex(self.download.dl_client.config['swagger'],    self.endpoint_regex)
       self.assertRegex(self.download.dl_client.config['download'],   self.endpoint_regex)
       self.assertIsInstance(self.download.dl_client.config['metadata_key'], type('a string'))
- 
+
    def test_reject_bad_config(self):
       with self.assertRaises(KeyError):
          doomed = Monocle_Download_Client(set_up=False)
          doomed.set_up(self.bad_config)
-         
+
    def test_missing_config(self):
       with self.assertRaises(FileNotFoundError):
          doomed = Monocle_Download_Client(set_up=False)
          doomed.set_up('no_such_config.yml')
-         
+
    def test_reject_bad_url(self):
       with self.assertRaises(urllib.error.URLError):
          doomed = Monocle_Download_Client(set_up=False)
@@ -294,7 +306,7 @@ class MetadataDownloadTest(TestCase):
          doomed.config['base_url']=self.bad_api_host
          endpoint = doomed.config['download']+self.mock_download_param[0]
          doomed.make_request(endpoint)
-         
+
    def test_reject_bad_endpoint(self):
       with self.assertRaises(urllib.error.URLError):
          doomed = Monocle_Download_Client(set_up=False)
@@ -302,7 +314,7 @@ class MetadataDownloadTest(TestCase):
          doomed.config['base_url']=self.genuine_api_host
          endpoint = self.bad_api_endpoint+self.mock_download_param[0]
          doomed.make_request(endpoint)
- 
+
    @patch.object(Monocle_Download_Client, 'make_request')
    def test_download_metadata(self, mock_request):
       mock_request.return_value = self.mock_metadata_download
@@ -316,7 +328,7 @@ class MetadataDownloadTest(TestCase):
          self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
       # check data are correct
       self.assertEqual(this_lane, self.expected_metadata, msg="returned metadata differ from expected metadata")
-      
+
    @patch.object(Monocle_Download_Client, 'make_request')
    def test_reject_bad_download_metadata_response(self, mock_request):
       with self.assertRaises(ProtocolError):
@@ -342,7 +354,7 @@ class MetadataDownloadTest(TestCase):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_download
          self.download.get_in_silico_data(self.mock_download_param[0])
-         
+
    @patch.object(urllib.request, 'urlopen')
    def test_download_in_silico_data__when_no_in_silico_data_available(self, mock_urlopen):
       mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')

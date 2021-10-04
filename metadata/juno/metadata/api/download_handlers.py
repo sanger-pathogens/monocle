@@ -154,8 +154,14 @@ class DownloadInSilicoHandler(DownloadHandler):
             self._append_to_dict(record_dict, 'RIB', entry.RIB),
             self._append_to_dict(record_dict, 'SRR1', entry.SRR1),
             self._append_to_dict(record_dict, 'SRR2', entry.SRR2),
+            self._append_to_dict(record_dict, 'twenty_three_S1_variant', entry.twenty_three_S1_variant),
+            self._append_to_dict(record_dict, 'twenty_three_S1_variant', entry.twenty_three_S1_variant),
             self._append_to_dict(record_dict, 'GYRA_variant', entry.GYRA_variant),
-            self._append_to_dict(record_dict, 'PARC_variant', entry.PARC_variant)
+            self._append_to_dict(record_dict, 'PARC_variant', entry.PARC_variant),
+            self._append_to_dict(record_dict, 'RPOBGBS_1_variant', entry.RPOBGBS_1_variant),
+            self._append_to_dict(record_dict, 'RPOBGBS_2_variant', entry.RPOBGBS_2_variant),
+            self._append_to_dict(record_dict, 'RPOBGBS_3_variant', entry.RPOBGBS_3_variant),
+            self._append_to_dict(record_dict, 'RPOBGBS_4_variant', entry.RPOBGBS_4_variant)
 
             response.append(record_dict)
 
