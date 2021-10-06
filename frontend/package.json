@@ -30,7 +30,8 @@
   "jest": {
     "testEnvironment": "jsdom",
     "setupFiles": [
-      "./scripts/jest/mockBrowser.js"
+      "./scripts/jest/mockBrowser.js",
+      "./scripts/jest/suppressLogs.js"
     ],
     "transform": {
       "^.+\\.js$": "babel-jest",
