@@ -2,13 +2,13 @@
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
-  import { getBatches } from "../../../dataLoading.js";
+  import { getBatches, getBulkDownloadUrls } from "../../../dataLoading.js";
 
   const PAGE_TITLE_ID = "bulk-download-title";
 
   let formValues = {
-    annotationsChecked: true,
-    assembliesChecked: true
+    annotations: true,
+    assemblies: true
   };
   let batchesPromise = Promise.resolve();
   let downloadLinksRequested;
@@ -16,7 +16,7 @@
   let selectedBatches = null;
 
   $: formValid = selectedBatches &&
-      (formValues.annotationsChecked || formValues.assembliesChecked);
+      (formValues.annotations || formValues.assemblies);
 
   onMount(() => {
     batchesPromise = getBatches(fetch)
@@ -33,10 +33,9 @@
 
   function makeBatchListItem({ name, date, number: numSamples }, institutionKey) {
     const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
-    const batchNameWithData = `${date}: ${name}${numSamplesText}`;
     return {
-      label: batchNameWithData,
-      value: batchNameWithData,
+      label: `${date}: ${name}${numSamplesText}`,
+      value: date,
       group: institutionKey
     };
   }
@@ -50,26 +49,20 @@
     downloadLinksRequested =
       confirm("You won't be able to change the parameters if you proceed.");
     if (downloadLinksRequested) {
-      fetchDownloadLinks()
+      const batchDates = selectedBatches?.map(({value}) => value);
+      getBulkDownloadUrls(fetch, batchDates, formValues)
         .then((downloadLinks = []) => {
           downloadLink = downloadLinks[0];
           if (!downloadLink) {
-            return Promise.reject("no download links returned from the server");
+            console.error("The list of download URLs returned from the server is empty.");
+            return Promise.reject();
           }
         })
-        .catch((err) => {
+        .catch(() => {
           downloadLinksRequested = false;
-          alert(`Error while generating a download link: ${err}.\nPlease try again.`);
+          alert(`Error while generating a download link. Please try again.`);
         });
     }
-  }
-
-  function fetchDownloadLinks() {
-    return fetch("FIXME")
-      .then((resp) => resp.ok && resp.json ?
-        resp.json() :
-        Promise.reject(`${resp.status} ${resp.statusText}`)
-      )
   }
 </script>
 
@@ -103,7 +96,7 @@
         <label>
           <input
             type="checkbox"
-            bind:checked={formValues.assembliesChecked}
+            bind:checked={formValues.assemblies}
           />
           Assemblies
         </label>
@@ -111,7 +104,7 @@
         <label>
           <input
             type="checkbox"
-            bind:checked={formValues.annotationsChecked}
+            bind:checked={formValues.annotations}
           />
           Annotations
         </label>
@@ -163,7 +156,7 @@
     </a>
   {/if}
 {:catch error}
-	<p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
+    <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}
 

@@ -1,9 +1,10 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { getBatches } from "../../../dataLoading.js";
+import { getBatches, getBulkDownloadUrls } from "../../../dataLoading.js";
 import DownloadPage from "./index.svelte";
 
 jest.mock("../../../dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
+  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"]))
 }));
 
 it("shows the loading indicator", () => {
@@ -24,6 +25,18 @@ it("shows an error message if fetching batches rejects", async () => {
 });
 
 describe("once batches are fetched", () => {
+  const BATCHES = [{
+    name: "batch 1",
+    date: "2021-07-30",
+    number: 12
+  }, {
+    name: "batch 2",
+    date: "2020-12-15",
+    number: 32
+  }, {
+    name: "batch 3",
+    date: "2021-07-21"
+  }];
   const ANNOTATIONS_LABEL = "Annotations";
   const ASSEMBLIES_LABEL = "Assemblies";
   const CONFIRM_BUTTON_LABEL = "Confirm";
@@ -77,18 +90,6 @@ describe("once batches are fetched", () => {
   });
 
   describe("batch selector", () => {
-    const BATCHES = [{
-        name: "batch 1",
-        date: "2021-07-30",
-        number: 12
-      }, {
-        name: "batch 2",
-        date: "2020-12-15",
-        number: 32
-      }, {
-        name: "batch 3",
-        date: "2021-07-21"
-      }];
     const BATCHES_PAYLOAD = {
       FioRon: { deliveries: [BATCHES[0], BATCHES[1]] },
       UlmUni: { deliveries: [BATCHES[2]] }
@@ -147,17 +148,11 @@ describe("once batches are fetched", () => {
   });
 
   describe("on form submit", () => {
-    const DOWNLOAD_LINK_GENERATOR_ENDPOINT = "FIXME";
-    const DOWNLOAD_URL = "fake-url";
-
-    global.fetch = jest.fn(() => Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve([DOWNLOAD_URL])
-    }));
+    global.fetch = "fake fetch";
 
     beforeEach(() => {
       global.confirm = () => true;
-      global.fetch.mockClear();
+      getBulkDownloadUrls.mockClear();
     });
 
     it("prevents submitting the form directly w/o clicking confirm if the form isn't valid", async () => {
@@ -168,7 +163,7 @@ describe("once batches are fetched", () => {
       await fireEvent.submit(form);
 
       expect(confirm).not.toHaveBeenCalled();
-      expect(fetch).not.toHaveBeenCalled();
+      expect(getBulkDownloadUrls).not.toHaveBeenCalled();
     });
 
     it("asks for confirmation", async () => {
@@ -202,17 +197,22 @@ describe("once batches are fetched", () => {
 
       await selectBatchesAndConfirm(findByRole, getByRole);
 
-      expect(fetch).toHaveBeenCalledTimes(1);
-      expect(fetch).toHaveBeenCalledWith(DOWNLOAD_LINK_GENERATOR_ENDPOINT);
+      expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
+      expect(getBulkDownloadUrls).toHaveBeenCalledWith(
+        fetch,
+        BATCHES.map(({date}) => date),
+        {assemblies: true, annotations: true});
       await waitFor(() => {
         const downloadLink = getByRole("link", { name: "Download samples" });
-        expect(downloadLink.href.endsWith(DOWNLOAD_URL)).toBeTruthy();
+        expect(downloadLink.href.endsWith("fake-download-url")).toBeTruthy();
         expect(downloadLink.download).toBe("");
         expect(downloadLink.target).toBe("_blank");
       });
     });
 
     describe("informs the user about an error", () => {
+      const EXPECTED_ERROR_MSG = "Error while generating a download link. Please try again.";
+
       global.alert = jest.fn();
 
       afterEach(() => {
@@ -221,31 +221,25 @@ describe("once batches are fetched", () => {
 
       it("when fetching download links fails", async () => {
         const { findByRole, getByRole } = render(DownloadPage);
-        const fetchError = "some error";
-        global.fetch.mockRejectedValueOnce(fetchError);
+        getBulkDownloadUrls.mockRejectedValueOnce();
 
         await selectBatchesAndConfirm(findByRole, getByRole);
 
         await waitFor(() => {
           expect(alert).toHaveBeenCalledTimes(1);
-          expect(alert).toHaveBeenCalledWith(
-            `Error while generating a download link: ${fetchError}.\nPlease try again.`);
+          expect(alert).toHaveBeenCalledWith(EXPECTED_ERROR_MSG);
         });
       });
 
       it("when no download links are returned from the server", async () => {
         const { findByRole, getByRole } = render(DownloadPage);
-        global.fetch.mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve()
-        });
+        getBulkDownloadUrls.mockResolvedValueOnce();
 
         await selectBatchesAndConfirm(findByRole, getByRole);
 
         await waitFor(() => {
           expect(alert).toHaveBeenCalledTimes(1);
-          expect(alert).toHaveBeenCalledWith(
-            `Error while generating a download link: no download links returned from the server.\nPlease try again.`);
+          expect(alert).toHaveBeenCalledWith(EXPECTED_ERROR_MSG);
         });
       });
     });

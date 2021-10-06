@@ -18,7 +18,7 @@
 
  function selectBatches() {
     if (!allBatches) {
-      allBatches = batchList.map(({ value }) => value);
+      allBatches = Array.from(batchList);
     }
     selectedBatches = allBatches;
   }
