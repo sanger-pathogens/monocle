@@ -1,5 +1,6 @@
 import {
   getBatches,
+  getBulkDownloadUrls,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
@@ -14,7 +15,7 @@ describe.each([
     fnName: "getBatches",
     getResource: getBatches,
     expectedEndpoints: ["get_batches"],
-    payload: {
+    responsePayload: {
       batches: {
         some: "data",
       }
@@ -22,10 +23,25 @@ describe.each([
     expectedResult: { some: "data" }
   },
   {
+    fnName: "getBulkDownloadUrls",
+    getResource: getBulkDownloadUrls,
+    args: [["2021-05-20"], { assemblies: true, annotations: false }],
+    expectedFetchOpts: {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batches: ["2021-05-20"], assemblies: true, annotations: false })
+    },
+    expectedEndpoints: ["bulk_download_urls"],
+    responsePayload: {
+      download_urls: ["fake_url"],
+    },
+    expectedResult: ["fake_url"]
+  },
+  {
     fnName: "getInstitutionStatus",
     getResource: getInstitutionStatus,
     expectedEndpoints: ["get_institutions", "get_batches", "sequencing_status_summary", "pipeline_status_summary"],
-    payload: {
+    responsePayload: {
       institutions: {
         CRS: { name: "Center for Reducing Suffering" },
         SR: { name: "Sentience Research" }
@@ -55,7 +71,7 @@ describe.each([
     fnName: "getProjectProgress",
     getResource: getProjectProgress,
     expectedEndpoints: ["get_progress"],
-    payload: {
+    responsePayload: {
       progress_graph: {
         data: { date: "21.08.21", "samples received": 200, "samples sequenced": 50 },
       }
@@ -72,7 +88,7 @@ describe.each([
     fnName: "getUserDetails",
     getResource: getUserDetails,
     expectedEndpoints: ["get_user_details"],
-    payload: {
+    responsePayload: {
       user_details: {
         type: "support"
       }
@@ -81,27 +97,32 @@ describe.each([
       type: "support"
     }
   }
-])("$fnName", ({ getResource, expectedEndpoints, payload, expectedResult }) => {
+])("$fnName", ({
+    getResource, args = [], expectedEndpoints, expectedFetchOpts, responsePayload, expectedResult
+}) => {
   beforeEach(() => {
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(payload)
+      json: () => Promise.resolve(responsePayload)
     });
   });
 
   it("fetches the data from the correct endpoints", async () => {
     fetch.mockClear();
 
-    await getResource(fetch);
+    await getResource(fetch, ...args);
 
     expect(fetch).toHaveBeenCalledTimes(expectedEndpoints.length);
-    expectedEndpoints.forEach((expectedEndpoint) => {
-      expect(fetch).toHaveBeenCalledWith(`${DASHBOARD_API_URL}/${expectedEndpoint}`);
+    expectedEndpoints.forEach((expectedEndpoint, i) => {
+      const fetchArgs = fetch.mock.calls[i];
+      expect(fetchArgs[0]).toBe(`${DASHBOARD_API_URL}/${expectedEndpoint}`);
+      const actualFetchOpts = fetchArgs[1];
+      expect([undefined, expectedFetchOpts]).toContainEqual(actualFetchOpts);
     });
   });
 
   it("returns result in the correct format", async () => {
-    const result = await getResource(fetch);
+    const result = await getResource(fetch, ...args);
 
     expect(result).toEqual(expectedResult);
   });

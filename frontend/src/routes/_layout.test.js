@@ -39,7 +39,6 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   await waitFor(() => {
     expect(getByRole("heading", { name: "Monocle" }))
       .toBeDefined();
-    expect(console.error).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith(errorMessage);
   });
 });

@@ -1,3 +1,6 @@
+const HTTP_POST = "POST";
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
 export function getInstitutionStatus(fetch) {
   return Promise.all([
     getInstitutions(fetch),
@@ -35,41 +38,57 @@ export function getProjectProgress(fetch) {
 
 //TODO use service workers to cache response
 export function getBatches(fetch) {
-  return fetchDashboardResource("get_batches", "batches", fetch);
+  return fetchDashboardApiResource("get_batches", "batches", fetch);
+}
+
+export function getBulkDownloadUrls(fetch, batchDates, { assemblies, annotations }) {
+  return fetchDashboardApiResource(
+    "bulk_download_urls", "download_urls", fetch, {
+        method: HTTP_POST,
+        headers: JSON_HEADERS,
+        body: JSON.stringify({
+            batches: batchDates,
+            assemblies,
+            annotations
+        })
+    });
 }
 
 export function getUserDetails(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);
 }
 
 function getProjectProgressData(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "get_progress", "progress_graph", fetch);
 }
 
 function getInstitutions(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "get_institutions", "institutions", fetch);
 }
 
 function getSequencingStatus(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "sequencing_status_summary", "sequencing_status", fetch);
 }
 
 function getPipelineStatus(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "pipeline_status_summary", "pipeline_status", fetch);
 }
 
-function fetchDashboardResource(endpoint, resourceKey, fetch) {
-  return fetch(`/dashboard-api/${endpoint}`)
+function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+  return (fetchOptions ?
+    fetch(`/dashboard-api/${endpoint}`, fetchOptions) :
+    fetch(`/dashboard-api/${endpoint}`)
+  )
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => payload?.[resourceKey])
     .catch((err) => {
-      console.log(
+      console.error(
         `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}`
       );
       return Promise.reject(err);
