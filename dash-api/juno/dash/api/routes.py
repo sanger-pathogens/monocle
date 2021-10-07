@@ -157,7 +157,7 @@ def get_authenticated_username(req_obj):
 def _parse_BulkDownloadInput(BulkDownloadInput):
    """ Parse the BulkDownloadInput request body passed to a POST request handler """
    batches     = BulkDownloadInput['batches'] # required
-   assemblies  = BulkDownloadInput['assemblies']  if 'assemblies'  in BulkDownloadInput else False;
-   annotations = BulkDownloadInput['annotations'] if 'annotations' in BulkDownloadInput else False;
-   reads       = BulkDownloadInput['reads']       if 'reads'       in BulkDownloadInput else False;
+   assemblies  = BulkDownloadInput.get('assemblies',  False)
+   annotations = BulkDownloadInput.get('annotations', False)
+   reads       = BulkDownloadInput.get('reads',       False)
    return(batches, assemblies, annotations, reads)
