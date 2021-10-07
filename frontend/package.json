@@ -18,13 +18,13 @@
     "@sveltejs/kit": "next",
     "@testing-library/svelte": "^3.0.3",
     "babel-jest": "^27.0.6",
-    "eslint": "^7.22.0",
-    "eslint-plugin-svelte3": "^3.2.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-svelte3": "^3.2.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.0.6",
-    "svelte": "^3.34.0",
+    "svelte": "^3.43.1",
     "svelte-jester": "^1.8.2",
-    "svelte-select": "^4.4.0"
+    "svelte-select": "^4.4.3"
   },
   "_id": "Monocle frontend@0.0.1",
   "jest": {

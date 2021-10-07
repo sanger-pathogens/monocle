@@ -4,6 +4,7 @@ import DownloadPage from "./index.svelte";
 
 jest.mock("../../../dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
+  getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
   getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"]))
 }));
 
@@ -37,12 +38,14 @@ describe("once batches are fetched", () => {
     name: "batch 3",
     date: "2021-07-21"
   }];
+  const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB (42 TB unzipped)";
   const ANNOTATIONS_LABEL = "Annotations";
   const ASSEMBLIES_LABEL = "Assemblies";
   const CONFIRM_BUTTON_LABEL = "Confirm";
   const SELECT_ALL_BATCHES_LABEL = "Select all";
   const ROLE_BUTTON = "button";
   const ROLE_CHECKBOX = "checkbox";
+  const ROLE_OPTION = "option";
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(DownloadPage);
@@ -87,6 +90,45 @@ describe("once batches are fetched", () => {
 
     confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
     expect(confirmButton.disabled).toBeFalsy();
+  });
+
+  it("updates the download estimate if selected batches change", async () => {
+    const { findByRole, queryByRole } = render(DownloadPage);
+
+    await waitFor(() => {
+      const downloadEstimateElement = queryByRole(ROLE_OPTION);
+      expect(downloadEstimateElement).toBeNull();
+    });
+
+    const selectAllBatchesBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+    fireEvent.click(selectAllBatchesBtn);
+
+    await waitFor(() => {
+      const downloadEstimateElement = queryByRole(ROLE_OPTION);
+      expect(downloadEstimateElement.textContent).toBe(EXPECTED_DOWNLOAD_ESTIMATE_TEXT);
+    });
+  });
+
+  it("updates the download estimate if selected data types change", async () => {
+    const { findByRole, getByRole, queryByRole } = render(DownloadPage);
+
+    const selectAllBatchesBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+    fireEvent.click(selectAllBatchesBtn);
+    // Deselect data types.
+    fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL}));
+    fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ANNOTATIONS_LABEL }));
+
+    await waitFor(() => {
+      const downloadEstimateElement = queryByRole(ROLE_OPTION);
+      expect(downloadEstimateElement).toBeNull();
+    });
+
+    fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL}));
+
+    await waitFor(() => {
+      const downloadEstimateElement = queryByRole(ROLE_OPTION);
+      expect(downloadEstimateElement.textContent).toBe(EXPECTED_DOWNLOAD_ESTIMATE_TEXT);
+    });
   });
 
   describe("batch selector", () => {
@@ -155,7 +197,7 @@ describe("once batches are fetched", () => {
       getBulkDownloadUrls.mockClear();
     });
 
-    it("prevents submitting the form directly w/o clicking confirm if the form isn't valid", async () => {
+    it("prevents submitting the form directly w/o clicking confirm if the form isn't comlpete", async () => {
       const { findByRole } = render(DownloadPage);
       global.confirm = jest.fn();
 
@@ -199,9 +241,9 @@ describe("once batches are fetched", () => {
 
       expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
       expect(getBulkDownloadUrls).toHaveBeenCalledWith(
-        fetch,
         BATCHES.map(({date}) => date),
-        {assemblies: true, annotations: true});
+        {assemblies: true, annotations: true},
+        fetch);
       await waitFor(() => {
         const downloadLink = getByRole("link", { name: "Download samples" });
         expect(downloadLink.href.endsWith("fake-download-url")).toBeTruthy();

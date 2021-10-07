@@ -11,17 +11,45 @@
     assemblies: true
   };
   let batchesPromise = Promise.resolve();
+  let downloadEstimate = {};
   let downloadLinksRequested;
   let downloadLink;
   let selectedBatches = null;
 
-  $: formValid = selectedBatches &&
+  $: formComplete = selectedBatches &&
       (formValues.annotations || formValues.assemblies);
+
+  // These arguments are passed just to indicate to Svelte that this reactive statement
+  // should re-run only when one of the args has changed.
+  $: updateDownloadEstimate(selectedBatches, formValues);
 
   onMount(() => {
     batchesPromise = getBatches(fetch)
       .then((batches) => makeListOfBatches(batches));
   });
+
+  // FIXME: debounce to avoid hammering the endpoint w/ requests
+  function updateDownloadEstimate() {
+    if (!formComplete) {
+      unsetDownloadEstimate();
+      return;
+    }
+
+    getBulkDownloadInfo(
+      selectedBatches.map(({value}) => value),
+      formValues,
+      fetch
+    )
+      .then(({size, size_zipped}) => {
+        downloadEstimate.size = size;
+        downloadEstimate.sizeZipped = size_zipped;
+      })
+      .catch(unsetDownloadEstimate);
+  }
+
+  function unsetDownloadEstimate() {
+    downloadEstimate = {};
+  }
 
   function makeListOfBatches(batches = {}) {
     return Object.keys(batches)
@@ -41,7 +69,7 @@
   }
 
   function onSubmit() {
-    if (!formValid) {
+    if (!formComplete) {
       // Prevents submitting the form on Enter while the confirm btn is disabled.
       return;
     }
@@ -50,7 +78,7 @@
       confirm("You won't be able to change the parameters if you proceed.");
     if (downloadLinksRequested) {
       const batchDates = selectedBatches?.map(({value}) => value);
-      getBulkDownloadUrls(fetch, batchDates, formValues)
+      getBulkDownloadUrls(batchDates, formValues, fetch)
         .then((downloadLinks = []) => {
           downloadLink = downloadLinks[0];
           if (!downloadLink) {
@@ -117,19 +145,13 @@
         -->
       </fieldset>
 
-      <fieldset disabled={!selectedBatches}>
-        <legend>Split download</legend>
+      <fieldset disabled={true}>
+        <legend>Download size</legend>
         <select>
-          {#if selectedBatches}
-            <option selected>1 download of 200 GB (1 TB unzipped)</option>
-            <option>2 downloads, ~100 GB per download</option>
-            <option>4 downloads, ~50 GB per download</option>
-            <option>8 downloads, ~25 GB per download</option>
-            <option>16 downloads, ~12.5 GB per download</option>
-            <option>32 downloads, ~6.2 GB per download</option>
-            <option>64 downloads, ~3.1 GB per download</option>
-            <option>128 downloads, ~1.6 GB per download</option>
-            <option>256 downloads, ~0.8 GB per download</option>
+          {#if downloadEstimate?.size}
+            <option selected>
+              1 download of {downloadEstimate.sizeZipped} ({downloadEstimate.size} unzipped)
+            </option>
           {/if}
         </select>
       </fieldset>
@@ -137,7 +159,7 @@
       <button
         type="submit"
         class="primary"
-        disabled={!formValid}
+        disabled={!formComplete}
       >
         Confirm
       </button>
