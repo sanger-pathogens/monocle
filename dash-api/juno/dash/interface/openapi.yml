@@ -114,7 +114,7 @@ paths:
           description: "Authorization information is missing or invalid."
 
   /bulk_download_info:
-    get:
+    post:
       operationId: dash.api.routes.bulk_download_info
       summary: "Return information on expected bulk download based on selected batches and data types"
       parameters:
@@ -141,7 +141,7 @@ paths:
           description: "Authorization information is missing or invalid."
 
   /bulk_download_urls:
-    get:
+    post:
       operationId: dash.api.routes.bulk_download_urls
       summary: "Return download links corresponding to selected batches and data types"
       parameters:
