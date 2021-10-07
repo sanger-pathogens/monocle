@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
-  import { getBatches, getBulkDownloadUrls } from "../../../dataLoading.js";
+  import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls } from "../../../dataLoading.js";
 
   const PAGE_TITLE_ID = "bulk-download-title";
 

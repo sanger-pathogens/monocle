@@ -41,7 +41,20 @@ export function getBatches(fetch) {
   return fetchDashboardApiResource("get_batches", "batches", fetch);
 }
 
-export function getBulkDownloadUrls(fetch, batchDates, { assemblies, annotations }) {
+export function getBulkDownloadInfo(batchDates, { assemblies, annotations }, fetch) {
+  return fetchDashboardApiResource(
+    "bulk_download_info", null, fetch, {
+        method: HTTP_POST,
+        headers: JSON_HEADERS,
+        body: JSON.stringify({
+            batches: batchDates,
+            assemblies,
+            annotations
+        })
+    });
+}
+
+export function getBulkDownloadUrls(batchDates, { assemblies, annotations }, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
         method: HTTP_POST,
@@ -86,7 +99,7 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   )
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
-    .then((payload) => payload?.[resourceKey])
+    .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
     .catch((err) => {
       console.error(
         `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}`

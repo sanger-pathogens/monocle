@@ -1,11 +1,13 @@
 import {
   getBatches,
+  getBulkDownloadInfo,
   getBulkDownloadUrls,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
 } from "./dataLoading.js";
 
+const BATCH_DATES = ["2021-05-20"];
 const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
@@ -23,13 +25,26 @@ describe.each([
     expectedResult: { some: "data" }
   },
   {
-    fnName: "getBulkDownloadUrls",
-    getResource: getBulkDownloadUrls,
-    args: [["2021-05-20"], { assemblies: true, annotations: false }],
+    fnName: "getBulkDownloadInfo",
+    getResource: getBulkDownloadInfo,
+    args: [BATCH_DATES, { assemblies: true, annotations: false }],
     expectedFetchOpts: {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ batches: ["2021-05-20"], assemblies: true, annotations: false })
+        body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
+    },
+    expectedEndpoints: ["bulk_download_info"],
+    responsePayload: "as is",
+    expectedResult: "as is"
+  },
+  {
+    fnName: "getBulkDownloadUrls",
+    getResource: getBulkDownloadUrls,
+    args: [BATCH_DATES, { assemblies: true, annotations: false }],
+    expectedFetchOpts: {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
     },
     expectedEndpoints: ["bulk_download_urls"],
     responsePayload: {
@@ -110,7 +125,7 @@ describe.each([
   it("fetches the data from the correct endpoints", async () => {
     fetch.mockClear();
 
-    await getResource(fetch, ...args);
+    await getResource(...args, fetch);
 
     expect(fetch).toHaveBeenCalledTimes(expectedEndpoints.length);
     expectedEndpoints.forEach((expectedEndpoint, i) => {
@@ -122,7 +137,7 @@ describe.each([
   });
 
   it("returns result in the correct format", async () => {
-    const result = await getResource(fetch, ...args);
+    const result = await getResource(...args, fetch);
 
     expect(result).toEqual(expectedResult);
   });
