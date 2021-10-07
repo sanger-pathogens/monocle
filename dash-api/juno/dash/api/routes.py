@@ -70,8 +70,10 @@ def pipeline_status_summary():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def bulk_download_info(batches: List[str], assemblies: bool = False, annotations: bool = False, reads: bool = False):
+def bulk_download_info(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    batches, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     return call_jsonify(
         ServiceFactory.data_service(get_authenticated_username(request)).get_bulk_download_info(
             batches,
@@ -81,8 +83,10 @@ def bulk_download_info(batches: List[str], assemblies: bool = False, annotations
     ), HTTPStatus.OK
 
 
-def bulk_download_urls(batches: List[str], assemblies: bool = False, annotations: bool = False, reads: bool = False):
+def bulk_download_urls(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    batches, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
     samples = monocle_data.get_samples_from_batches(batches)
     lane_files = monocle_data.get_lane_files(
@@ -102,7 +106,6 @@ def bulk_download_urls(batches: List[str], assemblies: bool = False, annotations
     return call_jsonify({
         'download_urls': [zip_file_url]
     }), HTTPStatus.OK
-
 
 def get_metadata_for_download(institution: str, category: str, status: str):
    """
@@ -150,3 +153,11 @@ def get_authenticated_username(req_obj):
             raise NotAuthorisedException(msg)
 
     return username
+
+def _parse_BulkDownloadInput(BulkDownloadInput):
+   """ Parse the BulkDownloadInput request body passed to a POST request handler """
+   batches     = BulkDownloadInput['batches'] # required
+   assemblies  = BulkDownloadInput['assemblies']  if 'assemblies'  in BulkDownloadInput else False;
+   annotations = BulkDownloadInput['annotations'] if 'annotations' in BulkDownloadInput else False;
+   reads       = BulkDownloadInput['reads']       if 'reads'       in BulkDownloadInput else False;
+   return(batches, assemblies, annotations, reads)
