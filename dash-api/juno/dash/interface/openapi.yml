@@ -297,18 +297,18 @@ components:
 
     BulkDownloadInput:
       type: object
-        required:
-          - batches
-        properties:
-          batches:
+      required:
+         - batches
+      properties:
+         batches:
             type: array
-            items:
-              type: string
-          assemblies:
+         items:
+            type: string
+         assemblies:
             type: boolean
-          annotations:
+         annotations:
             type: boolean
-          reads:
+         reads:
             type: boolean
 
     DownloadInfo:
