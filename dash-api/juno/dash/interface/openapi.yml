@@ -302,8 +302,8 @@ components:
       properties:
          batches:
             type: array
-         items:
-            type: string
+            items:
+               type: string
          assemblies:
             type: boolean
          annotations:
