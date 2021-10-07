@@ -163,7 +163,7 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
-        result = bulk_download_info(batches, assemblies, annotations)
+        result = bulk_download_info({'batches':batches, 'assemblies':assemblies, 'annotations':annotations})
         # Then
         data_service_mock.assert_called_once_with(self.TEST_USER)
         data_service_mock.return_value.get_bulk_download_info.assert_called_once_with(
@@ -205,7 +205,7 @@ class TestRoutes(unittest.TestCase):
             'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
         }
         # When
-        result = bulk_download_urls(batches, assemblies, annotations)
+        result = bulk_download_urls({'batches':batches, 'assemblies':assemblies, 'annotations':annotations})
         # Then
         data_service_mock.assert_called_once_with(self.TEST_USER)
         zip_files_mock.assert_called_once_with(
