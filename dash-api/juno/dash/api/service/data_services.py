@@ -814,7 +814,7 @@ class MonocleData:
       try:
          return path_instance.stat().st_size
       except OSError as err:
-         logging.error(f'Failed to open file {path_instance}: {err}')
+         logging.info(f'Failed to open file {path_instance}: {err}')
          return 0
 
    def _load_data_source_config(self):
