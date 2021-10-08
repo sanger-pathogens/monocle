@@ -10,7 +10,8 @@
     "test:watch": "npm run test -- --watch",
     "test:coverage": "jest src --coverage --coverageDirectory='coverage' --coverageThreshold='{\"global\":{\"branches\":\"50\",\"functions\":\"80\",\"lines\":\"80\",\"statements\":\"80\"}}'",
     "test:summary": "jest src --coverageReporters='text-summary'",
-    "lint": "eslint --ignore-path .gitignore ."
+    "lint": "eslint --ignore-path .gitignore .",
+    "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.7",
@@ -19,6 +20,7 @@
     "@testing-library/svelte": "^3.0.3",
     "babel-jest": "^27.0.6",
     "eslint": "^7.32.0",
+    "eslint-plugin-jest": "^24.5.2",
     "eslint-plugin-svelte3": "^3.2.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.0.6",
