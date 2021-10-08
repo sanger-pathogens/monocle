@@ -37,6 +37,19 @@ or in the watch mode:
 npm run test:watch
 ```
 
+### Linting JS & Svelte code
+
+To display linting issues, run:
+
+```bash
+npm run lint
+```
+To fix linting issues that can be fixed automatically, run:
+
+```bash
+npm run lint:fix
+```
+
 ### Icons
 
 Icon components live in `src/lib/components/icon/`.
