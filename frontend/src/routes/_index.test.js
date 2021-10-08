@@ -1,6 +1,11 @@
 import { render, waitFor, within } from "@testing-library/svelte";
+// eslint-disable-next-line no-unused-vars
 import { session } from "$app/stores";
-import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
+import {
+  getInstitutionStatus,
+  // eslint-disable-next-line no-unused-vars
+  getProjectProgress
+} from "../dataLoading.js";
 import DashboardPage from "./index.svelte";
 
 const INSTITUTIONS = [{
@@ -70,15 +75,15 @@ describe("after data fetching", () => {
     const uploadLinksContainer = await findByRole("navigation");
 
     const metadataUploadLink = within(uploadLinksContainer)
-      .findByRole("link", { name: "Upload metadata" })
+      .findByRole("link", { name: "Upload metadata" });
     expect(metadataUploadLink).toBeDefined();
     const insilicoUploadLink = within(uploadLinksContainer)
-      .findByRole("link", { name: "Upload in-silico data" })
+      .findByRole("link", { name: "Upload in-silico data" });
     expect(insilicoUploadLink).toBeDefined();
   });
 
   it("displays status for each institution", async () => {
-    const { component, getByText } = render(DashboardPage);
+    const { getByText } = render(DashboardPage);
 
     await waitFor(() => {
       INSTITUTIONS.forEach(({ name }) => {

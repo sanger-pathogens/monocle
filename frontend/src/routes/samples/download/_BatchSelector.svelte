@@ -16,7 +16,7 @@
     selectedBatches = null;
   }
 
- function selectBatches() {
+function selectBatches() {
     if (!allBatches) {
       allBatches = Array.from(batchList);
     }

@@ -2,8 +2,8 @@
 	export let midscreen = false;
 
 	const style = midscreen ?
-		"position: absolute; transform: translateX(-50%); left: 50vw; top: 37vh" :
-		undefined;
+	  "position: absolute; transform: translateX(-50%); left: 50vw; top: 37vh" :
+	  undefined;
 </script>
 
 

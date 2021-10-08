@@ -1,19 +1,19 @@
 <script>
 	import { onMount } from "svelte";
 	import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
-  import InstitutionStatus from './_dashboard/_InstitutionStatus.svelte';
-  import LineChart from '$lib/components/LineChart.svelte';
+import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
+import LineChart from "$lib/components/LineChart.svelte";
 	import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import InsilicoUploadLink from './_dashboard/_InsilicoUploadLink.svelte';
-  import MetadataUploadLink from './_dashboard/_MetadataUploadLink.svelte';
+import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
+import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
 
 	let dashboardDataPromise = Promise.resolve();
 
 	onMount(() => {
-		dashboardDataPromise = Promise.all([
-			getInstitutionStatus(fetch),
-			getProjectProgress(fetch)
-		]);
+	  dashboardDataPromise = Promise.all([
+	    getInstitutionStatus(fetch),
+	    getProjectProgress(fetch)
+	  ]);
 	});
 </script>
 

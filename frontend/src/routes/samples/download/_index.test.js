@@ -69,26 +69,26 @@ describe("once batches are fetched", () => {
   });
 
   it("enables the confirm button only when a batch and a data type are selected", async () => {
-    const { findByRole, getByRole, queryByRole } = render(DownloadPage);
+    const { findByRole, getByRole } = render(DownloadPage);
     // Deselect data types:
     let assembliesCheckbox = await findByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL });
     fireEvent.click(assembliesCheckbox);
     const annotationsCheckbox = getByRole(ROLE_CHECKBOX, { name: ANNOTATIONS_LABEL });
     fireEvent.click(annotationsCheckbox);
 
-    let confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    let confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
     expect(confirmButton.disabled).toBeTruthy();
 
     const selectAllBtn = getByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
     await fireEvent.click(selectAllBtn);
 
-    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
     expect(confirmButton.disabled).toBeTruthy();
 
     assembliesCheckbox = getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL });
     await fireEvent.click(assembliesCheckbox);
 
-    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL })
+    confirmButton = getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL });
     expect(confirmButton.disabled).toBeFalsy();
   });
 

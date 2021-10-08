@@ -2,9 +2,9 @@
   import { onMount } from "svelte";
   import { getStores } from "$app/stores";
   import { getUserDetails } from "../dataLoading.js";
-  import Header from '$lib/components/layout/Header.svelte';
-  import Footer from '$lib/components/layout/Footer.svelte';
-  import "../base.css"
+  import Header from "$lib/components/layout/Header.svelte";
+  import Footer from "$lib/components/layout/Footer.svelte";
+  import "../base.css";
 
   const { session } = getStores();
 

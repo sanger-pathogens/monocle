@@ -11,7 +11,7 @@ it("calls the chart library w/ the correct arguments", () => {
   const height = 42;
   const xLabels = ["XXI", "XXII"];
 
-  const { getByText } = render(LineChart, {
+  render(LineChart, {
     datasets,
     height,
     xLabels,

@@ -29,9 +29,9 @@ describe.each([
     getResource: getBulkDownloadInfo,
     args: [BATCH_DATES, { assemblies: true, annotations: false }],
     expectedFetchOpts: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
     },
     expectedEndpoints: ["bulk_download_info"],
     responsePayload: "as is",
@@ -42,9 +42,9 @@ describe.each([
     getResource: getBulkDownloadUrls,
     args: [BATCH_DATES, { assemblies: true, annotations: false }],
     expectedFetchOpts: {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
     },
     expectedEndpoints: ["bulk_download_urls"],
     responsePayload: {
@@ -113,7 +113,7 @@ describe.each([
     }
   }
 ])("$fnName", ({
-    getResource, args = [], expectedEndpoints, expectedFetchOpts, responsePayload, expectedResult
+  getResource, args = [], expectedEndpoints, expectedFetchOpts, responsePayload, expectedResult
 }) => {
   beforeEach(() => {
     fetch.mockResolvedValue({

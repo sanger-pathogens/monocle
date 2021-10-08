@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { render } from "@testing-library/svelte";
 import BatchSelector from "./_BatchSelector.svelte";
 
 it("is rendered w/ the select all & clear buttons", () => {

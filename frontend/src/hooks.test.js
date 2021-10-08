@@ -1,4 +1,4 @@
-import { getSession, serverFetch } from "./hooks.js";
+import { serverFetch } from "./hooks.js";
 
 const DASHBOARD_API_INTERNAL_URL = "http://dash-api:5000/dashboard-api/";
 

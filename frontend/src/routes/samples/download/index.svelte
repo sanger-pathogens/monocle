@@ -88,7 +88,7 @@
         })
         .catch(() => {
           downloadLinksRequested = false;
-          alert(`Error while generating a download link. Please try again.`);
+          alert("Error while generating a download link. Please try again.");
         });
     }
   }

@@ -44,26 +44,26 @@ export function getBatches(fetch) {
 export function getBulkDownloadInfo(batchDates, { assemblies, annotations }, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_info", null, fetch, {
-        method: HTTP_POST,
-        headers: JSON_HEADERS,
-        body: JSON.stringify({
-            batches: batchDates,
-            assemblies,
-            annotations
-        })
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        batches: batchDates,
+        assemblies,
+        annotations
+      })
     });
 }
 
 export function getBulkDownloadUrls(batchDates, { assemblies, annotations }, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
-        method: HTTP_POST,
-        headers: JSON_HEADERS,
-        body: JSON.stringify({
-            batches: batchDates,
-            assemblies,
-            annotations
-        })
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        batches: batchDates,
+        assemblies,
+        annotations
+      })
     });
 }
 
@@ -124,5 +124,5 @@ function collateInstitutionStatus({
         ...pipelineStatus[key]
       },
       key
-    }))
+    }));
 }
