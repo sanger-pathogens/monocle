@@ -514,7 +514,7 @@ class MonocleData:
       
       # retrieve the sample metadata and load into DataFrame
       logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
-      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(samples_for_download.keys()))
+      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(list(samples_for_download.keys())))
       metadata_df                   = pandas.DataFrame(metadata)
       
       # add download links to metadata DataFrame
