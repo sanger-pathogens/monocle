@@ -522,7 +522,9 @@ class MonocleData:
       logging.debug("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
 
       # if there are any in silico data, these are merged into the metadata DataFrame
-      lanes_for_download=[y for x in samples_for_download.values() for y in x]
+      lanes_for_download=[]
+      for this_sample in samples_for_download.keys():
+         lanes_for_download.extend(samples_for_download[this_sample])
       logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
       in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lanes_for_download))
       if len(in_silico_data) > 0:
