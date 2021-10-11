@@ -138,16 +138,10 @@ while [[ $# -gt 0 ]]; do
       -p|--port)
       shift
       SSH_PORT_ARG=${1:+-p "$1"}
-      ;;
-      -p=*|--port=*)
-      SSH_PORT_ARG=${"${key#*=}":+-p "${key#*=}"}
-      ;;
-
-      -p|--port)
-      shift
       SCP_PORT_ARG=${1:+-P "$1"}
       ;;
       -p=*|--port=*)
+      SSH_PORT_ARG=${"${key#*=}":+-p "${key#*=}"}
       SCP_PORT_ARG=${"${key#*=}":+-P "${key#*=}"}
       ;;
 
