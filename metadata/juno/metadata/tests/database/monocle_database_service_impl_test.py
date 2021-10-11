@@ -420,7 +420,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_download_metadata(self) -> None:
 
-        input_list = ['9999STDY8113123:2000_2#10', '9999STDY8113124:2000_2#11']
+        input_list = ['9999STDY8113123', '9999STDY8113124']
         # Fake a returned result set...
         self.connection.execute.return_value = [
             dict(sample_id='9999STDY8113123',
@@ -551,17 +551,17 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(len(metadata), 2)
         self.assertEqual(metadata[0], TEST_SAMPLE_1)
         self.assertEqual(metadata[1], TEST_SAMPLE_2)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_SQL,
-                                                   lanes=('2000_2#10', '2000_2#11'))
+        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_SAMPLES_SQL,
+                                                   samples=('9999STDY8113123', '9999STDY8113124'))
 
     def test_get_download_metadata_noresults(self) -> None:
-        input_list = ['9999STDY8113123:2000_2#10', '9999STDY8113124:2000_2#11']
+        input_list = ['9999STDY8113123', '9999STDY8113124']
         self.connection.execute.return_value = []
 
         metadata = self.under_test.get_download_metadata(input_list)
         self.assertIsNotNone(metadata)
         self.assertIsInstance(metadata, list)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_SQL, lanes=('2000_2#10', '2000_2#11'))
+        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_SAMPLES_SQL, samples=('9999STDY8113123', '9999STDY8113124'))
         self.assertEqual(len(metadata), 0)
 
     def test_convert_string(self) -> None:
