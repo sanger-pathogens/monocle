@@ -24,6 +24,7 @@ usage() {
                         from version number (set by \`--version\`)
        -t --tag         docker images tag; overrides tag derived from version
                         number (set by \`--version\`)
+       -p --port        port number for deployment host
        -c --conn-file   full path to database connection file, required for a database release
 
        (There is no option to set the public domain for the service, as
@@ -83,6 +84,7 @@ ENVIRONMENT=
 VERSION=
 REMOTE_USER=
 REMOTE_HOST=
+SSH_PORT_ARG=
 db_release_file=
 FAILED_CODE=2
 
@@ -128,6 +130,19 @@ while [[ $# -gt 0 ]]; do
       ;;
       -h=*|--host=*)
       REMOTE_HOST="${key#*=}"
+      ;;
+
+      # Assignment to `SCP_PORT_ARG` and `SSH_PORT_ARG` uses the standart parameter expansion of the form
+      # `${var:+word}`, where the expression is expanded to `word` only if `var` isn't unset or null (see
+      # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
+      -p|--port)
+      shift
+      SSH_PORT_ARG=${1:+-p "$1"}
+      SCP_PORT_ARG=${1:+-P "$1"}
+      ;;
+      -p=*|--port=*)
+      SSH_PORT_ARG=${"${key#*=}":+-p "${key#*=}"}
+      SCP_PORT_ARG=${"${key#*=}":+-P "${key#*=}"}
       ;;
 
       -m|--mode)
@@ -262,7 +277,7 @@ fi
 
 # shut down applications first
 # keep connection to avoid multiple password entries
-ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
     echo "Stopping existing containers..."
     docker-compose down
@@ -285,23 +300,23 @@ fi
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_application}" ]]
 then
     # copy production compose file (template)
-    scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+    scp -o ControlPath=%C $SCP_PORT_ARG docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
     # copy production nginx config and metadata api config
     # (may want to remove from git long term)
-    scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
-    scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
+    scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json   $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
-    scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
-    scp -o ControlPath=%C data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.p $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
     # replace the running version
     # using existing connection
     # note: local variables are substituted as normal,
     #       remote variables need escaping
     #       (eg. VERSION vs API_SECRET_KEY)
-    ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+    ssh -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
         set -e
         echo "Setting configuration in docker-compose.yml..."
         sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
@@ -321,7 +336,7 @@ EOF
 fi
 
 # restart the application docker containers
-ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+ssh -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
     echo "Starting containers..."
     docker-compose up -d
@@ -329,4 +344,4 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
 EOF
 
 # close the connection
-ssh -o ControlPath=%C -O exit $REMOTE_USER@$REMOTE_HOST
+ssh -o ControlPath=%C -O exit $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST
