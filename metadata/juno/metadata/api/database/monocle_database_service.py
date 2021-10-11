@@ -40,5 +40,5 @@ class MonocleDatabaseService(ABC):
 
     @abstractmethod
     def get_download_in_silico_data(self, keys: List[str]) -> List[Metadata]:
-        """ Get download in silico data for given list of 'sample:lane' keys """
+        """ Get download in silico data for given list of lane keys """
         pass

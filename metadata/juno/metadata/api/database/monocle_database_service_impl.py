@@ -599,7 +599,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         return results
 
     def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
-        """ Get download in silico data for given list of 'sample:lane' keys """
+        """ Get download in silico data for given list of lane keys """
 
         if len(keys) == 0:
             return []
