@@ -174,7 +174,7 @@ components:
         type: string
         minLength: 3
         maxLength: 270
-        pattern: '^\S+[:]\S+$'
+        pattern: '^\S+$'
       minItems: 1
 
     DownloadField:
