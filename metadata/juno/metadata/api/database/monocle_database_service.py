@@ -42,21 +42,3 @@ class MonocleDatabaseService(ABC):
     def get_download_in_silico_data(self, keys: List[str]) -> List[Metadata]:
         """ Get download in silico data for given list of 'sample:lane' keys """
         pass
-
-    """ =============== Utility methods ============= """
-
-    @staticmethod
-    def split_keys(keys: List[str]) -> List[str]:
-        """ Get lists of samples and associated lanes from 'sample:lane' keys """
-
-        samples = []
-        lanes = []
-        for key in keys:
-            key_parts = key.split(':')
-            if len(key_parts) == 2 and key_parts[0] != '' and key_parts[1] != '':
-                samples.append(key_parts[0])
-                lanes.append(key_parts[1])
-            else:
-                raise ValueError("Illegal key format: " + key)
-
-        return samples, lanes

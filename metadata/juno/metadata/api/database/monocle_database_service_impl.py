@@ -605,8 +605,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             return []
 
         results = []
-        samples, lanes = self.split_keys(keys)
-        lane_ids = tuple(lanes)
+        lane_ids = tuple(keys)
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
