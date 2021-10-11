@@ -38,14 +38,16 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
         """ Get download mock metadata for given list of 'sample:lane' keys """
 
         results = []
-        samples, lanes = self.split_keys(keys)
+        samples = tuple(keys)
+        lane_id  = 0
 
-        for sample_id, lane_id in zip(samples, lanes):
+        for sample_id in samples:
 
+            lane_id += 1
             results.append(
                 Metadata(
                     sanger_sample_id=sample_id,
-                    lane_id=lane_id,
+                    lane_id=f'lane_{str(lane_id)}',
                     submitting_institution='My institution',
                     supplier_sample_name='CUHK_GBS2WT_00',
                     public_name='JN_HK_GBS2WT',

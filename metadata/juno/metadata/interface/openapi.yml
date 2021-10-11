@@ -66,13 +66,13 @@ paths:
       operationId: metadata.api.routes.get_download_metadata
       summary: "Download the metadata for the given download keys"
       requestBody:
-        description: "A list of 'sampleId:laneId' keys"
+        description: "A list of sampleId keys"
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/DownloadKeys"
-              examples: "[\"5903STDY8059122:24936_2#76\", \"5903STDY8059054:24937_1#22\"]"
+              examples: "[\"5903STDY8059122\", \"5903STDY8059054\"]"
       responses:
         200:
           description: "The download result set"
