@@ -300,16 +300,16 @@ fi
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_application}" ]]
 then
     # copy production compose file (template)
-    scp -o ControlPath=%C docker-compose.prod.yml $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+    scp -o ControlPath=%C $SCP_PORT_ARG docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
     # copy production nginx config and metadata api config
     # (may want to remove from git long term)
-    scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $SCP_PORT_ARG $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
-    scp -o ControlPath=%C metadata/juno/config.json    $SCP_PORT_ARG $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
+    scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json   $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
-    scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $SCP_PORT_ARG $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
-    scp -o ControlPath=%C data_view/bin/run_data_view_script_in_docker.sh       $SCP_PORT_ARG $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.p $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
     # replace the running version
     # using existing connection
