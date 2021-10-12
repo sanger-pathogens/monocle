@@ -7,13 +7,13 @@ jest.mock("frappe-charts");
 it("calls the chart library w/ the correct arguments", () => {
   const datasets = ["data"];
   const height = 42;
-  const labels = ["XXI", "XXII"];
+  const xLabels = ["XXI", "XXII"];
   const title = "Chart Title";
 
   const { getByText } = render(LineChart, {
     datasets,
     height,
-    labels,
+    xLabels,
     title
   });
 
@@ -27,7 +27,7 @@ it("calls the chart library w/ the correct arguments", () => {
     title,
     data: {
       datasets,
-      labels,
+      labels: xLabels,
     }
   });
 });

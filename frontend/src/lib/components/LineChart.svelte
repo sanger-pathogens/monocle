@@ -4,7 +4,7 @@
 
   export let datasets = [];
   export let height = 320;
-  export let labels = [];
+  export let xLabels= [];
   export let title;
 
   const chartOptions = {
@@ -18,7 +18,7 @@
       hideDots: 1
     },
     data: {
-      labels,
+      labels: xLabels,
       datasets
     }
   };
