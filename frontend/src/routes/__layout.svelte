@@ -39,15 +39,18 @@
 
   --bp-xl: 1400px;
 
-  --width-main: 50rem;
+  --width-main: min(98vw, var(--bp-xl));
+  --width-reading: 50rem;
 }
 
 main {
   box-sizing:border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 2rem auto;
   padding-left: 0.8rem;
   padding-right: 0.8rem;
-  /* Pages can redefine the variable and thus the width. */
   width: var(--width-main);
   max-width: 100%;
 }

@@ -29,11 +29,6 @@
 
 
 <style>
-:root {
-  /* w/o `!important` redefining `--width-main` variable doesn't work in production build */
-  --width-main: min(98vw, var(--bp-xl)) !important;
-}
-
 article {
   display: flex;
   flex-wrap: wrap;

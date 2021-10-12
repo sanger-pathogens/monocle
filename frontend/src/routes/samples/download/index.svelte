@@ -184,6 +184,11 @@
 
 
 <style>
+form {
+  width: var(--width-reading);
+  max-width: 100%;
+}
+
 form > fieldset {
   padding: 0;
 }
