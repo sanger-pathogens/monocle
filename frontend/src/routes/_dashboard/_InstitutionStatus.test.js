@@ -62,3 +62,15 @@ it.each([
   expect(getByRole(ROLE_HEADING, { name: expectedHeadingText }))
     .toBeDefined();
 });
+
+it("displays the bulk download link", () => {
+  const { getByRole } = render(InstitutionStatus, {
+    institutionName: INSTITUTION_NAME,
+    batches: { received: 42, deliveries: [] },
+    sequencingStatus: {},
+    pipelineStatus: {}
+  });
+
+  expect(getByRole("link", { name: "Bulk data download" }))
+    .toBeDefined();
+});
