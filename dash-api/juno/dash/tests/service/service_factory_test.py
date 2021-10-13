@@ -349,6 +349,9 @@ class MonocleDataTest(TestCase):
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          BATCH_DATES, assemblies=True, annotations=False)
 
+      # TODO delete next line
+      logging.critical("bulk_download_info = {}".format(bulk_download_info))
+
       expected_num_samples = len(BATCH_DATES)
       num_lanes = 3
       expected_byte_size = file_size * num_lanes
@@ -376,11 +379,11 @@ class MonocleDataTest(TestCase):
          samples, assemblies=True, annotations=False)
 
       expected_lane_files = [
-         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_1.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_2.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_3.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_4.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assemblies/fake_lane_id_5.contigs_spades.fa'
+         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_1.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_2.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_3.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_4.contigs_spades.fa',
+         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_5.contigs_spades.fa'
       ]
       actual = list( map(lambda file: str(file), lane_files) )
       self.assertEqual(expected_lane_files, actual)
