@@ -36,6 +36,6 @@ data_download:
    cross_institution_dir   : 'monocle_juno_institution_view/downloads'
    url_path                : 'files/downloads'
 lane_dir:
-   assemblies              : 'monocle_juno/assemblies'
-   annotations             : 'monocle_juno/annotations'
+   assemblies              : 'monocle_juno/assembly'
+   annotations             : 'monocle_juno/annotation'
    reads                   : 'monocle_juno/reads'
