@@ -12,7 +12,7 @@ from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
 from   DataSources.pipeline_status     import PipelineStatus
 from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data           import UserData
-from   data_services                   import MonocleUser, MonocleData, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
+from   data_services                   import MonocleUser, MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                      import format_file_size
 
 BATCH_DATES = ['2020-04-29', '2020-11-16']
@@ -68,7 +68,8 @@ class MonocleUserTest(TestCase):
  
 class MonocleDataTest(TestCase):
 
-   test_config = 'dash/tests/mock_data/data_sources.yml'
+   test_config       = 'dash/tests/mock_data/data_sources.yml'
+   test_config_bad   = 'dash/tests/mock_data/data_sources_bad.yml'
    with open(test_config, 'r') as file:
       data_sources   = yaml.load(file, Loader=yaml.FullLoader)
       mock_url_path  = data_sources['data_download']['url_path']
@@ -349,9 +350,6 @@ class MonocleDataTest(TestCase):
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          BATCH_DATES, assemblies=True, annotations=False)
 
-      # TODO delete next line
-      logging.critical("bulk_download_info = {}".format(bulk_download_info))
-
       expected_num_samples = len(BATCH_DATES)
       num_lanes = 3
       expected_byte_size = file_size * num_lanes
@@ -388,15 +386,13 @@ class MonocleDataTest(TestCase):
       actual = list( map(lambda file: str(file), lane_files) )
       self.assertEqual(expected_lane_files, actual)
 
-   @patch.object(MonocleData,              'get_lane_dir_paths')
-   def test_get_lane_files_returns_empty_list_if_lane_dir_cannot_be_found(self, get_lane_dir_paths_mock):
-      get_lane_dir_paths_mock.side_effect = Exception('some error')
-      samples = list( self.mock_seq_status.values() )
-
-      actual_lane_files = self.monocle_data.get_lane_files(
-         samples, assemblies=True, annotations=False)
-
-      self.assertEqual([], actual_lane_files)
+   def test_get_lane_files_rejects_bad_config(self):
+      doomed = MonocleData(set_up=False)
+      doomed.data_source_config_name = self.test_config_bad
+      with self.assertRaises(DataSourceConfigError):
+         doomed.get_lane_dir_paths(assemblies=True, annotations=False)
+      with self.assertRaises(FileNotFoundError):
+         doomed.get_lane_dir_paths(assemblies=False, annotations=True)
 
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')

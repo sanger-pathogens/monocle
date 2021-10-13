@@ -5,6 +5,7 @@ from   dateutil.relativedelta import relativedelta
 import errno
 from functools                import reduce
 import logging
+import os
 from   os                     import environ
 import pandas
 from   pathlib                import Path
@@ -484,8 +485,9 @@ class MonocleData:
       try:
           lane_file_config = data_sources[LANE_DIR_CONFIG]
       except KeyError:
-         logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config_name}')
-         raise
+         message=f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config_name}'
+         logging.error(message)
+         raise DataSourceConfigError(message)
 
       assembly_lanes_path = None
       annotation_lanes_path = None
@@ -497,6 +499,9 @@ class MonocleData:
             message=f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
+         if not Path(assembly_lanes_path).is_dir():
+            logging.error("assemblies data directory {} does not exist".format(assembly_lanes_path))
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), assembly_lanes_path)
       if kwargs.get('annotations', False):
          try:
             annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
@@ -504,6 +509,10 @@ class MonocleData:
             message=f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
+         if not Path(annotation_lanes_path).is_dir():
+            logging.error("annotations data directory {} does not exist".format(annotation_lanes_path))
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), annotation_lanes_path)
+            #raise DataSourceConfigError('oops')
       if kwargs.get('reads', False):
          try:
             reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
@@ -511,6 +520,9 @@ class MonocleData:
             message=f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
+         if not Path(reads_lanes_path).is_dir():
+            logging.error("reads data directory {} does not exist".format(reads_lanes_path))
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), reads_lanes_path)
 
       return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
 
