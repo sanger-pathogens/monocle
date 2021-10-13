@@ -12,6 +12,27 @@ from flask_injector import FlaskInjector
 CORS_CONTEXT_REGEX = r"/metadata/*"
 OPEN_API_SPEC_FILE = 'openapi.yml'
 
+logging_config = {
+    "version": 1,
+    "formatters": {
+      "default": {
+        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+      }
+    },
+    "handlers": {
+      "wsgi": {
+        "class": "logging.StreamHandler",
+        "stream": "ext://flask.logging.wsgi_errors_stream",
+        "formatter": "default"
+      }
+    },
+    "root": {
+      "level": "DEBUG" if not os.environ.get("LOG_LEVEL") else os.environ.get("LOG_LEVEL"),
+      "handlers": [
+        "wsgi"
+      ]
+    }
+}
 
 def create_application(conf_file, injection_bindings):
     """ Application configuration """
@@ -27,7 +48,7 @@ def create_application(conf_file, injection_bindings):
         app_handle.app.config.update(json.load(config_file))
 
     # Load logging configuration
-    logging.config.dictConfig(app_handle.app.config.get('logging_config'))
+    logging.config.dictConfig(logging_config)
 
     # Turn off automatic ordering of JSON keys
     app_handle.app.config['JSON_SORT_KEYS'] = False
