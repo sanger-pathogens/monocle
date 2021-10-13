@@ -31,6 +31,7 @@
 		title="Project Progress"
 		datasets={projectProgress.datasets}
 		xLabels={projectProgress.dates}
+		yLabel="# of samples"
 	/>
 
 	{#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
