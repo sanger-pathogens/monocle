@@ -481,10 +481,11 @@ class MonocleData:
          raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), self.data_source_config_name)
 
       data_sources = self._load_data_source_config()
-      lane_file_config = data_sources[LANE_DIR_CONFIG]
-      if not lane_file_config:
+      try:
+          lane_file_config = data_sources[LANE_DIR_CONFIG]
+      except KeyError:
          logging.error(f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config_name}')
-         return
+         raise
 
       assembly_lanes_path = None
       annotation_lanes_path = None
@@ -492,21 +493,21 @@ class MonocleData:
       if kwargs.get('assemblies', False):
          try:
             assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
-         except KeyError as err:
+         except KeyError:
             message=f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
       if kwargs.get('annotations', False):
          try:
             annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
-         except KeyError as err:
+         except KeyError:
             message=f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
       if kwargs.get('reads', False):
          try:
             reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
-         except KeyError as err:
+         except KeyError:
             message=f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
             logging.error(message)
             raise DataSourceConfigError(message)
