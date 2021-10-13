@@ -36,6 +36,6 @@ data_download:
    cross_institution_dir : 'dash/tests/mock_data/monocle_juno_institution_view/downloads'
    url_path              : 'files/downloads'
 lane_dir:
-   assemblies            : 'dash/tests/mock_data/monocle_juno/assemblies'
-   annotations           : 'dash/tests/mock_data/monocle_juno/annotations'
+   assemblies            : 'dash/tests/mock_data/monocle_juno/assembly'
+   annotations           : 'dash/tests/mock_data/monocle_juno/annotation'
    reads                 : 'dash/tests/mock_data/monocle_juno/reads'
