@@ -2,6 +2,7 @@ from   collections            import defaultdict
 from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_ALL
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
+import errno
 from functools                import reduce
 import logging
 from   os                     import environ
@@ -50,6 +51,8 @@ class MonocleUser:
       self.record = self.user_data.get_user_details(authenticated_username)
       return self.record
 
+class DataSourceConfigError(Exception):
+    pass
 
 class MonocleData:
    """
@@ -462,24 +465,20 @@ class MonocleData:
       Pass a list of samples and an optional boolean flag per assembly, annotation, and reads types of lane files.
       Returns a list of file names for lanes corresponding to the parameters.
       """
-      try:
-         assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
-            assemblies=kwargs.get('assemblies', False),
-            annotations=kwargs.get('annotations', False),
-            reads=kwargs.get('reads', False))
-      except:
-         return []
-
-      else:
-         return self._get_lane_files(samples,
-            assembly_lanes_path=assembly_lanes_path,
-            annotation_lanes_path=annotation_lanes_path,
-            read_lanes_path=read_lanes_path)
+      assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
+         assemblies=kwargs.get('assemblies', False),
+         annotations=kwargs.get('annotations', False),
+         reads=kwargs.get('reads', False))
+      
+      return self._get_lane_files(samples,
+         assembly_lanes_path=assembly_lanes_path,
+         annotation_lanes_path=annotation_lanes_path,
+         read_lanes_path=read_lanes_path)
 
    def get_lane_dir_paths(self, **kwargs):
       if not Path(self.data_source_config_name).is_file():
          logging.error(f'Data source config file {self.data_source_config_name} missing')
-         return
+         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), self.data_source_config_name)
 
       data_sources = self._load_data_source_config()
       lane_file_config = data_sources[LANE_DIR_CONFIG]
@@ -491,23 +490,26 @@ class MonocleData:
       annotation_lanes_path = None
       reads_lanes_path = None
       if kwargs.get('assemblies', False):
-         assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
-         if not assembly_lanes_path:
-            logging.error(
-               f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
-            return
+         try:
+            assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
+         except KeyError as err:
+            message=f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
+            logging.error(message)
+            raise DataSourceConfigError(message)
       if kwargs.get('annotations', False):
-         annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
-         if not annotation_lanes_path:
-            logging.error(
-               f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
-            return
+         try:
+            annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
+         except KeyError as err:
+            message=f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
+            logging.error(message)
+            raise DataSourceConfigError(message)
       if kwargs.get('reads', False):
-         reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
-         if not reads_lanes_path:
-            logging.error(
-               f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}')
-            return
+         try:
+            reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
+         except KeyError as err:
+            message=f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
+            logging.error(message)
+            raise DataSourceConfigError(message)
 
       return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
 
@@ -812,6 +814,9 @@ class MonocleData:
 
    def _get_file_size(self, path_instance):
       try:
+         # TODO delete next 2 lines when done testing
+         size=path_instance.stat().st_size
+         logging.critical(f'FOUND A FILE: {path_instance}  {size}')
          return path_instance.stat().st_size
       except OSError as err:
          logging.info(f'Failed to open file {path_instance}: {err}')
