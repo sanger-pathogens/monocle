@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { getBatches, getBulkDownloadUrls } from "../../../dataLoading.js";
+import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls } from "../../../dataLoading.js";
 import DownloadPage from "./index.svelte";
 
 jest.mock("../../../dataLoading.js", () => ({
@@ -46,6 +46,11 @@ describe("once batches are fetched", () => {
   const ROLE_BUTTON = "button";
   const ROLE_CHECKBOX = "checkbox";
   const ROLE_OPTION = "option";
+
+  global.setTimeout = jest.fn((callback) => {
+    callback();
+  });
+  global.clearTimeout = jest.fn();
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(DownloadPage);
@@ -129,6 +134,33 @@ describe("once batches are fetched", () => {
       const downloadEstimateElement = queryByRole(ROLE_OPTION);
       expect(downloadEstimateElement.textContent).toBe(EXPECTED_DOWNLOAD_ESTIMATE_TEXT);
     });
+  });
+
+  it("debounces the download estimate request", async () => {
+    clearTimeout.mockClear();
+    setTimeout.mockClear();
+    const { findByRole, getByRole } = render(DownloadPage);
+
+    const selectAllBatchesBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+    await fireEvent.click(selectAllBatchesBtn);
+
+    let clearTimeoutCallOrder = clearTimeout.mock.invocationCallOrder[0];
+    let setTimeoutCallOrder = setTimeout.mock.invocationCallOrder[0];
+    expect(clearTimeoutCallOrder).toBeLessThan(setTimeoutCallOrder);
+    // `2` calls: one after the initial rendering and one after the click to select all batches.
+    expect(clearTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+
+    clearTimeout.mockClear();
+    setTimeout.mockClear();
+    fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL}));
+    await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL}));
+
+    clearTimeoutCallOrder = clearTimeout.mock.invocationCallOrder[0];
+    setTimeoutCallOrder = setTimeout.mock.invocationCallOrder[0];
+    expect(clearTimeoutCallOrder).toBeLessThan(setTimeoutCallOrder);
+    expect(clearTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeout).toHaveBeenCalledTimes(1);
   });
 
   describe("batch selector", () => {

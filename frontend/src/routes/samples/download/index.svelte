@@ -4,6 +4,7 @@
   import BatchSelector from "./_BatchSelector.svelte";
   import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls } from "../../../dataLoading.js";
 
+  const MAX_REQUEST_FREQUENCY_MS = 1500;
   const PAGE_TITLE_ID = "bulk-download-title";
 
   let formValues = {
@@ -11,6 +12,7 @@
     assemblies: true
   };
   let batchesPromise = Promise.resolve();
+  let debounceTimeoutId;
   let downloadEstimate = {};
   let downloadLinksRequested;
   let downloadLink;
@@ -28,8 +30,11 @@
       .then((batches) => makeListOfBatches(batches));
   });
 
-  // FIXME: debounce to avoid hammering the endpoint w/ requests
   function updateDownloadEstimate() {
+    debounce(_updateDownloadEstimate);
+  }
+
+  function _updateDownloadEstimate() {
     if (!formComplete) {
       unsetDownloadEstimate();
       return;
@@ -91,6 +96,12 @@
           alert("Error while generating a download link. Please try again.");
         });
     }
+  }
+
+  function debounce(callback) {
+    // Clear the previous timeout and set a new one.
+    clearTimeout(debounceTimeoutId);
+    debounceTimeoutId = setTimeout(callback, MAX_REQUEST_FREQUENCY_MS);
   }
 </script>
 
