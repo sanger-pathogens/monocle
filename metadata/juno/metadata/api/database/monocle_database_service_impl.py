@@ -118,7 +118,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin_method = :vancomycin_method
             """)
 
-    SELECT_LANES_SQL = text(""" \
+    SELECT_SAMPLES_SQL = text(""" \
             SELECT
                 sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
@@ -133,7 +133,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin, vancomycin_method
             FROM api_sample
             WHERE
-                lane_id IN :lanes""")
+                sample_id IN :samples""")
 
     SELECT_INSTITUTIONS_SQL = text(""" \
                 SELECT name, country, latitude, longitude
@@ -509,17 +509,23 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         logger.info("update_lane_in_silico_data completed")
 
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
-        """ Get download metadata for given list of 'sample:lane' keys """
+        """ Get download metadata for given list of samples """
 
         if len(keys) == 0:
             return []
 
         results = []
-        samples, lanes = self.split_keys(keys)
-        lane_ids = tuple(lanes)
+        sample_ids = tuple(keys)
+
+        logger.info(
+            "get_download_metadata: About to pull {} sample records from the database...".format(len(sample_ids))
+        )
+        logger.debug(
+            "get_download_metadata: Pulling sample ids {} from the database...".format(sample_ids)
+        )
 
         with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_LANES_SQL, lanes=lane_ids)
+            rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sample_ids)
 
             for row in rs:
                 results.append(
@@ -586,18 +592,20 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         linezolid_method=row['linezolid_method']
                     )
                 )
+        logger.debug(
+            "get_download_metadata: Pulled records of samples {} from the database...".format(results)
+        )
 
         return results
 
     def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
-        """ Get download in silico data for given list of 'sample:lane' keys """
+        """ Get download in silico data for given list of lane keys """
 
         if len(keys) == 0:
             return []
 
         results = []
-        samples, lanes = self.split_keys(keys)
-        lane_ids = tuple(lanes)
+        lane_ids = tuple(keys)
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
