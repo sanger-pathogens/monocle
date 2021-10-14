@@ -30,7 +30,8 @@
 	<LineChart
 		title="Project Progress"
 		datasets={projectProgress.datasets}
-		labels={projectProgress.dates}
+		xLabels={projectProgress.dates}
+		yLabel="# of samples"
 	/>
 
 	{#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
