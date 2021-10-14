@@ -552,7 +552,8 @@ class MonocleData:
       try:
           return data_source_config['data_download']['cross_institution_dir']
       except KeyError as err:
-          return self._download_config_error(err)
+          self._download_config_error(err)
+          raise
 
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
