@@ -33,7 +33,7 @@ monocle_ldap:
    employee_type_attr: 'employeeType'
 data_download:
    web_dir               : 'dash/tests/mock_data/monocle_juno_web_root/downloads'
-   cross_institution_dir : 'dash/tests/mock_data/monocle_juno_institution_view/downloads'
+   cross_institution_dir : 'downloads'
    url_path              : 'files/downloads'
 lane_dir:
    assemblies            : 'dash/tests/mock_data/monocle_juno/assembly'

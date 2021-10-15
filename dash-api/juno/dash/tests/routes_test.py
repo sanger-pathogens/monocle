@@ -1,5 +1,6 @@
 from flask import Response
 from http import HTTPStatus
+import pathlib
 import json
 import unittest
 from unittest.mock import patch, Mock
@@ -178,7 +179,9 @@ class TestRoutes(unittest.TestCase):
     @patch('dash.api.routes.zip_files')
     @patch('dash.api.routes.uuid4')
     @patch.object(ServiceFactory, 'data_service')
+    @patch('pathlib.Path.is_dir')
     def test_get_bulk_download_urls(self,
+            is_dir_mock,
             data_service_mock,
             uuid4_mock,
             zip_files_mock,
@@ -192,6 +195,7 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         data_service_mock.return_value.get_samples_from_batches.return_value = samples
+        is_dir_mock.return_value = True
         uuid_hex = '123'
         uuid4_mock.return_value.hex = uuid_hex
         zip_file_basename = f'{"_".join(batches)}__{uuid_hex}'
@@ -211,7 +215,9 @@ class TestRoutes(unittest.TestCase):
         zip_files_mock.assert_called_once_with(
             lane_files,
             basename=zip_file_basename,
-            location=zip_file_location)
+            location=zip_file_location,
+            ignoreMissingFiles=True
+            )
         data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)

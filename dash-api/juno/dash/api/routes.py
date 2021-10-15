@@ -1,7 +1,10 @@
 import logging
 from flask import jsonify, request, Response
 from datetime import datetime
+import errno
 from http import HTTPStatus
+import os
+from pathlib import Path
 from typing import List
 from uuid import uuid4
 
@@ -95,10 +98,18 @@ def bulk_download_urls(body):
         annotations=annotations,
         reads=reads)
     zip_file_basename = f'{"_".join(batches)}__{uuid4().hex}'
+    zip_file_location = monocle_data.get_zip_download_location()
+    logging.info("{} data files to be included in ZIP file {}/{}.zip".format(len(lane_files), zip_file_location, zip_file_basename))
+    if not Path(zip_file_location).is_dir():
+        logging.error("data downloads directory {} does not exist".format(zip_file_location))
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), zip_file_location)
+    logging.debug("data files: {}".format(lane_files))
     zip_files(
         lane_files,
         basename=zip_file_basename,
-        location=monocle_data.get_zip_download_location())
+        location=zip_file_location,
+        ignoreMissingFiles=True
+        )
     zip_file_url = '/'.join([
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
         zip_file_basename + ZIP_SUFFIX])

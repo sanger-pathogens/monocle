@@ -548,9 +548,13 @@ class MonocleData:
       return lane_files
 
    def get_zip_download_location(self):
-      data_source_config = self._load_data_source_config()
+      data_source_config      = self._load_data_source_config()
+      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
+      if data_inst_view_environ not in environ:
+         return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
       try:
-          return data_source_config['data_download']['cross_institution_dir']
+          cross_institution_dir = data_source_config['data_download']['cross_institution_dir']
+          return Path(environ[data_inst_view_environ], cross_institution_dir)
       except KeyError as err:
           self._download_config_error(err)
           raise
@@ -728,7 +732,7 @@ class MonocleData:
    
    def make_download_symlink(self, target_institution=None, **kwargs):
       """
-      Pass the institution name.
+      Pass the institution name
       
       This creates a symlink from the web server download directory to the
       directory in which an institution's sample data (annotations,
@@ -741,7 +745,8 @@ class MonocleData:
       """
       download_config_section = 'data_download'
       download_dir_param      = 'web_dir'
-      download_url_path       = 'url_path'
+      download_url_path_param = 'url_path'
+      cross_institution_dir_param = 'cross_institution_dir'
       data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
       # get web server directory, and check it exists
       if not Path(self.data_source_config_name).is_file():
@@ -751,9 +756,12 @@ class MonocleData:
       if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
          return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_dir_param))
       download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
-      if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
-         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_url_path))
-      download_url_path  = data_sources[download_config_section][download_url_path]
+      if download_config_section not in data_sources or download_url_path_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_url_path_param))
+      download_url_path  = data_sources[download_config_section][download_url_path_param]
+      if download_config_section not in data_sources or cross_institution_dir_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,cross_institution_dir_param))
+      cross_institution_dir  = data_sources[download_config_section][cross_institution_dir_param]
       if not download_web_dir.is_dir():
          return self._download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
       logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
@@ -762,7 +770,7 @@ class MonocleData:
       # to a volume mount that is also set up by docker-compose.)
       if data_inst_view_environ not in environ:
          return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
-      child_dir = 'downloads' if kwargs.get('cross_institution') else self.institution_db_key_to_dict[target_institution]
+      child_dir = cross_institution_dir if kwargs.get('cross_institution') else self.institution_db_key_to_dict[target_institution]
       download_host_dir = Path(environ[data_inst_view_environ], child_dir)
       if not download_host_dir.is_dir():
          return self._download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
@@ -830,7 +838,7 @@ class MonocleData:
       try:
          # TODO delete next 2 lines when done testing
          size=path_instance.stat().st_size
-         logging.critical(f'FOUND A FILE: {path_instance}  {size}')
+         logging.debug(f'counting size of download file: {path_instance}  {size}')
          return path_instance.stat().st_size
       except OSError as err:
          logging.info(f'Failed to open file {path_instance}: {err}')
@@ -848,3 +856,4 @@ class MonocleData:
       """
       logging.error("Invalid data download config: {}".format(message))
       return None
+
