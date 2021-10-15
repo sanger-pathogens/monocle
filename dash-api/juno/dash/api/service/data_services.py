@@ -732,7 +732,7 @@ class MonocleData:
    
    def make_download_symlink(self, target_institution=None, **kwargs):
       """
-      Pass the institution name
+      Pass the institution name _or_ cross_institution=True
       
       This creates a symlink from the web server download directory to the
       directory in which an institution's sample data (annotations,
@@ -743,6 +743,11 @@ class MonocleData:
       
       The symlink path (relative to web server document root) is returned.
       """
+      if target_institution is None and not kwargs.get('cross_institution'):
+         message="must pass either a target_institution name or 'cross_institution=True'"
+         logging.error("{} parameter error: {}".format(__class__.__name__,message))
+         ValueError(message)
+      
       download_config_section = 'data_download'
       download_dir_param      = 'web_dir'
       download_url_path_param = 'url_path'
