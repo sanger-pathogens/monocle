@@ -16,7 +16,7 @@ from dash.api.service.data_services import MonocleData
 
 INITIAL_DIR = Path().absolute()
 # directory in which the data files are located
-DATA_DIR='/home/ubuntu/monocle_juno'
+DATA_DIR='/home/monocle/monocle_juno'
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
 def create_download_view_for_sample_data(db, institution_name_to_id):

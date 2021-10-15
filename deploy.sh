@@ -35,7 +35,7 @@ usage() {
 
        Example 1: deploy code to pathogens_dev instance and run the associated database release
                   using the db.cnf connection file:
-       $0 -e dev -v 0.1.45 -m all -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
+       $0 -e dev -v 0.1.45 -m all -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
           
        Example 2: deploy unstable (pre-release) code version as \`dev_user@localhost\`
        $0 -e dev -u dev_user -h localhost --domain localhost --branch master --tag unstable
@@ -46,7 +46,7 @@ usage() {
        $0 -e dev -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
 
        Example 4: deploy only the 0.1.45 database release using a db.cnf database connection file:
-       $0 -e dev -v 0.1.45 -m database -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
+       $0 -e dev -v 0.1.45 -m database -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
 "
   exit 1
 }
