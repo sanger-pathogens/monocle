@@ -853,12 +853,12 @@ class MonocleData:
       with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
          return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
 
-   def _download_config_error(self, message):
+   def _download_config_error(self, description):
       """
       Call for errors occurring in make_download_symlink().
-      Pass error message, which is logged.
-      Always returns None.
+      Pass error description of problem, which is logged.
+      Raises DataSourceConfigError.
       """
-      logging.error("Invalid data download config: {}".format(message))
-      return None
-
+      message="Invalid data download config: {}".format(description)
+      logging.error(message)
+      raise DataSourceConfigError(message)
