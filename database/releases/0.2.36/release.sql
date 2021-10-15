@@ -1,5 +1,5 @@
 
--- Add new institutionw
+-- Add new institutions
 
 insert into api_institution (name, country, latitude, longitude)
 values ('Respiratory and Meningeal Pathogens Research Unit, University of the Witwatersrand', 'South Africa', -26.187832582, 28.024833234);
