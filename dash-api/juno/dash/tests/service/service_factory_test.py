@@ -394,6 +394,26 @@ class MonocleDataTest(TestCase):
       with self.assertRaises(FileNotFoundError):
          doomed.get_lane_dir_paths(assemblies=False, annotations=True)
 
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_zip_download_location(self):
+      download_location = self.monocle_data.get_zip_download_location()
+
+      self.assertEqual(Path(self.mock_inst_view_dir, 'downloads'), download_location)
+
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):
+      del environ['DATA_INSTITUTION_VIEW']
+
+      with self.assertRaises(DataSourceConfigError):
+         self.monocle_data.get_zip_download_location()
+
+   def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
+      monocle_data_with_bad_config = MonocleData(set_up=False)
+      monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
+
+      with self.assertRaises(DataSourceConfigError):
+         monocle_data_with_bad_config.get_zip_download_location()
+
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -401,7 +421,9 @@ class MonocleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
