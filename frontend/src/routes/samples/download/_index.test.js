@@ -1,11 +1,12 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls } from "../../../dataLoading.js";
+import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls, getInstitutions } from "../../../dataLoading.js";
 import DownloadPage from "./index.svelte";
 
 jest.mock("../../../dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
-  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"]))
+  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"])),
+  getInstitutions: jest.fn(() => Promise.resolve()),
 }));
 
 it("shows the loading indicator", () => {
@@ -174,18 +175,35 @@ describe("once batches are fetched", () => {
     });
 
     it("displays a list of available batches and their institutions when clicked", async () => {
+      const institutionsPayload = Object.keys(BATCHES_PAYLOAD)
+        .reduce((accum, institutionKey) => {
+          accum[institutionKey] = { name: `full name of ${institutionKey}` };
+          return accum;
+        }, {});
+      getInstitutions.mockResolvedValueOnce(institutionsPayload);
       const { findByRole, getByText } = render(DownloadPage);
 
       const selector = await findByRole("textbox");
       await fireEvent.click(selector);
 
-      const institutions = Object.keys(BATCHES_PAYLOAD);
-      institutions.forEach((institution) => {
-        expect(getByText(institution)).toBeDefined();
+      Object.values(institutionsPayload).forEach(({ name: institutionName }) => {
+        expect(getByText(institutionName)).toBeDefined();
       });
       BATCHES.forEach(({ name, date, number: numSamples }) => {
         const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
         expect(getByText(`${date}: ${name}${numSamplesText}`)).toBeDefined();
+      });
+    });
+
+    it("displays institution keys if full names aren't available", async () => {
+      getInstitutions.mockRejectedValueOnce();
+      const { findByRole, getByText } = render(DownloadPage);
+
+      const selector = await findByRole("textbox");
+      await fireEvent.click(selector);
+
+      Object.keys(BATCHES_PAYLOAD).forEach((institutionKey) => {
+        expect(getByText(institutionKey)).toBeDefined();
       });
     });
 

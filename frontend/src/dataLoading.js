@@ -67,6 +67,11 @@ export function getBulkDownloadUrls(batchDates, { assemblies, annotations }, fet
     });
 }
 
+export function getInstitutions(fetch) {
+  return fetchDashboardApiResource(
+    "get_institutions", "institutions", fetch);
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);
@@ -75,11 +80,6 @@ export function getUserDetails(fetch) {
 function getProjectProgressData(fetch) {
   return fetchDashboardApiResource(
     "get_progress", "progress_graph", fetch);
-}
-
-function getInstitutions(fetch) {
-  return fetchDashboardApiResource(
-    "get_institutions", "institutions", fetch);
 }
 
 function getSequencingStatus(fetch) {

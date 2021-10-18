@@ -2,16 +2,17 @@
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
-  import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls } from "../../../dataLoading.js";
+  import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls, getInstitutions } from "../../../dataLoading.js";
 
   const MAX_REQUEST_FREQUENCY_MS = 1500;
   const PAGE_TITLE_ID = "bulk-download-title";
+  const PROMISE_STATUS_REJECTED = "rejected";
 
   let formValues = {
     annotations: true,
     assemblies: true
   };
-  let batchesPromise = Promise.resolve();
+  let dataPromise = Promise.resolve();
   let debounceTimeoutId;
   let downloadEstimate = {};
   let downloadLinksRequested;
@@ -26,8 +27,14 @@
   $: updateDownloadEstimate(selectedBatches, formValues);
 
   onMount(() => {
-    batchesPromise = getBatches(fetch)
-      .then((batches) => makeListOfBatches(batches));
+    dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
+      .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+        if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
+          console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
+          return Promise.reject(batchesSettledPromise.reason);
+        }
+        return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
+      });
   });
 
   function updateDownloadEstimate() {
@@ -56,20 +63,20 @@
     downloadEstimate = {};
   }
 
-  function makeListOfBatches(batches = {}) {
+  function makeListOfBatches(batches = {}, institutions = {}) {
     return Object.keys(batches)
       .map((institutionKey) =>
         batches[institutionKey].deliveries.map((batch) =>
-          makeBatchListItem(batch, institutionKey)))
+          makeBatchListItem(batch, institutions[institutionKey]?.name || institutionKey)))
       .flat();
   }
 
-  function makeBatchListItem({ name, date, number: numSamples }, institutionKey) {
+  function makeBatchListItem({ name, date, number: numSamples }, institution) {
     const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
     return {
       label: `${date}: ${name}${numSamplesText}`,
       value: date,
-      group: institutionKey
+      group: institution
     };
   }
 
@@ -108,7 +115,7 @@
 
 <h2 id={PAGE_TITLE_ID}>Sample bulk download</h2>
 
-{#await batchesPromise}
+{#await dataPromise}
   <LoadingIndicator />
 
 {:then batchList}
