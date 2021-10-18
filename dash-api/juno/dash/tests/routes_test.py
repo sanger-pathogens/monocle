@@ -216,7 +216,7 @@ class TestRoutes(unittest.TestCase):
             lane_files,
             basename=zip_file_basename,
             location=zip_file_location,
-            ignoreMissingFiles=True
+            ignore_missing_files=True
             )
         data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         resp_mock.assert_called_once_with(expected_payload)

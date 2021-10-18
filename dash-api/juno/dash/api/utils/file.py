@@ -21,13 +21,13 @@ def format_file_size(bytes, call_cli=check_output):
     return f'{bytes} B'
 
 
-def zip_files(files, *, basename, location=CURRENT_FOLDER, ZipFileInjected=ZipFile, ignoreMissingFiles=False):
+def zip_files(files, *, basename, location=CURRENT_FOLDER, injected_zip_file_lib=ZipFile, ignore_missing_files=False):
   if not files:
     logging.warning('no files passed')
     return
 
   files_to_zip = []
-  if ignoreMissingFiles:
+  if ignore_missing_files:
     for this_file in files:
       if Path(this_file).exists():
          files_to_zip.append(this_file)
@@ -39,6 +39,6 @@ def zip_files(files, *, basename, location=CURRENT_FOLDER, ZipFileInjected=ZipFi
 
   zfile_name = basename + ZIP_SUFFIX
   zfile_full_name = Path(location) / zfile_name
-  with ZipFileInjected(zfile_full_name, mode=WRITE_MODE, compression=ZIP_LZMA) as zfile:
+  with injected_zip_file_lib(zfile_full_name, mode=WRITE_MODE, compression=ZIP_LZMA) as zfile:
     for this_file in files_to_zip:
       zfile.write(this_file)

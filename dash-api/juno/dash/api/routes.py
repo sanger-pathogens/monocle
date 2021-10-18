@@ -108,7 +108,7 @@ def bulk_download_urls(body):
         lane_files,
         basename=zip_file_basename,
         location=zip_file_location,
-        ignoreMissingFiles=True
+        ignore_missing_files=True
         )
     zip_file_url = '/'.join([
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),

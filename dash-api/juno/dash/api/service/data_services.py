@@ -20,6 +20,7 @@ import DataSources.pipeline_status
 import DataSources.user_data
 from utils.file               import format_file_size
 
+DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f'{FORMAT_DATE}T%H:%M:%S%z'
@@ -549,12 +550,11 @@ class MonocleData:
 
    def get_zip_download_location(self):
       data_source_config      = self._load_data_source_config()
-      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
-      if data_inst_view_environ not in environ:
-         return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
+      if DATA_INST_VIEW_ENVIRON not in environ:
+         return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
       try:
           cross_institution_dir = data_source_config['data_download']['cross_institution_dir']
-          return Path(environ[data_inst_view_environ], cross_institution_dir)
+          return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
       except KeyError as err:
           self._download_config_error(err)
           raise
@@ -746,13 +746,12 @@ class MonocleData:
       if target_institution is None and not kwargs.get('cross_institution'):
          message="must pass either a target_institution name or 'cross_institution=True'"
          logging.error("{} parameter error: {}".format(__class__.__name__,message))
-         ValueError(message)
+         raise ValueError(message)
       
       download_config_section = 'data_download'
       download_dir_param      = 'web_dir'
       download_url_path_param = 'url_path'
       cross_institution_dir_param = 'cross_institution_dir'
-      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
       # get web server directory, and check it exists
       if not Path(self.data_source_config_name).is_file():
          return self._download_config_error("data source config file {} missing".format(self.data_source_config_name))
@@ -773,10 +772,10 @@ class MonocleData:
       # get the "target" directory where the data for the institution is kept, and check it exists
       # (Why an environment variable? Because this can be set by docker-compose, and it is a path
       # to a volume mount that is also set up by docker-compose.)
-      if data_inst_view_environ not in environ:
-         return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
+      if DATA_INST_VIEW_ENVIRON not in environ:
+         return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
       child_dir = cross_institution_dir if kwargs.get('cross_institution') else self.institution_db_key_to_dict[target_institution]
-      download_host_dir = Path(environ[data_inst_view_environ], child_dir)
+      download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
       if not download_host_dir.is_dir():
          return self._download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
       logging.debug('host data download dir = {}'.format(str(download_host_dir)))

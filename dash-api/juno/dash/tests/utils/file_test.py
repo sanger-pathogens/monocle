@@ -53,7 +53,7 @@ class TestFileUtil(TestCase):
     zip_files(FILES,
       basename=BASENAME,
       location=location,
-      ZipFileInjected=self.ZipFileMock)
+      injected_zip_file_lib=self.ZipFileMock)
 
     expected_zip_file_full_name = Path(location) / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
@@ -63,13 +63,13 @@ class TestFileUtil(TestCase):
       zipfile_instance.write.assert_any_call(file)
 
   def test_zip_files_to_current_folder_if_no_location_given(self):
-    zip_files(FILES, basename=BASENAME, ZipFileInjected=self.ZipFileMock)
+    zip_files(FILES, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
 
     expected_zip_file_full_name = Path('.') / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
       expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_LZMA)
 
   def test_does_not_zip_if_no_files_passed(self):
-    zip_files([], basename=BASENAME, ZipFileInjected=self.ZipFileMock)
+    zip_files([], basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
 
     self.ZipFileMock.assert_not_called()
