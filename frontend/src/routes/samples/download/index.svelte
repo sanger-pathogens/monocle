@@ -157,7 +157,7 @@
       </fieldset>
 
       <fieldset disabled={true}>
-        <legend>Download size</legend>
+        <legend>Split download (coming soon)</legend>
         <select>
           {#if downloadEstimate?.size}
             <option selected>
