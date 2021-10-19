@@ -97,7 +97,7 @@ def bulk_download_urls(body):
         assemblies=assemblies,
         annotations=annotations,
         reads=reads)
-    zip_file_basename = f'{"_".join(batches)}__{uuid4().hex}'
+    zip_file_basename = uuid4().hex
     zip_file_location = monocle_data.get_zip_download_location()
     logging.info("{} data files to be included in ZIP file {}/{}.zip".format(len(lane_files), zip_file_location, zip_file_basename))
     if not Path(zip_file_location).is_dir():

@@ -198,7 +198,7 @@ class TestRoutes(unittest.TestCase):
         is_dir_mock.return_value = True
         uuid_hex = '123'
         uuid4_mock.return_value.hex = uuid_hex
-        zip_file_basename = f'{"_".join(batches)}__{uuid_hex}'
+        zip_file_basename = uuid_hex
         zip_file_location = 'some/dir'
         data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
         download_symlink = 'downloads/'
