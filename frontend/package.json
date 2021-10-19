@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "svelte-kit dev",
+    "dev:open": "svelte-kit dev -o",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview",
     "test": "jest src",
