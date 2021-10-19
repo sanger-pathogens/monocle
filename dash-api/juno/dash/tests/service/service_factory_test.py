@@ -309,7 +309,34 @@ class MonocleDataTest(TestCase):
       
    def test_get_institutions(self):
       institution_data = self.monocle_data.get_institutions()
+
       self.assertEqual(self.expected_institution_data, institution_data)
+
+   def test_get_institution_names(self):
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual(self.mock_institutions, institution_names)
+
+   def test_get_institution_names_returns_cached_response(self):
+      expected = 'some data'
+      self.monocle_data.institution_names = expected
+
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual(expected, institution_names)
+      # Teardown: clear cache.
+      self.monocle_data.institution_names = None
+
+   def test_get_institution_names_returns_names_from_user_membership(self):
+      expected_institution_name = 'Center of Paradise Engineering'
+      user_record = { 'memberOf': [{ 'inst_name': expected_institution_name }] }
+      self.monocle_data.user_record = user_record
+
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual([expected_institution_name], institution_names)
+      # Teardown: clear user record.
+      self.monocle_data.user_record = None
       
    def test_get_samples(self):
       sample_data = self.monocle_data.get_samples()

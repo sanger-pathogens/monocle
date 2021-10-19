@@ -75,6 +75,7 @@ class MonocleData:
    def __init__(self, set_up=True):
       self.user_record                 = None
       self.institutions_data           = None
+      self.institution_names           = None
       self.samples_data                = None
       self.sequencing_status_data      = None
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
@@ -156,27 +157,37 @@ class MonocleData:
       """
       if self.institutions_data is not None:
          return self.institutions_data
-      names = self.sample_metadata.get_institution_names()
-      if self.user_record is not None:
-         user_memberships = [ inst['inst_id'] for inst in self.user_record['memberOf'] ]
-         logging.info("user {} is a member of {}".format( self.user_record['username'],user_memberships))
+
+      names = self.get_institution_names()
       institutions = {}
       for this_name in names:
          dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
-         # filter out institution that the user is a member of
-         if self.user_record is None or dict_key in user_memberships:
-            # currently the db uses insitution names as keys, but we don't want to rely on that
-            # so the name and db key are stored as separate items
-            # TODO we will start to use the metadata API instread of the database, so this problem will go away soon
-            #      (this reckless prediction made 2021-06-15)
-            this_db_key = this_name
-            institutions[dict_key] = { 'name'   : this_name,
-                                       'db_key' : this_db_key
-                                       }
-            # this allows lookup of the institution dict key from a db key
-            self.institution_db_key_to_dict[this_db_key] = dict_key
+         this_db_key = this_name
+         institutions[dict_key] = { 'name'   : this_name,
+                                    'db_key' : this_db_key
+                                  }
+         # this allows lookup of the institution dict key from a db key
+         self.institution_db_key_to_dict[this_db_key] = dict_key
+
       self.institutions_data = institutions
       return self.institutions_data
+
+   def get_institution_names(self):
+      """
+      Return a list of institution names.
+      If `user_record` is defined, returns only those institutions that the user is a member of.
+      """
+      if self.institution_names is not None:
+         return self.institution_names
+
+      institution_names = None
+      if self.user_record is not None:
+         institution_names = [inst['inst_name'] for inst in self.user_record.get('memberOf', [])]
+      else:
+         institution_names = self.sample_metadata.get_institution_names()
+
+      self.institution_names = institution_names
+      return institution_names
 
    def get_samples(self):
       """
@@ -428,7 +439,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_samples_from_batches(batches)
+      samples_from_requested_batches = self.get_samples_from_batches(batches, self.get_institution_names())
       lane_files = self.get_lane_files(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -445,7 +456,7 @@ class MonocleData:
          'size_zipped': format_file_size(lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_samples_from_batches(self, batches):
+   def get_samples_from_batches(self, batches, institutions=None):
       """
       Pass a list of batch dates.
       Returns a list of samples from the batches.
@@ -454,7 +465,7 @@ class MonocleData:
          logging.debug(f'{__class__.__name__}.get_samples_from_batches(): The list of batches is empty.')
          return []
 
-      sample_ids = self.sample_metadata.get_sample_ids()
+      sample_ids = self.sample_metadata.get_sample_ids(institutions)
       samples_by_id = self.sequencing_status_source.get_multiple_samples(sample_ids)
       unique_batch_dates = set(batches)
       return [
