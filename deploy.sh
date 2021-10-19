@@ -5,7 +5,7 @@
 
 usage() {
   echo "Usage: $0 arguments [options]
-       
+
        Mandatory arguments:
        -e --env         deployed environment: \`prod\` or \`dev\`
        -u --user        user id on deployment host
@@ -36,10 +36,10 @@ usage() {
        Example 1: deploy code to pathogens_dev instance and run the associated database release
                   using the db.cnf connection file:
        $0 -e dev -v 0.1.45 -m all -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
-          
+
        Example 2: deploy unstable (pre-release) code version as \`dev_user@localhost\`
        $0 -e dev -u dev_user -h localhost --domain localhost --branch master --tag unstable
-          
+
        Example 3: deploy as \`dev_user@localhost\`, from feature branch
                   \`some_feature_branch\`, using docker images built from
                   commit \`ae48f554\`:
@@ -308,9 +308,9 @@ then
     scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json   $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
-    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.p $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
-    
+
     # replace the running version
     # using existing connection
     # note: local variables are substituted as normal,
