@@ -36,7 +36,6 @@ services:
        - ldap-auth-daemon
   metadata-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
-    user: <USER_UID>:<USER_GID>
     expose:
       - "80"
     restart: unless-stopped
@@ -88,7 +87,6 @@ services:
       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
-    user: <USER_UID>:<USER_GID>
     expose:
        - "3000"
     restart: unless-stopped
@@ -106,7 +104,6 @@ services:
   monocle-ldap:
     # temporarily use default image; should create out own (https://github.com/osixia/docker-openldap#advanced-user-guide)
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/openldap:1.5.0"
-    user: <USER_UID>:<USER_GID>
     expose:
       - "389"
       - "636"
@@ -134,7 +131,6 @@ services:
       - ./openldap-data/var/run/slapd:/var/run/slapd
   ldap-admin:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-ldap-admin:<DOCKERTAG>"
-    user: <USER_UID>:<USER_GID>
     expose:
       - "80"
     restart: unless-stopped
@@ -162,7 +158,6 @@ services:
       - PHPLDAPADMIN_LDAP_HOSTS=monocle-ldap
   ldap-auth-daemon:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r329"
-    user: <USER_UID>:<USER_GID>
     expose:
       - "8888"
     restart: unless-stopped
