@@ -308,7 +308,7 @@ then
     scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json   $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
-    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.p $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
     # replace the running version
