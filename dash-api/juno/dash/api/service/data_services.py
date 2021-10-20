@@ -390,6 +390,8 @@ class MonocleData:
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
          for this_sample_id in sample_id_list:
+            if this_sample_id == '_ERROR':
+               continue
             this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
             for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
                this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
@@ -677,6 +679,8 @@ class MonocleData:
          return {}
       num_samples_received_by_date  = defaultdict(int)
       for this_sample_id in samples_received:
+         if this_sample_id == '_ERROR':
+            continue
          # get date in ISO8601 format (YYYY-MM-DD)
          received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
                                              self.mlwh_datetime_fmt
@@ -692,6 +696,8 @@ class MonocleData:
       num_lanes_sequenced_by_date   = defaultdict(int)
 
       for this_sample_id in samples_received:
+         if this_sample_id == '_ERROR':
+            continue
          # get each lane (some samples may have non lanes yet)
          for this_lane in sequencing_status_data[institution][this_sample_id]['lanes']:
             # get timestamp for completion (some lanes may not have one yet)
