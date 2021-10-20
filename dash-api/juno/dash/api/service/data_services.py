@@ -321,9 +321,11 @@ class MonocleData:
                                        'failed'    : 0,
                                        'fail_messages' : [],
                                        }
-         if 0 < len(sample_id_list):
+         if 0 < len(sample_id_list)-1:
             this_sequencing_status_data = sequencing_status_data[this_institution]
             for this_sample_id in sample_id_list:
+               if this_sample_id == '_ERROR' :
+                  continue
                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                # i.e. only samples with lanes need to be looked at by the lines below
                for this_lane in this_sequencing_status_data[this_sample_id]['lanes']:

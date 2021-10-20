@@ -331,11 +331,12 @@ class MonocleDataTest(TestCase):
       batches_data = self.monocle_data.get_batches()
       self.assertEqual(self.expected_batches, batches_data)
 
-   @patch('DataSources.sample_metadata.SampleMetadata.get_sequencing_status')
-   def test_get_batches_dropouts(self, mock_seq_status_query):
-      mock_seq_status_query.return_value = self.expected_dropout_data
-      batches_data = self.monocle_data.get_batches()
-      self.assertEqual(self.expected_dropout_data, batches_data)
+   @patch.object(SequencingStatus, 'get_multiple_samples')
+   def test_get_batches_dropouts(self, mock_seq_samples_query):
+       mock_seq_samples_query.side_effect = urllib.request.HTTPError
+       self.monocle_data.get_sequencing_status()
+       batches_data = self.monocle_data.get_batches()
+       self.assertEqual(self.expected_dropout_data, batches_data)
 
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
@@ -347,17 +348,14 @@ class MonocleDataTest(TestCase):
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
-   @patch('DataSources.sample_metadata.SampleMetadata.get_sequencing_status')
-   def test_sequencing_status_summary_dropout(self, mock_seq_status_query):
-       mock_seq_status_query.return_value = self.expected_dropout_data
+   def test_sequencing_status_summary_dropout(self):
        self.sequencing_status_data = self.expected_dropout_data
        seq_status_summary = self.monocle_data.sequencing_status_summary()
        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
        self.assertEqual(self.expected_dropout_data, seq_status_summary)
 
-   @patch('DataSources.sample_metadata.SampleMetadata.get_sequencing_status')
-   def test_pipeline_status_summary_dropout(self, mock_seq_status_query):
-       mock_seq_status_query.return_value = self.expected_dropout_data
+   def test_pipeline_status_summary_dropout(self):
+       self.sequencing_status_data = self.expected_dropout_data
        pipeline_summary = self.monocle_data.pipeline_status_summary()
        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
        self.assertEqual(self.expected_dropout_data, pipeline_summary)
