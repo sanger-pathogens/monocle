@@ -1,3 +1,0 @@
-# The data view py script is copied from WD and not from `./bin` because the cron task is meant
-# to run only on the server, and `../deploy.sh` copies the script into WD of the server.
-* /15 * * * /home/monocle/run_data_view_script_in_docker.sh
