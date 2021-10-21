@@ -496,10 +496,13 @@ class MonocleData:
       # get list of lane IDs for this combo of institution/category/status
       lane_id_list = []
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         if sequencing_status_data[institution_data_key][this_sample_id] == 'HTTPError: records could not be collected from MLWH':
-
-            logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
-            raise KeyError("{} has no sample data".format(institution))
+         if this_sample_id == '_ERROR':
+            if sequencing_status_data[institution_data_key][
+               this_sample_id] == 'HTTPError: records could not be collected from MLWH':
+               logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
+               raise KeyError("{} has no sample data".format(institution))
+            else:
+               continue
 
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
             
