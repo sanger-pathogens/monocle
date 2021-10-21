@@ -316,7 +316,8 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in sequencing_status_data.keys():
-         logging.critical(sequencing_status_data)
+         logging.debug("{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
+            __class__.__name__,sequencing_status_data[this_institution].keys(), this_institution))
          if sequencing_status_data[this_institution][self.api_key_error] is not None:
             status[this_institution] = { self.api_key_error : 'Server Error: records could not be collected from MLWH' }
             continue
