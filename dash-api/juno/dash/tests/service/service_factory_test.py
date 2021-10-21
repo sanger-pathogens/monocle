@@ -3,6 +3,7 @@ from   unittest.mock import patch
 from   datetime      import datetime
 import logging
 import urllib.request
+import urllib.error
 from   os            import environ
 from   pandas.errors import MergeError
 from   pathlib       import Path
@@ -73,7 +74,7 @@ class MonocleDataTest(TestCase):
       mock_web_dir   = data_sources['data_download']['web_dir']
    
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
-   mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
+   mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view' #dash/tests/mock_data/
    
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
@@ -323,7 +324,8 @@ class MonocleDataTest(TestCase):
    def test_get_sequencing_status_droppout(self, get_multiple_samples_mock, mock_db_sample_query, mock_institution_query):
        mock_institution_query.return_value = self.mock_institutions
        mock_db_sample_query.return_value = self.mock_samples
-       get_multiple_samples_mock.side_effect = urllib.request.HTTPError
+       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found', 'yes', 'no')
+       self.monocle_data.sequencing_status_data = None
        httpdropout = self.monocle_data.get_sequencing_status()
        self.assertEqual(self.expected_dropout_data, httpdropout)
 
@@ -332,8 +334,10 @@ class MonocleDataTest(TestCase):
       self.assertEqual(self.expected_batches, batches_data)
 
    @patch.object(SequencingStatus, 'get_multiple_samples')
-   def test_get_batches_dropouts(self, mock_seq_samples_query):
-       mock_seq_samples_query.side_effect = urllib.request.HTTPError
+   def test_get_batches_dropouts(self, get_multiple_samples_mock):
+       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found',
+                                                                      'yes', 'no')
+       self.monocle_data.sequencing_status_data = None
        self.monocle_data.get_sequencing_status()
        batches_data = self.monocle_data.get_batches()
        self.assertEqual(self.expected_dropout_data, batches_data)
@@ -349,13 +353,13 @@ class MonocleDataTest(TestCase):
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    def test_sequencing_status_summary_dropout(self):
-       self.sequencing_status_data = self.expected_dropout_data
+       self.monocle_data.sequencing_status_data = self.expected_dropout_data
        seq_status_summary = self.monocle_data.sequencing_status_summary()
        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
        self.assertEqual(self.expected_dropout_data, seq_status_summary)
 
    def test_pipeline_status_summary_dropout(self):
-       self.sequencing_status_data = self.expected_dropout_data
+       self.monocle_data.sequencing_status_data = self.expected_dropout_data
        pipeline_summary = self.monocle_data.pipeline_status_summary()
        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
        self.assertEqual(self.expected_dropout_data, pipeline_summary)

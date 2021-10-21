@@ -10,6 +10,7 @@ import urllib.parse
 import uuid
 import yaml
 import urllib.request
+import urllib.error
 
 import DataSources.sample_metadata
 import DataSources.metadata_download
@@ -25,7 +26,7 @@ class MonocleUser:
    
    def __init__(self, authenticated_username=None, set_up=True):
       self.updated      = datetime.now()
-      self.user_data    = DataSources.user_data.UserData(set_up=set_up)
+      self.user_data    = user_data.UserData(set_up=set_up)
       # only attempt to load if set_up flag is true
       if authenticated_username is not None and set_up:
          self.load_user_record(authenticated_username)
@@ -231,12 +232,12 @@ class MonocleData:
       for this_institution in institutions_data.keys():
          sequencing_status[this_institution] = {}
          sample_id_list = [ s['sample_id'] for s in samples_data[this_institution] ]
-         if 0 < len(sample_id_list):
+         if 0 < len(sample_id_list)-1:
             logging.debug("{}.get_sequencing_status() requesting sequencing status for samples {}".format(__class__.__name__,sample_id_list))
             try:
                sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
                sequencing_status[this_institution]['_ERROR'] = None
-            except urllib.request.HTTPError:
+            except urllib.error.HTTPError:
                logging.error("{}.get_sequencing_status() failed to collect samples {} for unknown reason".format(__class__.__name__,sample_id_list))
                sequencing_status[this_institution]['_ERROR'] = 'HTTPError: records could not be collected from MLWH'
       self.sequencing_status_data = sequencing_status
@@ -315,7 +316,7 @@ class MonocleData:
             continue
          sample_id_list = sequencing_status_data[this_institution].keys()
          status[this_institution] = {  '_ERROR'    : None,
-                                       'received'  : len(sample_id_list),
+                                       'received'  : len(sample_id_list)-1,
                                        'completed' : 0,
                                        'success'   : 0,
                                        'failed'    : 0,
@@ -495,9 +496,10 @@ class MonocleData:
       # get list of lane IDs for this combo of institution/category/status
       lane_id_list = []
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         if this_sample_id == '_ERROR':
+         if sequencing_status_data[institution_data_key][this_sample_id] == 'HTTPError: records could not be collected from MLWH':
+
             logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
-            raise KeyError('{} has no sample data'.format(institution))
+            raise KeyError("{} has no sample data".format(institution))
 
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
             
