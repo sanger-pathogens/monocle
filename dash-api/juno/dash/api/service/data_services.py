@@ -234,15 +234,15 @@ class MonocleData:
       sequencing_status = {}
       for this_institution in institutions_data.keys():
          sequencing_status[this_institution] = {}
-         sequencing_status[this_institution][self.api_key_error] = None
          sample_id_list = [ s['sample_id'] for s in samples_data[this_institution] ]
          if len(sample_id_list)-1 > 0: # sample_id_list must be -1 to discount _ERROR entry
             logging.debug("{}.get_sequencing_status() requesting sequencing status for samples {}".format(__class__.__name__,sample_id_list))
             try:
                sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
+               sequencing_status[this_institution]['_ERROR'] = None
             except urllib.error.HTTPError:
                logging.error("{}.get_sequencing_status() failed to collect samples {} for unknown reason".format(__class__.__name__,sample_id_list))
-               sequencing_status[this_institution][self.api_key_error] = 'Server Error: records could not be collected from MLWH'
+               sequencing_status[this_institution]['_ERROR'] = 'Server Error: records could not be collected from MLWH'
       self.sequencing_status_data = sequencing_status
       return self.sequencing_status_data
 
