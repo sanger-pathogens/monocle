@@ -295,6 +295,7 @@ class MonocleDataTest(TestCase):
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+      self.monocle_data.sequencing_status_data = None
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
