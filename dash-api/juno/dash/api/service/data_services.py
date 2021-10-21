@@ -242,7 +242,7 @@ class MonocleData:
                sequencing_status[this_institution][self.api_key_error] = None
             except urllib.error.HTTPError:
                logging.error("{}.get_sequencing_status() failed to collect samples {} for unknown reason".format(__class__.__name__,sample_id_list))
-               sequencing_status[this_institution][self.api_key_error] = 'HTTPError: records could not be collected from MLWH'
+               sequencing_status[this_institution][self.api_key_error] = 'Server Error: records could not be collected from MLWH'
       self.sequencing_status_data = sequencing_status
       return self.sequencing_status_data
 
