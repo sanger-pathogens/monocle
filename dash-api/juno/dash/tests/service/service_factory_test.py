@@ -200,8 +200,8 @@ class MonocleDataTest(TestCase):
                                     'FakTwo' : {'name': 'Fake institution Two', 'db_key': 'Fake institution Two'},
                                     }
 
-   expected_dropout_data      = { 'FakOne' : { '_ERROR': 'Server Error: records could not be collected from MLWH' },
-                                  'FakTwo' : { '_ERROR': 'Server Error: records could not be collected from MLWH' }
+   expected_dropout_data      = { 'FakOne' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' },
+                                  'FakTwo' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' }
                                     }
 
    expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1'}, {'sample_id': 'fake_sample_id_2'}],

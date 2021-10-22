@@ -319,7 +319,7 @@ class MonocleData:
          logging.debug("{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
             __class__.__name__,sequencing_status_data[this_institution].keys(), this_institution))
          if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            status[this_institution] = { self.api_key_error : 'Server Error: records could not be collected from MLWH' }
+            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
          sample_id_list = sequencing_status_data[this_institution].keys()
          status[this_institution] = {  self.api_key_error    : None,
@@ -389,7 +389,7 @@ class MonocleData:
       status = {}
       for this_institution in institutions_data.keys():
          if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            status[this_institution] = { self.api_key_error : 'Server Error: records could not be collected from MLWH' }
+            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
          status[this_institution] = {  self.api_key_error    : None,
                                        'running'   : 0,
@@ -505,7 +505,7 @@ class MonocleData:
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
          if this_sample_id == self.api_key_error:
             if sequencing_status_data[institution_data_key][
-               this_sample_id] == 'Server Error: records could not be collected from MLWH':
+               this_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
                logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
                raise KeyError("{} has no sample data".format(institution))
             else:
