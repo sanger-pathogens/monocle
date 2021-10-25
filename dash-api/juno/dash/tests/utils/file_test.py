@@ -1,11 +1,15 @@
 from unittest      import TestCase
-from unittest.mock import create_autospec, Mock
-from pathlib       import Path
+from unittest.mock import create_autospec, patch, Mock
+from functools     import reduce
+from pathlib       import Path, PurePath
 from zipfile       import ZipFile, ZIP_LZMA
 
 from utils.file import format_file_size, zip_files, WRITE_MODE
 
-FILES = ['a_file.txt', 'another_file.fastq']
+PUBLIC_NAME_TO_LANE_FILES = {
+  'pub_name_1': ['a_file.txt', 'another_file.fastq'],
+  'pub_name_2': ['some_other_file.txt', 'yet_another_file.fastq']
+}
 BASENAME = 'batches'
 ZIP_FILE_NAME = BASENAME + '.zip'
 
@@ -44,32 +48,55 @@ class TestFileUtil(TestCase):
 
     self.assertEqual(actual, f'{bytes} B')
 
-  def test_zip_files(self):
+  @patch.object(Path, 'exists', return_value=True)
+  def test_zip_files(self, _file_exists_mock):
     zipfile_instance = self.ZipFileMock.return_value
-    # Make the instance of `ZipFileMock` available in the context manager of the tested `zip_files()`.
+    # Make the instance of `ZipFileMock` available in the context manager of `zip_files()`.
     zipfile_instance.__enter__.return_value = zipfile_instance
     location = 'downloads'
 
-    zip_files(FILES,
+    zip_files(PUBLIC_NAME_TO_LANE_FILES,
       basename=BASENAME,
       location=location,
       injected_zip_file_lib=self.ZipFileMock)
 
-    expected_zip_file_full_name = Path(location) / ZIP_FILE_NAME
+    expected_zip_file_full_name = PurePath(location) / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
       expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_LZMA)
-    self.assertEqual(zipfile_instance.write.call_count, len(FILES))
-    for file in FILES:
-      zipfile_instance.write.assert_any_call(file)
+    num_files = reduce(
+      lambda accum, lane_files: accum + len(lane_files),
+      PUBLIC_NAME_TO_LANE_FILES.values(),
+      0)
+    self.assertEqual(zipfile_instance.write.call_count, num_files)
+    for public_name, files in PUBLIC_NAME_TO_LANE_FILES.items():
+      for file in files:
+        zipfile_instance.write.assert_any_call(
+          file, PurePath(public_name, file))
 
-  def test_zip_files_to_current_folder_if_no_location_given(self):
-    zip_files(FILES, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
+  def test_zip_files_ignores_missing_files(self):
+    zipfile_instance = self.ZipFileMock.return_value
+    # Make the instance of `ZipFileMock` available in the context manager of `zip_files()`.
+    zipfile_instance.__enter__.return_value = zipfile_instance
 
-    expected_zip_file_full_name = Path('.') / ZIP_FILE_NAME
+    zip_files(PUBLIC_NAME_TO_LANE_FILES, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
+
+    expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
+    self.ZipFileMock.assert_called_once_with(
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_LZMA)
+    self.assertEqual(zipfile_instance.write.call_count, 0)
+
+  @patch.object(Path, 'exists', return_value=True)
+  def test_zip_files_to_current_folder_if_no_location_given(self, _file_exists_mock):
+    zip_files(PUBLIC_NAME_TO_LANE_FILES, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
+
+    expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
       expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_LZMA)
 
-  def test_does_not_zip_if_no_files_passed(self):
-    zip_files([], basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
+  def test_zip_files_creates_empty_archive_if_no_files_passed(self):
+    zip_files({}, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
 
-    self.ZipFileMock.assert_not_called()
+    expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
+    # Instantiating `ZipFile` creates an empty ZIP archive even if `write()` isn't called.
+    self.ZipFileMock.assert_called_once_with(
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_LZMA)
