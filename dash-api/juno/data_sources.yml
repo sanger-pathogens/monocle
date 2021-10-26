@@ -35,7 +35,3 @@ data_download:
    web_dir                 : 'monocle_juno_web_root/downloads'
    cross_institution_dir   : 'downloads'
    url_path                : 'files/downloads'
-lane_dir:
-   assemblies              : 'monocle_juno/assembly'
-   annotations             : 'monocle_juno/annotation'
-   reads                   : 'monocle_juno/reads'

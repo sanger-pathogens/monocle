@@ -4,7 +4,7 @@ from   datetime      import datetime
 import logging
 from   os            import environ
 from   pandas.errors import MergeError
-from   pathlib       import Path
+from   pathlib       import Path, PurePath
 import yaml
 
 from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
@@ -365,14 +365,18 @@ class MonocleDataTest(TestCase):
 
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
+   @patch.object(Path, 'rglob')
    @patch.object(SampleMetadata,           'get_sample_ids')
    @patch.object(SequencingStatus,         'get_multiple_samples')
    @patch.object(MonocleData,              '_get_file_size')
-   def test_get_bulk_download_info(self, get_file_size_mock, get_multiple_samples_mock, get_sample_ids_mock):
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_bulk_download_info(self, get_file_size_mock, get_multiple_samples_mock, get_sample_ids_mock, rglob_mock):
       get_sample_ids_mock.return_value = []
       get_multiple_samples_mock.return_value = self.mock_seq_status
       file_size = 420024
       get_file_size_mock.return_value = file_size
+      pub_dir_name = 'dir'
+      rglob_mock.side_effect = lambda pattern: [Path(pub_dir_name, pattern.split('/')[-1])]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          BATCH_DATES, assemblies=True, annotations=False)
@@ -397,29 +401,37 @@ class MonocleDataTest(TestCase):
       expected_samples = [self.mock_seq_status['fake_sample_id_1'], self.mock_seq_status['fake_sample_id_2']]
       self.assertEqual(expected_samples, actual_samples)
 
-   def test_get_lane_files(self):
+   @patch.object(Path, 'rglob')
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_public_name_to_lane_files_dict(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
+      pub_dir_name = 'dir'
+      rglob_mock.side_effect = lambda pattern: [Path(pub_dir_name, pattern.split('/')[-1])]
 
-      lane_files = self.monocle_data.get_lane_files(
+      public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [
-         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_1.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_2.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_3.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_4.contigs_spades.fa',
-         'dash/tests/mock_data/monocle_juno/assembly/fake_lane_id_5.contigs_spades.fa'
-      ]
-      actual = list( map(lambda file: str(file), lane_files) )
-      self.assertEqual(expected_lane_files, actual)
+      expected_lane_files = [PurePath(pub_dir_name, f'{lane["id"]}.contigs_spades.fa')
+         for sample in self.mock_seq_status.values()
+         for lane in sample['lanes']]
+      expected = {pub_dir_name: expected_lane_files}
+      self.assertEqual(expected, public_name_to_lane_files)
 
-   def test_get_lane_files_rejects_bad_config(self):
+   def test_get_public_name_to_lane_files_dict_rejects_if_data_institution_view_env_var_is_not_set(self):
+      samples = list( self.mock_seq_status.values() )
+
+      with self.assertRaises(DataSourceConfigError):
+         self.monocle_data.get_public_name_to_lane_files_dict(
+            samples, assemblies=True, annotations=False)
+
+   def test_get_public_name_to_lane_files_dict_rejects_bad_config(self):
       doomed = MonocleData(set_up=False)
       doomed.data_source_config_name = self.test_config_bad
+      samples = list( self.mock_seq_status.values() )
+
       with self.assertRaises(DataSourceConfigError):
-         doomed.get_lane_dir_paths(assemblies=True, annotations=False)
-      with self.assertRaises(FileNotFoundError):
-         doomed.get_lane_dir_paths(assemblies=False, annotations=True)
+         doomed.get_public_name_to_lane_files_dict(samples, assemblies=True, annotations=False)
+
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location(self):

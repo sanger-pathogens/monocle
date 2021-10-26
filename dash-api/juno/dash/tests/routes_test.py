@@ -203,8 +203,8 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
         download_symlink = 'downloads/'
         data_service_mock.return_value.make_download_symlink.return_value = download_symlink
-        lane_files = ['lane file', 'another lane file']
-        data_service_mock.return_value.get_lane_files.return_value = lane_files
+        lane_files = {'pubname': ['lane file', 'another lane file']}
+        data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
             'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
         }
@@ -215,8 +215,7 @@ class TestRoutes(unittest.TestCase):
         zip_files_mock.assert_called_once_with(
             lane_files,
             basename=zip_file_basename,
-            location=zip_file_location,
-            ignore_missing_files=True
+            location=zip_file_location
             )
         data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         resp_mock.assert_called_once_with(expected_payload)

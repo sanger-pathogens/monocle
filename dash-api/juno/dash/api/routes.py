@@ -92,23 +92,23 @@ def bulk_download_urls(body):
     batches, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
     samples = monocle_data.get_samples_from_batches(batches, monocle_data.get_institution_names())
-    lane_files = monocle_data.get_lane_files(
+    public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
         assemblies=assemblies,
         annotations=annotations,
         reads=reads)
     zip_file_basename = uuid4().hex
     zip_file_location = monocle_data.get_zip_download_location()
-    logging.info("{} data files to be included in ZIP file {}/{}.zip".format(len(lane_files), zip_file_location, zip_file_basename))
+
     if not Path(zip_file_location).is_dir():
         logging.error("data downloads directory {} does not exist".format(zip_file_location))
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), zip_file_location)
-    logging.debug("data files: {}".format(lane_files))
+
+    logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
     zip_files(
-        lane_files,
+        public_name_to_lane_files,
         basename=zip_file_basename,
-        location=zip_file_location,
-        ignore_missing_files=True
+        location=zip_file_location
         )
     zip_file_url = '/'.join([
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),

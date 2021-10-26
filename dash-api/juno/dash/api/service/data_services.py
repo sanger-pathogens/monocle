@@ -6,11 +6,11 @@ import errno
 from functools                import reduce
 import logging
 import os
-from   os                     import environ
+from   os                     import environ, path
 import pandas
 from   pathlib                import Path
 import urllib.parse
-from uuid import uuid4
+from uuid                     import uuid4
 import yaml
 
 import DataSources.sample_metadata
@@ -28,10 +28,6 @@ READ_MODE = 'r'
 #FIXME: estimate the factor from a wider range of real-world files.
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
 
-LANE_DIR_CONFIG = 'lane_dir'
-ASSEMBLY_CONFIG_SUBSECTION = 'assemblies'
-ANNOTATION_CONFIG_SUBSECTION = 'annotations'
-READS_CONFIG_SUBSECTION = 'reads'
 ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
 ANNOTATION_FILE_SUFFIX = '.spades.gff'
 READS_FILE_SUFFIXES = ('_1.fastq.gz', '_2.fastq.gz')
@@ -440,20 +436,23 @@ class MonocleData:
       }
       """
       samples_from_requested_batches = self.get_samples_from_batches(batches, self.get_institution_names())
-      lane_files = self.get_lane_files(
+      public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
          annotations=kwargs.get('annotations', False),
          reads=kwargs.get('reads', False))
-      lane_files_size = reduce(
-         lambda accum, file: accum + self._get_file_size(file),
-         lane_files,
-         0)
+      total_lane_files_size = 0
+      for lane_files in public_name_to_lane_files.values():
+         lane_files_size = reduce(
+            lambda accum, fl: accum + self._get_file_size(fl),
+            lane_files,
+            0)
+         total_lane_files_size = total_lane_files_size + lane_files_size
 
       return {
          'num_samples': len(samples_from_requested_batches),
-         'size': format_file_size(lane_files_size),
-         'size_zipped': format_file_size(lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
+         'size': format_file_size(total_lane_files_size),
+         'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
    def get_samples_from_batches(self, batches, institutions=None):
@@ -473,91 +472,63 @@ class MonocleData:
          if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in unique_batch_dates
       ]
 
-   def get_lane_files(self, samples, **kwargs):
+   def get_public_name_to_lane_files_dict(self, samples, **kwargs):
       """
       Pass a list of samples and an optional boolean flag per assembly, annotation, and reads types of lane files.
-      Returns a list of file names for lanes corresponding to the parameters.
+      Returns a dict of public names to lane files corresponding to the parameters.
+
+      {
+         <public name 1>: [<lane files>],
+         <public name 2>: ...
+      }
       """
-      assembly_lanes_path, annotation_lanes_path, read_lanes_path = self.get_lane_dir_paths(
-         assemblies=kwargs.get('assemblies', False),
-         annotations=kwargs.get('annotations', False),
-         reads=kwargs.get('reads', False))
-      
-      return self._get_lane_files(samples,
-         assembly_lanes_path=assembly_lanes_path,
-         annotation_lanes_path=annotation_lanes_path,
-         read_lanes_path=read_lanes_path)
+      if DATA_INST_VIEW_ENVIRON not in environ:
+         self._download_config_error(f'environment variable {DATA_INST_VIEW_ENVIRON} is not set')
 
-   def get_lane_dir_paths(self, **kwargs):
-      if not Path(self.data_source_config_name).is_file():
-         logging.error(f'Data source config file {self.data_source_config_name} missing')
-         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), self.data_source_config_name)
-
-      data_sources = self._load_data_source_config()
+      public_name_to_lane_files = {}
+      assemblies = kwargs.get('assemblies', False)
+      annotations = kwargs.get('annotations', False)
+      reads = kwargs.get('reads', False)
+      data_source_config = self._load_data_source_config()
       try:
-          lane_file_config = data_sources[LANE_DIR_CONFIG]
-      except KeyError:
-         message=f'Lane file section "{LANE_DIR_CONFIG}" is missing from data source config file {self.data_source_config_name}'
-         logging.error(message)
-         raise DataSourceConfigError(message)
+         cross_institution_dir = data_source_config['data_download']['cross_institution_dir']
+      except KeyError as err:
+          self._download_config_error(err)
 
-      assembly_lanes_path = None
-      annotation_lanes_path = None
-      reads_lanes_path = None
-      if kwargs.get('assemblies', False):
-         try:
-            assembly_lanes_path = lane_file_config[ASSEMBLY_CONFIG_SUBSECTION]
-         except KeyError:
-            message=f'"{ASSEMBLY_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
-            logging.error(message)
-            raise DataSourceConfigError(message)
-         if not Path(assembly_lanes_path).is_dir():
-            logging.error("assemblies data directory {} does not exist".format(assembly_lanes_path))
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), assembly_lanes_path)
-      if kwargs.get('annotations', False):
-         try:
-            annotation_lanes_path = lane_file_config[ANNOTATION_CONFIG_SUBSECTION]
-         except KeyError:
-            message=f'"{ANNOTATION_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
-            logging.error(message)
-            raise DataSourceConfigError(message)
-         if not Path(annotation_lanes_path).is_dir():
-            logging.error("annotations data directory {} does not exist".format(annotation_lanes_path))
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), annotation_lanes_path)
-            #raise DataSourceConfigError('oops')
-      if kwargs.get('reads', False):
-         try:
-            reads_lanes_path = lane_file_config[READS_CONFIG_SUBSECTION]
-         except KeyError:
-            message=f'"{READS_CONFIG_SUBSECTION}" subsection is missing from "{LANE_DIR_CONFIG}" section of data source config file {self.data_source_config_name}'
-            logging.error(message)
-            raise DataSourceConfigError(message)
-         if not Path(reads_lanes_path).is_dir():
-            logging.error("reads data directory {} does not exist".format(reads_lanes_path))
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), reads_lanes_path)
-
-      return assembly_lanes_path, annotation_lanes_path, reads_lanes_path
-
-   def _get_lane_files(self, samples, **kwargs):
-      lane_files = []
-      assembly_lanes_path = kwargs.get('assembly_lanes_path')
-      annotation_lanes_path = kwargs.get('annotation_lanes_path')
-      reads_lanes_path = kwargs.get('reads_lanes_path')
       for sample in samples:
          for lane in sample['lanes']:
             lane_id = lane['id']
-            if assembly_lanes_path:
-               lane_files.append(
-                  Path(assembly_lanes_path, f'{lane_id}{ASSEMBLY_FILE_SUFFIX}'))
-            if annotation_lanes_path:
-               lane_files.append(
-                  Path(annotation_lanes_path, f'{lane_id}{ANNOTATION_FILE_SUFFIX}'))
-            if reads_lanes_path:
-               for file_suffix in READS_FILE_SUFFIXES:
-                  lane_files.append(
-                     Path(reads_lanes_path, f'{lane_id}{file_suffix}'))
+            lane_file_names = self._get_lane_file_names(
+               lane_id,
+               assemblies=assemblies,
+               annotations=annotations,
+               reads=reads)
+            for lane_file_name in lane_file_names:
+               try:
+                  # `[!<name>]` in `rglob()` means include only those matching files that aren't in folder <name>
+                  lane_file = list(Path().rglob(
+                     path.join(f'[!{cross_institution_dir}]', lane_file_name)
+                  ))[0]
+               except IndexError:
+                  logging.debug(f'File {lane_file_name} doesn\'t exist')
+                  continue
+               dir_name = lane_file.resolve().parent.name
+               if dir_name not in public_name_to_lane_files:
+                  public_name_to_lane_files[dir_name] = []
+               public_name_to_lane_files[dir_name].append(lane_file)
 
-      return lane_files
+      return public_name_to_lane_files
+
+   def _get_lane_file_names(self, lane_id, **kwargs):
+      lane_file_names = []
+      if kwargs.get('assemblies'):
+         lane_file_names.append(f'{lane_id}{ASSEMBLY_FILE_SUFFIX}')
+      if kwargs.get('annotations'):
+         lane_file_names.append(f'{lane_id}{ANNOTATION_FILE_SUFFIX}')
+      if kwargs.get('reads'):
+         for file_suffix in READS_FILE_SUFFIXES:
+            lane_file_names.append(f'{lane_id}{file_suffix}')
+      return lane_file_names
 
    def get_zip_download_location(self):
       data_source_config      = self._load_data_source_config()
@@ -696,7 +667,7 @@ class MonocleData:
          metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
          del in_silico_data_df
          # add silico data columns to the list
-         metadata_col_order = metadata_col_order+in_silico_data_col_order
+         metadata_col_order = metadata_col_order + in_silico_data_col_order
          
       # list of columns in `metadata_col_order` defines the CSV output
       # remove delete Sample_id -- this is a dupliacte of Lane_ID
@@ -850,7 +821,7 @@ class MonocleData:
 
    def _get_file_size(self, path_instance):
       try:
-         # TODO delete next 2 lines when done testing
+         # FIXME delete next 2 lines when done testing
          size=path_instance.stat().st_size
          logging.debug(f'counting size of download file: {path_instance}  {size}')
          return path_instance.stat().st_size
@@ -859,8 +830,11 @@ class MonocleData:
          return 0
 
    def _load_data_source_config(self):
-      with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
-         return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      try:
+         with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
+            return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      except EnvironmentError as err:
+         self._download_config_error(err)
 
    def _download_config_error(self, description):
       """

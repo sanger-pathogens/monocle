@@ -27,6 +27,3 @@ monocle_ldap:
 data_download:
    web_dir           : 'monocle_juno_web_root/downloads'
    url_path          : 'files/downloads'
-lane_dir:
-   annotations           : 'this/does/not/exist/on/disk'
-   reads                 : 'dash/tests/mock_data/monocle_juno/reads'
