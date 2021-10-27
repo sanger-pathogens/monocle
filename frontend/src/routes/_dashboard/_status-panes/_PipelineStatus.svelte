@@ -11,7 +11,6 @@
 
   const {
     sequencedSuccess,
-    running,
     success: succeeded,
     failed,
     completed,
