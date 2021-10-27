@@ -1,5 +1,6 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
+from   copy          import deepcopy
 from   datetime      import datetime
 import logging
 from   os            import environ
@@ -14,8 +15,6 @@ from   DataSources.metadata_download   import MetadataDownload, Monocle_Download
 from   DataSources.user_data           import UserData
 from   data_services                   import MonocleUser, MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                      import format_file_size
-
-BATCH_DATES = ['2020-04-29', '2020-11-16']
 
 class MonocleUserTest(TestCase):
    
@@ -74,6 +73,10 @@ class MonocleDataTest(TestCase):
       data_sources   = yaml.load(file, Loader=yaml.FullLoader)
       mock_url_path  = data_sources['data_download']['url_path']
       mock_web_dir   = data_sources['data_download']['web_dir']
+
+   inst_key_batch_date_pairs = [
+      ['FakOne', '2020-04-29'], ['FakTwo', '2021-05-02'], ['FakOne', '1892-01-30']
+   ]
    
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
    mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
@@ -366,23 +369,19 @@ class MonocleDataTest(TestCase):
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    @patch.object(Path, 'rglob')
-   @patch.object(SampleMetadata,           'get_sample_ids')
-   @patch.object(SequencingStatus,         'get_multiple_samples')
    @patch.object(MonocleData,              '_get_file_size')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_bulk_download_info(self, get_file_size_mock, get_multiple_samples_mock, get_sample_ids_mock, rglob_mock):
-      get_sample_ids_mock.return_value = []
-      get_multiple_samples_mock.return_value = self.mock_seq_status
+   def test_get_bulk_download_info(self, get_file_size_mock, rglob_mock):
       file_size = 420024
       get_file_size_mock.return_value = file_size
       pub_dir_name = 'dir'
       rglob_mock.side_effect = lambda pattern: [Path(pub_dir_name, pattern.split('/')[-1])]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
-         BATCH_DATES, assemblies=True, annotations=False)
+         self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
 
-      expected_num_samples = len(BATCH_DATES)
-      num_lanes = 3
+      expected_num_samples = len(self.inst_key_batch_date_pairs)
+      num_lanes = 4
       expected_byte_size = file_size * num_lanes
       self.assertEqual({
          'num_samples': expected_num_samples,
@@ -390,15 +389,32 @@ class MonocleDataTest(TestCase):
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
 
-   @patch.object(SampleMetadata,           'get_sample_ids')
-   @patch.object(SequencingStatus,         'get_multiple_samples')
-   def test_get_samples_from_batches(self, get_multiple_samples_mock, get_sample_ids_mock):
-      get_sample_ids_mock.return_value = []
-      get_multiple_samples_mock.return_value = self.mock_seq_status
+   def test_get_samples_from_batches(self):
+      actual_samples = self.monocle_data.get_samples_from_batches(self.inst_key_batch_date_pairs)
 
-      actual_samples = self.monocle_data.get_samples_from_batches(BATCH_DATES)
+      expected_samples = [
+         self.mock_seq_status['fake_sample_id_1'],
+         self.mock_seq_status['fake_sample_id_3'],
+         self.mock_seq_status['fake_sample_id_4']
+      ]
+      self.assertEqual(expected_samples, actual_samples)
 
-      expected_samples = [self.mock_seq_status['fake_sample_id_1'], self.mock_seq_status['fake_sample_id_2']]
+   def test_get_samples_from_batches_accepts_empty_list(self):
+      samples = self.monocle_data.get_samples_from_batches([])
+
+      self.assertEqual([], samples)
+
+   def test_get_samples_from_batches_ignores_institution_keys_that_are_not_in_seq_status_data(self):
+      inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
+      inst_key_batch_date_pairs.append(['nonExistentInst', '2021-01-27'])
+
+      actual_samples = self.monocle_data.get_samples_from_batches(inst_key_batch_date_pairs)
+
+      expected_samples = [
+         self.mock_seq_status['fake_sample_id_1'],
+         self.mock_seq_status['fake_sample_id_3'],
+         self.mock_seq_status['fake_sample_id_4']
+      ]
       self.assertEqual(expected_samples, actual_samples)
 
    @patch.object(Path, 'rglob')

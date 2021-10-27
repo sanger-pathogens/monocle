@@ -298,18 +298,25 @@ components:
     BulkDownloadInput:
       type: object
       required:
-         - batches
+        - batches
       properties:
-         batches:
-            type: array
-            items:
-               type: string
-         assemblies:
-            type: boolean
-         annotations:
-            type: boolean
-         reads:
-            type: boolean
+        batches:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstKeyBatchDatePair"
+        assemblies:
+          type: boolean
+        annotations:
+          type: boolean
+        reads:
+          type: boolean
+
+    InstKeyBatchDatePair:
+      type: array
+      items:
+        type: string
+      minItems: 2
+      maxItems: 2
 
     DownloadInfo:
       type: object

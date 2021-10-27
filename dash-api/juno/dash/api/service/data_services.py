@@ -187,7 +187,7 @@ class MonocleData:
 
    def get_samples(self):
       """
-      Pass dict of institutions. Returns a dict of all samples for each institution in the dict.
+      Returns a dict of all samples for each institution in the dict.
       
       {  institution_1   => [sample_id_1, sample_id_2...],
          institution_2...
@@ -424,7 +424,7 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_bulk_download_info(self, batches, **kwargs):
+   def get_bulk_download_info(self, inst_key_batch_date_pairs, **kwargs):
       """
       Pass a list of batch dates and an optional boolean flag per assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
@@ -435,7 +435,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_samples_from_batches(batches, self.get_institution_names())
+      samples_from_requested_batches = self.get_samples_from_batches(inst_key_batch_date_pairs)
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -455,22 +455,29 @@ class MonocleData:
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_samples_from_batches(self, batches, institutions=None):
+   def get_samples_from_batches(self, inst_key_batch_date_pairs):
       """
-      Pass a list of batch dates.
+      Pass a list of pairs of an institution key and a batch date.
       Returns a list of samples from the batches.
       """
-      if len(batches) == 0:
-         logging.debug(f'{__class__.__name__}.get_samples_from_batches(): The list of batches is empty.')
+      if len(inst_key_batch_date_pairs) == 0:
+         logging.debug(
+            f'{__class__.__name__}.get_samples_from_batches(): The list of [institution key, batch date] pairs is empty.')
          return []
 
-      sample_ids = self.sample_metadata.get_sample_ids(institutions)
-      samples_by_id = self.sequencing_status_source.get_multiple_samples(sample_ids)
-      unique_batch_dates = set(batches)
-      return [
-         sample for _sample_id, sample in samples_by_id.items()
-         if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) in unique_batch_dates
-      ]
+      batch_samples = []
+      sequencing_status_data = self.get_sequencing_status()
+      for inst_key, batch_date_stamp in inst_key_batch_date_pairs:
+         try:
+            samples = sequencing_status_data[inst_key].values()
+         except KeyError:
+            logging.warning(f'No key "{inst_key}" in sequencing status data.')
+            continue
+         for sample in samples:
+            if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
+               batch_samples.append(sample)
+
+      return batch_samples
 
    def get_public_name_to_lane_files_dict(self, samples, **kwargs):
       """

@@ -76,10 +76,10 @@ def pipeline_status_summary():
 def bulk_download_info(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    batches, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
+    inst_key_batch_date_pairs, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     return call_jsonify(
         ServiceFactory.data_service(get_authenticated_username(request)).get_bulk_download_info(
-            batches,
+            inst_key_batch_date_pairs,
             assemblies=assemblies,
             annotations=annotations,
             reads=reads)
@@ -89,9 +89,9 @@ def bulk_download_info(body):
 def bulk_download_urls(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    batches, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
+    inst_key_batch_date_pairs, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
-    samples = monocle_data.get_samples_from_batches(batches, monocle_data.get_institution_names())
+    samples = monocle_data.get_samples_from_batches(inst_key_batch_date_pairs)
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
         assemblies=assemblies,
@@ -167,8 +167,8 @@ def get_authenticated_username(req_obj):
 
 def _parse_BulkDownloadInput(BulkDownloadInput):
    """ Parse the BulkDownloadInput request body passed to a POST request handler """
-   batches     = BulkDownloadInput['batches'] # required
+   inst_key_batch_date_pairs = BulkDownloadInput['batches'] # required
    assemblies  = BulkDownloadInput.get('assemblies',  False)
    annotations = BulkDownloadInput.get('annotations', False)
    reads       = BulkDownloadInput.get('reads',       False)
-   return(batches, assemblies, annotations, reads)
+   return(inst_key_batch_date_pairs, assemblies, annotations, reads)

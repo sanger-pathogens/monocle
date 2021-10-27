@@ -53,21 +53,6 @@ class SampleMetadata:
                samples.append( this_sample )
         return samples
 
-    def get_sample_ids(self, institutions=None):
-        samples = self.monocle_client.samples()
-        logging.info(f'{__class__.__name__}.get_sample_ids() got {len(samples)} sample(s)')
-        sample_ids = []
-        for sample in samples:
-            if institutions is None or sample['submitting_institution'] in institutions:
-                try:
-                    sample_id = sample['sanger_sample_id']
-                except KeyError:
-                    logging.error(f'"sanger_sample_id" entry is missing from sample {sample}')
-                else:
-                    logging.debug(f'sample id: {sample_id}')
-                    sample_ids.append(sample_id)
-        return sample_ids
-
 
 class ProtocolError(Exception):
     pass
