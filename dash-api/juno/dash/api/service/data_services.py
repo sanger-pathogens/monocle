@@ -241,7 +241,7 @@ class MonocleData:
                sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
             except urllib.error.HTTPError:
                logging.error("{}.get_sequencing_status() failed to collect samples {} for unknown reason".format(__class__.__name__,sample_id_list))
-               sequencing_status[this_institution][self.api_key_error] = 'Server Error: records could not be collected from MLWH'
+               sequencing_status[this_institution][self.api_key_error] = 'Server Error: Records cannot be collected at this time. Please try again later.'
          if '_ERROR' not in sequencing_status[this_institution].keys():
             sequencing_status[this_institution][self.api_key_error] = None
       self.sequencing_status_data = sequencing_status
@@ -265,7 +265,7 @@ class MonocleData:
          # this is a check to make sure the data for this institution has actually been found
          print()
          if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            batches[this_institution] = { self.api_key_error : 'Server Error: records could not be collected from MLWH' }
+            batches[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
          num_samples_expected          = len(samples[this_institution])
          # this is a list of the samples actually found in MLWH; it is not necessarily the same as
