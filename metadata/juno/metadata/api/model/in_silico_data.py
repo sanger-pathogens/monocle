@@ -49,5 +49,11 @@ class InSilicoData:
     RIB: str
     SRR1: str
     SRR2: str
+    twenty_three_S1_variant: str
+    twenty_three_S3_variant: str
     GYRA_variant: str
     PARC_variant: str
+    RPOBGBS_1_variant: str
+    RPOBGBS_2_variant: str
+    RPOBGBS_3_variant: str
+    RPOBGBS_4_variant: str

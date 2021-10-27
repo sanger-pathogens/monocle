@@ -2,7 +2,10 @@ import { render } from "@testing-library/svelte";
 import { setContext } from "svelte";
 import InstitutionStatus from "./_InstitutionStatus.svelte";
 
+const API_ERROR = "some error";
 const INSTITUTION_NAME = "Welfare Biology Research Institute";
+const RE_STATUS_PANE_HEADING_TEXT =
+  / (?:Samples (?:Received|Sequenced))|(?:Sample Pipelines Completed)$/;
 const ROLE_HEADING = "heading";
 
 jest.mock("svelte", () => ({
@@ -34,7 +37,7 @@ it("puts an institution's name into context", () => {
 });
 
 it("displays only an institution name and a short message when no samples received", () => {
-  const { container, getByText } = render(InstitutionStatus, {
+  const { container, getByRole, getByText } = render(InstitutionStatus, {
     institutionName: INSTITUTION_NAME,
     batches: { received: 0, deliveries: [] },
     sequencingStatus: {},
@@ -43,7 +46,8 @@ it("displays only an institution name and a short message when no samples receiv
 
   const innerElements = container.querySelector("article").children;
   expect(innerElements).toHaveLength(2);
-  expect(getByText(INSTITUTION_NAME)).toBeDefined();
+  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
+    .toBeDefined();
   expect(getByText("No samples received")).toBeDefined();
 });
 
@@ -61,4 +65,22 @@ it.each([
 
   expect(getByRole(ROLE_HEADING, { name: expectedHeadingText }))
     .toBeDefined();
+});
+
+it.each([
+ ["batch", { batches: { _ERROR: API_ERROR }, sequencingStatus: {}, pipelineStatus: {} }],
+ ["sequencing status", { batches: {}, sequencingStatus: { _ERROR: API_ERROR }, pipelineStatus: {} }],
+ ["pipeline status", { batches: {}, sequencingStatus: {}, pipelineStatus: { _ERROR: API_ERROR } }]
+])("displays an institution name and an API error if %s response has the error field", (endpointName, props) => {
+  const { getByRole, getByText, queryByRole } = render(InstitutionStatus, {
+    institutionName: INSTITUTION_NAME,
+    ...props
+  });
+
+  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
+    .toBeDefined();
+  expect(getByText(`⚠️ ${API_ERROR}`))
+    .toBeDefined();
+  expect(queryByRole(ROLE_HEADING, { name: { RE_STATUS_PANE_HEADING_TEXT } }))
+    .toBeNull();
 });

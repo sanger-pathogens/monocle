@@ -58,8 +58,14 @@ CREATE TABLE `in_silico` (
   `RIB` varchar(30),
   `SRR1` varchar(30),
   `SRR2` varchar(30),
+  `twenty_three_S1_variant` varchar(256),
+  `twenty_three_S3_variant` varchar(256),
   `GYRA_variant` varchar(256),
   `PARC_variant` varchar(256),
+  `RPOBGBS_1_variant` varchar(256),
+  `RPOBGBS_2_variant` varchar(256),
+  `RPOBGBS_3_variant` varchar(256),
+  `RPOBGBS_4_variant` varchar(256),
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

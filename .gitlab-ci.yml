@@ -19,7 +19,7 @@ variables:
 Docker builds:
   stage: build
   tags:
-    - openstack-autoscale-theta
+    - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"

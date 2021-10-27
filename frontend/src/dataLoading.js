@@ -83,14 +83,14 @@ function collateInstitutionStatus({
   pipelineStatus
 }) {
   return Object.keys(institutions)
-    .map((key) => ({
-      name: institutions[key].name,
-      batches: batches[key],
-      sequencingStatus: sequencingStatus[key],
+    .map((institutionKey) => ({
+      name: institutions[institutionKey].name,
+      batches: batches[institutionKey],
+      sequencingStatus: sequencingStatus[institutionKey],
       pipelineStatus: {
-        sequencedSuccess: sequencingStatus[key].success,
-        ...pipelineStatus[key]
+        sequencedSuccess: sequencingStatus[institutionKey].success,
+        ...pipelineStatus[institutionKey]
       },
-      key
+      key: institutionKey
     }))
 }

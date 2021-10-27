@@ -57,11 +57,12 @@ describe("after data fetching", () => {
     });
   });
 
-  it("displays the project progress chart", async () => {
+  it("displays the project progress chart w/ a Y-axis label", async () => {
     const { getByText } = render(DashboardPage);
 
     await waitFor(() => {
       expect(getByText("Project Progress")).toBeDefined();
+      expect(getByText("# of samples")).toBeDefined();
     });
   });
 

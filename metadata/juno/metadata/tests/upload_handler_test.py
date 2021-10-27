@@ -384,13 +384,8 @@ class TestUploadHandler(unittest.TestCase):
 class TestInSilicoUploadHandler(unittest.TestCase):
     """ Unit tests for the UploadHandler class """
 
-    TEST_TAB_WITH_VALIDATION_ERRORS = '**/validation_test_in_silico_data.tab'
-    TEST_TAB_WITH_NO_ERRORS = '**/valid_in_silico_data.tab'
-    TEST_TSV_WITH_VALIDATION_ERRORS = '**/validation_test_in_silico_data.tsv'
-    TEST_TSV_WITH_NO_ERRORS = '**/valid_in_silico_data.tsv'
     TEST_TXT_WITH_VALIDATION_ERRORS = '**/validation_test_in_silico_data.txt'
     TEST_TXT_WITH_NO_ERRORS = '**/valid_in_silico_data.txt'
-    TEST_NO_EXTENSION_WITH_NO_ERRORS = '**/valid_in_silico_data'
     CONFIG_FILE_PATH = 'config.json'
 
     def display_errors(self, test_method, errors: List[str]) -> None:
@@ -418,100 +413,82 @@ class TestInSilicoUploadHandler(unittest.TestCase):
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
-        self.assertEqual(len(validation_errors), 46)
+        self.assertEqual(len(validation_errors), 38)
 
         self.assertTrue(
             '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "cps_type"}: "@" contains illegal characters' in validation_errors)
+            '{row: 2, column: "23S1"}: "[pos]" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "ST"}: "ST=I" contains illegal characters' in validation_errors)
+            '{row: 3, column: "23S3"}: "*" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "adhP"}: "abc" must be a whole positive number and/or asterisk' in validation_errors)
-        #self.assertTrue(
-        #    '{row: 2, column: "pheS"}: "*" must be a whole positive number' in validation_errors)
+            '{row: 3, column: "ERMB"}: "_" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "atr"}: "0!" must be a whole positive number and/or asterisk' in validation_errors)
+            '{row: 2, column: "ERMT"}: "0" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "glnA"}: "1_6" must be a whole positive number and/or asterisk' in validation_errors)
+            '{row: 3, column: "FOSA"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "sdhA"}: "2.2" must be a whole positive number and/or asterisk' in validation_errors)
+            '{row: 2, column: "GYRA"}: "+" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "glcK"}: "" must be a whole positive number and/or asterisk' in validation_errors)
+            '{row: 3, column: "LNUB"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "tkt"}: "abc" must be a whole positive number and/or asterisk' in validation_errors)
+            '{row: 2, column: "LSAC"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "23S1"}: "[pos]" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "MEFA"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "23S3"}: "*" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "MPHC"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "ERMB"}: "_" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "MSRA"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "ERMT"}: "0" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "MSRD"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "FOSA"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "PARC"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "GYRA"}: "+" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "RPOBGBS-1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "LNUB"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "RPOBGBS-2"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "LSAC"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "RPOBGBS-3"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "MEFA"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "RPOBGBS-4"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "MPHC"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "SUL2"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "MSRA"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "TETB"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "MSRD"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "TETL"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "PARC"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "TETM"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "RPOBGBS-1"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "TETO"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "RPOBGBS-2"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "TETS"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "RPOBGBS-3"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "ALP1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "RPOBGBS-4"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "ALP23"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "SUL2"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "ALPHA"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "TETB"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "HVGA"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "TETL"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "PI1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "TETM"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "PI2A1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "TETO"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "PI2A2"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "TETS"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "PI2B"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "ALP1"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "RIB"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "ALP23"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "SRR1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "ALPHA"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 2, column: "SRR2"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "HVGA"}: "\'\'" must be pos, neg or NA' in validation_errors)
+            '{row: 3, column: "23S1_variant"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty' in validation_errors)
         self.assertTrue(
-            '{row: 2, column: "PI1"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "PI2A1"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 2, column: "PI2A2"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "PI2B"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 2, column: "RIB"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "SRR1"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 2, column: "SRR2"}: "\'\'" must be pos, neg or NA' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "GYRA_variant"}: "\'\'" contains illegal characters' in validation_errors)
-        self.assertTrue(
-            '{row: 2, column: "PARC_variant"}: "\'\'" contains illegal characters' in validation_errors)
+            '{row: 3, column: "23S3_variant"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty' in validation_errors)
 
     def test_allowed_file_types(self):
         self.assertIsNotNone(self.under_test.allowed_file_types())
@@ -521,81 +498,18 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         # check that file names are checked when file extension check is enabled
         previous_check_file_extension_value = self.under_test.check_file_extension
         self.under_test.check_file_extension = True
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TAB_WITH_NO_ERRORS))
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TSV_WITH_NO_ERRORS))
         self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TXT_WITH_NO_ERRORS))
         self.assertFalse(self.under_test.is_valid_file_type('foo'))
         self.assertFalse(self.under_test.is_valid_file_type(None))
         self.assertFalse(self.under_test.is_valid_file_type(''))
         self.under_test.check_file_extension = previous_check_file_extension_value
 
-    def test_file_type_check_disabled_ok(self):
-        # check that files without extensions are accepted if the file extention check is disabled
-        previous_check_file_extension_value = self.under_test.check_file_extension
-        self.under_test.check_file_extension = False
-        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_WITH_NO_ERRORS))
-        self.under_test.check_file_extension = previous_check_file_extension_value
-
-    def test_tab_load_with_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_WITH_VALIDATION_ERRORS, recursive=True)[0])
-        #self.display_errors('test_tab_load_with_validation_errors', validation_errors)
-        self.__check_validation_errors(validation_errors)
-
-    def test_tab_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_WITH_NO_ERRORS, recursive=True)[0])
-        #self.display_errors('test_tab_load_with_no_validation_errors', validation_errors)
-        self.assertEqual(len(validation_errors), 0)
-
-    def test_tsv_load_with_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TSV_WITH_VALIDATION_ERRORS, recursive=True)[0])
-        #self.display_errors('test_tab_load_with_validation_errors', validation_errors)
-        self.__check_validation_errors(validation_errors)
-
-    def test_tsv_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TSV_WITH_NO_ERRORS, recursive=True)[0])
-        #self.display_errors('test_tsv_load_with_no_validation_errors', validation_errors)
+    def test_txt_load_with_no_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
+        #self.display_errors('test_txt_load_with_no_validation_errors', validation_errors)
         self.assertEqual(len(validation_errors), 0)
 
     def test_txt_load_with_validation_errors(self) -> None:
         validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_VALIDATION_ERRORS, recursive=True)[0])
         #self.display_errors('test_tab_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
-
-    def test_txt_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
-        #self.display_errors('test_txt_load_with_no_validation_errors', validation_errors)
-        self.assertEqual(len(validation_errors), 0)
-
-    def test_parse_in_silico_data(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
-        #self.display_errors('test_parse_in_silico_data', validation_errors)
-
-        self.assertEqual(len(validation_errors), 0)
-
-        expected_results = [
-            InSilicoData(lane_id='50000_2#282', cps_type='III', ST='ST-I', adhP='15', pheS='8', atr='4', glnA='4', sdhA='22', glcK='1', tkt='9',
-                twenty_three_S1='pos', twenty_three_S3='pos', CAT='neg', ERMB='neg', ERMT='neg', FOSA='neg', GYRA='pos', LNUB='neg',
-                LSAC='neg', MEFA='neg', MPHC='neg', MSRA='neg', MSRD='neg', PARC='pos', RPOBGBS_1='neg', RPOBGBS_2='neg', RPOBGBS_3='neg',
-                RPOBGBS_4='neg', SUL2='neg', TETB='neg', TETL='neg', TETM='pos', TETO='neg', TETS='neg', ALP1='neg', ALP23='neg', ALPHA='neg',
-                HVGA='pos', PI1='pos', PI2A1='neg', PI2A2='neg', PI2B='pos', RIB='pos', SRR1='neg', SRR2='pos', GYRA_variant='*', PARC_variant='*'),
-            InSilicoData(lane_id='50000_2#287', cps_type='III', ST='ST-2', adhP='3', pheS='11', atr='0', glnA='16', sdhA='14', glcK='31', tkt='6',
-                twenty_three_S1='pos', twenty_three_S3='pos', CAT='neg', ERMB='neg', ERMT='neg', FOSA='neg', GYRA='pos', LNUB='neg',
-                LSAC='neg', MEFA='neg', MPHC='neg', MSRA='neg', MSRD='neg', PARC='pos', RPOBGBS_1='neg', RPOBGBS_2='neg', RPOBGBS_3='neg',
-                RPOBGBS_4='neg', SUL2='neg', TETB='neg', TETL='neg', TETM='pos', TETO='neg', TETS='neg', ALP1='neg', ALP23='neg', ALPHA='neg',
-                HVGA='pos', PI1='pos', PI2A1='neg', PI2A2='neg', PI2B='pos', RIB='pos', SRR1='neg', SRR2='pos', GYRA_variant='GYRA-T78Q,L55A', PARC_variant='PARC-Q17S')]
-
-        samples = self.under_test.parse()
-        self.assertEqual(len(samples), len(expected_results))
-
-        for idx in range(0, len(expected_results)-1):
-            #print(samples[idx])
-            self.assertEqual(samples[idx], expected_results[idx])
-
-    def test_store_in_silico_nothing_loaded(self) -> None:
-        with self.assertRaises(RuntimeError):
-            self.under_test.store()
-
-    def test_store_in_silico(self) -> None:
-        self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
-        self.under_test.store()
-        self.dao_mock.update_lane_in_silico_data.assert_called_once()

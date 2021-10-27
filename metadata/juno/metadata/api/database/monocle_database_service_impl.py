@@ -118,7 +118,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin_method = :vancomycin_method
             """)
 
-    SELECT_LANES_SQL = text(""" \
+    SELECT_SAMPLES_SQL = text(""" \
             SELECT
                 sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
@@ -133,7 +133,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin, vancomycin_method
             FROM api_sample
             WHERE
-                lane_id IN :lanes""")
+                sample_id IN :samples""")
 
     SELECT_INSTITUTIONS_SQL = text(""" \
                 SELECT name, country, latitude, longitude
@@ -166,11 +166,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             INSERT INTO in_silico (
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
-                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
+                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant, twenty_three_S3_variant, GYRA_variant, PARC_variant,
+                RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             ) VALUES (
                 :lane_id, :cps_type, :ST, :adhP, :pheS, :atr, :glnA, :sdhA, :glcK, :tkt, :twenty_three_S1, :twenty_three_S3, :CAT, :ERMB, :ERMT, :FOSA, :GYRA, :LNUB,
                 :LSAC, :MEFA, :MPHC, :MSRA, :MSRD, :PARC, :RPOBGBS_1, :RPOBGBS_2, :RPOBGBS_3, :RPOBGBS_4, :SUL2, :TETB, :TETL, :TETM, :TETO, :TETS,
-                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :GYRA_variant, :PARC_variant
+                :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :twenty_three_S1_variant, :twenty_three_S3_variant, :GYRA_variant, :PARC_variant,
+                :RPOBGBS_1_variant, :RPOBGBS_2_variant, :RPOBGBS_3_variant, :RPOBGBS_4_variant
             ) ON DUPLICATE KEY UPDATE
                 lane_id = :lane_id,
                 cps_type = :cps_type,
@@ -217,15 +219,22 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 RIB = :RIB,
                 SRR1 = :SRR1,
                 SRR2 = :SRR2,
+                twenty_three_S1_variant = :twenty_three_S1_variant,
+                twenty_three_S3_variant = :twenty_three_S3_variant,
                 GYRA_variant = :GYRA_variant,
-                PARC_variant = :PARC_variant
+                PARC_variant = :PARC_variant,
+                RPOBGBS_1_variant = :RPOBGBS_1_variant,
+                RPOBGBS_2_variant = :RPOBGBS_2_variant,
+                RPOBGBS_3_variant = :RPOBGBS_3_variant,
+                RPOBGBS_4_variant = :RPOBGBS_4_variant
             """)
 
     SELECT_LANES_IN_SILICO_SQL = text(""" \
             SELECT
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, CAT, ERMB, ERMT, FOSA, GYRA, LNUB,
                 LSAC, MEFA, MPHC, MSRA, MSRD, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4, SUL2, TETB, TETL, TETM, TETO, TETS,
-                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, GYRA_variant, PARC_variant
+                ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant, twenty_three_S3_variant, GYRA_variant, PARC_variant,
+                RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             FROM in_silico
             WHERE
                 lane_id IN :lanes""")
@@ -487,24 +496,36 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     RIB=self.convert_string(in_silico_data.RIB),
                     SRR1=self.convert_string(in_silico_data.SRR1),
                     SRR2=self.convert_string(in_silico_data.SRR2),
+                    twenty_three_S1_variant=self.convert_string(in_silico_data.twenty_three_S1_variant),
+                    twenty_three_S3_variant=self.convert_string(in_silico_data.twenty_three_S3_variant),
                     GYRA_variant=self.convert_string(in_silico_data.GYRA_variant),
-                    PARC_variant=self.convert_string(in_silico_data.PARC_variant)
+                    PARC_variant=self.convert_string(in_silico_data.PARC_variant),
+                    RPOBGBS_1_variant=self.convert_string(in_silico_data.RPOBGBS_1_variant),
+                    RPOBGBS_2_variant=self.convert_string(in_silico_data.RPOBGBS_2_variant),
+                    RPOBGBS_3_variant=self.convert_string(in_silico_data.RPOBGBS_3_variant),
+                    RPOBGBS_4_variant=self.convert_string(in_silico_data.RPOBGBS_4_variant)
                 )
 
         logger.info("update_lane_in_silico_data completed")
 
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
-        """ Get download metadata for given list of 'sample:lane' keys """
+        """ Get download metadata for given list of samples """
 
         if len(keys) == 0:
             return []
 
         results = []
-        samples, lanes = self.split_keys(keys)
-        lane_ids = tuple(lanes)
+        sample_ids = tuple(keys)
+
+        logger.info(
+            "get_download_metadata: About to pull {} sample records from the database...".format(len(sample_ids))
+        )
+        logger.debug(
+            "get_download_metadata: Pulling sample ids {} from the database...".format(sample_ids)
+        )
 
         with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_LANES_SQL, lanes=lane_ids)
+            rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sample_ids)
 
             for row in rs:
                 results.append(
@@ -571,18 +592,20 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         linezolid_method=row['linezolid_method']
                     )
                 )
+        logger.debug(
+            "get_download_metadata: Pulled records of samples {} from the database...".format(results)
+        )
 
         return results
 
     def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
-        """ Get download in silico data for given list of 'sample:lane' keys """
+        """ Get download in silico data for given list of lane keys """
 
         if len(keys) == 0:
             return []
 
         results = []
-        samples, lanes = self.split_keys(keys)
-        lane_ids = tuple(lanes)
+        lane_ids = tuple(keys)
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
@@ -635,8 +658,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         RIB=row['RIB'],
                         SRR1=row['SRR1'],
                         SRR2=row['SRR2'],
+                        twenty_three_S1_variant=row['twenty_three_S1_variant'],
+                        twenty_three_S3_variant=row['twenty_three_S3_variant'],
                         GYRA_variant=row['GYRA_variant'],
-                        PARC_variant=row['PARC_variant']
+                        PARC_variant=row['PARC_variant'],
+                        RPOBGBS_1_variant=row['RPOBGBS_1_variant'],
+                        RPOBGBS_2_variant=row['RPOBGBS_2_variant'],
+                        RPOBGBS_3_variant=row['RPOBGBS_3_variant'],
+                        RPOBGBS_4_variant=row['RPOBGBS_4_variant']
                     )
                 )
 
