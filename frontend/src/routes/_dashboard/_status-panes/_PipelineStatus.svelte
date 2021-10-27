@@ -37,7 +37,6 @@
     <StatusChart
       labels={CHART_LABELS}
       values={[pending, succeeded, failed]}
-      includesRunning={true}
     />
 
     <DownloadButtons
