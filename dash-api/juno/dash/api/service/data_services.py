@@ -222,8 +222,7 @@ class MonocleData:
             
    def get_sequencing_status(self):
       """
-      Pass dict of institutions.
-      Returns dict with sequencing data for each institution; data are in
+      Returns dict with sequencing data for each institution the user is a member of; data are in
       a dict, keyed on the sample ID
       
       Note that these are sample IDs that were found in MLWH, and have therefore
@@ -263,7 +262,7 @@ class MonocleData:
 
    def get_batches(self):
       """
-      Pass dict of institutions. Returns dict with details of batches delivered.
+      Returns dict with details of batches delivered.
       
       TODO:  find out a way to get the genuine total number of expected samples for each institution
       """ 
@@ -426,7 +425,8 @@ class MonocleData:
 
    def get_bulk_download_info(self, inst_key_batch_date_pairs, **kwargs):
       """
-      Pass a list of batch dates and an optional boolean flag per assembly, annotation, and reads types of lane files.
+      Pass a list of [institution key, batch date] pairs and an optional boolean flag per
+      assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
 
       {
@@ -457,7 +457,7 @@ class MonocleData:
 
    def get_samples_from_batches(self, inst_key_batch_date_pairs):
       """
-      Pass a list of pairs of an institution key and a batch date.
+      Pass a list of [institution key, batch date] pairs.
       Returns a list of samples from the batches.
       """
       if len(inst_key_batch_date_pairs) == 0:
@@ -601,7 +601,7 @@ class MonocleData:
                   'content'   : csv_response_string
                   }
 
-   def metadata_as_csv(self,institution,category,status,download_base_url):
+   def metadata_as_csv(self, institution, category, status, download_base_url):
       """
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
