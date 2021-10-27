@@ -221,21 +221,21 @@ class MonocleDataTest(TestCase):
                                                                                                 ]
                                                 }
                                     }
-   expected_seq_summary       =  {  'FakOne': { '_ERROR': None, 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [  {   'lane': 'fake_lane_id_2 (sample fake_sample_id_1)', 'stage': 'sequencing',
+   expected_seq_summary       =  {  'FakOne': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
+                                                'fail_messages': [  {   'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 },
-                                    'FakTwo': { '_ERROR': None, 'received': 4, 'completed': 5, 'success': 4, 'failed': 1,
-                                                'fail_messages': [   {  'lane': 'fake_lane_id_2 (sample fake_sample_id_1)', 'stage': 'sequencing',
+                                    'FakTwo': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
+                                                'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 }
                                     }
-   expected_pipeline_summary  = {   'FakOne': {'_ERROR': None, 'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []},
-                                    'FakTwo': {'_ERROR': None, 'running': 5, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
+   expected_pipeline_summary  = {   'FakOne': {'_ERROR': None, 'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []},
+                                    'FakTwo': {'_ERROR': None, 'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
