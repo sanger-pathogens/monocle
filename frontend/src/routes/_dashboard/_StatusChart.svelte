@@ -11,8 +11,7 @@
   const SEGMENT_COLORS = ["light-grey", "light-green", "red"];
 
   function calcPercentCompleted(values) {
-    let pending, succeeded, failed;
-    [pending, succeeded, failed] = values;
+    const [pending, succeeded, failed] = values;
     const completed = succeeded + failed;
     const received = completed + pending;
     return received ? completed / received : 0;
