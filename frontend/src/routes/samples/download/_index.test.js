@@ -39,6 +39,10 @@ describe("once batches are fetched", () => {
     name: "batch 3",
     date: "2021-07-21"
   }];
+  const BATCHES_PAYLOAD = {
+    FioRon: { deliveries: [BATCHES[0], BATCHES[1]] },
+    UlmUni: { deliveries: [BATCHES[2]] }
+  };
   const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB (42 TB unzipped)";
   const ANNOTATIONS_LABEL = "Annotations";
   const ASSEMBLIES_LABEL = "Assemblies";
@@ -52,6 +56,10 @@ describe("once batches are fetched", () => {
     callback();
   });
   global.clearTimeout = jest.fn();
+
+  beforeAll(() => {
+    getBatches.mockResolvedValue(BATCHES_PAYLOAD);
+  });
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(DownloadPage);
@@ -148,9 +156,9 @@ describe("once batches are fetched", () => {
     let clearTimeoutCallOrder = clearTimeout.mock.invocationCallOrder[0];
     let setTimeoutCallOrder = setTimeout.mock.invocationCallOrder[0];
     expect(clearTimeoutCallOrder).toBeLessThan(setTimeoutCallOrder);
-    // `2` calls: one after the initial rendering and one after the click to select all batches.
-    expect(clearTimeout).toHaveBeenCalledTimes(2);
-    expect(setTimeout).toHaveBeenCalledTimes(2);
+    const numTimesFormValuesChange = 3;
+    expect(clearTimeout).toHaveBeenCalledTimes(numTimesFormValuesChange);
+    expect(setTimeout).toHaveBeenCalledTimes(numTimesFormValuesChange);
 
     clearTimeout.mockClear();
     setTimeout.mockClear();
@@ -165,15 +173,6 @@ describe("once batches are fetched", () => {
   });
 
   describe("batch selector", () => {
-    const BATCHES_PAYLOAD = {
-      FioRon: { deliveries: [BATCHES[0], BATCHES[1]] },
-      UlmUni: { deliveries: [BATCHES[2]] }
-    };
-
-    beforeAll(() => {
-      getBatches.mockResolvedValue(BATCHES_PAYLOAD);
-    });
-
     it("displays a list of available batches and their institutions when clicked", async () => {
       const institutionsPayload = Object.keys(BATCHES_PAYLOAD)
         .reduce((accum, institutionKey) => {
@@ -291,7 +290,7 @@ describe("once batches are fetched", () => {
 
       expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
       expect(getBulkDownloadUrls).toHaveBeenCalledWith(
-        BATCHES.map(({date}) => date),
+        [['FioRon', BATCHES[0].date], ['FioRon', BATCHES[1].date], ['UlmUni', BATCHES[2].date]],
         {assemblies: true, annotations: true},
         fetch);
       await waitFor(() => {

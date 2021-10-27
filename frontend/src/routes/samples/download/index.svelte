@@ -19,7 +19,7 @@
   let downloadLink;
   let selectedBatches = null;
 
-  $: formComplete = selectedBatches &&
+  $: formComplete = selectedBatches?.length &&
       (formValues.annotations || formValues.assemblies);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
@@ -67,16 +67,16 @@
     return Object.keys(batches)
       .map((institutionKey) =>
         batches[institutionKey].deliveries.map((batch) =>
-          makeBatchListItem(batch, institutions[institutionKey]?.name || institutionKey)))
+          makeBatchListItem(batch, institutionKey, institutions[institutionKey]?.name)))
       .flat();
   }
 
-  function makeBatchListItem({ name, date, number: numSamples }, institution) {
+  function makeBatchListItem({ name, date, number: numSamples }, institutionKey, institutionName) {
     const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
     return {
       label: `${date}: ${name}${numSamplesText}`,
-      value: date,
-      group: institution
+      value: [institutionKey, date],
+      group: institutionName || institutionKey
     };
   }
 
@@ -89,8 +89,8 @@
     downloadLinksRequested =
       confirm("You won't be able to change the parameters if you proceed.");
     if (downloadLinksRequested) {
-      const batchDates = selectedBatches?.map(({value}) => value);
-      getBulkDownloadUrls(batchDates, formValues, fetch)
+      const selectedBatchValues = selectedBatches?.map(({value}) => value);
+      getBulkDownloadUrls(selectedBatchValues, formValues, fetch)
         .then((downloadLinks = []) => {
           downloadLink = downloadLinks[0];
           if (!downloadLink) {
