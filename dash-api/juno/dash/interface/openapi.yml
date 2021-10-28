@@ -314,8 +314,8 @@ components:
     InstKeyBatchDatePair:
       type: array
       items:
-        oneOf:
-          type: string
+        anyOf:
+          - type: string
           - $ref: "#/components/schemas/BatchDate"
       minItems: 2
       maxItems: 2
