@@ -9,6 +9,8 @@ from   pathlib                import Path
 import urllib.parse
 import uuid
 import yaml
+import urllib.request
+import urllib.error
 
 import DataSources.sample_metadata
 import DataSources.metadata_download
@@ -49,6 +51,9 @@ class MonocleData:
   
    # format of timestamp returned in MLWH queries
    mlwh_datetime_fmt    = '%Y-%m-%dT%H:%M:%S%z'
+
+   # Server error key handle
+   api_key_error = '_ERROR'
    
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
@@ -181,7 +186,8 @@ class MonocleData:
       """
       if self.samples_data is not None:
          return self.samples_data
-      institutions_data = self.get_institutions()
+      if self.institutions_data is None:
+         self.institutions_data = self.get_institutions()
       all_juno_samples = self.sample_metadata.get_samples()
       samples = { i:[] for i in list(self.institutions_data.keys()) }
       for this_sample in all_juno_samples:
@@ -201,7 +207,7 @@ class MonocleData:
       a dict, keyed on the sample ID
       
       Note that these are sample IDs that were found in MLWH, and have therefore
-      neen processed at Sanger; some samples that are in the monocle db may not
+      been processed at Sanger; some samples that are in the monocle db may not
       be present here.
       
       {  institution_1: {  sample_id_1: { seq_data_1 => 'the value',
@@ -229,9 +235,15 @@ class MonocleData:
       for this_institution in institutions_data.keys():
          sequencing_status[this_institution] = {}
          sample_id_list = [ s['sample_id'] for s in samples_data[this_institution] ]
-         if 0 < len(sample_id_list):
+         if len(sample_id_list)-1 > 0: # sample_id_list must be -1 to discount _ERROR entry
             logging.debug("{}.get_sequencing_status() requesting sequencing status for samples {}".format(__class__.__name__,sample_id_list))
-            sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
+            try:
+               sequencing_status[this_institution] = self.sequencing_status_source.get_multiple_samples(sample_id_list)
+            except urllib.error.HTTPError:
+               logging.error("{}.get_sequencing_status() failed to collect samples {} for unknown reason".format(__class__.__name__,sample_id_list))
+               sequencing_status[this_institution][self.api_key_error] = 'Server Error: Records cannot be collected at this time. Please try again later.'
+         if '_ERROR' not in sequencing_status[this_institution].keys():
+            sequencing_status[this_institution][self.api_key_error] = None
       self.sequencing_status_data = sequencing_status
       return self.sequencing_status_data
 
@@ -250,6 +262,11 @@ class MonocleData:
          # but currently all we know are the number of samples for which we have metadata; this will be
          # a subset of the total expected samples (until the last delivery arrives) so it isn't what we really want
          # but we have no other data yet
+         # this is a check to make sure the data for this institution has actually been found
+         print()
+         if sequencing_status_data[this_institution][self.api_key_error] is not None:
+            batches[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+            continue
          num_samples_expected          = len(samples[this_institution])
          # this is a list of the samples actually found in MLWH; it is not necessarily the same as
          # the list of sample IDs in the monocle db
@@ -268,8 +285,9 @@ class MonocleData:
                                     'number' : num_samples_received_by_date[this_date],
                                     },
                                  )
-         batches[this_institution] = { 'expected'  : num_samples_expected,
-                                       'received'  : len(samples_received),
+         batches[this_institution] = { self.api_key_error    : None,
+                                       'expected'  : num_samples_expected,
+                                       'received'  : len(samples_received) - 1,
                                        'deliveries': deliveries,
                                        }
       return batches
@@ -298,16 +316,24 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in sequencing_status_data.keys():
+         logging.debug("{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
+            __class__.__name__,sequencing_status_data[this_institution].keys(), this_institution))
+         if sequencing_status_data[this_institution][self.api_key_error] is not None:
+            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+            continue
          sample_id_list = sequencing_status_data[this_institution].keys()
-         status[this_institution] = {  'received'  : len(sample_id_list),
+         status[this_institution] = {  self.api_key_error    : None,
+                                       'received'  : len(sample_id_list)-1,
                                        'completed' : 0,
                                        'success'   : 0,
                                        'failed'    : 0,
                                        'fail_messages' : [],
                                        }
-         if 0 < len(sample_id_list):
+         if len(sample_id_list)-1 > 0: # sample_id_list must be -1 to discount _ERROR entry
             this_sequencing_status_data = sequencing_status_data[this_institution]
             for this_sample_id in sample_id_list:
+               if this_sample_id == self.api_key_error :
+                  continue
                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                # i.e. only samples with lanes need to be looked at by the lines below
                for this_lane in this_sequencing_status_data[this_sample_id]['lanes']:
@@ -362,7 +388,11 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in institutions_data.keys():
-         status[this_institution] = {  'running'   : 0,
+         if sequencing_status_data[this_institution][self.api_key_error] is not None:
+            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+            continue
+         status[this_institution] = {  self.api_key_error    : None,
+                                       'running'   : 0,
                                        'completed' : 0,
                                        'success'   : 0,
                                        'failed'    : 0,
@@ -370,6 +400,8 @@ class MonocleData:
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
          for this_sample_id in sample_id_list:
+            if this_sample_id == self.api_key_error:
+               continue
             this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
             for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
                this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
@@ -473,7 +505,14 @@ class MonocleData:
       # then the sample ID associated with eacj matchuing lane gets pushed onto a list that we can use for the metadata download request
       samples_for_download = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         
+         if this_sample_id == self.api_key_error:
+            if sequencing_status_data[institution_data_key][
+               this_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
+               logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
+               raise KeyError("{} has no sample data".format(institution))
+            else:
+               continue
+
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
             
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
@@ -667,8 +706,12 @@ class MonocleData:
    def num_samples_received_by_date(self, institution):
       sequencing_status_data        = self.get_sequencing_status()
       samples_received              = sequencing_status_data[institution].keys()
+      if sequencing_status_data[institution][self.api_key_error] is not None:
+         return {}
       num_samples_received_by_date  = defaultdict(int)
       for this_sample_id in samples_received:
+         if this_sample_id == self.api_key_error:
+            continue
          # get date in ISO8601 format (YYYY-MM-DD)
          received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
                                              self.mlwh_datetime_fmt
@@ -678,10 +721,14 @@ class MonocleData:
    
    def num_lanes_sequenced_by_date(self, institution):
       sequencing_status_data        = self.get_sequencing_status()
+      if sequencing_status_data[institution][self.api_key_error] is not None:
+         return {}
       samples_received              = sequencing_status_data[institution].keys()
       num_lanes_sequenced_by_date   = defaultdict(int)
 
       for this_sample_id in samples_received:
+         if this_sample_id == self.api_key_error:
+            continue
          # get each lane (some samples may have non lanes yet)
          for this_lane in sequencing_status_data[institution][this_sample_id]['lanes']:
             # get timestamp for completion (some lanes may not have one yet)
