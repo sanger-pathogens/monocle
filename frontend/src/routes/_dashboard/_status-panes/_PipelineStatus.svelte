@@ -6,18 +6,17 @@
 
   export let pipelineStatus = {};
 
-  const CHART_LABELS = ["Waiting", "Running", "Succeeded", "Failed"];
+  const CHART_LABELS = ["Pending", "Succeeded", "Failed"];
   const FAIL_MESSAGES_TITLE = "Pipeline Failures";
 
   const {
     sequencedSuccess,
-    running,
     success: succeeded,
     failed,
     completed,
     fail_messages: failures
   } = pipelineStatus;
-  const waiting = sequencedSuccess - completed;
+  const pending = sequencedSuccess - completed;
 </script>
 
 
@@ -28,24 +27,23 @@
     </h4>
   {:else}
     <h4>
-      {#if waiting > 0}
+      {#if pending > 0}
         <code>{completed}</code> of <code>{sequencedSuccess}</code> Sample Pipelines Completed
       {:else}
         All <code>{completed}</code> Sample Pipelines Completed
       {/if}
     </h4>
-  
+
     <StatusChart
       labels={CHART_LABELS}
-      values={[waiting, running, succeeded, failed]}
-      includesRunning={true}
+      values={[pending, succeeded, failed]}
     />
 
     <DownloadButtons
       {succeeded}
       isPipeline={true}
     />
-  
+
     {#if failed > 0}
       <FailMessages
         {failures}
@@ -65,4 +63,3 @@
     {/if}
   {/if}
 </StatusPane>
-
