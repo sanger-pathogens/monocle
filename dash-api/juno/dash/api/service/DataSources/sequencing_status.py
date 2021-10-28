@@ -3,6 +3,7 @@ import json
 import logging
 import urllib.parse
 import urllib.request
+import urllib.error
 import yaml
 
 # class DataSourceParamError(Exception):
@@ -31,7 +32,10 @@ class SequencingStatus:
       Returns a dict, keys are sample IDs, values are the sequencing status data as a dict
       If a sample ID is passed that is not found by the API, it will be missing from the returned dict.
       """
-      results_list = self.mlwh_client.find_by_ids(sample_ids)
+      try:
+         results_list = self.mlwh_client.find_by_ids(sample_ids)
+      except urllib.error.HTTPError:
+         raise
       logging.info("{}.get_multiple_samples() got {} result(s)".format(__class__.__name__,len(results_list)))
       # turn results list into dict keys on the sample IDs
       results_by_sample_id = {}
@@ -92,9 +96,12 @@ class MLWH_Client:
    def find_by_ids(self, sample_ids):
       endpoint    = self.config['findByIds']
       logging.debug("{}.find_by_ids() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(sample_ids)))
-      response = self.make_request( endpoint, post_data = sample_ids )
-      logging.debug("{}.find_by_ids([{}]) returned {}".format(__class__.__name__,','.join(sample_ids),response))
-      results = self.parse_response(response, required_keys = [self.config['findByIds_key']])
+      try:
+         response = self.make_request( endpoint, post_data = sample_ids )
+         logging.debug("{}.find_by_ids([{}]) returned {}".format(__class__.__name__,','.join(sample_ids),response))
+         results = self.parse_response(response, required_keys = [self.config['findByIds_key']])
+      except urllib.error.HTTPError:
+         raise
       return results[self.config['findByIds_key']]
 
    def make_request(self, endpoint, post_data=None):

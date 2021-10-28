@@ -2,9 +2,9 @@
 
 `./bin/create_download_view_for_sample_data.py` creates a folder for each lane of each institution w/ symlinks to sample data files.
 
-The script is meant to be run on the server: `./sync_data_view_cron` creates a Docker container w/ the required environment and runs the script inside the container.
+The script `./bin/run_data_view_script_in_docker.sh` runs in a standalone dash-api container, which provides the required environment. Note this container must be attached to the Monocle service docker network so that the metadata API can be queried.  This is scheduled by cron (the crontab is kept under version control in monocle-box in fce-management).
 
-Both the script and the cron file are deployed to the server by `deploy.sh`.
+Both the scripts are deployed to the server by `deploy.sh`.
 
 ## Tests
 
