@@ -2,6 +2,8 @@ from   unittest      import TestCase
 from   unittest.mock import patch
 from   datetime      import datetime
 import logging
+import urllib.request
+import urllib.error
 from   os            import environ
 from   pandas.errors import MergeError
 from   pathlib       import Path
@@ -90,7 +92,8 @@ class MonocleDataTest(TestCase):
                                     {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two'},
                                     {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two'}
                                     ]
-   mock_seq_status            = {   'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
+   mock_seq_status            = {   '_ERROR': None,
+                                    'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
                                                             'lanes': [  {  'id': 'fake_lane_id_1',
                                                                            'qc_lib': 1,
                                                                            'qc_seq': 1,
@@ -197,38 +200,43 @@ class MonocleDataTest(TestCase):
    expected_institution_data  = {   'FakOne' : {'name': 'Fake institution One', 'db_key': 'Fake institution One'},
                                     'FakTwo' : {'name': 'Fake institution Two', 'db_key': 'Fake institution Two'},
                                     }
+
+   expected_dropout_data      = { 'FakOne' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' },
+                                  'FakTwo' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' }
+                                    }
+
    expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1'}, {'sample_id': 'fake_sample_id_2'}],
                                     'FakTwo': [{'sample_id': 'fake_sample_id_3'}, {'sample_id': 'fake_sample_id_4'}]
                                     }
    expected_seq_status        = {   'FakOne': mock_seq_status,
                                     'FakTwo': mock_seq_status
                                     }
-   expected_batches           = {   'FakOne': { 'expected': 2, 'received': 4, 'deliveries':  [ {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
+   expected_batches           = {   'FakOne': { '_ERROR': None, 'expected': 2, 'received': 4, 'deliveries':  [ {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
                                                                                                 {'name': 'Batch 2', 'date': '2020-11-16', 'number': 1},
                                                                                                 {'name': 'Batch 3', 'date': '2021-05-02', 'number': 2}
                                                                                                 ]
                                                 },
-                                    'FakTwo': {'expected': 2, 'received': 4, 'deliveries':   [  {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
+                                    'FakTwo': { '_ERROR': None, 'expected': 2, 'received': 4, 'deliveries':   [  {'name': 'Batch 1', 'date': '2020-04-29', 'number': 1},
                                                                                                 {'name': 'Batch 2', 'date': '2020-11-16', 'number': 1},
                                                                                                 {'name': 'Batch 3', 'date': '2021-05-02', 'number': 2}
                                                                                                 ]
                                                 }
                                     }
-   expected_seq_summary       =  {  'FakOne': { 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
+   expected_seq_summary       =  {  'FakOne': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
                                                 'fail_messages': [  {   'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 },
-                                    'FakTwo': { 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
+                                    'FakTwo': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
                                                 'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
                                                                         'issue': 'sorry, failure mesages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 }
                                     }
-   expected_pipeline_summary  = {   'FakOne': {'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []},
-                                    'FakTwo': {'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
+   expected_pipeline_summary  = {   'FakOne': {'_ERROR': None, 'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []},
+                                    'FakTwo': {'_ERROR': None, 'running': 6, 'completed': 0, 'success': 0, 'failed': 0, 'fail_messages': []}
                                     }
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
@@ -286,6 +294,7 @@ class MonocleDataTest(TestCase):
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+      self.monocle_data.sequencing_status_data = None
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
@@ -308,11 +317,35 @@ class MonocleDataTest(TestCase):
    def test_get_sequencing_status(self):
       seq_status_data = self.monocle_data.get_sequencing_status()
       self.assertEqual(self.expected_seq_status, seq_status_data)
-           
+
+   @patch.object(SampleMetadata, 'get_institution_names')
+   @patch.object(SampleMetadata, 'get_samples')
+   @patch.object(SequencingStatus, 'get_multiple_samples')
+   def test_get_sequencing_status_droppout(self, get_multiple_samples_mock, mock_db_sample_query, mock_institution_query):
+       mock_institution_query.return_value = self.mock_institutions
+       mock_db_sample_query.return_value = self.mock_samples
+       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found', 'yes', 'no')
+       self.monocle_data.sequencing_status_data = None
+
+       httpdropout = self.monocle_data.get_sequencing_status()
+
+       self.assertEqual(self.expected_dropout_data, httpdropout)
+
    def test_get_batches(self):
       batches_data = self.monocle_data.get_batches()
       self.assertEqual(self.expected_batches, batches_data)
-    
+
+   @patch.object(SequencingStatus, 'get_multiple_samples')
+   def test_get_batches_dropouts(self, get_multiple_samples_mock):
+       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found',
+                                                                      'yes', 'no')
+       self.monocle_data.sequencing_status_data = None
+       self.monocle_data.get_sequencing_status()
+
+       batches_data = self.monocle_data.get_batches()
+
+       self.assertEqual(self.expected_dropout_data, batches_data)
+
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
@@ -323,6 +356,23 @@ class MonocleDataTest(TestCase):
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
+   def test_sequencing_status_summary_dropout(self):
+       self.monocle_data.sequencing_status_data = self.expected_dropout_data
+
+       seq_status_summary = self.monocle_data.sequencing_status_summary()
+
+       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+       self.assertEqual(self.expected_dropout_data, seq_status_summary)
+
+   def test_pipeline_status_summary_dropout(self):
+       self.monocle_data.sequencing_status_data = self.expected_dropout_data
+
+       pipeline_summary = self.monocle_data.pipeline_status_summary()
+
+       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+       self.assertEqual(self.expected_dropout_data, pipeline_summary)
+
+
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -330,6 +380,7 @@ class MonocleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = self.mock_download_path
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
@@ -339,7 +390,9 @@ class MonocleDataTest(TestCase):
    def test_get_metadata_for_download_reject_missing_institution(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
+
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
    @patch.object(MonocleData,              'make_download_symlink')
@@ -349,7 +402,9 @@ class MonocleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       mock_make_symlink.return_value         = None
+
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
+
       self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -357,15 +412,30 @@ class MonocleDataTest(TestCase):
    def test_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+
       self.assertEqual(self.expected_metadata, metadata_as_csv)
+
+   @patch.object(Monocle_Download_Client, 'in_silico_data')
+   @patch.object(Monocle_Download_Client, 'metadata')
+   def test_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+       mock_metadata_fetch.return_value = self.mock_metadata
+       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
+       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful',
+                                                           self.mock_download_url)
+
+       self.assertEqual(self.expected_metadata, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_metadata_as_csv_when_no_in_silico_data_available(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.in_silico_data_available_not_available
+
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
+
       self.assertEqual(self.expected_metadata_when_no_in_silico_data, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -373,8 +443,10 @@ class MonocleDataTest(TestCase):
    def test_metadata_as_csv_when_in_silico_data_has_bad_lane_id(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data_bad_lane_id
+
       metadata_as_csv = self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata, metadata_as_csv))
+
       self.assertEqual(self.expected_metadata, metadata_as_csv)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -382,6 +454,7 @@ class MonocleDataTest(TestCase):
    def test_metadata_as_csv_invalid_metadata_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_invalid_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+
       with self.assertRaises(MergeError):
          self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
 
@@ -390,6 +463,7 @@ class MonocleDataTest(TestCase):
    def test_metadata_as_csv_invalid_in_silico_merge_fails(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_invalid_in_silico_data
+
       with self.assertRaises(MergeError):
          self.monocle_data.metadata_as_csv(self.mock_institutions[0], 'sequencing', 'successful', self.mock_download_url)
 
@@ -398,8 +472,10 @@ class MonocleDataTest(TestCase):
       test_inst_name = self.mock_institutions[0]
       test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
       self._symlink_test_setup(test_inst_key)
+
       symlink_url_path  = self.monocle_data.make_download_symlink(test_inst_name)
       symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
+
       # test the symlink is actually a symlink, and that it points at the intended target
       self.assertTrue( Path(symlink_disk_path).is_symlink() )
       self.assertEqual( Path(self.mock_inst_view_dir, test_inst_key).absolute(),
