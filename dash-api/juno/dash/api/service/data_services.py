@@ -8,7 +8,7 @@ import logging
 import os
 from   os                     import environ, path
 import pandas
-from   pathlib                import Path
+from   pathlib                import Path, PurePath
 import urllib.parse
 from uuid                     import uuid4
 import yaml
@@ -518,7 +518,9 @@ class MonocleData:
          <public name 2>: ...
       }
       """
-      if DATA_INST_VIEW_ENVIRON not in environ:
+      try:
+         data_inst_view_path = environ[DATA_INST_VIEW_ENVIRON]
+      except KeyError:
          self._download_config_error(f'environment variable {DATA_INST_VIEW_ENVIRON} is not set')
 
       public_name_to_lane_files = {}
@@ -531,6 +533,8 @@ class MonocleData:
       except KeyError as err:
           self._download_config_error(err)
 
+      data_inst_view_dir = PurePath(data_inst_view_path).name
+      path_instance = Path(data_inst_view_dir)
       for sample in samples:
          if not sample:
             continue
@@ -542,12 +546,13 @@ class MonocleData:
                annotations=annotations,
                reads=reads)
             for lane_file_name in lane_file_names:
-               try:
-                  # `[!<name>]` in `rglob()` means include only those matching files that aren't in folder <name>
-                  lane_file = list(Path().rglob(
-                     path.join(f'[!{cross_institution_dir}]', lane_file_name)
-                  ))[0]
-               except IndexError:
+               lane_file = None
+               for file in path_instance.rglob(lane_file_name):
+                  # Check that the file isn't in the "cross-institution" dir.
+                  if cross_institution_dir not in file.parts:
+                     lane_file = file
+                     break
+               else:
                   logging.debug(f'File {lane_file_name} doesn\'t exist')
                   continue
                dir_name = lane_file.resolve().parent.name

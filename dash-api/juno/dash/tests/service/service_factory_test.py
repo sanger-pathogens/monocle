@@ -422,8 +422,8 @@ class MonocleDataTest(TestCase):
    def test_get_bulk_download_info(self, get_file_size_mock, rglob_mock):
       file_size = 420024
       get_file_size_mock.return_value = file_size
-      pub_dir_name = 'dir'
-      rglob_mock.side_effect = lambda pattern: [Path(pub_dir_name, pattern.split('/')[-1])]
+      public_name = 'public_name'
+      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
@@ -469,16 +469,38 @@ class MonocleDataTest(TestCase):
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_public_name_to_lane_files_dict(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
-      pub_dir_name = 'dir'
-      rglob_mock.side_effect = lambda pattern: [Path(pub_dir_name, pattern.split('/')[-1])]
+      public_name = 'public_name'
+      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [PurePath(pub_dir_name, f'{lane["id"]}.contigs_spades.fa')
+      expected_lane_files = [PurePath(public_name, f'{lane["id"]}.contigs_spades.fa')
          for sample in self.mock_seq_status.values() if sample
          for lane in sample['lanes']]
-      expected = {pub_dir_name: expected_lane_files}
+      expected = {public_name: expected_lane_files}
+      self.assertEqual(expected, public_name_to_lane_files)
+
+   @patch.object(Path, 'rglob')
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_public_name_to_lane_files_dict_excludes_files_from_cross_institutional_dir(self, rglob_mock):
+      samples = list( self.mock_seq_status.values() )
+      public_name = 'public_name'
+      cross_institution_dir = 'downloads'
+      excluded_lane_id = 'fake_lane_id_3'
+      # Put one lane file in the cross-institution dir.
+      rglob_mock.side_effect = lambda lane_file_name: (
+         [Path(cross_institution_dir, lane_file_name)] if lane_file_name.startswith(excluded_lane_id)
+         else [Path(public_name, lane_file_name)]
+      )
+
+      public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
+         samples, assemblies=True, annotations=False)
+
+      expected_lane_files = [PurePath(public_name, f'{lane["id"]}.contigs_spades.fa')
+         for sample in self.mock_seq_status.values() if sample
+         for lane in sample['lanes'] if lane['id'] is not excluded_lane_id]
+      expected = {public_name: expected_lane_files}
       self.assertEqual(expected, public_name_to_lane_files)
 
    def test_get_public_name_to_lane_files_dict_rejects_if_data_institution_view_env_var_is_not_set(self):
