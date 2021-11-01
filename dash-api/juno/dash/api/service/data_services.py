@@ -496,7 +496,9 @@ class MonocleData:
 
       batch_samples = []
       sequencing_status_data = self.get_sequencing_status()
-      for inst_key, batch_date_stamp in inst_key_batch_date_pairs:
+      for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
+         inst_key         = this_inst_key_batch_date_pair['institution key']
+         batch_date_stamp = this_inst_key_batch_date_pair['batch date']
          try:
             samples = [sample for sample in sequencing_status_data[inst_key].values() if sample]
          except KeyError:
@@ -505,6 +507,7 @@ class MonocleData:
          for sample in samples:
             if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
                batch_samples.append(sample)
+      logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
 
       return batch_samples
 

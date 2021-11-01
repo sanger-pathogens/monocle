@@ -77,7 +77,9 @@ class MonocleDataTest(TestCase):
       mock_web_dir   = data_sources['data_download']['web_dir']
 
    inst_key_batch_date_pairs = [
-      ['FakOne', '2020-04-29'], ['FakTwo', '2021-05-02'], ['FakOne', '1892-01-30']
+      {'institution key': 'FakOne', 'batch date': '2020-04-29'},
+      {'institution key': 'FakTwo', 'batch date': '2021-05-02'},
+      {'institution key': 'FakOne', 'batch date': '1892-01-30'}
    ]
    
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
@@ -454,7 +456,7 @@ class MonocleDataTest(TestCase):
 
    def test_get_samples_from_batches_ignores_institution_keys_that_are_not_in_seq_status_data(self):
       inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
-      inst_key_batch_date_pairs.append(['nonExistentInst', '2021-01-27'])
+      inst_key_batch_date_pairs.append({'institution key': 'nonExistentInst', 'batch date': '2021-01-27'})
 
       actual_samples = self.monocle_data.get_samples_from_batches(inst_key_batch_date_pairs)
 

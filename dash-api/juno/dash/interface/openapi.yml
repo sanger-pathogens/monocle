@@ -310,16 +310,23 @@ components:
           type: boolean
         reads:
           type: boolean
-
+          
     InstKeyBatchDatePair:
-      type: array
-      items:
-        anyOf:
-          - type: string
-          - $ref: "#/components/schemas/BatchDate"
-      minItems: 2
-      maxItems: 2
-
+      type: object
+      required:
+        - "institution key"
+        - "batch date"
+      description: "Batch of samples, identified by institution and delivery date"
+      properties:
+        institution key:
+          description: "Instiution key"
+          example: "NatRefLab"
+          type: string
+        batch date:
+          description: "Date of delivery"
+          example: "2019-11-15"
+          $ref: "#/components/schemas/BatchDate"
+            
     BatchDate:
       type: string
       format: date
