@@ -4,6 +4,7 @@ from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
 import errno
 from functools                import reduce
+from glob                     import glob
 import logging
 import os
 from   os                     import environ, path
@@ -22,7 +23,9 @@ import DataSources.pipeline_status
 import DataSources.user_data
 from utils.file               import format_file_size
 
+ANY_DIR = '*'
 API_ERROR_KEY = '_ERROR'
+CURRENT_DIR = '.'
 DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
 # format of timestamp returned in MLWH queries
@@ -537,7 +540,6 @@ class MonocleData:
           self._download_config_error(err)
 
       data_inst_view_dir = PurePath(data_inst_view_path).name
-      path_instance = Path(data_inst_view_dir)
       for sample in samples:
          if not sample:
             continue
@@ -550,7 +552,10 @@ class MonocleData:
                reads=reads)
             for lane_file_name in lane_file_names:
                lane_file = None
-               for file in path_instance.rglob(lane_file_name):
+               for file_path in glob(
+                  path.join(CURRENT_DIR, data_inst_view_dir, ANY_DIR, lane_file_name)
+               ):
+                  file = Path(file_path)
                   # Check that the file isn't in the "cross-institution" dir.
                   if cross_institution_dir not in file.parts:
                      lane_file = file
