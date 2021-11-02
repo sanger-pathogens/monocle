@@ -12,8 +12,13 @@
   let uploading = false;
   let validationErrors = [];
 
+  // `files` is referenced here only to indicate Svelte's reactive statemnt that `clearValidationErrors()`
+  // should be run each time `files` changes. (See https://svelte.dev/docs#3_$_marks_a_statement_as_reactive.)
+  $: clearValidationErrors(files);
+
   function onFileSubmit() {
     uploading = true;
+    clearValidationErrors();
 
     uploadFiles(emitUploadSuccess)
       .catch(onUploadError)
@@ -87,6 +92,10 @@
       },
       []
     );
+  }
+
+  function clearValidationErrors() {
+    validationErrors = [];
   }
 </script>
 
