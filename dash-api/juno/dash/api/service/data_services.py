@@ -536,8 +536,7 @@ class MonocleData:
       except KeyError as err:
           self._download_config_error(err)
 
-      data_inst_view_dir = PurePath(data_inst_view_path).name
-      path_instance = Path(data_inst_view_dir)
+      path_instance = Path(data_inst_view_path)
       for sample in samples:
          if not sample:
             continue
