@@ -41,26 +41,26 @@ export function getBatches(fetch) {
   return fetchDashboardApiResource("get_batches", "batches", fetch);
 }
 
-export function getBulkDownloadInfo(batches, { assemblies, annotations }, fetch) {
+export function getBulkDownloadInfo(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_info", null, fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        batches,
+        batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
         assemblies,
         annotations
       })
     });
 }
 
-export function getBulkDownloadUrls(batches, { assemblies, annotations }, fetch) {
+export function getBulkDownloadUrls(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        batches,
+        batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
         assemblies,
         annotations
       })
@@ -126,4 +126,10 @@ function collateInstitutionStatus({
       },
       key: institutionKey
     }));
+}
+
+function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs) {
+  return instKeyBatchDatePairs.map(([instKey, batchDate]) => (
+    { "institution key": instKey, "batch date": batchDate }
+  ));
 }

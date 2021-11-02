@@ -7,7 +7,13 @@ import {
   getUserDetails
 } from "./dataLoading.js";
 
-const BATCH_DATES = ["2021-05-20"];
+const INST_KEY_BATCH_DATE_PAIRS = [
+  ["SomIns", "2021-05-20"],
+  ["AnoIns", "2020-09-01"]
+];
+const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, batchDate]) => (
+  { "institution key": instKey, "batch date": batchDate }
+))
 const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
@@ -27,11 +33,11 @@ describe.each([
   {
     fnName: "getBulkDownloadInfo",
     getResource: getBulkDownloadInfo,
-    args: [BATCH_DATES, { assemblies: true, annotations: false }],
+    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
+      body: JSON.stringify({ batches: INST_KEY_BATCH_DATE_OBJECTS, assemblies: true, annotations: false })
     },
     expectedEndpoints: ["bulk_download_info"],
     responsePayload: "as is",
@@ -40,11 +46,11 @@ describe.each([
   {
     fnName: "getBulkDownloadUrls",
     getResource: getBulkDownloadUrls,
-    args: [BATCH_DATES, { assemblies: true, annotations: false }],
+    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ batches: BATCH_DATES, assemblies: true, annotations: false })
+      body: JSON.stringify({ batches: INST_KEY_BATCH_DATE_OBJECTS, assemblies: true, annotations: false })
     },
     expectedEndpoints: ["bulk_download_urls"],
     responsePayload: {
