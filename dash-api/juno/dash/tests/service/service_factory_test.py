@@ -5,7 +5,7 @@ from   datetime      import datetime
 import logging
 import urllib.request
 import urllib.error
-from   os            import environ, path
+from   os            import environ
 from   pandas.errors import MergeError
 from   pathlib       import Path, PurePath
 import yaml
@@ -418,14 +418,14 @@ class MonocleDataTest(TestCase):
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
-   @patch('data_services.glob')
-   @patch.object(MonocleData, '_get_file_size')
+   @patch.object(Path, 'rglob')
+   @patch.object(MonocleData,              '_get_file_size')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_bulk_download_info(self, get_file_size_mock, glob_mock):
+   def test_get_bulk_download_info(self, get_file_size_mock, rglob_mock):
       file_size = 420024
       get_file_size_mock.return_value = file_size
       public_name = 'public_name'
-      glob_mock.side_effect = lambda file_path: [path.join(public_name, PurePath(file_path).name)]
+      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
@@ -467,12 +467,12 @@ class MonocleDataTest(TestCase):
       ]
       self.assertEqual(expected_samples, actual_samples)
 
-   @patch('data_services.glob')
+   @patch.object(Path, 'rglob')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_public_name_to_lane_files_dict(self, glob_mock):
+   def test_get_public_name_to_lane_files_dict(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
       public_name = 'public_name'
-      glob_mock.side_effect = lambda file_path: [path.join(public_name, PurePath(file_path).name)]
+      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
@@ -483,17 +483,17 @@ class MonocleDataTest(TestCase):
       expected = {public_name: expected_lane_files}
       self.assertEqual(expected, public_name_to_lane_files)
 
-   @patch('data_services.glob')
+   @patch.object(Path, 'rglob')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_public_name_to_lane_files_dict_excludes_files_from_cross_institutional_dir(self, glob_mock):
+   def test_get_public_name_to_lane_files_dict_excludes_files_from_cross_institutional_dir(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
       public_name = 'public_name'
       cross_institution_dir = 'downloads'
       excluded_lane_id = 'fake_lane_id_3'
       # Put one lane file in the cross-institution dir.
-      glob_mock.side_effect = lambda file_path: (
-         [path.join(cross_institution_dir, PurePath(file_path).name)] if PurePath(file_path).name.startswith(excluded_lane_id)
-         else [path.join(public_name, PurePath(file_path).name)]
+      rglob_mock.side_effect = lambda lane_file_name: (
+         [Path(cross_institution_dir, lane_file_name)] if lane_file_name.startswith(excluded_lane_id)
+         else [Path(public_name, lane_file_name)]
       )
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
@@ -525,7 +525,7 @@ class MonocleDataTest(TestCase):
    def test_get_zip_download_location(self):
       download_location = self.monocle_data.get_zip_download_location()
 
-      self.assertEqual(PurePath(self.mock_inst_view_dir, 'downloads'), download_location)
+      self.assertEqual(Path(self.mock_inst_view_dir, 'downloads'), download_location)
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):

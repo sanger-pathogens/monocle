@@ -148,8 +148,11 @@ class SequencingStatusTest(TestCase):
          doomed = MLWH_Client(set_up=False)
          doomed.set_up('no_such_config.yml')
  
+   #@patch('DataSources.sequencing_status.datetime')
    @patch.object(MLWH_Client, 'make_request')
    def test_get_sample(self, mock_request):
+      ##from datetime import date
+      ##mock_datetime.datetime.now.return_value = date(2010, 3, 19)
       mock_request.return_value = self.mock_get_sample
       sample = self.seq_status.get_sample(self.expected_sample_ids[0])
       self.assertIsInstance(sample, type({'a': 'dict'}))
