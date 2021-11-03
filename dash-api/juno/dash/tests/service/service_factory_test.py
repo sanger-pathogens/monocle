@@ -18,6 +18,8 @@ from   DataSources.user_data           import UserData
 from   data_services                   import MonocleUser, MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                      import format_file_size
 
+PUBLIC_NAME = 'SCN9A'
+
 class MonocleUserTest(TestCase):
    
    test_config             = 'dash/tests/mock_data/data_sources.yml'
@@ -96,10 +98,10 @@ class MonocleDataTest(TestCase):
    mock_institutions          = [   'Fake institution One',
                                     'Fake institution Two'
                                     ]
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two'}
+   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
@@ -214,8 +216,8 @@ class MonocleDataTest(TestCase):
                                   'FakTwo' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' }
                                     }
 
-   expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1'}, {'sample_id': 'fake_sample_id_2'}],
-                                    'FakTwo': [{'sample_id': 'fake_sample_id_3'}, {'sample_id': 'fake_sample_id_4'}]
+   expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1', 'public_name': f'{PUBLIC_NAME}_1'}, {'sample_id': 'fake_sample_id_2', 'public_name': f'{PUBLIC_NAME}_2'}],
+                                    'FakTwo': [{'sample_id': 'fake_sample_id_3', 'public_name': f'{PUBLIC_NAME}_3'}, {'sample_id': 'fake_sample_id_4', 'public_name': f'{PUBLIC_NAME}_4'}]
                                     }
    expected_seq_status        = {   'FakOne': mock_seq_status,
                                     'FakTwo': mock_seq_status
@@ -418,14 +420,15 @@ class MonocleDataTest(TestCase):
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
-   @patch.object(Path, 'rglob')
-   @patch.object(MonocleData,              '_get_file_size')
+   @patch.object(Path,           'rglob')
+   @patch.object(MonocleData,    '_get_file_size')
+   @patch.object(SampleMetadata, 'get_samples')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_bulk_download_info(self, get_file_size_mock, rglob_mock):
+   def test_get_bulk_download_info(self, get_sample_metadata_mock, get_file_size_mock, rglob_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
       file_size = 420024
       get_file_size_mock.return_value = file_size
-      public_name = 'public_name'
-      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
+      rglob_mock.side_effect = lambda lane_file_name: [Path(PUBLIC_NAME, lane_file_name)]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
@@ -439,7 +442,10 @@ class MonocleDataTest(TestCase):
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
 
-   def test_get_samples_from_batches(self):
+   @patch.object(SampleMetadata, 'get_samples')
+   def test_get_samples_from_batches(self, get_sample_metadata_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
+
       actual_samples = self.monocle_data.get_samples_from_batches(self.inst_key_batch_date_pairs)
 
       expected_samples = [
@@ -454,7 +460,9 @@ class MonocleDataTest(TestCase):
 
       self.assertEqual([], samples)
 
-   def test_get_samples_from_batches_ignores_institution_keys_that_are_not_in_seq_status_data(self):
+   @patch.object(SampleMetadata, 'get_samples')
+   def test_get_samples_from_batches_ignores_institution_keys_that_are_not_in_seq_status_data(self, get_sample_metadata_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
       inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
       inst_key_batch_date_pairs.append({'institution key': 'nonExistentInst', 'batch date': '2021-01-27'})
 
@@ -471,38 +479,36 @@ class MonocleDataTest(TestCase):
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_public_name_to_lane_files_dict(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
-      public_name = 'public_name'
-      rglob_mock.side_effect = lambda lane_file_name: [Path(public_name, lane_file_name)]
+      rglob_mock.side_effect = lambda lane_file_name: [Path(PUBLIC_NAME, lane_file_name)]
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [PurePath(public_name, f'{lane["id"]}.contigs_spades.fa')
+      expected_lane_files = [PurePath(PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
          for sample in self.mock_seq_status.values() if sample
          for lane in sample['lanes']]
-      expected = {public_name: expected_lane_files}
+      expected = {PUBLIC_NAME: expected_lane_files}
       self.assertEqual(expected, public_name_to_lane_files)
 
    @patch.object(Path, 'rglob')
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_public_name_to_lane_files_dict_excludes_files_from_cross_institutional_dir(self, rglob_mock):
       samples = list( self.mock_seq_status.values() )
-      public_name = 'public_name'
       cross_institution_dir = 'downloads'
       excluded_lane_id = 'fake_lane_id_3'
       # Put one lane file in the cross-institution dir.
       rglob_mock.side_effect = lambda lane_file_name: (
          [Path(cross_institution_dir, lane_file_name)] if lane_file_name.startswith(excluded_lane_id)
-         else [Path(public_name, lane_file_name)]
+         else [Path(PUBLIC_NAME, lane_file_name)]
       )
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [PurePath(public_name, f'{lane["id"]}.contigs_spades.fa')
+      expected_lane_files = [PurePath(PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
          for sample in self.mock_seq_status.values() if sample
          for lane in sample['lanes'] if lane['id'] is not excluded_lane_id]
-      expected = {public_name: expected_lane_files}
+      expected = {PUBLIC_NAME: expected_lane_files}
       self.assertEqual(expected, public_name_to_lane_files)
 
    def test_get_public_name_to_lane_files_dict_rejects_if_data_institution_view_env_var_is_not_set(self):
@@ -525,7 +531,7 @@ class MonocleDataTest(TestCase):
    def test_get_zip_download_location(self):
       download_location = self.monocle_data.get_zip_download_location()
 
-      self.assertEqual(Path(self.mock_inst_view_dir, 'downloads'), download_location)
+      self.assertEqual(PurePath(self.mock_inst_view_dir, 'downloads'), download_location)
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):

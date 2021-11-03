@@ -34,6 +34,7 @@ ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
 ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
 ANNOTATION_FILE_SUFFIX = '.spades.gff'
 READS_FILE_SUFFIXES = ('_1.fastq.gz', '_2.fastq.gz')
+UNKNOWN_PUBLIC_NAME = 'unknown'
 
 class MonocleUser:
    """
@@ -487,29 +488,52 @@ class MonocleData:
    def get_samples_from_batches(self, inst_key_batch_date_pairs):
       """
       Pass a list of [institution key, batch date] pairs.
-      Returns a list of samples from the batches.
+      Returns a list of samples from the batches w/ institution keys and public names added.
       """
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
             f'{__class__.__name__}.get_samples_from_batches(): The list of [institution key, batch date] pairs is empty.')
          return []
 
+      institution_keys = [
+         inst_key_batch_date_pair['institution key'] for inst_key_batch_date_pair in inst_key_batch_date_pairs
+      ]
+      institution_names = [
+         institution['name'] for institution_key, institution in self.get_institutions().items()
+         if institution_key in institution_keys
+      ]
+      sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
       batch_samples = []
       sequencing_status_data = self.get_sequencing_status()
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
          inst_key         = this_inst_key_batch_date_pair['institution key']
          batch_date_stamp = this_inst_key_batch_date_pair['batch date']
          try:
-            samples = [sample for sample in sequencing_status_data[inst_key].values() if sample]
+            samples = [(sample_id, sample) for sample_id, sample in sequencing_status_data[inst_key].items() if sample]
          except KeyError:
             logging.warning(f'No key "{inst_key}" in sequencing status data.')
             continue
-         for sample in samples:
+         for sample_id, sample in samples:
             if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
+               sample['inst_key'] = inst_key
+               sample['public_name'] = sample_id_to_public_name[sample_id]
                batch_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
 
       return batch_samples
+
+   def _get_sample_id_to_public_name_dict(self, institutions):
+      sample_id_to_public_name = {}
+      for sample in self.sample_metadata.get_samples(institutions=institutions):
+         sample_id = sample['sample_id']
+         try:
+            public_name = sample['public_name']
+         except KeyError:
+            logging.error(f'No public name for sample {sample_id}')
+            sample_id_to_public_name[sample_id] = UNKNOWN_PUBLIC_NAME
+         else:
+            sample_id_to_public_name[sample_id] = public_name
+      return sample_id_to_public_name
 
    def get_public_name_to_lane_files_dict(self, samples, **kwargs):
       """
