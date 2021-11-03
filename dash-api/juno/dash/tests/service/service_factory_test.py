@@ -18,6 +18,7 @@ from   DataSources.user_data           import UserData
 from   data_services                   import MonocleUser, MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                      import format_file_size
 
+INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
 
 class MonocleUserTest(TestCase):
@@ -420,15 +421,14 @@ class MonocleDataTest(TestCase):
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
-   @patch.object(Path,           'rglob')
+   @patch.object(Path,           'exists', return_value=True)
    @patch.object(MonocleData,    '_get_file_size')
    @patch.object(SampleMetadata, 'get_samples')
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_bulk_download_info(self, get_sample_metadata_mock, get_file_size_mock, rglob_mock):
+   def test_get_bulk_download_info(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
       get_sample_metadata_mock.return_value = self.mock_samples
       file_size = 420024
       get_file_size_mock.return_value = file_size
-      rglob_mock.side_effect = lambda lane_file_name: [Path(PUBLIC_NAME, lane_file_name)]
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
          self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
@@ -475,41 +475,40 @@ class MonocleDataTest(TestCase):
       ]
       self.assertEqual(expected_samples, actual_samples)
 
-   @patch.object(Path, 'rglob')
+   @patch.object(Path, 'exists', return_value=True)
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_public_name_to_lane_files_dict(self, rglob_mock):
-      samples = list( self.mock_seq_status.values() )
-      rglob_mock.side_effect = lambda lane_file_name: [Path(PUBLIC_NAME, lane_file_name)]
+   def test_get_public_name_to_lane_files_dict(self, _path_exists_mock):
+      samples = self.mock_seq_status.values()
+      for sample in samples:
+         if not sample:
+            continue
+         sample['inst_key'] = INSTITUTION_KEY
+         sample['public_name'] = PUBLIC_NAME
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [PurePath(PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
-         for sample in self.mock_seq_status.values() if sample
+      expected_lane_files = [
+         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
+         for sample in samples if sample
          for lane in sample['lanes']]
       expected = {PUBLIC_NAME: expected_lane_files}
       self.assertEqual(expected, public_name_to_lane_files)
 
-   @patch.object(Path, 'rglob')
+   @patch.object(Path, 'exists', return_value=False)
    @patch.dict(environ, mock_environment, clear=True)
-   def test_get_public_name_to_lane_files_dict_excludes_files_from_cross_institutional_dir(self, rglob_mock):
-      samples = list( self.mock_seq_status.values() )
-      cross_institution_dir = 'downloads'
-      excluded_lane_id = 'fake_lane_id_3'
-      # Put one lane file in the cross-institution dir.
-      rglob_mock.side_effect = lambda lane_file_name: (
-         [Path(cross_institution_dir, lane_file_name)] if lane_file_name.startswith(excluded_lane_id)
-         else [Path(PUBLIC_NAME, lane_file_name)]
-      )
+   def test_get_public_name_to_lane_files_dict_ignores_non_existent_files(self, _path_exists_mock):
+      samples = self.mock_seq_status.values()
+      for sample in samples:
+         if not sample:
+            continue
+         sample['inst_key'] = INSTITUTION_KEY
+         sample['public_name'] = PUBLIC_NAME
 
       public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
          samples, assemblies=True, annotations=False)
 
-      expected_lane_files = [PurePath(PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
-         for sample in self.mock_seq_status.values() if sample
-         for lane in sample['lanes'] if lane['id'] is not excluded_lane_id]
-      expected = {PUBLIC_NAME: expected_lane_files}
-      self.assertEqual(expected, public_name_to_lane_files)
+      self.assertEqual({}, public_name_to_lane_files)
 
    def test_get_public_name_to_lane_files_dict_rejects_if_data_institution_view_env_var_is_not_set(self):
       samples = list( self.mock_seq_status.values() )
@@ -517,15 +516,6 @@ class MonocleDataTest(TestCase):
       with self.assertRaises(DataSourceConfigError):
          self.monocle_data.get_public_name_to_lane_files_dict(
             samples, assemblies=True, annotations=False)
-
-   def test_get_public_name_to_lane_files_dict_rejects_bad_config(self):
-      doomed = MonocleData(set_up=False)
-      doomed.data_source_config_name = self.test_config_bad
-      samples = list( self.mock_seq_status.values() )
-
-      with self.assertRaises(DataSourceConfigError):
-         doomed.get_public_name_to_lane_files_dict(samples, assemblies=True, annotations=False)
-
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location(self):

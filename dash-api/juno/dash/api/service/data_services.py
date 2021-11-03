@@ -554,16 +554,12 @@ class MonocleData:
       assemblies = kwargs.get('assemblies', False)
       annotations = kwargs.get('annotations', False)
       reads = kwargs.get('reads', False)
-      data_source_config = self._load_data_source_config()
-      try:
-         cross_institution_dir = data_source_config['data_download']['cross_institution_dir']
-      except KeyError as err:
-          self._download_config_error(err)
 
-      path_instance = Path(data_inst_view_path)
       for sample in samples:
          if not sample:
             continue
+         public_name = sample['public_name']
+         institution_key = sample['inst_key']
          for lane in sample['lanes']:
             lane_id = lane['id']
             lane_file_names = self._get_lane_file_names(
@@ -572,19 +568,17 @@ class MonocleData:
                annotations=annotations,
                reads=reads)
             for lane_file_name in lane_file_names:
-               lane_file = None
-               for file in path_instance.rglob(lane_file_name):
-                  # Check that the file isn't in the "cross-institution" dir.
-                  if cross_institution_dir not in file.parts:
-                     lane_file = file
-                     break
-               else:
-                  logging.debug(f'File {lane_file_name} doesn\'t exist')
+               lane_file = Path(
+                  data_inst_view_path,
+                  institution_key,
+                  public_name,
+                  lane_file_name)
+               if not lane_file.exists():
+                  logging.debug(f'File {lane_file} doesn\'t exist')
                   continue
-               dir_name = lane_file.resolve().parent.name
-               if dir_name not in public_name_to_lane_files:
-                  public_name_to_lane_files[dir_name] = []
-               public_name_to_lane_files[dir_name].append(lane_file)
+               if public_name not in public_name_to_lane_files:
+                  public_name_to_lane_files[public_name] = []
+               public_name_to_lane_files[public_name].append(lane_file)
 
       return public_name_to_lane_files
 
