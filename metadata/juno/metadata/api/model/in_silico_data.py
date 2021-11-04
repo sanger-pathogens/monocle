@@ -16,17 +16,25 @@ class InSilicoData:
     tkt: str
     twenty_three_S1: str
     twenty_three_S3: str
-    CAT: str
+    AAC6APH2: str
+    AADECC: str
+    ANT6: str
+    APH3III: str
+    APH3OTHER: str
+    CATPC194: str
+    CATQ: str
+    ERMA: str
     ERMB: str
     ERMT: str
-    FOSA: str
-    GYRA: str
     LNUB: str
+    LNUC: str
     LSAC: str
     MEFA: str
     MPHC: str
     MSRA: str
     MSRD: str
+    FOSA: str
+    GYRA: str
     PARC: str
     RPOBGBS_1: str
     RPOBGBS_2: str
