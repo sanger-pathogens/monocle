@@ -85,11 +85,13 @@ class MonocleDataTest(TestCase):
       {'institution key': 'FakOne', 'batch date': '1892-01-30'}
    ]
    
+   mock_monocle_data_dir = 'dash/tests/mock_data/s3'
+
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
    mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
    
    # this has mock values for the environment variables set by docker-compose
-   mock_environment = {'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
+   mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
 
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
@@ -279,6 +281,7 @@ class MonocleDataTest(TestCase):
    monocle_data = MonocleData(set_up=False)
    monocle_data.data_source_config_name = test_config
 
+   @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
       # mock moncoledb
       self.monocle_data.sample_metadata = SampleMetadata(set_up=False)

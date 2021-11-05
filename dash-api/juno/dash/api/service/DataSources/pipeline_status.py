@@ -1,6 +1,7 @@
 import logging
+from   os      import environ
 import pandas
-from   pandas import DataFrame, read_csv
+from   pandas  import DataFrame, read_csv
 import yaml
 
 class PipelineStatusDataError(Exception):
@@ -32,7 +33,7 @@ class PipelineStatus:
          message = "environment variable {} is not set".format(data_path_environ)
          logging.error(message)
          raise PipelineStatusDataError(message)
-      self.csv_file     = '/'.join(data_path,this_source['csv_file'])
+      self.csv_file     = '/'.join([data_path,this_source['csv_file']])
       self.num_columns  = this_source['num_columns']
       self.populate_dataframe(self.csv_file)
 
