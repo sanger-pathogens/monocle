@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path, PurePath
 from subprocess import check_output
-from zipfile import ZipFile, ZIP_LZMA
+from zipfile import ZipFile, ZIP_DEFLATED
 
 CURRENT_FOLDER = '.'
 ENCODING_UTF_8 = 'UTF-8'
@@ -28,7 +28,7 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
 
   zfile_name = basename + ZIP_SUFFIX
   zfile_full_name = Path(location) / zfile_name
-  with injected_zip_file_lib(zfile_full_name, mode=WRITE_MODE, compression=ZIP_LZMA) as zfile:
+  with injected_zip_file_lib(zfile_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED) as zfile:
     for dir_name, files in dir_name_to_files.items():
       for file in files:
         if Path(file).exists():
