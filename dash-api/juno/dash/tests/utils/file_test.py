@@ -4,7 +4,7 @@ from functools     import reduce
 from pathlib       import Path, PurePath
 from zipfile       import ZipFile, ZIP_DEFLATED
 
-from utils.file import format_file_size, zip_files, WRITE_MODE
+from utils.file    import format_file_size, zip_files, ZIP_COMPRESSION_LEVEL, WRITE_MODE
 
 PUBLIC_NAME_TO_LANE_FILES = {
   'pub_name_1': ['a_file.txt', 'another_file.fastq'],
@@ -62,7 +62,7 @@ class TestFileUtil(TestCase):
 
     expected_zip_file_full_name = PurePath(location) / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
-      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED)
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)
     num_files = reduce(
       lambda accum, lane_files: accum + len(lane_files),
       PUBLIC_NAME_TO_LANE_FILES.values(),
@@ -82,7 +82,7 @@ class TestFileUtil(TestCase):
 
     expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
-      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED)
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)
     self.assertEqual(zipfile_instance.write.call_count, 0)
 
   @patch.object(Path, 'exists', return_value=True)
@@ -91,7 +91,7 @@ class TestFileUtil(TestCase):
 
     expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
-      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED)
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)
 
   def test_zip_files_creates_empty_archive_if_no_files_passed(self):
     zip_files({}, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
@@ -99,4 +99,4 @@ class TestFileUtil(TestCase):
     expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
     # Instantiating `ZipFile` creates an empty ZIP archive even if `write()` isn't called.
     self.ZipFileMock.assert_called_once_with(
-      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED)
+      expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)

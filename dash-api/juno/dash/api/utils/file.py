@@ -7,6 +7,8 @@ CURRENT_FOLDER = '.'
 ENCODING_UTF_8 = 'UTF-8'
 FORMAT_NUMBER_TO_FILE_SIZE_CLI = ['numfmt', '--to=iec', '--suffix=B']
 WRITE_MODE = 'w'
+# From 0 (fastest) to 9 (most compact). See https://docs.python.org/3/library/zlib.html#zlib.compressobj
+ZIP_COMPRESSION_LEVEL = 8
 ZIP_SUFFIX = '.zip'
 
 
@@ -28,7 +30,11 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
 
   zfile_name = basename + ZIP_SUFFIX
   zfile_full_name = Path(location) / zfile_name
-  with injected_zip_file_lib(zfile_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED) as zfile:
+  with injected_zip_file_lib(
+    zfile_full_name,
+    mode=WRITE_MODE,
+    compression=ZIP_DEFLATED,
+    compresslevel=ZIP_COMPRESSION_LEVEL) as zfile:
     for dir_name, files in dir_name_to_files.items():
       for file in files:
         if Path(file).exists():
