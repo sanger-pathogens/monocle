@@ -20,7 +20,7 @@ ADD COLUMN `APH3III` varchar(30) AFTER `ANT6`;
 ALTER TABLE `in_silico`
 ADD COLUMN `APH3OTHER` varchar(30) AFTER `APH3III`;
 
-ALTER TABLE `new_table`
+ALTER TABLE `in_silico`
 ADD COLUMN `CATPC194` varchar(30) AFTER `APH3OTHER`;
 
 ALTER TABLE `in_silico`
