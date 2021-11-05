@@ -7,8 +7,8 @@ from zipfile       import ZipFile, ZIP_DEFLATED
 from utils.file    import format_file_size, zip_files, ZIP_COMPRESSION_LEVEL, WRITE_MODE
 
 PUBLIC_NAME_TO_LANE_FILES = {
-  'pub_name_1': ['a_file.txt', 'another_file.fastq'],
-  'pub_name_2': ['some_other_file.txt', 'yet_another_file.fastq']
+  'pub_name_1': [PurePath('a_file.txt'), PurePath('another_file.fastq')],
+  'pub_name_2': [PurePath('some_other_file.txt'), PurePath('yet_another_file.fastq')]
 }
 BASENAME = 'batches'
 ZIP_FILE_NAME = BASENAME + '.zip'
@@ -71,7 +71,7 @@ class TestFileUtil(TestCase):
     for public_name, files in PUBLIC_NAME_TO_LANE_FILES.items():
       for file in files:
         zipfile_instance.write.assert_any_call(
-          file, PurePath(public_name, file))
+          file, PurePath(public_name, file.name))
 
   def test_zip_files_ignores_missing_files(self):
     zipfile_instance = self.ZipFileMock.return_value

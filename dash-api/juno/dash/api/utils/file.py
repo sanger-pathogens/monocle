@@ -38,6 +38,6 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
     for dir_name, files in dir_name_to_files.items():
       for file in files:
         if Path(file).exists():
-          zfile.write(file, PurePath(dir_name, file))
+          zfile.write(file, PurePath(dir_name, file.name))
         else:
           logging.debug(f'Excluding non-exitent file from download: {file}')
