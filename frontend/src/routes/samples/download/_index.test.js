@@ -283,6 +283,14 @@ describe("once batches are fetched", () => {
         .toBeTruthy();
     });
 
+    it("shows the loading indicator", async () => {
+      const { findByRole, getByLabelText, getByRole } = render(DownloadPage);
+
+      await selectBatchesAndConfirm(findByRole, getByRole);
+
+      expect(getByLabelText("please wait")).toBeDefined();
+    });
+
     it("requests and displays a download link", async () => {
       const { findByRole, getByRole } = render(DownloadPage);
 
@@ -298,6 +306,16 @@ describe("once batches are fetched", () => {
         expect(downloadLink.href.endsWith("fake-download-url")).toBeTruthy();
         expect(downloadLink.download).toBe("");
         expect(downloadLink.target).toBe("_blank");
+      });
+    });
+
+    it("hides the loading indicator when a download link is displayed", async () => {
+      const { findByRole, getByRole, queryByLabelText } = render(DownloadPage);
+
+      await selectBatchesAndConfirm(findByRole, getByRole);
+
+      await waitFor(() => {
+        expect(queryByLabelText("please wait")).toBeNull();
       });
     });
 
@@ -331,6 +349,17 @@ describe("once batches are fetched", () => {
         await waitFor(() => {
           expect(alert).toHaveBeenCalledTimes(1);
           expect(alert).toHaveBeenCalledWith(EXPECTED_ERROR_MSG);
+        });
+      });
+
+      it("hides the loading indicator", async () => {
+        const { findByRole, getByRole, queryByLabelText } = render(DownloadPage);
+        getBulkDownloadUrls.mockRejectedValueOnce();
+
+        await selectBatchesAndConfirm(findByRole, getByRole);
+
+        await waitFor(() => {
+          expect(queryByLabelText("please wait")).toBeNull();
         });
       });
     });

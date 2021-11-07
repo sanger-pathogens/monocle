@@ -185,15 +185,19 @@
     </fieldset>
   </form>
 
-  {#if downloadLink}
-    <a
-      href={downloadLink}
-      target="_blank"
-      class="download-link"
-      download
-    >
-      Download samples
-    </a>
+  {#if downloadLinksRequested}
+    {#if downloadLink}
+      <a
+        href={downloadLink}
+        target="_blank"
+        class="download-link"
+        download
+      >
+        Download samples
+      </a>
+    {:else}
+      <LoadingIndicator />
+    {/if}
   {/if}
 {:catch error}
     <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
