@@ -15,11 +15,9 @@ from dash.api.service.DataSources.sequencing_status import SequencingStatus
 from dash.api.service.data_services import MonocleData
 
 INITIAL_DIR = Path().absolute()
-# directory in which the data files are located
-DATA_DIR='/home/monocle/monocle_juno'
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
-def create_download_view_for_sample_data(db, institution_name_to_id):
+def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
   institutions = list(db.get_institution_names())
   
   if 0 == len(institutions):
@@ -39,7 +37,7 @@ def create_download_view_for_sample_data(db, institution_name_to_id):
             for public_name, lane_ids in public_names_to_lane_ids.items():
               for lane_id in lane_ids:
                 _create_public_name_dir_with_symlinks(
-                  public_name, lane_id, institution)
+                  public_name, lane_id, institution, data_dir)
               if not lane_ids:
                 logging.debug(f'Creating empty directory "{public_name}" for {institution}.')
                 _mkdir(public_name)
@@ -86,8 +84,8 @@ def _get_sequencing_status_data(sample_ids):
   return SequencingStatus().get_multiple_samples(sample_ids)
 
 
-def _create_public_name_dir_with_symlinks(public_name, lane_id, institution):
-  data_files = _get_data_files(lane_id)
+def _create_public_name_dir_with_symlinks(public_name, lane_id, institution, data_dir):
+  data_files = _get_data_files(lane_id, data_dir)
 
   logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution}.')
   _mkdir(public_name)
@@ -99,11 +97,11 @@ def _create_public_name_dir_with_symlinks(public_name, lane_id, institution):
       _create_symlink_to(data_file, data_file.name)
 
 
-def _get_data_files(lane_id):
+def _get_data_files(lane_id, data_dir):
 
   data_files_for_this_lane = []
    
-  with _cd(DATA_DIR):
+  with _cd(data_dir):
     data_files_for_this_lane = list(Path().glob(f'**/{lane_id}[_.]*'))
     if len(data_files_for_this_lane) > 0:
       logging.debug("found {} data files for lane {}".format(len(data_files_for_this_lane),lane_id))
@@ -166,11 +164,9 @@ def _mkdir(dir_name):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Create sample data view')
-  parser.add_argument("-D", "--data_dir", help="Data file directory [default: {}]".format(DATA_DIR), default=DATA_DIR )
+  parser.add_argument("-D", "--data_dir", help="Data file directory")
   parser.add_argument("-L", "--log_level", help="Logging level [default: WARNING]", choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='WARNING')
   options = parser.parse_args(argv[1:])
-
-  DATA_DIR=options.data_dir
 
   # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
   # which can be handy
@@ -178,4 +174,4 @@ if __name__ == '__main__':
 
   sample_metadata = SampleMetadata()
 
-  create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata))
+  create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata), options.data_dir)
