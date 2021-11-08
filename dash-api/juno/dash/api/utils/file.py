@@ -8,7 +8,8 @@ ENCODING_UTF_8 = 'UTF-8'
 FORMAT_NUMBER_TO_FILE_SIZE_CLI = ['numfmt', '--to=iec', '--suffix=B']
 WRITE_MODE = 'w'
 # From 0 (fastest) to 9 (most compact). See https://docs.python.org/3/library/zlib.html#zlib.compressobj
-ZIP_COMPRESSION_LEVEL = 8
+# Going above lvl 1 gains us little while increasing the compression time significantly (esp. when reads are included).
+ZIP_COMPRESSION_LEVEL = 1
 ZIP_SUFFIX = '.zip'
 
 
