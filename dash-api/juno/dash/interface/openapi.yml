@@ -324,12 +324,12 @@ components:
           type: string
         batch date:
           description: "Date of delivery"
-          example: "2019-11-15"
           $ref: "#/components/schemas/BatchDate"
             
     BatchDate:
       type: string
       format: date
+      example: "2019-11-15"
 
     DownloadInfo:
       type: object
