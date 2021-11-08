@@ -28,8 +28,7 @@ FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f'{FORMAT_DATE}T%H:%M:%S%z'
 READ_MODE = 'r'
-#FIXME: estimate the factor from a wider range of real-world files.
-ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.6
+ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 3.3
 
 ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
 ANNOTATION_FILE_SUFFIX = '.spades.gff'

@@ -9,6 +9,7 @@ FORMAT_NUMBER_TO_FILE_SIZE_CLI = ['numfmt', '--to=iec', '--suffix=B']
 WRITE_MODE = 'w'
 # From 0 (fastest) to 9 (most compact). See https://docs.python.org/3/library/zlib.html#zlib.compressobj
 # Going above lvl 1 gains us little while increasing the compression time significantly (esp. when reads are included).
+# Note: when changing this constant, update `ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS` in `data_services.py` accordingly.
 ZIP_COMPRESSION_LEVEL = 1
 ZIP_SUFFIX = '.zip'
 
@@ -41,4 +42,4 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
         if Path(file).exists():
           zfile.write(file, PurePath(dir_name, file.name))
         else:
-          logging.debug(f'Excluding non-exitent file from download: {file}')
+          logging.debug(f'Excluding non-existent file from download: {file}')
