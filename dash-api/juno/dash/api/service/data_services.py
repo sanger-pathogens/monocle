@@ -265,7 +265,7 @@ class MonocleData:
             except urllib.error.HTTPError:
                logging.warning("{}.get_sequencing_status() failed to collect {} samples for unknown reason".format(__class__.__name__,len(sample_id_list)))
                logging.info("{}.get_sequencing_status() failed to collect these {} samples: {}".format(__class__.__name__,len(sample_id_list),sample_id_list))
-               sequencing_status[this_institution][self.api_key_error] = 'Server Error: Records cannot be collected at this time. Please try again later.'
+               sequencing_status[this_institution][API_ERROR_KEY] = 'Server Error: Records cannot be collected at this time. Please try again later.'
          if API_ERROR_KEY not in sequencing_status[this_institution].keys():
             sequencing_status[this_institution][API_ERROR_KEY] = None
       self.sequencing_status_data = sequencing_status
