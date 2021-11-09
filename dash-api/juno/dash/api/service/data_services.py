@@ -455,7 +455,7 @@ class MonocleData:
 
    def get_bulk_download_info(self, inst_key_batch_date_pairs, **kwargs):
       """
-      Pass a list of [institution key, batch date] pairs and an optional boolean flag per
+      Pass a list of {"institution key", "batch date"} dicts and an optional boolean flag per
       assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
 
@@ -487,12 +487,12 @@ class MonocleData:
 
    def get_samples_from_batches(self, inst_key_batch_date_pairs):
       """
-      Pass a list of [institution key, batch date] pairs.
+      Pass a list of {"institution key", "batch date"} dicts.
       Returns a list of samples from the batches w/ institution keys and public names added.
       """
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
-            f'{__class__.__name__}.get_samples_from_batches(): The list of [institution key, batch date] pairs is empty.')
+            f'{__class__.__name__}.get_samples_from_batches(): The list of {"institution key", "batch date"} dicts is empty.')
          return []
 
       institution_keys = [
