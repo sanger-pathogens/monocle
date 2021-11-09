@@ -10,7 +10,7 @@ WRITE_MODE = 'w'
 # From 0 (fastest) to 9 (most compact). See https://docs.python.org/3/library/zlib.html#zlib.compressobj
 # Going above lvl 1 gains us little while increasing the compression time significantly (esp. when reads are included).
 # Note: when changing this constant, update `ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS` in `data_services.py` accordingly.
-ZIP_COMPRESSION_LEVEL = 1
+ZIP_COMPRESSION_LEVEL = 0
 ZIP_SUFFIX = '.zip'
 
 
