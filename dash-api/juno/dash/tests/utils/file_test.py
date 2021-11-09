@@ -48,8 +48,7 @@ class TestFileUtil(TestCase):
 
     self.assertEqual(actual, f'{bytes} B')
 
-  @patch.object(Path, 'exists', return_value=True)
-  def test_zip_files(self, _file_exists_mock):
+  def test_zip_files(self):
     zipfile_instance = self.ZipFileMock.return_value
     # Make the instance of `ZipFileMock` available in the context manager of `zip_files()`.
     zipfile_instance.__enter__.return_value = zipfile_instance
@@ -73,7 +72,7 @@ class TestFileUtil(TestCase):
         zipfile_instance.write.assert_any_call(
           file, PurePath(public_name, file.name))
 
-  def test_zip_files_ignores_missing_files(self):
+  def test_zip_files_works_with_nonexistent_files(self):
     zipfile_instance = self.ZipFileMock.return_value
     # Make the instance of `ZipFileMock` available in the context manager of `zip_files()`.
     zipfile_instance.__enter__.return_value = zipfile_instance
@@ -83,10 +82,11 @@ class TestFileUtil(TestCase):
     expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
     self.ZipFileMock.assert_called_once_with(
       expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)
-    self.assertEqual(zipfile_instance.write.call_count, 0)
+    num_files = 4
+    zipfile_instance.write('non-existent.file')
+    self.assertEqual(zipfile_instance.write.call_count, num_files + 1)
 
-  @patch.object(Path, 'exists', return_value=True)
-  def test_zip_files_to_current_folder_if_no_location_given(self, _file_exists_mock):
+  def test_zip_files_to_current_folder_if_no_location_given(self):
     zip_files(PUBLIC_NAME_TO_LANE_FILES, basename=BASENAME, injected_zip_file_lib=self.ZipFileMock)
 
     expected_zip_file_full_name = PurePath('.') / ZIP_FILE_NAME
