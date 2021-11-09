@@ -544,8 +544,57 @@
         "regex": "^(^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
-      "CAT": {
-        "title": "CAT",
+      "AAC6APH2": {
+        "title": "AAC6APH2",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "AADECC": {
+        "title": "AADECC",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "ANT6": {
+        "title": "ANT6",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "APH3III": {
+        "title": "APH3III",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "APH3OTHER": {
+        "title": "APH3OTHER",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "CATPC194": {
+        "title": "CATPC194",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "CATQ": {
+        "title": "CATQ",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "ERMA": {
+        "title": "ERMA",
         "mandatory": true,
         "max_length": 20,
         "regex": "^(^$|pos|neg)+$",
@@ -565,22 +614,15 @@
         "regex": "^(^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
-      "FOSA": {
-        "title": "FOSA",
-        "mandatory": true,
-        "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
-        "regex_validation_message": "must be pos, neg or empty"
-      },
-      "GYRA": {
-        "title": "GYRA",
-        "mandatory": true,
-        "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
-        "regex_validation_message": "must be pos, neg or empty"
-      },
       "LNUB": {
         "title": "LNUB",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "LNUC": {
+        "title": "LNUC",
         "mandatory": true,
         "max_length": 20,
         "regex": "^(^$|pos|neg)+$",
@@ -616,6 +658,20 @@
       },
       "MSRD": {
         "title": "MSRD",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "FOSA": {
+        "title": "FOSA",
+        "mandatory": true,
+        "max_length": 20,
+        "regex": "^(^$|pos|neg)+$",
+        "regex_validation_message": "must be pos, neg or empty"
+      },
+      "GYRA": {
+        "title": "GYRA",
         "mandatory": true,
         "max_length": 20,
         "regex": "^(^$|pos|neg)+$",
