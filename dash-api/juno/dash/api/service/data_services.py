@@ -453,7 +453,7 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_bulk_download_info(self, inst_key_batch_date_pairs, **kwargs):
+   def get_bulk_download_info(self, sample_filters, **kwargs):
       """
       Pass a list of [institution key, batch date] pairs and an optional boolean flag per
       assembly, annotation, and reads types of lane files.
@@ -465,7 +465,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_samples_from_batches(inst_key_batch_date_pairs)
+      samples_from_requested_batches = self.get_samples_from_batches(sample_filters)
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -485,11 +485,12 @@ class MonocleData:
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_samples_from_batches(self, inst_key_batch_date_pairs):
+   def get_samples_from_batches(self, sample_filters):
       """
-      Pass a list of [institution key, batch date] pairs.
+      Pass sample filters dict including `batches` key, where the value is a list of [institution key, batch date] pairs.
       Returns a list of samples from the batches w/ institution keys and public names added.
       """
+      inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
             f'{__class__.__name__}.get_samples_from_batches(): The list of [institution key, batch date] pairs is empty.')

@@ -434,7 +434,7 @@ class MonocleDataTest(TestCase):
       get_file_size_mock.return_value = file_size
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
-         self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
+         {'batches': self.inst_key_batch_date_pairs}, assemblies=True, annotations=False)
 
       expected_num_samples = len(self.inst_key_batch_date_pairs)
       num_lanes = 5
@@ -449,7 +449,7 @@ class MonocleDataTest(TestCase):
    def test_get_samples_from_batches(self, get_sample_metadata_mock):
       get_sample_metadata_mock.return_value = self.mock_samples
 
-      actual_samples = self.monocle_data.get_samples_from_batches(self.inst_key_batch_date_pairs)
+      actual_samples = self.monocle_data.get_samples_from_batches({'batches': self.inst_key_batch_date_pairs})
 
       expected_samples = [
          self.mock_seq_status['fake_sample_id_1'],
@@ -459,7 +459,7 @@ class MonocleDataTest(TestCase):
       self.assertEqual(expected_samples, actual_samples)
 
    def test_get_samples_from_batches_accepts_empty_list(self):
-      samples = self.monocle_data.get_samples_from_batches([])
+      samples = self.monocle_data.get_samples_from_batches({'batches':[]})
 
       self.assertEqual([], samples)
 
@@ -469,7 +469,7 @@ class MonocleDataTest(TestCase):
       inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
       inst_key_batch_date_pairs.append({'institution key': 'nonExistentInst', 'batch date': '2021-01-27'})
 
-      actual_samples = self.monocle_data.get_samples_from_batches(inst_key_batch_date_pairs)
+      actual_samples = self.monocle_data.get_samples_from_batches({'batches': inst_key_batch_date_pairs})
 
       expected_samples = [
          self.mock_seq_status['fake_sample_id_1'],
