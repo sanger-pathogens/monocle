@@ -91,7 +91,7 @@ def bulk_download_urls(body):
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
-    samples = monocle_data.get_samples_from_batches(sample_filters)
+    samples = monocle_data.get_filtered_samples(sample_filters)
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
         assemblies=assemblies,

@@ -194,7 +194,7 @@ class TestRoutes(unittest.TestCase):
         annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
-        data_service_mock.return_value.get_samples_from_batches.return_value = samples
+        data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
         uuid_hex = '123'
         uuid4_mock.return_value.hex = uuid_hex

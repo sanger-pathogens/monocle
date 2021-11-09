@@ -465,7 +465,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_samples_from_batches(sample_filters)
+      samples_from_requested_batches = self.get_filtered_samples(sample_filters)
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -485,15 +485,20 @@ class MonocleData:
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_samples_from_batches(self, sample_filters):
+   def get_filtered_samples(self, sample_filters):
       """
-      Pass sample filters dict including `batches` key, where the value is a list of [institution key, batch date] pairs.
-      Returns a list of samples from the batches w/ institution keys and public names added.
+      Pass sample filters dict (describes the filters applied in the front end)
+      
+      Currently supports only a `batches` filter;  value is a list of [institution key, batch date] pairs.
+      
+         "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+      
+      Returns a list of matching samples w/ institution keys and public names added.
       """
       inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
-            f'{__class__.__name__}.get_samples_from_batches(): The list of [institution key, batch date] pairs is empty.')
+            f'{__class__.__name__}.get_filtered_samples(): The list of batches (institution key, batch date pairs) is empty.')
          return []
 
       institution_keys = [
