@@ -53,7 +53,8 @@
       fetch
     )
       .then(({size, size_zipped}) => {
-        downloadEstimate.size = size;
+        // Commented out because BE currently doesn't compress for performace reasons:
+        // downloadEstimate.size = size;
         downloadEstimate.sizeZipped = size_zipped;
       })
       .catch(unsetDownloadEstimate);
@@ -166,9 +167,9 @@
       <fieldset disabled={true}>
         <legend>Split download (coming soon)</legend>
         <select>
-          {#if downloadEstimate?.size}
+          {#if downloadEstimate?.sizeZipped}
             <option selected>
-              1 download of {downloadEstimate.sizeZipped} ({downloadEstimate.size} unzipped)
+              1 download of {downloadEstimate.sizeZipped}
             </option>
           {/if}
         </select>

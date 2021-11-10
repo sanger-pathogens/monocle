@@ -43,7 +43,7 @@ describe("once batches are fetched", () => {
     FioRon: { deliveries: [BATCHES[0], BATCHES[1]] },
     UlmUni: { deliveries: [BATCHES[2]] }
   };
-  const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB (42 TB unzipped)";
+  const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB";
   const ANNOTATIONS_LABEL = "Annotations";
   const ASSEMBLIES_LABEL = "Assemblies";
   const CONFIRM_BUTTON_LABEL = "Confirm";
