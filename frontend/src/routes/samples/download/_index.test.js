@@ -206,6 +206,24 @@ describe("once batches are fetched", () => {
       });
     });
 
+    it("ignores institutions w/ no batches", async () => {
+      const institutionWithoutBatches = "XyzUni";
+      const batches_payload = {
+        ...BATCHES_PAYLOAD,
+        [institutionWithoutBatches]: { _ERROR: "no batches" }
+      };
+      getBatches.mockResolvedValueOnce(batches_payload);
+      const { findByRole, getByText, queryByText } = render(DownloadPage);
+
+      const selector = await findByRole("textbox");
+      await fireEvent.click(selector);
+
+      expect(queryByText(institutionWithoutBatches)).toBeNull();
+      Object.keys(BATCHES_PAYLOAD).forEach((institutionKey) => {
+        expect(getByText(institutionKey)).toBeDefined();
+      });
+    });
+
     it("selects and deselects all batches when the corresponding buttons are clicked", async () => {
       const batchNamesWithData = BATCHES.map(({ name, date, number: numSamples }) => {
         const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";

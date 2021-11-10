@@ -70,10 +70,21 @@
 
   function makeListOfBatches(batches = {}, institutions = {}) {
     return Object.keys(batches)
-      .map((institutionKey) =>
-        batches[institutionKey].deliveries.map((batch) =>
-          makeBatchListItem(batch, institutionKey, institutions[institutionKey]?.name)))
-      .flat();
+      .reduce(((accumListOfBatches, institutionKey) =>
+        addBatchListItems(
+          accumListOfBatches,
+          batches[institutionKey].deliveries,
+          institutionKey,
+          institutions[institutionKey]?.name
+        )
+      ), []);
+  }
+
+  function addBatchListItems(accumListOfBatches, batches = [], institutionKey, institutionName) {
+    return batches.reduce((thisAccumListOfBatches, batch) => {
+      thisAccumListOfBatches.push(makeBatchListItem(batch, institutionKey, institutionName));
+      return thisAccumListOfBatches;
+    }, accumListOfBatches);
   }
 
   function makeBatchListItem({ name, date, number: numSamples }, institutionKey, institutionName) {
