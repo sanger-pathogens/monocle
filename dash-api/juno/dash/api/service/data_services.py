@@ -486,10 +486,33 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
+   def get_metadata(self, sample_filters):
+      """
+      Pass sample filters dict (describes the filters applied in the front end).
+      Returns array of samples that match the filter(s); each sample is a dict containing the metadata
+      [
+         'sample_id_1' : { 'metadata_field_1',
+                           'metadata_field_2',
+                           ...
+                           },
+         'sample_id_2' : { 'metadata_field_1',
+                           'metadata_field_2',
+                           ...
+                           },
+         ...
+      ]
+      """
+      filtered_samples = self.get_filtered_samples(sample_filters)
+
+      return [
+         {  'placeholer': 'not implemented yet'
+            }
+      ]
+
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
-      Pass a list of {"institution key", "batch date"} dicts and an optional boolean flag per
-      assembly, annotation, and reads types of lane files.
+      Pass sample filters dict (describes the filters applied in the front end)
+      and an optional boolean flag per assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
 
       {
@@ -498,9 +521,9 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_filtered_samples(sample_filters)
+      filtered_samples = self.get_filtered_samples(sample_filters)
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
-         samples_from_requested_batches,
+         filtered_samples,
          assemblies=kwargs.get('assemblies', False),
          annotations=kwargs.get('annotations', False),
          reads=kwargs.get('reads', False))
@@ -513,7 +536,7 @@ class MonocleData:
          total_lane_files_size = total_lane_files_size + lane_files_size
 
       return {
-         'num_samples': len(samples_from_requested_batches),
+         'num_samples': len(filtered_samples),
          'size': format_file_size(total_lane_files_size),
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }

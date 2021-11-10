@@ -73,6 +73,16 @@ def pipeline_status_summary():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
+def get_metadata(body):
+    """ Get sample metadata based on standard sample filter  """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    sample_filters = _parse_BulkDownloadInput(body['sample filters'])
+    return call_jsonify(
+        ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(
+            sample_filters,
+    ), HTTPStatus.OK
+
+
 def bulk_download_info(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
