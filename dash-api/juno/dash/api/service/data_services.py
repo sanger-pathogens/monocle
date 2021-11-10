@@ -453,7 +453,7 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_bulk_download_info(self, inst_key_batch_date_pairs, **kwargs):
+   def get_bulk_download_info(self, sample_filters, **kwargs):
       """
       Pass a list of {"institution key", "batch date"} dicts and an optional boolean flag per
       assembly, annotation, and reads types of lane files.
@@ -465,7 +465,7 @@ class MonocleData:
          size_zipped: <str>
       }
       """
-      samples_from_requested_batches = self.get_samples_from_batches(inst_key_batch_date_pairs)
+      samples_from_requested_batches = self.get_filtered_samples(sample_filters)
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          samples_from_requested_batches,
          assemblies=kwargs.get('assemblies', False),
@@ -485,14 +485,23 @@ class MonocleData:
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_samples_from_batches(self, inst_key_batch_date_pairs):
+   def get_filtered_samples(self, sample_filters):
       """
-      Pass a list of {"institution key", "batch date"} dicts.
-      Returns a list of samples from the batches w/ institution keys and public names added.
+      Pass sample filters dict (describes the filters applied in the front end)
+      
+      Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
+      
+         "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+         
+      TODO support all filters included in the OpenAPI spec. SampleFilters object
+      (this describes the parameter passed to endpoints to describe the sample filters required)
+      
+      Returns a list of matching samples w/ institution keys and public names added.
       """
+      inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
-            f'{__class__.__name__}.get_samples_from_batches(): The list of {"institution key", "batch date"} dicts is empty.')
+            f'{__class__.__name__}.get_filtered_samples(): The list of batches ({"institution key", "batch date"} dicts) is empty.')
          return []
 
       institution_keys = [

@@ -295,15 +295,25 @@ components:
           type: string
           description: "The id of the institution."
 
-    BulkDownloadInput:
+    SampleFilters:
       type: object
-      required:
-        - batches
       properties:
         batches:
           type: array
           items:
             $ref: "#/components/schemas/InstKeyBatchDatePair"
+        serotypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Serotype"
+
+    BulkDownloadInput:
+      type: object
+      required:
+        - sample filters
+      properties:
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
         assemblies:
           type: boolean
         annotations:
@@ -330,6 +340,10 @@ components:
       type: string
       format: date
       example: "2019-11-15"
+
+    Serotype:
+      type: string
+      example: "IV"
 
     DownloadInfo:
       type: object

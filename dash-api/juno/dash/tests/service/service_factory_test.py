@@ -434,7 +434,7 @@ class MonocleDataTest(TestCase):
       get_file_size_mock.return_value = file_size
 
       bulk_download_info = self.monocle_data.get_bulk_download_info(
-         self.inst_key_batch_date_pairs, assemblies=True, annotations=False)
+         {'batches': self.inst_key_batch_date_pairs}, assemblies=True, annotations=False)
 
       expected_num_samples = len(self.inst_key_batch_date_pairs)
       num_lanes = 5
@@ -446,10 +446,10 @@ class MonocleDataTest(TestCase):
       }, bulk_download_info)
 
    @patch.object(SampleMetadata, 'get_samples')
-   def test_get_samples_from_batches(self, get_sample_metadata_mock):
+   def test_get_filtered_samples(self, get_sample_metadata_mock):
       get_sample_metadata_mock.return_value = self.mock_samples
 
-      actual_samples = self.monocle_data.get_samples_from_batches(self.inst_key_batch_date_pairs)
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs})
 
       expected_samples = [
          self.mock_seq_status['fake_sample_id_1'],
@@ -458,18 +458,18 @@ class MonocleDataTest(TestCase):
       ]
       self.assertEqual(expected_samples, actual_samples)
 
-   def test_get_samples_from_batches_accepts_empty_list(self):
-      samples = self.monocle_data.get_samples_from_batches([])
+   def test_get_filtered_samples_accepts_empty_list(self):
+      samples = self.monocle_data.get_filtered_samples({'batches':[]})
 
       self.assertEqual([], samples)
 
    @patch.object(SampleMetadata, 'get_samples')
-   def test_get_samples_from_batches_ignores_institution_keys_that_are_not_in_seq_status_data(self, get_sample_metadata_mock):
+   def test_get_filtered_samples_ignores_institution_keys_that_are_not_in_seq_status_data(self, get_sample_metadata_mock):
       get_sample_metadata_mock.return_value = self.mock_samples
       inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
       inst_key_batch_date_pairs.append({'institution key': 'nonExistentInst', 'batch date': '2021-01-27'})
 
-      actual_samples = self.monocle_data.get_samples_from_batches(inst_key_batch_date_pairs)
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': inst_key_batch_date_pairs})
 
       expected_samples = [
          self.mock_seq_status['fake_sample_id_1'],
