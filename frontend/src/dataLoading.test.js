@@ -37,7 +37,11 @@ describe.each([
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ batches: INST_KEY_BATCH_DATE_OBJECTS, assemblies: true, annotations: false })
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        assemblies: true,
+        annotations: false
+      })
     },
     expectedEndpoints: ["bulk_download_info"],
     responsePayload: "as is",
@@ -50,7 +54,11 @@ describe.each([
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ batches: INST_KEY_BATCH_DATE_OBJECTS, assemblies: true, annotations: false })
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        assemblies: true,
+        annotations: false
+      })
     },
     expectedEndpoints: ["bulk_download_urls"],
     responsePayload: {

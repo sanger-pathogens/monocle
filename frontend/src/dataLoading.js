@@ -47,7 +47,9 @@ export function getBulkDownloadInfo(instKeyBatchDatePairs, { assemblies, annotat
       method: HTTP_POST,
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
+        "sample filters": {
+          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+        },
         assemblies,
         annotations
       })
@@ -60,7 +62,9 @@ export function getBulkDownloadUrls(instKeyBatchDatePairs, { assemblies, annotat
       method: HTTP_POST,
       headers: JSON_HEADERS,
       body: JSON.stringify({
-        batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
+        "sample filters": {
+          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+        },
         assemblies,
         annotations
       })
