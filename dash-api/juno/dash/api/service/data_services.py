@@ -492,6 +492,9 @@ class MonocleData:
       Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
       
          "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+         
+      TODO support all filters included in the OpenAPI spec. SampleFilters object
+      (this describes the parameter passed to endpoints to describe the sample filters required)
       
       Returns a list of matching samples w/ institution keys and public names added.
       """
