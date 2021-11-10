@@ -78,6 +78,7 @@ class MonocleData:
       self.samples_data                = None
       self.sequencing_status_data      = None
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
+      self.all_institutions_data_irrespective_of_user_membership = None
       # set_up flag causes data objects to be loaded on instantiation
       # only set to False if you know what you're doing
       if set_up:
@@ -89,7 +90,7 @@ class MonocleData:
          self.data_source_config_name     = 'data_sources.yml'
 
    def get_progress(self):
-      institutions_data = self.get_institutions()
+      institutions_data = self.get_all_institutions_irrespective_of_user_membership()
       total_num_samples_received_by_month = defaultdict(int)
       total_num_lanes_sequenced_by_month  = defaultdict(int)
       progress             = {   'date'             : [],
@@ -171,6 +172,7 @@ class MonocleData:
       self.institutions_data = institutions
       return self.institutions_data
 
+<<<<<<< HEAD
    def get_institution_names(self):
       """
       Return a list of institution names.
@@ -187,6 +189,36 @@ class MonocleData:
 
       self.institution_names = institution_names
       return institution_names
+=======
+   def get_all_institutions_irrespective_of_user_membership(self):
+      """
+      Returns a dict of  ALL INSTITUTIONS REGARDLESS OF USER MEMBERSHIP.
+      
+      In almost every case, you want to call get_institutions() instead -- hence
+      the silly name, which is intended to put you off.   If this method is
+      used in the wrong context, then it will bypass the authorization that
+      should be required to see institutions' data.
+      
+      You have been warned.  Only use this method if you are really certain that
+      you know what you are doing.
+            
+      See the documentation for get_institions for details of the dict that is
+      returned.
+      """
+      if self.all_institutions_data_irrespective_of_user_membership is not None:
+         return self.all_institutions_data_irrespective_of_user_membership
+
+      # save .user_record, and temporarily assign None
+      temporary_copy_of_user_record = self.user_record
+      self.user_record = None
+      # get_institutions() will return all institutions when .user_record is None
+      self.all_institutions_data_irrespective_of_user_membership = self.get_institutions()
+      # CRITICAL:  reset .user_record
+      self.user_record = temporary_copy_of_user_record
+
+      return self.all_institutions_data_irrespective_of_user_membership
+
+>>>>>>> fix/progress_graph_must_show_all_institutions
 
    def get_samples(self):
       """
