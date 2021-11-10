@@ -233,7 +233,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SampleFilters"
+              $ref: "#/components/schemas/GetMetadataInput"
       responses:
         200:
           description: "The operation was successful. The following data format will be returned..."
@@ -338,6 +338,14 @@ components:
       type: string
       example: "IV"
       
+    GetMetadataInput:
+      type: object
+      required:
+        - sample filters
+      properties:
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+
     SampleMetadata:
       type: object
       required:
@@ -403,125 +411,125 @@ components:
         - "linezolid_method"
       properties:
         sanger_sample_id:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         lane_id:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         submitting_institution:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         supplier_sample_name:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         public_name:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         host_status:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         study_name:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         study_ref:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         selection_random:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         country:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         county_state:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         city:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         collection_year:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         collection_month:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         collection_day:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         host_species:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         gender:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         age_group:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         age_years:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         age_months:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         age_weeks:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         age_days:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         disease_type:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         disease_onset:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         isolation_source:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         serotype:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         serotype_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         infection_during_pregnancy:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         maternal_infection_type:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         gestational_age_weeks:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         birth_weight_gram:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         apgar_score:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ceftizoxime:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ceftizoxime_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefoxitin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefoxitin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefotaxime:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefotaxime_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefazolin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         cefazolin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ampicillin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ampicillin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         penicillin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         penicillin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         erythromycin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         erythromycin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         clindamycin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         clindamycin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         tetracycline:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         tetracycline_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         levofloxacin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         levofloxacin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ciprofloxacin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         ciprofloxacin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         daptomycin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         daptomycin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         vancomycin:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         vancomycin_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         linezolid:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
         linezolid_method:
-          $ref: "#/components/schemas/DownloadField"
+          type: string
 
     BulkDownloadInput:
       type: object

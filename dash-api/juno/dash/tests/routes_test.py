@@ -223,6 +223,28 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_metadata(self, data_service_mock, username_mock, resp_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        assemblies = False
+        annotations = True
+        expected_payload = 'payload'
+        data_service_mock.return_value.get_metadata.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_metadata({'sample filters':{'batches':batches}})
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        data_service_mock.return_value.get_metadata.assert_called_once_with(
+            {'batches':batches})
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
     @patch.object(ServiceFactory, 'data_service')

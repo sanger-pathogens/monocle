@@ -502,12 +502,14 @@ class MonocleData:
          ...
       ]
       """
+      
+      # get_filtered_samples isn't returning the metadta we need
+      # but it does filter the samples for us
       filtered_samples = self.get_filtered_samples(sample_filters)
-
-      return [
-         {  'placeholer': 'not implemented yet'
-            }
-      ]
+      # TODO demote to INFO when done testing
+      logging.warning("sample filters {} resulted in {} samples being returned".format(sample_filters,len(filtered_samples)))
+      
+      return [ { 'public_name': s['public_name'] } for s in filtered_samples ]
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
