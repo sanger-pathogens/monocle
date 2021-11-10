@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path, PurePath
+from pathlib import PurePath
 from subprocess import check_output
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -31,7 +31,7 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
     logging.info('No files passed. Creating an empty zip archive.')
 
   zfile_name = basename + ZIP_SUFFIX
-  zfile_full_name = Path(location) / zfile_name
+  zfile_full_name = PurePath(location) / zfile_name
   with injected_zip_file_lib(
     zfile_full_name,
     mode=WRITE_MODE,
@@ -39,7 +39,7 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
     compresslevel=ZIP_COMPRESSION_LEVEL) as zfile:
     for dir_name, files in dir_name_to_files.items():
       for file in files:
-        if Path(file).exists():
+        try:
           zfile.write(file, PurePath(dir_name, file.name))
-        else:
+        except FileNotFoundError:
           logging.debug(f'Excluding non-existent file from download: {file}')

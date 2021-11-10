@@ -455,7 +455,7 @@ class MonocleData:
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
-      Pass a list of [institution key, batch date] pairs and an optional boolean flag per
+      Pass a list of {"institution key", "batch date"} dicts and an optional boolean flag per
       assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
 
@@ -489,7 +489,7 @@ class MonocleData:
       """
       Pass sample filters dict (describes the filters applied in the front end)
       
-      Currently supports only a `batches` filter;  value is a list of [institution key, batch date] pairs.
+      Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
       
          "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
       
@@ -498,7 +498,7 @@ class MonocleData:
       inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
          logging.debug(
-            f'{__class__.__name__}.get_filtered_samples(): The list of batches (institution key, batch date pairs) is empty.')
+            f'{__class__.__name__}.get_filtered_samples(): The list of batches ({"institution key", "batch date"} dicts) is empty.')
          return []
 
       institution_keys = [
