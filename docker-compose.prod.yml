@@ -89,6 +89,9 @@ services:
       - MONOCLE_DATA=/home/<USER>/monocle_juno
       # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+      - GUNICORN_PORT=5000
+      - GUNICORN_WORKERS=8
+      - GUNICORN_TIMEOUT=300
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>
