@@ -116,7 +116,7 @@ class Monocle_Download_Client:
       return response_as_string
 
    def parse_response(self, response_as_string, required_keys=[]):
-      swagger_url  = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
+      swagger_url  = self.config['base_url'] + self.config['swagger'] # only because it may be useful for error messages
       results_data = json.loads(response_as_string)
       if not isinstance(results_data, dict):
          error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)

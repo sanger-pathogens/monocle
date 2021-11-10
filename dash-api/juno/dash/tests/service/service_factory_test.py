@@ -1,12 +1,13 @@
 from   unittest      import TestCase
 from   unittest.mock import patch
+from   copy          import deepcopy
 from   datetime      import datetime
 import logging
 import urllib.request
 import urllib.error
 from   os            import environ
 from   pandas.errors import MergeError
-from   pathlib       import Path
+from   pathlib       import Path, PurePath
 import yaml
 
 from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
@@ -14,7 +15,11 @@ from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
 from   DataSources.pipeline_status     import PipelineStatus
 from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data           import UserData
-from   data_services                   import MonocleUser, MonocleData
+from   data_services                   import MonocleUser, MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
+from   utils.file                      import format_file_size
+
+INSTITUTION_KEY = 'GenWel'
+PUBLIC_NAME = 'SCN9A'
 
 class MonocleUserTest(TestCase):
    
@@ -67,17 +72,26 @@ class MonocleUserTest(TestCase):
  
 class MonocleDataTest(TestCase):
 
-   test_config = 'dash/tests/mock_data/data_sources.yml'
+   test_config       = 'dash/tests/mock_data/data_sources.yml'
+   test_config_bad   = 'dash/tests/mock_data/data_sources_bad.yml'
    with open(test_config, 'r') as file:
-      data_sources = yaml.load(file, Loader=yaml.FullLoader)
+      data_sources   = yaml.load(file, Loader=yaml.FullLoader)
       mock_url_path  = data_sources['data_download']['url_path']
       mock_web_dir   = data_sources['data_download']['web_dir']
+
+   inst_key_batch_date_pairs = [
+      {'institution key': 'FakOne', 'batch date': '2020-04-29'},
+      {'institution key': 'FakTwo', 'batch date': '2021-05-02'},
+      {'institution key': 'FakOne', 'batch date': '1892-01-30'}
+   ]
    
+   mock_monocle_data_dir = 'dash/tests/mock_data/s3'
+
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
    mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
    
    # this has mock values for the environment variables set by docker-compose
-   mock_environment = {'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
+   mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
 
    # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
@@ -87,10 +101,10 @@ class MonocleDataTest(TestCase):
    mock_institutions          = [   'Fake institution One',
                                     'Fake institution Two'
                                     ]
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two'}
+   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
@@ -205,8 +219,8 @@ class MonocleDataTest(TestCase):
                                   'FakTwo' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' }
                                     }
 
-   expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1'}, {'sample_id': 'fake_sample_id_2'}],
-                                    'FakTwo': [{'sample_id': 'fake_sample_id_3'}, {'sample_id': 'fake_sample_id_4'}]
+   expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1', 'public_name': f'{PUBLIC_NAME}_1'}, {'sample_id': 'fake_sample_id_2', 'public_name': f'{PUBLIC_NAME}_2'}],
+                                    'FakTwo': [{'sample_id': 'fake_sample_id_3', 'public_name': f'{PUBLIC_NAME}_3'}, {'sample_id': 'fake_sample_id_4', 'public_name': f'{PUBLIC_NAME}_4'}]
                                     }
    expected_seq_status        = {   'FakOne': mock_seq_status,
                                     'FakTwo': mock_seq_status
@@ -265,8 +279,9 @@ class MonocleDataTest(TestCase):
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
-   monocle_data.download_symlink_config = test_config
+   monocle_data.data_source_config_name = test_config
 
+   @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
       # mock moncoledb
       self.monocle_data.sample_metadata = SampleMetadata(set_up=False)
@@ -293,7 +308,11 @@ class MonocleDataTest(TestCase):
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
-   def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+   def get_mock_data(self,
+         mock_seq_samples_query,
+         mock_db_sample_query,
+         mock_institution_query
+      ):
       self.monocle_data.sequencing_status_data = None
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
@@ -304,18 +323,48 @@ class MonocleDataTest(TestCase):
       
    def test_get_progress(self):
       progress_data = self.monocle_data.get_progress()
+
       self.assertEqual(self.expected_progress_data, progress_data)
       
    def test_get_institutions(self):
       institution_data = self.monocle_data.get_institutions()
+
       self.assertEqual(self.expected_institution_data, institution_data)
+
+   def test_get_institution_names(self):
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual(self.mock_institutions, institution_names)
+
+   def test_get_institution_names_returns_cached_response(self):
+      expected = 'some data'
+      self.monocle_data.institution_names = expected
+
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual(expected, institution_names)
+      # Teardown: clear cache.
+      self.monocle_data.institution_names = None
+
+   def test_get_institution_names_returns_names_from_user_membership(self):
+      expected_institution_name = 'Center of Paradise Engineering'
+      user_record = { 'memberOf': [{ 'inst_name': expected_institution_name }] }
+      self.monocle_data.user_record = user_record
+
+      institution_names = self.monocle_data.get_institution_names()
+
+      self.assertEqual([expected_institution_name], institution_names)
+      # Teardown: clear user record.
+      self.monocle_data.user_record = None
       
    def test_get_samples(self):
       sample_data = self.monocle_data.get_samples()
+
       self.assertEqual(self.expected_sample_data, sample_data)
       
    def test_get_sequencing_status(self):
       seq_status_data = self.monocle_data.get_sequencing_status()
+
       self.assertEqual(self.expected_seq_status, seq_status_data)
 
    @patch.object(SampleMetadata, 'get_institution_names')
@@ -333,45 +382,163 @@ class MonocleDataTest(TestCase):
 
    def test_get_batches(self):
       batches_data = self.monocle_data.get_batches()
+
       self.assertEqual(self.expected_batches, batches_data)
 
    @patch.object(SequencingStatus, 'get_multiple_samples')
    def test_get_batches_dropouts(self, get_multiple_samples_mock):
-       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found',
+      get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found',
                                                                       'yes', 'no')
-       self.monocle_data.sequencing_status_data = None
-       self.monocle_data.get_sequencing_status()
+      self.monocle_data.sequencing_status_data = None
+      self.monocle_data.get_sequencing_status()
 
-       batches_data = self.monocle_data.get_batches()
+      batches_data = self.monocle_data.get_batches()
 
-       self.assertEqual(self.expected_dropout_data, batches_data)
+      self.assertEqual(self.expected_dropout_data, batches_data)
 
    def test_sequencing_status_summary(self):
       seq_status_summary = self.monocle_data.sequencing_status_summary()
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+
       self.assertEqual(self.expected_seq_summary, seq_status_summary)
-      
-   def test_pipeline_status_summary(self):
-      pipeline_summary = self.monocle_data.pipeline_status_summary()
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
-      self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    def test_sequencing_status_summary_dropout(self):
-       self.monocle_data.sequencing_status_data = self.expected_dropout_data
+      self.monocle_data.sequencing_status_data = self.expected_dropout_data
 
-       seq_status_summary = self.monocle_data.sequencing_status_summary()
+      seq_status_summary = self.monocle_data.sequencing_status_summary()
 
-       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
-       self.assertEqual(self.expected_dropout_data, seq_status_summary)
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
+      self.assertEqual(self.expected_dropout_data, seq_status_summary)
+     
+   def test_pipeline_status_summary(self):
+      pipeline_summary = self.monocle_data.pipeline_status_summary()
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+
+      self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    def test_pipeline_status_summary_dropout(self):
-       self.monocle_data.sequencing_status_data = self.expected_dropout_data
+      self.monocle_data.sequencing_status_data = self.expected_dropout_data
 
-       pipeline_summary = self.monocle_data.pipeline_status_summary()
+      pipeline_summary = self.monocle_data.pipeline_status_summary()
 
-       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
-       self.assertEqual(self.expected_dropout_data, pipeline_summary)
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+      self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
+   @patch.object(Path,           'exists', return_value=True)
+   @patch.object(MonocleData,    '_get_file_size')
+   @patch.object(SampleMetadata, 'get_samples')
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_bulk_download_info(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
+      file_size = 420024
+      get_file_size_mock.return_value = file_size
+
+      bulk_download_info = self.monocle_data.get_bulk_download_info(
+         {'batches': self.inst_key_batch_date_pairs}, assemblies=True, annotations=False)
+
+      expected_num_samples = len(self.inst_key_batch_date_pairs)
+      num_lanes = 5
+      expected_byte_size = file_size * num_lanes
+      self.assertEqual({
+         'num_samples': expected_num_samples,
+         'size': format_file_size(expected_byte_size),
+         'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
+      }, bulk_download_info)
+
+   @patch.object(SampleMetadata, 'get_samples')
+   def test_get_filtered_samples(self, get_sample_metadata_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
+
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs})
+
+      expected_samples = [
+         self.mock_seq_status['fake_sample_id_1'],
+         self.mock_seq_status['fake_sample_id_3'],
+         self.mock_seq_status['fake_sample_id_4']
+      ]
+      self.assertEqual(expected_samples, actual_samples)
+
+   def test_get_filtered_samples_accepts_empty_list(self):
+      samples = self.monocle_data.get_filtered_samples({'batches':[]})
+
+      self.assertEqual([], samples)
+
+   @patch.object(SampleMetadata, 'get_samples')
+   def test_get_filtered_samples_ignores_institution_keys_that_are_not_in_seq_status_data(self, get_sample_metadata_mock):
+      get_sample_metadata_mock.return_value = self.mock_samples
+      inst_key_batch_date_pairs = deepcopy(self.inst_key_batch_date_pairs)
+      inst_key_batch_date_pairs.append({'institution key': 'nonExistentInst', 'batch date': '2021-01-27'})
+
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': inst_key_batch_date_pairs})
+
+      expected_samples = [
+         self.mock_seq_status['fake_sample_id_1'],
+         self.mock_seq_status['fake_sample_id_3'],
+         self.mock_seq_status['fake_sample_id_4']
+      ]
+      self.assertEqual(expected_samples, actual_samples)
+
+   @patch.object(Path, 'exists', return_value=True)
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_public_name_to_lane_files_dict(self, _path_exists_mock):
+      samples = self.mock_seq_status.values()
+      for sample in samples:
+         if not sample:
+            continue
+         sample['inst_key'] = INSTITUTION_KEY
+         sample['public_name'] = PUBLIC_NAME
+
+      public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
+         samples, assemblies=True, annotations=False)
+
+      expected_lane_files = [
+         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
+         for sample in samples if sample
+         for lane in sample['lanes']]
+      expected = {PUBLIC_NAME: expected_lane_files}
+      self.assertEqual(expected, public_name_to_lane_files)
+
+   @patch.object(Path, 'exists', return_value=False)
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_public_name_to_lane_files_dict_ignores_non_existent_files(self, _path_exists_mock):
+      samples = self.mock_seq_status.values()
+      for sample in samples:
+         if not sample:
+            continue
+         sample['inst_key'] = INSTITUTION_KEY
+         sample['public_name'] = PUBLIC_NAME
+
+      public_name_to_lane_files = self.monocle_data.get_public_name_to_lane_files_dict(
+         samples, assemblies=True, annotations=False)
+
+      self.assertEqual({}, public_name_to_lane_files)
+
+   def test_get_public_name_to_lane_files_dict_rejects_if_data_institution_view_env_var_is_not_set(self):
+      samples = list( self.mock_seq_status.values() )
+
+      with self.assertRaises(DataSourceConfigError):
+         self.monocle_data.get_public_name_to_lane_files_dict(
+            samples, assemblies=True, annotations=False)
+
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_zip_download_location(self):
+      download_location = self.monocle_data.get_zip_download_location()
+
+      self.assertEqual(PurePath(self.mock_inst_view_dir, 'downloads'), download_location)
+
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):
+      del environ['DATA_INSTITUTION_VIEW']
+
+      with self.assertRaises(DataSourceConfigError):
+         self.monocle_data.get_zip_download_location()
+
+   def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
+      monocle_data_with_bad_config = MonocleData(set_up=False)
+      monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
+
+      with self.assertRaises(DataSourceConfigError):
+         monocle_data_with_bad_config.get_zip_download_location()
 
    @patch.object(MonocleData,              'make_download_symlink')
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -382,7 +549,8 @@ class MonocleDataTest(TestCase):
       mock_make_symlink.return_value         = self.mock_download_path
 
       metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_institutions[0], 'sequencing', 'successful')
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
+
+      # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
@@ -474,11 +642,27 @@ class MonocleDataTest(TestCase):
       self._symlink_test_setup(test_inst_key)
 
       symlink_url_path  = self.monocle_data.make_download_symlink(test_inst_name)
+
       symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
 
       # test the symlink is actually a symlink, and that it points at the intended target
       self.assertTrue( Path(symlink_disk_path).is_symlink() )
       self.assertEqual( Path(self.mock_inst_view_dir, test_inst_key).absolute(),
+                        Path(symlink_disk_path).resolve()
+                        )
+      self._symlink_test_teardown()
+
+   @patch.dict(environ, mock_environment, clear=True)
+   def test_make_download_symlink_cross_institution(self):
+      cross_institution_dir = 'downloads'
+      self._symlink_test_setup(cross_institution_dir)
+
+      symlink_url_path  = self.monocle_data.make_download_symlink(cross_institution=True)
+
+      symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
+      # test the symlink is actually a symlink, and that it points at the intended target
+      self.assertTrue( Path(symlink_disk_path).is_symlink() )
+      self.assertEqual( Path(self.mock_inst_view_dir, cross_institution_dir).absolute(),
                         Path(symlink_disk_path).resolve()
                         )
       self._symlink_test_teardown()

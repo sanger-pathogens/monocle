@@ -73,7 +73,8 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      - data:/app/monocle_juno
+      # data must have the same path as MONOCLE_DATA, as lane symlinks in DATA_INSTITUTION_VIEW point to this location
+      - data:/home/<USER>/monocle_juno
       # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
       - data_institution_view:/home/<USER>/monocle_juno_institution_view
       - data_downloads:/app/monocle_juno_web_root/downloads
@@ -84,8 +85,13 @@ services:
       # if ENABLE_SWAGGER_UI is true the UI should be available at /dashboard-api/ui/ (see nginx.prod.proxy.conf)
       - ENABLE_SWAGGER_UI=true
       - LOG_LEVEL=WARNING
+      # MONOCLE_DATA ***must*** be the same path as the mount point for data
+      - MONOCLE_DATA=/home/<USER>/monocle_juno
       # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+      - GUNICORN_PORT=5000
+      - GUNICORN_WORKERS=8
+      - GUNICORN_TIMEOUT=300
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>

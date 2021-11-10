@@ -21,13 +21,13 @@ class SampleMetadataTest(TestCase):
                                        }
                                     }"""
                                     
-   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+   mock_get_samples  = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id_1", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "Ministry of Health, Central laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+                                             {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id_2", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "National Reference Laboratories", "id": "an_id"},
-                                             {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id", "public_name":"fake_name",
+                                             {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id_3", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
                                                 "submitting_institution": "The Chinese University of Hong Kong", "id": "an_id"}
                                              ]

@@ -2,12 +2,15 @@ from   collections            import defaultdict
 from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_ALL
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
+import errno
+from functools                import reduce
 import logging
-from   os                     import environ
+import os
+from   os                     import environ, path
 import pandas
-from   pathlib                import Path
+from   pathlib                import Path, PurePath
 import urllib.parse
-import uuid
+from uuid                     import uuid4
 import yaml
 import urllib.request
 import urllib.error
@@ -17,6 +20,20 @@ import DataSources.metadata_download
 import DataSources.sequencing_status
 import DataSources.pipeline_status
 import DataSources.user_data
+from utils.file               import format_file_size
+
+API_ERROR_KEY = '_ERROR'
+DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
+FORMAT_DATE = '%Y-%m-%d' # # YYYY-MM-DD is the date format of ISO 8601
+# format of timestamp returned in MLWH queries
+FORMAT_MLWH_DATETIME = f'{FORMAT_DATE}T%H:%M:%S%z'
+READ_MODE = 'r'
+ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
+
+ASSEMBLY_FILE_SUFFIX = '.contigs_spades.fa'
+ANNOTATION_FILE_SUFFIX = '.spades.gff'
+READS_FILE_SUFFIXES = ('_1.fastq.gz', '_2.fastq.gz')
+UNKNOWN_PUBLIC_NAME = 'unknown'
 
 class MonocleUser:
    """
@@ -35,6 +52,8 @@ class MonocleUser:
       self.record = self.user_data.get_user_details(authenticated_username)
       return self.record
 
+class DataSourceConfigError(Exception):
+    pass
 
 class MonocleData:
    """
@@ -49,18 +68,13 @@ class MonocleData:
                               'qc_seq':   'sequencing',
                               }
   
-   # format of timestamp returned in MLWH queries
-   mlwh_datetime_fmt    = '%Y-%m-%dT%H:%M:%S%z'
-
-   # Server error key handle
-   api_key_error = '_ERROR'
-   
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
    def __init__(self, set_up=True):
       self.user_record                 = None
       self.institutions_data           = None
+      self.institution_names           = None
       self.samples_data                = None
       self.sequencing_status_data      = None
       self.institution_db_key_to_dict  = {} # see get_institutions for the purpose of this
@@ -72,7 +86,7 @@ class MonocleData:
          self.metadata_source             = DataSources.metadata_download.MetadataDownload()
          self.sequencing_status_source    = DataSources.sequencing_status.SequencingStatus()
          self.pipeline_status             = DataSources.pipeline_status.PipelineStatus()
-         self.download_symlink_config     = 'data_sources.yml'
+         self.data_source_config_name     = 'data_sources.yml'
 
    def get_progress(self):
       institutions_data = self.get_institutions()
@@ -129,7 +143,7 @@ class MonocleData:
       a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
       is provided.
       
-      ***IMPORTANT***
+      ***IMPORTANT / FIXME***
       Institution IDs (`cn`) are now in LDAP, as are their names.
       We need to stop reading institutions from monocledb, and read the names and IDs from LDAP
       The IDs from LDAP will be used as the dict keys in the code in this module, and we can
@@ -142,31 +156,41 @@ class MonocleData:
       """
       if self.institutions_data is not None:
          return self.institutions_data
-      names = self.sample_metadata.get_institution_names()
-      if self.user_record is not None:
-         user_memberships = [ inst['inst_id'] for inst in self.user_record['memberOf'] ]
-         logging.info("user {} is a member of {}".format( self.user_record['username'],user_memberships))
+
+      names = self.get_institution_names()
       institutions = {}
       for this_name in names:
          dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
-         # filter out institution that the user is a member of
-         if self.user_record is None or dict_key in user_memberships:
-            # currently the db uses insitution names as keys, but we don't want to rely on that
-            # so the name and db key are stored as separate items
-            # TODO we will start to use the metadata API instread of the database, so this problem will go away soon
-            #      (this reckless prediction made 2021-06-15)
-            this_db_key = this_name
-            institutions[dict_key] = { 'name'   : this_name,
-                                       'db_key' : this_db_key
-                                       }
-            # this allows lookup of the institution dict key from a db key
-            self.institution_db_key_to_dict[this_db_key] = dict_key
+         this_db_key = this_name
+         institutions[dict_key] = { 'name'   : this_name,
+                                    'db_key' : this_db_key
+                                  }
+         # this allows lookup of the institution dict key from a db key
+         self.institution_db_key_to_dict[this_db_key] = dict_key
+
       self.institutions_data = institutions
       return self.institutions_data
 
+   def get_institution_names(self):
+      """
+      Return a list of institution names.
+      If `user_record` is defined, returns only those institutions that the user is a member of.
+      """
+      if self.institution_names is not None:
+         return self.institution_names
+
+      institution_names = None
+      if self.user_record is not None:
+         institution_names = [inst['inst_name'] for inst in self.user_record.get('memberOf', [])]
+      else:
+         institution_names = self.sample_metadata.get_institution_names()
+
+      self.institution_names = institution_names
+      return institution_names
+
    def get_samples(self):
       """
-      Pass dict of institutions. Returns a dict of all samples for each institution in the dict.
+      Returns a dict of all samples for each institution in the dict.
       
       {  institution_1   => [sample_id_1, sample_id_2...],
          institution_2...
@@ -202,8 +226,7 @@ class MonocleData:
             
    def get_sequencing_status(self):
       """
-      Pass dict of institutions.
-      Returns dict with sequencing data for each institution; data are in
+      Returns dict with sequencing data for each institution the user is a member of; data are in
       a dict, keyed on the sample ID
       
       Note that these are sample IDs that were found in MLWH, and have therefore
@@ -242,17 +265,17 @@ class MonocleData:
             except urllib.error.HTTPError:
                logging.warning("{}.get_sequencing_status() failed to collect {} samples for unknown reason".format(__class__.__name__,len(sample_id_list)))
                logging.info("{}.get_sequencing_status() failed to collect these {} samples: {}".format(__class__.__name__,len(sample_id_list),sample_id_list))
-               sequencing_status[this_institution][self.api_key_error] = 'Server Error: Records cannot be collected at this time. Please try again later.'
-         if '_ERROR' not in sequencing_status[this_institution].keys():
-            sequencing_status[this_institution][self.api_key_error] = None
+               sequencing_status[this_institution][API_ERROR_KEY] = 'Server Error: Records cannot be collected at this time. Please try again later.'
+         if API_ERROR_KEY not in sequencing_status[this_institution].keys():
+            sequencing_status[this_institution][API_ERROR_KEY] = None
       self.sequencing_status_data = sequencing_status
       return self.sequencing_status_data
 
    def get_batches(self):
       """
-      Pass dict of institutions. Returns dict with details of batches delivered.
+      Returns dict with details of batches delivered.
       
-      TO DO:  find out a way to get the genuine total number of expected samples for each institution
+      TODO:  find out a way to get the genuine total number of expected samples for each institution
       """ 
       samples = self.get_samples()
       institutions_data       = self.get_institutions()
@@ -264,9 +287,8 @@ class MonocleData:
          # a subset of the total expected samples (until the last delivery arrives) so it isn't what we really want
          # but we have no other data yet
          # this is a check to make sure the data for this institution has actually been found
-         print()
-         if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            batches[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+         if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
+            batches[this_institution] = { API_ERROR_KEY: 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
          num_samples_expected          = len(samples[this_institution])
          # this is a list of the samples actually found in MLWH; it is not necessarily the same as
@@ -286,7 +308,7 @@ class MonocleData:
                                     'number' : num_samples_received_by_date[this_date],
                                     },
                                  )
-         batches[this_institution] = { self.api_key_error    : None,
+         batches[this_institution] = { API_ERROR_KEY: None,
                                        'expected'  : num_samples_expected,
                                        'received'  : len(samples_received) - 1,
                                        'deliveries': deliveries,
@@ -311,7 +333,7 @@ class MonocleData:
          institution_2...
          }
 
-      TO DO:  improve 'failed' dict 'issue' strings
+      TODO:  improve 'failed' dict 'issue' strings
       """
       institutions_data = self.get_institutions()
       sequencing_status_data = self.get_sequencing_status()
@@ -319,11 +341,11 @@ class MonocleData:
       for this_institution in sequencing_status_data.keys():
          logging.debug("{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
             __class__.__name__,sequencing_status_data[this_institution].keys(), this_institution))
-         if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+         if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
+            status[this_institution] = { API_ERROR_KEY: 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
          sample_id_list = sequencing_status_data[this_institution].keys()
-         status[this_institution] = {  self.api_key_error    : None,
+         status[this_institution] = {  API_ERROR_KEY: None,
                                        'received'  : len(sample_id_list)-1,
                                        'completed' : 0,
                                        'success'   : 0,
@@ -333,7 +355,7 @@ class MonocleData:
          if len(sample_id_list)-1 > 0: # sample_id_list must be -1 to discount _ERROR entry
             this_sequencing_status_data = sequencing_status_data[this_institution]
             for this_sample_id in sample_id_list:
-               if this_sample_id == self.api_key_error :
+               if this_sample_id == API_ERROR_KEY:
                   continue
                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                # i.e. only samples with lanes need to be looked at by the lines below
@@ -383,16 +405,16 @@ class MonocleData:
       data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
       are handled in this class.
          
-      TO DO:  decide what to do about about 'failed' dict 'issue' strings
+      TODO:  decide what to do about about 'failed' dict 'issue' strings
       """
       institutions_data = self.get_institutions()
       sequencing_status_data = self.get_sequencing_status()
       status = {}
       for this_institution in institutions_data.keys():
-         if sequencing_status_data[this_institution][self.api_key_error] is not None:
-            status[this_institution] = { self.api_key_error : 'Server Error: Records cannot be collected at this time. Please try again later.' }
+         if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
+            status[this_institution] = { API_ERROR_KEY: 'Server Error: Records cannot be collected at this time. Please try again later.' }
             continue
-         status[this_institution] = {  self.api_key_error    : None,
+         status[this_institution] = {  API_ERROR_KEY: None,
                                        'running'   : 0,
                                        'completed' : 0,
                                        'success'   : 0,
@@ -401,7 +423,7 @@ class MonocleData:
                                        }
          sample_id_list = sequencing_status_data[this_institution].keys()
          for this_sample_id in sample_id_list:
-            if this_sample_id == self.api_key_error:
+            if this_sample_id == API_ERROR_KEY:
                continue
             this_sample_lanes = sequencing_status_data[this_institution][this_sample_id]['lanes']
             for this_lane_id in [ lane['id'] for lane in this_sample_lanes ]:
@@ -430,6 +452,165 @@ class MonocleData:
                else:
                   status[this_institution]['running'] += 1
       return status
+
+   def get_bulk_download_info(self, sample_filters, **kwargs):
+      """
+      Pass a list of {"institution key", "batch date"} dicts and an optional boolean flag per
+      assembly, annotation, and reads types of lane files.
+      Returns a dict w/ a summary for an expected sample bulk download.
+
+      {
+         num_samples: <int>,
+         size: <str>,
+         size_zipped: <str>
+      }
+      """
+      samples_from_requested_batches = self.get_filtered_samples(sample_filters)
+      public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
+         samples_from_requested_batches,
+         assemblies=kwargs.get('assemblies', False),
+         annotations=kwargs.get('annotations', False),
+         reads=kwargs.get('reads', False))
+      total_lane_files_size = 0
+      for lane_files in public_name_to_lane_files.values():
+         lane_files_size = reduce(
+            lambda accum, fl: accum + self._get_file_size(fl),
+            lane_files,
+            0)
+         total_lane_files_size = total_lane_files_size + lane_files_size
+
+      return {
+         'num_samples': len(samples_from_requested_batches),
+         'size': format_file_size(total_lane_files_size),
+         'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
+      }
+
+   def get_filtered_samples(self, sample_filters):
+      """
+      Pass sample filters dict (describes the filters applied in the front end)
+      
+      Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
+      
+         "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+         
+      TODO support all filters included in the OpenAPI spec. SampleFilters object
+      (this describes the parameter passed to endpoints to describe the sample filters required)
+      
+      Returns a list of matching samples w/ institution keys and public names added.
+      """
+      inst_key_batch_date_pairs = sample_filters['batches']
+      if len(inst_key_batch_date_pairs) == 0:
+         logging.debug(
+            f'{__class__.__name__}.get_filtered_samples(): The list of batches ({"institution key", "batch date"} dicts) is empty.')
+         return []
+
+      institution_keys = [
+         inst_key_batch_date_pair['institution key'] for inst_key_batch_date_pair in inst_key_batch_date_pairs
+      ]
+      institution_names = [
+         institution['name'] for institution_key, institution in self.get_institutions().items()
+         if institution_key in institution_keys
+      ]
+      sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
+      batch_samples = []
+      sequencing_status_data = self.get_sequencing_status()
+      for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
+         inst_key         = this_inst_key_batch_date_pair['institution key']
+         batch_date_stamp = this_inst_key_batch_date_pair['batch date']
+         try:
+            samples = [(sample_id, sample) for sample_id, sample in sequencing_status_data[inst_key].items() if sample]
+         except KeyError:
+            logging.warning(f'No key "{inst_key}" in sequencing status data.')
+            continue
+         for sample_id, sample in samples:
+            if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
+               sample['inst_key'] = inst_key
+               sample['public_name'] = sample_id_to_public_name[sample_id]
+               batch_samples.append(sample)
+      logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
+
+      return batch_samples
+
+   def _get_sample_id_to_public_name_dict(self, institutions):
+      sample_id_to_public_name = {}
+      for sample in self.sample_metadata.get_samples(institutions=institutions):
+         sample_id = sample['sample_id']
+         try:
+            public_name = sample['public_name']
+         except KeyError:
+            logging.error(f'No public name for sample {sample_id}')
+            sample_id_to_public_name[sample_id] = UNKNOWN_PUBLIC_NAME
+         else:
+            sample_id_to_public_name[sample_id] = public_name
+      return sample_id_to_public_name
+
+   def get_public_name_to_lane_files_dict(self, samples, **kwargs):
+      """
+      Pass a list of samples and an optional boolean flag per assembly, annotation, and reads types of lane files.
+      Returns a dict of public names to lane files corresponding to the parameters.
+
+      {
+         <public name 1>: [<lane files>],
+         <public name 2>: ...
+      }
+      """
+      try:
+         data_inst_view_path = environ[DATA_INST_VIEW_ENVIRON]
+      except KeyError:
+         self._download_config_error(f'environment variable {DATA_INST_VIEW_ENVIRON} is not set')
+
+      public_name_to_lane_files = {}
+      assemblies = kwargs.get('assemblies', False)
+      annotations = kwargs.get('annotations', False)
+      reads = kwargs.get('reads', False)
+
+      for sample in samples:
+         if not sample:
+            continue
+         public_name = sample['public_name']
+         institution_key = sample['inst_key']
+         for lane in sample['lanes']:
+            lane_id = lane['id']
+            lane_file_names = self._get_lane_file_names(
+               lane_id,
+               assemblies=assemblies,
+               annotations=annotations,
+               reads=reads)
+            for lane_file_name in lane_file_names:
+               lane_file = Path(
+                  data_inst_view_path,
+                  institution_key,
+                  public_name,
+                  lane_file_name)
+               if not lane_file.exists():
+                  logging.debug(f'File {lane_file} doesn\'t exist')
+                  continue
+               if public_name not in public_name_to_lane_files:
+                  public_name_to_lane_files[public_name] = []
+               public_name_to_lane_files[public_name].append(lane_file)
+
+      return public_name_to_lane_files
+
+   def _get_lane_file_names(self, lane_id, **kwargs):
+      lane_file_names = []
+      if kwargs.get('assemblies'):
+         lane_file_names.append(f'{lane_id}{ASSEMBLY_FILE_SUFFIX}')
+      if kwargs.get('annotations'):
+         lane_file_names.append(f'{lane_id}{ANNOTATION_FILE_SUFFIX}')
+      if kwargs.get('reads'):
+         for file_suffix in READS_FILE_SUFFIXES:
+            lane_file_names.append(f'{lane_id}{file_suffix}')
+      return lane_file_names
+
+   def get_zip_download_location(self):
+      data_source_config      = self._load_data_source_config()
+      if DATA_INST_VIEW_ENVIRON not in environ:
+         return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+      try:
+          cross_institution_dir = data_source_config['data_download']['cross_institution_dir']
+          return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
+      except KeyError as err:
+          self._download_config_error(err)
 
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
@@ -485,7 +666,7 @@ class MonocleData:
                   'content'   : csv_response_string
                   }
 
-   def metadata_as_csv(self,institution,category,status,download_base_url):
+   def metadata_as_csv(self, institution, category, status, download_base_url):
       """
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
@@ -506,7 +687,7 @@ class MonocleData:
       # then the sample ID associated with eacj matchuing lane gets pushed onto a list that we can use for the metadata download request
       samples_for_download = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         if this_sample_id == self.api_key_error:
+         if this_sample_id == API_ERROR_KEY:
             if sequencing_status_data[institution_data_key][
                this_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
                logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
@@ -582,7 +763,7 @@ class MonocleData:
          metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
          del in_silico_data_df
          # add silico data columns to the list
-         metadata_col_order = metadata_col_order+in_silico_data_col_order
+         metadata_col_order = metadata_col_order + in_silico_data_col_order
          
       # list of columns in `metadata_col_order` defines the CSV output
       # remove delete Sample_id -- this is a dupliacte of Lane_ID
@@ -626,50 +807,58 @@ class MonocleData:
          first_row = False
       return pandas_data,col_order
    
-   def make_download_symlink(self,target_institution):
+   def make_download_symlink(self, target_institution=None, **kwargs):
       """
-      Pass the institution name.
+      Pass the institution name _or_ cross_institution=True
       
       This creates a symlink from the web server download directory to the
       directory in which an institution's sample data (annotations,
-      assemblies, reads etc.) can be found.
+      assemblies, reads etc.) or a cross-institution sample ZIP file can be found.
       
       The symlink has a random name so only someone given the URL will be
       able to access it.
       
       The symlink path (relative to web server document root) is returned.
       """
+      if target_institution is None and not kwargs.get('cross_institution'):
+         message="must pass either a target_institution name or 'cross_institution=True'"
+         logging.error("{} parameter error: {}".format(__class__.__name__,message))
+         raise ValueError(message)
+      
       download_config_section = 'data_download'
       download_dir_param      = 'web_dir'
-      download_url_path       = 'url_path'
-      data_inst_view_environ  = 'DATA_INSTITUTION_VIEW'
+      download_url_path_param = 'url_path'
+      cross_institution_dir_param = 'cross_institution_dir'
       # get web server directory, and check it exists
-      if not Path(self.download_symlink_config).is_file():
-         return self._download_config_error("data source config file {} missing".format(self.download_symlink_config))
+      if not Path(self.data_source_config_name).is_file():
+         return self._download_config_error("data source config file {} missing".format(self.data_source_config_name))
       # read config, check required params
-      with open(self.download_symlink_config, 'r') as file:
-         data_sources = yaml.load(file, Loader=yaml.FullLoader)
-         if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_dir_param))
-         download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
-         if download_config_section not in data_sources or download_url_path not in data_sources[download_config_section]:
-            return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.download_symlink_config,download_config_section,download_url_path))
-         download_url_path  = data_sources[download_config_section][download_url_path]
+      data_sources = self._load_data_source_config()
+      if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_dir_param))
+      download_web_dir  = Path(data_sources[download_config_section][download_dir_param])
+      if download_config_section not in data_sources or download_url_path_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,download_url_path_param))
+      download_url_path  = data_sources[download_config_section][download_url_path_param]
+      if download_config_section not in data_sources or cross_institution_dir_param not in data_sources[download_config_section]:
+         return self._download_config_error("data source config file {} does not provide the required parameter {}.{}".format(self.data_source_config_name,download_config_section,cross_institution_dir_param))
+      cross_institution_dir  = data_sources[download_config_section][cross_institution_dir_param]
       if not download_web_dir.is_dir():
          return self._download_config_error("data download web server directory {} does not exist (or not a directory)".format(str(download_web_dir)))
       logging.debug('web server data download dir = {}'.format(str(download_web_dir)))
       # get the "target" directory where the data for the institution is kept, and check it exists
-      # (Why an environment variable?  Because this can be set  by docker-compose, and it is a path
+      # (Why an environment variable? Because this can be set by docker-compose, and it is a path
       # to a volume mount that is also set up by docker-compose.)
-      if data_inst_view_environ not in environ:
-         return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
-      download_host_dir = Path(environ[data_inst_view_environ], self.institution_db_key_to_dict[target_institution])
+      if DATA_INST_VIEW_ENVIRON not in environ:
+         return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+      child_dir = cross_institution_dir if kwargs.get('cross_institution') else self.institution_db_key_to_dict[target_institution]
+      download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
       if not download_host_dir.is_dir():
          return self._download_config_error("data download host directory {} does not exist (or not a directory)".format(str(download_host_dir)))
       logging.debug('host data download dir = {}'.format(str(download_host_dir)))
       # create a randomly named symlink to present to the user (do..while is just in case the path exists already)
       while True:
-         random_name          = uuid.uuid4().hex
+         random_name          = uuid4().hex
          data_download_link   = Path(download_web_dir, random_name)
          download_url_path    = '/'.join([download_url_path, random_name])
          if not data_download_link.exists():
@@ -678,15 +867,6 @@ class MonocleData:
       data_download_link.symlink_to(download_host_dir.absolute())
       return download_url_path
 
-   def _download_config_error(self,message):
-      """
-      Call for errors occurring in make_download_symlink().
-      Pass error message, which is logged.
-      Always returns None.
-      """
-      logging.error("Invalid data download config: {}".format(message))
-      return None
-   
    def institution_name_to_dict_key(self, name, existing_keys):
       """
       Private method that creates a shortened, all-alphanumeric version of the institution name
@@ -707,35 +887,65 @@ class MonocleData:
    def num_samples_received_by_date(self, institution):
       sequencing_status_data        = self.get_sequencing_status()
       samples_received              = sequencing_status_data[institution].keys()
-      if sequencing_status_data[institution][self.api_key_error] is not None:
+      if sequencing_status_data[institution][API_ERROR_KEY] is not None:
          return {}
       num_samples_received_by_date  = defaultdict(int)
       for this_sample_id in samples_received:
-         if this_sample_id == self.api_key_error:
+         if this_sample_id == API_ERROR_KEY:
             continue
-         # get date in ISO8601 format (YYYY-MM-DD)
-         received_date = datetime.strptime(  sequencing_status_data[institution][this_sample_id]['creation_datetime'],
-                                             self.mlwh_datetime_fmt
-                                             ).strftime( '%Y-%m-%d' )
+         received_date = self.convert_mlwh_datetime_stamp_to_date_stamp(
+            sequencing_status_data[institution][this_sample_id]['creation_datetime'])
          num_samples_received_by_date[received_date] += 1
       return num_samples_received_by_date
    
    def num_lanes_sequenced_by_date(self, institution):
       sequencing_status_data        = self.get_sequencing_status()
-      if sequencing_status_data[institution][self.api_key_error] is not None:
+      if sequencing_status_data[institution][API_ERROR_KEY] is not None:
          return {}
       samples_received              = sequencing_status_data[institution].keys()
       num_lanes_sequenced_by_date   = defaultdict(int)
 
       for this_sample_id in samples_received:
-         if this_sample_id == self.api_key_error:
+         if this_sample_id == API_ERROR_KEY:
             continue
          # get each lane (some samples may have non lanes yet)
          for this_lane in sequencing_status_data[institution][this_sample_id]['lanes']:
             # get timestamp for completion (some lanes may not have one yet)
             if 'complete_datetime' in this_lane:
                this_lane['complete_datetime']
-               # get date in ISO8601 format (YYYY-MM-DD)
-               sequenced_date = datetime.strptime( this_lane['complete_datetime'], self.mlwh_datetime_fmt ).strftime( '%Y-%m-%d' )
+               sequenced_date = self.convert_mlwh_datetime_stamp_to_date_stamp(
+                  this_lane['complete_datetime'])
                num_lanes_sequenced_by_date[sequenced_date] += 1
       return num_lanes_sequenced_by_date
+
+   def convert_mlwh_datetime_stamp_to_date_stamp(self, datetime_stamp):
+      return datetime.strptime(datetime_stamp,
+         FORMAT_MLWH_DATETIME
+      ).strftime( FORMAT_DATE )
+
+   def _get_file_size(self, path_instance):
+      try:
+         # FIXME delete next 2 lines when done testing
+         size=path_instance.stat().st_size
+         logging.debug(f'counting size of download file: {path_instance}  {size}')
+         return path_instance.stat().st_size
+      except OSError as err:
+         logging.info(f'Failed to open file {path_instance}: {err}')
+         return 0
+
+   def _load_data_source_config(self):
+      try:
+         with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
+            return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+      except EnvironmentError as err:
+         self._download_config_error(err)
+
+   def _download_config_error(self, description):
+      """
+      Call for errors occurring in make_download_symlink().
+      Pass error description of problem, which is logged.
+      Raises DataSourceConfigError.
+      """
+      message="Invalid data download config: {}".format(description)
+      logging.error(message)
+      raise DataSourceConfigError(message)
