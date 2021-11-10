@@ -113,6 +113,60 @@ paths:
         403:
           description: "Authorization information is missing or invalid."
 
+  /bulk_download_info:
+    post:
+      operationId: dash.api.routes.bulk_download_info
+      summary: "Return information on expected bulk download based on selected batches and data types"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkDownloadInput"
+      responses:
+        200:
+          description: "The operation was successful. The following data format will be returned..."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadInfo"
+        403:
+          description: "Authorization information is missing or invalid."
+
+  /bulk_download_urls:
+    post:
+      operationId: dash.api.routes.bulk_download_urls
+      summary: "Return download links corresponding to selected batches and data types"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkDownloadInput"
+      responses:
+        200:
+          description: "The operation was successful. The following data format will be returned..."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadInfo"
+        403:
+          description: "Authorization information is missing or invalid."
+
   /get_progress:
     get:
       operationId: dash.api.routes.get_progress
@@ -241,35 +295,77 @@ components:
           type: string
           description: "The id of the institution."
 
+    SampleFilters:
+      type: object
+      properties:
+        batches:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstKeyBatchDatePair"
+        serotypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Serotype"
+
+    BulkDownloadInput:
+      type: object
+      required:
+        - sample filters
+      properties:
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+        assemblies:
+          type: boolean
+        annotations:
+          type: boolean
+        reads:
+          type: boolean
+          
+    InstKeyBatchDatePair:
+      type: object
+      required:
+        - "institution key"
+        - "batch date"
+      description: "Batch of samples, identified by institution and delivery date"
+      properties:
+        institution key:
+          description: "Instiution key"
+          example: "NatRefLab"
+          type: string
+        batch date:
+          description: "Date of delivery"
+          $ref: "#/components/schemas/BatchDate"
+            
+    BatchDate:
+      type: string
+      format: date
+      example: "2019-11-15"
+
+    Serotype:
+      type: string
+      example: "IV"
+
+    DownloadInfo:
+      type: object
+      required:
+        - num_samples
+        - size
+        - size_zipped
+      properties:
+        num_samples:
+          type: integer
+        size:
+          type: string
+        size_zipped:
+          type: string
+
     ProjectProgress:
       type: object
       required:
-        - title
         - data
-        - x_col_key
-        - y_cols_keys
-        - x_label
-        - y_label
       properties:
-        title:
-          type: string
-          description: "Progress graph title."
         data:
           $ref: "#/components/schemas/ProjectProgressData"
-        x_col_key:
-          type: string
-          description: "Progress graph x axis key."
-        x_label:
-          type: string
-          description: "Progress graph x axis label."
-        y_cols_keys:
-          type: array
-          items:
-            type: string
-            description: "Progress graph y axis keys."
-        y_label:
-          type: string
-          description: "Progress graph y axis label."
 
     ProjectProgressData:
       type: object

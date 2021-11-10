@@ -1,0 +1,2 @@
+# this exists only to make git add this directory, which we want for tests
+!.gitignore

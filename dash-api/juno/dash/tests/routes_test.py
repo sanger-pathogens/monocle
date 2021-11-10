@@ -1,4 +1,7 @@
 from flask import Response
+from http import HTTPStatus
+import pathlib
+import json
 import unittest
 from unittest.mock import patch, Mock
 from dash.api.service.service_factory import ServiceFactory
@@ -18,16 +21,10 @@ class TestRoutes(unittest.TestCase):
 
     EXPECTED_PROGRESS_RESULTS = {
         'progress_graph': {
-            'title': 'Project Progress',
-            'data': SERVICE_CALL_RETURN_DATA,
-            'x_col_key': 'date',
-            'x_label': '',
-            'y_cols_keys': ['samples received', 'samples sequenced'],
-            'y_label': 'number of samples'
+            'data': SERVICE_CALL_RETURN_DATA
         }
     }
         
-    EXPECTED_CSV_STATUS_CODE     = 200
     EXPECTED_CSV_CONTENT_TYPE    = 'text/csv; charset=UTF-8'
     EXPECTED_CONTENT_DISPOSITION = 'attachment; filename="{}"'.format(SERVICE_CALL_RETURN_CSV_DATA['filename'])
 
@@ -52,7 +49,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 1)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -73,7 +70,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -94,7 +91,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -111,7 +108,7 @@ class TestRoutes(unittest.TestCase):
         resp_mock.assert_called_once_with(self.EXPECTED_PROGRESS_RESULTS)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -132,7 +129,7 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -153,7 +150,78 @@ class TestRoutes(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], 200)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_bulk_download_info(self, data_service_mock, username_mock, resp_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        assemblies = False
+        annotations = True
+        expected_payload = 'paylod'
+        data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = bulk_download_info({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        data_service_mock.return_value.get_bulk_download_info.assert_called_once_with(
+            {'batches':batches}, assemblies=assemblies, annotations=annotations, reads=False)
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch('dash.api.routes.uuid4')
+    @patch.object(ServiceFactory, 'data_service')
+    @patch('pathlib.Path.is_dir')
+    def test_get_bulk_download_urls(self,
+            is_dir_mock,
+            data_service_mock,
+            uuid4_mock,
+            zip_files_mock,
+            username_mock,
+            resp_mock
+        ):
+        # Given
+        batches = ['2020-09-04', '2021-01-30']
+        assemblies = False
+        annotations = True
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        data_service_mock.return_value.get_filtered_samples.return_value = samples
+        is_dir_mock.return_value = True
+        uuid_hex = '123'
+        uuid4_mock.return_value.hex = uuid_hex
+        zip_file_basename = uuid_hex
+        zip_file_location = 'some/dir'
+        data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
+        download_symlink = 'downloads/'
+        data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        lane_files = {'pubname': ['lane file', 'another lane file']}
+        data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
+        expected_payload = {
+            'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
+        }
+        # When
+        result = bulk_download_urls({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_called_once_with(
+            lane_files,
+            basename=zip_file_basename,
+            location=zip_file_location
+            )
+        data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
@@ -169,7 +237,7 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.assert_called_once_with(self.TEST_USER)
         data_service_mock.return_value.get_metadata_for_download.assert_called_once()
         self.assertIsInstance(result, type(Response('any content will do')))
-        self.assertEqual(result.status_code,                    self.EXPECTED_CSV_STATUS_CODE)
+        self.assertEqual(result.status_code,                    HTTPStatus.OK)
         self.assertEqual(result.content_type,                   self.EXPECTED_CSV_CONTENT_TYPE)
         self.assertEqual(result.headers['Content-Disposition'], self.EXPECTED_CONTENT_DISPOSITION)
         

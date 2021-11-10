@@ -413,7 +413,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
-        self.assertEqual(len(validation_errors), 38)
+        self.assertEqual(len(validation_errors), 37)
 
         self.assertTrue(
             '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)

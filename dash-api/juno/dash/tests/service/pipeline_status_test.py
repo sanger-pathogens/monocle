@@ -1,6 +1,8 @@
-from   pandas     import DataFrame, errors
+from   os            import environ
+from   pandas        import DataFrame, errors
 import logging
-from   unittest   import TestCase
+from   unittest      import TestCase
+from   unittest.mock import patch
 
 from   DataSources.pipeline_status  import PipelineStatus, PipelineStatusDataError
 
@@ -15,6 +17,8 @@ class PipelineStatusTest(TestCase):
    bad_csv_file         = 'dash/tests/mock_data/s3/status/pipelines_bad.csv'
    missing_col_csv_file = 'dash/tests/mock_data/s3/status/pipelines_9_cols.csv'
    empty_csv_file       = 'dash/tests/mock_data/s3/status/pipelines_empty.csv'
+
+   mock_environment = {'MONOCLE_DATA': 'dash/tests/mock_data/s3'}
    
    # these lane IDs should be picked from test_csv_file as examples of various states
    mock_missing_lane_id       = 'no_such#lane'
@@ -39,6 +43,7 @@ class PipelineStatusTest(TestCase):
    expected_all_failed_lane_status  = {'FAILED': True,  'SUCCESS': False, 'Import': 'Failed',  'QC': 'Failed',  'Assemble': 'Failed',  'Annotate': 'Failed'}
 
     
+   @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
       self.pipeline_status = PipelineStatus(config=self.test_config)
    
@@ -48,10 +53,12 @@ class PipelineStatusTest(TestCase):
       self.assertEqual(self.pipeline_status.num_columns,    self.expected_num_columns)
       self.assertIsInstance(self.pipeline_status.dataframe, self.expected_dataframe_type)
  
+   @patch.dict(environ, mock_environment, clear=True)
    def test_reject_bad_config(self):
       with self.assertRaises(KeyError):
          PipelineStatus(config=self.bad_config)
 
+   @patch.dict(environ, mock_environment, clear=True)
    def test_reject_bad_input_file(self):
       with self.assertRaises(FileNotFoundError):
          PipelineStatus(config=self.test_config).populate_dataframe('good_luck_finding_this_chum')
