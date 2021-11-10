@@ -23,4 +23,4 @@ COPY     . /app
 ENV      PYTHONPATH "${PYTHONPATH}:./dash/api:./dash/api/service"
 
 EXPOSE   5000
-CMD      ["gunicorn", "--workers 6", "--timeout 300", "-b :5000", "dash.wsgi"]
+CMD      ["gunicorn", "-w 6", "-t 300", "-b :5000", "dash.wsgi"]
