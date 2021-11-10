@@ -34,6 +34,10 @@
           return Promise.reject(batchesSettledPromise.reason);
         }
         return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
+      })
+      .catch((err) => {
+        console.error(`Error while fetching batches and institutions: ${err}`);
+        return Promise.reject(err);
       });
   });
 
