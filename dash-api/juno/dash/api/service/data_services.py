@@ -511,16 +511,72 @@ class MonocleData:
       
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
-      
+      logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
+            
       # the samples IDs can be used to get the sample metadata
-      sample_id_list = [ s['sample_id'] for s in filtered_samples ]
-      # TODO demote to INFO when done testing
-      logging.warning("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
+      try:
+         sample_id_list = [ s['sample_id'] for s in filtered_samples ]
+      except KeyError:
+         logging.error("{}.get_filtered_samples returned one or more samples without a sample ID (expected 'sample_id' key)".format(__class__.__name__))
+         raise
+      logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       metadata = self.metadata_source.get_metadata(sample_id_list)
       
-      # structure to be returned is array of dicts, one per sample, each with 'metadata' and (if requsted) 'in silico'
-      combined_metadata = [ {'metadata': m} for m in metadata ]
+      if include_in_silico:
+         # in silco data must be retrieved using lane IDs
+         lane_id_list = []
+         sample_to_lane_lookup = {}
+         for this_sample in filtered_samples:
+            try:
+               for this_lane in this_sample['lanes']:
+                  # some samples may legitimately have no lanes
+                  this_lane_id = this_lane.get('id',None)
+                  if this_lane_id is not None:
+                     lane_id_list.append(this_lane_id)
+                     # TODO figure out how to support multiple lanes
+                     # even if there are multiple lanes, there is *probably* only one lane that has in silico data
+                     # so we should try and select that lane -- but that won't be known until self.metadata_source.get_in_silico_data
+                     # has been called (a few lines below...)
+                     if this_sample['sample_id'] in sample_to_lane_lookup:
+                        logging.error("Oh no, you found the temporary bodge in {}.get_metadata!  Sample {} has more than one lane; metadata returned will contain in silico data from the randomly chosen lane {}".format(__class__.__name__,this_sample['sample_id'],sample_to_lane_lookup[this_sample['sample_id']]))
+                     sample_to_lane_lookup[this_sample['sample_id']] = this_lane_id
+            except KeyError:
+               logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
+               raise
+         in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)   
+         logging.debug("{}.metadata_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
+         lane_to_in_silico_lookup = {}
+         for this_in_silico_data in in_silico_data:
+            try:
+               lane_to_in_silico_lookup[this_in_silico_data['lane_id']['value']] = this_in_silico_data
+            except KeyError:
+               logging.error("{}.metadata_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
+               raise
+         
+         # structure to be returned is array of dicts, one per sample, each with 'metadata' and 'in silico'
+         combined_metadata = []
+         for this_sample_metadata in metadata:
+            this_sample_id = None
+            try:
+               this_sample_id = this_sample_metadata['sanger_sample_id']['value']
+            except KeyError:
+               logging.error("{}.metadata_source.get_metadata returned one or more samples without a sample ID (expected 'sanger_sample_id'/'value' keys)".format(__class__.__name__))
+               raise
+            combined_metadata_item = {'metadata': this_sample_metadata}
+            # some samples may legitimately have no lanes
+            this_lane_id = sample_to_lane_lookup.get(this_sample_id, None)
+            if this_lane_id is not None:
+               # some lanes may legitimately have no in silico data
+               combined_metadata_item['in silico'] = lane_to_in_silico_lookup.get(this_lane_id, None)
+                                 
+            combined_metadata.append(combined_metadata_item)
+      
+      else:
+         # structure to be returned is array of dicts, one per sample, each with 'metadata' ('in silico' not required in this context)
+         combined_metadata = [ {'metadata': m} for m in metadata ]
+         
    
+      logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
       return combined_metadata
 
    def get_bulk_download_info(self, sample_filters, **kwargs):

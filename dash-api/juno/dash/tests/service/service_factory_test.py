@@ -172,18 +172,19 @@ class MonocleDataTest(TestCase):
                                        {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_3"     },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
                                           "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_3"  },
                                           "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
                                        ]
-   mock_combined_metadata     =     [  {  "metadata": mock_metadata[0]
+   mock_combined_metadata     =     [  {  "metadata":    mock_metadata[0],
+                                          "in silico":   mock_in_silico_data[0]
                                           },
-                                       {  "metadata": mock_metadata[1]
+                                       {  "metadata":    mock_metadata[1]
                                           }
                                        ]
    # the return value when no in silico data are available
@@ -455,7 +456,7 @@ class MonocleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},True)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_metadata, filtered_samples_metadata))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
 
 
