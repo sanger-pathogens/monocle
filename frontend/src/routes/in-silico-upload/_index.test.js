@@ -2,7 +2,7 @@ import { fireEvent, render } from "@testing-library/svelte";
 import UploadingPage from "./index.svelte";
 
 it("is rendered w/ the data upload form that accepts only specified file extensions", () => {
-  const { container, getByRole } = render(UploadingPage);
+  const { container } = render(UploadingPage);
 
   expect(container.querySelector("p").textContent)
     .toBe("Select or drag and drop your files with tab-separated in silico data:");

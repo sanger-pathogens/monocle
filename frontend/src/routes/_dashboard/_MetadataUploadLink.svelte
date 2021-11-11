@@ -1,5 +1,5 @@
 <script>
-  import { session } from '$app/stores';
+  import { session } from "$app/stores";
   import UploadIcon from "$lib/components/icons/UploadIcon.svelte";
 
   const LINK_TITLE = "Upload metadata";

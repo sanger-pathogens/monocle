@@ -56,7 +56,8 @@
   position: relative;
   margin: 0 auto;
   min-height: var(--initial-height);
-  max-width: 50rem;
+  width: var(--width-reading);
+  max-width: 100%;
 }
 
 .y-label {

@@ -1,10 +1,19 @@
 import {
   getBatches,
+  getBulkDownloadInfo,
+  getBulkDownloadUrls,
   getInstitutionStatus,
   getProjectProgress,
   getUserDetails
 } from "./dataLoading.js";
 
+const INST_KEY_BATCH_DATE_PAIRS = [
+  ["SomIns", "2021-05-20"],
+  ["AnoIns", "2020-09-01"]
+];
+const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, batchDate]) => (
+  { "institution key": instKey, "batch date": batchDate }
+))
 const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
@@ -14,7 +23,7 @@ describe.each([
     fnName: "getBatches",
     getResource: getBatches,
     expectedEndpoints: ["get_batches"],
-    payload: {
+    responsePayload: {
       batches: {
         some: "data",
       }
@@ -22,10 +31,46 @@ describe.each([
     expectedResult: { some: "data" }
   },
   {
+    fnName: "getBulkDownloadInfo",
+    getResource: getBulkDownloadInfo,
+    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        assemblies: true,
+        annotations: false
+      })
+    },
+    expectedEndpoints: ["bulk_download_info"],
+    responsePayload: "as is",
+    expectedResult: "as is"
+  },
+  {
+    fnName: "getBulkDownloadUrls",
+    getResource: getBulkDownloadUrls,
+    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        assemblies: true,
+        annotations: false
+      })
+    },
+    expectedEndpoints: ["bulk_download_urls"],
+    responsePayload: {
+      download_urls: ["fake_url"],
+    },
+    expectedResult: ["fake_url"]
+  },
+  {
     fnName: "getInstitutionStatus",
     getResource: getInstitutionStatus,
     expectedEndpoints: ["get_institutions", "get_batches", "sequencing_status_summary", "pipeline_status_summary"],
-    payload: {
+    responsePayload: {
       institutions: {
         CRS: { name: "Center for Reducing Suffering" },
         SR: { name: "Sentience Research" }
@@ -55,7 +100,7 @@ describe.each([
     fnName: "getProjectProgress",
     getResource: getProjectProgress,
     expectedEndpoints: ["get_progress"],
-    payload: {
+    responsePayload: {
       progress_graph: {
         data: { date: "21.08.21", "samples received": 200, "samples sequenced": 50 },
       }
@@ -72,7 +117,7 @@ describe.each([
     fnName: "getUserDetails",
     getResource: getUserDetails,
     expectedEndpoints: ["get_user_details"],
-    payload: {
+    responsePayload: {
       user_details: {
         type: "support"
       }
@@ -81,27 +126,32 @@ describe.each([
       type: "support"
     }
   }
-])("$fnName", ({ getResource, expectedEndpoints, payload, expectedResult }) => {
+])("$fnName", ({
+  getResource, args = [], expectedEndpoints, expectedFetchOpts, responsePayload, expectedResult
+}) => {
   beforeEach(() => {
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(payload)
+      json: () => Promise.resolve(responsePayload)
     });
   });
 
   it("fetches the data from the correct endpoints", async () => {
     fetch.mockClear();
 
-    await getResource(fetch);
+    await getResource(...args, fetch);
 
     expect(fetch).toHaveBeenCalledTimes(expectedEndpoints.length);
-    expectedEndpoints.forEach((expectedEndpoint) => {
-      expect(fetch).toHaveBeenCalledWith(`${DASHBOARD_API_URL}/${expectedEndpoint}`);
+    expectedEndpoints.forEach((expectedEndpoint, i) => {
+      const fetchArgs = fetch.mock.calls[i];
+      expect(fetchArgs[0]).toBe(`${DASHBOARD_API_URL}/${expectedEndpoint}`);
+      const actualFetchOpts = fetchArgs[1];
+      expect([undefined, expectedFetchOpts]).toContainEqual(actualFetchOpts);
     });
   });
 
   it("returns result in the correct format", async () => {
-    const result = await getResource(fetch);
+    const result = await getResource(...args, fetch);
 
     expect(result).toEqual(expectedResult);
   });

@@ -59,7 +59,7 @@ describe("file uploading", () => {
         UPLOAD_URL, {
           method: "POST",
           body: formData
-      });
+        });
     });
   });
 
@@ -129,7 +129,7 @@ describe("file uploading", () => {
   });
 
   it("displays a server error", async () => {
-    const { container, queryAllByText } = render(DataUploader, {
+    const { container } = render(DataUploader, {
       files: FILES,
       uploadUrl: UPLOAD_URL
     });

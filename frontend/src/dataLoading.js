@@ -1,3 +1,6 @@
+const HTTP_POST = "POST";
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
 export function getInstitutionStatus(fetch) {
   return Promise.all([
     getInstitutions(fetch),
@@ -35,42 +38,76 @@ export function getProjectProgress(fetch) {
 
 //TODO use service workers to cache response
 export function getBatches(fetch) {
-  return fetchDashboardResource("get_batches", "batches", fetch);
+  return fetchDashboardApiResource("get_batches", "batches", fetch);
+}
+
+export function getBulkDownloadInfo(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+  return fetchDashboardApiResource(
+    "bulk_download_info", null, fetch, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        "sample filters": {
+          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+        },
+        assemblies,
+        annotations
+      })
+    });
+}
+
+export function getBulkDownloadUrls(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+  return fetchDashboardApiResource(
+    "bulk_download_urls", "download_urls", fetch, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        "sample filters": {
+          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+        },
+        assemblies,
+        annotations
+      })
+    });
+}
+
+export function getInstitutions(fetch) {
+  return fetchDashboardApiResource(
+    "get_institutions", "institutions", fetch);
 }
 
 export function getUserDetails(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);
 }
 
 function getProjectProgressData(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "get_progress", "progress_graph", fetch);
 }
 
-function getInstitutions(fetch) {
-  return fetchDashboardResource(
-    "get_institutions", "institutions", fetch);
-}
-
 function getSequencingStatus(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "sequencing_status_summary", "sequencing_status", fetch);
 }
 
 function getPipelineStatus(fetch) {
-  return fetchDashboardResource(
+  return fetchDashboardApiResource(
     "pipeline_status_summary", "pipeline_status", fetch);
 }
 
-function fetchDashboardResource(endpoint, resourceKey, fetch) {
-  return fetch(`/dashboard-api/${endpoint}`)
+function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+  return (fetchOptions ?
+    fetch(`/dashboard-api/${endpoint}`, fetchOptions) :
+    fetch(`/dashboard-api/${endpoint}`)
+  )
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
-    .then((payload) => payload?.[resourceKey])
+    .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
     .catch((err) => {
-      console.log(
-        `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}`
+      console.error(resourceKey ?
+        `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
+        `Error while fetching resource from endpoint ${endpoint}: ${err}`
       );
       return Promise.reject(err);
     });
@@ -92,5 +129,11 @@ function collateInstitutionStatus({
         ...pipelineStatus[institutionKey]
       },
       key: institutionKey
-    }))
+    }));
+}
+
+function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs) {
+  return instKeyBatchDatePairs.map(([instKey, batchDate]) => (
+    { "institution key": instKey, "batch date": batchDate }
+  ));
 }

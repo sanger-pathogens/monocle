@@ -1,5 +1,5 @@
 <script>
-  import SlicedChart from '$lib/components/SlicedChart.svelte';
+  import SlicedChart from "$lib/components/SlicedChart.svelte";
 
   export let labels = [];
   export let values = [];

@@ -1,4 +1,4 @@
-import nodeAdapter from '@sveltejs/adapter-node';
+import nodeAdapter from "@sveltejs/adapter-node";
 
 const production = process.env.NODE_ENV === "production" || process.env.NODE_ENV === undefined;
 
@@ -6,11 +6,11 @@ const production = process.env.NODE_ENV === "production" || process.env.NODE_ENV
 const config = {
   kit: {
     // hydrate the <div id="app"> element in src/app.html
-    target: '#app',
+    target: "#app",
     ssr: production,
     adapter: nodeAdapter({
       precompress: production
-	})
+    })
   }
 };
 

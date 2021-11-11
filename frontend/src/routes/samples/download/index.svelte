@@ -1,159 +1,237 @@
 <script>
   import { onMount } from "svelte";
-  // We need to import the source Svelte component because Jest doesn't recognise the compiled JS code provided by the library.
-  import Select from "svelte-select/src/Select.svelte";
-  import { getBatches } from "../../../dataLoading.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import BatchSelector from "./_BatchSelector.svelte";
+  import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls, getInstitutions } from "../../../dataLoading.js";
 
-  const groupBatchesBy = ({ institutionKey }) => institutionKey;
+  const MAX_REQUEST_FREQUENCY_MS = 1500;
+  const PAGE_TITLE_ID = "bulk-download-title";
+  const PROMISE_STATUS_REJECTED = "rejected";
 
-  let allBatches;
-  let batchesPromise = Promise.resolve();
+  let formValues = {
+    annotations: true,
+    assemblies: true
+  };
+  let dataPromise = Promise.resolve();
+  let debounceTimeoutId;
+  let downloadEstimate = {};
+  let downloadLinksRequested;
+  let downloadLink;
   let selectedBatches = null;
 
+  $: formComplete = selectedBatches?.length &&
+      (formValues.annotations || formValues.assemblies);
+
+  // These arguments are passed just to indicate to Svelte that this reactive statement
+  // should re-run only when one of the args has changed.
+  $: updateDownloadEstimate(selectedBatches, formValues);
+
   onMount(() => {
-    batchesPromise = getBatches(fetch)
-      .then((batches) => makeListOfBatches(batches));
+    dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
+      .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+        if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
+          console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
+          return Promise.reject(batchesSettledPromise.reason);
+        }
+        return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
+      })
+      .catch((err) => {
+        console.error(`Error while fetching batches and institutions: ${err}`);
+        return Promise.reject(err);
+      });
   });
 
-  function makeListOfBatches(batches = {}) {
-    return Object.keys(batches)
-      .map((institutionKey) =>
-        batches[institutionKey].deliveries.map((batch) =>
-          makeBatchListItem(batch, institutionKey)))
-      .flat();
+  function updateDownloadEstimate() {
+    unsetDownloadEstimate();
+    debounce(_updateDownloadEstimate);
   }
 
-  function makeBatchListItem({ name, date, number: numSamples }, institutionKey) {
+  function _updateDownloadEstimate() {
+    if (!formComplete) {
+      return;
+    }
+
+    getBulkDownloadInfo(
+      selectedBatches.map(({value}) => value),
+      formValues,
+      fetch
+    )
+      .then(({size, size_zipped}) => {
+        // Commented out because BE currently doesn't compress for performace reasons:
+        // downloadEstimate.size = size;
+        downloadEstimate.sizeZipped = size_zipped;
+      })
+      .catch(unsetDownloadEstimate);
+  }
+
+  function unsetDownloadEstimate() {
+    downloadEstimate = {};
+  }
+
+  function makeListOfBatches(batches = {}, institutions = {}) {
+    return Object.keys(batches)
+      .reduce(((accumListOfBatches, institutionKey) =>
+        addBatchListItems(
+          accumListOfBatches,
+          batches[institutionKey].deliveries,
+          institutionKey,
+          institutions[institutionKey]?.name
+        )
+      ), []);
+  }
+
+  function addBatchListItems(accumListOfBatches, batches = [], institutionKey, institutionName) {
+    return batches.reduce((thisAccumListOfBatches, batch) => {
+      thisAccumListOfBatches.push(makeBatchListItem(batch, institutionKey, institutionName));
+      return thisAccumListOfBatches;
+    }, accumListOfBatches);
+  }
+
+  function makeBatchListItem({ name, date, number: numSamples }, institutionKey, institutionName) {
     const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
-    const batchNameWithData = `${date}: ${name}${numSamplesText}`;
     return {
-      label: batchNameWithData,
-      value: batchNameWithData,
-      institutionKey
+      label: `${date}: ${name}${numSamplesText}`,
+      value: [institutionKey, date],
+      group: institutionName || institutionKey
     };
   }
 
-  function deselectBatches() {
-    selectedBatches = null;
-  }
-
-  async function selectBatches() {
-    if (!allBatches) {
-      const listOfBatches = await batchesPromise;
-      allBatches = listOfBatches.map(({ value }) => value);
-    }
-    selectedBatches = allBatches;
-  }
-
   function onSubmit() {
-    confirm("You won't be able to change the parameters if you proceed.");
+    if (!formComplete) {
+      // Prevents submitting the form on Enter while the confirm btn is disabled.
+      return;
+    }
+
+    downloadLinksRequested =
+      confirm("You won't be able to change the parameters if you proceed.");
+    if (downloadLinksRequested) {
+      const selectedBatchValues = selectedBatches?.map(({value}) => value);
+      getBulkDownloadUrls(selectedBatchValues, formValues, fetch)
+        .then((downloadLinks = []) => {
+          downloadLink = downloadLinks[0];
+          if (!downloadLink) {
+            console.error("The list of download URLs returned from the server is empty.");
+            return Promise.reject();
+          }
+        })
+        .catch(() => {
+          downloadLinksRequested = false;
+          alert("Error while generating a download link. Please try again.");
+        });
+    }
+  }
+
+  function debounce(callback) {
+    // Clear the previous timeout and set a new one.
+    clearTimeout(debounceTimeoutId);
+    debounceTimeoutId = setTimeout(callback, MAX_REQUEST_FREQUENCY_MS);
   }
 </script>
 
 
-<h2>Sample bulk download</h2>
+<h2 id={PAGE_TITLE_ID}>Sample bulk download</h2>
 
-{#await batchesPromise}
+{#await dataPromise}
   <LoadingIndicator />
 
 {:then batchList}
-  <form on:submit|preventDefault={onSubmit}>
-
-    <fieldset class="batch-selection-section">
-      <legend>Select batches to download</legend>
-
-      <div>
-        <button
-          type="button"
-          on:click={selectBatches}
-          class="compact"
-        >
-          Select all
-        </button>
-
-        <button
-          type="button"
-          on:click={deselectBatches}
-          class="compact"
-        >
-          Clear
-        </button>
-      </div>
-
-      <Select
-        noOptionsMessage={"No batches"}
-        bind:value={selectedBatches}
-        items={batchList}
-        groupBy={groupBatchesBy}
-        showIndicator={true}
-        isClearable={false}
-        isMulti={true}
-        containerStyles="flex-grow: 1; order: -1"
-      />
-    </fieldset>
-
-    <fieldset class="data-type-section">
-      <legend>Data type</legend>
-
-      <label>
-        <input type="checkbox" checked />
-        Assemblies
-      </label>
-
-      <label>
-        <input type="checkbox" checked />
-        Annotations
-      </label>
-
-      <label class="disabled">
-        <input type="checkbox" disabled />
-        Reads ( ⚠️ may increase the size drastically)
-      </label>
-    </fieldset>
-
-    <fieldset disabled={!selectedBatches}>
-      <legend>Split download</legend>
-      <select>
-        {#if selectedBatches}
-          <option selected>1 download of 200 GB (1 TB unzipped)</option>
-          <option>2 downloads, ~100 GB per download</option>
-          <option>4 downloads, ~50 GB per download</option>
-          <option>8 downloads, ~25 GB per download</option>
-          <option>16 downloads, ~12.5 GB per download</option>
-          <option>32 downloads, ~6.2 GB per download</option>
-          <option>64 downloads, ~3.1 GB per download</option>
-          <option>128 downloads, ~1.6 GB per download</option>
-          <option>256 downloads, ~0.8 GB per download</option>
-        {/if}
-      </select>
-    </fieldset>
-
-    <button
-      type="submit"
-      class="primary"
-      disabled={!selectedBatches}
+  <form
+    aria-labelledby={PAGE_TITLE_ID}
+    on:submit|preventDefault={onSubmit}
+  >
+    <fieldset
+      disabled={downloadLinksRequested}
+      class:disabled={downloadLinksRequested}
     >
-      Confirm
-    </button>
+
+      <fieldset class="batch-selection-section">
+        <legend>Select batches to download</legend>
+        <BatchSelector
+          bind:selectedBatches
+          {batchList}
+        />
+      </fieldset>
+
+      <fieldset class="data-type-section">
+        <legend>Data type</legend>
+
+        <label>
+          <input
+            type="checkbox"
+            bind:checked={formValues.assemblies}
+          />
+          Assemblies
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            bind:checked={formValues.annotations}
+          />
+          Annotations
+        </label>
+
+        <!-- To be done in a future version of Monocle.
+        <label class="disabled">
+          <input type="checkbox" />
+          Reads ( ⚠️ may increase the size drastically)
+        </label>
+        -->
+      </fieldset>
+
+      <fieldset disabled={true}>
+        <legend>Split download (coming soon)</legend>
+        <select>
+          {#if downloadEstimate?.sizeZipped}
+            <option selected>
+              1 download of {downloadEstimate.sizeZipped}
+            </option>
+          {/if}
+        </select>
+      </fieldset>
+
+      <button
+        type="submit"
+        class="primary"
+        disabled={!formComplete}
+      >
+        Confirm
+      </button>
+
+    </fieldset>
   </form>
 
+  {#if downloadLinksRequested}
+    {#if downloadLink}
+      <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
+      <a
+        href={`/${downloadLink}`}
+        target="_blank"
+        class="download-link"
+        download
+      >
+        Download samples
+      </a>
+    {:else}
+      <LoadingIndicator
+        message="Please wait: generating a file archive can take several minutes if thousands of samples are involved."
+      />
+    {/if}
+  {/if}
 {:catch error}
-	<p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
+    <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}
 
 
 <style>
 form {
-  --multiItemActiveBG: transparent;
-  --multiItemActiveColor: var(--juno-indigo);
-  --multiSelectPadding: 0;
-  --multiSelectInputPadding: 0 0 0 .9rem;
+  width: var(--width-reading);
+  max-width: 100%;
 }
 
-button {
-  flex-shrink: 0;
+form > fieldset {
+  padding: 0;
 }
 
 button[type=submit] {
@@ -164,30 +242,29 @@ button[type=submit] {
 
 select {
   min-width: 12rem;
-  max-width: 98%;
-}
-
-.data-type-section, .batch-selection-section, .batch-selection-section > div {
-  display: flex;
-}
-
-.data-type-section, .batch-selection-section > div {
-  flex-direction: column;
-}
-
-.batch-selection-section > div {
-  flex-shrink: 0;
-  margin-left: .5rem;
+  max-width: 90%;
 }
 
 .batch-selection-section {
   align-items: flex-start;
   margin-bottom: 1rem;
 }
+@media (min-width: 480px) {
+  .batch-selection-section {
+    display: flex;
+  }
+}
 
 .data-type-section {
+  display: flex;
+  flex-direction: column;
   /* This prevents the checkbox labels from being clickable across all of the container's width. */
   align-items: flex-start;
+}
+
+.download-link {
+  display: inline-block;
+  margin: 2rem 0;
 }
 </style>
 

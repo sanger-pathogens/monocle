@@ -20,7 +20,7 @@
       .finally(() => {
         uploading = false;
       });
-    }
+  }
 
   function uploadFiles(successCallback) {
     const filesArray = Array.from(files);
