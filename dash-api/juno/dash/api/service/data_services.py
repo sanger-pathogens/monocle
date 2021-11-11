@@ -486,34 +486,42 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters):
+   def get_metadata(self, sample_filters, include_in_silico=False):
       """
       Pass sample filters dict (describes the filters applied in the front end).
+      Also pass flag indicating of in silico data should be retrieved and merged into the metadata.
+      
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
+      and (if requested) in silico data.  Metadta and in silico data are respresented with the same format:
+      a dict of fields, where each dict value is a dict with the name, column position (order) and value
+      for that field.
       [
-         'sample_id_1' : { 'metadata_field_1',
-                           'metadata_field_2',
-                           ...
-                           },
-         'sample_id_2' : { 'metadata_field_1',
-                           'metadata_field_2',
-                           ...
-                           },
+         { metadata: { 'metadata_field_1' : {'name': 'field name', order: 1, value: 'the value'},
+                       'metadata_field_2' : {'name': 'another field name', order: 2, value: 'another value'},
+                        ...
+                        },
+          'in silico' :{   'in_silico_field_1' : {'name': 'field name', order: 1, value: 'the value'},
+                           'in_silico_field_2' : {'name': 'another field name', order: 2, value: 'another value'},
+                        ...
+                        }
+         },
          ...
       ]
       """
       
-      # get_filtered_samples filters the samples for us from sequencing status data
-      # but all we want from this is the sa,ples IDs
-      sample_id_list = [   s['sample_id']
-                           for s in self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
-                           ]
+      # get_filtered_samples filters the samples for us, from the sequencing status data
+      filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
+      
+      # the samples IDs can be used to get the sample metadata
+      sample_id_list = [ s['sample_id'] for s in filtered_samples ]
       # TODO demote to INFO when done testing
       logging.warning("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
-      
       metadata = self.metadata_source.get_metadata(sample_id_list)
+      
+      # structure to be returned is array of dicts, one per sample, each with 'metadata' and (if requsted) 'in silico'
+      combined_metadata = [ {'metadata': m} for m in metadata ]
    
-      return metadata
+      return combined_metadata
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """

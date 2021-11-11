@@ -181,6 +181,11 @@ class MonocleDataTest(TestCase):
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
                                        ]
+   mock_combined_metadata     =     [  {  "metadata": mock_metadata[0]
+                                          },
+                                       {  "metadata": mock_metadata[1]
+                                          }
+                                       ]
    # the return value when no in silico data are available
    in_silico_data_available_not_available =  []
    # this contains a bad lane ID, so it should be ignored and *not* merged into the metadata download
@@ -444,12 +449,14 @@ class MonocleDataTest(TestCase):
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
       
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
-   def test_get_metadata(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = self.mock_metadata
-      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
+   def test_get_metadata(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},True)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_metadata, filtered_samples_metadata))
-      self.assertEqual(self.mock_metadata, filtered_samples_metadata)
+      self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
 
 
    @patch.object(SampleMetadata, 'get_samples')

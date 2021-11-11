@@ -76,8 +76,9 @@ def pipeline_status_summary():
 def get_metadata(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    sample_filters = body['sample filters']
-    return call_jsonify( ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(sample_filters) ), HTTPStatus.OK
+    sample_filters      = body['sample filters']
+    include_in_silico   = body.get('in silico',False)
+    return call_jsonify( ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(sample_filters, include_in_silico) ), HTTPStatus.OK
 
 
 def bulk_download_info(body):

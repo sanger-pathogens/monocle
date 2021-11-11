@@ -230,16 +230,15 @@ class TestRoutes(unittest.TestCase):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters = {'batches':batches}
-        assemblies = False
-        annotations = True
+        include_in_silico = True
         expected_payload = 'payload'
         data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
-        result = get_metadata({'sample filters':sample_filters})
+        result = get_metadata({'sample filters':sample_filters, 'in silico': include_in_silico})
         # Then
         data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata.assert_called_once_with(sample_filters)
+        data_service_mock.return_value.get_metadata.assert_called_once_with(sample_filters,include_in_silico)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
