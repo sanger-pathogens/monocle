@@ -300,7 +300,6 @@ class MonocleDataTest(TestCase):
       self.monocle_data.metadata_source.dl_client.set_up(self.test_config)
       # load mock data
       self.get_mock_data()
-      
  
    def test_init(self):
       self.assertIsInstance(self.monocle_data, MonocleData)
@@ -444,6 +443,14 @@ class MonocleDataTest(TestCase):
          'size': format_file_size(expected_byte_size),
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
+      
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata(self, mock_metadata_fetch):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_metadata, filtered_samples_metadata))
+      self.assertEqual(self.mock_metadata, filtered_samples_metadata)
+
 
    @patch.object(SampleMetadata, 'get_samples')
    def test_get_filtered_samples(self, get_sample_metadata_mock):

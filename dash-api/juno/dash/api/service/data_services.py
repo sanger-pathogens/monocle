@@ -503,13 +503,17 @@ class MonocleData:
       ]
       """
       
-      # get_filtered_samples isn't returning the metadta we need
-      # but it does filter the samples for us
-      filtered_samples = self.get_filtered_samples(sample_filters)
+      # get_filtered_samples filters the samples for us from sequencing status data
+      # but all we want from this is the sa,ples IDs
+      sample_id_list = [   s['sample_id']
+                           for s in self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
+                           ]
       # TODO demote to INFO when done testing
-      logging.warning("sample filters {} resulted in {} samples being returned".format(sample_filters,len(filtered_samples)))
+      logging.warning("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       
-      return [ { 'public_name': s['public_name'] } for s in filtered_samples ]
+      metadata = self.metadata_source.get_metadata(sample_id_list)
+   
+      return metadata
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
@@ -543,9 +547,14 @@ class MonocleData:
          'size_zipped': format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }
 
-   def get_filtered_samples(self, sample_filters):
+   def get_filtered_samples(self, sample_filters, disable_public_name_fetch=False):
       """
       Pass sample filters dict (describes the filters applied in the front end)
+      Optionally pass `disable_public_name_fetch` (default: false) to stop public names being retrieved
+      from metadata API (will be slightly quicker, so use this if you don't need public names)
+      
+      Returns a list of matching samples' sequencing status data w/ institution keys and (unless
+      disable_public_name_fetch was passed) public names added.
       
       Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
       
@@ -553,8 +562,6 @@ class MonocleData:
          
       TODO support all filters included in the OpenAPI spec. SampleFilters object
       (this describes the parameter passed to endpoints to describe the sample filters required)
-      
-      Returns a list of matching samples w/ institution keys and public names added.
       """
       inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
@@ -569,7 +576,8 @@ class MonocleData:
          institution['name'] for institution_key, institution in self.get_institutions().items()
          if institution_key in institution_keys
       ]
-      sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
+      if not disable_public_name_fetch:
+         sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
       batch_samples = []
       sequencing_status_data = self.get_sequencing_status()
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
@@ -582,8 +590,12 @@ class MonocleData:
             continue
          for sample_id, sample in samples:
             if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
-               sample['inst_key'] = inst_key
-               sample['public_name'] = sample_id_to_public_name[sample_id]
+               # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
+               # add it as otherwise functions that call get_filtered_samples() wouldn't have access to the sample ID
+               sample['sample_id']  = sample_id
+               sample['inst_key']   = inst_key
+               if not disable_public_name_fetch:
+                  sample['public_name'] = sample_id_to_public_name[sample_id]
                batch_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
 
