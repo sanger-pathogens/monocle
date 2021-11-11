@@ -48,7 +48,6 @@
 
   function _updateDownloadEstimate() {
     if (!formComplete) {
-      unsetDownloadEstimate();
       return;
     }
 
