@@ -42,6 +42,7 @@
   });
 
   function updateDownloadEstimate() {
+    unsetDownloadEstimate();
     debounce(_updateDownloadEstimate);
   }
 
