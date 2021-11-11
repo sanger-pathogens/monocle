@@ -213,7 +213,9 @@
         Download samples
       </a>
     {:else}
-      <LoadingIndicator />
+      <LoadingIndicator
+        message="Please wait: generating a file archive can take several minutes if thousands of samples are involved."
+      />
     {/if}
   {/if}
 {:catch error}

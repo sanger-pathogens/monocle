@@ -257,6 +257,9 @@ describe("once batches are fetched", () => {
   });
 
   describe("on form submit", () => {
+    const LOADING_MESSAGE =
+      "Please wait: generating a file archive can take several minutes if thousands of samples are involved."
+
     global.fetch = "fake fetch";
 
     beforeEach(() => {
@@ -306,7 +309,7 @@ describe("once batches are fetched", () => {
 
       await selectBatchesAndConfirm(findByRole, getByRole);
 
-      expect(getByLabelText("please wait")).toBeDefined();
+      expect(getByLabelText(LOADING_MESSAGE)).toBeDefined();
     });
 
     it("requests and displays a download link", async () => {
@@ -333,7 +336,7 @@ describe("once batches are fetched", () => {
       await selectBatchesAndConfirm(findByRole, getByRole);
 
       await waitFor(() => {
-        expect(queryByLabelText("please wait")).toBeNull();
+        expect(queryByLabelText(LOADING_MESSAGE)).toBeNull();
       });
     });
 
@@ -377,7 +380,7 @@ describe("once batches are fetched", () => {
         await selectBatchesAndConfirm(findByRole, getByRole);
 
         await waitFor(() => {
-          expect(queryByLabelText("please wait")).toBeNull();
+          expect(queryByLabelText(LOADING_MESSAGE)).toBeNull();
         });
       });
     });
