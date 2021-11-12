@@ -495,7 +495,7 @@ class MonocleData:
       Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
       
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
-      and (if requested) in silico data.  Metadta and in silico data are respresented with the same format:
+      and (if requested) in silico data.  Metadata and in silico data are represented with the same format:
       a dict of fields, where each dict value is a dict with the name, column position (order) and value
       for that field.
       [
@@ -891,7 +891,7 @@ class MonocleData:
       # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
       # it is possible, but rarely (perhaps never in practice) happens, that a smaple may have multiple lane IDs;
       # tin tbhis case they are all put into the lane ID cell
-      logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadta download!")
+      logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
       metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
       
       # add download links to metadata DataFrame
@@ -907,7 +907,7 @@ class MonocleData:
       if len(in_silico_data) > 0:
          in_silico_data_df = pandas.DataFrame(in_silico_data)
          logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
-         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadta row
+         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadata row
          # validate to ensure lane ID is unique in both dataframes
          metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
          del in_silico_data_df
