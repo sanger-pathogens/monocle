@@ -184,7 +184,7 @@ class MonocleDataTest(TestCase):
    mock_combined_metadata     =     [  {  "metadata":    mock_metadata[0],
                                           "in silico":   mock_in_silico_data[0]
                                           },
-                                       {  "metadata":    mock_metadata[1]
+                                       {  "metadata":    mock_metadata[1],
                                           }
                                        ]
    # the return value when no in silico data are available
