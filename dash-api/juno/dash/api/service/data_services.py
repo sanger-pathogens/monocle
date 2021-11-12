@@ -1,4 +1,5 @@
 from   collections            import defaultdict
+from   copy                   import deepcopy
 from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC, QUOTE_ALL
 from   datetime               import datetime
 from   dateutil.relativedelta import relativedelta
@@ -530,9 +531,8 @@ class MonocleData:
          for this_sample in filtered_samples:
             sample_to_lanes_lookup[this_sample['sample_id']] = []
             try:
-               for this_lane in this_sample['lanes']:
-                  # some samples may legitimately have no lanes
-                  this_lane_id = this_lane.get('id',None)
+               # remember, some samples may legitimately have no lanes
+               for this_lane_id in this_sample['lanes']:
                   if this_lane_id is not None:
                      lane_id_list.append(this_lane_id)
                      sample_to_lanes_lookup[this_sample['sample_id']].append(this_lane_id)
@@ -646,7 +646,7 @@ class MonocleData:
       if not disable_public_name_fetch:
          sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
       batch_samples = []
-      sequencing_status_data = self.get_sequencing_status()
+      sequencing_status_data = deepcopy( self.get_sequencing_status() )
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
          inst_key         = this_inst_key_batch_date_pair['institution key']
          batch_date_stamp = this_inst_key_batch_date_pair['batch date']
@@ -657,6 +657,13 @@ class MonocleData:
             continue
          for sample_id, sample in samples:
             if self.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
+               # `sample` contains all sequencing status data (because it was copy from the dict returned by
+               # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
+               for this_key in list(sample.keys()):
+                  if 'lanes' == this_key:
+                     sample[this_key] = [ l['id'] for l in sample[this_key] ]
+                  elif this_key not in ['creation_datetime', 'inst_key', 'public_name', 'sample_id']:
+                     del sample[this_key]
                # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
                # add it as otherwise functions that call get_filtered_samples() wouldn't have access to the sample ID
                sample['sample_id']  = sample_id
@@ -665,7 +672,6 @@ class MonocleData:
                   sample['public_name'] = sample_id_to_public_name[sample_id]
                batch_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
-
       return batch_samples
 
    def _get_sample_id_to_public_name_dict(self, institutions):
@@ -706,8 +712,7 @@ class MonocleData:
             continue
          public_name = sample['public_name']
          institution_key = sample['inst_key']
-         for lane in sample['lanes']:
-            lane_id = lane['id']
+         for lane_id in sample['lanes']:
             lane_file_names = self._get_lane_file_names(
                lane_id,
                assemblies=assemblies,

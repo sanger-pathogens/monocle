@@ -162,6 +162,27 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     }
+
+   mock_filtered_samples      = [   {  'creation_datetime': '2020-04-29T11:03:35Z',
+                                       'lanes': ['fake_lane_id_1', 'fake_lane_id_2', 'fake_lane_id_3'],
+                                       'sample_id': 'fake_sample_id_1',
+                                       'inst_key': 'FakOne',
+                                       'public_name': 'SCN9A_1'
+                                       },
+                                    {  'creation_datetime': '2021-05-02T10:31:49Z',
+                                       'lanes': ['fake_lane_id_5'],
+                                       'sample_id': 'fake_sample_id_3',
+                                       'inst_key': 'FakTwo',
+                                       'public_name': 'SCN9A_3'
+                                       },
+                                    {  'creation_datetime': '2021-05-02T14:07:23Z',
+                                       'lanes': ['fake_lane_id_6'],
+                                       'sample_id': 'fake_sample_id_4',
+                                       'inst_key': 'FakTwo',
+                                       'public_name': 'SCN9A_4'
+                                       }
+                                    ]
+   
    mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           # note use of `None`, which should end up in CSV as ""
@@ -466,11 +487,8 @@ class MonocleDataTest(TestCase):
 
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs})
 
-      expected_samples = [
-         self.mock_seq_status['fake_sample_id_1'],
-         self.mock_seq_status['fake_sample_id_3'],
-         self.mock_seq_status['fake_sample_id_4']
-      ]
+      expected_samples = self.mock_filtered_samples
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
 
    def test_get_filtered_samples_accepts_empty_list(self):
@@ -486,11 +504,7 @@ class MonocleDataTest(TestCase):
 
       actual_samples = self.monocle_data.get_filtered_samples({'batches': inst_key_batch_date_pairs})
 
-      expected_samples = [
-         self.mock_seq_status['fake_sample_id_1'],
-         self.mock_seq_status['fake_sample_id_3'],
-         self.mock_seq_status['fake_sample_id_4']
-      ]
+      expected_samples = self.mock_filtered_samples
       self.assertEqual(expected_samples, actual_samples)
 
    @patch.object(Path, 'exists', return_value=True)
@@ -507,7 +521,7 @@ class MonocleDataTest(TestCase):
          samples, assemblies=True, annotations=False)
 
       expected_lane_files = [
-         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
+         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane}.contigs_spades.fa')
          for sample in samples if sample
          for lane in sample['lanes']]
       expected = {PUBLIC_NAME: expected_lane_files}
