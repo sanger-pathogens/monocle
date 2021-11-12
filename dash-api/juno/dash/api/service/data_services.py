@@ -487,10 +487,12 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters, include_in_silico=False):
+   def get_metadata(self, sample_filters, start_row=None, num_rows=20, include_in_silico=False):
       """
-      Pass sample filters dict (describes the filters applied in the front end).
-      Also pass flag indicating of in silico data should be retrieved and merged into the metadata.
+      Pass sample filters dict (describes the filters applied in the front end)
+      If pagination is wanted, pass the number of the starting row (first row is 1) and number of rows wanted;
+      if start_row is defined,  num_rows defaults to 20.
+      Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
       
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico data.  Metadta and in silico data are respresented with the same format:
@@ -513,6 +515,11 @@ class MonocleData:
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
       logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
+
+      if start_row is not None:
+         start = start_row-1
+         stop  = start + num_rows
+         filtered_samples = list(filtered_samples[start:stop])
             
       # the samples IDs can be used to get the sample metadata
       try:
@@ -522,7 +529,7 @@ class MonocleData:
          raise
       logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       metadata = self.metadata_source.get_metadata(sample_id_list)
-      
+         
       if include_in_silico:
          # in silco data must be retrieved using lane IDs
          lane_id_list = []

@@ -78,7 +78,9 @@ def get_metadata(body):
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters      = body['sample filters']
     include_in_silico   = body.get('in silico',False)
-    return call_jsonify( ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(sample_filters, include_in_silico) ), HTTPStatus.OK
+    start_row           = body.get('start row',None)
+    num_rows            = body.get('num rows',None)
+    return call_jsonify( ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(sample_filters, start_row=start_row, num_rows=num_rows, include_in_silico=include_in_silico) ), HTTPStatus.OK
 
 
 def bulk_download_info(body):

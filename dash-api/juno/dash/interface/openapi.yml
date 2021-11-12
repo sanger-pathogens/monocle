@@ -346,8 +346,18 @@ components:
         sample filters:
           $ref: "#/components/schemas/SampleFilters"
         in silico:
+          description: "Set this flag to true to include in silico data with the metadata"
           type: boolean
           default: false
+        start row:
+          description: "For pagination: the first row of metadata (starting at 1) to be returned"
+          type: integer
+          minimum: 1
+        num rows:
+          description: "For pagination: number of rows of metadata to be returned"
+          type: integer
+          default: 20
+          minimum: 1
 
     GetMetadataOutput:
       type: array
