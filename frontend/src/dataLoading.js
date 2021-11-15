@@ -76,6 +76,19 @@ export function getInstitutions(fetch) {
     "get_institutions", "institutions", fetch);
 }
 
+export function getSampleMetadata(instKeyBatchDatePairs, fetch) {
+  return fetchDashboardApiResource(
+    "get_metadata", null, fetch, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        "sample filters": {
+          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+        }
+      })
+    });
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);

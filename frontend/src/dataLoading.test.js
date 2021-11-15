@@ -4,6 +4,7 @@ import {
   getBulkDownloadUrls,
   getInstitutionStatus,
   getProjectProgress,
+  getSampleMetadata,
   getUserDetails
 } from "./dataLoading.js";
 
@@ -112,6 +113,21 @@ describe.each([
       ],
       dates: "21.08.21"
     }
+  },
+  {
+    fnName: "getSampleMetadata",
+    getResource: getSampleMetadata,
+    args: [INST_KEY_BATCH_DATE_PAIRS],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS }
+      })
+    },
+    expectedEndpoints: ["get_metadata"],
+    responsePayload: "as is",
+    expectedResult: "as is"
   },
   {
     fnName: "getUserDetails",
