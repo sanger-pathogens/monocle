@@ -667,7 +667,7 @@ class MonocleData:
       ]
       if not disable_public_name_fetch:
          sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
-      batch_samples = []
+      filtered_samples = []
       sequencing_status_data = deepcopy( self.get_sequencing_status() )
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
          inst_key         = this_inst_key_batch_date_pair['institution key']
@@ -692,9 +692,9 @@ class MonocleData:
                sample['inst_key']   = inst_key
                if not disable_public_name_fetch:
                   sample['public_name'] = sample_id_to_public_name[sample_id]
-               batch_samples.append(sample)
-      logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(batch_samples)))
-      return batch_samples
+               filtered_samples.append(sample)
+      logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
+      return filtered_samples
 
    def _get_sample_id_to_public_name_dict(self, institutions):
       sample_id_to_public_name = {}
