@@ -220,7 +220,7 @@ paths:
   /get_metadata:
     post:
       operationId: dash.api.routes.get_metadata
-      summary: "Return metadta for samples matching standard sample filters"
+      summary: "Return metadata for samples matching standard sample filters"
       parameters:
         - name: X-Remote-User
           in: header
