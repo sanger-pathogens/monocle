@@ -239,10 +239,10 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.assert_called_once_with(self.TEST_USER)
         data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
-                                                                              num_rows          = 20,
-                                                                              include_in_silico = False,
-                                                                              metadata_columns  = None,
-                                                                              in_silico_columns = None)
+                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
+                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              metadata_columns  = GetMetadataInputDefaults['metadata columns'],
+                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
