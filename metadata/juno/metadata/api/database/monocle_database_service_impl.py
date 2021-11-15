@@ -308,11 +308,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         return results
 
     def filter_samples_in(self, filters: dict) -> List:
+        """ Get sample ids where their columns' values are in specified filters """
         sample_ids = []
         with self.connector.get_connection() as con:
             for filter, values in filters.items():
-                str_values = ','.join(values)
-                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = "({})".format(str_values))
+                str_values = "('{}')".format(','.join(values))
+                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = str_values)
                 new_sample_ids = [row['sample_id'] for row in rs]
                 if len(sample_ids) > 0:
                     tmp_ids = [id for id in new_sample_ids if id in sample_ids]
@@ -331,7 +332,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
             for row in rs:
-                if len(sample_ids) == 0 or row['sample_id'] in sample_ids:
+                if len(filters) == 0 or row['sample_id'] in sample_ids:
                     results.append(
                         Metadata(
                             sanger_sample_id=row['sample_id'],
