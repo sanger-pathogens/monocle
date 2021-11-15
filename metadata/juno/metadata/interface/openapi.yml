@@ -143,13 +143,12 @@ paths:
       operationId: metadata.api.routes.get_samples
       summary: "Gather sample records"
       requestBody:
-        description: "A list of filters and associated values"
-        required: false
+        description: "A dictionary of filters with lists of values"
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Samples"
-              examples: "{\"serotypes\": [\"IV\"]}"
       responses:
         200:
           description: "The sample result set"
@@ -207,10 +206,15 @@ components:
 
     Samples:
       type: object
-      items:
+      additionalProperties:
         type: array
+        items:
+          type: string
         minItems: 1
       minItems: 0
+      example:
+        serotype: ["IA", "IV"]
+        isolation_source: ["human"]
 
     Institutions:
       type: array

@@ -36,7 +36,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
         fakeDB.get_samples = MagicMock(return_value=['sample1', 'sample2'])
-        under_test = mar.get_samples(fakeDB, {'serotype': ['IA']})
+        under_test = mar.get_samples({'serotype': ['IA']}, fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
@@ -47,7 +47,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
         fakeDB.get_samples = MagicMock(return_value=[])
-        under_test = mar.get_samples(fakeDB, {'serotype': ['IA']})
+        under_test = mar.get_samples({'serotype': ['IA']}, fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
