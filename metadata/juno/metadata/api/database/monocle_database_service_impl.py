@@ -174,7 +174,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin, vancomycin_method
                 FROM api_sample
                 WHERE
-                    :column IN :values""")
+                    :column IN :value""")
 
     DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
 
@@ -312,9 +312,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         sample_ids = []
         with self.connector.get_connection() as con:
             for filter, values in filters.items():
-                str_values = "('{}')".format(','.join(values))
-                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = str_values)
-                new_sample_ids = [row['sample_id'] for row in rs]
+                new_sample_ids = []
+                for value in values:
+                    rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, value = value)
+                    new_sample_ids.extend([row['sample_id'] for row in rs])
                 if len(sample_ids) > 0:
                     tmp_ids = [id for id in new_sample_ids if id in sample_ids]
                     sample_ids = tmp_ids
