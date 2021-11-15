@@ -487,11 +487,13 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters, start_row=None, num_rows=20, include_in_silico=False):
+   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False):
       """
       Pass sample filters dict (describes the filters applied in the front end)
       If pagination is wanted, pass the number of the starting row (first row is 1) and number of rows wanted;
-      if start_row is defined,  num_rows defaults to 20.
+      num_rows is ignored unless start_rows is defined
+      Optionally pass lists metadata_columns and in_silico_columns to specify which metadata
+      and in silico data (respectively) columns are returned.  Both defaults to returning all columns.
       Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
       
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
@@ -511,7 +513,6 @@ class MonocleData:
          ...
       ]
       """
-      
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
       logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
@@ -529,7 +530,7 @@ class MonocleData:
          raise
       logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       metadata = self.metadata_source.get_metadata(sample_id_list)
-         
+                  
       if include_in_silico:
          # in silco data must be retrieved using lane IDs
          lane_id_list = []
@@ -585,7 +586,21 @@ class MonocleData:
          # structure to be returned is array of dicts, one per sample, each with 'metadata' ('in silico' not required in this context)
          combined_metadata = [ {'metadata': m} for m in metadata ]
          
-   
+      # filtering metadata columns is done last, because some columns are needed in the processes above
+      if metadata_columns is not None or in_silico_columns is not None:
+         for this_row in combined_metadata:
+            if metadata_columns is not None:
+               metadata = this_row['metadata']
+               for this_column in list(metadata.keys()):
+                  if this_column not in metadata_columns:
+                     logging.debug("removing unwanted metadata column {}".format(this_column))
+                     del metadata[this_column]
+            if in_silico_columns is not None and 'in silico' in this_row:
+               in_silico = this_row['in silico']
+               for this_column in list(in_silico.keys()):
+                  if this_column not in in_silico_columns:
+                     del in_silico[this_column]
+      
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
       return combined_metadata
 
