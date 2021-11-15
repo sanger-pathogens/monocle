@@ -14,7 +14,7 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_samples(self) -> List[Institution]:
+    def get_samples(self, filters: dict) -> List[Institution]:
         """ Return a list of samples """
         pass
 

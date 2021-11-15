@@ -139,9 +139,17 @@ paths:
           description: "Institutions could not be gathered from database"
 
   /samples:
-    get:
+    post:
       operationId: metadata.api.routes.get_samples
-      summary: "Gather all sample records"
+      summary: "Gather sample records"
+      requestBody:
+        description: "A list of filters and associated values"
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Samples"
+              examples: "{\"serotypes\": [\"IV\"]}"
       responses:
         200:
           description: "The sample result set"
@@ -155,7 +163,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/Metadata"
         404:
-          description: "No data could be found for the given institutions"
+          description: "No data could be found for the given institutions or filters"
 
 
 components:
@@ -196,6 +204,13 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
+
+    Samples:
+      type: object
+      items:
+        type: array
+        minItems: 1
+      minItems: 0
 
     Institutions:
       type: array

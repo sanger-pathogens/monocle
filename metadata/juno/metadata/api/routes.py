@@ -155,9 +155,9 @@ def get_institution_names(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_samples(dao: MonocleDatabaseService):
+def get_samples(dao: MonocleDatabaseService, filters: dict):
     """ Download all samples and their metadata from the database """
-    samples = dao.get_samples()
+    samples = dao.get_samples(filters)
 
     result = convert_to_json({'samples': samples})
 

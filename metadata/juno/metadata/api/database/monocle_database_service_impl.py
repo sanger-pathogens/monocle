@@ -160,6 +160,22 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 FROM api_sample
                 ORDER BY sample_id""")
 
+    FILTER_SAMPLES_IN_SQL = text(""" \
+                SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
+                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
+                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
+                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
+                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
+                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
+                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
+                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
+                vancomycin, vancomycin_method
+                FROM api_sample
+                WHERE
+                    :column IN :values""")
+
     DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
 
     INSERT_OR_UPDATE_IN_SILICO_SQL = text(""" \
@@ -291,77 +307,95 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def get_samples(self) -> List[Metadata]:
+    def filter_samples_in(self, filters: dict) -> List:
+        sample_ids = []
+        with self.connector.get_connection() as con:
+            for filter, values in filters.items():
+                str_values = ','.join(values)
+                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = "({})".format(str_values))
+                new_sample_ids = [row['sample_id'] for row in rs]
+                if len(sample_ids) > 0:
+                    tmp_ids = [id for id in new_sample_ids if id in sample_ids]
+                    sample_ids = tmp_ids
+                else:
+                    sample_ids = new_sample_ids
+
+        return sample_ids
+
+    def get_samples(self, filters: dict) -> List[Metadata]:
         """ Retrieve all sample records """
         results = []
+        # TODO: Also consider other filters such as greater than/less than...
+        sample_ids = self.filter_samples_in(filters)
+
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
-
             for row in rs:
-                results.append(
-                    Metadata(
-                        sanger_sample_id=row['sample_id'],
-                        lane_id=row['lane_id'],
-                        submitting_institution=row['submitting_institution_id'],
-                        supplier_sample_name=row['supplier_sample_name'],
-                        public_name=row['public_name'],
-                        host_status=row['host_status'],
-                        study_name=row['study_name'],
-                        study_ref=row['study_ref'],
-                        selection_random=row['selection_random'],
-                        country=row['country'],
-                        county_state=row['county_state'],
-                        city=row['city'],
-                        collection_year=str(row['collection_year']),
-                        collection_month=str(row['collection_month']),
-                        collection_day=str(row['collection_day']),
-                        host_species=row['host_species'],
-                        gender=row['gender'],
-                        age_group=row['age_group'],
-                        age_years=str(row['age_years']),
-                        age_months=str(row['age_months']),
-                        age_weeks=str(row['age_weeks']),
-                        age_days=str(row['age_days']),
-                        disease_type=row['disease_type'],
-                        disease_onset=row['disease_onset'],
-                        isolation_source=row['isolation_source'],
-                        serotype=row['serotype'],
-                        serotype_method=row['serotype_method'],
-                        infection_during_pregnancy=row['infection_during_pregnancy'],
-                        maternal_infection_type=row['maternal_infection_type'],
-                        gestational_age_weeks=str(row['gestational_age_weeks']),
-                        birth_weight_gram=str(row['birthweight_gram']),
-                        apgar_score=str(row['apgar_score']),
-                        ceftizoxime=row['ceftizoxime'],
-                        ceftizoxime_method=row['ceftizoxime_method'],
-                        cefoxitin=row['cefoxitin'],
-                        cefoxitin_method=row['cefoxitin_method'],
-                        cefotaxime=row['cefotaxime'],
-                        cefotaxime_method=row['cefotaxime_method'],
-                        cefazolin=row['cefazolin'],
-                        cefazolin_method=row['cefazolin_method'],
-                        ampicillin=row['ampicillin'],
-                        ampicillin_method=row['ampicillin_method'],
-                        penicillin=row['penicillin'],
-                        penicillin_method=row['penicillin_method'],
-                        erythromycin=row['erythromycin'],
-                        erythromycin_method=row['erythromycin_method'],
-                        clindamycin=row['clindamycin'],
-                        clindamycin_method=row['clindamycin_method'],
-                        tetracycline=row['tetracycline'],
-                        tetracycline_method=row['tetracycline_method'],
-                        levofloxacin=row['levofloxacin'],
-                        levofloxacin_method=row['levofloxacin_method'],
-                        ciprofloxacin=row['ciprofloxacin'],
-                        ciprofloxacin_method=row['ciprofloxacin_method'],
-                        daptomycin=row['daptomycin'],
-                        daptomycin_method=row['daptomycin_method'],
-                        vancomycin=row['vancomycin'],
-                        vancomycin_method=row['vancomycin_method'],
-                        linezolid=row['linezolid'],
-                        linezolid_method=row['linezolid_method']
+                if len(sample_ids) == 0 or row['sample_id'] in sample_ids:
+                    results.append(
+                        Metadata(
+                            sanger_sample_id=row['sample_id'],
+                            lane_id=row['lane_id'],
+                            submitting_institution=row['submitting_institution_id'],
+                            supplier_sample_name=row['supplier_sample_name'],
+                            public_name=row['public_name'],
+                            host_status=row['host_status'],
+                            study_name=row['study_name'],
+                            study_ref=row['study_ref'],
+                            selection_random=row['selection_random'],
+                            country=row['country'],
+                            county_state=row['county_state'],
+                            city=row['city'],
+                            collection_year=str(row['collection_year']),
+                            collection_month=str(row['collection_month']),
+                            collection_day=str(row['collection_day']),
+                            host_species=row['host_species'],
+                            gender=row['gender'],
+                            age_group=row['age_group'],
+                            age_years=str(row['age_years']),
+                            age_months=str(row['age_months']),
+                            age_weeks=str(row['age_weeks']),
+                            age_days=str(row['age_days']),
+                            disease_type=row['disease_type'],
+                            disease_onset=row['disease_onset'],
+                            isolation_source=row['isolation_source'],
+                            serotype=row['serotype'],
+                            serotype_method=row['serotype_method'],
+                            infection_during_pregnancy=row['infection_during_pregnancy'],
+                            maternal_infection_type=row['maternal_infection_type'],
+                            gestational_age_weeks=str(row['gestational_age_weeks']),
+                            birth_weight_gram=str(row['birthweight_gram']),
+                            apgar_score=str(row['apgar_score']),
+                            ceftizoxime=row['ceftizoxime'],
+                            ceftizoxime_method=row['ceftizoxime_method'],
+                            cefoxitin=row['cefoxitin'],
+                            cefoxitin_method=row['cefoxitin_method'],
+                            cefotaxime=row['cefotaxime'],
+                            cefotaxime_method=row['cefotaxime_method'],
+                            cefazolin=row['cefazolin'],
+                            cefazolin_method=row['cefazolin_method'],
+                            ampicillin=row['ampicillin'],
+                            ampicillin_method=row['ampicillin_method'],
+                            penicillin=row['penicillin'],
+                            penicillin_method=row['penicillin_method'],
+                            erythromycin=row['erythromycin'],
+                            erythromycin_method=row['erythromycin_method'],
+                            clindamycin=row['clindamycin'],
+                            clindamycin_method=row['clindamycin_method'],
+                            tetracycline=row['tetracycline'],
+                            tetracycline_method=row['tetracycline_method'],
+                            levofloxacin=row['levofloxacin'],
+                            levofloxacin_method=row['levofloxacin_method'],
+                            ciprofloxacin=row['ciprofloxacin'],
+                            ciprofloxacin_method=row['ciprofloxacin_method'],
+                            daptomycin=row['daptomycin'],
+                            daptomycin_method=row['daptomycin_method'],
+                            vancomycin=row['vancomycin'],
+                            vancomycin_method=row['vancomycin_method'],
+                            linezolid=row['linezolid'],
+                            linezolid_method=row['linezolid_method']
+                        )
                     )
-                )
 
         return results
 
