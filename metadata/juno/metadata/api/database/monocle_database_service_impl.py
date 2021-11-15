@@ -160,7 +160,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 FROM api_sample
                 ORDER BY sample_id""")
 
-    FILTER_SAMPLES_EQUALS_SQL = text(""" \
+    FILTER_SAMPLES_IN_SQL = text(""" \
                 SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
                 ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
@@ -174,7 +174,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin, vancomycin_method
                 FROM api_sample
                 WHERE
-                    :column = :value""")
+                    :column IN :values""")
 
     DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
 
@@ -313,9 +313,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             for filter, values in filters.items():
                 new_sample_ids = []
-                for value in values:
-                    rs = con.execute(self.FILTER_SAMPLES_EQUALS_SQL, column = filter, value = value)
-                    new_sample_ids.extend([row['sample_id'] for row in rs])
+                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = tuple(values))
+                new_sample_ids.extend([row['sample_id'] for row in rs])
                 if len(sample_ids) > 0:
                     tmp_ids = [id for id in new_sample_ids if id in sample_ids]
                     sample_ids = tmp_ids
