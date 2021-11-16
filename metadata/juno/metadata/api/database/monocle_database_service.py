@@ -14,8 +14,13 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_samples(self, filters: dict) -> List[Institution]:
+    def get_samples(self) -> List[Metadata]:
         """ Return a list of samples """
+        pass
+
+    @abstractmethod
+    def get_filtered_samples(self, filters: dict) -> List:
+        """ Return a list of samples ids"""
         pass
 
     @abstractmethod

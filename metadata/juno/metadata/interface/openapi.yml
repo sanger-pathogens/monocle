@@ -141,14 +141,7 @@ paths:
   /samples:
     post:
       operationId: metadata.api.routes.get_samples
-      summary: "Gather sample records"
-      requestBody:
-        description: "A dictionary of filters with lists of values"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Samples"
+      summary: "Gather all sample records"
       responses:
         200:
           description: "The sample result set"
@@ -164,6 +157,26 @@ paths:
         404:
           description: "No data could be found for the given institutions or filters"
 
+  /filters:
+    post:
+      operationId: metadata.api.routes.get_filtered_samples
+      summary: "Gather filtered sample records"
+      requestBody:
+        description: "A dictionary of filters with lists of values"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Filters"
+      responses:
+        200:
+          description: "List of sample ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Samples"
+        404:
+          description: "No data could be found for the given filters"
 
 components:
   schemas:
@@ -204,7 +217,7 @@ components:
           description: "The value of the metadata field"
           readOnly: true
 
-    Samples:
+    Filters:
       type: object
       additionalProperties:
         type: array
@@ -223,6 +236,13 @@ components:
         minLength: 1
         #maxLength: 255
         #pattern: '^[a-zA-Z0-9]*$'
+      minItems: 1
+
+    Samples:
+      type: array
+      items:
+        type: string
+        minLength: 1
       minItems: 1
 
     Metadata:

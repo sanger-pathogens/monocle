@@ -155,16 +155,32 @@ def get_institution_names(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_samples(body: dict, dao: MonocleDatabaseService):
+def get_samples(dao: MonocleDatabaseService):
     """ Download all samples and their metadata from the database """
-    filters = body
     try:
-        samples = dao.get_samples(filters)
+        samples = dao.get_samples()
     except ValueError as ve:
         logger.error(str(ve))
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
     result = convert_to_json({'samples': samples})
+
+    if len(samples) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_filtered_samples(body: dict, dao: MonocleDatabaseService):
+    """ Download sample ids from the database """
+    filters = body
+    try:
+        samples = dao.get_filtered_samples(filters)
+    except ValueError as ve:
+        logger.error(str(ve))
+        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json(samples)
 
     if len(samples) > 0:
         return result, HTTP_SUCCEEDED_STATUS

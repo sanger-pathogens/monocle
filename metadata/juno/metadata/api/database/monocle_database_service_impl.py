@@ -307,96 +307,98 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def filter_samples_in(self, filters: dict) -> List:
+    def get_filtered_samples(self, filters: dict) -> List:
         """ Get sample ids where their columns' values are in specified filters """
+        # TODO: Also consider other filters such as greater than/less than...
         sample_ids = []
         with self.connector.get_connection() as con:
-            for filter, values in filters.items():
-                new_sample_ids = []
-                rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = tuple(values))
-                new_sample_ids.extend([row['sample_id'] for row in rs])
-                if len(sample_ids) > 0:
-                    tmp_ids = [id for id in new_sample_ids if id in sample_ids]
-                    sample_ids = tmp_ids
-                else:
-                    sample_ids = new_sample_ids
+            if len(filters) > 0:
+                for filter, values in filters.items():
+                    new_sample_ids = []
+                    rs = con.execute(self.FILTER_SAMPLES_IN_SQL, column = filter, values = tuple(values))
+                    new_sample_ids.extend([row['sample_id'] for row in rs])
+                    if len(sample_ids) > 0:
+                        tmp_ids = [id for id in new_sample_ids if id in sample_ids]
+                        sample_ids = tmp_ids
+                    else:
+                        sample_ids = new_sample_ids
+            else:
+                rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
+                sample_ids = [row['sample_id'] for row in rs]
 
         return sample_ids
 
-    def get_samples(self, filters: dict) -> List[Metadata]:
+    def get_samples(self) -> List[Metadata]:
         """ Retrieve all sample records """
         results = []
-        # TODO: Also consider other filters such as greater than/less than...
-        sample_ids = self.filter_samples_in(filters)
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
             for row in rs:
-                if len(filters) == 0 or row['sample_id'] in sample_ids:
-                    results.append(
-                        Metadata(
-                            sanger_sample_id=row['sample_id'],
-                            lane_id=row['lane_id'],
-                            submitting_institution=row['submitting_institution_id'],
-                            supplier_sample_name=row['supplier_sample_name'],
-                            public_name=row['public_name'],
-                            host_status=row['host_status'],
-                            study_name=row['study_name'],
-                            study_ref=row['study_ref'],
-                            selection_random=row['selection_random'],
-                            country=row['country'],
-                            county_state=row['county_state'],
-                            city=row['city'],
-                            collection_year=str(row['collection_year']),
-                            collection_month=str(row['collection_month']),
-                            collection_day=str(row['collection_day']),
-                            host_species=row['host_species'],
-                            gender=row['gender'],
-                            age_group=row['age_group'],
-                            age_years=str(row['age_years']),
-                            age_months=str(row['age_months']),
-                            age_weeks=str(row['age_weeks']),
-                            age_days=str(row['age_days']),
-                            disease_type=row['disease_type'],
-                            disease_onset=row['disease_onset'],
-                            isolation_source=row['isolation_source'],
-                            serotype=row['serotype'],
-                            serotype_method=row['serotype_method'],
-                            infection_during_pregnancy=row['infection_during_pregnancy'],
-                            maternal_infection_type=row['maternal_infection_type'],
-                            gestational_age_weeks=str(row['gestational_age_weeks']),
-                            birth_weight_gram=str(row['birthweight_gram']),
-                            apgar_score=str(row['apgar_score']),
-                            ceftizoxime=row['ceftizoxime'],
-                            ceftizoxime_method=row['ceftizoxime_method'],
-                            cefoxitin=row['cefoxitin'],
-                            cefoxitin_method=row['cefoxitin_method'],
-                            cefotaxime=row['cefotaxime'],
-                            cefotaxime_method=row['cefotaxime_method'],
-                            cefazolin=row['cefazolin'],
-                            cefazolin_method=row['cefazolin_method'],
-                            ampicillin=row['ampicillin'],
-                            ampicillin_method=row['ampicillin_method'],
-                            penicillin=row['penicillin'],
-                            penicillin_method=row['penicillin_method'],
-                            erythromycin=row['erythromycin'],
-                            erythromycin_method=row['erythromycin_method'],
-                            clindamycin=row['clindamycin'],
-                            clindamycin_method=row['clindamycin_method'],
-                            tetracycline=row['tetracycline'],
-                            tetracycline_method=row['tetracycline_method'],
-                            levofloxacin=row['levofloxacin'],
-                            levofloxacin_method=row['levofloxacin_method'],
-                            ciprofloxacin=row['ciprofloxacin'],
-                            ciprofloxacin_method=row['ciprofloxacin_method'],
-                            daptomycin=row['daptomycin'],
-                            daptomycin_method=row['daptomycin_method'],
-                            vancomycin=row['vancomycin'],
-                            vancomycin_method=row['vancomycin_method'],
-                            linezolid=row['linezolid'],
-                            linezolid_method=row['linezolid_method']
-                        )
+                results.append(
+                    Metadata(
+                        sanger_sample_id=row['sample_id'],
+                        lane_id=row['lane_id'],
+                        submitting_institution=row['submitting_institution_id'],
+                        supplier_sample_name=row['supplier_sample_name'],
+                        public_name=row['public_name'],
+                        host_status=row['host_status'],
+                        study_name=row['study_name'],
+                        study_ref=row['study_ref'],
+                        selection_random=row['selection_random'],
+                        country=row['country'],
+                        county_state=row['county_state'],
+                        city=row['city'],
+                        collection_year=str(row['collection_year']),
+                        collection_month=str(row['collection_month']),
+                        collection_day=str(row['collection_day']),
+                        host_species=row['host_species'],
+                        gender=row['gender'],
+                        age_group=row['age_group'],
+                        age_years=str(row['age_years']),
+                        age_months=str(row['age_months']),
+                        age_weeks=str(row['age_weeks']),
+                        age_days=str(row['age_days']),
+                        disease_type=row['disease_type'],
+                        disease_onset=row['disease_onset'],
+                        isolation_source=row['isolation_source'],
+                        serotype=row['serotype'],
+                        serotype_method=row['serotype_method'],
+                        infection_during_pregnancy=row['infection_during_pregnancy'],
+                        maternal_infection_type=row['maternal_infection_type'],
+                        gestational_age_weeks=str(row['gestational_age_weeks']),
+                        birth_weight_gram=str(row['birthweight_gram']),
+                        apgar_score=str(row['apgar_score']),
+                        ceftizoxime=row['ceftizoxime'],
+                        ceftizoxime_method=row['ceftizoxime_method'],
+                        cefoxitin=row['cefoxitin'],
+                        cefoxitin_method=row['cefoxitin_method'],
+                        cefotaxime=row['cefotaxime'],
+                        cefotaxime_method=row['cefotaxime_method'],
+                        cefazolin=row['cefazolin'],
+                        cefazolin_method=row['cefazolin_method'],
+                        ampicillin=row['ampicillin'],
+                        ampicillin_method=row['ampicillin_method'],
+                        penicillin=row['penicillin'],
+                        penicillin_method=row['penicillin_method'],
+                        erythromycin=row['erythromycin'],
+                        erythromycin_method=row['erythromycin_method'],
+                        clindamycin=row['clindamycin'],
+                        clindamycin_method=row['clindamycin_method'],
+                        tetracycline=row['tetracycline'],
+                        tetracycline_method=row['tetracycline_method'],
+                        levofloxacin=row['levofloxacin'],
+                        levofloxacin_method=row['levofloxacin_method'],
+                        ciprofloxacin=row['ciprofloxacin'],
+                        ciprofloxacin_method=row['ciprofloxacin_method'],
+                        daptomycin=row['daptomycin'],
+                        daptomycin_method=row['daptomycin_method'],
+                        vancomycin=row['vancomycin'],
+                        vancomycin_method=row['vancomycin_method'],
+                        linezolid=row['linezolid'],
+                        linezolid_method=row['linezolid_method']
                     )
+                )
 
         return results
 
