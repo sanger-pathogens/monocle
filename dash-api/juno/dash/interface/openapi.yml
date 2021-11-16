@@ -359,7 +359,7 @@ components:
           default: 20
           minimum: 1
         metadata columns:
-          description: "List of metadata columns that should be returned (as defined by the Metadata object)"
+          description: "List of metadata columns that should be returned (as defined by the Metadata object).   Pass ['_ALL'] to get all columns."
           type: array
           items:
             type: string
@@ -373,7 +373,7 @@ components:
             - "host_species"
             - "isolation_source"
         in silico columns:
-          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object)"
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object).   Pass ['_ALL'] to get all columns."
           type: array
           items:
             type: string
