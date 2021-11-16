@@ -507,11 +507,17 @@ class MonocleDataTest(TestCase):
 
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
-      mock_metadata_fetch.return_value = deepcopy(self.mock_metadata) # work on a copy, as metadta will be modified
+      mock_metadata_fetch.return_value = deepcopy(self.mock_metadata) # work on a copy, as metadata will be modified
       filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
                                                                   metadata_columns=['public_name'])
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_filtered, filtered_samples_metadata)
+      
+   def test_get_metadata_pagination_reject_missing_num_rows(self):
+      with self.assertRaises(AssertionError):
+         filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
+                                                                     metadata_columns=['public_name'],
+                                                                     start_row=2)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -522,7 +528,7 @@ class MonocleDataTest(TestCase):
                                                                   metadata_columns=['public_name'],
                                                                   in_silico_columns=["some_in_silico_thing"],
                                                                   include_in_silico=True)
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata)
 
    @patch.object(SampleMetadata, 'get_samples')

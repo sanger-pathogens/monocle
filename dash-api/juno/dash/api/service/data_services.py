@@ -490,8 +490,8 @@ class MonocleData:
    def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False):
       """
       Pass sample filters dict (describes the filters applied in the front end)
-      If pagination is wanted, pass the number of the starting row (first row is 1) and number of rows wanted;
-      num_rows is ignored unless start_rows is defined
+      If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
+      num_rows is ignored unless start_rows is defined. Passing start_row without num_rows is an error.
       Optionally pass lists metadata_columns and in_silico_columns to specify which metadata
       and in silico data (respectively) columns are returned.  Both defaults to returning all columns.
       Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
@@ -515,12 +515,13 @@ class MonocleData:
       """
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
+      logging.info("{}.get_filtered_samples returned {} samples".format(__class__.__name__,len(filtered_samples)))
       logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
-
+      # if paginating, take a slice of the samples
       if start_row is not None:
-         start = start_row-1
-         stop  = start + num_rows
-         filtered_samples = list(filtered_samples[start:stop])
+         assert num_rows is not None, "{} must be passed start_rows and num_rows, or neither.".format(__class__.__name__)
+         filtered_samples = list(filtered_samples[ (start_row-1) : ((start_row -1) + num_rows) ])
+      logging.info("pagination (start {}, num {}) working with {} samples".format(__class__.__name__,start_row,num_rows,len(filtered_samples)))
             
       # the samples IDs can be used to get the sample metadata
       try:
@@ -531,77 +532,95 @@ class MonocleData:
       logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       metadata = self.metadata_source.get_metadata(sample_id_list)
                   
+      # combined_metadata is the structure to be returned
+      combined_metadata = [ {'metadata': m} for m in metadata ]
       if include_in_silico:
-         # in silco data must be retrieved using lane IDs
-         lane_id_list = []
-         # also need to track which lane(s) are associated with each sample
-         sample_to_lanes_lookup = {}
-         for this_sample in filtered_samples:
-            sample_to_lanes_lookup[this_sample['sample_id']] = []
-            try:
-               # remember, some samples may legitimately have no lanes
-               for this_lane_id in this_sample['lanes']:
-                  if this_lane_id is not None:
-                     lane_id_list.append(this_lane_id)
-                     sample_to_lanes_lookup[this_sample['sample_id']].append(this_lane_id)
-            except KeyError:
-               logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
-               raise
-         in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)   
-         logging.debug("{}.metadata_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
-         lane_to_in_silico_lookup = {}
-         for this_in_silico_data in in_silico_data:
-            try:
-               lane_to_in_silico_lookup[this_in_silico_data['lane_id']['value']] = this_in_silico_data
-            except KeyError:
-               logging.error("{}.metadata_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
-               raise
-         
-         # structure to be returned is array of dicts, one per sample, each with 'metadata' and 'in silico'
-         combined_metadata = []
-         for this_sample_metadata in metadata:
-            this_sample_id = None
-            try:
-               this_sample_id = this_sample_metadata['sanger_sample_id']['value']
-            except KeyError:
-               logging.error("{}.metadata_source.get_metadata returned one or more samples without a sample ID (expected 'sanger_sample_id'/'value' keys)".format(__class__.__name__))
-               raise
-            combined_metadata_item = {'metadata': this_sample_metadata}
-            # now get in silico data for this sample's lane(s)
-            # some samples may legitimately have no lanes
-            for this_lane_id in sample_to_lanes_lookup.get(this_sample_id, []):
-               # some lanes may legitimately have no in silico data
-               this_lane_in_silico_data = lane_to_in_silico_lookup.get(this_lane_id, None)
-               if this_lane_in_silico_data is not None:
-                  if 'in silico' in combined_metadata_item:
-                     message = "sample {} has more than one lane with in silico data, which is not supported".format(this_sample_id)
-                     logging.error(message)
-                     raise ValueError(message)
-                  else:
-                     combined_metadata_item['in silico'] = this_lane_in_silico_data
-            combined_metadata.append(combined_metadata_item)
-      
-      # else == if not include_in_silico
-      else:
-         # structure to be returned is array of dicts, one per sample, each with 'metadata' ('in silico' not required in this context)
-         combined_metadata = [ {'metadata': m} for m in metadata ]
-         
+         combined_metadata = self._merge_in_silico_data_into_combined_metadata(filtered_samples, combined_metadata)
+
       # filtering metadata columns is done last, because some columns are needed in the processes above
       if metadata_columns is not None or in_silico_columns is not None:
-         for this_row in combined_metadata:
-            if metadata_columns is not None:
-               metadata = this_row['metadata']
-               for this_column in list(metadata.keys()):
-                  if this_column not in metadata_columns:
-                     logging.debug("removing unwanted metadata column {}".format(this_column))
-                     del metadata[this_column]
-            if in_silico_columns is not None and 'in silico' in this_row:
-               in_silico = this_row['in silico']
-               for this_column in list(in_silico.keys()):
-                  if this_column not in in_silico_columns:
-                     del in_silico[this_column]
+         combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
       
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
+      return combined_metadata
+
+   def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
+      """
+      Pass
+      - filtered samples structure (as constructed by `get_filtered_samples()`)
+      - combined metadata structure (of the type `get_metadata()` creates and returns) but which contains
+      only a `metadata` key for each sample
+      
+      Retrieves _in silico_ data from the metadta API, and inserts it into the combined metadata structure
+      
+      Returns the combined metadata structure
+      """
+      # in silco data must be retrieved using lane IDs
+      lane_id_list = []
+      # also need to track which lane(s) are associated with each sample
+      sample_to_lanes_lookup = {}
+      for this_sample in filtered_samples:
+         sample_to_lanes_lookup[this_sample['sample_id']] = []
+         try:
+            # remember, some samples may legitimately have no lanes
+            for this_lane_id in this_sample['lanes']:
+               if this_lane_id is not None:
+                  lane_id_list.append(this_lane_id)
+                  sample_to_lanes_lookup[this_sample['sample_id']].append(this_lane_id)
+         except KeyError:
+            logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
+            raise
+      in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)   
+      logging.debug("{}.metadata_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
+      lane_to_in_silico_lookup = {}
+      for this_in_silico_data in in_silico_data:
+         try:
+            lane_to_in_silico_lookup[this_in_silico_data['lane_id']['value']] = this_in_silico_data
+         except KeyError:
+            logging.error("{}.metadata_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
+            raise
+      
+      for combined_metadata_item in combined_metadata:
+         this_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
+         # now get in silico data for this sample's lane(s)
+         # some samples may legitimately have no lanes
+         for this_lane_id in sample_to_lanes_lookup.get(this_sample_id, []):
+            # some lanes may legitimately have no in silico data
+            this_lane_in_silico_data = lane_to_in_silico_lookup.get(this_lane_id, None)
+            if this_lane_in_silico_data is not None:
+               if 'in silico' in combined_metadata_item:
+                  message = "sample {} has more than one lane with in silico data, which is not supported".format(this_sample_id)
+                  logging.error(message)
+                  raise ValueError(message)
+               else:
+                  combined_metadata_item['in silico'] = this_lane_in_silico_data
+         
+      return combined_metadata
+   
+   def _filter_combined_metadata_columns(self, combined_metadata, metadata_columns, in_silico_columns):
+      """
+      Pass
+      - combined metadata structure (of the type `get_metadata()` creates and returns)
+      - a list of metadata columns
+      - a list of in silico data columns
+      All columns that are _not_ in the column lists will be removed from the combined metadata.
+      (Pass `None` in place of a list if metadta and/or in silico columns should *not* be filtered).
+
+      Returns the (probably modified) combined metadata structure
+      """
+      for this_sample in combined_metadata:
+         if metadata_columns is not None:
+            metadata = this_sample['metadata']
+            for this_column in list(metadata.keys()):
+               if this_column not in metadata_columns:
+                  logging.debug("removing unwanted metadata column {}".format(this_column))
+                  del metadata[this_column]
+         # some samples will legitimately have no in silico data
+         if in_silico_columns is not None and 'in silico' in this_sample:
+            in_silico = this_sample['in silico']
+            for this_column in list(in_silico.keys()):
+               if this_column not in in_silico_columns:
+                  del in_silico[this_column]
       return combined_metadata
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
