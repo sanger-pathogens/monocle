@@ -227,7 +227,6 @@ components:
       minItems: 0
       example:
         serotype: ["IA", "IV"]
-        isolation_source: ["human"]
 
     Institutions:
       type: array

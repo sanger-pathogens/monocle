@@ -214,7 +214,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_filtered_samples(self) -> None:
         self.connection.execute.return_value = [
-            dict(sample_id='9999STDY8113123',
+                dict(sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution_id='UniversityA',
                 supplier_sample_name='SUPPLIER_1',
@@ -274,7 +274,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 vancomycin_method='method13',
                 linezolid='14',
                 linezolid_method='method14')
-            ]
+        ]
         samples_ids = self.under_test.get_filtered_samples({'serotype': ['IV']})
         self.assertEqual(samples_ids, ['9999STDY8113123'])
 
