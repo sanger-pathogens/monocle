@@ -162,6 +162,27 @@ class MonocleDataTest(TestCase):
                                                                         ]
                                                             },
                                     }
+
+   mock_filtered_samples      = [   {  'creation_datetime': '2020-04-29T11:03:35Z',
+                                       'lanes': ['fake_lane_id_1', 'fake_lane_id_2', 'fake_lane_id_3'],
+                                       'sample_id': 'fake_sample_id_1',
+                                       'inst_key': 'FakOne',
+                                       'public_name': 'SCN9A_1'
+                                       },
+                                    {  'creation_datetime': '2021-05-02T10:31:49Z',
+                                       'lanes': ['fake_lane_id_5'],
+                                       'sample_id': 'fake_sample_id_3',
+                                       'inst_key': 'FakTwo',
+                                       'public_name': 'SCN9A_3'
+                                       },
+                                    {  'creation_datetime': '2021-05-02T14:07:23Z',
+                                       'lanes': ['fake_lane_id_6'],
+                                       'sample_id': 'fake_sample_id_4',
+                                       'inst_key': 'FakTwo',
+                                       'public_name': 'SCN9A_4'
+                                       }
+                                    ]
+   
    mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           # note use of `None`, which should end up in CSV as ""
@@ -172,11 +193,11 @@ class MonocleDataTest(TestCase):
                                        {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_3"     },
+                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
                                           "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_3"  },
                                           "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
                                           "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
@@ -193,6 +214,30 @@ class MonocleDataTest(TestCase):
                                                    "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
                                                    }
                                              ]
+
+   mock_combined_metadata                    = [   {  "metadata":    mock_metadata[0]
+                                                      },
+                                                   {  "metadata":    mock_metadata[1],
+                                                      }
+                                                   ]
+   mock_combined_metadata_plus_in_silico     = [   {  "metadata":    mock_metadata[0],
+                                                      "in silico":   mock_in_silico_data[0]
+                                                      },
+                                                   {  "metadata":    mock_metadata[1],
+                                                      }
+                                                   ]
+   mock_combined_metadata_filtered           = [   {  "metadata":    {"public_name": mock_metadata[0]["public_name"]}
+                                                      },
+                                                   {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
+                                                      }
+                                                   ]
+   mock_combined_metadata_in_silico_filtered = [   {  "metadata":    {"public_name": mock_metadata[0]["public_name"]},
+                                                      "in silico":   {"some_in_silico_thing": mock_in_silico_data[0]["some_in_silico_thing"]}
+                                                      },
+                                                   {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
+                                                      }
+                                                   ]
+                                                
 
    # these are invalid because the lane ID appears twice:  pandas merge should catch this in validation
    mock_invalid_metadata      =     [  mock_metadata[0], mock_metadata[1], mock_metadata[0] ]
@@ -300,7 +345,6 @@ class MonocleDataTest(TestCase):
       self.monocle_data.metadata_source.dl_client.set_up(self.test_config)
       # load mock data
       self.get_mock_data()
-      
  
    def test_init(self):
       self.assertIsInstance(self.monocle_data, MonocleData)
@@ -444,6 +488,48 @@ class MonocleDataTest(TestCase):
          'size': format_file_size(expected_byte_size),
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
+      
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata(self, mock_metadata_fetch):
+      mock_metadata_fetch.return_value = self.mock_metadata
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata)
+
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
+      mock_metadata_fetch.return_value = deepcopy(self.mock_metadata) # work on a copy, as metadata will be modified
+      filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
+                                                                  metadata_columns=['public_name'])
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_filtered, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata_filtered, filtered_samples_metadata)
+      
+   def test_get_metadata_pagination_reject_missing_num_rows(self):
+      with self.assertRaises(AssertionError):
+         filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
+                                                                     metadata_columns=['public_name'],
+                                                                     start_row=2)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_plus_in_silico_filtered_columns(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      mock_metadata_fetch.return_value       = deepcopy(self.mock_metadata) # work on a copy, as metadata will be modified
+      mock_in_silico_data_fetch.return_value = deepcopy(self.mock_in_silico_data) # work on a copy, as metadata will be modified
+      filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
+                                                                  metadata_columns=['public_name'],
+                                                                  in_silico_columns=["some_in_silico_thing"],
+                                                                  include_in_silico=True)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata)
 
    @patch.object(SampleMetadata, 'get_samples')
    def test_get_filtered_samples(self, get_sample_metadata_mock):
@@ -451,11 +537,8 @@ class MonocleDataTest(TestCase):
 
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs})
 
-      expected_samples = [
-         self.mock_seq_status['fake_sample_id_1'],
-         self.mock_seq_status['fake_sample_id_3'],
-         self.mock_seq_status['fake_sample_id_4']
-      ]
+      expected_samples = self.mock_filtered_samples
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
 
    def test_get_filtered_samples_accepts_empty_list(self):
@@ -471,11 +554,7 @@ class MonocleDataTest(TestCase):
 
       actual_samples = self.monocle_data.get_filtered_samples({'batches': inst_key_batch_date_pairs})
 
-      expected_samples = [
-         self.mock_seq_status['fake_sample_id_1'],
-         self.mock_seq_status['fake_sample_id_3'],
-         self.mock_seq_status['fake_sample_id_4']
-      ]
+      expected_samples = self.mock_filtered_samples
       self.assertEqual(expected_samples, actual_samples)
 
    @patch.object(Path, 'exists', return_value=True)
@@ -492,7 +571,7 @@ class MonocleDataTest(TestCase):
          samples, assemblies=True, annotations=False)
 
       expected_lane_files = [
-         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane["id"]}.contigs_spades.fa')
+         PurePath(self.mock_inst_view_dir, INSTITUTION_KEY, PUBLIC_NAME, f'{lane}.contigs_spades.fa')
          for sample in samples if sample
          for lane in sample['lanes']]
       expected = {PUBLIC_NAME: expected_lane_files}

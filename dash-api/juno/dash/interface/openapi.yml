@@ -116,7 +116,7 @@ paths:
   /bulk_download_info:
     post:
       operationId: dash.api.routes.bulk_download_info
-      summary: "Return information on expected bulk download based on selected batches and data types"
+      summary: "Return information on expected bulk download based on standard sample filters and data types"
       parameters:
         - name: X-Remote-User
           in: header
@@ -143,7 +143,7 @@ paths:
   /bulk_download_urls:
     post:
       operationId: dash.api.routes.bulk_download_urls
-      summary: "Return download links corresponding to selected batches and data types"
+      summary: "Return download links corresponding to standard sample filters and data types"
       parameters:
         - name: X-Remote-User
           in: header
@@ -216,7 +216,34 @@ paths:
                       $ref: "#/components/schemas/Institution"
         403:
           description: "Authorization information is missing or invalid."
-
+          
+  /get_metadata:
+    post:
+      operationId: dash.api.routes.get_metadata
+      summary: "Return metadata for samples matching standard sample filters"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetMetadataInput"
+      responses:
+        200:
+          description: "The operation was successful. The following data format will be returned..."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetMetadataOutput"
+        403:
+          description: "Authorization information is missing or invalid."
+          
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download
@@ -307,6 +334,443 @@ components:
           items:
             $ref: "#/components/schemas/Serotype"
 
+    Serotype:
+      type: string
+      example: "IV"
+      
+    GetMetadataInput:
+      type: object
+      required:
+        - sample filters
+      properties:
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+        in silico:
+          description: "Set this flag to true to include in silico data with the metadata"
+          type: boolean
+          default: false
+        start row:
+          description: "For pagination: the first row of metadata (starting at 1) to be returned"
+          type: integer
+          minimum: 1
+        num rows:
+          description: "For pagination: number of rows of metadata to be returned"
+          type: integer
+          default: 20
+          minimum: 1
+        metadata columns:
+          description: "List of metadata columns that should be returned (as defined by the Metadata object).   Pass ['_ALL'] to get all columns."
+          type: array
+          items:
+            type: string
+          default:
+            - "submitting_institution"
+            - "public_name"
+            - "host_status"
+            - "selection_random"
+            - "country"
+            - "collection_year"
+            - "host_species"
+            - "isolation_source"
+        in silico columns:
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object).   Pass ['_ALL'] to get all columns."
+          type: array
+          items:
+            type: string
+          default:
+            - "ST"
+
+    GetMetadataOutput:
+      type: array
+      items:
+        $ref: "#/components/schemas/CombinedSampleMetadata"
+    
+    CombinedSampleMetadata:
+      type: object
+      description: "Sample manifest metadata plus in silico data (may be extended to inclide QC data in future)"
+      required:
+        - metadata
+      properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        in silico:
+          $ref: "#/components/schemas/InSilicoData"
+          
+    Metadata:
+      type: object
+      required:
+        - "sanger_sample_id"
+        - "lane_id"
+        - "submitting_institution"
+        - "supplier_sample_name"
+        - "public_name"
+        - "host_status"
+        - "study_name"
+        - "study_ref"
+        - "selection_random"
+        - "country"
+        - "county_state"
+        - "city"
+        - "collection_year"
+        - "collection_month"
+        - "collection_day"
+        - "host_species"
+        - "gender"
+        - "age_group"
+        - "age_years"
+        - "age_months"
+        - "age_weeks"
+        - "age_days"
+        - "disease_type"
+        - "disease_onset"
+        - "isolation_source"
+        - "serotype"
+        - "serotype_method"
+        - "infection_during_pregnancy"
+        - "maternal_infection_type"
+        - "gestational_age_weeks"
+        - "birth_weight_gram"
+        - "apgar_score"
+        - "ceftizoxime"
+        - "ceftizoxime_method"
+        - "cefoxitin"
+        - "cefoxitin_method"
+        - "cefotaxime"
+        - "cefotaxime_method"
+        - "cefazolin"
+        - "cefazolin_method"
+        - "ampicillin"
+        - "ampicillin_method"
+        - "penicillin"
+        - "penicillin_method"
+        - "erythromycin"
+        - "erythromycin_method"
+        - "clindamycin"
+        - "clindamycin_method"
+        - "tetracycline"
+        - "tetracycline_method"
+        - "levofloxacin"
+        - "levofloxacin_method"
+        - "ciprofloxacin"
+        - "ciprofloxacin_method"
+        - "daptomycin"
+        - "daptomycin_method"
+        - "vancomycin"
+        - "vancomycin_method"
+        - "linezolid"
+        - "linezolid_method"
+      properties:
+        sanger_sample_id:
+          $ref: "#/components/schemas/DownloadField"
+        lane_id:
+          $ref: "#/components/schemas/DownloadField"
+        submitting_institution:
+          $ref: "#/components/schemas/DownloadField"
+        supplier_sample_name:
+          $ref: "#/components/schemas/DownloadField"
+        public_name:
+          $ref: "#/components/schemas/DownloadField"
+        host_status:
+          $ref: "#/components/schemas/DownloadField"
+        study_name:
+          $ref: "#/components/schemas/DownloadField"
+        study_ref:
+          $ref: "#/components/schemas/DownloadField"
+        selection_random:
+          $ref: "#/components/schemas/DownloadField"
+        country:
+          $ref: "#/components/schemas/DownloadField"
+        county_state:
+          $ref: "#/components/schemas/DownloadField"
+        city:
+          $ref: "#/components/schemas/DownloadField"
+        collection_year:
+          $ref: "#/components/schemas/DownloadField"
+        collection_month:
+          $ref: "#/components/schemas/DownloadField"
+        collection_day:
+          $ref: "#/components/schemas/DownloadField"
+        host_species:
+          $ref: "#/components/schemas/DownloadField"
+        gender:
+          $ref: "#/components/schemas/DownloadField"
+        age_group:
+          $ref: "#/components/schemas/DownloadField"
+        age_years:
+          $ref: "#/components/schemas/DownloadField"
+        age_months:
+          $ref: "#/components/schemas/DownloadField"
+        age_weeks:
+          $ref: "#/components/schemas/DownloadField"
+        age_days:
+          $ref: "#/components/schemas/DownloadField"
+        disease_type:
+          $ref: "#/components/schemas/DownloadField"
+        disease_onset:
+          $ref: "#/components/schemas/DownloadField"
+        isolation_source:
+          $ref: "#/components/schemas/DownloadField"
+        serotype:
+          $ref: "#/components/schemas/DownloadField"
+        serotype_method:
+          $ref: "#/components/schemas/DownloadField"
+        infection_during_pregnancy:
+          $ref: "#/components/schemas/DownloadField"
+        maternal_infection_type:
+          $ref: "#/components/schemas/DownloadField"
+        gestational_age_weeks:
+          $ref: "#/components/schemas/DownloadField"
+        birth_weight_gram:
+          $ref: "#/components/schemas/DownloadField"
+        apgar_score:
+          $ref: "#/components/schemas/DownloadField"
+        ceftizoxime:
+          $ref: "#/components/schemas/DownloadField"
+        ceftizoxime_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefoxitin:
+          $ref: "#/components/schemas/DownloadField"
+        cefoxitin_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefotaxime:
+          $ref: "#/components/schemas/DownloadField"
+        cefotaxime_method:
+          $ref: "#/components/schemas/DownloadField"
+        cefazolin:
+          $ref: "#/components/schemas/DownloadField"
+        cefazolin_method:
+          $ref: "#/components/schemas/DownloadField"
+        ampicillin:
+          $ref: "#/components/schemas/DownloadField"
+        ampicillin_method:
+          $ref: "#/components/schemas/DownloadField"
+        penicillin:
+          $ref: "#/components/schemas/DownloadField"
+        penicillin_method:
+          $ref: "#/components/schemas/DownloadField"
+        erythromycin:
+          $ref: "#/components/schemas/DownloadField"
+        erythromycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        clindamycin:
+          $ref: "#/components/schemas/DownloadField"
+        clindamycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        tetracycline:
+          $ref: "#/components/schemas/DownloadField"
+        tetracycline_method:
+          $ref: "#/components/schemas/DownloadField"
+        levofloxacin:
+          $ref: "#/components/schemas/DownloadField"
+        levofloxacin_method:
+          $ref: "#/components/schemas/DownloadField"
+        ciprofloxacin:
+          $ref: "#/components/schemas/DownloadField"
+        ciprofloxacin_method:
+          $ref: "#/components/schemas/DownloadField"
+        daptomycin:
+          $ref: "#/components/schemas/DownloadField"
+        daptomycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        vancomycin:
+          $ref: "#/components/schemas/DownloadField"
+        vancomycin_method:
+          $ref: "#/components/schemas/DownloadField"
+        linezolid:
+          $ref: "#/components/schemas/DownloadField"
+        linezolid_method:
+          $ref: "#/components/schemas/DownloadField"
+
+    InSilicoData:
+      type: object
+      required:
+       - "lane_id"
+       - "cps_type"
+       - "ST"
+       - "adhP"
+       - "pheS"
+       - "atr"
+       - "glnA"
+       - "sdhA"
+       - "glcK"
+       - "tkt"
+       - "twenty_three_S1"
+       - "twenty_three_S3"
+       - "AAC6APH2"
+       - "AADECC"
+       - "ANT6"
+       - "APH3III"
+       - "APH3OTHER"
+       - "CATPC194"
+       - "CATQ"
+       - "ERMA"
+       - "ERMB"
+       - "ERMT"
+       - "LNUB"
+       - "LNUC"
+       - "LSAC"
+       - "MEFA"
+       - "MPHC"
+       - "MSRA"
+       - "MSRD"
+       - "FOSA"
+       - "GYRA"
+       - "PARC"
+       - "RPOBGBS_1"
+       - "RPOBGBS_2"
+       - "RPOBGBS_3"
+       - "RPOBGBS_4"
+       - "SUL2"
+       - "TETB"
+       - "TETL"
+       - "TETM"
+       - "TETO"
+       - "TETS"
+       - "ALP1"
+       - "ALP23"
+       - "ALPHA"
+       - "HVGA"
+       - "PI1"
+       - "PI2A1"
+       - "PI2A2"
+       - "PI2B"
+       - "RIB"
+       - "SRR1"
+       - "SRR2"
+       - "GYRA_variant"
+       - "PARC_variant"
+      properties:
+        lane_id:
+          $ref: "#/components/schemas/DownloadField"
+        cps_type:
+          $ref: "#/components/schemas/DownloadField"
+        ST:
+          $ref: "#/components/schemas/DownloadField"
+        adhP:
+          $ref: "#/components/schemas/DownloadField"
+        pheS:
+          $ref: "#/components/schemas/DownloadField"
+        atr:
+          $ref: "#/components/schemas/DownloadField"
+        glnA:
+          $ref: "#/components/schemas/DownloadField"
+        sdhA:
+          $ref: "#/components/schemas/DownloadField"
+        glcK:
+          $ref: "#/components/schemas/DownloadField"
+        tkt:
+          $ref: "#/components/schemas/DownloadField"
+        twenty_three_S1:
+          $ref: "#/components/schemas/DownloadField"
+        twenty_three_S3:
+          $ref: "#/components/schemas/DownloadField"
+        AAC6APH2:
+          $ref: "#/components/schemas/DownloadField"
+        AADECC:
+          $ref: "#/components/schemas/DownloadField"
+        ANT6:
+          $ref: "#/components/schemas/DownloadField"
+        APH3III:
+          $ref: "#/components/schemas/DownloadField"
+        APH3OTHER:
+          $ref: "#/components/schemas/DownloadField"
+        CATPC194:
+          $ref: "#/components/schemas/DownloadField"
+        CATQ:
+          $ref: "#/components/schemas/DownloadField"
+        ERMA:
+          $ref: "#/components/schemas/DownloadField"
+        ERMB:
+          $ref: "#/components/schemas/DownloadField"
+        ERMT:
+          $ref: "#/components/schemas/DownloadField"
+        LNUB:
+          $ref: "#/components/schemas/DownloadField"
+        LNUC:
+          $ref: "#/components/schemas/DownloadField"
+        LSAC:
+          $ref: "#/components/schemas/DownloadField"
+        MEFA:
+          $ref: "#/components/schemas/DownloadField"
+        MPHC:
+          $ref: "#/components/schemas/DownloadField"
+        MSRA:
+          $ref: "#/components/schemas/DownloadField"
+        MSRD:
+          $ref: "#/components/schemas/DownloadField"
+        FOSA:
+          $ref: "#/components/schemas/DownloadField"
+        GYRA:
+          $ref: "#/components/schemas/DownloadField"
+        PARC:
+          $ref: "#/components/schemas/DownloadField"
+        RPOBGBS_1:
+          $ref: "#/components/schemas/DownloadField"
+        RPOBGBS_2:
+          $ref: "#/components/schemas/DownloadField"
+        RPOBGBS_3:
+          $ref: "#/components/schemas/DownloadField"
+        RPOBGBS_4:
+          $ref: "#/components/schemas/DownloadField"
+        SUL2:
+          $ref: "#/components/schemas/DownloadField"
+        TETB:
+          $ref: "#/components/schemas/DownloadField"
+        TETL:
+          $ref: "#/components/schemas/DownloadField"
+        TETM:
+          $ref: "#/components/schemas/DownloadField"
+        TETO:
+          $ref: "#/components/schemas/DownloadField"
+        TETS:
+          $ref: "#/components/schemas/DownloadField"
+        ALP1:
+          $ref: "#/components/schemas/DownloadField"
+        ALP23:
+          $ref: "#/components/schemas/DownloadField"
+        ALPHA:
+          $ref: "#/components/schemas/DownloadField"
+        HVGA:
+          $ref: "#/components/schemas/DownloadField"
+        PI1:
+          $ref: "#/components/schemas/DownloadField"
+        PI2A1:
+          $ref: "#/components/schemas/DownloadField"
+        PI2A2:
+          $ref: "#/components/schemas/DownloadField"
+        PI2B:
+          $ref: "#/components/schemas/DownloadField"
+        RIB:
+          $ref: "#/components/schemas/DownloadField"
+        SRR1:
+          $ref: "#/components/schemas/DownloadField"
+        SRR2:
+          $ref: "#/components/schemas/DownloadField"
+        GYRA_variant:
+          $ref: "#/components/schemas/DownloadField"
+        PARC_variant:
+          $ref: "#/components/schemas/DownloadField"
+
+    DownloadField:
+      type: object
+      required:
+        - "name"
+        - "value"
+        - "order"
+      properties:
+        order:
+          type: integer
+          description: "An ordering integer index for the field"
+          readOnly: true
+        name:
+          type: string
+          description: "The name of the metadata field"
+          readOnly: true
+        value:
+          type: string
+          description: "The value of the metadata field"
+          readOnly: true
+
     BulkDownloadInput:
       type: object
       required:
@@ -341,10 +805,6 @@ components:
       format: date
       example: "2019-11-15"
 
-    Serotype:
-      type: string
-      example: "IV"
-
     DownloadInfo:
       type: object
       required:
@@ -358,7 +818,7 @@ components:
           type: string
         size_zipped:
           type: string
-
+          
     ProjectProgress:
       type: object
       required:

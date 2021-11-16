@@ -18,6 +18,21 @@ logger = logging.getLogger()
 # Testing only
 ServiceFactory.TEST_MODE = False
 
+# these are set in the openapi.yml file, but request body doesn't seem to set default values
+# to they have to be set by the route :-/
+GetMetadataInputDefaults = {  "in silico"          : False,
+                              "num rows"           : 20,
+                              "metadata columns"   : ["submitting_institution",
+                                                      "public_name",
+                                                      "host_status",
+                                                      "selection_random",
+                                                      "country",
+                                                      "collection_year",
+                                                      "host_species",
+                                                      "isolation_source"],
+                              "in silico columns"  : ["ST"],
+                              }
+
 
 def get_user_details():
     """ Given a username retrieve all details for that user """
@@ -71,6 +86,28 @@ def pipeline_status_summary():
         'pipeline_status': data
     }
     return call_jsonify(response_dict), HTTPStatus.OK
+
+
+def get_metadata(body):
+    """ Get sample metadata based on standard sample filter  """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    sample_filters = body['sample filters']
+    metadata_columns  = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
+    in_silico_columns = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
+    # setting column filter params to '_ALL' means all columns should be returned
+    if '_ALL' == metadata_columns[0]:
+       metadata_columns = None
+    if '_ALL' == in_silico_columns[0]:
+       in_silico_columns = None
+    return call_jsonify(
+       ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(
+            sample_filters,
+            start_row         = body.get('start row', None),
+            num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
+            include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+            metadata_columns  = metadata_columns,
+            in_silico_columns = in_silico_columns)
+       ), HTTPStatus.OK
 
 
 def bulk_download_info(body):
