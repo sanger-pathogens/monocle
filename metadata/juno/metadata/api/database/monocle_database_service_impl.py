@@ -160,6 +160,21 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 FROM api_sample
                 ORDER BY sample_id""")
 
+    FILTER_SAMPLES_IN_SQL = """ \
+            SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+            age_days, age_group, age_months, age_weeks, age_years, ampicillin,
+            ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+            cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
+            ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
+            collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
+            disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
+            host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
+            linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
+            selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
+            vancomycin, vancomycin_method
+            FROM api_sample
+            WHERE {} IN :values"""
+
     DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
 
     INSERT_OR_UPDATE_IN_SILICO_SQL = text(""" \
@@ -291,12 +306,35 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
+    def get_filtered_samples(self, filters: dict) -> List:
+        """ Get sample ids where their columns' values are in specified filters """
+        # TODO: Also consider other filters such as greater than/less than...
+
+        sample_ids = []
+        with self.connector.get_connection() as con:
+            if len(filters) > 0:
+                for filter, values in filters.items():
+                    new_sample_ids = []
+                    values = ['iA','ib']
+                    rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
+                    new_sample_ids.extend([row['sample_id'] for row in rs])
+                    if len(sample_ids) > 0:
+                        tmp_ids = [id for id in new_sample_ids if id in sample_ids]
+                        sample_ids = tmp_ids
+                    else:
+                        sample_ids = new_sample_ids
+            else:
+                rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
+                sample_ids = [row['sample_id'] for row in rs]
+
+        return sample_ids
+
     def get_samples(self) -> List[Metadata]:
         """ Retrieve all sample records """
         results = []
+
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
-
             for row in rs:
                 results.append(
                     Metadata(
