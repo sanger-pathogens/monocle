@@ -5,7 +5,7 @@ import {
   getInstitutionStatus,
   // eslint-disable-next-line no-unused-vars
   getProjectProgress
-} from "../dataLoading.js";
+} from "$lib/dataLoading.js";
 import DashboardPage from "./index.svelte";
 
 const INSTITUTIONS = [{
@@ -29,7 +29,7 @@ jest.mock("$app/stores", async () => {
   return { session: writable() };
 });
 
-jest.mock("../dataLoading.js", () => ({
+jest.mock("$lib/dataLoading.js", () => ({
   getInstitutionStatus: jest.fn(() => Promise.resolve(INSTITUTIONS)),
   getProjectProgress: () => Promise.resolve()
 }));

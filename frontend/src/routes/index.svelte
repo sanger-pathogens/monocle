@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
+  import { getInstitutionStatus, getProjectProgress } from "$lib/dataLoading.js";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
@@ -45,7 +45,7 @@
     <p>No institutions found for this account. This may be an error, so please try to reload the page or to log out and log in again.</p>
   {/each}
 
-{:catch error}
+{:catch}
   <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}

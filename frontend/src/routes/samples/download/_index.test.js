@@ -1,8 +1,14 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls, getInstitutions } from "../../../dataLoading.js";
+import {
+  getBatches,
+  getBulkDownloadInfo,
+  getBulkDownloadUrls,
+  getInstitutions,
+  getSampleMetadata
+} from "$lib/dataLoading.js";
 import DownloadPage from "./index.svelte";
 
-jest.mock("../../../dataLoading.js", () => ({
+jest.mock("$lib/dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
   getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"])),

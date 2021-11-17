@@ -2,7 +2,13 @@
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
-  import { getBatches, getBulkDownloadInfo, getBulkDownloadUrls, getInstitutions } from "../../../dataLoading.js";
+  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
+  import {
+    getBatches,
+    getBulkDownloadInfo,
+    getBulkDownloadUrls,
+    getInstitutions
+  } from "$lib/dataLoading.js";
 
   const MAX_REQUEST_FREQUENCY_MS = 1500;
   const PAGE_TITLE_ID = "bulk-download-title";
