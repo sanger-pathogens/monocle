@@ -713,7 +713,28 @@ class MonocleData:
                   sample['public_name'] = sample_id_to_public_name[sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
+      
+      serotype_filter = sample_filters.get('serotypes', None)
+      if serotype_filter is not None:
+         filtered_samples = self._apply_serotypes_filter(filtered_samples, {'serotype': serotype_filter})
+      
       return filtered_samples
+   
+   def _apply_serotypes_filter(self, filtered_samples, serotype_filter):
+      logging.critical("TO DO: filter the samples using the sample IDs returned by {}.metadata_source.filters".format(__class__.__name__))
+      matching_samples_ids = self.sample_metadata.get_filtered_sample_ids(serotype_filter)
+      #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
+      # TODO demote to INFO after testing
+      logging.critical("{}.metadata_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      intersection = []
+      for this_sample in filtered_samples:
+         if this_sample['sample_id'] in matching_samples_ids:
+            logging.debug("sample {} matches serotype filter".format(this_sample['sample_id']))
+            intersection.append(this_sample)
+      filtered_samples = intersection
+      logging.critical("fully filtered sample list contains {} samples".format(len(filtered_samples)))
+      return filtered_samples
+   
 
    def _get_sample_id_to_public_name_dict(self, institutions):
       sample_id_to_public_name = {}
