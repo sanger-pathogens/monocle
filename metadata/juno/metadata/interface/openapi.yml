@@ -139,7 +139,7 @@ paths:
           description: "Institutions could not be gathered from database"
 
   /samples:
-    post:
+    get:
       operationId: metadata.api.routes.get_samples
       summary: "Gather all sample records"
       responses:
