@@ -147,8 +147,7 @@ class Monocle_Client:
         try:
             logging.info("request to Metadata API: {}".format(request_url))
             http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
-            # TODO demote this to INFO when done testing
-            logging.critical("\nRequest to metadta API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
+            logging.info("\nRequest to metadta API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))

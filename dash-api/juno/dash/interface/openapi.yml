@@ -329,15 +329,20 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/InstKeyBatchDatePair"
-        serotypes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Serotype"
-
-    Serotype:
-      type: string
-      example: "IV"
-      
+        metadata:
+          $ref: "#/components/schemas/MetadataFilters"
+          
+    MetadataFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+        minItems: 1
+      minItems: 0
+      example:
+        serotype: ["IA", "IV"]
+          
     GetMetadataInput:
       type: object
       required:
