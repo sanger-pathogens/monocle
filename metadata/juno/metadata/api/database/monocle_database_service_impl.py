@@ -315,7 +315,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             if len(filters) > 0:
                 for filter, values in filters.items():
                     new_sample_ids = []
-                    values = ['iA','ib']
                     rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
                     new_sample_ids.extend([row['sample_id'] for row in rs])
                     if len(sample_ids) > 0:
