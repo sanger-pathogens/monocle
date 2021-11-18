@@ -21,7 +21,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. A user details record is returned."
@@ -45,7 +45,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -71,7 +71,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -97,7 +97,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -123,7 +123,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       requestBody:
         required: true
         content:
@@ -150,7 +150,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       requestBody:
         required: true
         content:
@@ -177,7 +177,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. The following data format will be returned..."
@@ -201,7 +201,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       responses:
         200:
           description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
@@ -227,7 +227,7 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
       requestBody:
         required: true
         content:
@@ -254,34 +254,25 @@ paths:
           description: "Username."
           required: false
           schema:
-            type: string
+            $ref: "#/components/schemas/UserName"
         - name: "institution"
           in: path
           description: "The institution name."
           required: true
           schema:
-            type: string
-            minLength: 1
-            maxLength: 256
-            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+            $ref: "#/components/schemas/InstitutionName"
         - name: "category"
           in: path
           description: "The category to be downloaded: sequencing or pipeline."
           required: true
           schema:
-            type: string
-            minLength: 1
-            maxLength: 20
-            pattern: ^[a-zA-Z]*$
+            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
         - name: "status"
           in: path
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
-            type: string
-            minLength: 1
-            maxLength: 20
-            pattern: ^[a-zA-Z]*$
+            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
       responses:
         200:
           description: "The operation was successful."
@@ -295,19 +286,12 @@ paths:
 
 components:
   schemas:
-
-    UserInstitution:
-      type: object
-      required:
-        - "inst_id"
-        - "inst_name"
-      properties:
-        inst_id:
-          type: string
-          description: "The id of the institution."
-        inst_name:
-          type: string
-          description: "The name of the institution."
+  
+    UserName:
+       type: string
+       minLength: 3
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9à-úÀ-Ú\!#\$%&'\*\+\-/=\?\^_`\{\|\}~;]+$
 
     Institution:
       type: object
@@ -316,11 +300,29 @@ components:
         - db_key
       properties:
         name:
-          type: string
-          description: "The name of the institution."
+          $ref: "#/components/schemas/InstitutionName"
         db_key:
-          type: string
-          description: "The id of the institution."
+          $ref: "#/components/schemas/InstitutionID"
+
+    InstitutionID:
+       description: "The ID of the institution."
+       type: string
+       minLength: 3
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
+
+    InstitutionName:
+       description: "The name of the institution."
+       type: string
+       minLength: 3
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+       
+    DashboardMetadataDownloadParam:
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^[a-zA-Z]*$
 
     SampleFilters:
       type: object
@@ -338,6 +340,9 @@ components:
         type: array
         items:
           type: string
+          minLength: 1
+          maxLength: 256
+          pattern: ^\S*$
         minItems: 1
       minItems: 0
       example:
@@ -368,6 +373,7 @@ components:
           type: array
           items:
             type: string
+            pattern: ^[a-zA-Z0-9_]*$
           default:
             - "submitting_institution"
             - "public_name"
@@ -382,6 +388,7 @@ components:
           type: array
           items:
             type: string
+            pattern: ^[a-zA-Z0-9_]*$
           default:
             - "ST"
 
@@ -798,9 +805,9 @@ components:
       description: "Batch of samples, identified by institution and delivery date"
       properties:
         institution key:
-          description: "Instiution key"
+          description: "Institution ID"
           example: "NatRefLab"
-          type: string
+          $ref: "#/components/schemas/InstitutionID"
         batch date:
           description: "Date of delivery"
           $ref: "#/components/schemas/BatchDate"
@@ -819,10 +826,13 @@ components:
       properties:
         num_samples:
           type: integer
+          readOnly: true
         size:
           type: string
+          readOnly: true
         size_zipped:
           type: string
+          readOnly: true
           
     ProjectProgress:
       type: object
@@ -846,18 +856,21 @@ components:
             description: "The batch date."
             example: "Jan 2019"
             type: string
+            readOnly: true
         samples received:
           type: array
           items:
             description: "The number of samples received for the batch."
             example: 300
             type: string
+            readOnly: true
         samples sequenced:
           type: array
           items:
             description: "The number of samples sequenced for the batch."
             example: 200
             type: string
+            readOnly: true
 
     InstitutionBatchSummary:
       type: object
@@ -871,10 +884,12 @@ components:
           description: "The number of samples expected."
           example: 200
           type: integer
+          readOnly: true
         received:
           description: "The number of samples received."
           example: 200
           type: integer
+          readOnly: true
         deliveries:
           type: array
           items:
@@ -893,14 +908,17 @@ components:
           description: "The batch name."
           example: "Batch 1"
           type: string
+          readOnly: true
         date:
           description: "The delivery date."
           example: "2019-09-18"
           type: string
+          readOnly: true
         number:
           description: "The batch sample size."
           example: 200
           type: integer
+          readOnly: true
 
     InstitutionSequencingStatus:
       type: object
@@ -916,18 +934,22 @@ components:
           description: "The number of lanes received."
           example: 400
           type: integer
+          readOnly: true
         completed:
           description: "The number of lanes that have completed sequencing, whether pass or fail."
           example: 300
           type: integer
+          readOnly: true
         success:
           description: "The number of lanes that have successfully completed sequencing."
           example: 298
           type: integer
+          readOnly: true
         failed:
           description: "The number of lanes that have failed sequencing."
           example: 2
           type: integer
+          readOnly: true
         fail_messages:
           type: array
           items:
@@ -948,18 +970,22 @@ components:
           description: "The number of lanes currently running."
           example: 400
           type: integer
+          readOnly: true
         completed:
           description: "The number of lanes that have completed pipelines, whether pass or fail."
           example: 300
           type: integer
+          readOnly: true
         success:
           description: "The number of lanes that have successfully completed pipeline runs."
           example: 298
           type: integer
+          readOnly: true
         failed:
           description: "The number of lanes that have failed their pipeline runs."
           example: 2
           type: integer
+          readOnly: true
         fail_messages:
           type: array
           items:
@@ -977,14 +1003,17 @@ components:
           description: "The failed lane id."
           example: "31741_3#378"
           type: string
+          readOnly: true
         stage:
           description: "The name of QC stage where issues was detected."
           example: "qc_lib"
           type: string
+          readOnly: true
         issue:
           description: "The associated error message."
           example: "Error message"
           type: string
+          readOnly: true
 
     UserData:
       type: object
@@ -995,11 +1024,24 @@ components:
         username:
           type: string
           description: "The username for this user"
+          readOnly: true
         type:
           type: string
           description: "Optional employee user type field, e.g. admin"
+          readOnly: true
         memberOf:
           type: array
           description: "A list of institutions for which the user is a member"
           items:
             $ref: "#/components/schemas/UserInstitution"
+
+    UserInstitution:
+      type: object
+      required:
+        - "inst_id"
+        - "inst_name"
+      properties:
+        inst_id:
+          $ref: "#/components/schemas/InstitutionID"
+        inst_name:
+          $ref: "#/components/schemas/InstitutionName"
