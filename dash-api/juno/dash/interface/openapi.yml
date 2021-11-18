@@ -346,7 +346,7 @@ components:
         minItems: 1
       minItems: 0
       example:
-        serotype: ["IA", "IV"]
+        serotype: ["Ia", "IV"]
           
     GetMetadataInput:
       type: object
