@@ -12,5 +12,4 @@ then
 fi
 
 schemathesis run  --base-url "http://${MONOCLE_HOST}${API_BASE_ROUTE}" \
-                  --validate-schema=false \
                   "${OPENAPI_SCHEMA}"

@@ -25,9 +25,9 @@ paths:
                   type: string
                   format: binary
       responses:
-        200:
+        "200":
           description: "The upload succeeded"
-        400:
+        "400":
           description: "The file has not passed validation"
           content:
             application/json:
@@ -50,9 +50,9 @@ paths:
                   type: string
                   format: binary
       responses:
-        200:
+        "200":
           description: "The upload succeeded"
-        400:
+        "400":
           description: "The file has not passed validation"
           content:
             application/json:
@@ -74,7 +74,7 @@ paths:
               $ref: "#/components/schemas/DownloadKeys"
               examples: "[\"5903STDY8059122\", \"5903STDY8059054\"]"
       responses:
-        200:
+        "200":
           description: "The download result set"
           content:
             application/json:
@@ -85,9 +85,9 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Metadata"
-        400:
+        "400":
           description: "Invalid arguments provided"
-        404:
+        "404":
           description: "No data could be found for the given download key"
 
   /download_in_silico_data:
@@ -103,7 +103,7 @@ paths:
               $ref: "#/components/schemas/DownloadKeys"
               examples: "[\"24936_2#76\", \"24937_1#22\"]"
       responses:
-        200:
+        "200":
           description: "The download result set"
           content:
             application/json:
@@ -114,9 +114,9 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/InSilicoData"
-        400:
+        "400":
           description: "Invalid arguments provided"
-        404:
+        "404":
           description: "No data could be found for the given download key"
 
   /institutions:
@@ -124,7 +124,7 @@ paths:
       operationId: metadata.api.routes.get_institution_names
       summary: "Gather the names for all institutions"
       responses:
-        200:
+        "200":
           description: "The institution result set"
           content:
             application/json:
@@ -135,7 +135,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Institutions"
-        404:
+        "404":
           description: "Institutions could not be gathered from database"
 
   /samples:
@@ -143,7 +143,7 @@ paths:
       operationId: metadata.api.routes.get_samples
       summary: "Gather all sample records"
       responses:
-        200:
+        "200":
           description: "The sample result set"
           content:
             application/json:
@@ -154,7 +154,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Metadata"
-        404:
+        "404":
           description: "No data could be found for the given institutions or filters"
 
   /filters:
@@ -169,13 +169,13 @@ paths:
             schema:
               $ref: "#/components/schemas/Filters"
       responses:
-        200:
+        "200":
           description: "List of sample ids"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Samples"
-        404:
+        "404":
           description: "No data could be found for the given filters"
 
 components:
