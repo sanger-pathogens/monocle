@@ -7,12 +7,16 @@
 
   const NUM_METADATA_ROWS_PER_PAGE = 12;
 
+  // This var is used to detect the last page.
+  let numMetadataRowsDisplayed = 0;
+  let pageNum = 1;
   let sortedMetadataPromise;
   let updateMetadataTimeoutId;
 
   // `batches` is passed just to indicate to Svelte that this reactive statement
   // should re-run only when `batches` has changed.
-  $: updateMetadata(batches);
+  $: setToFirstPage(batches);
+  $: updateMetadata(batches, pageNum);
 
   function updateMetadata() {
     showMetadataLoading();
@@ -25,11 +29,20 @@
       return;
     }
 
-    sortedMetadataPromise = getSampleMetadata({
+    const metadataRequestArgs = {
       instKeyBatchDatePairs: batches,
       numRows: NUM_METADATA_ROWS_PER_PAGE
-    }, fetch)
-      .then((unsortedMetadata = []) => sortMetadataByOrder(unsortedMetadata));
+    };
+    if (pageNum > 1) {
+      metadataRequestArgs.startRow = NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1;
+    }
+
+    sortedMetadataPromise = getSampleMetadata(metadataRequestArgs, fetch)
+      .then((unsortedMetadata = []) => {
+        const sortedMetadata = sortMetadataByOrder(unsortedMetadata);
+        numMetadataRowsDisplayed = sortedMetadata.length;
+        return sortedMetadata;
+      });
   }
 
   function sortMetadataByOrder(unsortedMetadata) {
@@ -53,6 +66,28 @@
   function hideMetadataLoading() {
     sortedMetadataPromise = null;
   }
+
+  function incrementPage() {
+    pageNum += 1;
+  }
+
+  function decrementPage() {
+    if (pageNum > 1) {
+      pageNum -= 1;
+    }
+    // Never say "never"?
+    else if (pageNum < 1) {
+      setToFirstPage();
+    }
+  }
+
+  function setToFirstPage() {
+    pageNum = 1;
+  }
+
+  function isLastPage() {
+    return numMetadataRowsDisplayed < NUM_METADATA_ROWS_PER_PAGE;
+  }
 </script>
 
 
@@ -62,12 +97,18 @@
 
     <nav>
       <ul>
+        <!-- TODO: cache metadata so as to avoid waiting when one of the buttons is clicked. -->
         <!-- `type="button"` is needed to prevent the buttons from submitting a form that they
           may be a descendant of. -->
-        <li><button type="button">First</button></li>
-        <li><button type="button">Previous</button></li>
-        <li><button type="button">Next</button></li>
-        <li><button type="button">Last</button></li>
+        <li><button type="button" on:click={setToFirstPage} disabled={pageNum <= 1}>
+          First
+        </button></li>
+        <li><button type="button" on:click={incrementPage} disabled={pageNum <= 1}>
+          Previous
+        </button></li>
+        <li><button type="button" on:click={decrementPage} disabled={isLastPage()}>
+          Next
+        </button></li>
       </ul>
     </nav>
   </section>
