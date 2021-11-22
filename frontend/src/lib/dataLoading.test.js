@@ -117,12 +117,14 @@ describe.each([
   {
     fnName: "getSampleMetadata",
     getResource: getSampleMetadata,
-    args: [INST_KEY_BATCH_DATE_PAIRS],
+    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2 }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS }
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "num rows": 14,
+        "start row": 2
       })
     },
     expectedEndpoints: ["get_metadata"],
