@@ -1,15 +1,27 @@
 <script>
+  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
 
   export let metadataPromise;
 
+  let isError = false;
+  let metadata;
   let metadataColumnHeaders = [];
 
-  metadataPromise
-    .then((metadata) =>
-      // Extract column headers from metadata or fall back to headers from the previous response.
-      metadataColumnHeaders = extractColumnHeadersFromMetadata(metadata) || metadataColumnHeaders;
-    );
+  $: {
+    if (metadataPromise) {
+    isError = false;
+    metadataPromise
+      .then((sortedMetadata) => {
+        metadata = sortedMetadata;
+        metadataColumnHeaders = extractColumnHeadersFromMetadata(sortedMetadata);
+      })
+      .catch((err) => {
+        console.error(err);
+        isError = true;
+      });
+    }
+  };
 
   function extractColumnHeadersFromMetadata(metadata = []) {
     return metadata[0]?.metadata?.map(({ name }) => name);
@@ -17,31 +29,43 @@
 </script>
 
 
-<table>
-  <tr>
-    <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
-     https://svelte.dev/docs#each). -->
-    {#each metadataColumnHeaders as columnName (columnName)}
-      <th>{columnName}<th/>
-    {/each}
-  </tr>
+{#if metadataPromise}
+  <table>
+    <tr>
+      <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+       https://svelte.dev/docs#each). -->
+      {#each metadataColumnHeaders as columnName (columnName)}
+        <th>{columnName}<th/>
+      {/each}
+    </tr>
 
-  {#await metadataPromise}
-    <LoadingIndicator />
-
-  {:then metadata}
-    {#each metadata as sample}
+    {#if isError}
       <tr>
-        <!-- `("<column name>-<value>")` is a unique (per sample) key for Svelte to identify cells to avoid unnecessary
-         re-rendering (see https://svelte.dev/docs#each). -->
-        {#each sample.metadata as { name: columnName, value } (`${columnName}-${value}`)}
-          <td>{value}</td>
-        {/each}
+        <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
+        <td colspan={metadataColumnHeaders.length || 1}>
+          Error while fetching metadata. Please <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the error persists.
+        </td>
       </tr>
-    {/each}
 
-  {:catch}
-    <p></p>
+    {:else if metadata}
+      {#each metadata as sample}
+        <tr>
+          <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+           https://svelte.dev/docs#each). -->
+          {#each sample.metadata as { name: columnName, value } (columnName)}
+            <td>{value}</td>
+          {/each}
+        </tr>
+      {/each}
 
-  {/await}
-</table>
+    {:else}
+      <tr>
+        <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
+        <td colspan={metadataColumnHeaders.length || 1}>
+          <LoadingIndicator />
+        </td>
+      </tr>
+
+   {/if}
+  </table>
+{/if}

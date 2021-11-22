@@ -224,7 +224,7 @@
       />
     {/if}
   {/if}
-{:catch error}
+{:catch}
     <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}

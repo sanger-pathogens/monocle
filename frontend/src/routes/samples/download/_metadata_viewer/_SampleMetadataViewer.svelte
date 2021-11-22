@@ -3,9 +3,11 @@
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
-  export let batches;
+  export let batches = undefined;
 
-  let sortedMetadataPromise = Promise.resolve();
+  const NUM_METADATA_ROWS_PER_PAGE = 12;
+
+  let sortedMetadataPromise;
   let updateMetadataTimeoutId;
 
   // `batches` is passed just to indicate to Svelte that this reactive statement
@@ -13,15 +15,20 @@
   $: updateMetadata(batches);
 
   function updateMetadata() {
+    showMetadataLoading();
     updateMetadataTimeoutId = debounce(_updateMetadata, updateMetadataTimeoutId);
   }
 
   function _updateMetadata() {
     if (!batches) {
+      hideMetadataLoading();
       return;
     }
 
-    sortedMetadataPromise = getSampleMetadata(batches, fetch)
+    sortedMetadataPromise = getSampleMetadata({
+      instKeyBatchDatePairs: batches,
+      numRows: NUM_METADATA_ROWS_PER_PAGE
+    }, fetch)
       .then((unsortedMetadata = []) => sortMetadataByOrder(unsortedMetadata));
   }
 
@@ -30,11 +37,21 @@
   }
 
   function transformSampleMetadataToSorted({ metadata }) {
-    return Object.values(metadata)
-      .reduce((accumSortedMetadata, metadatum) => {
-        accumSortedMetadata[metadatum.order - 1] = metadatum;
-        return accumSortedMetadata;
-      }, []);
+    return { metadata: Object.values(metadata)
+      .sort(compareMetadataByOrder)
+    };
+  }
+
+  function compareMetadataByOrder(metadatumA, metadatumB) {
+    return metadatumA.order - metadatumB.order;
+  }
+
+  function showMetadataLoading() {
+    sortedMetadataPromise = new Promise(() => {});
+  }
+
+  function hideMetadataLoading() {
+    sortedMetadataPromise = null;
   }
 </script>
 
@@ -45,10 +62,12 @@
 
     <nav>
       <ul>
-        <li><button>First</button></li>
-        <li><button>Previous</button></li>
-        <li><button>Next</button></li>
-        <li><button>Last</button></li>
+        <!-- `type="button"` is needed to prevent the buttons from submitting a form that they
+          may be a descendant of. -->
+        <li><button type="button">First</button></li>
+        <li><button type="button">Previous</button></li>
+        <li><button type="button">Next</button></li>
+        <li><button type="button">Last</button></li>
       </ul>
     </nav>
   </section>

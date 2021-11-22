@@ -1,8 +1,12 @@
+<script>
+  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+</script>
+
 <footer>
   <div class="max-inner-width">
     <address>
       <div>Contacts</div>
-      <a href="mailto:monocle-help@sanger.ac.uk">Monocle Help</a>
+      <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>Monocle Help</a>
       <span aria-hidden="true">|</span>
       <a href="mailto:sdb@sanger.ac.uk">Stephen Bentley</a>
     </address>

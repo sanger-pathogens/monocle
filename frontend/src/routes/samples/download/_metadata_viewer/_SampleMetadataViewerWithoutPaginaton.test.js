@@ -1,25 +1,74 @@
-import { render } from "@testing-library/svelte";
+import { render, waitFor } from "@testing-library/svelte";
 import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
-it("displayes passed metadata in a table", () => {
-  const metadata = [{
+const LABEL_LOADING_INDICATOR = "please wait";
+const ROLE_TABLE = "table";
+
+it("isn't displayed if a metadata promise isn't passed", () => {
+  const { queryByRole } = render(SimpleSampleMetadataViewer);
+
+  expect(queryByRole(ROLE_TABLE)).toBeNull();
+});
+
+it("shows the loading indicator if the metadata promise is pending", () => {
+  const { getByLabelText } = render(SimpleSampleMetadataViewer,
+    { metadataPromise: new Promise(() => {})});
+
+  expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
+});
+
+describe("on metadata resolved", () => {
+  const METADATA = [{
     metadata: [{ name: "Sample ID", value: "1a" }, { name: "Country", value: "UK" }]
   }, {
     metadata: [{ name: "Sample ID", value: "2b" }, { name: "Country", value: "UA" }]
   }];
 
-  const { getAllByRole, getByRole } = render(SimpleSampleMetadataViewer, { metadata });
+  it("hides the loading indicator", async () => {
+    const { queryByLabelText } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.resolve(METADATA) });
 
-  expect(getByRole("table")).toBeDefined();
-  // Data rows + the header row
-  expect(getAllByRole("row")).toHaveLength(metadata.length + 1);
-  metadata[0].metadata.forEach(({ name }) => {
-    expect(getByRole("columnheader", { name })).toBeDefined();
-  });
-  const roleTableCell = "cell";
-  metadata.forEach(({ metadata: sampleMetadata }) => {
-    sampleMetadata.forEach(({ value }) => {
-      expect(getByRole(roleTableCell, { name: value })).toBeDefined();
+    waitFor(() => {
+      expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });
+  });
+
+  it("displays metadata in a table", async () => {
+    const { getAllByRole, getByRole } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.resolve(METADATA) });
+
+    waitFor(() => {
+      expect(getByRole(ROLE_TABLE)).toBeDefined();
+      // Data rows + the header row
+      expect(getAllByRole("row")).toHaveLength(METADATA.length + 1);
+      METADATA[0].metadata.forEach(({ name }) => {
+        expect(getByRole("columnheader", { name })).toBeDefined();
+      });
+      const roleTableCell = "cell";
+      METADATA.forEach(({ metadata: sampleMetadata }) => {
+        sampleMetadata.forEach(({ value }) => {
+          expect(getByRole(roleTableCell, { name: value })).toBeDefined();
+        });
+      });
+    });
+  });
+});
+
+describe("on error", () => {
+  it("hides the loading indicator", async () => {
+    const { queryByLabelText } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.reject() });
+
+    waitFor(() => {
+      expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
+    });
+  });
+
+  it("displays the error", async () => {
+    const { findByText } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.reject() });
+
+    const errorElement = await findByText(/^Error while fetching metadata/);
+    expect(errorElement).toBeDefined();
   });
 });

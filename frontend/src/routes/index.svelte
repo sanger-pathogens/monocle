@@ -7,6 +7,7 @@
   import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
   import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
 
+  // FIXME: try unresolved promise
   let dashboardDataPromise = Promise.resolve();
 
   onMount(() => {
