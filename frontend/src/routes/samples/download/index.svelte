@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import debounce from "$lib/utils/debounce.js"
   import BatchSelector from "./_BatchSelector.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import {
@@ -10,7 +11,6 @@
     getInstitutions
   } from "$lib/dataLoading.js";
 
-  const MAX_REQUEST_FREQUENCY_MS = 1500;
   const PAGE_TITLE_ID = "bulk-download-title";
   const PROMISE_STATUS_REJECTED = "rejected";
 
@@ -18,15 +18,18 @@
     annotations: true,
     assemblies: true
   };
+  // FIXME: try unresolved promise
   let dataPromise = Promise.resolve();
-  let debounceTimeoutId;
   let downloadEstimate = {};
   let downloadLinksRequested;
   let downloadLink;
   let selectedBatches = null;
+  let updateDownloadEstimateTimeoutId;
 
   $: formComplete = selectedBatches?.length &&
       (formValues.annotations || formValues.assemblies);
+
+  $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when one of the args has changed.
@@ -49,7 +52,7 @@
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
-    debounce(_updateDownloadEstimate);
+    updateDownloadEstimateTimeoutId = debounce(_updateDownloadEstimate, updateDownloadEstimateTimeoutId);
   }
 
   function _updateDownloadEstimate() {
@@ -58,7 +61,7 @@
     }
 
     getBulkDownloadInfo(
-      selectedBatches.map(({value}) => value),
+      selectedInstKeyBatchDatePairs,
       formValues,
       fetch
     )
@@ -126,16 +129,10 @@
         });
     }
   }
-
-  function debounce(callback) {
-    // Clear the previous timeout and set a new one.
-    clearTimeout(debounceTimeoutId);
-    debounceTimeoutId = setTimeout(callback, MAX_REQUEST_FREQUENCY_MS);
-  }
 </script>
 
 
-<h2 id={PAGE_TITLE_ID}>Sample bulk download</h2>
+<h2 id={PAGE_TITLE_ID}>Sample data viewer</h2>
 
 {#await dataPromise}
   <LoadingIndicator />
@@ -156,6 +153,10 @@
           bind:selectedBatches
           {batchList}
         />
+      </fieldset>
+
+      <fieldset>
+        <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
       </fieldset>
 
       <fieldset class="data-type-section">
@@ -225,7 +226,7 @@
     {/if}
   {/if}
 {:catch}
-    <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
+  <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}
 
