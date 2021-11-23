@@ -33,7 +33,9 @@ class SampleMetadataTest(TestCase):
                                              ]
                               }"""
 
-   mock_institution_names = """{ "institutions":   [  "Ministry of Health, Central laboratories",
+   mock_get_filtered_sample_ids = """[  "fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3" ]"""
+
+   mock_institution_names  = """{ "institutions":   [  "Ministry of Health, Central laboratories",
                                                       "National Reference Laboratories",
                                                       "The Chinese University of Hong Kong"
                                                       ]
@@ -98,6 +100,12 @@ class SampleMetadataTest(TestCase):
          for required in self.required_sample_dict_keys:
             self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
             self.assertIsInstance(this_sample[required], type('a string'), msg="sample item {} should be a string".format(required))
+
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_filters(self,mock_query):
+      mock_query.return_value = self.mock_get_filtered_sample_ids
+      samples = self.sample_metadata.get_filtered_sample_ids({'any_filter_name': ['any', 'list', 'of', 'values']})
+      self.assertIsInstance(samples, type(['a list']))
 
    @patch.object(Monocle_Client, 'make_request')
    def test_reject_bad_get_sample_response(self, mock_request):

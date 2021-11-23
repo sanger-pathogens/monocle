@@ -551,7 +551,7 @@ class MonocleData:
       - combined metadata structure (of the type `get_metadata()` creates and returns) but which contains
       only a `metadata` key for each sample
       
-      Retrieves _in silico_ data from the metadta API, and inserts it into the combined metadata structure
+      Retrieves _in silico_ data from the metadata API, and inserts it into the combined metadata structure
       
       Returns the combined metadata structure
       """
@@ -604,7 +604,7 @@ class MonocleData:
       - a list of metadata columns
       - a list of in silico data columns
       All columns that are _not_ in the column lists will be removed from the combined metadata.
-      (Pass `None` in place of a list if metadta and/or in silico columns should *not* be filtered).
+      (Pass `None` in place of a list if metadata and/or in silico columns should *not* be filtered).
 
       Returns the (probably modified) combined metadata structure
       """
@@ -664,12 +664,12 @@ class MonocleData:
       Returns a list of matching samples' sequencing status data w/ institution keys and (unless
       disable_public_name_fetch was passed) public names added.
       
-      Currently supports only a `batches` filter;  value is a list of {"institution key", "batch date"} dicts.
-      
+      Supports `batches` filter:
          "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
          
-      TODO support all filters included in the OpenAPI spec. SampleFilters object
-      (this describes the parameter passed to endpoints to describe the sample filters required)
+      Also metadata filters, e.g.
+         "metadata": {"serotype": ["I", "IV"], ...}
+
       """
       inst_key_batch_date_pairs = sample_filters['batches']
       if len(inst_key_batch_date_pairs) == 0:
@@ -713,7 +713,27 @@ class MonocleData:
                   sample['public_name'] = sample_id_to_public_name[sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
+      
+      metadata_filters = sample_filters.get('metadata', None)
+      if metadata_filters is not None:
+         filtered_samples = self._apply_metadata_filters(filtered_samples, metadata_filters)
+      
       return filtered_samples
+   
+   def _apply_metadata_filters(self, filtered_samples, metadata_filters):
+      logging.info("{}.metadata_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      matching_samples_ids = self.sample_metadata.get_filtered_sample_ids(metadata_filters)
+      #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
+      logging.info("{}.metadata_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      intersection = []
+      for this_sample in filtered_samples:
+         if this_sample['sample_id'] in matching_samples_ids:
+            logging.debug("sample {} matches metadata filters".format(this_sample['sample_id']))
+            intersection.append(this_sample)
+      filtered_samples = intersection
+      logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
+      return filtered_samples
+   
 
    def _get_sample_id_to_public_name_dict(self, institutions):
       sample_id_to_public_name = {}

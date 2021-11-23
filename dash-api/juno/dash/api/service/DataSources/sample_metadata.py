@@ -5,6 +5,7 @@ import urllib.parse
 import urllib.request
 import yaml
 
+##logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
 # class DataSourceParamError(Exception):
 #    """ exception when data source methods are called with invalid parameter(s) """
@@ -28,19 +29,24 @@ class SampleMetadata:
 
     def get_samples(self, exclude_lane_id=True, institutions=None):
         """
-        Pass a list of institutions.
-        Returns a dict, keys are sample IDs, values are the sequencing status data as a dict
-        If a sample ID is passed that is not found by the API, it will be missing from the returned dict.
+        Optionally pass a list of institutions that filters samples according to submitting institution
+        Optiomally pass exclude_lane_id=False to stop the lane ID being removed (the laner ID retrieved here
+        is from the monocle db, where it was added for *some* samples for historical reasons, but it is not
+        generally useful or necessarily accurate.  Lane IDs for a sample should be retrieved from MLWH)
+        Returns a dict, keys are sample IDs, values are the selected metadata as a dict
         """
         results_list = self.monocle_client.samples()
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
         samples = []
         for this_result in results_list:
             if institutions is None or this_result['submitting_institution'] in institutions:
-               # for historical reasons, get_samples() should return a list of dicts in the following form
+               # for historical reasons, get_samples() should return a list of dicts with
+               # changes to sanger_sample_id
                # TODO just return `results_list` and tweak the code that calls get_samples(); it should
                #      only require that the use of the old keys `sample_id` and `submitting_institution_id`
-               #      is replaced with 'sanger_sample_id' and 'submitting_institution', respectively
+               #      is replaced with 'sanger_sample_id' and 'submitting_institution', respectively.
+               #      **But** lane ID would need to be removed from each item in results_list (unless
+               #      exclude_lane_id is False).
                this_sample = {'sample_id'                   : this_result['sanger_sample_id'],
                               'submitting_institution_id'   : this_result['submitting_institution'],
                               'public_name'                 : this_result['public_name'],
@@ -52,6 +58,15 @@ class SampleMetadata:
                logging.debug("result: {}".format(this_sample))
                samples.append( this_sample )
         return samples
+     
+    def get_filtered_sample_ids(self, filters):
+        """
+        Pass a list of filters, as defined by the metadta API /filters endpoint.
+        Returns a list of sample IDs matching the filter conditions
+        """
+        results_list = self.monocle_client.filters(filters)
+        logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
+        return results_list
 
 
 class ProtocolError(Exception):
@@ -65,6 +80,7 @@ class Monocle_Client:
                               'swagger',
                               'institutions',
                               'samples',
+                              'filters',
                               'institutions_key',
                               'samples_key',
                               ]
@@ -93,12 +109,27 @@ class Monocle_Client:
 
     def samples(self):
         endpoint = self.config['samples']
-        logging.debug(
-            "{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
+        logging.debug("{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
         results = self.parse_response(response,required_keys=[self.config['samples_key']])
         return results[self.config['samples_key']]
+
+    def filters(self,filters):
+        endpoint = self.config['filters']
+        logging.debug("{}.filters() using endpoint {}".format(__class__.__name__, endpoint))
+        response = self.make_request(endpoint, post_data=filters)
+        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
+        # FIXME (for the metadata API, not the dashboard API)
+        # the filters endpount returns a response like
+        #    ['a', 'b', 'c']
+        # but really should be
+        #    { 'filters': ['a', 'b', 'c'] }
+        # (then we would pass required_keys=[self.config['filters_key']] to parse_response()
+        # and return results[self.config['filters_key']])
+        # current implementation works, but is inconsistent with other endpoints
+        results = json.loads(response)
+        return results
 
     def make_request(self, endpoint, post_data=None):
         request_url = self.config['base_url'] + endpoint
@@ -116,6 +147,7 @@ class Monocle_Client:
         try:
             logging.info("request to Metadata API: {}".format(request_url))
             http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
+            logging.info("\nRequest to metadta API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))
