@@ -310,6 +310,8 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
+       example: "NatRefLab"
+
 
     InstitutionName:
        description: "The name of the institution."
@@ -317,6 +319,7 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+       example: "National Reference Laboratories"
        
     DashboardMetadataDownloadParam:
        type: string
@@ -806,12 +809,11 @@ components:
       properties:
         institution key:
           description: "Institution ID"
-          example: "NatRefLab"
           $ref: "#/components/schemas/InstitutionID"
         batch date:
           description: "Date of delivery"
           $ref: "#/components/schemas/BatchDate"
-            
+          
     BatchDate:
       type: string
       format: date

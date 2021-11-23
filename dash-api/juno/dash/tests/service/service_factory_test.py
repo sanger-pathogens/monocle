@@ -1,5 +1,5 @@
 from   unittest      import TestCase
-from   unittest.mock import patch
+from   unittest.mock import patch, Mock
 from   copy          import deepcopy
 from   datetime      import datetime
 import logging
@@ -491,7 +491,15 @@ class MonocleDataTest(TestCase):
       
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata(self, mock_metadata_fetch):
+      """
+      data_services.MonocleData.get_metadata should return sample metadta in expected format,
+      without in silico data when `include_in_silico=False` is passed; and should default to
+      the same if `include_in_silico` is not defined
+      """
       mock_metadata_fetch.return_value = self.mock_metadata
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=False)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
@@ -499,26 +507,80 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      """
+      data_services.MonocleData.get_metadata should return sample metadta in expected format,
+      with added in silico data when `include_in_silico=True` is passed
+      """
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata)
-
+      
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
+      """
+      data_services.MonocleData.get_metadata should filter the response to include
+      only the requested columns
+      """
       mock_metadata_fetch.return_value = deepcopy(self.mock_metadata) # work on a copy, as metadata will be modified
       filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
                                                                   metadata_columns=['public_name'])
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_filtered, filtered_samples_metadata)
       
+   @patch.object(MonocleData, 'get_filtered_samples')
+   def test_get_metadata_no_matching_samples(self, mock_get_filtered_samples):
+      """
+      data_services.MonocleData.get_metadata should gracefully handle a case of the filters
+      matching zero samples, by just returning an empty response
+      """
+      mock_get_filtered_samples.return_value = []
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual({'metadata':[]}, filtered_samples_metadata)
+      filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual({'metadata':[], 'in silico':[]}, filtered_samples_metadata_plus_in_silico)
+
+   @patch.object(Monocle_Download_Client,  'in_silico_data')
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_start_row_out_of_range_ok(self, mock_metadata_fetch, mock_in_silico_data_fetch):
+      """
+      data_services.MonocleData.get_metadata should gracefully handle a start_row parameter that
+      "points" to a row beyond the total number of rows, by just returning an empty response
+      """
+      mock_metadata_fetch.return_value       = self.mock_metadata
+      mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs}, start_row=9999, num_rows=1)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual({'metadata':[]}, filtered_samples_metadata)
+      filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True, start_row=9999, num_rows=1)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual({'metadata':[], 'in silico':[]}, filtered_samples_metadata_plus_in_silico)
+         
+   @patch.object(Monocle_Download_Client,  'metadata')
+   def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
+      """
+      data_services.MonocleData.get_metadata should gracefully handle num_rows parameter that
+      "points" to a row beyond the total number of rows, by just returning all available rows
+      """
+      mock_metadata_fetch.return_value = self.mock_metadata
+      filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs}, start_row=1, num_rows=9999)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
+      self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
+
    def test_get_metadata_pagination_reject_missing_num_rows(self):
+      """
+      data_services.MonocleData.get_metadata should raise AssertionError if only
+      one pagination param start_row is passwd with a num_rows param
+      (note if start_row is not defined, num_rows is simply ignored)
+      """
       with self.assertRaises(AssertionError):
          filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
                                                                      metadata_columns=['public_name'],
                                                                      start_row=2)
-
+         
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_plus_in_silico_filtered_columns(self, mock_metadata_fetch, mock_in_silico_data_fetch):

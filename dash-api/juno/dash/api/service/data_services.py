@@ -519,10 +519,18 @@ class MonocleData:
       logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
       # if paginating, take a slice of the samples
       if start_row is not None:
-         assert num_rows is not None, "{} must be passed start_rows and num_rows, or neither.".format(__class__.__name__)
+         assert num_rows is not None, "{} must be passed start_row and num_rows, or neither.".format(__class__.__name__)
          filtered_samples = list(filtered_samples[ (start_row-1) : ((start_row -1) + num_rows) ])
       logging.info("pagination (start {}, num {}) working with {} samples".format(__class__.__name__,start_row,num_rows,len(filtered_samples)))
-            
+
+      # if filters or pagination results in an empty samples list, return an empty response
+      if 1 > len(filtered_samples):
+         logging.info("no matching samples: returning empty response")
+         empty_response = {'metadata':[]}
+         if include_in_silico:
+            empty_response['in silico'] = []
+         return empty_response
+
       # the samples IDs can be used to get the sample metadata
       try:
          sample_id_list = [ s['sample_id'] for s in filtered_samples ]
