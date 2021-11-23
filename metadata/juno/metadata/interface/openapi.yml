@@ -155,8 +155,28 @@ paths:
                     items:
                       $ref: "#/components/schemas/Metadata"
         404:
-          description: "No data could be found for the given institutions"
+          description: "No data could be found for the given institutions or filters"
 
+  /filters:
+    post:
+      operationId: metadata.api.routes.get_filtered_samples
+      summary: "Gather filtered sample records"
+      requestBody:
+        description: "A dictionary of filters with lists of values"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Filters"
+      responses:
+        200:
+          description: "List of sample ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Samples"
+        404:
+          description: "No data could be found for the given filters"
 
 components:
   schemas:
@@ -197,6 +217,17 @@ components:
           description: "The value of the metadata field"
           readOnly: true
 
+    Filters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+        minItems: 1
+      minItems: 0
+      example:
+        serotype: ["IA", "IV"]
+
     Institutions:
       type: array
       items:
@@ -204,6 +235,13 @@ components:
         minLength: 1
         #maxLength: 255
         #pattern: '^[a-zA-Z0-9]*$'
+      minItems: 1
+
+    Samples:
+      type: array
+      items:
+        type: string
+        minLength: 1
       minItems: 1
 
     Metadata:
