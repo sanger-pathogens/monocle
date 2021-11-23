@@ -99,10 +99,10 @@
         <li><button type="button" on:click={setToFirstPage} disabled={pageNum <= 1}>
           First
         </button></li>
-        <li><button type="button" on:click={incrementPage} disabled={pageNum <= 1}>
+        <li><button type="button" on:click={decrementPage} disabled={pageNum <= 1}>
           Previous
         </button></li>
-        <li><button type="button" on:click={decrementPage} disabled={isLastPage()}>
+        <li><button type="button" on:click={incrementPage} disabled={isLastPage()}>
           Next
         </button></li>
       </ul>
