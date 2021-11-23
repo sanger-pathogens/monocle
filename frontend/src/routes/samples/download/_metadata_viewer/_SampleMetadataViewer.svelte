@@ -29,15 +29,11 @@
       return;
     }
 
-    const metadataRequestArgs = {
+    sortedMetadataPromise = getSampleMetadata({
       instKeyBatchDatePairs: batches,
-      numRows: NUM_METADATA_ROWS_PER_PAGE
-    };
-    if (pageNum > 1) {
-      metadataRequestArgs.startRow = NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1;
-    }
-
-    sortedMetadataPromise = getSampleMetadata(metadataRequestArgs, fetch)
+      numRows: NUM_METADATA_ROWS_PER_PAGE,
+      startRow: NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1
+    }, fetch)
       .then((unsortedMetadata = []) => {
         const sortedMetadata = sortMetadataByOrder(unsortedMetadata);
         numMetadataRowsDisplayed = sortedMetadata.length;
