@@ -396,9 +396,25 @@ components:
             - "ST"
 
     GetMetadataOutput:
-      type: array
-      items:
-        $ref: "#/components/schemas/CombinedSampleMetadata"
+      type: object
+      readOnly: true
+      required:
+        - samples
+        - total
+        - last
+      properties:
+        last:
+          description: "Number of the last row in this response.  If start row + num rows exceeds the total number of rows, this will be the last available row."
+          type: integer
+          minimum: 1
+        total:
+          description: "Total number of rows that match the sample filters passed."
+          type: integer
+          minimum: 0
+        samples:
+          type: array
+          items:
+            $ref: "#/components/schemas/CombinedSampleMetadata"
     
     CombinedSampleMetadata:
       type: object

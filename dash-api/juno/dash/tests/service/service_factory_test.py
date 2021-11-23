@@ -215,29 +215,40 @@ class MonocleDataTest(TestCase):
                                                    }
                                              ]
 
-   mock_combined_metadata                    = [   {  "metadata":    mock_metadata[0]
-                                                      },
-                                                   {  "metadata":    mock_metadata[1],
-                                                      }
-                                                   ]
-   mock_combined_metadata_plus_in_silico     = [   {  "metadata":    mock_metadata[0],
-                                                      "in silico":   mock_in_silico_data[0]
-                                                      },
-                                                   {  "metadata":    mock_metadata[1],
-                                                      }
-                                                   ]
-   mock_combined_metadata_filtered           = [   {  "metadata":    {"public_name": mock_metadata[0]["public_name"]}
-                                                      },
-                                                   {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
-                                                      }
-                                                   ]
-   mock_combined_metadata_in_silico_filtered = [   {  "metadata":    {"public_name": mock_metadata[0]["public_name"]},
-                                                      "in silico":   {"some_in_silico_thing": mock_in_silico_data[0]["some_in_silico_thing"]}
-                                                      },
-                                                   {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
-                                                      }
-                                                   ]
-                                                
+   mock_combined_metadata                    =  { "samples":   [  {  "metadata":    mock_metadata[0]
+                                                                     },
+                                                                  {  "metadata":    mock_metadata[1],
+                                                                     }
+                                                                  ],
+                                                   "total":    3,
+                                                   "last":     3
+                                                   }
+   mock_combined_metadata_plus_in_silico     =  { "samples":   [  {  "metadata":    mock_metadata[0],
+                                                                  "in silico":      mock_in_silico_data[0]
+                                                                  },
+                                                               {  "metadata":       mock_metadata[1],
+                                                                  }
+                                                               ],
+                                                   "total":    3,
+                                                   "last":     3
+                                                   }
+   mock_combined_metadata_filtered           =  { "samples":   [  {  "metadata":    {"public_name": mock_metadata[0]["public_name"]}
+                                                                     },
+                                                                  {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
+                                                                     }
+                                                                  ],
+                                                   "total":    3,
+                                                   "last":     3
+                                                   }
+   mock_combined_metadata_in_silico_filtered =  { "samples":   [  {  "metadata":    {"public_name": mock_metadata[0]["public_name"]},
+                                                                     "in silico":   {"some_in_silico_thing": mock_in_silico_data[0]["some_in_silico_thing"]}
+                                                                     },
+                                                                  {  "metadata":    {"public_name": mock_metadata[1]["public_name"]}
+                                                                     }
+                                                                  ],
+                                                   "total":    3,
+                                                   "last":     3
+                                                   }
 
    # these are invalid because the lane ID appears twice:  pandas merge should catch this in validation
    mock_invalid_metadata      =     [  mock_metadata[0], mock_metadata[1], mock_metadata[0] ]
@@ -538,10 +549,10 @@ class MonocleDataTest(TestCase):
       mock_get_filtered_samples.return_value = []
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'metadata':[]}, filtered_samples_metadata)
+      self.assertEqual({'last':0, 'total':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'metadata':[], 'in silico':[]}, filtered_samples_metadata_plus_in_silico)
+      self.assertEqual({'last':0, 'total':0, 'samples':{'metadata':[], 'in silico':[]}}, filtered_samples_metadata_plus_in_silico)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -554,10 +565,10 @@ class MonocleDataTest(TestCase):
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs}, start_row=9999, num_rows=1)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'metadata':[]}, filtered_samples_metadata)
+      self.assertEqual({'last':0, 'total':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True, start_row=9999, num_rows=1)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'metadata':[], 'in silico':[]}, filtered_samples_metadata_plus_in_silico)
+      self.assertEqual({'last':0, 'total':0, 'samples':{'metadata':[], 'in silico':[]}}, filtered_samples_metadata_plus_in_silico)
          
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
