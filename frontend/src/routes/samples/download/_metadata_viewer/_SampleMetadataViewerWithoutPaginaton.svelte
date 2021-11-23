@@ -2,15 +2,17 @@
   import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
 
-  export let metadataPromise;
+  export let metadataPromise = undefined;
 
-  let isError = false;
+  let isError;
+  let isLoading;
   let metadata;
   let metadataColumnHeaders = [];
 
   $: {
     if (metadataPromise) {
     isError = false;
+    isLoading = true;
     metadataPromise
       .then((sortedMetadata) => {
         metadata = sortedMetadata;
@@ -19,7 +21,8 @@
       .catch((err) => {
         console.error(err);
         isError = true;
-      });
+      })
+      .finally(() => isLoading = false);
     }
   };
 
@@ -47,25 +50,28 @@
         </td>
       </tr>
 
-    {:else if metadata}
-      {#each metadata as sample}
-        <tr>
-          <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
-           https://svelte.dev/docs#each). -->
-          {#each sample.metadata as { name: columnName, value } (columnName)}
-            <td>{value}</td>
-          {/each}
-        </tr>
-      {/each}
-
     {:else}
-      <tr>
-        <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
-        <td colspan={metadataColumnHeaders.length || 1}>
-          <LoadingIndicator />
-        </td>
-      </tr>
 
-   {/if}
+      {#if isLoading}
+        <tr>
+          <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
+          <td colspan={metadataColumnHeaders.length || 1}>
+            <LoadingIndicator />
+          </td>
+        </tr>
+      {/if}
+      {#if metadata}
+        {#each metadata as sample}
+          <tr aria-live="polite">
+            <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+             https://svelte.dev/docs#each). -->
+            {#each sample.metadata as { name: columnName, value } (columnName)}
+              <td>{value}</td>
+            {/each}
+          </tr>
+        {/each}
+      {/if}
+
+    {/if}
   </table>
 {/if}

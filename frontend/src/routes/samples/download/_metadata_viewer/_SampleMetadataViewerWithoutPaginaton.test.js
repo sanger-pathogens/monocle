@@ -2,7 +2,10 @@ import { render, waitFor } from "@testing-library/svelte";
 import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
 const LABEL_LOADING_INDICATOR = "please wait";
+const ROLE_COLUMN_HEADER = "columnheader";
+const ROLE_TABLE_ROW = "row";
 const ROLE_TABLE = "table";
+const ROLE_TABLE_CELL = "cell";
 
 it("isn't displayed if a metadata promise isn't passed", () => {
   const { queryByRole } = render(SimpleSampleMetadataViewer);
@@ -38,20 +41,38 @@ describe("on metadata resolved", () => {
       { metadataPromise: Promise.resolve(METADATA) });
 
     waitFor(() => {
-      expect(getByRole(ROLE_TABLE)).toBeDefined();
-      // Data rows + the header row
-      expect(getAllByRole("row")).toHaveLength(METADATA.length + 1);
-      METADATA[0].metadata.forEach(({ name }) => {
-        expect(getByRole("columnheader", { name })).toBeDefined();
-      });
-      const roleTableCell = "cell";
-      METADATA.forEach(({ metadata: sampleMetadata }) => {
-        sampleMetadata.forEach(({ value }) => {
-          expect(getByRole(roleTableCell, { name: value })).toBeDefined();
-        });
-      });
+      expectMetadataToBeShown({ getAllByRole, getByRole });
     });
   });
+
+  it("shows the loading indicator and keeps showing old metadata while new metadata is loading", async () => {
+    const { component, findByRole, getAllByRole, getByRole, getByLabelText } =
+      render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+
+    await findByRole(ROLE_TABLE_CELL);
+
+    // `new Promise(() => {})` == "endless" promise == wait "forever"
+    component.$set({ metadataPromise: new Promise(() => {}) });
+
+    waitFor(() => {
+      expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
+      expectMetadataToBeShown({ getAllByRole, getByRole });
+    });
+  });
+
+  function expectMetadataToBeShown({ getAllByRole, getByRole }) {
+    expect(getByRole(ROLE_TABLE)).toBeDefined();
+    // Data rows + the header row
+    expect(getAllByRole(ROLE_TABLE_ROW)).toHaveLength(METADATA.length + 1);
+    METADATA[0].metadata.forEach(({ name }) => {
+      expect(getByRole(ROLE_COLUMN_HEADER, { name })).toBeDefined();
+    });
+    METADATA.forEach(({ metadata: sampleMetadata }) => {
+      sampleMetadata.forEach(({ value }) => {
+        expect(getByRole(ROLE_TABLE_CELL, { name: value })).toBeDefined();
+      });
+    });
+  }
 });
 
 describe("on error", () => {

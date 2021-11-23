@@ -53,7 +53,8 @@ it("requests metadata w/ the correct arguments", () => {
   waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
-      numRows: 12
+      numRows: 12,
+      startRow: 1
     });
   });
 });

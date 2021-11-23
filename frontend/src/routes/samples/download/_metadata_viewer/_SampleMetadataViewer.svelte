@@ -25,7 +25,6 @@
 
   function _updateMetadata() {
     if (!batches) {
-      hideMetadataLoading();
       return;
     }
 
@@ -57,10 +56,6 @@
 
   function showMetadataLoading() {
     sortedMetadataPromise = new Promise(() => {});
-  }
-
-  function hideMetadataLoading() {
-    sortedMetadataPromise = null;
   }
 
   function incrementPage() {
