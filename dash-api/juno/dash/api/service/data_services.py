@@ -538,7 +538,7 @@ class MonocleData:
          no_samples = {'metadata':[]}
          if include_in_silico:
             no_samples['in silico'] = []
-         return {'samples': no_samples, 'total':0, 'last': 0}
+         return {'samples': no_samples, 'total rows':0, 'last row': 0}
 
       # the samples IDs can be used to get the sample metadata
       try:
@@ -559,7 +559,7 @@ class MonocleData:
          combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
       
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
-      return {'samples': combined_metadata, 'total':total_num_matching_samples, 'last': last_sample_row_returned}
+      return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
 
    def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
       """
