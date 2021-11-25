@@ -155,7 +155,6 @@ components:
         spreadsheet:
           type: string
           format: binary
-          pattern: ^[^\/](([a-zA-Z0-9à-úÀ-Ú _',;:()\/\=-]+)\.?)+$
 
     ValidationErrors:
       description: "Error response"
