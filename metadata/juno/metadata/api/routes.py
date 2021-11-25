@@ -47,6 +47,7 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
                HTTP_BAD_REQUEST_STATUS
 
     spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info('Saving spreadsheet as {}...'.format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
 
     try:
@@ -88,6 +89,7 @@ def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
                HTTP_BAD_REQUEST_STATUS
 
     spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info('Saving spreadsheet as {}...'.format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
 
     try:
