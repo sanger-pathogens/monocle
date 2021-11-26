@@ -184,7 +184,7 @@ def get_filtered_samples(body: dict, dao: MonocleDatabaseService):
     try:
         allowed_filters_regex = re.compile(FILTER_NAME_REGEX)
         for this_filter in filters:
-          logging.critical("checking filter name {}".format(this_filter))
+          logging.debug("checking filter name {}".format(this_filter))
           if not allowed_filters_regex.match(this_filter):
             raise ValueError("filter name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_filter))
         samples = dao.get_filtered_samples(filters)
