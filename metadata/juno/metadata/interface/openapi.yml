@@ -155,8 +155,6 @@ components:
         spreadsheet:
           type: string
           format: binary
-          # Does not allow a / or . at the start nor .. anywhere else
-          pattern: ^(?!.*\.\.|\/).*$
 
     ValidationErrors:
       description: "Error response"
@@ -292,11 +290,11 @@ components:
       properties:
         institutions:
           type: array
+          readOnly: True
           items:
             type: string
             minLength: 3
             maxLength: 256
-            pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
           minItems: 1
 
     Samples:
