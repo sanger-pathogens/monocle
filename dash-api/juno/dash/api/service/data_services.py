@@ -41,7 +41,7 @@ class MonocleUser:
    Provides a wrapper for claasses the retrieve user details
    Only use this after authentication: trying to get details of users that are not in LDAP will raise an exception
    """
-   
+
    def __init__(self, authenticated_username=None, set_up=True):
       self.updated      = datetime.now()
       self.user_data    = DataSources.user_data.UserData(set_up=set_up)
@@ -68,7 +68,7 @@ class MonocleData:
    sequencing_flags        = {'qc_lib':   'library',
                               'qc_seq':   'sequencing',
                               }
-  
+
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
@@ -131,20 +131,20 @@ class MonocleData:
    def get_institutions(self):
       """
       Returns a dict of institutions.
-      
+
       {  institution_1   => { 'name':     'the institution name',
                               'db_key':   'db key'
                               }
          institution_2...
          }
-         
+
       If .user_record is defined, it will be used to filter the institutions for those the user belongs to.
-            
+
       Dict keys are alphanumeric-only and safe for HTML id attr. The monocle db keys are not
       suitable for this as they are full institution names.   It's useful to be able to lookup
       a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
       is provided.
-      
+
       ***IMPORTANT / FIXME***
       Institution IDs (`cn`) are now in LDAP, as are their names.
       We need to stop reading institutions from monocledb, and read the names and IDs from LDAP
@@ -152,7 +152,7 @@ class MonocleData:
       then deprecate `institution_name_to_dict_key()`
       *During the transition* the IDs used in LDAP will be the same as the values returned by
       `institution_name_to_dict_key()`
-      
+
       The data are cached so this can safely be called multiple times without
       repeated monocle db queries being made.
       """
@@ -184,7 +184,7 @@ class MonocleData:
 
       institution_names = None
       if self.user_record is not None:
-         institution_names = [inst['inst_name'] for inst in self.user_record.get('memberOf', [])]
+         institution_names = [inst['inst_info']['inst_name'] for inst in self.user_record.get('memberOf', [])]
       else:
          institution_names = self.sample_metadata.get_institution_names()
 
@@ -194,17 +194,17 @@ class MonocleData:
    def get_all_institutions_irrespective_of_user_membership(self):
       """
       Returns a dict of  ALL INSTITUTIONS REGARDLESS OF USER MEMBERSHIP.
-      
+
       In almost every case, you want to call get_institutions() instead -- hence
       the silly name, which is intended to put you off using this without
       figuring out what it is all about.
-      
+
       If this method is used in the wrong context, then it will bypass the
       authorization that should be required to see institutions' data.
-      
+
       YOU HAVE BEEN WARNED.  Only use this method if you are REALLY CERTAIN that
       you know what you are doing.
-            
+
       See the documentation for get_institions for details of the dict that is
       returned.
       """
@@ -225,14 +225,14 @@ class MonocleData:
    def get_samples(self):
       """
       Returns a dict of all samples for each institution in the dict.
-      
+
       {  institution_1   => [sample_id_1, sample_id_2...],
          institution_2...
          }
-         
+
       All institutions are included in the top level dict, even if they have no
       has no samples in the monocle db; the value will be an empty list.
-      
+
       Note that samples in the monocle db derive from an inventory of those that are expected;
       they are not necessarily all present in MLWH, so certain samples may not be found
       in the data returned methods that look for sequencing or pipeline status data.  Think
@@ -257,16 +257,16 @@ class MonocleData:
             logging.info("samples excluded because {} is not in current user's institutions list".format(this_sample[self.sample_table_inst_key]))
       self.samples_data = samples
       return self.samples_data
-            
+
    def get_sequencing_status(self):
       """
       Returns dict with sequencing data for each institution the user is a member of; data are in
       a dict, keyed on the sample ID
-      
+
       Note that these are sample IDs that were found in MLWH, and have therefore
       been processed at Sanger; some samples that are in the monocle db may not
       be present here.
-      
+
       {  institution_1: {  sample_id_1: { seq_data_1 => 'the value',
                                           seq_data_2 => 'the value',
                                           seq_data_3...
@@ -275,12 +275,12 @@ class MonocleData:
                            },
          institution_2...
          }
-         
+
       All institutions are included in the top level dict, even if they have no
       has no samples in the monocle db; the sequencing data for these in an empty dict.
       If a sample from the monocle db has no sequencing data available, that sample's
       ID will not appear as a key in the dict of sequencing data for its institution.
-      
+
       The data are cached so this can safely be called multiple times without
       repeated MLWH queries being made.
       """
@@ -308,9 +308,9 @@ class MonocleData:
    def get_batches(self):
       """
       Returns dict with details of batches delivered.
-      
+
       TODO:  find out a way to get the genuine total number of expected samples for each institution
-      """ 
+      """
       samples = self.get_samples()
       institutions_data       = self.get_institutions()
       sequencing_status_data  = self.get_sequencing_status()
@@ -348,11 +348,11 @@ class MonocleData:
                                        'deliveries': deliveries,
                                        }
       return batches
-      
+
    def sequencing_status_summary(self):
       """
       Returns dict with a summary of sequencing outcomes for each institution.
-      
+
       {  institution_1: {  'received':    <int>,
                            'completed':   <int>,
                            'success':     <int>,
@@ -433,12 +433,12 @@ class MonocleData:
                            },
          institution_2...
          }
-         
+
       Note that when self.pipeline_status is instantiated it creates a dataframe with
       the data, rather than querying an API, there is no separate method to "get" pipeline
       data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
       are handled in this class.
-         
+
       TODO:  decide what to do about about 'failed' dict 'issue' strings
       """
       institutions_data = self.get_institutions()
@@ -471,12 +471,12 @@ class MonocleData:
                      # ...and if the stage failed...
                      if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
                         # ...record a message for the failed stage
-                        status[this_institution]['fail_messages'].append(  
+                        status[this_institution]['fail_messages'].append(
                            {  'lane'   : "{} (sample {})".format(this_lane_id, this_sample_id),
                               'stage'  : this_stage,
                               # currently have no way to retrieve a failure report
                               'issue'  : 'sorry, failure mesages cannot currently be seen here',
-                              },           
+                              },
                            )
                # if not failed, but succeded, increment success and completed counter
                elif this_pipeline_status['SUCCESS']:
@@ -495,7 +495,7 @@ class MonocleData:
       Optionally pass lists metadata_columns and in_silico_columns to specify which metadata
       and in silico data (respectively) columns are returned.  Both defaults to returning all columns.
       Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
-      
+
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico data.  Metadata and in silico data are represented with the same format:
       a dict of fields, where each dict value is a dict with the name, column position (order) and value
@@ -522,7 +522,7 @@ class MonocleData:
          assert num_rows is not None, "{} must be passed start_rows and num_rows, or neither.".format(__class__.__name__)
          filtered_samples = list(filtered_samples[ (start_row-1) : ((start_row -1) + num_rows) ])
       logging.info("pagination (start {}, num {}) working with {} samples".format(__class__.__name__,start_row,num_rows,len(filtered_samples)))
-            
+
       # the samples IDs can be used to get the sample metadata
       try:
          sample_id_list = [ s['sample_id'] for s in filtered_samples ]
@@ -531,7 +531,7 @@ class MonocleData:
          raise
       logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
       metadata = self.metadata_source.get_metadata(sample_id_list)
-                  
+
       # combined_metadata is the structure to be returned
       combined_metadata = [ {'metadata': m} for m in metadata ]
       if include_in_silico:
@@ -540,7 +540,7 @@ class MonocleData:
       # filtering metadata columns is done last, because some columns are needed in the processes above
       if metadata_columns is not None or in_silico_columns is not None:
          combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
-      
+
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
       return combined_metadata
 
@@ -550,9 +550,9 @@ class MonocleData:
       - filtered samples structure (as constructed by `get_filtered_samples()`)
       - combined metadata structure (of the type `get_metadata()` creates and returns) but which contains
       only a `metadata` key for each sample
-      
+
       Retrieves _in silico_ data from the metadata API, and inserts it into the combined metadata structure
-      
+
       Returns the combined metadata structure
       """
       # in silco data must be retrieved using lane IDs
@@ -570,7 +570,7 @@ class MonocleData:
          except KeyError:
             logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
             raise
-      in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)   
+      in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)
       logging.debug("{}.metadata_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
       lane_to_in_silico_lookup = {}
       for this_in_silico_data in in_silico_data:
@@ -579,7 +579,7 @@ class MonocleData:
          except KeyError:
             logging.error("{}.metadata_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
             raise
-      
+
       for combined_metadata_item in combined_metadata:
          this_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
          # now get in silico data for this sample's lane(s)
@@ -594,9 +594,9 @@ class MonocleData:
                   raise ValueError(message)
                else:
                   combined_metadata_item['in silico'] = this_lane_in_silico_data
-         
+
       return combined_metadata
-   
+
    def _filter_combined_metadata_columns(self, combined_metadata, metadata_columns, in_silico_columns):
       """
       Pass
@@ -660,13 +660,13 @@ class MonocleData:
       Pass sample filters dict (describes the filters applied in the front end)
       Optionally pass `disable_public_name_fetch` (default: false) to stop public names being retrieved
       from metadata API (will be slightly quicker, so use this if you don't need public names)
-      
+
       Returns a list of matching samples' sequencing status data w/ institution keys and (unless
       disable_public_name_fetch was passed) public names added.
-      
+
       Supports `batches` filter:
          "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
-         
+
       Also metadata filters, e.g.
          "metadata": {"serotype": ["I", "IV"], ...}
 
@@ -713,13 +713,13 @@ class MonocleData:
                   sample['public_name'] = sample_id_to_public_name[sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
-      
+
       metadata_filters = sample_filters.get('metadata', None)
       if metadata_filters is not None:
          filtered_samples = self._apply_metadata_filters(filtered_samples, metadata_filters)
-      
+
       return filtered_samples
-   
+
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
       logging.info("{}.metadata_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_metadata.get_filtered_sample_ids(metadata_filters)
@@ -733,7 +733,7 @@ class MonocleData:
       filtered_samples = intersection
       logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
-   
+
 
    def _get_sample_id_to_public_name_dict(self, institutions):
       sample_id_to_public_name = {}
@@ -820,20 +820,20 @@ class MonocleData:
       Pass Flask request object, institution name, category ('sequencing' or 'pipeline')
       and status ('successful' or 'failed');
       this identifies the lanes for which metadata are required.
-      
+
       *Note* this was originally written as a method for retrieving sample metadata, but the
       in silico data are now also included so these can all be viewed in a single spreadsheet.
-      
+
       On success, returns content for response, with suggested filename
-      
+
       {  'success'   : True,
          'filename'  : 'the-institution-name_the-category_the-status.csv',
          'content'   : 'a,very,long,multi-line,CSV,string'
          }
-         
+
       On failure, returns reasons ('request' or 'internal'; could extend in future if required??)
       that can be used to provide suitable HTTP status.
-      
+
       {  'success'   : False,
          'error'     : 'request'
          }
@@ -846,7 +846,7 @@ class MonocleData:
          return { 'success'   : False,
                   'error'     : 'request',
                   }
-      
+
       institution_download_symlink_url_path = self.make_download_symlink(institution)
       if institution_download_symlink_url_path is None:
          logging.error("Failed to create a symlink for data downloads.")
@@ -875,7 +875,7 @@ class MonocleData:
       this identifies the lanes for which metadata are required.
       Also pass the base URL for the download.  The complete download URL for each lane is this
       base URL with the lane ID appended.
-      
+
       *Note* this was originally written as a method for retrieving sample metadata, but the
       in silico data are now also included so these can all be viewed in a single spreadsheet.
 
@@ -884,7 +884,7 @@ class MonocleData:
       sequencing_status_data = self.get_sequencing_status()
       institution_data_key = self.institution_db_key_to_dict[institution]
       logging.debug("getting metadata: institution db key {} maps to dict key {}".format(institution,institution_data_key))
-         
+
       # get list of samples for this combo of institution/category/status
       # note that the status can only be found by *lane* ID, so we need to look up lanes that match the requirements
       # then the sample ID associated with eacj matchuing lane gets pushed onto a list that we can use for the metadata download request
@@ -899,7 +899,7 @@ class MonocleData:
                continue
 
          for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
-            
+
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
                # lane completed sequencing, though possibly failed
                this_lane_seq_fail = False
@@ -907,7 +907,7 @@ class MonocleData:
                   if not 1 == this_lane[this_flag]:
                      this_lane_seq_fail = True
                      break
-               
+
                want_this_lane = False
                # we're looking for lanes that completed sequencing...
                if 'sequencing' == category:
@@ -939,7 +939,7 @@ class MonocleData:
       logging.info("Requesting metadata for samples: {}".format(samples_for_download))
       metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(list(samples_for_download.keys())))
       metadata_df                   = pandas.DataFrame(metadata)
-      
+
       # IMPORTANT
       # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
       # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
@@ -947,11 +947,11 @@ class MonocleData:
       # tin tbhis case they are all put into the lane ID cell
       logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
       metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
-      
+
       # add download links to metadata DataFrame
       metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
-      logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))   
-      
+      logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
+
       # if there are any in silico data, these are merged into the metadata DataFrame
       lanes_for_download=[]
       for this_sample in samples_for_download.keys():
@@ -967,7 +967,7 @@ class MonocleData:
          del in_silico_data_df
          # add silico data columns to the list
          metadata_col_order = metadata_col_order + in_silico_data_col_order
-         
+
       # list of columns in `metadata_col_order` defines the CSV output
       # remove delete Sample_id -- this is a dupliacte of Lane_ID
       while 'Sample_id' in metadata_col_order:
@@ -978,11 +978,11 @@ class MonocleData:
       metadata_col_order.insert(0,'Public_Name')
       # put download links in last column
       metadata_col_order.append('Download_Link')
-      
+
       metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
       logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))
       return metadata_csv
-      
+
    def _metadata_download_to_pandas_data(self, api_data):
       """
       Transforms data returned by MetadataDownload methods into a form that can be loaded by pandas
@@ -1009,25 +1009,25 @@ class MonocleData:
          pandas_data.append( pandas_row )
          first_row = False
       return pandas_data,col_order
-   
+
    def make_download_symlink(self, target_institution=None, **kwargs):
       """
       Pass the institution name _or_ cross_institution=True
-      
+
       This creates a symlink from the web server download directory to the
       directory in which an institution's sample data (annotations,
       assemblies, reads etc.) or a cross-institution sample ZIP file can be found.
-      
+
       The symlink has a random name so only someone given the URL will be
       able to access it.
-      
+
       The symlink path (relative to web server document root) is returned.
       """
       if target_institution is None and not kwargs.get('cross_institution'):
          message="must pass either a target_institution name or 'cross_institution=True'"
          logging.error("{} parameter error: {}".format(__class__.__name__,message))
          raise ValueError(message)
-      
+
       download_config_section = 'data_download'
       download_dir_param      = 'web_dir'
       download_url_path_param = 'url_path'
@@ -1100,7 +1100,7 @@ class MonocleData:
             sequencing_status_data[institution][this_sample_id]['creation_datetime'])
          num_samples_received_by_date[received_date] += 1
       return num_samples_received_by_date
-   
+
    def num_lanes_sequenced_by_date(self, institution):
       sequencing_status_data        = self.get_sequencing_status()
       if sequencing_status_data[institution][API_ERROR_KEY] is not None:

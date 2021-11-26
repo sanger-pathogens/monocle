@@ -26,6 +26,7 @@ monocle_ldap:
    ldap_url                : 'ldap://monocle-ldap:389'
    users_obj               : 'inetOrgPerson'
    groups_obj              : 'posixGroup'
+   country_names_attr      : 'memberUid'
    username_attr           : 'uid'
    uid_attr                : 'uidNumber'
    membership_attr         : 'o'

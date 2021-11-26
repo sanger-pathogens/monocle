@@ -216,7 +216,7 @@ paths:
                       $ref: "#/components/schemas/Institution"
         403:
           description: "Authorization information is missing or invalid."
-          
+
   /get_metadata:
     post:
       operationId: dash.api.routes.get_metadata
@@ -243,7 +243,7 @@ paths:
                 $ref: "#/components/schemas/GetMetadataOutput"
         403:
           description: "Authorization information is missing or invalid."
-          
+
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download
@@ -260,7 +260,7 @@ paths:
           description: "The institution name."
           required: true
           schema:
-            $ref: "#/components/schemas/InstitutionName"
+            $ref: "#/components/schemas/InstitutionInfo"
         - name: "category"
           in: path
           description: "The category to be downloaded: sequencing or pipeline."
@@ -286,7 +286,7 @@ paths:
 
 components:
   schemas:
-  
+
     UserName:
        type: string
        minLength: 3
@@ -296,13 +296,32 @@ components:
     Institution:
       type: object
       required:
-        - name
         - db_key
+        - info
       properties:
-        name:
-          $ref: "#/components/schemas/InstitutionName"
         db_key:
           $ref: "#/components/schemas/InstitutionID"
+        info:
+          $ref: "#/components/schemas/InstitutionInfo"
+
+    InstitutionInfo:
+      description: "The name of the institution and source countries."
+      type: object
+      required:
+        - inst_name
+        - country_names
+      properties:
+        inst_name:
+          $ref: "#/components/schemas/InstitutionName"
+        country_names:
+          $ref: "#/components/schemas/CountryNames"
+
+    CountryNames:
+      description: "List of countries."
+      type: array
+      items:
+        $ref: "#/components/schemas/CountryName"
+      minItems: 1
 
     InstitutionID:
        description: "The ID of the institution."
@@ -312,12 +331,17 @@ components:
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
 
     InstitutionName:
-       description: "The name of the institution."
-       type: string
-       minLength: 3
-       maxLength: 256
-       pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
-       
+      type: string
+      minLength: 3
+      maxLength: 256
+      pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+
+    CountryName:
+      type: string
+      minLength: 3
+      maxLength: 256
+      pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)\[\]]*$
+
     DashboardMetadataDownloadParam:
        type: string
        minLength: 1
@@ -333,7 +357,7 @@ components:
             $ref: "#/components/schemas/InstKeyBatchDatePair"
         metadata:
           $ref: "#/components/schemas/MetadataFilters"
-          
+
     MetadataFilters:
       type: object
       additionalProperties:
@@ -347,7 +371,7 @@ components:
       minItems: 0
       example:
         serotype: ["Ia", "IV"]
-          
+
     GetMetadataInput:
       type: object
       required:
@@ -396,7 +420,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/CombinedSampleMetadata"
-    
+
     CombinedSampleMetadata:
       type: object
       description: "Sample manifest metadata plus in silico data (may be extended to inclide QC data in future)"
@@ -407,7 +431,7 @@ components:
           $ref: "#/components/schemas/Metadata"
         in silico:
           $ref: "#/components/schemas/InSilicoData"
-          
+
     Metadata:
       type: object
       required:
@@ -796,7 +820,7 @@ components:
           type: boolean
         reads:
           type: boolean
-          
+
     InstKeyBatchDatePair:
       type: object
       required:
@@ -811,7 +835,7 @@ components:
         batch date:
           description: "Date of delivery"
           $ref: "#/components/schemas/BatchDate"
-            
+
     BatchDate:
       type: string
       format: date
@@ -833,7 +857,7 @@ components:
         size_zipped:
           type: string
           readOnly: true
-          
+
     ProjectProgress:
       type: object
       required:
@@ -1031,7 +1055,7 @@ components:
           readOnly: true
         memberOf:
           type: array
-          description: "A list of institutions for which the user is a member"
+          description: "A list of institutions and source countries of institutions for which the user is a member"
           items:
             $ref: "#/components/schemas/UserInstitution"
 
@@ -1039,9 +1063,9 @@ components:
       type: object
       required:
         - "inst_id"
-        - "inst_name"
+        - "inst_info"
       properties:
         inst_id:
           $ref: "#/components/schemas/InstitutionID"
-        inst_name:
-          $ref: "#/components/schemas/InstitutionName"
+        inst_info:
+          $ref: "#/components/schemas/InstitutionInfo"

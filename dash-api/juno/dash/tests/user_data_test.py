@@ -13,12 +13,12 @@ class MonocleUserDataTest(TestCase):
    bad_openldap_config  = 'dash/tests/mock_data/openldap-bad.yaml'
    # in UserData object variable config (dict of config parames) the OpenLDAP params are stored using this key:
    openldap_config_key  = 'openldap'
-   expected_config_str  = ['openldap_config', 'ldap_url', 'users_obj', 'groups_obj', 'username_attr',
+   expected_config_str  = ['openldap_config', 'ldap_url', 'users_obj', 'groups_obj', 'country_names_attr', 'username_attr',
                            'uid_attr', 'membership_attr', 'gid_attr', 'inst_id_attr', 'inst_name_attr']
    expected_ldap_str    = ['LDAP_ORGANISATION', 'LDAP_DOMAIN', 'LDAP_ADMIN_PASSWORD', 'LDAP_CONFIG_PASSWORD', 'LDAP_READONLY_USER_USERNAME',
                            'LDAP_READONLY_USER_PASSWORD', 'MONOCLE_LDAP_BASE_DN', 'MONOCLE_LDAP_BIND_DN', 'MONOCLE_LDAP_BIND_PASSWORD']
    expected_ldap_bool   = ['LDAP_READONLY_USER']
-      
+
    mock_ldap_result_user            =  (  'cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
                                           {  'cn': [b'mock_user_sanger_ac_uk'],
                                              'gidNumber': [b'501'],
@@ -58,13 +58,15 @@ class MonocleUserDataTest(TestCase):
                                           {  'cn': [b'WelSanIns'],
                                              'description': [b'Wellcome Sanger Institute'],
                                              'gidNumber': [b'501'],
-                                             'objectClass': [b'posixGroup', b'top']
+                                             'objectClass': [b'posixGroup', b'top'],
+                                             'memberUid': [b'UK']
                                              }
                                           )
    mock_ldap_result_group_no_desc   =  (  'cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk',
                                           {  'cn': [b'WelSanIns'],
                                              'gidNumber': [b'501'],
-                                             'objectClass': [b'posixGroup', b'top']
+                                             'objectClass': [b'posixGroup', b'top'],
+                                             'memberUid': [b'UK']
                                              }
                                           )
 
@@ -88,7 +90,7 @@ class MonocleUserDataTest(TestCase):
       with self.assertRaises(KeyError):
          doomed = UserData(set_up=False)
          doomed.set_up(self.bad_config)
-         
+
    def test_missing_config(self):
       with self.assertRaises(FileNotFoundError):
          doomed = UserData(set_up=False)
@@ -146,7 +148,7 @@ class MonocleUserDataTest(TestCase):
       mock_query.return_value = [self.mock_ldap_result_group]
       user_ldap_result = self.userdata.ldap_search_group_by_gid('any_valid_string')
       self.assertIsInstance(user_ldap_result, type(('a','tuple')))
-      
+
    @patch.object(UserData, 'ldap_search_group_by_gid')
    @patch.object(UserData, 'ldap_search_user_by_username')
    def test_get_user_details(self,mock_user_query,mock_group_query):
@@ -180,8 +182,8 @@ class MonocleUserDataTest(TestCase):
       self.assertIsInstance( user_details['memberOf'],                  type(['a', 'list'])  )
       self.assertIsInstance( user_details['memberOf'][0],               type({'a': 'dict'})  )
       self.assertIsInstance( user_details['memberOf'][0]['inst_id'],    type('a string')     )
-      self.assertIsInstance( user_details['memberOf'][0]['inst_name'],  type('a string')     )
+      self.assertIsInstance( user_details['memberOf'][0]['inst_info'],  type({'a': 'dict'})     )
       # data values
       self.assertEqual( 'mock_user',                  user_details['username']                  )
       self.assertEqual( 'WelSanIns',                  user_details['memberOf'][0]['inst_id']    )
-      self.assertEqual( 'Wellcome Sanger Institute',  user_details['memberOf'][0]['inst_name']  )
+      self.assertEqual( {'inst_name': 'Wellcome Sanger Institute', 'country_names': ['UK']},  user_details['memberOf'][0]['inst_info']  )
