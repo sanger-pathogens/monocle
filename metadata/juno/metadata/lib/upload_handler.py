@@ -1,6 +1,7 @@
 import pandas
 import logging
 import re
+from flask import request
 from typing import List
 from pandas_schema import Column, Schema
 from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, \
@@ -189,7 +190,8 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            self.__institutions = self.__dao.get_institutions()
+            username = self.__dao.get_authenticated_username(request)
+            self.__institutions = self.__dao.get_institutions(username)
             # Create a validation schema
             schema = self.create_schema()
             # Run the validation

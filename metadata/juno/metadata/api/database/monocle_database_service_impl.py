@@ -1,4 +1,7 @@
 import logging
+import json
+import urllib
+from flask import request
 from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -10,6 +13,8 @@ from metadata.api.database.monocle_database_service import MonocleDatabaseServic
 
 logger = logging.getLogger()
 
+class ProtocolError(Exception):
+    pass
 
 class Connector:
     """ Provide SQL Alchemy connections """
@@ -28,6 +33,9 @@ class Connector:
 
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """ DAO for metadata and in silico data access """
+
+    DASHBOARD_API_ENDPOINT = "http://dash-api/dashboard-api/get_user_details"
+    DASHBOARD_API_SWAGGER = "http://dash-api/dashboard-api/ui/"
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
@@ -265,6 +273,19 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
+
+    def get_authenticated_username(self, req_obj: request):
+        # TODO: Make this a separate service
+        """ Return the request authenticated user name """
+        username = None
+        try:
+            username = req_obj.headers['X-Remote-User']
+            logging.info('X-Remote-User header = {}'.format(username))
+        except KeyError:
+            pass
+
+        return username
+
     def convert_string(self, val: str) -> str:
         """ If a given string is empty return None """
         return val if val else None
@@ -282,16 +303,57 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return int_val
 
-    def get_institutions(self) -> List[Institution]:
-        """ Return a list of allowed institutions """
-        results = []
-        with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
+    def make_request(self, endpoint, request_headers, post_data=None):
+        request_url       = endpoint
+        request_data      = None
+        # if POST data were passed, convert to a UTF-8 JSON string
+        if post_data is not None:
+            assert ( isinstance(post_data, dict) or isinstance(post_data, list) ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__,post_data)
+            request_data = str(json.dumps(post_data))
+            logging.debug("POST data for Monocle Download API: {}".format(request_data))
+            request_data = request_data.encode('utf-8')
+        try:
+            logging.info("request to Monocle Download: {}".format(request_url))
+            http_request = urllib.request.Request(request_url, data = request_data, headers = request_headers)
+            with urllib.request.urlopen( http_request ) as this_response:
+                response_as_string = this_response.read().decode('utf-8')
+                logging.debug("response from Monocle Download: {}".format(response_as_string))
+        except urllib.error.HTTPError as e:
+            if 404 == e.code:
+                logging.info("HTTP response status {} (no data found) during Monocle Download request {}".format(e.code,request_url))
+            else:
+                logging.error("HTTP status {} during Monocle Download request {}".format(e.code,request_url))
+            raise
+        return response_as_string
 
-            for row in rs:
+    def parse_response(self, response_as_string, required_keys=[]):
+        results_data = json.loads(response_as_string)
+        if not isinstance(results_data, dict):
+            error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER)
+            raise ProtocolError(error_message)
+        for required_key in required_keys:
+            try:
+                results_data[required_key]
+            except KeyError:
+                error_message = "response data did not contain the expected key '{}' (see API documentation at {})".format(self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER)
+                raise ProtocolError(error_message)
+        return results_data
+
+    def get_institutions(self, username) -> List[Institution]:
+        """ Return a list of allowed institutions """
+        endpoint = self.DASHBOARD_API_ENDPOINT
+        request_headers = {'Content-type': 'application/json;charset=utf-8', 'X-Remote-User': username}
+        logging.debug("{}.get_institutions() using endpoint {} for username {}".format(__class__.__name__, endpoint, username))
+        response_as_string = self.make_request(endpoint, request_headers)
+        logging.debug("{}.get_institutions() returned {}".format(__class__.__name__, response_as_string))
+        results_as_dict = self.parse_response(response_as_string, required_keys = ['user_details'])
+
+        results = []
+        for item in results_as_dict['user_details']['memberOf']:
+            for country_name in item['inst_info']['country_names']:
                 results.append(
-                    Institution(row['name'], row['country'], row['latitude'], row['longitude'])
-                )
+                    Institution(item['inst_info']['inst_name'], country_name)
+                    )
 
         return results
 

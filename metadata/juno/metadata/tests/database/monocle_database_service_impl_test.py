@@ -1,8 +1,10 @@
 import unittest
+import flask
 from unittest.mock import patch, Mock, call
 from metadata.api.model.institution import Institution
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
 from metadata.tests.test_data import *
+from metadata.api.database.monocle_database_service_impl import ProtocolError
 
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
@@ -21,34 +23,67 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             self.connector.get_connection.return_value = self.connection
             self.under_test = MonocleDatabaseServiceImpl(self.connector)
 
-    def test_get_institutions(self) -> None:
-        self.connection.execute.return_value = [
-            dict(name='Institution1', country='Israel', latitude=20.0, longitude=30.0),
-            dict(name='Institution2', country='China', latitude=50.0, longitude=60.0)
-        ]
+        self.response_as_string = '{"user_details": {"username": "mock_user", \
+        "memberOf": [{"inst_id": "mock_id", "inst_info": \
+        {"inst_name": "mock_name", "country_names": ["name1", "name2"]}}, \
+        {"inst_id": "LabCenEstPar", "inst_info": \
+        {"inst_name": "Laboratório Central do Estado do Paraná", "country_names": ["Brazil"]}}]}}'
 
-        institutions = self.under_test.get_institutions()
+        self.response_as_dict = {'user_details': {
+            'username': 'mock_user',
+            'memberOf': [{
+                'inst_id': 'mock_id',
+                'inst_info':{
+                    'inst_name': 'mock_name',
+                    'country_names': ['name1', 'name2']
+                    }
+                },
+                {
+                'inst_id': 'LabCenEstPar',
+                'inst_info': {
+                    'inst_name': 'Laboratório Central do Estado do Paraná',
+                    'country_names': ['Brazil']
+                }
+            }]
+        }}
+
+    @patch('metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.parse_response')
+    @patch('metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.make_request')
+    def test_get_institutions(self, make_request_mock, parse_response_mock) -> None:
+        make_request_mock.return_value = self.response_as_string
+        parse_response_mock.return_value = self.response_as_dict
+
+        institutions = self.under_test.get_institutions('mock_user')
+
         self.assertIsNotNone(institutions)
         self.assertIsInstance(institutions, list)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertEqual(len(institutions), 2)
+        self.assertEqual(len(institutions), 3)
         self.assertIsInstance(institutions[0], Institution)
-        self.assertEqual(institutions[0].name, 'Institution1')
-        self.assertEqual(institutions[0].country, 'Israel')
-        self.assertEqual(institutions[0].latitude, 20.0)
-        self.assertEqual(institutions[0].longitude, 30.0)
+        self.assertEqual(institutions[0].name, 'mock_name')
+        self.assertEqual(institutions[0].country, 'name1')
         self.assertIsInstance(institutions[1], Institution)
-        self.assertEqual(institutions[1].name, 'Institution2')
-        self.assertEqual(institutions[1].country, 'China')
-        self.assertEqual(institutions[1].latitude, 50.0)
-        self.assertEqual(institutions[1].longitude, 60.0)
+        self.assertEqual(institutions[1].name, 'mock_name')
+        self.assertEqual(institutions[1].country, 'name2')
+        self.assertIsInstance(institutions[2], Institution)
+        self.assertEqual(institutions[2].name, 'Laboratório Central do Estado do Paraná')
+        self.assertEqual(institutions[2].country, 'Brazil')
 
-    def test_get_institutions_noresults(self) -> None:
-        self.connection.execute.return_value = []
-        institutions = self.under_test.get_institutions()
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertIsNotNone(institutions)
-        self.assertEqual(len(institutions), 0)
+    def test_parse_response(self) -> None:
+        actual = self.under_test.parse_response(self.response_as_string, ['user_details'])
+        self.assertEqual(actual, self.response_as_dict)
+
+    def test_parse_response_incorrect(self) -> None:
+        response_as_string = '[{"Not": "a dictionary"}]'
+        with self.assertRaises(ProtocolError):
+            self.under_test.parse_response(response_as_string, ['user_details'])
+
+    @patch.object(flask, 'request')
+    def test_get_authenticated_username(self, mock_request) -> None:
+        mock_request.headers = {'X-Remote-User': 'mock_user'}
+
+        actual = self.under_test.get_authenticated_username(mock_request)
+
+        self.assertEqual(actual, 'mock_user')
 
     def test_get_institution_names(self) -> None:
         self.connection.execute.return_value = [
@@ -790,3 +825,139 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(self.under_test.convert_int('0'), 0)
         with self.assertRaises(ValueError):
             self.under_test.convert_int('hello')
+
+    def test_get_download_in_silico_data(self) -> None:
+
+        input_list = ['50000_2#282', '50000_2#287']
+        # Fake a returned result set...
+        self.connection.execute.return_value = [
+            dict(lane_id='50000_2#282',
+                cps_type='III',
+                ST='ST-I',
+                adhP='15',
+                pheS='8',
+                atr='4',
+                glnA='4',
+                sdhA='22',
+                glcK='1',
+                tkt='9',
+                twenty_three_S1='pos',
+                twenty_three_S3='pos',
+                AAC6APH2='neg',
+                AADECC='neg',
+                ANT6='neg',
+                APH3III='neg',
+                APH3OTHER='neg',
+                CATPC194='neg',
+                CATQ='neg',
+                ERMA='neg',
+                ERMB='neg',
+                ERMT='neg',
+                LNUB='neg',
+                LNUC='neg',
+                LSAC='neg',
+                MEFA='neg',
+                MPHC='neg',
+                MSRA='neg',
+                MSRD='neg',
+                FOSA='neg',
+                GYRA='pos',
+                PARC='pos',
+                RPOBGBS_1='neg',
+                RPOBGBS_2='neg',
+                RPOBGBS_3='neg',
+                RPOBGBS_4='neg',
+                SUL2='neg',
+                TETB='neg',
+                TETL='neg',
+                TETM='pos',
+                TETO='neg',
+                TETS='neg',
+                ALP1='neg',
+                ALP23='neg',
+                ALPHA='neg',
+                HVGA='pos',
+                PI1='pos',
+                PI2A1='neg',
+                PI2A2='neg',
+                PI2B='pos',
+                RIB='pos',
+                SRR1='neg',
+                SRR2='pos',
+                twenty_three_S1_variant = '',
+                twenty_three_S3_variant = '',
+                GYRA_variant = '*',
+                PARC_variant = '*',
+                RPOBGBS_1_variant = '',
+                RPOBGBS_2_variant = '',
+                RPOBGBS_3_variant = '',
+                RPOBGBS_4_variant = ''),
+            dict(lane_id='50000_2#287',
+                cps_type='III',
+                ST='ST-II',
+                adhP='3',
+                pheS='11',
+                atr='0',
+                glnA='16',
+                sdhA='14',
+                glcK='31',
+                tkt='6',
+                twenty_three_S1='pos',
+                twenty_three_S3='pos',
+                AAC6APH2='neg',
+                AADECC='neg',
+                ANT6='neg',
+                APH3III='neg',
+                APH3OTHER='neg',
+                CATPC194='neg',
+                CATQ='neg',
+                ERMA='neg',
+                ERMB='neg',
+                ERMT='neg',
+                LNUB='neg',
+                LNUC='neg',
+                LSAC='neg',
+                MEFA='neg',
+                MPHC='neg',
+                MSRA='neg',
+                MSRD='neg',
+                FOSA='neg',
+                GYRA='pos',
+                PARC='pos',
+                RPOBGBS_1='neg',
+                RPOBGBS_2='neg',
+                RPOBGBS_3='neg',
+                RPOBGBS_4='neg',
+                SUL2='neg',
+                TETB='neg',
+                TETL='neg',
+                TETM='pos',
+                TETO='neg',
+                TETS='neg',
+                ALP1='neg',
+                ALP23='neg',
+                ALPHA='neg',
+                HVGA='pos',
+                PI1='pos',
+                PI2A1='neg',
+                PI2A2='neg',
+                PI2B='pos',
+                RIB='pos',
+                SRR1='neg',
+                SRR2='pos',
+                twenty_three_S1_variant = '',
+                twenty_three_S3_variant = '',
+                GYRA_variant='GYRA-T78Q,L55A',
+                PARC_variant='PARC-Q17S',
+                RPOBGBS_1_variant = '',
+                RPOBGBS_2_variant = '',
+                RPOBGBS_3_variant = '',
+                RPOBGBS_4_variant = '')]
+
+        in_silico_data = self.under_test.get_download_in_silico_data(input_list)
+        self.assertIsNotNone(in_silico_data)
+        self.assertEqual(len(in_silico_data), 2)
+        self.assertEqual(in_silico_data[0], TEST_LANE_1)
+        self.assertEqual(in_silico_data[1], TEST_LANE_2)
+        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_IN_SILICO_SQL,
+                                                   lanes=('50000_2#282', '50000_2#287'))
