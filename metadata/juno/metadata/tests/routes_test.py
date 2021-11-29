@@ -73,6 +73,21 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_filtered_samples_stop_injection(self, mocked_jsoncall, mocked_query):
+        mocked_query.return_value = ['sample1', 'sample2']
+        mocked_jsoncall.return_value = ''
+        fakeDB = MagicMock()
+        fakeDB.get_filtered_samples = MagicMock(return_value=[])
+        for looks_iffy_to_me_guv in [  'serotype="Ia"; DO something NASTY; --',
+                                       'actually anything with -- in it',
+                                       'no semi; colons either',
+                                       'wildcards % are right out'
+                                       ]:
+          under_test = mar.get_filtered_samples({looks_iffy_to_me_guv: 'any search term'}, fakeDB)
+          self.assertEqual(under_test, ('Invalid arguments provided', 400))
+
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions')
     @patch('metadata.api.routes.convert_to_json')
     def test_get_institutions_jsonified(self, mocked_jsoncall, mocked_query):

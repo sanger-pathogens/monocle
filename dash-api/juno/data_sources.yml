@@ -5,6 +5,7 @@ monocle_metadata_api:
    metadata_key            : 'download'
    institutions            : '/metadata/institutions'
    samples                 : '/metadata/samples'
+   filters                 : '/metadata/filters'
    institutions_key        : 'institutions'
    samples_key             : 'samples'
    download_in_silico_data : '/metadata/download_in_silico_data'

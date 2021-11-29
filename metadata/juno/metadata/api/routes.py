@@ -2,6 +2,7 @@ import logging
 import uuid
 import os
 import connexion
+import re
 from flask import jsonify
 from injector import inject
 from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
@@ -16,6 +17,10 @@ HTTP_NOT_FOUND_STATUS = 404
 HTTP_SUCCEEDED_STATUS = 200
 
 UPLOAD_EXTENSION = '.xlsx'
+
+# regex for names allowed for filters; interpolated into SQL, so must prevent injection
+# (this is easy in practice, as it only has to match column names we choose to sue the the db schema)
+FILTER_NAME_REGEX = '^[a-zA-Z0-9_]+$'
 
 def convert_to_json(samples):
     return jsonify(samples)
@@ -47,6 +52,7 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
                HTTP_BAD_REQUEST_STATUS
 
     spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info('Saving spreadsheet as {}...'.format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
 
     try:
@@ -88,6 +94,7 @@ def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
                HTTP_BAD_REQUEST_STATUS
 
     spreadsheet_file = '/tmp/{}-{}'.format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info('Saving spreadsheet as {}...'.format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
 
     try:
@@ -175,6 +182,11 @@ def get_filtered_samples(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
     filters = body
     try:
+        allowed_filters_regex = re.compile(FILTER_NAME_REGEX)
+        for this_filter in filters:
+          logging.debug("checking filter name {}".format(this_filter))
+          if not allowed_filters_regex.match(this_filter):
+            raise ValueError("filter name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_filter))
         samples = dao.get_filtered_samples(filters)
     except ValueError as ve:
         logger.error(str(ve))
