@@ -7,8 +7,7 @@
 
   const NUM_METADATA_ROWS_PER_PAGE = 12;
 
-  // This var is used to detect the last page.
-  let numMetadataRowsDisplayed = 0;
+  let isLastPage = false;
   let pageNum = 1;
   let sortedMetadataPromise;
   let updateMetadataTimeoutId;
@@ -33,14 +32,14 @@
       numRows: NUM_METADATA_ROWS_PER_PAGE,
       startRow: NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1
     }, fetch)
-      .then((unsortedMetadata = []) => {
-        const sortedMetadata = sortMetadataByOrder(unsortedMetadata);
-        numMetadataRowsDisplayed = sortedMetadata.length;
+      .then((metadataResponse = {}) => {
+        const sortedMetadata = sortMetadataByOrder(metadataResponse.samples);
+        isLastPage = metadataResponse["last row"] >= metadataResponse["total rows"];
         return sortedMetadata;
       });
   }
 
-  function sortMetadataByOrder(unsortedMetadata) {
+  function sortMetadataByOrder(unsortedMetadata = []) {
     return unsortedMetadata.map(transformSampleMetadataToSorted);
   }
 
@@ -75,10 +74,6 @@
   function setToFirstPage() {
     pageNum = 1;
   }
-
-  function isLastPage() {
-    return numMetadataRowsDisplayed < NUM_METADATA_ROWS_PER_PAGE;
-  }
 </script>
 
 
@@ -97,7 +92,7 @@
         <li><button type="button" on:click={decrementPage} disabled={pageNum <= 1}>
           Previous
         </button></li>
-        <li><button type="button" on:click={incrementPage} disabled={isLastPage()}>
+        <li><button type="button" on:click={incrementPage} disabled={isLastPage}>
           Next
         </button></li>
       </ul>
