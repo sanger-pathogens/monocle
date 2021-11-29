@@ -515,14 +515,31 @@ class MonocleData:
       """
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
-      logging.info("{}.get_filtered_samples returned {} samples".format(__class__.__name__,len(filtered_samples)))
+      # be careful using total_num_matching_samples in following lines, as this is the complete
+      # number of samples, but pagination params mean we may below be working with a smaller
+      # (possibly empty) list of samples
+      total_num_matching_samples = len(filtered_samples)
+      logging.info("{}.get_filtered_samples returned {} samples".format(__class__.__name__,total_num_matching_samples))
       logging.debug("{}.get_filtered_samples returned {}".format(__class__.__name__,filtered_samples))
       # if paginating, take a slice of the samples
-      if start_row is not None:
-         assert num_rows is not None, "{} must be passed start_rows and num_rows, or neither.".format(__class__.__name__)
+      if start_row is None:
+         last_sample_row_returned = total_num_matching_samples
+      else:
+         assert num_rows is not None, "{} must be passed start_row and num_rows, or neither.".format(__class__.__name__)
          filtered_samples = list(filtered_samples[ (start_row-1) : ((start_row -1) + num_rows) ])
+         # last_sample_row_returned must be the actual last row, which may be lower
+         # than expected when the end of the result set is reached
+         last_sample_row_returned = (start_row-1) + len(filtered_samples)
       logging.info("pagination (start {}, num {}) working with {} samples".format(__class__.__name__,start_row,num_rows,len(filtered_samples)))
-            
+
+      # if filters or pagination results in an empty samples list, return an empty response
+      if 1 > len(filtered_samples):
+         logging.info("no matching samples: returning empty response")
+         no_samples = {'metadata':[]}
+         if include_in_silico:
+            no_samples['in silico'] = []
+         return {'samples': no_samples, 'total rows':0, 'last row': 0}
+
       # the samples IDs can be used to get the sample metadata
       try:
          sample_id_list = [ s['sample_id'] for s in filtered_samples ]
@@ -542,7 +559,7 @@ class MonocleData:
          combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
       
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
-      return combined_metadata
+      return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
 
    def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
       """

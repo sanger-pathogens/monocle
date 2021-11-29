@@ -310,6 +310,8 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
+       example: "NatRefLab"
+
 
     InstitutionName:
        description: "The name of the institution."
@@ -317,6 +319,7 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
+       example: "National Reference Laboratories"
        
     DashboardMetadataDownloadParam:
        type: string
@@ -393,9 +396,25 @@ components:
             - "ST"
 
     GetMetadataOutput:
-      type: array
-      items:
-        $ref: "#/components/schemas/CombinedSampleMetadata"
+      type: object
+      readOnly: true
+      required:
+        - samples
+        - total rows
+        - last row
+      properties:
+        last row:
+          description: "Number of the last row in this response.  If start row + num rows exceeds the total number of rows, this will be the last available row."
+          type: integer
+          minimum: 1
+        total rows:
+          description: "Total number of rows that match the sample filters passed."
+          type: integer
+          minimum: 0
+        samples:
+          type: array
+          items:
+            $ref: "#/components/schemas/CombinedSampleMetadata"
     
     CombinedSampleMetadata:
       type: object
@@ -806,12 +825,11 @@ components:
       properties:
         institution key:
           description: "Institution ID"
-          example: "NatRefLab"
           $ref: "#/components/schemas/InstitutionID"
         batch date:
           description: "Date of delivery"
           $ref: "#/components/schemas/BatchDate"
-            
+          
     BatchDate:
       type: string
       format: date
