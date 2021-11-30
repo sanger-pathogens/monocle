@@ -182,8 +182,10 @@ class MonocleUserDataTest(TestCase):
       self.assertIsInstance( user_details['memberOf'],                  type(['a', 'list'])  )
       self.assertIsInstance( user_details['memberOf'][0],               type({'a': 'dict'})  )
       self.assertIsInstance( user_details['memberOf'][0]['inst_id'],    type('a string')     )
-      self.assertIsInstance( user_details['memberOf'][0]['inst_info'],  type({'a': 'dict'})     )
+      self.assertIsInstance( user_details['memberOf'][0]['inst_name'],     type('a string')     )
+      self.assertIsInstance( user_details['memberOf'][0]['country_names'], type(['a', 'list'])  )
       # data values
       self.assertEqual( 'mock_user',                  user_details['username']                  )
       self.assertEqual( 'WelSanIns',                  user_details['memberOf'][0]['inst_id']    )
-      self.assertEqual( {'inst_name': 'Wellcome Sanger Institute', 'country_names': ['UK']},  user_details['memberOf'][0]['inst_info']  )
+      self.assertEqual( 'Wellcome Sanger Institute',  user_details['memberOf'][0]['inst_name']      )
+      self.assertEqual( ['UK'],                       user_details['memberOf'][0]['country_names']  )

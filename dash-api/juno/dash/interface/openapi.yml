@@ -260,7 +260,7 @@ paths:
           description: "The institution name."
           required: true
           schema:
-            $ref: "#/components/schemas/InstitutionInfo"
+            $ref: "#/components/schemas/InstitutionName"
         - name: "category"
           in: path
           description: "The category to be downloaded: sequencing or pipeline."
@@ -294,23 +294,15 @@ components:
        pattern: ^[a-zA-Z0-9à-úÀ-Ú\!#\$%&'\*\+\-/=\?\^_`\{\|\}~;]+$
 
     Institution:
+      description: "Institution key, name and source countries."
       type: object
       required:
         - db_key
-        - info
-      properties:
-        db_key:
-          $ref: "#/components/schemas/InstitutionID"
-        info:
-          $ref: "#/components/schemas/InstitutionInfo"
-
-    InstitutionInfo:
-      description: "The name of the institution and source countries."
-      type: object
-      required:
         - inst_name
         - country_names
       properties:
+        db_key:
+          $ref: "#/components/schemas/InstitutionID"
         inst_name:
           $ref: "#/components/schemas/InstitutionName"
         country_names:
@@ -1057,15 +1049,4 @@ components:
           type: array
           description: "A list of institutions and source countries of institutions for which the user is a member"
           items:
-            $ref: "#/components/schemas/UserInstitution"
-
-    UserInstitution:
-      type: object
-      required:
-        - "inst_id"
-        - "inst_info"
-      properties:
-        inst_id:
-          $ref: "#/components/schemas/InstitutionID"
-        inst_info:
-          $ref: "#/components/schemas/InstitutionInfo"
+            $ref: "#/components/schemas/Institution"

@@ -59,17 +59,18 @@ class MonocleUserTest(TestCase):
       mock_group_query.return_value = self.mock_ldap_result_group
       user_record = self.user.load_user_record('mock_user')
       self.assertIsInstance(user_record, type({'a': 'dict'}))
-      self.assertIsInstance( user_record,                              type({'a': 'dict'})  )
-      self.assertIsInstance( user_record['username'],                  type('a string')     )
-      self.assertIsInstance( user_record['memberOf'],                  type(['a', 'list'])  )
-      self.assertIsInstance( user_record['memberOf'][0],               type({'a': 'dict'})  )
-      self.assertIsInstance( user_record['memberOf'][0]['inst_id'],    type('a string')     )
-      self.assertIsInstance( user_record['memberOf'][0]['inst_info'],  type({'a': 'dict'})  )
+      self.assertIsInstance( user_record,                                 type({'a': 'dict'})  )
+      self.assertIsInstance( user_record['username'],                     type('a string')     )
+      self.assertIsInstance( user_record['memberOf'],                     type(['a', 'list'])  )
+      self.assertIsInstance( user_record['memberOf'][0],                  type({'a': 'dict'})  )
+      self.assertIsInstance( user_record['memberOf'][0]['inst_id'],       type('a string')     )
+      self.assertIsInstance( user_record['memberOf'][0]['inst_name'],     type('a string')     )
+      self.assertIsInstance( user_record['memberOf'][0]['country_names'], type(['a', 'list'])  )
       # data values
-      self.assertEqual( 'mock_user',                  user_record['username']                  )
-      self.assertEqual( 'WelSanIns',                  user_record['memberOf'][0]['inst_id']    )
-      self.assertEqual( {'inst_name': 'Wellcome Sanger Institute', 'country_names': ['UK']},  user_record['memberOf'][0]['inst_info']  )
-
+      self.assertEqual( 'mock_user',                  user_record['username']                      )
+      self.assertEqual( 'WelSanIns',                  user_record['memberOf'][0]['inst_id']        )
+      self.assertEqual( 'Wellcome Sanger Institute',  user_record['memberOf'][0]['inst_name']      )
+      self.assertEqual( ['UK'],                       user_record['memberOf'][0]['country_names']  )
 
 class MonocleDataTest(TestCase):
 
@@ -393,7 +394,7 @@ class MonocleDataTest(TestCase):
 
    def test_get_institution_names_returns_names_from_user_membership(self):
       expected_institution_name = 'Center of Paradise Engineering'
-      user_record = { 'memberOf': [{ 'inst_info': {'inst_name': expected_institution_name }}] }
+      user_record = { 'memberOf': [{'inst_name': expected_institution_name }] }
       self.monocle_data.user_record = user_record
 
       institution_names = self.monocle_data.get_institution_names()

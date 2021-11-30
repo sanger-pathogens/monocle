@@ -144,7 +144,6 @@ class UserData:
       except Exception:
          pass
 
-      inst_info = {}
       for this_gid in org_gids:
          ldap_group_rec = self.ldap_search_group_by_gid(this_gid)
          if ldap_group_rec is None:
@@ -160,10 +159,8 @@ class UserData:
 
          user_details['memberOf'].append({
             'inst_id': inst_id,
-            'inst_info': {
-               'inst_name': group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8'),
-               'country_names': country_names
-            }
+            'inst_name': group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8'),
+            'country_names': country_names
          })
 
       return user_details

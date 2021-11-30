@@ -1,6 +1,7 @@
 import logging
 import json
-import urllib
+import urllib.parse
+import urllib.request
 from flask import request
 from typing import List
 from sqlalchemy import create_engine
@@ -34,8 +35,8 @@ class Connector:
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """ DAO for metadata and in silico data access """
 
-    DASHBOARD_API_ENDPOINT = "http://dash-api/dashboard-api/get_user_details"
-    DASHBOARD_API_SWAGGER = "http://dash-api/dashboard-api/ui/"
+    DASHBOARD_API_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
+    DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
@@ -350,9 +351,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         results = []
         for item in results_as_dict['user_details']['memberOf']:
-            for country_name in item['inst_info']['country_names']:
+            for country_name in item['country_names']:
                 results.append(
-                    Institution(item['inst_info']['inst_name'], country_name)
+                    Institution(item['inst_name'], country_name)
                     )
 
         return results

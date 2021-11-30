@@ -24,26 +24,20 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             self.under_test = MonocleDatabaseServiceImpl(self.connector)
 
         self.response_as_string = '{"user_details": {"username": "mock_user", \
-        "memberOf": [{"inst_id": "mock_id", "inst_info": \
-        {"inst_name": "mock_name", "country_names": ["name1", "name2"]}}, \
-        {"inst_id": "LabCenEstPar", "inst_info": \
-        {"inst_name": "Laboratório Central do Estado do Paraná", "country_names": ["Brazil"]}}]}}'
+        "memberOf": [{"inst_id": "mock_id", "inst_name": "mock_name", "country_names": ["name1", "name2"]}, \
+        {"inst_id": "LabCenEstPar", "inst_name": "Laboratório Central do Estado do Paraná", "country_names": ["Brazil"]}]}}'
 
         self.response_as_dict = {'user_details': {
             'username': 'mock_user',
             'memberOf': [{
                 'inst_id': 'mock_id',
-                'inst_info':{
-                    'inst_name': 'mock_name',
-                    'country_names': ['name1', 'name2']
-                    }
+                'inst_name': 'mock_name',
+                'country_names': ['name1', 'name2']
                 },
                 {
                 'inst_id': 'LabCenEstPar',
-                'inst_info': {
-                    'inst_name': 'Laboratório Central do Estado do Paraná',
-                    'country_names': ['Brazil']
-                }
+                'inst_name': 'Laboratório Central do Estado do Paraná',
+                'country_names': ['Brazil']
             }]
         }}
 

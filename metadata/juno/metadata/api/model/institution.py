@@ -5,3 +5,5 @@ from dataclasses import dataclass
 class Institution:
     name: str
     country: str
+    latitute: float = None
+    longitude: float = None
