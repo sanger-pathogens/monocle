@@ -22,7 +22,7 @@ INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
 
 class MonocleUserTest(TestCase):
-   
+
    test_config             = 'dash/tests/mock_data/data_sources.yml'
    mock_ldap_result_user   = (   'cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk',
                                  {  'cn': [b'mock_user_sanger_ac_uk'],
@@ -40,7 +40,8 @@ class MonocleUserTest(TestCase):
                                  {  'cn': [b'WelSanIns'],
                                     'description': [b'Wellcome Sanger Institute'],
                                     'gidNumber': [b'501'],
-                                    'objectClass': [b'posixGroup', b'top']
+                                    'objectClass': [b'posixGroup', b'top'],
+                                    'memberUid': [b'UK']
                                     }
                                  )
 
@@ -58,18 +59,19 @@ class MonocleUserTest(TestCase):
       mock_group_query.return_value = self.mock_ldap_result_group
       user_record = self.user.load_user_record('mock_user')
       self.assertIsInstance(user_record, type({'a': 'dict'}))
-      self.assertIsInstance( user_record,                              type({'a': 'dict'})  )
-      self.assertIsInstance( user_record['username'],                  type('a string')     )
-      self.assertIsInstance( user_record['memberOf'],                  type(['a', 'list'])  )
-      self.assertIsInstance( user_record['memberOf'][0],               type({'a': 'dict'})  )
-      self.assertIsInstance( user_record['memberOf'][0]['inst_id'],    type('a string')     )
-      self.assertIsInstance( user_record['memberOf'][0]['inst_name'],  type('a string')     )
+      self.assertIsInstance( user_record,                                 type({'a': 'dict'})  )
+      self.assertIsInstance( user_record['username'],                     type('a string')     )
+      self.assertIsInstance( user_record['memberOf'],                     type(['a', 'list'])  )
+      self.assertIsInstance( user_record['memberOf'][0],                  type({'a': 'dict'})  )
+      self.assertIsInstance( user_record['memberOf'][0]['inst_id'],       type('a string')     )
+      self.assertIsInstance( user_record['memberOf'][0]['inst_name'],     type('a string')     )
+      self.assertIsInstance( user_record['memberOf'][0]['country_names'], type(['a', 'list'])  )
       # data values
-      self.assertEqual( 'mock_user',                  user_record['username']                  )
-      self.assertEqual( 'WelSanIns',                  user_record['memberOf'][0]['inst_id']    )
-      self.assertEqual( 'Wellcome Sanger Institute',  user_record['memberOf'][0]['inst_name']  )
-      
- 
+      self.assertEqual( 'mock_user',                  user_record['username']                      )
+      self.assertEqual( 'WelSanIns',                  user_record['memberOf'][0]['inst_id']        )
+      self.assertEqual( 'Wellcome Sanger Institute',  user_record['memberOf'][0]['inst_name']      )
+      self.assertEqual( ['UK'],                       user_record['memberOf'][0]['country_names']  )
+
 class MonocleDataTest(TestCase):
 
    test_config       = 'dash/tests/mock_data/data_sources.yml'
@@ -84,12 +86,12 @@ class MonocleDataTest(TestCase):
       {'institution key': 'FakTwo', 'batch date': '2021-05-02'},
       {'institution key': 'FakOne', 'batch date': '1892-01-30'}
    ]
-   
+
    mock_monocle_data_dir = 'dash/tests/mock_data/s3'
 
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
    mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
-   
+
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
 
@@ -182,7 +184,7 @@ class MonocleDataTest(TestCase):
                                        'public_name': 'SCN9A_4'
                                        }
                                     ]
-   
+
    mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
                                           "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
                                           # note use of `None`, which should end up in CSV as ""
@@ -258,7 +260,7 @@ class MonocleDataTest(TestCase):
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
    mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
-   
+
    # data we expect MonocleData method to return, given patched queries with the value above
    # the latest month included here must match the date provided by `mock_data_updated`
    expected_progress_data     =  {  'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
@@ -266,8 +268,8 @@ class MonocleDataTest(TestCase):
                                              'Nov 2020', 'Dec 2020', 'Jan 2021', 'Feb 2021', 'Mar 2021', 'Apr 2021', 'May 2021'],
                                     'samples received':  [0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 8],
                                     'samples sequenced': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                                    }                                                                                                                       
-   
+                                    }
+
    expected_institution_data  = {   'FakOne' : {'name': 'Fake institution One', 'db_key': 'Fake institution One'},
                                     'FakTwo' : {'name': 'Fake institution Two', 'db_key': 'Fake institution Two'},
                                     }
@@ -332,7 +334,7 @@ class MonocleDataTest(TestCase):
    expected_metadata_download_error_response  = {  'success'   : False ,
                                                    'error'     : 'internal'
                                                    }
-   
+
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_data = MonocleData(set_up=False)
@@ -357,7 +359,7 @@ class MonocleDataTest(TestCase):
       self.monocle_data.metadata_source.dl_client.set_up(self.test_config)
       # load mock data
       self.get_mock_data()
- 
+
    def test_init(self):
       self.assertIsInstance(self.monocle_data, MonocleData)
 
@@ -376,12 +378,12 @@ class MonocleDataTest(TestCase):
       self.monocle_data.get_institutions()
       self.monocle_data.get_samples()
       self.monocle_data.get_sequencing_status()
-      
+
    def test_get_progress(self):
       progress_data = self.monocle_data.get_progress()
 
       self.assertEqual(self.expected_progress_data, progress_data)
-      
+
    def test_get_institutions(self):
       institution_data = self.monocle_data.get_institutions()
 
@@ -404,7 +406,7 @@ class MonocleDataTest(TestCase):
 
    def test_get_institution_names_returns_names_from_user_membership(self):
       expected_institution_name = 'Center of Paradise Engineering'
-      user_record = { 'memberOf': [{ 'inst_name': expected_institution_name }] }
+      user_record = { 'memberOf': [{'inst_name': expected_institution_name }] }
       self.monocle_data.user_record = user_record
 
       institution_names = self.monocle_data.get_institution_names()
@@ -412,12 +414,12 @@ class MonocleDataTest(TestCase):
       self.assertEqual([expected_institution_name], institution_names)
       # Teardown: clear user record.
       self.monocle_data.user_record = None
-      
+
    def test_get_samples(self):
       sample_data = self.monocle_data.get_samples()
 
       self.assertEqual(self.expected_sample_data, sample_data)
-      
+
    def test_get_sequencing_status(self):
       seq_status_data = self.monocle_data.get_sequencing_status()
 
@@ -465,7 +467,7 @@ class MonocleDataTest(TestCase):
 
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
       self.assertEqual(self.expected_dropout_data, seq_status_summary)
-     
+
    def test_pipeline_status_summary(self):
       pipeline_summary = self.monocle_data.pipeline_status_summary()
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
@@ -500,7 +502,7 @@ class MonocleDataTest(TestCase):
          'size': format_file_size(expected_byte_size),
          'size_zipped': format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS)
       }, bulk_download_info)
-      
+
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata(self, mock_metadata_fetch):
       """
@@ -528,7 +530,7 @@ class MonocleDataTest(TestCase):
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata)
-      
+
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
       """
@@ -540,7 +542,7 @@ class MonocleDataTest(TestCase):
                                                                   metadata_columns=['public_name'])
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_filtered, filtered_samples_metadata)
-      
+
    @patch.object(MonocleData, 'get_filtered_samples')
    def test_get_metadata_no_matching_samples(self, mock_get_filtered_samples):
       """
@@ -570,7 +572,7 @@ class MonocleDataTest(TestCase):
       filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True, start_row=9999, num_rows=1)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
       self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[], 'in silico':[]}}, filtered_samples_metadata_plus_in_silico)
-         
+
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
       """
@@ -592,7 +594,7 @@ class MonocleDataTest(TestCase):
          filtered_samples_metadata = self.monocle_data.get_metadata( {'batches': self.inst_key_batch_date_pairs},
                                                                      metadata_columns=['public_name'],
                                                                      start_row=2)
-         
+
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_plus_in_silico_filtered_columns(self, mock_metadata_fetch, mock_in_silico_data_fetch):

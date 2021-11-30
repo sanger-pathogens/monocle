@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock
+import flask
+from unittest.mock import patch, MagicMock, Mock
 from flask import Config
 import metadata.api.routes as mar
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -73,6 +74,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
+
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
     @patch('metadata.api.routes.convert_to_json')
     def test_get_filtered_samples_stop_injection(self, mocked_jsoncall, mocked_query):
@@ -88,9 +90,12 @@ class TestRoutes(unittest.TestCase):
           under_test = mar.get_filtered_samples({looks_iffy_to_me_guv: 'any search term'}, fakeDB)
           self.assertEqual(under_test, ('Invalid arguments provided', 400))
 
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_authenticated_username')
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_institutions_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_institutions_jsonified(self, mocked_jsoncall, mocked_query, mocked_username):
+        mocked_username.return_value = 'mock_user'
         mocked_query.return_value = ['ints1', 'inst2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
@@ -99,9 +104,11 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_authenticated_username')
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_institutions_not_returned(self, mocked_jsoncall, mocked_query):
+    def test_get_institutions_not_returned(self, mocked_jsoncall, mocked_query, mocked_username):
+        mocked_username.return_value = 'mock_user'
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()

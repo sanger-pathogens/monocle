@@ -12,7 +12,7 @@ class UserData:
    """
    Methods for retrieving user data from the Monocle LDAP service.
    """
-   
+
    data_sources_config           = 'data_sources.yml'
    data_source                   = 'monocle_ldap'
    data_source_config_file_param = 'openldap_config'
@@ -96,7 +96,7 @@ class UserData:
          conn.simple_bind_s(self.config['openldap']['MONOCLE_LDAP_BIND_DN'], self.config['openldap']['MONOCLE_LDAP_BIND_PASSWORD'])
          self._current_ldap_connection = conn
       return self._current_ldap_connection
-   
+
    def disconnect(self):
       """
       If currently connected to LDAP server, disconnects.
@@ -104,7 +104,7 @@ class UserData:
       """
       if self._current_ldap_connection is not None:
          self._current_ldap_connection = None
-         
+
 
    def get_user_details(self, username):
       """
@@ -151,10 +151,18 @@ class UserData:
             raise UserDataError("group with GID {} not found.".format(this_gid))
          # note dict of attributes is the second element of the `ldap_group_rec` tuple
          group_attr = ldap_group_rec[1]
-         user_details['memberOf'].append( {  'inst_id':     group_attr[ self.config['inst_id_attr']   ][0].decode('UTF-8'),
-                                             'inst_name':   group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8')
-                                             }
-                                          )
+         inst_id = group_attr[ self.config['inst_id_attr']][0].decode('UTF-8')
+         country_names = [ country_name_bytes.decode('UTF-8') for country_name_bytes in group_attr[self.config['country_names_attr']] ]
+         if len(country_names) < 1:
+            logging.error("The institute id {} is not associated with any countries, which indicates an invalid group record)".format(inst_id))
+            raise UserDataError("institute id {} has no country name attribute values ".format(inst_id))
+
+         user_details['memberOf'].append({
+            'inst_id': inst_id,
+            'inst_name': group_attr[ self.config['inst_name_attr'] ][0].decode('UTF-8'),
+            'country_names': country_names
+         })
+
       return user_details
 
    def ldap_search_user_by_username(self, username):
@@ -213,13 +221,13 @@ class UserData:
          raise UserDataError("GID {} is not unique".format(gid))
       result = result_list[0]
       group_attr = result[1]
-      for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr']]:
+      for required_attr in [self.config['inst_id_attr'], self.config['inst_name_attr'], self.config['country_names_attr']]:
          if required_attr not in group_attr or len(group_attr[required_attr]) < 1:
             logging.error("group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(gid,required_attr,result))
             raise UserDataError("group doesn't contain the required attribute {}".format(gid,required_attr))
       logging.debug("found group: {}".format(result))
       return result
-   
+
    def ldap_search(self, object_class, attr, value):
       """
       Generic LDAP search method

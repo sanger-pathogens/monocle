@@ -33,9 +33,10 @@ class TestUploadHandler(unittest.TestCase):
         with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
             self.dao_mock = dao_mock
             self.dao_mock.get_institutions.return_value = [
-                Institution('Test Institution A', 'TestCountryA', 0, 0),
-                Institution('Test Institution B', 'TestCountryB', 0, 0)
+                Institution('Test Institution A', 'TestCountryA'),
+                Institution('Test Institution B', 'TestCountryB')
             ]
+            self.dao_mock.get_authenticated_username.return_value = 'mock_user'
 
             # Read in the spreadsheet field definitions
             with open(self.CONFIG_FILE_PATH, 'r') as app_config_file:
@@ -398,8 +399,8 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
             self.dao_mock = dao_mock
             self.dao_mock.get_institutions.return_value = [
-                Institution('Test Institution A', 'TestCountryA', 0, 0),
-                Institution('Test Institution B', 'TestCountryB', 0, 0)
+                Institution('Test Institution A', 'TestCountryA'),
+                Institution('Test Institution B', 'TestCountryB')
             ]
 
             # Read in the spreadsheet field definitions
