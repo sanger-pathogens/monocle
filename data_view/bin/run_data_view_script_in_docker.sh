@@ -36,7 +36,7 @@ docker run  -u `id -u`:`id -g` \
 # Doing this here should ensure that any new lanes/data get md5 files added asap.
 # If this step proves too slow, we may need to consider moving it to separate cron entry
 # or changing the job frequency.
-for DIR in $(find ${HOME}/monocle_juno_institution_view -mindepth 2 -maxdepth 2 -type d)
+for DIR in $(find ${HOME}/monocle_juno_institution_view -follow -mindepth 2 -maxdepth 2 -type d)
 do
     cd "${DIR}"
     if ls * > /dev/null 2>&1
