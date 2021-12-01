@@ -310,6 +310,10 @@ then
     # scripts for syncing sample data view
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
+    
+    # hopusekeeping script(s)
+    scp -o ControlPath=%C $SCP_PORT_ARG housekeeping/bin/housekeeping.sh $REMOTE_USER@$REMOTE_HOST:~/housekeeping.sh
+
 
     # replace the running version
     # using existing connection
@@ -330,7 +334,7 @@ then
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
         chmod 644 nginx.proxy.conf metadata-api.json
-        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh
+        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh housekeeping.sh
         echo "Pulling ${docker_tag} docker images..."
         docker-compose pull
 EOF
