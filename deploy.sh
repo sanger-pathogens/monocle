@@ -330,6 +330,7 @@ then
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
         chmod 644 nginx.proxy.conf metadata-api.json
+        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh
         echo "Pulling ${docker_tag} docker images..."
         docker-compose pull
 EOF
