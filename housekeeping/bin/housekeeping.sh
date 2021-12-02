@@ -29,14 +29,14 @@ cp "$NGINX_MAINTENACE_CONF" "$NGINX_SERVICE_CONF"
 docker-compose restart "$NGINX_CONTAINER"
 
 # Delete expired bulk download files
-chmod "$TEMP_READBLE_DIR_MODE" "$TEMP_BULK_DOWNLOAD_DIR"
-find "$TEMP_BULK_DOWNLOAD_DIR" -name "$BULK_DOWNLOAD_GLOB" -follow -mtime +"$BULK_DOWNLOAD_EXPIRY" -exec rm {} \;
-chmod "$NORMAL_UNREADBLE_DIR_MODE" "$TEMP_DOWNLOAD_LINK_DIR"
+chmod "$TEMP_READBLE_DIR_MODE" "$BULK_DOWNLOAD_DIR"
+find "$BULK_DOWNLOAD_DIR" -name "$BULK_DOWNLOAD_GLOB" -follow -mtime +"$BULK_DOWNLOAD_EXPIRY" -exec rm {} \;
+chmod "$NORMAL_UNREADBLE_DIR_MODE" "$BULK_DOWNLOAD_DIR"
 
 # Delete expired web download symlinks.
-chmod "$TEMP_READBLE_DIR_MODE" "$TEMP_DOWNLOAD_LINK_DIR"
-find "$TEMP_DOWNLOAD_LINK_DIR" -type l -mtime +"$WEB_DOWNLOAD_LINK_EXPIRY" -exec rm {} \;
-chmod "$NORMAL_UNREADBLE_DIR_MODE" "$TEMP_DOWNLOAD_LINK_DIR"
+chmod "$TEMP_READBLE_DIR_MODE" "$WEB_DOWNLOAD_LINK_DIR"
+find "$WEB_DOWNLOAD_LINK_DIR" -type l -mtime +"$WEB_DOWNLOAD_LINK_EXPIRY" -exec rm {} \;
+chmod "$NORMAL_UNREADBLE_DIR_MODE" "$WEB_DOWNLOAD_LINK_DIR"
 
 # reenable access to service at proxy
 mv "$NGINX_SERVICE_CONF_TEMP_MOVE" "$NGINX_SERVICE_CONF"
