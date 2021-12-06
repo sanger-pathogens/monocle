@@ -20,7 +20,9 @@ ServiceFactory.TEST_MODE = False
 
 # these are set in the openapi.yml file, but request body doesn't seem to set default values
 # to they have to be set by the route :-/
-GetMetadataInputDefaults = {  "in silico"          : False,
+GetMetadataInputDefaults = {  "as csv"             : False,
+                              "csv filename"       : "monocle.csv",
+                              "in silico"          : False,
                               "num rows"           : 20,
                               "metadata columns"   : ["submitting_institution",
                                                       "public_name",
@@ -91,24 +93,34 @@ def pipeline_status_summary():
 def get_metadata(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    sample_filters = body['sample filters']
-    metadata_columns  = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
-    in_silico_columns = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
+    sample_filters      = body['sample filters']
+    return_as_csv       = body.get('as csv',             GetMetadataInputDefaults['as csv'])
+    csv_filename        = body.get('csv filename',       GetMetadataInputDefaults['csv filename'])
+    metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
+    in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
     # setting column filter params to '_ALL' means all columns should be returned
     if '_ALL' == metadata_columns[0]:
        metadata_columns = None
     if '_ALL' == in_silico_columns[0]:
        in_silico_columns = None
-    return call_jsonify(
-       ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(
-            sample_filters,
-            start_row         = body.get('start row', None),
-            num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
-            include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-            metadata_columns  = metadata_columns,
-            in_silico_columns = in_silico_columns)
-       ), HTTPStatus.OK
-
+    metadata = ServiceFactory.data_service(
+                  get_authenticated_username(request)).get_metadata(
+                     sample_filters,
+                     start_row         = body.get('start row', None),
+                     num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
+                     include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+                     return_as_csv     = return_as_csv,
+                     metadata_columns  = metadata_columns,
+                     in_silico_columns = in_silico_columns)
+    if return_as_csv:
+      metadata = "not\timplemented\tyet"
+      return Response(  metadata,
+                        content_type   = 'text/csv; charset=UTF-8',
+                        headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(csv_filename)},
+                        status         = HTTPStatus.OK
+                        )
+    else:
+      return call_jsonify( metadata ), HTTPStatus.OK
 
 def bulk_download_info(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """

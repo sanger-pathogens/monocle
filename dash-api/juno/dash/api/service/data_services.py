@@ -487,16 +487,18 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False):
+   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False, return_as_csv=None):
       """
       Pass sample filters dict (describes the filters applied in the front end)
       If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
       num_rows is ignored unless start_rows is defined. Passing start_row without num_rows is an error.
       Optionally pass lists metadata_columns and in_silico_columns to specify which metadata
       and in silico data (respectively) columns are returned.  Both defaults to returning all columns.
-      Also optionally pass flag if in silico data should be retrieved and merged into the metadata.
-
-      Returns array of samples that match the filter(s); each sample is a dict containing the metadata
+      Optionally flags:
+      'include_in_silico' if in silico data should be retrieved and merged into the metadata.
+      'return_as_csv' if the response should be CSV rather than JSON
+      
+      By default, returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico data.  Metadata and in silico data are represented with the same format:
       a dict of fields, where each dict value is a dict with the name, column position (order) and value
       for that field.
@@ -512,6 +514,9 @@ class MonocleData:
          },
          ...
       ]
+      
+      If CSV is requested, the same data as above are returned as a CSV string:  metadata fields sorted by their
+      `order` attribute, followed by in silico fields sorted by their `order` attribute.
       """
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)

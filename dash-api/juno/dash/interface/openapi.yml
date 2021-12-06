@@ -375,6 +375,16 @@ components:
       properties:
         sample filters:
           $ref: "#/components/schemas/SampleFilters"
+        as csv:
+          description: "Set this flag to true when a text/csv response is required"
+          type: boolean
+          default: false
+        csv filename:
+          description: "For text/csv responses: the filename to use in the Content-Disposition header"
+          type: string
+          minLength: 1
+          maxLength: 256
+          default: "monocle.csv"
         in silico:
           description: "Set this flag to true to include in silico data with the metadata"
           type: boolean

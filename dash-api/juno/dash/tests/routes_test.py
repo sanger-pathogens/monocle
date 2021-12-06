@@ -15,7 +15,8 @@ class TestRoutes(unittest.TestCase):
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
     SERVICE_CALL_RETURN_DATA = {'field1': 'value1'}
-    SERVICE_CALL_RETURN_CSV_DATA = {'success': True, 'filename':'myfile.csv', 'content' : 'a,csv,string'}
+    SERVICE_CALL_RETURN_CSV_FILENAME = 'myfile.csv'
+    SERVICE_CALL_RETURN_CSV_DATA = {'success': True, 'filename':SERVICE_CALL_RETURN_CSV_FILENAME, 'content' : 'a,csv,string'}
     TEST_USER = 'fbloggs'
     TEST_HOST_NAME = 'mock.host'
 
@@ -26,7 +27,7 @@ class TestRoutes(unittest.TestCase):
     }
         
     EXPECTED_CSV_CONTENT_TYPE    = 'text/csv; charset=UTF-8'
-    EXPECTED_CONTENT_DISPOSITION = 'attachment; filename="{}"'.format(SERVICE_CALL_RETURN_CSV_DATA['filename'])
+    EXPECTED_CONTENT_DISPOSITION = 'attachment; filename="{}"'.format(SERVICE_CALL_RETURN_CSV_FILENAME)
 
     def setUp(self) -> None:
         ServiceFactory.TEST_MODE = True
@@ -241,6 +242,7 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              return_as_csv     = GetMetadataInputDefaults['as csv'],
                                                                               metadata_columns  = GetMetadataInputDefaults['metadata columns'],
                                                                               in_silico_columns = GetMetadataInputDefaults['in silico columns'])
         resp_mock.assert_called_once_with(expected_payload)
@@ -268,6 +270,7 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              return_as_csv     = GetMetadataInputDefaults['as csv'],
                                                                               metadata_columns  = None,
                                                                               in_silico_columns = None)
         resp_mock.assert_called_once_with(expected_payload)
@@ -285,6 +288,7 @@ class TestRoutes(unittest.TestCase):
         start_row          = 21
         num_rows           = 20
         include_in_silico  = True
+        return_as_csv      = GetMetadataInputDefaults['as csv']
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         expected_payload   = 'payload'
@@ -295,6 +299,7 @@ class TestRoutes(unittest.TestCase):
                                  'start row'          : start_row,
                                  'num rows'           : num_rows,
                                  'in silico'          : include_in_silico,
+                                 'as csv'             : return_as_csv,
                                  'metadata columns'   : metadata_columns,
                                  'in silico columns'  : in_silico_columns
                                  }
@@ -305,12 +310,37 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
                                                                               include_in_silico = include_in_silico,
+                                                                              return_as_csv     = return_as_csv,
                                                                               metadata_columns  = metadata_columns,
                                                                               in_silico_columns = in_silico_columns)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_metadata_return_csv(self, data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_metadata({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
+                                                                              start_row         = None,
+                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
+                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              return_as_csv     = True,
+                                                                              metadata_columns  = GetMetadataInputDefaults['metadata columns'],
+                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'])
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, type(Response('any content will do')))
+        self.assertEqual(result.status_code,                    HTTPStatus.OK)
+        self.assertEqual(result.content_type,                   self.EXPECTED_CSV_CONTENT_TYPE)
+        self.assertEqual(result.headers['Content-Disposition'], self.EXPECTED_CONTENT_DISPOSITION)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
