@@ -385,6 +385,7 @@ components:
           minLength: 1
           maxLength: 256
           default: "monocle.csv"
+          example: "monocle.csv"
         in silico:
           description: "Set this flag to true to include in silico data with the metadata"
           type: boolean
@@ -393,11 +394,13 @@ components:
           description: "For pagination: the first row of metadata (starting at 1) to be returned"
           type: integer
           minimum: 1
+          example: 1
         num rows:
           description: "For pagination: number of rows of metadata to be returned"
           type: integer
-          default: 20
           minimum: 1
+          default: 20
+          example: 20
         metadata columns:
           description: "List of metadata columns that should be returned (as defined by the Metadata object).   Pass ['_ALL'] to get all columns."
           type: array
@@ -413,6 +416,15 @@ components:
             - "collection_year"
             - "host_species"
             - "isolation_source"
+          example:
+            - "submitting_institution"
+            - "public_name"
+            - "host_status"
+            - "selection_random"
+            - "country"
+            - "collection_year"
+            - "host_species"
+            - "isolation_source"
         in silico columns:
           description: "List of in silico data columns that should be returned (as defined by the InSilicoData object).   Pass ['_ALL'] to get all columns."
           type: array
@@ -420,6 +432,8 @@ components:
             type: string
             pattern: ^[a-zA-Z0-9_]*$
           default:
+            - "ST"
+          example:
             - "ST"
 
     GetMetadataOutput:
