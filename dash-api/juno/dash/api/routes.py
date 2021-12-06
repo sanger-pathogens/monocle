@@ -113,7 +113,6 @@ def get_metadata(body):
                      metadata_columns  = metadata_columns,
                      in_silico_columns = in_silico_columns)
     if return_as_csv:
-      metadata = "not\timplemented\tyet"
       return Response(  metadata,
                         content_type   = 'text/csv; charset=UTF-8',
                         headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(csv_filename)},

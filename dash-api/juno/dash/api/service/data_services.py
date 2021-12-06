@@ -487,7 +487,7 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False, return_as_csv=None):
+   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False, return_as_csv=False):
       """
       Pass sample filters dict (describes the filters applied in the front end)
       If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
@@ -564,7 +564,10 @@ class MonocleData:
          combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
 
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
-      return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
+      if return_as_csv:
+         return self._convert_metadata_to_csv(combined_metadata)
+      else:
+         return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
 
    def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
       """
@@ -644,6 +647,13 @@ class MonocleData:
                if this_column not in in_silico_columns:
                   del in_silico[this_column]
       return combined_metadata
+   
+   def _convert_metadata_to_csv(self, metadata):
+      """
+      Pass "combined metadata" structure as returned by get_metadata(), and return it in the form of a giant CSV string
+      """
+      return "not\timplemented\tyet"
+
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
