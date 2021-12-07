@@ -648,11 +648,25 @@ class MonocleData:
                   del in_silico[this_column]
       return combined_metadata
    
-   def _convert_metadata_to_csv(self, metadata):
+   def _convert_metadata_to_csv(self, combined_metadata):
       """
       Pass "combined metadata" structure as returned by get_metadata(), and return it in the form of a giant CSV string
       """
-      return "not\timplemented\tyet"
+      return "\"not\",\"implemented\",\"yet\""
+
+      ######first_sample = True
+      ######headers_row = []
+      ######for this_sample in combined_metadata:
+         ######metadata = this_sample['metadata']
+         ######metadata_row = []
+         ######for this_column in sorted(metadata, key=lambda col: (metadata[col]['order'])):
+            ######if first_sample:
+               ######headers_row.append( metadata[this_column]['name'] )
+            ######else:
+               ######assert (metadata[this_column]['name'] in headers_row), "found metadta field \"{}\" which was not present in the first row:  all rows should contain the same fields".format(metadata[this_column]['name'])
+            ######metadata_row.append( metadata[this_column]['value'] )
+         ######first_sample = False
+
 
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
@@ -846,15 +860,66 @@ class MonocleData:
           return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
       except KeyError as err:
           self._download_config_error(err)
-
+          
+          
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
-      Pass Flask request object, institution name, category ('sequencing' or 'pipeline')
-      and status ('successful' or 'failed');
-      this identifies the lanes for which metadata are required.
+      This acts as a wrapper for get_csv_download().
+      
+      get_metadata_for_download() was the original implementation when metadta were only available
+      for download via the dashboard, selected according to whether sequencing of pipelines had succeeded or failed;
+      so the input parameters are simpler than get_csv_download().
+      
+      It is useful to retain this wrapper as it supports the existing routes that (because params are simple)
+      conveniently accept GET requests.
+      
+      Pass host name (used for download links), institution name, category ('sequencing' or 'pipeline')
+      and status ('successful' or 'failed').  These are translated into the parameters required by
+      get_csv_download().
+      
+      Returns the return value(s) of get_csv_download().
+      """
+      # validate params
+      institution_data  = self.get_institutions()
+      institution_names = [institution_data[i]['name'] for i in institution_data.keys()]
+      categories        = ['sequencing', 'pipeline']
+      statuses          = ['successful', 'failed']
+      if not institution in institution_names:
+         logging.error("Invalid request to {}: institution should be one of: \"{}\"".format(__class__.__name__,'", "'.join(institution_names)))
+         return { 'success': False, 'error': 'request' }
+      if not category in categories:
+         logging.error("Invalid request to {}: category should be one of: \"{}\"".format(__class__.__name__,'", "'.join(categories)))
+         return { 'success': False, 'error': 'request' }
+      if not status in statuses:
+         logging.error("Invalid request to {}: status should be one of: \"{}\"".format(__class__.__name__,'", "'.join(statuses)))
+         return { 'success': False, 'error': 'request' }
+      # create get_csv_download params
+      sample_status  =  {  "institution"  : institution,
+                           "category"     : category,
+                           "status"       : status
+                           }
+      filename       =  '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
+                                                category,
+                                                status)
+      download_links =  {  "hostname"     : download_hostname,
+                           "institution"  : institution
+                           }
+      # wrap get_csv_download()
+      return self.get_csv_download(filename, sample_status=sample_status, download_links=download_links)
 
-      *Note* this was originally written as a method for retrieving sample metadata, but the
-      in silico data are now also included so these can all be viewed in a single spreadsheet.
+   def get_csv_download(self, csv_response_filename, sample_status=None, sample_filters=None, download_links=None):
+      """
+      Retrieves metadata and (when available) in silico data as CSV for a set of samples.
+      
+      Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
+      params to indicate the samples to be downloads.  Sample status takes precedence.
+      Also pass the suggested filename (ultimately for HTTP headers).
+      Optionally pass `download_links` if data download links are to be included in the CSV:
+      this is a dict with 'hostname', the host name to be used in the URLs, and 'institution',
+      the institution that "owns" the data.
+      *Important:*  Currently download links can only be provided where all the samples are
+      from a single institution.  If `sample_filters` matches samples from more than one
+      institution, some of the download links will br broken!
 
       On success, returns content for response, with suggested filename
 
@@ -863,7 +928,7 @@ class MonocleData:
          'content'   : 'a,very,long,multi-line,CSV,string'
          }
 
-      On failure, returns reasons ('request' or 'internal'; could extend in future if required??)
+      On failure, returns reasons ('not found', 'request' or 'internal'; could extend in future if required??)
       that can be used to provide suitable HTTP status.
 
       {  'success'   : False,
@@ -871,56 +936,152 @@ class MonocleData:
          }
 
       """
-      institution_data = self.get_institutions()
-      institution_names = [institution_data[i]['name'] for i in institution_data.keys()]
-      if not institution in institution_names:
-         logging.error("Invalid request to /download: parameter 'institution' was not a recognized institution name; should be one of: \"{}\"".format('", "'.join(institution_names)))
-         return { 'success'   : False,
-                  'error'     : 'request',
-                  }
+      if None == sample_status and None == sample_filters:
+         logging.error("Must pass sample_status or sample_filters to {}".format(__class__.__name__))
+         return { 'success': False, 'error': 'request' }
+         
+      download_base_url = None
+      if download_links is not None:
+         try:
+            institution =  download_links['institution']
+            hostname    =  download_links['hostname']
+         except KeyError:
+            logging.error("{} parameter download_links must provide 'institution' and 'hostname'".format(__class__.__name__))
+            raise
+         institution_download_symlink_url_path = self.make_download_symlink(institution)
+         if institution_download_symlink_url_path is None:
+            logging.error("Failed to create a symlink for data downloads.")
+            return { 'success'   : False,
+                     'error'     : 'internal',
+                     }
+         host_url = 'https://{}'.format(hostname)
+         # TODO add correct port number
+         # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
+         # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
+         download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
+         logging.info('Data download base URL = {}'.format(download_base_url))
 
-      institution_download_symlink_url_path = self.make_download_symlink(institution)
-      if institution_download_symlink_url_path is None:
-         logging.error("Failed to create a symlink for data downloads.")
+      if sample_status:
+         csv_response_string = self.metadata_as_csv(sample_status=sample_status, download_base_url=download_base_url)
+      else:
+         csv_response_string = self.metadata_as_csv(sample_filters=sample_filters, download_base_url=download_base_url)
+      if csv_response_string is None:
          return { 'success'   : False,
-                  'error'     : 'internal',
+                  'error'     : 'not found',
                   }
-      host_url = 'https://{}'.format(download_hostname)
-      # TODO add correct port number
-      # not critical as it will always be default (80/443) in production, and default port is available on all current dev instances
-      # port should be available as request.headers['X-Forwarded-Port'] but that header isn't present (NGINX proxy config error?)
-      download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
-      logging.info('Data download base URL = {}'.format(download_base_url))
-
-      csv_response_filename = '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
-                                                      category,
-                                                      status)
-      csv_response_string = self.metadata_as_csv(institution, category, status, download_base_url)
       return   {  'success'   : True,
                   'filename'  : csv_response_filename,
                   'content'   : csv_response_string
                   }
 
-   def metadata_as_csv(self, institution, category, status, download_base_url):
+   def metadata_as_csv(self, sample_status=None, sample_filters=None, download_base_url=None):
       """
-      Pass institution name, category ('sequencing' or 'pipeline') and status ('successful' or 'failed');
-      this identifies the lanes for which metadata are required.
-      Also pass the base URL for the download.  The complete download URL for each lane is this
-      base URL with the lane ID appended.
+      Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
+      params to indicate the samples to be downloads.
+      Optionally pass a base URL for the download; if provided, a download URL for each sample
+      (this base URL with the public name appended) will be added as an extra column.
 
-      *Note* this was originally written as a method for retrieving sample metadata, but the
-      in silico data are now also included so these can all be viewed in a single spreadsheet.
+      When available, in silico data for each sample are now also included.
 
-      Returns metadata as CSV
+      Returns metadata as CSV, or None if there are no matching samples
       """
-      sequencing_status_data = self.get_sequencing_status()
-      institution_data_key = self.institution_db_key_to_dict[institution]
+      if (None == sample_status and None == sample_filters) or (sample_status and sample_filters):
+         message = "Must pass EITHER sample_status OR sample_filters to {}".format(__class__.__name__)
+         logging.error(message)
+         raise RuntimeError(message)
+      
+      # for metadata downloads, we just need a dict with sample IDs as keys,
+      # value are arrays of lane ID(s) for each sample
+      samples_for_download = None
+      if sample_status:
+         samples_for_download = self._get_samples_by_status(sample_status)
+      else:
+         samples_for_download = {}
+         # get_filtered_samples returns sequencing status data for the samples that match the sample filters used
+         filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
+         # extract what we need from seq status data
+         for this_sample in filtered_samples:
+            this_sample_id = this_sample['sample_id']
+            for this_lane in this_sample['lanes']:
+               if this_sample_id in samples_for_download:
+                  samples_for_download[this_sample_id].append(this_lane['id'])
+               else:
+                  samples_for_download[this_sample_id] = [this_lane['id']]
+
+      if 1 > len(samples_for_download):
+         return None
+
+      # retrieve the sample metadata and load into DataFrame
+      logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
+      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(list(samples_for_download.keys())))
+      metadata_df                   = pandas.DataFrame(metadata)
+
+      # IMPORTANT
+      # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
+      # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
+      # it is possible, but rarely (perhaps never in practice) happens, that a smaple may have multiple lane IDs;
+      # tin tbhis case they are all put into the lane ID cell
+      logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
+      metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
+
+      # if required, add download links to metadata DataFrame
+      if download_base_url is not None:
+         metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
+         logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
+
+      # if there are any in silico data, these are merged into the metadata DataFrame
+      lanes_for_download=[]
+      for this_sample in samples_for_download.keys():
+         lanes_for_download.extend(samples_for_download[this_sample])
+      logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
+      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lanes_for_download))
+      if len(in_silico_data) > 0:
+         in_silico_data_df = pandas.DataFrame(in_silico_data)
+         logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
+         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadata row
+         # validate to ensure lane ID is unique in both dataframes
+         metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
+         del in_silico_data_df
+         # add silico data columns to the list
+         metadata_col_order = metadata_col_order + in_silico_data_col_order
+
+      # list of columns in `metadata_col_order` defines the CSV output
+      # remove delete Sample_id -- this is a dupliacte of Lane_ID
+      while 'Sample_id' in metadata_col_order:
+         metadata_col_order.remove('Sample_id')
+      # move public name to first column
+      while 'Public_Name' in metadata_col_order:
+         metadata_col_order.remove('Public_Name')
+      metadata_col_order.insert(0,'Public_Name')
+      # put download links in last column
+      metadata_col_order.append('Download_Link')
+
+      metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
+      logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))
+      return metadata_csv
+
+   def _get_samples_by_status(self, sample_status):
+      """
+      Pass institution name, category ('sequencing' or 'pipeline') and status ('successful'
+      or 'failed).
+
+      Returns dict of samples from that institution matching the cetgeory & status.
+      Keys are sample IDs, values are a list of the lane IDs for that sample.
+      """
+      try:
+         institution = sample_status['institution']
+         category    = sample_status['category']
+         status      = sample_status['status']
+      except KeyError:
+         logging.error("{} must be passed sample_status dict including 'institution', 'category' and 'status'".format(__class__.__name__))
+         raise
+      sequencing_status_data  = self.get_sequencing_status()
+      institution_data_key    = self.institution_db_key_to_dict[institution]
       logging.debug("getting metadata: institution db key {} maps to dict key {}".format(institution,institution_data_key))
 
-      # get list of samples for this combo of institution/category/status
       # note that the status can only be found by *lane* ID, so we need to look up lanes that match the requirements
-      # then the sample ID associated with eacj matchuing lane gets pushed onto a list that we can use for the metadata download request
-      samples_for_download = {}
+      # then the sample ID associated with each matchuing lane gets pushed onto a list that we can use for the metadata download request
+      filtered_samples = {}
       for this_sample_id in sequencing_status_data[institution_data_key].keys():
          if this_sample_id == API_ERROR_KEY:
             if sequencing_status_data[institution_data_key][
@@ -961,59 +1122,13 @@ class MonocleData:
                      elif 'failed' == status and this_pipeline_status['FAILED']:
                         want_this_lane = True
                if want_this_lane:
-                  if this_sample_id in samples_for_download:
-                     samples_for_download[this_sample_id].append(this_lane['id'])
+                  if this_sample_id in filtered_samples:
+                     filtered_samples[this_sample_id].append(this_lane['id'])
                   else:
-                     samples_for_download[this_sample_id] = [this_lane['id']]
-      logging.info("Found {} samples from {} with {} status {}".format(len(samples_for_download.keys()),institution,category,status))
-
-      # retrieve the sample metadata and load into DataFrame
-      logging.info("Requesting metadata for samples: {}".format(samples_for_download))
-      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(list(samples_for_download.keys())))
-      metadata_df                   = pandas.DataFrame(metadata)
-
-      # IMPORTANT
-      # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
-      # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
-      # it is possible, but rarely (perhaps never in practice) happens, that a smaple may have multiple lane IDs;
-      # tin tbhis case they are all put into the lane ID cell
-      logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
-      metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
-
-      # add download links to metadata DataFrame
-      metadata_df = metadata_df.assign( Download_Link = [ '/'.join( [download_base_url, urllib.parse.quote(pn)] ) for pn in metadata_df['Public_Name'].tolist() ] )
-      logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
-
-      # if there are any in silico data, these are merged into the metadata DataFrame
-      lanes_for_download=[]
-      for this_sample in samples_for_download.keys():
-         lanes_for_download.extend(samples_for_download[this_sample])
-      logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
-      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lanes_for_download))
-      if len(in_silico_data) > 0:
-         in_silico_data_df = pandas.DataFrame(in_silico_data)
-         logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
-         # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadata row
-         # validate to ensure lane ID is unique in both dataframes
-         metadata_df = metadata_df.merge(in_silico_data_df, left_on='Lane_ID', right_on='Sample_id', how='left', validate="one_to_one")
-         del in_silico_data_df
-         # add silico data columns to the list
-         metadata_col_order = metadata_col_order + in_silico_data_col_order
-
-      # list of columns in `metadata_col_order` defines the CSV output
-      # remove delete Sample_id -- this is a dupliacte of Lane_ID
-      while 'Sample_id' in metadata_col_order:
-         metadata_col_order.remove('Sample_id')
-      # move public name to first column
-      while 'Public_Name' in metadata_col_order:
-         metadata_col_order.remove('Public_Name')
-      metadata_col_order.insert(0,'Public_Name')
-      # put download links in last column
-      metadata_col_order.append('Download_Link')
-
-      metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
-      logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))
-      return metadata_csv
+                     filtered_samples[this_sample_id] = [this_lane['id']]
+      logging.info("Found {} samples from {} with {} status {}".format(len(filtered_samples.keys()),institution,category,status))
+      
+      return filtered_samples
 
    def _metadata_download_to_pandas_data(self, api_data):
       """
