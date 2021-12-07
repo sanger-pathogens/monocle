@@ -241,6 +241,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetMetadataOutput"
+            text/csv:
+              schema:
+                type: string
+                format: binary
         "403":
           description: "Authorization information is missing or invalid."
 
@@ -387,22 +391,22 @@ components:
           default: "monocle.csv"
           example: "monocle.csv"
         in silico:
-          description: "Set this flag to true to include in silico data with the metadata"
+          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
           type: boolean
           default: false
         start row:
-          description: "For pagination: the first row of metadata (starting at 1) to be returned"
+          description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
           type: integer
           minimum: 1
           example: 1
         num rows:
-          description: "For pagination: number of rows of metadata to be returned"
+          description: "For pagination: number of rows of metadata to be returned (ignored when 'as csv' is true)"
           type: integer
           minimum: 1
           default: 20
           example: 20
         metadata columns:
-          description: "List of metadata columns that should be returned (as defined by the Metadata object).   Pass ['_ALL'] to get all columns."
+          description: "List of metadata columns that should be returned (as defined by the Metadata object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
           items:
             type: string
@@ -426,7 +430,7 @@ components:
             - "host_species"
             - "isolation_source"
         in silico columns:
-          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object).   Pass ['_ALL'] to get all columns."
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
           items:
             type: string
