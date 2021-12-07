@@ -975,7 +975,6 @@ class MonocleData:
          filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
          # extract what we need from seq status data
          for this_sample in filtered_samples:
-            logging.critical("************************************************\n{}".format(this_sample))
             this_sample_id = this_sample['sample_id']
             for this_lane in this_sample['lanes']:
                if this_sample_id in samples_for_download:
