@@ -98,27 +98,28 @@ def get_metadata(body):
     csv_filename        = body.get('csv filename',       GetMetadataInputDefaults['csv filename'])
     metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
     in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
-    # setting column filter params to '_ALL' means all columns should be returned
-    if '_ALL' == metadata_columns[0]:
-       metadata_columns = None
-    if '_ALL' == in_silico_columns[0]:
-       in_silico_columns = None
-    metadata = ServiceFactory.data_service(
-                  get_authenticated_username(request)).get_metadata(
-                     sample_filters,
-                     start_row         = body.get('start row', None),
-                     num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
-                     include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-                     return_as_csv     = return_as_csv,
-                     metadata_columns  = metadata_columns,
-                     in_silico_columns = in_silico_columns)
     if return_as_csv:
-      return Response(  metadata,
-                        content_type   = 'text/csv; charset=UTF-8',
-                        headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(csv_filename)},
-                        status         = HTTPStatus.OK
-                        )
+      # note the metadata CSV here does not include data download URLs
+      # this is because the sample filters could match samples from multiple institutions, and download
+      # links for multiple institutions are not currently supported with CSV metadata downloads
+      return  _metadata_as_csv_response(
+                  ServiceFactory.data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
+                  )
     else:
+      # setting column filter params to '_ALL' means all columns should be returned
+      if '_ALL' == metadata_columns[0]:
+         metadata_columns = None
+      if '_ALL' == in_silico_columns[0]:
+         in_silico_columns = None
+      metadata = ServiceFactory.data_service(
+                     get_authenticated_username(request)).get_metadata(
+                        sample_filters,
+                        start_row         = body.get('start row', None),
+                        num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
+                        include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+                        return_as_csv     = return_as_csv,
+                        metadata_columns  = metadata_columns,
+                        in_silico_columns = in_silico_columns)
       return call_jsonify( metadata ), HTTPStatus.OK
 
 def bulk_download_info(body):
@@ -132,7 +133,6 @@ def bulk_download_info(body):
             annotations=annotations,
             reads=reads)
     ), HTTPStatus.OK
-
 
 def bulk_download_urls(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
@@ -173,10 +173,14 @@ def get_metadata_for_download(institution: str, category: str, status: str):
    This endpiunt differs, we expect it to be reached by the user clicking on a link/button;  the browser
    should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
    """
-   metadata_for_download = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+   return  _metadata_as_csv_response(
+               ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+               )
+   
+def _metadata_as_csv_response(metadata_for_download):
    if not metadata_for_download['success']:
       if 'not found' == metadata_for_download['error']:
-         return "{} has no samples with {} status of {}".format(institution,category,status), HTTPStatus.NOT_FOUND
+         return HTTPStatus.NOT_FOUND
       elif 'request' == metadata_for_download['error']:
          return HTTPStatus.BAD_REQUEST
       else:

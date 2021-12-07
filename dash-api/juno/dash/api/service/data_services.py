@@ -487,16 +487,15 @@ class MonocleData:
                   status[this_institution]['running'] += 1
       return status
 
-   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False, return_as_csv=False):
+   def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None, in_silico_columns=None, include_in_silico=False):
       """
       Pass sample filters dict (describes the filters applied in the front end)
       If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
       num_rows is ignored unless start_rows is defined. Passing start_row without num_rows is an error.
       Optionally pass lists metadata_columns and in_silico_columns to specify which metadata
       and in silico data (respectively) columns are returned.  Both defaults to returning all columns.
-      Optionally flags:
+      Optional flags:
       'include_in_silico' if in silico data should be retrieved and merged into the metadata.
-      'return_as_csv' if the response should be CSV rather than JSON
       
       By default, returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico data.  Metadata and in silico data are represented with the same format:
@@ -514,10 +513,8 @@ class MonocleData:
          },
          ...
       ]
-      
-      If CSV is requested, the same data as above are returned as a CSV string:  metadata fields sorted by their
-      `order` attribute, followed by in silico fields sorted by their `order` attribute.
       """
+
       # get_filtered_samples filters the samples for us, from the sequencing status data
       filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
       # be careful using total_num_matching_samples in following lines, as this is the complete
@@ -564,10 +561,7 @@ class MonocleData:
          combined_metadata = self._filter_combined_metadata_columns(combined_metadata, metadata_columns, in_silico_columns)
 
       logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
-      if return_as_csv:
-         return self._convert_metadata_to_csv(combined_metadata)
-      else:
-         return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
+      return {'samples': combined_metadata, 'total rows':total_num_matching_samples, 'last row': last_sample_row_returned}
 
    def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
       """
@@ -648,26 +642,6 @@ class MonocleData:
                   del in_silico[this_column]
       return combined_metadata
    
-   def _convert_metadata_to_csv(self, combined_metadata):
-      """
-      Pass "combined metadata" structure as returned by get_metadata(), and return it in the form of a giant CSV string
-      """
-      return "\"not\",\"implemented\",\"yet\""
-
-      ######first_sample = True
-      ######headers_row = []
-      ######for this_sample in combined_metadata:
-         ######metadata = this_sample['metadata']
-         ######metadata_row = []
-         ######for this_column in sorted(metadata, key=lambda col: (metadata[col]['order'])):
-            ######if first_sample:
-               ######headers_row.append( metadata[this_column]['name'] )
-            ######else:
-               ######assert (metadata[this_column]['name'] in headers_row), "found metadta field \"{}\" which was not present in the first row:  all rows should contain the same fields".format(metadata[this_column]['name'])
-            ######metadata_row.append( metadata[this_column]['value'] )
-         ######first_sample = False
-
-
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
@@ -1001,12 +975,13 @@ class MonocleData:
          filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
          # extract what we need from seq status data
          for this_sample in filtered_samples:
+            logging.critical("************************************************\n{}".format(this_sample))
             this_sample_id = this_sample['sample_id']
             for this_lane in this_sample['lanes']:
                if this_sample_id in samples_for_download:
-                  samples_for_download[this_sample_id].append(this_lane['id'])
+                  samples_for_download[this_sample_id].append(this_lane)
                else:
-                  samples_for_download[this_sample_id] = [this_lane['id']]
+                  samples_for_download[this_sample_id] = [this_lane]
 
       if 1 > len(samples_for_download):
          return None
@@ -1053,8 +1028,9 @@ class MonocleData:
       while 'Public_Name' in metadata_col_order:
          metadata_col_order.remove('Public_Name')
       metadata_col_order.insert(0,'Public_Name')
-      # put download links in last column
-      metadata_col_order.append('Download_Link')
+      # if download links are included, put them in last column
+      if download_base_url is not None:
+         metadata_col_order.append('Download_Link')
 
       metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
       logging.debug("merged metadata and in silico data as CSV:\n{}".format(metadata_csv))

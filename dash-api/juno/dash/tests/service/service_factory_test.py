@@ -611,20 +611,6 @@ class MonocleDataTest(TestCase):
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata)
 
-   ########@patch.object(MonocleData,              'make_download_symlink')
-   ########@patch.object(Monocle_Download_Client,  'in_silico_data')
-   ########@patch.object(Monocle_Download_Client,  'metadata')
-   ########def test_get_metadata_as_csv(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
-      ########mock_metadata_fetch.return_value       = self.mock_metadata
-      ########mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
-      ########mock_make_symlink.return_value         = self.mock_download_path
-
-      ########metadata_as_csv = self.monocle_data.get_metadata(  {'batches': self.inst_key_batch_date_pairs},
-                                                         ########return_as_csv=True,
-                                                         ########include_in_silico=True)
-      ########logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_as_csv))
-      ########self.assertEqual(self.expected_metadata_download, metadata_as_csv)
-
    @patch.object(SampleMetadata, 'get_samples')
    def test_get_filtered_samples(self, get_sample_metadata_mock):
       get_sample_metadata_mock.return_value = self.mock_samples

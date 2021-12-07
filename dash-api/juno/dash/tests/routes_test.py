@@ -17,6 +17,7 @@ class TestRoutes(unittest.TestCase):
     SERVICE_CALL_RETURN_DATA = {'field1': 'value1'}
     SERVICE_CALL_RETURN_CSV_FILENAME = 'myfile.csv'
     SERVICE_CALL_RETURN_CSV_DATA = {'success': True, 'filename':SERVICE_CALL_RETURN_CSV_FILENAME, 'content' : 'a,csv,string'}
+    SERVICE_CALL_RETURN_CSV_NOT_FOUND = {'success': False, 'error': 'not found'}
     TEST_USER = 'fbloggs'
     TEST_HOST_NAME = 'mock.host'
 
@@ -325,22 +326,34 @@ class TestRoutes(unittest.TestCase):
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
         username_mock.return_value = self.TEST_USER
+        data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
         # When
         result = get_metadata({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
         data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
-                                                                              start_row         = None,
-                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
-                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              return_as_csv     = True,
-                                                                              metadata_columns  = GetMetadataInputDefaults['metadata columns'],
-                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'])
+        data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
+                                                                                sample_filters = sample_filters)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, type(Response('any content will do')))
-        self.assertEqual(result.status_code,                    HTTPStatus.OK)
-        self.assertEqual(result.content_type,                   self.EXPECTED_CSV_CONTENT_TYPE)
+        self.assertEqual(result.status_code, HTTPStatus.OK)
+        self.assertEqual(result.content_type, self.EXPECTED_CSV_CONTENT_TYPE)
         self.assertEqual(result.headers['Content-Disposition'], self.EXPECTED_CONTENT_DISPOSITION)
+        
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'data_service')
+    def test_get_metadata_return_csv_404(self, data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        username_mock.return_value = self.TEST_USER
+        data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
+        # When
+        result = get_metadata({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
+        # Then
+        data_service_mock.assert_called_once_with(self.TEST_USER)
+        data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
+                                                                                sample_filters = sample_filters)
+        self.assertEqual(result, HTTPStatus.NOT_FOUND)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
