@@ -11,7 +11,6 @@
     getInstitutions
   } from "$lib/dataLoading.js";
 
-  const PAGE_TITLE_ID = "bulk-download-title";
   const PROMISE_STATUS_REJECTED = "rejected";
 
   let formValues = {
@@ -132,33 +131,30 @@
 </script>
 
 
-<h2 id={PAGE_TITLE_ID}>Sample data viewer</h2>
+<h2>Sample data viewer</h2>
 
 {#await dataPromise}
   <LoadingIndicator />
 
 {:then batchList}
+  <section class="batch-selection-section">
+    <h3>Select batches</h3>
+    <BatchSelector
+      bind:selectedBatches
+      {batchList}
+    />
+  </section>
+
+  <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
+
   <form
-    aria-labelledby={PAGE_TITLE_ID}
+    aria-label="Sample bulk download"
     on:submit|preventDefault={onSubmit}
   >
     <fieldset
       disabled={downloadLinksRequested}
       class:disabled={downloadLinksRequested}
     >
-
-      <fieldset class="batch-selection-section">
-        <legend>Select batches to download</legend>
-        <BatchSelector
-          bind:selectedBatches
-          {batchList}
-        />
-      </fieldset>
-
-      <fieldset>
-        <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
-      </fieldset>
-
       <fieldset class="data-type-section">
         <legend>Data type</legend>
 
@@ -253,12 +249,10 @@ select {
 }
 
 .batch-selection-section {
-  align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 @media (min-width: 480px) {
   .batch-selection-section {
-    display: flex;
   }
 }
 

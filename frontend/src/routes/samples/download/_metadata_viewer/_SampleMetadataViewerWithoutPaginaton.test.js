@@ -73,6 +73,16 @@ describe("on metadata resolved", () => {
       });
     });
   }
+
+  it("displays a message if there's no metadata", async () => {
+    const { getByLabelText, queryByLabelText } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.resolve([]) });
+
+    waitFor(() => {
+      expect(getByLabelText("No data. Try to refresh or change a filter.")).toBeDefined();
+      expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
+    });
+  });
 });
 
 describe("on error", () => {

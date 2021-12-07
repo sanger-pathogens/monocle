@@ -86,16 +86,51 @@
         <!-- TODO: cache metadata so as to avoid waiting when one of the buttons is clicked. -->
         <!-- `type="button"` is needed to prevent the buttons from submitting a form that they
           may be a descendant of. -->
-        <li><button type="button" on:click={setToFirstPage} disabled={pageNum <= 1}>
-          First
+        <li><button
+          aria-label="First page"
+          class="compact"
+          type="button"
+          on:click={setToFirstPage}
+          disabled={pageNum <= 1}
+        >
+          &lt&lt First
         </button></li>
-        <li><button type="button" on:click={decrementPage} disabled={pageNum <= 1}>
-          Previous
+        <li><button
+          aria-label="Previous page"
+          class="compact"
+          type="button"
+          on:click={decrementPage}
+          disabled={pageNum <= 1}
+        >
+          &lt Previous
         </button></li>
-        <li><button type="button" on:click={incrementPage} disabled={isLastPage}>
-          Next
+        <li><button
+          aria-label="Next page"
+          class="compact"
+          type="button"
+          on:click={incrementPage}
+          disabled={isLastPage}
+        >
+          Next &gt
         </button></li>
       </ul>
     </nav>
   </section>
 {/if}
+
+
+<style>
+section {
+  max-width: 100%;
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  margin-left: 4%;
+}
+
+li {
+  margin-left: 1rem;
+}
+</style>

@@ -76,39 +76,39 @@ it("debounces the metadata request when batches change", async () => {
 });
 
 describe("pagination", () => {
-  const BUTTON_NAME_FIRST = "First";
-  const BUTTON_NAME_NEXT = "Next";
-  const BUTTON_NAME_PREV = "Previous";
+  const LABEL_FIRST_BUTTON = "First page";
+  const LABEL_NEXT_BUTTON = "Next page";
+  const LABEL_PREV_BUTTON = "Previous page";
   const LABEL_LOADING_INDICATOR = "please wait";
   const NUM_METADATA_ROWS_PER_PAGE = 12;
 
   it("disables First and Previous buttons only if the first page is shown", async () => {
     const { getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-    expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_FIRST }).disabled)
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }).disabled)
       .toBeTruthy();
-    expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_PREV }).disabled)
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }).disabled)
       .toBeTruthy();
 
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT }));
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
-    expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_FIRST }).disabled)
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }).disabled)
       .toBeFalsy();
-    expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_PREV }).disabled)
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }).disabled)
       .toBeFalsy();
   });
 
   it("disables Next button only if the last page is shown", async () => {
     const { getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-    expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT }).disabled)
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
       .toBeFalsy();
 
     getSampleMetadata.mockResolvedValueOnce({ "last row": 99, "total rows": 99 });
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT }));
+    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
     waitFor(() => {
-      expect(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT }).disabled)
+      expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
         .toBeTruthy();
     });
   });
@@ -116,7 +116,7 @@ describe("pagination", () => {
   it("requests and loads the next page when Next button is clicked", async () => {
     const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT }));
+    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
     waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
@@ -128,11 +128,11 @@ describe("pagination", () => {
 
   it("requests and loads the previous page when Previous button is clicked", async () => {
     const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
-    const nextBtn = getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT });
+    const nextBtn = getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON });
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
 
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_PREV }));
+    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }));
 
     waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
@@ -144,11 +144,11 @@ describe("pagination", () => {
 
   it("requests and loads the first page when First button is clicked", async () => {
     const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
-    const nextBtn = getByRole(ROLE_BUTTON, { name: BUTTON_NAME_NEXT });
+    const nextBtn = getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON });
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
 
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: BUTTON_NAME_FIRST }));
+    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }));
 
     waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();

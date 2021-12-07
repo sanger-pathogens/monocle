@@ -237,7 +237,8 @@ input[type=submit] {
   border: 1px solid var(--background);
   font-weight: 100;
   padding-right: 21px;
-  padding-left: 21px
+  padding-left: 21px;
+  white-space: nowrap;
 }
 
 button:hover,
@@ -461,7 +462,7 @@ th {
 
 td,
 th {
-  padding: 6px;
+  padding: .7rem;
   vertical-align: top;
   word-wrap: break-word
 }
