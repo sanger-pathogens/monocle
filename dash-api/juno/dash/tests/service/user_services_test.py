@@ -1,8 +1,10 @@
-from   unittest               import TestCase
-from   unittest.mock          import patch, Mock
+from   datetime         import datetime
+from   unittest         import TestCase
+from   unittest.mock    import patch, Mock
 import logging
 
-from   DataSources.user_data  import UserData
+from   DataServices.user_services   import MonocleUser
+from   DataSources.user_data        import UserData
 
 class MonocleUserTest(TestCase):
 

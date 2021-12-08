@@ -10,13 +10,14 @@ from   pandas.errors import MergeError
 from   pathlib       import Path, PurePath
 import yaml
 
-from   DataSources.sample_metadata     import SampleMetadata, Monocle_Client
-from   DataSources.sequencing_status   import SequencingStatus, MLWH_Client
-from   DataSources.pipeline_status     import PipelineStatus
-from   DataSources.metadata_download   import MetadataDownload, Monocle_Download_Client
-from   DataSources.user_data           import UserData
-from   DataServices.data_services      import MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
-from   utils.file                      import format_file_size
+from   DataSources.sample_metadata           import SampleMetadata, Monocle_Client
+from   DataSources.sequencing_status         import SequencingStatus, MLWH_Client
+from   DataSources.pipeline_status           import PipelineStatus
+from   DataSources.metadata_download         import MetadataDownload, Monocle_Download_Client
+from   DataSources.user_data                 import UserData
+from   DataServices.sample_tracking_services import MonocleSampleTracking
+from   DataServices.data_services            import MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
+from   utils.file                            import format_file_size
 
 INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
@@ -290,22 +291,23 @@ class MonocleDataTest(TestCase):
 
    # create MonocleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
-   monocle_data = MonocleData(set_up=False)
+   monocle_sample_tracking = MonocleSampleTracking(set_up=False)
+   monocle_data            = MonocleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
    monocle_data.data_source_config_name = test_config
 
    @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
       # mock moncoledb
-      self.monocle_data.sample_metadata = SampleMetadata(set_up=False)
-      self.monocle_data.sample_metadata.monocle_client = Monocle_Client(set_up=False)
-      self.monocle_data.sample_metadata.monocle_client.set_up(self.test_config)
-      self.monocle_data.updated = self.mock_data_updated
+      self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
+      self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+      self.monocle_sample_tracking.sample_metadata.monocle_client.set_up(self.test_config)
+      self.monocle_sample_tracking.updated = self.mock_data_updated
       # mock sequencing_status
-      self.monocle_data.sequencing_status_source = SequencingStatus(set_up=False)
-      self.monocle_data.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
-      self.monocle_data.sequencing_status_source.mlwh_client.set_up(self.test_config)
+      self.monocle_sample_tracking.sequencing_status_source = SequencingStatus(set_up=False)
+      self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
+      self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
       # mock pipeline_status
-      self.monocle_data.pipeline_status = PipelineStatus(config=self.test_config)
+      self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
       # mock metadata_download
       self.monocle_data.metadata_source = MetadataDownload(set_up=False)
       self.monocle_data.metadata_source.dl_client = Monocle_Download_Client(set_up=False)
@@ -314,7 +316,9 @@ class MonocleDataTest(TestCase):
       self.get_mock_data()
 
    def test_init(self):
-      self.assertIsInstance(self.monocle_data, MonocleData)
+      self.assertIsInstance(self.monocle_sample_tracking,      MonocleSampleTracking)
+      self.assertIsInstance(self.monocle_data,                 MonocleData)
+      self.assertIsInstance(self.monocle_data.sample_tracking, MonocleSampleTracking)
 
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
@@ -324,57 +328,57 @@ class MonocleDataTest(TestCase):
          mock_db_sample_query,
          mock_institution_query
       ):
-      self.monocle_data.sequencing_status_data = None
+      self.monocle_sample_tracking.sequencing_status_data = None
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples
       mock_seq_samples_query.return_value = self.mock_seq_status
-      self.monocle_data.get_institutions()
-      self.monocle_data.get_samples()
-      self.monocle_data.get_sequencing_status()
+      self.monocle_sample_tracking.get_institutions()
+      self.monocle_sample_tracking.get_samples()
+      self.monocle_sample_tracking.get_sequencing_status()
 
    def test_get_progress(self):
-      progress_data = self.monocle_data.get_progress()
+      progress_data = self.monocle_sample_tracking.get_progress()
 
       self.assertEqual(self.expected_progress_data, progress_data)
 
    def test_get_institutions(self):
-      institution_data = self.monocle_data.get_institutions()
+      institution_data = self.monocle_sample_tracking.get_institutions()
 
       self.assertEqual(self.expected_institution_data, institution_data)
 
    def test_get_institution_names(self):
-      institution_names = self.monocle_data.get_institution_names()
+      institution_names = self.monocle_sample_tracking.get_institution_names()
 
       self.assertEqual(self.mock_institutions, institution_names)
 
    def test_get_institution_names_returns_cached_response(self):
       expected = 'some data'
-      self.monocle_data.institution_names = expected
+      self.monocle_sample_tracking.institution_names = expected
 
-      institution_names = self.monocle_data.get_institution_names()
+      institution_names = self.monocle_sample_tracking.get_institution_names()
 
       self.assertEqual(expected, institution_names)
       # Teardown: clear cache.
-      self.monocle_data.institution_names = None
+      self.monocle_sample_tracking.institution_names = None
 
    def test_get_institution_names_returns_names_from_user_membership(self):
       expected_institution_name = 'Center of Paradise Engineering'
       user_record = { 'memberOf': [{'inst_name': expected_institution_name }] }
-      self.monocle_data.user_record = user_record
+      self.monocle_sample_tracking.user_record = user_record
 
-      institution_names = self.monocle_data.get_institution_names()
+      institution_names = self.monocle_sample_tracking.get_institution_names()
 
       self.assertEqual([expected_institution_name], institution_names)
       # Teardown: clear user record.
-      self.monocle_data.user_record = None
+      self.monocle_sample_tracking.user_record = None
 
    def test_get_samples(self):
-      sample_data = self.monocle_data.get_samples()
+      sample_data = self.monocle_sample_tracking.get_samples()
 
       self.assertEqual(self.expected_sample_data, sample_data)
 
    def test_get_sequencing_status(self):
-      seq_status_data = self.monocle_data.get_sequencing_status()
+      seq_status_data = self.monocle_sample_tracking.get_sequencing_status()
 
       self.assertEqual(self.expected_seq_status, seq_status_data)
 
@@ -385,14 +389,14 @@ class MonocleDataTest(TestCase):
        mock_institution_query.return_value = self.mock_institutions
        mock_db_sample_query.return_value = self.mock_samples
        get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found', 'yes', 'no')
-       self.monocle_data.sequencing_status_data = None
+       self.monocle_sample_tracking.sequencing_status_data = None
 
-       httpdropout = self.monocle_data.get_sequencing_status()
+       httpdropout = self.monocle_sample_tracking.get_sequencing_status()
 
        self.assertEqual(self.expected_dropout_data, httpdropout)
 
    def test_get_batches(self):
-      batches_data = self.monocle_data.get_batches()
+      batches_data = self.monocle_sample_tracking.get_batches()
 
       self.assertEqual(self.expected_batches, batches_data)
 
@@ -400,37 +404,37 @@ class MonocleDataTest(TestCase):
    def test_get_batches_dropouts(self, get_multiple_samples_mock):
       get_multiple_samples_mock.side_effect = urllib.error.HTTPError('/nowhere', '404', 'page could not be found',
                                                                       'yes', 'no')
-      self.monocle_data.sequencing_status_data = None
-      self.monocle_data.get_sequencing_status()
+      self.monocle_sample_tracking.sequencing_status_data = None
+      self.monocle_sample_tracking.get_sequencing_status()
 
-      batches_data = self.monocle_data.get_batches()
+      batches_data = self.monocle_sample_tracking.get_batches()
 
       self.assertEqual(self.expected_dropout_data, batches_data)
 
    def test_sequencing_status_summary(self):
-      seq_status_summary = self.monocle_data.sequencing_status_summary()
+      seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
 
       self.assertEqual(self.expected_seq_summary, seq_status_summary)
 
    def test_sequencing_status_summary_dropout(self):
-      self.monocle_data.sequencing_status_data = self.expected_dropout_data
+      self.monocle_sample_tracking.sequencing_status_data = self.expected_dropout_data
 
-      seq_status_summary = self.monocle_data.sequencing_status_summary()
+      seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
 
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
       self.assertEqual(self.expected_dropout_data, seq_status_summary)
 
    def test_pipeline_status_summary(self):
-      pipeline_summary = self.monocle_data.pipeline_status_summary()
+      pipeline_summary = self.monocle_sample_tracking.pipeline_status_summary()
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
 
       self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
    def test_pipeline_status_summary_dropout(self):
-      self.monocle_data.sequencing_status_data = self.expected_dropout_data
+      self.monocle_sample_tracking.sequencing_status_data = self.expected_dropout_data
 
-      pipeline_summary = self.monocle_data.pipeline_status_summary()
+      pipeline_summary = self.monocle_sample_tracking.pipeline_status_summary()
 
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
       self.assertEqual(self.expected_dropout_data, pipeline_summary)
@@ -642,7 +646,7 @@ class MonocleDataTest(TestCase):
          self.monocle_data.get_zip_download_location()
 
    def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
-      monocle_data_with_bad_config = MonocleData(set_up=False)
+      monocle_data_with_bad_config = MonocleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
       monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
       with self.assertRaises(DataSourceConfigError):
@@ -800,7 +804,7 @@ class MonocleDataTest(TestCase):
    @patch.dict(environ, mock_environment, clear=True)
    def test_make_download_symlink(self):
       test_inst_name = self.mock_institutions[0]
-      test_inst_key  = self.monocle_data.institution_db_key_to_dict[test_inst_name]
+      test_inst_key  = self.monocle_sample_tracking.institution_db_key_to_dict[test_inst_name]
       self._symlink_test_setup(test_inst_key)
 
       symlink_url_path  = self.monocle_data.make_download_symlink(test_inst_name)
