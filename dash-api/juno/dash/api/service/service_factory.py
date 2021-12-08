@@ -1,4 +1,4 @@
-from dash.api.service.DataServices.data_services            import MonocleData
+from dash.api.service.DataServices.sample_data_services     import MonocleSampleData
 from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 from dash.api.service.DataServices.user_services            import MonocleUser
 
@@ -13,21 +13,21 @@ class UserService(MonocleUser):
         return self.record
 
 
-class DataService(MonocleData):
-    """ Wrapper class for MonocleData, that sets a user details record """
+class DataService(MonocleSampleData):
+    """ Wrapper class for MonocleSampleData, that sets a user details record """
 
     def __init__(self, username: str, set_up: bool = True):
-        MonocleData.__init__(self, set_up=set_up)
+        MonocleSampleData.__init__(self, set_up=set_up)
         user = MonocleUser(username)
         # Setting this record will enforce data filtering by user
         self.user_record = user.record
 
 
-class TestDataService(MonocleData):
-    """ Wrapper class for MonocleData testing, which does not do user checking """
+class TestDataService(MonocleSampleData):
+    """ Wrapper class for MonocleSampleData testing, which does not do user checking """
 
     def __init__(self, set_up: bool = True):
-        MonocleData.__init__(self, set_up=set_up)
+        MonocleSampleData.__init__(self, set_up=set_up)
 
 class SampleTrackingService(MonocleSampleTracking):
     """ Wrapper class for MonocleSampleTracking, that sets a user details record """

@@ -16,13 +16,13 @@ from   DataSources.pipeline_status           import PipelineStatus
 from   DataSources.metadata_download         import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data                 import UserData
 from   DataServices.sample_tracking_services import MonocleSampleTracking
-from   DataServices.data_services            import MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
+from   DataServices.sample_data_services     import MonocleSampleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                            import format_file_size
 
 INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
 
-class MonocleDataTest(TestCase):
+class MonocleSampleDataTest(TestCase):
 
    test_config       = 'dash/tests/mock_data/data_sources.yml'
    test_config_bad   = 'dash/tests/mock_data/data_sources_bad.yml'
@@ -234,10 +234,10 @@ class MonocleDataTest(TestCase):
                                                    'error'     : 'internal'
                                                    }
 
-   # create MonocleData object outside setUp() to avoid creating multipe instances
+   # create MonocleSampleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_sample_tracking = MonocleSampleTracking(set_up=False)
-   monocle_data            = MonocleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
+   monocle_data            = MonocleSampleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
    monocle_data.data_source_config_name = test_config
 
    @patch.dict(environ, mock_environment, clear=True)
@@ -259,7 +259,7 @@ class MonocleDataTest(TestCase):
 
    def test_init(self):
       self.assertIsInstance(self.monocle_sample_tracking,      MonocleSampleTracking)
-      self.assertIsInstance(self.monocle_data,                 MonocleData)
+      self.assertIsInstance(self.monocle_data,                 MonocleSampleData)
       self.assertIsInstance(self.monocle_data.sample_tracking, MonocleSampleTracking)
 
    @patch.object(SampleMetadata,    'get_institution_names')
@@ -278,9 +278,9 @@ class MonocleDataTest(TestCase):
       self.monocle_sample_tracking.get_samples()
       self.monocle_sample_tracking.get_sequencing_status()
 
-   @patch.object(Path,           'exists', return_value=True)
-   @patch.object(MonocleData,    '_get_file_size')
-   @patch.object(SampleMetadata, 'get_samples')
+   @patch.object(Path,              'exists', return_value=True)
+   @patch.object(MonocleSampleData, '_get_file_size')
+   @patch.object(SampleMetadata,    'get_samples')
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_bulk_download_info(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
       get_sample_metadata_mock.return_value = self.mock_samples
@@ -302,7 +302,7 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata(self, mock_metadata_fetch):
       """
-      data_services.MonocleData.get_metadata should return sample metadta in expected format,
+      sample_data_services.MonocleSampleData.get_metadata should return sample metadta in expected format,
       without in silico data when `include_in_silico=False` is passed; and should default to
       the same if `include_in_silico` is not defined
       """
@@ -318,7 +318,7 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       """
-      data_services.MonocleData.get_metadata should return sample metadta in expected format,
+      sample_data_services.MonocleSampleData.get_metadata should return sample metadta in expected format,
       with added in silico data when `include_in_silico=True` is passed
       """
       mock_metadata_fetch.return_value       = self.mock_metadata
@@ -330,7 +330,7 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
       """
-      data_services.MonocleData.get_metadata should filter the response to include
+      sample_data_services.MonocleSampleData.get_metadata should filter the response to include
       only the requested columns
       """
       mock_metadata_fetch.return_value = deepcopy(self.mock_metadata) # work on a copy, as metadata will be modified
@@ -339,10 +339,10 @@ class MonocleDataTest(TestCase):
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_filtered, filtered_samples_metadata)
 
-   @patch.object(MonocleData, 'get_filtered_samples')
+   @patch.object(MonocleSampleData, 'get_filtered_samples')
    def test_get_metadata_no_matching_samples(self, mock_get_filtered_samples):
       """
-      data_services.MonocleData.get_metadata should gracefully handle a case of the filters
+      sample_data_services.MonocleSampleData.get_metadata should gracefully handle a case of the filters
       matching zero samples, by just returning an empty response
       """
       mock_get_filtered_samples.return_value = []
@@ -357,7 +357,7 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_start_row_out_of_range_ok(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       """
-      data_services.MonocleData.get_metadata should gracefully handle a start_row parameter that
+      sample_data_services.MonocleSampleData.get_metadata should gracefully handle a start_row parameter that
       "points" to a row beyond the total number of rows, by just returning an empty response
       """
       mock_metadata_fetch.return_value       = self.mock_metadata
@@ -372,7 +372,7 @@ class MonocleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
       """
-      data_services.MonocleData.get_metadata should gracefully handle num_rows parameter that
+      sample_data_services.MonocleSampleData.get_metadata should gracefully handle num_rows parameter that
       "points" to a row beyond the total number of rows, by just returning all available rows
       """
       mock_metadata_fetch.return_value = self.mock_metadata
@@ -382,7 +382,7 @@ class MonocleDataTest(TestCase):
 
    def test_get_metadata_pagination_reject_missing_num_rows(self):
       """
-      data_services.MonocleData.get_metadata should raise AssertionError if only
+      sample_data_services.MonocleSampleData.get_metadata should raise AssertionError if only
       one pagination param start_row is passwd with a num_rows param
       (note if start_row is not defined, num_rows is simply ignored)
       """
@@ -485,15 +485,15 @@ class MonocleDataTest(TestCase):
          self.monocle_data.get_zip_download_location()
 
    def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
-      monocle_data_with_bad_config = MonocleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
+      monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
       monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
       with self.assertRaises(DataSourceConfigError):
          monocle_data_with_bad_config.get_zip_download_location()
 
-   @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'in_silico_data')
-   @patch.object(Monocle_Download_Client,  'metadata')
+   @patch.object(MonocleSampleData,       'make_download_symlink')
+   @patch.object(Monocle_Download_Client, 'in_silico_data')
+   @patch.object(Monocle_Download_Client, 'metadata')
    def test_get_metadata_for_download(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
@@ -504,8 +504,8 @@ class MonocleDataTest(TestCase):
       # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
       self.assertEqual(self.expected_metadata_download, metadata_download)
       
-   @patch.object(MonocleData, 'make_download_symlink')
-   @patch.object(MonocleData, 'metadata_as_csv')
+   @patch.object(MonocleSampleData, 'make_download_symlink')
+   @patch.object(MonocleSampleData, 'metadata_as_csv')
    def test_get_metadata_for_download_not_found_ok(self, mock_metadata_as_csv, mock_make_symlink):
       mock_metadata_as_csv.return_value   = None
       mock_make_symlink.return_value      = self.mock_download_path
@@ -526,9 +526,9 @@ class MonocleDataTest(TestCase):
 
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
-   @patch.object(MonocleData,              'make_download_symlink')
-   @patch.object(Monocle_Download_Client,  'in_silico_data')
-   @patch.object(Monocle_Download_Client,  'metadata')
+   @patch.object(MonocleSampleData,       'make_download_symlink')
+   @patch.object(Monocle_Download_Client, 'in_silico_data')
+   @patch.object(Monocle_Download_Client, 'metadata')
    def test_get_metadata_for_download_error_response(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_make_symlink):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data

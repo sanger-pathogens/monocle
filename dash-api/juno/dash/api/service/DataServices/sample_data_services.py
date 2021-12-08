@@ -32,7 +32,7 @@ UNKNOWN_PUBLIC_NAME = 'unknown'
 class DataSourceConfigError(Exception):
     pass
 
-class MonocleData:
+class MonocleSampleData:
    """
    Provides wrapper for classes that query various data sources for Monocle data.
    This class exists to convert data between the form in which they are provided by the data sources,

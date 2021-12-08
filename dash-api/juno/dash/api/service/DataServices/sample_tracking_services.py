@@ -104,7 +104,7 @@ class MonocleSampleTracking:
 
       Dict keys are alphanumeric-only and safe for HTML id attr. The monocle db keys are not
       suitable for this as they are full institution names.   It's useful to be able to lookup
-      a dict key from a db key (i.e. institution name) so MonocleData.institution_db_key_to_dict
+      a dict key from a db key (i.e. institution name) so institution_db_key_to_dict()
       is provided.
 
       ***IMPORTANT / FIXME***

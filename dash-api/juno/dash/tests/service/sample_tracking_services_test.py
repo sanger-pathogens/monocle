@@ -16,13 +16,12 @@ from   DataSources.pipeline_status           import PipelineStatus
 from   DataSources.metadata_download         import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data                 import UserData
 from   DataServices.sample_tracking_services import MonocleSampleTracking
-from   DataServices.data_services            import MonocleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
 from   utils.file                            import format_file_size
 
 INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
 
-class MonocleDataTest(TestCase):
+class MonocleSampleTrackingTest(TestCase):
 
    test_config       = 'dash/tests/mock_data/data_sources.yml'
    test_config_bad   = 'dash/tests/mock_data/data_sources_bad.yml'
@@ -45,7 +44,7 @@ class MonocleDataTest(TestCase):
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir}
 
-   # this is the mock date for the instantiation of MonocleData; it must match the latest month used in `expected_progress_data`
+   # this is the mock date for the instantiation of MonocleSampleTracking; it must match the latest month used in `expected_progress_data`
    # (because get_progeress() always returns date values up to "now")
    mock_data_updated = datetime(2021,5,15)
 
@@ -115,7 +114,7 @@ class MonocleDataTest(TestCase):
                                                             },
                                     }
 
-   # data we expect MonocleData method to return, given patched queries with the value above
+   # data we expect MonocleSampleTracking methods to return, given patched queries with the value above
    # the latest month included here must match the date provided by `mock_data_updated`
    expected_progress_data     =  {  'date': ['Sep 2019', 'Oct 2019', 'Nov 2019', 'Dec 2019', 'Jan 2020', 'Feb 2020', 'Mar 2020',
                                              'Apr 2020', 'May 2020', 'Jun 2020', 'Jul 2020', 'Aug 2020', 'Sep 2020', 'Oct 2020',
@@ -167,11 +166,9 @@ class MonocleDataTest(TestCase):
                                     }
 
 
-   # create MonocleData object outside setUp() to avoid creating multipe instances
+   # create MonocleSampleTracking object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_sample_tracking = MonocleSampleTracking(set_up=False)
-   monocle_data            = MonocleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
-   monocle_data.data_source_config_name = test_config
 
    @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
@@ -191,8 +188,6 @@ class MonocleDataTest(TestCase):
 
    def test_init(self):
       self.assertIsInstance(self.monocle_sample_tracking,      MonocleSampleTracking)
-      self.assertIsInstance(self.monocle_data,                 MonocleData)
-      self.assertIsInstance(self.monocle_data.sample_tracking, MonocleSampleTracking)
 
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
