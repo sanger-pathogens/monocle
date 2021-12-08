@@ -1,4 +1,5 @@
-from dash.api.service.data_services import MonocleUser, MonocleData
+from dash.api.service.DataServices.data_services import MonocleData
+from dash.api.service.DataServices.user_services import MonocleUser
 
 class UserService(MonocleUser):
     """ Wrapper class for MonocleUser """
