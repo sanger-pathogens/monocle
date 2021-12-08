@@ -20,8 +20,7 @@ class DataService(MonocleSampleData):
         MonocleSampleData.__init__(self, set_up=set_up)
         user = MonocleUser(username)
         # Setting this record will enforce data filtering by user
-        self.user_record = user.record
-
+        self.sample_tracking.user_record = user.record
 
 class TestDataService(MonocleSampleData):
     """ Wrapper class for MonocleSampleData testing, which does not do user checking """

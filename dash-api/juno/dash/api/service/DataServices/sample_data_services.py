@@ -49,14 +49,12 @@ class MonocleSampleData:
    day_zero = datetime(2019,9,17)
 
    def __init__(self, MonocleSampleTracking_ref=None, set_up=True):
-      self.user_record  = None
       # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
       # if one wasn't passed, create one now
       if MonocleSampleTracking_ref is not None:
          self.sample_tracking   = MonocleSampleTracking_ref
       else:
          self.sample_tracking             = DataServices.sample_tracking_services.MonocleSampleTracking()
-         self.sample_tracking.user_record = self.user_record
       # set_up flag causes data objects to be loaded on instantiation
       # only set to False if you know what you're doing
       if set_up:
