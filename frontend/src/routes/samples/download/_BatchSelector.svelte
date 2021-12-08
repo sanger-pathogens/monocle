@@ -4,8 +4,8 @@
 
   const STYLE_SELECT_CONTAINER = `
     flex-grow: 1;
-    order: -1;
-    align-self: baseline
+    align-self: baseline;
+    width: 100%
   `;
   
   export let batchList;
@@ -74,12 +74,16 @@ function selectBatches() {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 44rem;
 }
 
 .buttons-container {
   display: flex;
   flex-shrink: 0;
   margin-left: .5rem;
+  order: -1;
 }
 
 @media (min-width: 480px) {
@@ -89,6 +93,7 @@ function selectBatches() {
 
   .buttons-container {
     flex-direction: column;
+    order: 0;
   }
 } 
 

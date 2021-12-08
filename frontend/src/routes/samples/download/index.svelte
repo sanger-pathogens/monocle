@@ -250,6 +250,7 @@ select {
 
 .batch-selection-section {
   margin-bottom: 2rem;
+  width: 100%;
 }
 @media (min-width: 480px) {
   .batch-selection-section {
