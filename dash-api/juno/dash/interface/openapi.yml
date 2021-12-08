@@ -244,7 +244,6 @@ paths:
             text/csv:
               schema:
                 type: string
-                format: binary
         "403":
           description: "Authorization information is missing or invalid."
 
@@ -284,7 +283,6 @@ paths:
             text/csv:
               schema:
                 type: string
-                format: binary
         "403":
           description: "Authorization information is missing or invalid."
 
