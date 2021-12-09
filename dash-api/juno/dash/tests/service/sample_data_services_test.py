@@ -541,18 +541,29 @@ class MonocleSampleDataTest(TestCase):
    # get_csv_download() mostly covered by get_metadata_for_download() tests above
    # this checks param validation
    def test_get_csv_download_reject_invalid_params(self):
-      metadata_download = self.monocle_data.get_csv_download(  'any_name.csv',
-                                                               download_links = {'hostname'     :'any.server',
-                                                                                 'institution'  :'any institution'}
-                                                               )
-      self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
-
+      # neither sample filters nor sample status
+      with self.assertRaises(RuntimeError):
+         metadata_download = self.monocle_data.get_csv_download(  'any_name.csv',
+                                                                  download_links = {'hostname'     :'any.server',
+                                                                                    'institution'  :'any institution'}
+                                                                  )
+      # both sample filters and sample status
+      with self.assertRaises(RuntimeError):
+         metadata_download = self.monocle_data.get_csv_download(  'any_name.csv',
+                                                                  sample_status  = {'institution'  : self.mock_institutions[0],
+                                                                                    'category'     : 'sequencing',
+                                                                                    'status'       : 'successful'},
+                                                                  sample_filters = {'metadata'     : {'any field': 'any value'}},
+                                                                  download_links = {'hostname'     :'any.server',
+                                                                                    'institution'  :'any institution'}
+                                                                  )
+      # missing download_links `hostname` key
       with self.assertRaises(KeyError):
          metadata_download = self.monocle_data.get_csv_download(  'any_name.csv',
                                                                   sample_status  = {'institution'  : self.mock_institutions[0],
-                                                                                          'category'     : 'sequencing',
-                                                                                          'status'       : 'successful'},
-                                                                  download_links = {'institution'  :'any institution'}
+                                                                                    'category'     : 'sequencing',
+                                                                                    'status'       : 'successful'},
+                                                                  download_links = {'institution'  : 'any institution'}
                                                                   )
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
