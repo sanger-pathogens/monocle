@@ -19,7 +19,7 @@ class MetadataDownloadTest(TestCase):
    # this pattern should match a container on the docker network
    base_url_regex          = '^http://[\w\-]+$'
    endpoint_regex          = '(/[\w\-\.]+)+'
-   # metadta and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
+   # metadata and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
    mock_download_param     = ['5903STDY8059053:31663_7#43']
    mock_bad_download       =  """{  "wrong key":
                                        {  "does": "not matter what appears here"

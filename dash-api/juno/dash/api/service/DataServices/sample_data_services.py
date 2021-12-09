@@ -417,7 +417,7 @@ class MonocleSampleData:
       """
       This acts as a wrapper for get_csv_download().
       
-      get_metadata_for_download() was the original implementation when metadta were only available
+      get_metadata_for_download() was the original implementation when metadata were only available
       for download via the dashboard, selected according to whether sequencing of pipelines had succeeded or failed;
       so the input parameters are simpler than get_csv_download().
       
@@ -463,14 +463,14 @@ class MonocleSampleData:
       Retrieves metadata and (when available) in silico data as CSV for a set of samples.
       
       Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
-      params to indicate the samples to be downloads.  Sample status takes precedence.
+      params to indicate the samples to be downloaded.
       Also pass the suggested filename (ultimately for HTTP headers).
       Optionally pass `download_links` if data download links are to be included in the CSV:
       this is a dict with 'hostname', the host name to be used in the URLs, and 'institution',
       the institution that "owns" the data.
       *Important:*  Currently download links can only be provided where all the samples are
       from a single institution.  If `sample_filters` matches samples from more than one
-      institution, some of the download links will br broken!
+      institution, some of the download links will be broken!
 
       On success, returns content for response, with suggested filename
 
@@ -487,9 +487,10 @@ class MonocleSampleData:
          }
 
       """
-      if None == sample_status and None == sample_filters:
-         logging.error("Must pass sample_status or sample_filters to {}".format(__class__.__name__))
-         return { 'success': False, 'error': 'request' }
+      if (None == sample_status and None == sample_filters) or (sample_status and sample_filters):
+         message = "Must pass EITHER sample_status OR sample_filters to {}".format(__class__.__name__)
+         logging.error(message)
+         raise RuntimeError(message)
          
       download_base_url = None
       if download_links is not None:
@@ -570,8 +571,8 @@ class MonocleSampleData:
       # IMPORTANT
       # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
       # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
-      # it is possible, but rarely (perhaps never in practice) happens, that a smaple may have multiple lane IDs;
-      # tin tbhis case they are all put into the lane ID cell
+      # it is possible, but rarely (perhaps never in practice) happens, that a sample may have multiple lane IDs;
+      # in this case they are all put into the lane ID cell
       logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
       metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
 
@@ -597,7 +598,8 @@ class MonocleSampleData:
          metadata_col_order = metadata_col_order + in_silico_data_col_order
 
       # list of columns in `metadata_col_order` defines the CSV output
-      # remove delete Sample_id -- this is a dupliacte of Lane_ID
+      # remove Sample_id -- this is a duplicate of Lane_ID
+      # (lane IDs are called Sample_ID in the in silico data, for the lolz I guess)
       while 'Sample_id' in metadata_col_order:
          metadata_col_order.remove('Sample_id')
       # move public name to first column
@@ -617,7 +619,7 @@ class MonocleSampleData:
       Pass institution name, category ('sequencing' or 'pipeline') and status ('successful'
       or 'failed).
 
-      Returns dict of samples from that institution matching the cetgeory & status.
+      Returns dict of samples from that institution matching the category & status.
       Keys are sample IDs, values are a list of the lane IDs for that sample.
       """
       try:

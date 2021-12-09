@@ -302,7 +302,7 @@ class MonocleSampleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata(self, mock_metadata_fetch):
       """
-      sample_data_services.MonocleSampleData.get_metadata should return sample metadta in expected format,
+      sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
       without in silico data when `include_in_silico=False` is passed; and should default to
       the same if `include_in_silico` is not defined
       """
@@ -318,7 +318,7 @@ class MonocleSampleDataTest(TestCase):
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
       """
-      sample_data_services.MonocleSampleData.get_metadata should return sample metadta in expected format,
+      sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
       with added in silico data when `include_in_silico=True` is passed
       """
       mock_metadata_fetch.return_value       = self.mock_metadata
