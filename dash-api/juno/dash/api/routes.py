@@ -47,7 +47,7 @@ def get_user_details():
 
 def get_batches():
     """ Get dashboard batch information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_batches()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_batches()
     response_dict = {
         'batches': data
     }
@@ -56,7 +56,7 @@ def get_batches():
 
 def get_institutions():
     """ Get a list of institutions """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_institutions()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_institutions()
     response_dict = {
         'institutions': data
     }
@@ -65,7 +65,7 @@ def get_institutions():
 
 def get_progress():
     """ Get dashboard progress graph information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_progress()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_progress()
     response_dict = {
         'progress_graph': { 'data': data }
     }
@@ -74,7 +74,7 @@ def get_progress():
 
 def sequencing_status_summary():
     """ Get dashboard sequencing status summary information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).sequencing_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).sequencing_status_summary()
     response_dict = {
         'sequencing_status': data
     }
@@ -83,7 +83,7 @@ def sequencing_status_summary():
 
 def pipeline_status_summary():
     """ Get dashboard pipeline status summary information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).pipeline_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).pipeline_status_summary()
     response_dict = {
         'pipeline_status': data
     }
