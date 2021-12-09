@@ -180,11 +180,18 @@ def get_metadata_for_download(institution: str, category: str, status: str):
 def _metadata_as_csv_response(metadata_for_download):
    if not metadata_for_download['success']:
       if 'not found' == metadata_for_download['error']:
-         return HTTPStatus.NOT_FOUND
+         http_status = HTTPStatus.NOT_FOUND
+         content     = metadata_for_download.get('message','Not Found')
       elif 'request' == metadata_for_download['error']:
-         return HTTPStatus.BAD_REQUEST
+         http_status = HTTPStatus.BAD_REQUEST
+         content     = metadata_for_download.get('message','Bad Request')
       else:
-         return HTTPStatus.INTERNAL_SERVER_ERROR
+         http_status = HTTPStatus.INTERNAL_SERVER_ERROR
+         content     = metadata_for_download.get('message','Server Error')
+      return Response(  content,
+                        content_type   = 'text/plain; charset=UTF-8',
+                        status         = http_status
+                        )
    else:
       return Response(  metadata_for_download['content'],
                         content_type   = 'text/csv; charset=UTF-8', # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??

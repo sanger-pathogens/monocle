@@ -223,11 +223,13 @@ class MonocleSampleDataTest(TestCase):
                                     }
 
    expected_metadata_download_not_found       = {  'success'   : False ,
-                                                   'error'     : 'not found'
+                                                   'error'     : 'not found',
+                                                   'message'   : 'No matching samples were found.'
                                                    }
 
    expected_metadata_download_reject_missing  = {  'success'   : False ,
-                                                   'error'     : 'request'
+                                                   'error'     : 'request',
+                                                   'message'   : 'institution should be one of "{}"'.format('", "'.join(mock_institutions))
                                                    }
 
    expected_metadata_download_error_response  = {  'success'   : False ,

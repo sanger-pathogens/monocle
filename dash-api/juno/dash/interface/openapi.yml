@@ -269,13 +269,13 @@ paths:
           description: "The category to be downloaded: sequencing or pipeline."
           required: true
           schema:
-            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
+            $ref: "#/components/schemas/DashboardMetadataDownloadCategory"
         - name: "status"
           in: path
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
-            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
+            $ref: "#/components/schemas/DashboardMetadataDownloadStatus"
       responses:
         "200":
           description: "The operation was successful."
@@ -340,11 +340,17 @@ components:
       maxLength: 256
       pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)\[\]]*$
 
-    DashboardMetadataDownloadParam:
+    DashboardMetadataDownloadCategory:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^[a-zA-Z]*$
+       pattern: ^(sequencing)|(pipeline)$
+       
+    DashboardMetadataDownloadStatus:
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^(successful)|(failed)$
 
     SampleFilters:
       type: object

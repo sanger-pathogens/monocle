@@ -436,14 +436,17 @@ class MonocleSampleData:
       categories        = ['sequencing', 'pipeline']
       statuses          = ['successful', 'failed']
       if not institution in institution_names:
-         logging.error("Invalid request to {}: institution should be one of: \"{}\"".format(__class__.__name__,'", "'.join(institution_names)))
-         return { 'success': False, 'error': 'request' }
+         message = "institution should be one of \"{}\"".format('", "'.join(institution_names))
+         logging.error("Invalid request to {}: {}".format(__class__.__name__,message))
+         return { 'success': False, 'error': 'request', 'message': message }
       if not category in categories:
-         logging.error("Invalid request to {}: category should be one of: \"{}\"".format(__class__.__name__,'", "'.join(categories)))
-         return { 'success': False, 'error': 'request' }
+         message = "Invalid request to {}: category should be one of \"{}\"".format(__class__.__name__,'", "'.join(categories))
+         logging.error(message)
+         raise RuntimeError(message)
       if not status in statuses:
-         logging.error("Invalid request to {}: status should be one of: \"{}\"".format(__class__.__name__,'", "'.join(statuses)))
-         return { 'success': False, 'error': 'request' }
+         message = "Invalid request to {}: status should be one of \"{}\"".format(__class__.__name__,'", "'.join(statuses))
+         logging.error(message)
+         raise RuntimeError(message)
       # create get_csv_download params
       sample_status  =  {  "institution"  : institution,
                            "category"     : category,
@@ -520,6 +523,7 @@ class MonocleSampleData:
       if csv_response_string is None:
          return { 'success'   : False,
                   'error'     : 'not found',
+                  'message'   : 'No matching samples were found.'
                   }
       return   {  'success'   : True,
                   'filename'  : csv_response_filename,
@@ -550,15 +554,20 @@ class MonocleSampleData:
       else:
          samples_for_download = {}
          # get_filtered_samples returns sequencing status data for the samples that match the sample filters used
-         filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
-         # extract what we need from seq status data
-         for this_sample in filtered_samples:
-            this_sample_id = this_sample['sample_id']
-            for this_lane in this_sample['lanes']:
-               if this_sample_id in samples_for_download:
-                  samples_for_download[this_sample_id].append(this_lane)
-               else:
-                  samples_for_download[this_sample_id] = [this_lane]
+         try:
+            filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
+            # extract what we need from seq status data
+            for this_sample in filtered_samples:
+               this_sample_id = this_sample['sample_id']
+               for this_lane in this_sample['lanes']:
+                  if this_sample_id in samples_for_download:
+                     samples_for_download[this_sample_id].append(this_lane)
+                  else:
+                     samples_for_download[this_sample_id] = [this_lane]
+         # catch 404s -- this means the metadta API found no matching samples
+         except urllib.error.HTTPError as e:
+            if '404' not in str(e):
+               raise e
 
       if 1 > len(samples_for_download):
          return None

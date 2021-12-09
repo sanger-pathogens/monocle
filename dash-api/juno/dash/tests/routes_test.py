@@ -353,7 +353,8 @@ class TestRoutes(unittest.TestCase):
         data_service_mock.assert_called_once_with(self.TEST_USER)
         data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
                                                                                 sample_filters = sample_filters)
-        self.assertEqual(result, HTTPStatus.NOT_FOUND)
+        self.assertIsInstance(result, Response)
+        self.assertIn('404', result.status)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
