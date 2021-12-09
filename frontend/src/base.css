@@ -515,8 +515,6 @@ details {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background-color: #f7f7f7;
-  background-color: var(--background-alt);
   padding: 10px 10px 0;
   margin: 1em 0;
   border-radius: 6px;
@@ -537,17 +535,11 @@ details[open] summary {
 
 summary {
   display: list-item;
-  background-color: #efefef;
-  background-color: var(--background);
   padding: 10px;
   margin: -10px -10px 0;
   cursor: pointer;
-  outline: none
-}
-
-summary:focus,
-summary:hover {
-  text-decoration: underline
+  outline: none;
+  text-align: center;
 }
 
 details>:not(summary) {

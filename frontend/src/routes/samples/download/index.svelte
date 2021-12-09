@@ -1,38 +1,21 @@
 <script>
   import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import debounce from "$lib/utils/debounce.js"
   import BatchSelector from "./_BatchSelector.svelte";
+  import BulkDownload from "./_BulkDownload.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import {
     getBatches,
-    getBulkDownloadInfo,
-    getBulkDownloadUrls,
     getInstitutions
   } from "$lib/dataLoading.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
 
-  let formValues = {
-    annotations: true,
-    assemblies: true
-  };
   // FIXME: try unresolved promise
   let dataPromise = Promise.resolve();
-  let downloadEstimate = {};
-  let downloadLinksRequested;
-  let downloadLink;
   let selectedBatches = null;
-  let updateDownloadEstimateTimeoutId;
-
-  $: formComplete = selectedBatches?.length &&
-      (formValues.annotations || formValues.assemblies);
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
-
-  // These arguments are passed just to indicate to Svelte that this reactive statement
-  // should re-run only when one of the args has changed.
-  $: updateDownloadEstimate(selectedBatches, formValues);
 
   onMount(() => {
     dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
@@ -48,33 +31,6 @@
         return Promise.reject(err);
       });
   });
-
-  function updateDownloadEstimate() {
-    unsetDownloadEstimate();
-    updateDownloadEstimateTimeoutId = debounce(_updateDownloadEstimate, updateDownloadEstimateTimeoutId);
-  }
-
-  function _updateDownloadEstimate() {
-    if (!formComplete) {
-      return;
-    }
-
-    getBulkDownloadInfo(
-      selectedInstKeyBatchDatePairs,
-      formValues,
-      fetch
-    )
-      .then(({size, size_zipped}) => {
-        // Commented out because BE currently doesn't compress for performace reasons:
-        // downloadEstimate.size = size;
-        downloadEstimate.sizeZipped = size_zipped;
-      })
-      .catch(unsetDownloadEstimate);
-  }
-
-  function unsetDownloadEstimate() {
-    downloadEstimate = {};
-  }
 
   function makeListOfBatches(batches = {}, institutions = {}) {
     return Object.keys(batches)
@@ -103,31 +59,6 @@
       group: institutionName || institutionKey
     };
   }
-
-  function onSubmit() {
-    if (!formComplete) {
-      // Prevents submitting the form on Enter while the confirm btn is disabled.
-      return;
-    }
-
-    downloadLinksRequested =
-      confirm("You won't be able to change the parameters if you proceed.");
-    if (downloadLinksRequested) {
-      const selectedBatchValues = selectedBatches?.map(({value}) => value);
-      getBulkDownloadUrls(selectedBatchValues, formValues, fetch)
-        .then((downloadLinks = []) => {
-          downloadLink = downloadLinks[0];
-          if (!downloadLink) {
-            console.error("The list of download URLs returned from the server is empty.");
-            return Promise.reject();
-          }
-        })
-        .catch(() => {
-          downloadLinksRequested = false;
-          alert("Error while generating a download link. Please try again.");
-        });
-    }
-  }
 </script>
 
 
@@ -147,80 +78,15 @@
 
   <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
 
-  <form
-    aria-label="Sample bulk download"
-    on:submit|preventDefault={onSubmit}
-  >
-    <fieldset
-      disabled={downloadLinksRequested}
-      class:disabled={downloadLinksRequested}
-    >
-      <fieldset class="data-type-section">
-        <legend>Data type</legend>
+  <!-- FIXME test -->
+  <details>
+    <summary id="sample-bulk-download-label">Download selected samples</summary>
+    <BulkDownload
+      ariaLabelledby="sample-bulk-download-label"
+      batches={selectedInstKeyBatchDatePairs}
+    />
+  </details>
 
-        <label>
-          <input
-            type="checkbox"
-            bind:checked={formValues.assemblies}
-          />
-          Assemblies
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            bind:checked={formValues.annotations}
-          />
-          Annotations
-        </label>
-
-        <!-- To be done in a future version of Monocle.
-        <label class="disabled">
-          <input type="checkbox" />
-          Reads ( ⚠️ may increase the size drastically)
-        </label>
-        -->
-      </fieldset>
-
-      <fieldset disabled={true}>
-        <legend>Split download (coming soon)</legend>
-        <select>
-          {#if downloadEstimate?.sizeZipped}
-            <option selected>
-              1 download of {downloadEstimate.sizeZipped}
-            </option>
-          {/if}
-        </select>
-      </fieldset>
-
-      <button
-        type="submit"
-        class="primary"
-        disabled={!formComplete}
-      >
-        Confirm
-      </button>
-
-    </fieldset>
-  </form>
-
-  {#if downloadLinksRequested}
-    {#if downloadLink}
-      <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
-      <a
-        href={`/${downloadLink}`}
-        target="_blank"
-        class="download-link"
-        download
-      >
-        Download samples
-      </a>
-    {:else}
-      <LoadingIndicator
-        message="Please wait: generating a file archive can take several minutes if thousands of samples are involved."
-      />
-    {/if}
-  {/if}
 {:catch}
   <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
@@ -228,45 +94,9 @@
 
 
 <style>
-form {
-  width: var(--width-reading);
-  max-width: 100%;
-}
-
-form > fieldset {
-  padding: 0;
-}
-
-button[type=submit] {
-  display: block;
-  margin-top: 2.5rem;
-  margin-left: .9rem;
-}
-
-select {
-  min-width: 12rem;
-  max-width: 90%;
-}
-
 .batch-selection-section {
   margin-bottom: 2rem;
   width: 100%;
-}
-@media (min-width: 480px) {
-  .batch-selection-section {
-  }
-}
-
-.data-type-section {
-  display: flex;
-  flex-direction: column;
-  /* This prevents the checkbox labels from being clickable across all of the container's width. */
-  align-items: flex-start;
-}
-
-.download-link {
-  display: inline-block;
-  margin: 2rem 0;
 }
 </style>
 
