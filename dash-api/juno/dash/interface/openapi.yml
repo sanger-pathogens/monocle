@@ -216,7 +216,7 @@ paths:
                       $ref: "#/components/schemas/Institution"
         "403":
           description: "Authorization information is missing or invalid."
-          
+
   /get_metadata:
     post:
       operationId: dash.api.routes.get_metadata
@@ -241,9 +241,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetMetadataOutput"
+            text/csv:
+              schema:
+                type: string
         "403":
           description: "Authorization information is missing or invalid."
-          
+
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download
@@ -266,13 +269,13 @@ paths:
           description: "The category to be downloaded: sequencing or pipeline."
           required: true
           schema:
-            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
+            $ref: "#/components/schemas/DashboardMetadataDownloadCategory"
         - name: "status"
           in: path
           description: "The status type to be downloaded: successful or failed."
           required: true
           schema:
-            $ref: "#/components/schemas/DashboardMetadataDownloadParam"
+            $ref: "#/components/schemas/DashboardMetadataDownloadStatus"
       responses:
         "200":
           description: "The operation was successful."
@@ -280,13 +283,12 @@ paths:
             text/csv:
               schema:
                 type: string
-                format: binary
         "403":
           description: "Authorization information is missing or invalid."
 
 components:
   schemas:
-  
+
     UserName:
        type: string
        minLength: 3
@@ -294,15 +296,26 @@ components:
        pattern: ^[a-zA-Z0-9à-úÀ-Ú\!#\$%&'\*\+\-\./=\?\^_`\{\|\}~;]+$
 
     Institution:
+      description: "Institution key, name and source countries."
       type: object
       required:
-        - name
         - db_key
+        - inst_name
+        - country_names
       properties:
-        name:
-          $ref: "#/components/schemas/InstitutionName"
         db_key:
           $ref: "#/components/schemas/InstitutionID"
+        inst_name:
+          $ref: "#/components/schemas/InstitutionName"
+        country_names:
+          $ref: "#/components/schemas/CountryNames"
+
+    CountryNames:
+      description: "List of countries."
+      type: array
+      items:
+        $ref: "#/components/schemas/CountryName"
+      minItems: 1
 
     InstitutionID:
        description: "The ID of the institution."
@@ -320,12 +333,24 @@ components:
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
        example: "National Reference Laboratories"
-       
-    DashboardMetadataDownloadParam:
+
+    CountryName:
+      type: string
+      minLength: 3
+      maxLength: 256
+      pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)\[\]]*$
+
+    DashboardMetadataDownloadCategory:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^[a-zA-Z]*$
+       pattern: ^(sequencing)|(pipeline)$
+       
+    DashboardMetadataDownloadStatus:
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^(successful)|(failed)$
 
     SampleFilters:
       type: object
@@ -336,7 +361,7 @@ components:
             $ref: "#/components/schemas/InstKeyBatchDatePair"
         metadata:
           $ref: "#/components/schemas/MetadataFilters"
-          
+
     MetadataFilters:
       type: object
       additionalProperties:
@@ -350,7 +375,7 @@ components:
       minItems: 0
       example:
         serotype: ["Ia", "IV"]
-          
+
     GetMetadataInput:
       type: object
       required:
@@ -358,21 +383,34 @@ components:
       properties:
         sample filters:
           $ref: "#/components/schemas/SampleFilters"
+        as csv:
+          description: "Set this flag to true when a text/csv response is required"
+          type: boolean
+          default: false
+        csv filename:
+          description: "For text/csv responses: the filename to use in the Content-Disposition header"
+          type: string
+          minLength: 1
+          maxLength: 256
+          default: "monocle.csv"
+          example: "monocle.csv"
         in silico:
-          description: "Set this flag to true to include in silico data with the metadata"
+          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
           type: boolean
           default: false
         start row:
-          description: "For pagination: the first row of metadata (starting at 1) to be returned"
+          description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
           type: integer
           minimum: 1
+          example: 1
         num rows:
-          description: "For pagination: number of rows of metadata to be returned"
+          description: "For pagination: number of rows of metadata to be returned (ignored when 'as csv' is true)"
           type: integer
-          default: 20
           minimum: 1
+          default: 20
+          example: 20
         metadata columns:
-          description: "List of metadata columns that should be returned (as defined by the Metadata object).   Pass ['_ALL'] to get all columns."
+          description: "List of metadata columns that should be returned (as defined by the Metadata object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
           items:
             type: string
@@ -386,13 +424,24 @@ components:
             - "collection_year"
             - "host_species"
             - "isolation_source"
+          example:
+            - "submitting_institution"
+            - "public_name"
+            - "host_status"
+            - "selection_random"
+            - "country"
+            - "collection_year"
+            - "host_species"
+            - "isolation_source"
         in silico columns:
-          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object).   Pass ['_ALL'] to get all columns."
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
           items:
             type: string
             pattern: ^[a-zA-Z0-9_]*$
           default:
+            - "ST"
+          example:
             - "ST"
 
     GetMetadataOutput:
@@ -415,7 +464,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CombinedSampleMetadata"
-    
+
     CombinedSampleMetadata:
       type: object
       description: "Sample manifest metadata plus in silico data (may be extended to inclide QC data in future)"
@@ -426,7 +475,7 @@ components:
           $ref: "#/components/schemas/Metadata"
         in silico:
           $ref: "#/components/schemas/InSilicoData"
-          
+
     Metadata:
       type: object
       required:
@@ -815,7 +864,7 @@ components:
           type: boolean
         reads:
           type: boolean
-          
+
     InstKeyBatchDatePair:
       type: object
       required:
@@ -829,7 +878,7 @@ components:
         batch date:
           description: "Date of delivery"
           $ref: "#/components/schemas/BatchDate"
-          
+
     BatchDate:
       type: string
       format: date
@@ -851,7 +900,7 @@ components:
         size_zipped:
           type: string
           readOnly: true
-          
+
     ProjectProgress:
       type: object
       required:
@@ -1049,17 +1098,6 @@ components:
           readOnly: true
         memberOf:
           type: array
-          description: "A list of institutions for which the user is a member"
+          description: "A list of institutions and source countries of institutions for which the user is a member"
           items:
-            $ref: "#/components/schemas/UserInstitution"
-
-    UserInstitution:
-      type: object
-      required:
-        - "inst_id"
-        - "inst_name"
-      properties:
-        inst_id:
-          $ref: "#/components/schemas/InstitutionID"
-        inst_name:
-          $ref: "#/components/schemas/InstitutionName"
+            $ref: "#/components/schemas/Institution"

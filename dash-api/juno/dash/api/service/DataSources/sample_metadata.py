@@ -61,7 +61,7 @@ class SampleMetadata:
      
     def get_filtered_sample_ids(self, filters):
         """
-        Pass a list of filters, as defined by the metadta API /filters endpoint.
+        Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
         results_list = self.monocle_client.filters(filters)
@@ -147,7 +147,7 @@ class Monocle_Client:
         try:
             logging.info("request to Metadata API: {}".format(request_url))
             http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
-            logging.info("\nRequest to metadta API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
+            logging.info("\nRequest to metadata API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))

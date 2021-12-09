@@ -20,7 +20,9 @@ ServiceFactory.TEST_MODE = False
 
 # these are set in the openapi.yml file, but request body doesn't seem to set default values
 # to they have to be set by the route :-/
-GetMetadataInputDefaults = {  "in silico"          : False,
+GetMetadataInputDefaults = {  "as csv"             : False,
+                              "csv filename"       : "monocle.csv",
+                              "in silico"          : False,
                               "num rows"           : 20,
                               "metadata columns"   : ["submitting_institution",
                                                       "public_name",
@@ -45,7 +47,7 @@ def get_user_details():
 
 def get_batches():
     """ Get dashboard batch information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_batches()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_batches()
     response_dict = {
         'batches': data
     }
@@ -54,7 +56,7 @@ def get_batches():
 
 def get_institutions():
     """ Get a list of institutions """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_institutions()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_institutions()
     response_dict = {
         'institutions': data
     }
@@ -63,7 +65,7 @@ def get_institutions():
 
 def get_progress():
     """ Get dashboard progress graph information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).get_progress()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_progress()
     response_dict = {
         'progress_graph': { 'data': data }
     }
@@ -72,7 +74,7 @@ def get_progress():
 
 def sequencing_status_summary():
     """ Get dashboard sequencing status summary information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).sequencing_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).sequencing_status_summary()
     response_dict = {
         'sequencing_status': data
     }
@@ -81,7 +83,7 @@ def sequencing_status_summary():
 
 def pipeline_status_summary():
     """ Get dashboard pipeline status summary information """
-    data = ServiceFactory.data_service(get_authenticated_username(request)).pipeline_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).pipeline_status_summary()
     response_dict = {
         'pipeline_status': data
     }
@@ -91,24 +93,34 @@ def pipeline_status_summary():
 def get_metadata(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    sample_filters = body['sample filters']
-    metadata_columns  = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
-    in_silico_columns = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
-    # setting column filter params to '_ALL' means all columns should be returned
-    if '_ALL' == metadata_columns[0]:
-       metadata_columns = None
-    if '_ALL' == in_silico_columns[0]:
-       in_silico_columns = None
-    return call_jsonify(
-       ServiceFactory.data_service(get_authenticated_username(request)).get_metadata(
-            sample_filters,
-            start_row         = body.get('start row', None),
-            num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
-            include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-            metadata_columns  = metadata_columns,
-            in_silico_columns = in_silico_columns)
-       ), HTTPStatus.OK
-
+    sample_filters      = body['sample filters']
+    return_as_csv       = body.get('as csv',             GetMetadataInputDefaults['as csv'])
+    csv_filename        = body.get('csv filename',       GetMetadataInputDefaults['csv filename'])
+    metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
+    in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
+    if return_as_csv:
+      # note the metadata CSV here does not include data download URLs
+      # this is because the sample filters could match samples from multiple institutions, and download
+      # links for multiple institutions are not currently supported with CSV metadata downloads
+      return  _metadata_as_csv_response(
+                  ServiceFactory.data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
+                  )
+    else:
+      # setting column filter params to '_ALL' means all columns should be returned
+      if '_ALL' == metadata_columns[0]:
+         metadata_columns = None
+      if '_ALL' == in_silico_columns[0]:
+         in_silico_columns = None
+      metadata = ServiceFactory.data_service(
+                     get_authenticated_username(request)).get_metadata(
+                        sample_filters,
+                        start_row         = body.get('start row', None),
+                        num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
+                        include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+                        return_as_csv     = return_as_csv,
+                        metadata_columns  = metadata_columns,
+                        in_silico_columns = in_silico_columns)
+      return call_jsonify( metadata ), HTTPStatus.OK
 
 def bulk_download_info(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
@@ -121,7 +133,6 @@ def bulk_download_info(body):
             annotations=annotations,
             reads=reads)
     ), HTTPStatus.OK
-
 
 def bulk_download_urls(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
@@ -162,12 +173,25 @@ def get_metadata_for_download(institution: str, category: str, status: str):
    This endpiunt differs, we expect it to be reached by the user clicking on a link/button;  the browser
    should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
    """
-   metadata_for_download = ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+   return  _metadata_as_csv_response(
+               ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+               )
+   
+def _metadata_as_csv_response(metadata_for_download):
    if not metadata_for_download['success']:
-      if 'request' == metadata_for_download['error']:
-         return HTTPStatus.BAD_REQUEST
+      if 'not found' == metadata_for_download['error']:
+         http_status = HTTPStatus.NOT_FOUND
+         content     = metadata_for_download.get('message','Not Found')
+      elif 'request' == metadata_for_download['error']:
+         http_status = HTTPStatus.BAD_REQUEST
+         content     = metadata_for_download.get('message','Bad Request')
       else:
-         return HTTPStatus.INTERNAL_SERVER_ERROR
+         http_status = HTTPStatus.INTERNAL_SERVER_ERROR
+         content     = metadata_for_download.get('message','Server Error')
+      return Response(  content,
+                        content_type   = 'text/plain; charset=UTF-8',
+                        status         = http_status
+                        )
    else:
       return Response(  metadata_for_download['content'],
                         content_type   = 'text/csv; charset=UTF-8', # text/csv is correct MIME type, but could try 'application/vnd.ms-excel' for windows??

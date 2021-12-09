@@ -3,7 +3,7 @@ import uuid
 import os
 import connexion
 import re
-from flask import jsonify
+from flask import jsonify, request
 from injector import inject
 from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler
@@ -201,8 +201,14 @@ def get_filtered_samples(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_institutions(dao: MonocleDatabaseService):
+    username = None
+    try:
+        username = dao.get_authenticated_username(request)
+        logging.info('X-Remote-User header = {}'.format(username))
+    except KeyError:
+        pass
 
-    institutions = dao.get_institutions()
+    institutions = dao.get_institutions(username)
 
     result = convert_to_json({'institutions': institutions})
 

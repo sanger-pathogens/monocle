@@ -304,12 +304,17 @@ then
 
     # copy production nginx config and metadata api config
     # (may want to remove from git long term)
-    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
-    scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json   $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf           $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.service_maintenance.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.service_maintenance.conf
+    scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json             $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh      $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
+    
+    # hopusekeeping script(s)
+    scp -o ControlPath=%C $SCP_PORT_ARG housekeeping/bin/housekeeping.sh $REMOTE_USER@$REMOTE_HOST:~/housekeeping.sh
+
 
     # replace the running version
     # using existing connection
@@ -329,7 +334,8 @@ then
         sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
-        chmod 644 nginx.proxy.conf metadata-api.json
+        chmod 644 nginx.proxy.conf nginx.service_maintenance.conf metadata-api.json
+        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh housekeeping.sh
         echo "Pulling ${docker_tag} docker images..."
         docker-compose pull
 EOF

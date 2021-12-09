@@ -1,3 +1,4 @@
+from flask import request
 from abc import ABC, abstractmethod
 from typing import List
 from metadata.api.model.metadata import Metadata
@@ -14,6 +15,11 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
+    def get_authenticated_username(self, req_obj: request) -> str:
+        "Return username string"
+        pass
+
+    @abstractmethod
     def get_samples(self) -> List[Metadata]:
         """ Return a list of samples """
         pass
@@ -24,7 +30,7 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_institutions(self) -> List[Institution]:
+    def get_institutions(self, username: str) -> List[Institution]:
         """ Return a list of institutions """
         pass
 
