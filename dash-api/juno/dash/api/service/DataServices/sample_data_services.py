@@ -483,10 +483,11 @@ class MonocleSampleData:
          }
 
       On failure, returns reasons ('not found', 'request' or 'internal'; could extend in future if required??)
-      that can be used to provide suitable HTTP status.
+      that can be used to provide suitable HTTP status.  Optionally can include a message with details.
 
       {  'success'   : False,
-         'error'     : 'request'
+         'error'     : 'not found',
+         'message'   : 'No matching samples were found.'
          }
 
       """
