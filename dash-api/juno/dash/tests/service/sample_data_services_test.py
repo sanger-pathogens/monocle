@@ -49,6 +49,7 @@ class MonocleSampleDataTest(TestCase):
    mock_institutions          = [   'Fake institution One',
                                     'Fake institution Two'
                                     ]
+   mock_bad_institution_name  = "This Institution Does Not Exist"
    mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
                                     {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
                                     {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
@@ -229,7 +230,7 @@ class MonocleSampleDataTest(TestCase):
 
    expected_metadata_download_reject_missing  = {  'success'   : False ,
                                                    'error'     : 'request',
-                                                   'message'   : 'institution should be one of "{}"'.format('", "'.join(mock_institutions))
+                                                   'message'   : 'institution "{}" passed, but should be one of "{}"'.format(mock_bad_institution_name, '", "'.join(mock_institutions))
                                                    }
 
    expected_metadata_download_error_response  = {  'success'   : False ,
@@ -524,7 +525,7 @@ class MonocleSampleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
 
-      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, 'This Institution Does Not Exist', 'sequencing', 'successful')
+      metadata_download = self.monocle_data.get_metadata_for_download(self.mock_download_host, self.mock_bad_institution_name, 'sequencing', 'successful')
 
       self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 

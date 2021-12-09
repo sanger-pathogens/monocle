@@ -436,15 +436,15 @@ class MonocleSampleData:
       categories        = ['sequencing', 'pipeline']
       statuses          = ['successful', 'failed']
       if not institution in institution_names:
-         message = "institution should be one of \"{}\"".format('", "'.join(institution_names))
+         message = "institution \"{}\" passed, but should be one of \"{}\"".format(institution,'", "'.join(institution_names))
          logging.error("Invalid request to {}: {}".format(__class__.__name__,message))
          return { 'success': False, 'error': 'request', 'message': message }
       if not category in categories:
-         message = "Invalid request to {}: category should be one of \"{}\"".format(__class__.__name__,'", "'.join(categories))
+         message = "Invalid request to {}: category \"{}\" passed, but should be one of \"{}\"".format(__class__.__name__,category,'", "'.join(categories))
          logging.error(message)
          raise RuntimeError(message)
       if not status in statuses:
-         message = "Invalid request to {}: status should be one of \"{}\"".format(__class__.__name__,'", "'.join(statuses))
+         message = "Invalid request to {}: status \"{}\" passed, but should be one of \"{}\"".format(__class__.__name__,status,'", "'.join(statuses))
          logging.error(message)
          raise RuntimeError(message)
       # create get_csv_download params
