@@ -78,7 +78,6 @@
 
   <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
 
-  <!-- FIXME test -->
   <details>
     <summary id="sample-bulk-download-label">Download selected samples</summary>
     <BulkDownload

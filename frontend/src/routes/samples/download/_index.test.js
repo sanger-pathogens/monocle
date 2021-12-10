@@ -65,6 +65,13 @@ describe("once batches are fetched", () => {
     });
   });
 
+  it("displays the bulk download form", async () => {
+    const { findByRole, getByText } = render(DataViewerPage);
+
+    const bulkDownloadForm = await findByRole("form", { name: "Download selected samples" });
+    expect(bulkDownloadForm).toBeDefined();
+  });
+
   describe("batch selector", () => {
     it("displays a list of available batches and their institutions when clicked", async () => {
       const institutionsPayload = Object.keys(BATCHES_PAYLOAD)
