@@ -36,7 +36,7 @@ GetMetadataInputDefaults = {  "as csv"             : False,
                               }
 
 
-def get_user_details():
+def get_user_details_route():
     """ Given a username retrieve all details for that user """
     data = ServiceFactory.user_service(get_authenticated_username(request)).user_details
     response_dict = {
@@ -45,7 +45,7 @@ def get_user_details():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_batches():
+def get_batches_route():
     """ Get dashboard batch information """
     data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_batches()
     response_dict = {
@@ -54,7 +54,7 @@ def get_batches():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_institutions():
+def get_institutions_route():
     """ Get a list of institutions """
     data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_institutions()
     response_dict = {
@@ -63,7 +63,7 @@ def get_institutions():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_progress():
+def get_progress_route():
     """ Get dashboard progress graph information """
     data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_progress()
     response_dict = {
@@ -72,7 +72,7 @@ def get_progress():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def sequencing_status_summary():
+def sequencing_status_summary_route():
     """ Get dashboard sequencing status summary information """
     data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).sequencing_status_summary()
     response_dict = {
@@ -81,7 +81,7 @@ def sequencing_status_summary():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def pipeline_status_summary():
+def pipeline_status_summary_route():
     """ Get dashboard pipeline status summary information """
     data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).pipeline_status_summary()
     response_dict = {
@@ -90,7 +90,7 @@ def pipeline_status_summary():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_metadata(body):
+def get_metadata_route(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters      = body['sample filters']
@@ -121,7 +121,7 @@ def get_metadata(body):
                         in_silico_columns = in_silico_columns)
       return call_jsonify( metadata ), HTTPStatus.OK
 
-def bulk_download_info(body):
+def bulk_download_info_route(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
@@ -133,7 +133,7 @@ def bulk_download_info(body):
             reads=reads)
     ), HTTPStatus.OK
 
-def bulk_download_urls(body):
+def bulk_download_urls_route(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
@@ -165,7 +165,7 @@ def bulk_download_urls(body):
         'download_urls': [zip_file_url]
     }), HTTPStatus.OK
 
-def get_metadata_for_download(institution: str, category: str, status: str):
+def get_metadata_for_download_route(institution: str, category: str, status: str):
    """
    Get metadata as CSV for the user to download.
    IMPORTANT: The other endpoints are all (at time of writing...) for consumption by the front end framework.

@@ -13,7 +13,7 @@ servers:
 paths:
   /metadata-upload:
     post:
-      operationId: metadata.api.routes.update_sample_metadata
+      operationId: metadata.api.routes.update_sample_metadata_route
       summary: "Upload a new tab-delimited file of metadata"
       requestBody:
         content:
@@ -34,7 +34,7 @@ paths:
                     $ref: "#/components/schemas/ValidationErrors"
   /in-silico-upload:
     post:
-      operationId: metadata.api.routes.update_in_silico_data
+      operationId: metadata.api.routes.update_in_silico_data_route
       summary: "Upload a new tab-delimited file of in silico data"
       requestBody:
         content:
@@ -52,7 +52,7 @@ paths:
                 $ref: "#/components/schemas/ValidationErrors"
   /download:
     post:
-      operationId: metadata.api.routes.get_download_metadata
+      operationId: metadata.api.routes.get_download_metadata_route
       summary: "Download the metadata for the given download keys"
       requestBody:
         description: "A list of sampleId keys"
@@ -75,7 +75,7 @@ paths:
 
   /download_in_silico_data:
     post:
-      operationId: metadata.api.routes.get_download_in_silico_data
+      operationId: metadata.api.routes.get_download_in_silico_data_route
       summary: "Download the in silico data for the given download keys"
       requestBody:
         description: "A list of laneId keys"
@@ -98,7 +98,7 @@ paths:
 
   /institutions:
     get:
-      operationId: metadata.api.routes.get_institution_names
+      operationId: metadata.api.routes.get_institution_names_route
       summary: "Gather the names for all institutions"
       responses:
         "200":
@@ -112,7 +112,7 @@ paths:
 
   /samples:
     get:
-      operationId: metadata.api.routes.get_samples
+      operationId: metadata.api.routes.get_samples_route
       summary: "Gather all sample records"
       responses:
         "200":
@@ -126,7 +126,7 @@ paths:
 
   /filters:
     post:
-      operationId: metadata.api.routes.get_filtered_samples
+      operationId: metadata.api.routes.get_filtered_samples_route
       summary: "Gather filtered sample records"
       requestBody:
         description: "A dictionary of filters with lists of values"

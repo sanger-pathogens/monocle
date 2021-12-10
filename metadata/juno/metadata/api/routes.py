@@ -26,7 +26,7 @@ def convert_to_json(samples):
     return jsonify(samples)
 
 @inject
-def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
+def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """ Upload a spreadsheet to the database """
     try:
         uploaded_file = connexion.request.files['spreadsheet']
@@ -68,7 +68,7 @@ def update_sample_metadata(body: list, upload_handler: UploadMetadataHandler):
 
 
 @inject
-def update_in_silico_data(body: list, upload_handler: UploadInSilicoHandler):
+def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
     """ Upload a in silico data to the database """
     try:
         uploaded_file = connexion.request.files['spreadsheet']
@@ -116,7 +116,7 @@ def compare_sample_metadata(body: list):
 
 
 @inject
-def get_download_metadata(body: list, download_handler: DownloadMetadataHandler):
+def get_download_metadata_route(body: list, download_handler: DownloadMetadataHandler):
     """ Download sample metadata from the database """
     keys = body
     try:
@@ -133,7 +133,7 @@ def get_download_metadata(body: list, download_handler: DownloadMetadataHandler)
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_download_in_silico_data(body: list, download_handler: DownloadInSilicoHandler):
+def get_download_in_silico_data_route(body: list, download_handler: DownloadInSilicoHandler):
     """ Download in silico data from the database """
     keys = body
     try:
@@ -150,7 +150,7 @@ def get_download_in_silico_data(body: list, download_handler: DownloadInSilicoHa
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_institution_names(dao: MonocleDatabaseService):
+def get_institution_names_route(dao: MonocleDatabaseService):
     """ Download all institution names from the database """
     institutions = dao.get_institution_names()
 
@@ -162,7 +162,7 @@ def get_institution_names(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_samples(dao: MonocleDatabaseService):
+def get_samples_route(dao: MonocleDatabaseService):
     """ Download all samples and their metadata from the database """
     try:
         samples = dao.get_samples()
@@ -178,7 +178,7 @@ def get_samples(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_filtered_samples(body: dict, dao: MonocleDatabaseService):
+def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
     filters = body
     try:
