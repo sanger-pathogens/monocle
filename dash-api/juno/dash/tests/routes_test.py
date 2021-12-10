@@ -156,20 +156,20 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_bulk_download_info_route(self, data_service_mock, username_mock, resp_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_bulk_download_info_route(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         assemblies = False
         annotations = True
         expected_payload = 'paylod'
-        data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
+        sample_data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
         result = bulk_download_info_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_bulk_download_info.assert_called_once_with(
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_bulk_download_info.assert_called_once_with(
             {'batches':batches}, assemblies=assemblies, annotations=annotations, reads=False)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
@@ -180,11 +180,11 @@ class TestRoutes(unittest.TestCase):
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
     @patch('dash.api.routes.uuid4')
-    @patch.object(ServiceFactory, 'data_service')
+    @patch.object(ServiceFactory, 'sample_data_service')
     @patch('pathlib.Path.is_dir')
     def test_get_bulk_download_urls_route(self,
             is_dir_mock,
-            data_service_mock,
+            sample_data_service_mock,
             uuid4_mock,
             zip_files_mock,
             username_mock,
@@ -196,30 +196,30 @@ class TestRoutes(unittest.TestCase):
         annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
-        data_service_mock.return_value.get_filtered_samples.return_value = samples
+        sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
         uuid_hex = '123'
         uuid4_mock.return_value.hex = uuid_hex
         zip_file_basename = uuid_hex
         zip_file_location = 'some/dir'
-        data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
+        sample_data_service_mock.return_value.get_zip_download_location.return_value = zip_file_location
         download_symlink = 'downloads/'
-        data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         lane_files = {'pubname': ['lane file', 'another lane file']}
-        data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
+        sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
             'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
         }
         # When
         result = bulk_download_urls_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         zip_files_mock.assert_called_once_with(
             lane_files,
             basename=zip_file_basename,
             location=zip_file_location
             )
-        data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -227,19 +227,19 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_route_with_default_params(self, data_service_mock, username_mock, resp_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_with_default_params(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
         expected_payload   = 'payload'
-        data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({'sample filters': sample_filters})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
@@ -252,21 +252,21 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_route_all_columns(self, data_service_mock, username_mock, resp_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_all_columns(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
         metadata_columns   = ['_ALL']
         in_silico_columns  = ['_ALL']
         expected_payload   = 'payload'
-        data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'metadata columns': metadata_columns, 'in silico columns':in_silico_columns})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
@@ -279,8 +279,8 @@ class TestRoutes(unittest.TestCase):
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_route_with_optional_params(self, data_service_mock, username_mock, resp_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_with_optional_params(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
@@ -291,7 +291,7 @@ class TestRoutes(unittest.TestCase):
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         expected_payload   = 'payload'
-        data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({  'sample filters'     : sample_filters,
@@ -304,8 +304,8 @@ class TestRoutes(unittest.TestCase):
                                  }
                               )
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
                                                                               include_in_silico = include_in_silico,
@@ -317,18 +317,18 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_route_return_csv(self, data_service_mock, username_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_return_csv(self, sample_data_service_mock, username_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
         username_mock.return_value = self.TEST_USER
-        data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
+        sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
                                                                                 sample_filters = sample_filters)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, type(Response('any content will do')))
@@ -337,35 +337,35 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(result.headers['Content-Disposition'], self.EXPECTED_CONTENT_DISPOSITION)
         
     @patch('dash.api.routes.get_authenticated_username')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_route_return_csv_404(self, data_service_mock, username_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_return_csv_404(self, sample_data_service_mock, username_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
         username_mock.return_value = self.TEST_USER
-        data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
+        sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
                                                                                 sample_filters = sample_filters)
         self.assertIsInstance(result, Response)
         self.assertIn('404', result.status)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')
-    @patch.object(ServiceFactory, 'data_service')
-    def test_get_metadata_for_download_route(self, data_service_mock, host_name_mock, username_mock):
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_for_download_route(self, sample_data_service_mock, host_name_mock, username_mock):
         # Given
-        data_service_mock.return_value.get_metadata_for_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
+        sample_data_service_mock.return_value.get_metadata_for_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
         username_mock.return_value = self.TEST_USER
         host_name_mock.return_value = self.TEST_HOST_NAME
         # When
         result = get_metadata_for_download_route('Fake Institution', 'pipeline', 'successful')
         # Then
-        data_service_mock.assert_called_once_with(self.TEST_USER)
-        data_service_mock.return_value.get_metadata_for_download.assert_called_once()
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_metadata_for_download.assert_called_once()
         self.assertIsInstance(result, type(Response('any content will do')))
         self.assertEqual(result.status_code,                    HTTPStatus.OK)
         self.assertEqual(result.content_type,                   self.EXPECTED_CSV_CONTENT_TYPE)

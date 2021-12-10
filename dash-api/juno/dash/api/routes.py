@@ -103,7 +103,7 @@ def get_metadata_route(body):
       # this is because the sample filters could match samples from multiple institutions, and download
       # links for multiple institutions are not currently supported with CSV metadata downloads
       return  _metadata_as_csv_response(
-                  ServiceFactory.data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
+                  ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
                   )
     else:
       # setting column filter params to '_ALL' means all columns should be returned
@@ -111,7 +111,7 @@ def get_metadata_route(body):
          metadata_columns = None
       if '_ALL' == in_silico_columns[0]:
          in_silico_columns = None
-      metadata = ServiceFactory.data_service(
+      metadata = ServiceFactory.sample_data_service(
                      get_authenticated_username(request)).get_metadata(
                         sample_filters,
                         start_row         = body.get('start row', None),
@@ -126,7 +126,7 @@ def bulk_download_info_route(body):
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     return call_jsonify(
-        ServiceFactory.data_service(get_authenticated_username(request)).get_bulk_download_info(
+        ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
             sample_filters,
             assemblies=assemblies,
             annotations=annotations,
@@ -137,7 +137,7 @@ def bulk_download_urls_route(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
-    monocle_data = ServiceFactory.data_service(get_authenticated_username(request))
+    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
     samples = monocle_data.get_filtered_samples(sample_filters)
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
@@ -173,7 +173,7 @@ def get_metadata_for_download_route(institution: str, category: str, status: str
    should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
    """
    return  _metadata_as_csv_response(
-               ServiceFactory.data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
+               ServiceFactory.sample_data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
                )
    
 def _metadata_as_csv_response(metadata_for_download):
