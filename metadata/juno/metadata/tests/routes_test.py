@@ -14,70 +14,70 @@ class TestRoutes(unittest.TestCase):
     @patch('metadata.api.routes.os')
     @patch('connexion.request')
     @patch('metadata.api.upload_handlers.UploadMetadataHandler')
-    def test_update_sample_metadata(self, mock_upload_handler, mock_connexion_request, mock_os):
-        http_status = update_sample_metadata([], mock_upload_handler)
+    def test_update_sample_metadata_route(self, mock_upload_handler, mock_connexion_request, mock_os):
+        http_status = update_sample_metadata_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
     @patch('metadata.api.routes.os')
     @patch('connexion.request')
     @patch('metadata.api.upload_handlers.UploadInSilicoHandler')
-    def test_update_in_silico_data(self, mock_upload_handler, mock_connexion_request, mock_os):
-        http_status = update_in_silico_data([], mock_upload_handler)
+    def test_update_in_silico_data_route(self, mock_upload_handler, mock_connexion_request, mock_os):
+        http_status = update_in_silico_data_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
     @patch('metadata.api.download_handlers.DownloadMetadataHandler')
-    def test_get_download_metadata(self, download_handler_mock):
+    def test_get_download_metadata_route(self, download_handler_mock):
         # TODO Add this test
         pass
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_samples_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_samples_route_jsonified(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['sample1', 'sample2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
         fakeDB.get_samples = MagicMock(return_value=['sample1', 'sample2'])
-        under_test = mar.get_samples(fakeDB)
+        under_test = mar.get_samples_route(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_samples_no_return(self, mocked_jsoncall, mocked_query):
+    def test_get_samples_route_no_return(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
         fakeDB.get_samples = MagicMock(return_value=[])
-        under_test = mar.get_samples(fakeDB)
+        under_test = mar.get_samples_route(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_filtered_samples_route_jsonified(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['sample1', 'sample2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
         fakeDB.get_filtered_samples = MagicMock(return_value=['sample1', 'sample2'])
-        under_test = mar.get_filtered_samples({'serotype': 'IA'}, fakeDB)
+        under_test = mar.get_filtered_samples_route({'serotype': 'IA'}, fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_no_return(self, mocked_jsoncall, mocked_query):
+    def test_get_filtered_samples_route_no_return(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
         fakeDB.get_filtered_samples = MagicMock(return_value=[])
-        under_test = mar.get_filtered_samples({'serotype': 'None'}, fakeDB)
+        under_test = mar.get_filtered_samples_route({'serotype': 'None'}, fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_stop_injection(self, mocked_jsoncall, mocked_query):
+    def test_get_filtered_samples_route_stop_injection(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['sample1', 'sample2']
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
@@ -87,7 +87,7 @@ class TestRoutes(unittest.TestCase):
                                        'no semi; colons either',
                                        'wildcards % are right out'
                                        ]:
-          under_test = mar.get_filtered_samples({looks_iffy_to_me_guv: 'any search term'}, fakeDB)
+          under_test = mar.get_filtered_samples_route({looks_iffy_to_me_guv: 'any search term'}, fakeDB)
           self.assertEqual(under_test, ('Invalid arguments provided', 400))
 
 
@@ -119,22 +119,22 @@ class TestRoutes(unittest.TestCase):
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institution_names')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_institution_names_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_institution_names_route_jsonified(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['ints1', 'inst2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
         fakeDB.get_institution_names = MagicMock(return_value=['ints1', 'inst2'])
-        under_test = mar.get_institution_names(fakeDB)
+        under_test = mar.get_institution_names_route(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institution_names')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_institution_names_not_returned(self, mocked_jsoncall, mocked_query):
+    def test_get_institution_names_route_not_returned(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
         fakeDB.get_institution_names = MagicMock(return_value=[])
-        under_test = mar.get_institution_names(fakeDB)
+        under_test = mar.get_institution_names_route(fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
