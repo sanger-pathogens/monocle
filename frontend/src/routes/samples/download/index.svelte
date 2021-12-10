@@ -93,7 +93,7 @@
 
 <style>
 .batch-selection-section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.6rem;
   width: 100%;
 }
 </style>
