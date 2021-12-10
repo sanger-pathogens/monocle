@@ -9,12 +9,8 @@ import {
 import DataViewerPage from "./index.svelte";
 
 jest.mock("$lib/dataLoading.js", () => ({
-  // FIXME: check for redundancy
   getBatches: jest.fn(() => Promise.resolve()),
-  getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
-  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"])),
-  getInstitutions: jest.fn(() => Promise.resolve()),
-  getSampleMetadata: jest.fn(() => Promise.resolve())
+  getInstitutions: jest.fn(() => Promise.resolve())
 }));
 
 it("shows the loading indicator", () => {

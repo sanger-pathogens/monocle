@@ -11,8 +11,7 @@
 
   const PROMISE_STATUS_REJECTED = "rejected";
 
-  // FIXME: try unresolved promise
-  let dataPromise = Promise.resolve();
+  let dataPromise = new Promise(() => {});
   let selectedBatches = null;
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);

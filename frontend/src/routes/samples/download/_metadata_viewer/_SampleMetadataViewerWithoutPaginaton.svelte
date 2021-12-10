@@ -44,7 +44,6 @@
 
     {#if isError}
       <tr>
-        <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
         <td colspan={metadataColumnHeaders.length || 1}>
           Error while fetching metadata. Please <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the error persists.
         </td>
@@ -72,7 +71,6 @@
 
       {#if isLoading}
         <tr class="loading-indicator-row" class:no-metadata={!metadata || metadata.length === 0}>
-          <!-- FIXME: check that the message is still visible (and accessible) when there are no header columns. -->
           <td colspan={metadataColumnHeaders.length || 1}>
             <LoadingIndicator />
           </td>
