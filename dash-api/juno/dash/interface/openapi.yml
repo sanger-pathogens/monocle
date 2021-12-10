@@ -13,7 +13,7 @@ servers:
 paths:
   /get_user_details:
     get:
-      operationId: dash.api.routes.get_user_details
+      operationId: dash.api.routes.get_user_details_route
       summary: "Return all details for a user"
       parameters:
         - name: X-Remote-User
@@ -37,7 +37,7 @@ paths:
 
   /get_batches:
     get:
-      operationId: dash.api.routes.get_batches
+      operationId: dash.api.routes.get_batches_route
       summary: "Return information on batches delivered, keyed by institution id."
       parameters:
         - name: X-Remote-User
@@ -63,7 +63,7 @@ paths:
 
   /sequencing_status_summary:
     get:
-      operationId: dash.api.routes.sequencing_status_summary
+      operationId: dash.api.routes.sequencing_status_summary_route
       summary: "Return information on sample/lane sequencing status, keyed by institution id."
       parameters:
         - name: X-Remote-User
@@ -89,7 +89,7 @@ paths:
 
   /pipeline_status_summary:
     get:
-      operationId: dash.api.routes.pipeline_status_summary
+      operationId: dash.api.routes.pipeline_status_summary_route
       summary: "Return information on sample/lane pipeline status, keyed by institution id."
       parameters:
         - name: X-Remote-User
@@ -115,7 +115,7 @@ paths:
 
   /bulk_download_info:
     post:
-      operationId: dash.api.routes.bulk_download_info
+      operationId: dash.api.routes.bulk_download_info_route
       summary: "Return information on expected bulk download based on standard sample filters and data types"
       parameters:
         - name: X-Remote-User
@@ -142,7 +142,7 @@ paths:
 
   /bulk_download_urls:
     post:
-      operationId: dash.api.routes.bulk_download_urls
+      operationId: dash.api.routes.bulk_download_urls_route
       summary: "Return download links corresponding to standard sample filters and data types"
       parameters:
         - name: X-Remote-User
@@ -169,7 +169,7 @@ paths:
 
   /get_progress:
     get:
-      operationId: dash.api.routes.get_progress
+      operationId: dash.api.routes.get_progress_route
       summary: "Return the information necessary for plotting the project sample progress graph."
       parameters:
         - name: X-Remote-User
@@ -193,7 +193,7 @@ paths:
 
   /get_institutions:
     get:
-      operationId: dash.api.routes.get_institutions
+      operationId: dash.api.routes.get_institutions_route
       summary: "Return a list of institutions."
       parameters:
         - name: X-Remote-User
@@ -219,7 +219,7 @@ paths:
 
   /get_metadata:
     post:
-      operationId: dash.api.routes.get_metadata
+      operationId: dash.api.routes.get_metadata_route
       summary: "Return metadata for samples matching standard sample filters"
       parameters:
         - name: X-Remote-User
@@ -249,7 +249,7 @@ paths:
 
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
-      operationId: dash.api.routes.get_metadata_for_download
+      operationId: dash.api.routes.get_metadata_for_download_route
       summary: "The operation was successful. The following data format will be returned..."
       parameters:
         - in: header
