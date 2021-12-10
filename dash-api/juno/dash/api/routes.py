@@ -3,6 +3,7 @@ from flask import jsonify, request, Response
 from datetime import datetime
 import errno
 from http import HTTPStatus
+import json
 import os
 from pathlib import Path
 from typing import List
@@ -144,8 +145,56 @@ def bulk_download_urls_route(body):
         assemblies=assemblies,
         annotations=annotations,
         reads=reads)
+    logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
+
+    download_param_file_name = "{}.params.json".format(uuid4().hex)
+    download_param_file_location = monocle_data.get_bulk_download_location()
+    if not Path(download_param_file_location).is_dir():
+        logging.error("data downloads directory {} does not exist".format(download_param_file_location))
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
+    
+    ## the data we want to serialize contants PosixPath objects that we need to make into strings
+    for this_public_name in public_name_to_lane_files:
+       file_paths_as_strings = []
+       for this_file in public_name_to_lane_files[this_public_name]:
+          file_paths_as_strings.append(str(this_file))
+       public_name_to_lane_files[this_public_name] = file_paths_as_strings
+    
+    file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(public_name_to_lane_files))
+    # TODO demote to INFO when done testing
+    logging.critical("wrote download params to {}".format(file_written))
+
+    download_param_file_url = '/'.join([  monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
+                                          download_param_file_name]
+                                       )
+
+    # TODO change this download URL to a URL to the endpoint that invokes data_download_route()
+    #      but just now making the JSON available for download is useful to test we're creating it right
+    return call_jsonify({
+        'download_urls': [download_param_file_url]
+    }), HTTPStatus.OK
+
+# NOTE no route for data_download_route() exists yet
+#      this is a placeholder to preserve the code the creates the ZIP archive
+#      that used to be in bulk_download_urls_route
+# TODO - add a route pointing to this, which pases the UUID as a param
+#      - the UUID will have a synlink in place, created by bulk_download_urls_route()
+#      - bulk_download_urls_route() will also have created a JSON file with the data
+#        returned by monocle_data.get_public_name_to_lane_files_dict
+#      - create the ZIP archive as below
+def data_download_route(body):
+    """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
+    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
+    samples = monocle_data.get_filtered_samples(sample_filters)
+    public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
+        samples,
+        assemblies=assemblies,
+        annotations=annotations,
+        reads=reads)
     zip_file_basename = uuid4().hex
-    zip_file_location = monocle_data.get_zip_download_location()
+    zip_file_location = monocle_data.get_bulk_download_location()
 
     if not Path(zip_file_location).is_dir():
         logging.error("data downloads directory {} does not exist".format(zip_file_location))
@@ -202,7 +251,11 @@ def _metadata_as_csv_response(metadata_for_download):
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
     return jsonify(args)
-
+ 
+def write_text_file(filename, content) -> str:
+    with open(filename, 'a') as textfile:
+      textfile.write(content)
+    return filename
 
 def get_host_name(req_obj):
    return req_obj.host

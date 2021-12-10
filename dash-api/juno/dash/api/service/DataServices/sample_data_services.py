@@ -402,7 +402,7 @@ class MonocleSampleData:
             lane_file_names.append(f'{lane_id}{file_suffix}')
       return lane_file_names
 
-   def get_zip_download_location(self):
+   def get_bulk_download_location(self):
       data_source_config      = self._load_data_source_config()
       if DATA_INST_VIEW_ENVIRON not in environ:
          return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
@@ -411,8 +411,7 @@ class MonocleSampleData:
           return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
       except KeyError as err:
           self._download_config_error(err)
-          
-          
+                    
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
       This acts as a wrapper for get_csv_download().

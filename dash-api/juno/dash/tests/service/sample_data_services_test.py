@@ -476,7 +476,7 @@ class MonocleSampleDataTest(TestCase):
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location(self):
-      download_location = self.monocle_data.get_zip_download_location()
+      download_location = self.monocle_data.get_bulk_download_location()
 
       self.assertEqual(PurePath(self.mock_inst_view_dir, 'downloads'), download_location)
 
@@ -485,14 +485,14 @@ class MonocleSampleDataTest(TestCase):
       del environ['DATA_INSTITUTION_VIEW']
 
       with self.assertRaises(DataSourceConfigError):
-         self.monocle_data.get_zip_download_location()
+         self.monocle_data.get_bulk_download_location()
 
    def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
       monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
       monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
       with self.assertRaises(DataSourceConfigError):
-         monocle_data_with_bad_config.get_zip_download_location()
+         monocle_data_with_bad_config.get_bulk_download_location()
 
    @patch.object(MonocleSampleData,       'make_download_symlink')
    @patch.object(Monocle_Download_Client, 'in_silico_data')
