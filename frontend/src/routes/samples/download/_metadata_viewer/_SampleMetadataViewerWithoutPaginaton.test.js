@@ -31,7 +31,7 @@ describe("on metadata resolved", () => {
     const { queryByLabelText } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.resolve(METADATA) });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });
   });
@@ -40,7 +40,7 @@ describe("on metadata resolved", () => {
     const { getAllByRole, getByRole } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.resolve(METADATA) });
 
-    waitFor(() => {
+    await waitFor(() => {
       expectMetadataToBeShown({ getAllByRole, getByRole });
     });
   });
@@ -49,12 +49,12 @@ describe("on metadata resolved", () => {
     const { component, findByRole, getAllByRole, getByRole, getByLabelText } =
       render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
 
-    await findByRole(ROLE_TABLE_CELL);
+    await findByRole(ROLE_TABLE_CELL, { name: METADATA[0].metadata[0].value });
 
-    // `new Promise(() => {})` == "endless" promise == wait "forever"
-    component.$set({ metadataPromise: new Promise(() => {}) });
+    const endlessPromise = new Promise(() => {});
+    component.$set({ metadataPromise: endlessPromise });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
       expectMetadataToBeShown({ getAllByRole, getByRole });
     });
@@ -62,8 +62,6 @@ describe("on metadata resolved", () => {
 
   function expectMetadataToBeShown({ getAllByRole, getByRole }) {
     expect(getByRole(ROLE_TABLE)).toBeDefined();
-    // Data rows + the header row
-    expect(getAllByRole(ROLE_TABLE_ROW)).toHaveLength(METADATA.length + 1);
     METADATA[0].metadata.forEach(({ name }) => {
       expect(getByRole(ROLE_COLUMN_HEADER, { name })).toBeDefined();
     });
@@ -75,11 +73,12 @@ describe("on metadata resolved", () => {
   }
 
   it("displays a message if there's no metadata", async () => {
-    const { getByLabelText, queryByLabelText } = render(SimpleSampleMetadataViewer,
+    const { getByRole, queryByLabelText } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.resolve([]) });
 
-    waitFor(() => {
-      expect(getByLabelText("No data. Try to refresh or change a filter.")).toBeDefined();
+    await waitFor(() => {
+      expect(getByRole(ROLE_TABLE_CELL, { name: "No data. Try to refresh or change a filter." }))
+        .toBeDefined();
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });
   });
@@ -90,7 +89,7 @@ describe("on error", () => {
     const { queryByLabelText } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.reject() });
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });
   });

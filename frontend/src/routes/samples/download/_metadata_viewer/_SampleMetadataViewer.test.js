@@ -1,14 +1,21 @@
-import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
 import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
 import debounce from "$lib/utils/debounce.js"
 import { getSampleMetadata } from "$lib/dataLoading.js";
 
-// A workaround for Jest's `spyOn` working only for object methods.
-const debounceRef = { debounce };
-
 const BATCHES = ["some batches"];
+const DEBOUNCE_WAIT_MS = 1300;
 const ROLE_BUTTON = "button";
 const ROLE_TABLE = "table";
+
+// Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
+jest.mock("$lib/utils/debounce.js", () => {
+  const originalDebounce = jest.requireActual("$lib/utils/debounce.js")
+  return {
+    __esModule: true,
+    default: jest.fn(originalDebounce.default)
+  };
+});
 
 jest.mock("$lib/dataLoading.js", () => ({
   getSampleMetadata: jest.fn(() => Promise.resolve({
@@ -33,46 +40,47 @@ it("isn't displayed if no batches are passed", () => {
   expect(queryByRole(ROLE_TABLE)).toBeNull();
 });
 
-it("displays resolved metadata w/ each row sorted by order", () => {
+it("displays resolved metadata w/ each row sorted by order", async () => {
   const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-  waitFor(() => {
+  await waitFor(() => {
     // Data rows + the header row
-    expect(getAllByRole("row")).toHaveLength(METADATA.length + 1);
+    expect(getAllByRole("row")).toHaveLength(3);
     const actualColumnHeaderContents = getAllByRole("columnheader")
       .map(({ textContent }) => textContent);
-    expect(actualColumnHeaders).toEqual(["Host species", "QC"]);
+    expect(actualColumnHeaderContents).toEqual(["Host species", "QC"]);
     const actualTableCellContents = getAllByRole("cell")
       .map(({ textContent }) => textContent);
     expect(actualTableCellContents).toEqual([
       "Sciurus carolinensis", "90",
       "Ailuropoda melanoleuca", "40"
     ]);
-  });
+  }, { timeout: DEBOUNCE_WAIT_MS });
 });
 
-it("requests metadata w/ the correct arguments", () => {
+it("requests metadata w/ the correct arguments", async () => {
   render(SampleMetadataViewer, { batches: BATCHES });
 
-  waitFor(() => {
+  await waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
       numRows: 12,
       startRow: 1
-    });
+    }, fetch);
   });
 });
 
 it("debounces the metadata request when batches change", async () => {
-  jest.spyOn(debounceRef, "debounce");
-
+  debounce.mockClear();
   const { component } = render(SampleMetadataViewer, { batches: BATCHES });
-  component.$set({ batches: ["some other batches"] });
-  component.$set({ batches: BATCHES });
-
-  waitFor(() => {
-    expect(debounceRef.debounce).toHaveBeenCalledTimes(3);
+  await act(() => {
+    component.$set({ batches: ["some other batches"] });
   });
+  await act(() => {
+    component.$set({ batches: BATCHES });
+  });
+
+  expect(debounce).toHaveBeenCalledTimes(3);
 });
 
 describe("pagination", () => {
@@ -81,6 +89,10 @@ describe("pagination", () => {
   const LABEL_PREV_BUTTON = "Previous page";
   const LABEL_LOADING_INDICATOR = "please wait";
   const NUM_METADATA_ROWS_PER_PAGE = 12;
+
+  beforeEach(() => {
+    getSampleMetadata.mockClear();
+  });
 
   it("disables First and Previous buttons only if the first page is shown", async () => {
     const { getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
@@ -107,10 +119,10 @@ describe("pagination", () => {
     getSampleMetadata.mockResolvedValueOnce({ "last row": 99, "total rows": 99 });
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
         .toBeTruthy();
-    });
+    }, { timeout: DEBOUNCE_WAIT_MS });
   });
 
   it("requests and loads the next page when Next button is clicked", async () => {
@@ -118,12 +130,12 @@ describe("pagination", () => {
 
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
       expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
-    });
+    }, { timeout: DEBOUNCE_WAIT_MS });
   });
 
   it("requests and loads the previous page when Previous button is clicked", async () => {
@@ -134,12 +146,12 @@ describe("pagination", () => {
 
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
       expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
-    });
+    }, { timeout: DEBOUNCE_WAIT_MS });
   });
 
   it("requests and loads the first page when First button is clicked", async () => {
@@ -150,10 +162,10 @@ describe("pagination", () => {
 
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(1);
-    });
+    }, { timeout: DEBOUNCE_WAIT_MS });
   });
 });

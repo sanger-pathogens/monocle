@@ -127,7 +127,7 @@ describe("once batches are fetched", () => {
 
       expectNoBatchesSelected(batchNamesWithData, queryByText);
 
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: SELECT_ALL_BATCHES_LABEL });
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: "Select all" });
       fireEvent.click(selectAllBtn);
 
       await waitFor(() => {

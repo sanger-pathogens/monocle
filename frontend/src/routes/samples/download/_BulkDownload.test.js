@@ -6,6 +6,7 @@ import {
   getBulkDownloadUrls
 } from "$lib/dataLoading.js";
 
+// Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
   const originalDebounce = jest.requireActual("$lib/utils/debounce.js")
   return {
