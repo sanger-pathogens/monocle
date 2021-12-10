@@ -243,7 +243,6 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              return_as_csv     = GetMetadataInputDefaults['as csv'],
                                                                               metadata_columns  = GetMetadataInputDefaults['metadata columns'],
                                                                               in_silico_columns = GetMetadataInputDefaults['in silico columns'])
         resp_mock.assert_called_once_with(expected_payload)
@@ -271,7 +270,6 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              return_as_csv     = GetMetadataInputDefaults['as csv'],
                                                                               metadata_columns  = None,
                                                                               in_silico_columns = None)
         resp_mock.assert_called_once_with(expected_payload)
@@ -311,7 +309,6 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
                                                                               include_in_silico = include_in_silico,
-                                                                              return_as_csv     = return_as_csv,
                                                                               metadata_columns  = metadata_columns,
                                                                               in_silico_columns = in_silico_columns)
         resp_mock.assert_called_once_with(expected_payload)
