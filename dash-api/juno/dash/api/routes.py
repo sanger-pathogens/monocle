@@ -117,7 +117,6 @@ def get_metadata(body):
                         start_row         = body.get('start row', None),
                         num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
                         include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-                        return_as_csv     = return_as_csv,
                         metadata_columns  = metadata_columns,
                         in_silico_columns = in_silico_columns)
       return call_jsonify( metadata ), HTTPStatus.OK
