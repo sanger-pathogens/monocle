@@ -3,7 +3,6 @@ import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.
 
 const LABEL_LOADING_INDICATOR = "please wait";
 const ROLE_COLUMN_HEADER = "columnheader";
-const ROLE_TABLE_ROW = "row";
 const ROLE_TABLE = "table";
 const ROLE_TABLE_CELL = "cell";
 
@@ -37,16 +36,16 @@ describe("on metadata resolved", () => {
   });
 
   it("displays metadata in a table", async () => {
-    const { getAllByRole, getByRole } = render(SimpleSampleMetadataViewer,
+    const { getByRole } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.resolve(METADATA) });
 
     await waitFor(() => {
-      expectMetadataToBeShown({ getAllByRole, getByRole });
+      expectMetadataToBeShown(getByRole);
     });
   });
 
   it("shows the loading indicator and keeps showing old metadata while new metadata is loading", async () => {
-    const { component, findByRole, getAllByRole, getByRole, getByLabelText } =
+    const { component, findByRole, getByRole, getByLabelText } =
       render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
 
     await findByRole(ROLE_TABLE_CELL, { name: METADATA[0].metadata[0].value });
@@ -56,11 +55,11 @@ describe("on metadata resolved", () => {
 
     await waitFor(() => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
-      expectMetadataToBeShown({ getAllByRole, getByRole });
+      expectMetadataToBeShown(getByRole);
     });
   });
 
-  function expectMetadataToBeShown({ getAllByRole, getByRole }) {
+  function expectMetadataToBeShown(getByRole) {
     expect(getByRole(ROLE_TABLE)).toBeDefined();
     METADATA[0].metadata.forEach(({ name }) => {
       expect(getByRole(ROLE_COLUMN_HEADER, { name })).toBeDefined();

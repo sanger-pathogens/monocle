@@ -11,20 +11,20 @@
 
   $: {
     if (metadataPromise) {
-    isError = false;
-    isLoading = true;
-    metadataPromise
-      .then((sortedMetadata) => {
-        metadata = sortedMetadata;
-        metadataColumnHeaders = extractColumnHeadersFromMetadata(sortedMetadata);
-      })
-      .catch((err) => {
-        console.error(err);
-        isError = true;
-      })
-      .finally(() => isLoading = false);
+      isError = false;
+      isLoading = true;
+      metadataPromise
+        .then((sortedMetadata) => {
+          metadata = sortedMetadata;
+          metadataColumnHeaders = extractColumnHeadersFromMetadata(sortedMetadata);
+        })
+        .catch((err) => {
+          console.error(err);
+          isError = true;
+        })
+        .finally(() => isLoading = false);
     }
-  };
+  }
 
   function extractColumnHeadersFromMetadata(metadata = []) {
     return metadata[0]?.metadata?.map(({ name }) => name) || [];

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
 import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
-import debounce from "$lib/utils/debounce.js"
+import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
 
 const BATCHES = ["some batches"];
@@ -10,7 +10,7 @@ const ROLE_TABLE = "table";
 
 // Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
-  const originalDebounce = jest.requireActual("$lib/utils/debounce.js")
+  const originalDebounce = jest.requireActual("$lib/utils/debounce.js");
   return {
     __esModule: true,
     default: jest.fn(originalDebounce.default)
@@ -31,7 +31,7 @@ jest.mock("$lib/dataLoading.js", () => ({
         host_species: { name: "Host species", value: "Ailuropoda melanoleuca", order: 2 },
         qc: { name: "QC", value: "40", order: 7 }
       }
-  }] }))
+    }] }))
 }));
 
 it("isn't displayed if no batches are passed", () => {

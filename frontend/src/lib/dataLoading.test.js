@@ -14,7 +14,7 @@ const INST_KEY_BATCH_DATE_PAIRS = [
 ];
 const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, batchDate]) => (
   { "institution key": instKey, "batch date": batchDate }
-))
+));
 const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();

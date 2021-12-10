@@ -1,10 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import {
   getBatches,
-  getBulkDownloadInfo,
-  getBulkDownloadUrls,
-  getInstitutions,
-  getSampleMetadata
+  getInstitutions
 } from "$lib/dataLoading.js";
 import DataViewerPage from "./index.svelte";
 
@@ -62,7 +59,7 @@ describe("once batches are fetched", () => {
   });
 
   it("displays the bulk download form", async () => {
-    const { findByRole, getByText } = render(DataViewerPage);
+    const { findByRole } = render(DataViewerPage);
 
     const bulkDownloadForm = await findByRole("form", { name: "Download selected samples" });
     expect(bulkDownloadForm).toBeDefined();

@@ -1,5 +1,5 @@
 <script>
-  import debounce from "$lib/utils/debounce.js"
+  import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 

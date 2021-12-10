@@ -1,19 +1,21 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import BulkDownload from "./_BulkDownload.svelte";
-import debounce from "$lib/utils/debounce.js"
+import debounce from "$lib/utils/debounce.js";
 import {
+  // The next import is needed for the mock to work.
+  // eslint-disable-next-line no-unused-vars
   getBulkDownloadInfo,
   getBulkDownloadUrls
 } from "$lib/dataLoading.js";
 
 // Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
-  const originalDebounce = jest.requireActual("$lib/utils/debounce.js")
+  const originalDebounce = jest.requireActual("$lib/utils/debounce.js");
   return {
     __esModule: true,
     default: jest.fn(originalDebounce.default)
   };
-})
+});
 
 jest.mock("$lib/dataLoading.js", () => ({
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
@@ -81,7 +83,7 @@ it("updates the download estimate if selected batches change", async () => {
 });
 
 it("updates the download estimate if selected data types change", async () => {
-  const { findByRole, getByRole, queryByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
+  const { getByRole, queryByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
 
   // Deselect data types.
   fireEvent.click(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL}));
@@ -102,7 +104,7 @@ it("updates the download estimate if selected data types change", async () => {
 
 it("debounces the download estimate request", async () => {
   debounce.mockClear();
-  const { findByRole, getByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
+  const { getByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
 
   await waitFor(() => {
     expect(debounce).toHaveBeenCalledTimes(1);
@@ -117,7 +119,7 @@ it("debounces the download estimate request", async () => {
 
 describe("on form submit", () => {
   const LOADING_MESSAGE =
-    "Please wait: generating a file archive can take several minutes if thousands of samples are involved."
+    "Please wait: generating a file archive can take several minutes if thousands of samples are involved.";
 
   global.fetch = "fake fetch";
 

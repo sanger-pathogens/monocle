@@ -1,6 +1,6 @@
 <script>
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import debounce from "$lib/utils/debounce.js"
+  import debounce from "$lib/utils/debounce.js";
   import {
     getBulkDownloadInfo,
     getBulkDownloadUrls
@@ -40,6 +40,7 @@
       formValues,
       fetch
     )
+      // eslint-disable-next-line no-unused-vars
       .then(({size, size_zipped}) => {
         // Commented out because BE currently doesn't compress for performace reasons:
         // downloadEstimate.size = size;

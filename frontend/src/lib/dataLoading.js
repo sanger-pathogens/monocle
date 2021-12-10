@@ -77,11 +77,11 @@ export function getInstitutions(fetch) {
 }
 
 export function getSampleMetadata({
-    instKeyBatchDatePairs,
-    numRows,
-    startRow
-  },
-  fetch
+  instKeyBatchDatePairs,
+  numRows,
+  startRow
+},
+fetch
 ) {
   const payload = {
     "sample filters": {
