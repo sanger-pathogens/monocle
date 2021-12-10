@@ -126,8 +126,10 @@ section {
 
 ul {
   display: flex;
+  justify-content: center;
   list-style: none;
-  margin-left: 4%;
+  padding-left: 0;
+  padding-right: 3rem;
 }
 
 li {
