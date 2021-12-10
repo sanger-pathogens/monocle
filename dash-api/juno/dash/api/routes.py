@@ -19,6 +19,8 @@ logger = logging.getLogger()
 # Testing only
 ServiceFactory.TEST_MODE = False
 
+DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
+
 # these are set in the openapi.yml file, but request body doesn't seem to set default values
 # to they have to be set by the route :-/
 GetMetadataInputDefaults = {  "as csv"             : False,
@@ -154,15 +156,18 @@ def bulk_download_urls_route(body):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
     
     ## the data we want to serialize contants PosixPath objects that we need to make into strings
+    data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
     for this_public_name in public_name_to_lane_files:
        file_paths_as_strings = []
        for this_file in public_name_to_lane_files[this_public_name]:
-          file_paths_as_strings.append(str(this_file))
+          # this slice removes the leading path defined by the environment variable DATA_INST_VIEW_ENVIRON
+          # to (a) avoid exposing our file system structure oin plublically accessible file, and
+          # (b) ensure downlaods don't break if we move the data to a new directory
+          file_paths_as_strings.append( str(this_file)[len(data_inst_view_path):] )
        public_name_to_lane_files[this_public_name] = file_paths_as_strings
     
     file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(public_name_to_lane_files))
-    # TODO demote to INFO when done testing
-    logging.critical("wrote download params to {}".format(file_written))
+    logging.info("wrote download params to {}".format(file_written))
 
     download_param_file_url = '/'.join([  monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
                                           download_param_file_name]

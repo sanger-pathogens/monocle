@@ -1,16 +1,20 @@
 from flask import Response
 from http import HTTPStatus
-import pathlib
 import json
+from   os            import environ
+import pathlib
 import unittest
 from unittest.mock import patch, Mock
+
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.exceptions import NotAuthorisedException
 from dash.api.routes import *
 
-
 class TestRoutes(unittest.TestCase):
     """ Test class for the routes module """
+
+    # this has mock values for the environment variables set by docker-compose
+    MOCK_ENVIRONMENT = {'DATA_INSTITUTION_VIEW': 'dash/tests/mock_data/s3'}
 
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
@@ -176,6 +180,7 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.uuid4')
@@ -224,6 +229,7 @@ class TestRoutes(unittest.TestCase):
     # NOTE this is temporary until data_download_route is rewritten with intended function
     #      it exists to preserve the unit tests associated with ZIP files that used to be
     #      in bulk_download_urls_route
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
