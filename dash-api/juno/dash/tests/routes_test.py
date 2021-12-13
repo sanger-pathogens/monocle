@@ -206,7 +206,7 @@ class TestRoutes(unittest.TestCase):
         uuid_hex = '123'
         uuid4_mock.return_value.hex = uuid_hex
         download_param_filename = "{}.params.json".format(uuid_hex)
-        write_text_file_mock.write.return_value = download_param_filename
+        write_text_file_mock.return_value = download_param_filename
         download_param_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = download_param_location
         download_symlink = 'downloads/'
@@ -233,43 +233,43 @@ class TestRoutes(unittest.TestCase):
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
-    @patch('dash.api.routes.uuid4')
     @patch.object(ServiceFactory, 'sample_data_service')
     @patch('pathlib.Path.is_dir')
+    @patch('dash.api.routes.read_text_file')
     def test_data_download_route(self,
+            read_text_file_mock,
             is_dir_mock,
             sample_data_service_mock,
-            uuid4_mock,
             zip_files_mock,
             username_mock,
             resp_mock
         ):
         # Given
-        batches = ['2020-09-04', '2021-01-30']
-        assemblies = False
-        annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
-        sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
-        uuid_hex = '123'
-        uuid4_mock.return_value.hex = uuid_hex
-        zip_file_basename = uuid_hex
+        lane_files   = {"pubname": ["/lane file",
+                                    "/another lane file"]
+                        }
+        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
+                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
+                        }
+        read_text_file_mock.return_value = json.dumps(lane_files)
+        mock_token = '123'
+        zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
         download_symlink = 'downloads/'
         sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
-        lane_files = {'pubname': ['lane file', 'another lane file']}
-        sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
             'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
         }
         # When
-        result = data_download_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        result = data_download_route(mock_token)
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         zip_files_mock.assert_called_once_with(
-            lane_files,
+            files_to_zip,
             basename=zip_file_basename,
             location=zip_file_location
             )

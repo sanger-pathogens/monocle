@@ -155,7 +155,7 @@ def bulk_download_urls_route(body):
         logging.error("data downloads directory {} does not exist".format(download_param_file_location))
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
     
-    ## the data we want to serialize contants PosixPath objects that we need to make into strings
+    # the data we want to serialize contains PosixPath objects that we need to make into strings
     data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
     for this_public_name in public_name_to_lane_files:
        file_paths_as_strings = []
@@ -179,33 +179,36 @@ def bulk_download_urls_route(body):
         'download_urls': [download_param_file_url]
     }), HTTPStatus.OK
 
-# NOTE no route for data_download_route() exists yet
-#      this is a placeholder to preserve the code the creates the ZIP archive
-#      that used to be in bulk_download_urls_route
-# TODO - add a route pointing to this, which pases the UUID as a param
-#      - the UUID will have a synlink in place, created by bulk_download_urls_route()
-#      - bulk_download_urls_route() will also have created a JSON file with the data
-#        returned by monocle_data.get_public_name_to_lane_files_dict
-#      - create the ZIP archive as below
-def data_download_route(body):
-    """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
-    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
-    sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
+def data_download_route(token: str):
+    """ Provides download if the ZIP archive providing the data associated with the token passed.
+    The token identifies a JSON file that holds the parameter required to create the ZIP archive.
+    Unless the ZIP archive exists (i.e. this download has been requsetd before) the ZIP archive is
+    created.
+    A 302 response is returned providing a download of the ZIP archive via the static file route.
+    """
+    logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
-    samples = monocle_data.get_filtered_samples(sample_filters)
-    public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
-        samples,
-        assemblies=assemblies,
-        annotations=annotations,
-        reads=reads)
-    zip_file_basename = uuid4().hex
-    zip_file_location = monocle_data.get_bulk_download_location()
 
-    if not Path(zip_file_location).is_dir():
-        logging.error("data downloads directory {} does not exist".format(zip_file_location))
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), zip_file_location)
-
+    # read params from JSON file on disk containing
+    download_param_file_name = "{}.params.json".format(token)
+    download_param_file_location = monocle_data.get_bulk_download_location()
+    if not Path(download_param_file_location).is_dir():
+        logging.error("data downloads directory {} does not exist".format(download_param_file_location))
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
+    public_name_to_lane_files = json.loads(read_text_file(os.path.join(download_param_file_location,download_param_file_name)))
+    
+    # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
+    data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
+    for this_public_name in public_name_to_lane_files:
+       file_paths_as_strings = []
+       for this_file in public_name_to_lane_files[this_public_name]:
+          file_paths_as_strings.append( Path(data_inst_view_path + this_file) )
+       public_name_to_lane_files[this_public_name] = file_paths_as_strings
     logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
+       
+    # create the ZIp archive
+    zip_file_basename = token
+    zip_file_location = download_param_file_location
     zip_files(
         public_name_to_lane_files,
         basename=zip_file_basename,
@@ -229,7 +232,7 @@ def get_metadata_for_download_route(institution: str, category: str, status: str
    return  _metadata_as_csv_response(
                ServiceFactory.sample_data_service(get_authenticated_username(request)).get_metadata_for_download(get_host_name(request), institution, category, status)
                )
-   
+
 def _metadata_as_csv_response(metadata_for_download):
    if not metadata_for_download['success']:
       if 'not found' == metadata_for_download['error']:
@@ -258,9 +261,14 @@ def call_jsonify(args) -> str:
     return jsonify(args)
  
 def write_text_file(filename, content) -> str:
-    with open(filename, 'a') as textfile:
+    with open(filename, 'w') as textfile:
       textfile.write(content)
     return filename
+ 
+def read_text_file(filename) -> str:
+    with open(filename, 'r') as textfile:
+      content = textfile.read()
+    return content
 
 def get_host_name(req_obj):
    return req_obj.host
