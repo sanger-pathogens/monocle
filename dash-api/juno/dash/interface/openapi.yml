@@ -163,7 +163,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DownloadInfo"
+                $ref: "#/components/schemas/DownloadURLs"
         "403":
           description: "Authorization information is missing or invalid."
 
@@ -246,7 +246,9 @@ paths:
                 type: string
         "403":
           description: "Authorization information is missing or invalid."
-
+        "404":
+          description: "No samples were found that matched the request criteria."
+          
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
@@ -900,6 +902,17 @@ components:
         size_zipped:
           type: string
           readOnly: true
+
+    DownloadURLs:
+      type: object
+      required:
+        - download_urls
+      properties:
+        download_urls:
+          type: array
+          items:
+            type: string
+            format: uri
 
     ProjectProgress:
       type: object
