@@ -25,7 +25,6 @@ jest.mock("$lib/dataLoading.js", () => ({
 const ANNOTATIONS_LABEL = "Annotations";
 const ASSEMBLIES_LABEL = "Assemblies";
 const CONFIRM_BUTTON_LABEL = "Confirm";
-const DEBOUNCE_WAIT_MS = 1300;
 const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB";
 const FAKE_HEADER_ID = "section-header";
 const ROLE_BUTTON = "button";
@@ -79,7 +78,7 @@ it("updates the download estimate if selected batches change", async () => {
   await waitFor(() => {
     downloadEstimateElement = getByRole(ROLE_OPTION);
     expect(downloadEstimateElement.textContent).toBe(EXPECTED_DOWNLOAD_ESTIMATE_TEXT);
-  }, { timeout: DEBOUNCE_WAIT_MS });
+  });
 });
 
 it("updates the download estimate if selected data types change", async () => {
@@ -99,7 +98,7 @@ it("updates the download estimate if selected data types change", async () => {
   await waitFor(() => {
     const downloadEstimateElement = getByRole(ROLE_OPTION);
     expect(downloadEstimateElement.textContent).toBe(EXPECTED_DOWNLOAD_ESTIMATE_TEXT);
-  }, { timeout: DEBOUNCE_WAIT_MS });
+  });
 });
 
 it("debounces the download estimate request", async () => {

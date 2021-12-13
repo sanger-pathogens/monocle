@@ -5,12 +5,13 @@
 
   export let batches = undefined;
 
+  const MAX_METADATA_FETCH_FREQUENCY_MS = 800
   const NUM_METADATA_ROWS_PER_PAGE = 12;
 
   let isLastPage = false;
   let pageNum = 1;
   let sortedMetadataPromise;
-  let updateMetadataTimeoutId;
+  let metadataTimeoutId;
 
   // `batches` is passed just to indicate to Svelte that this reactive statement
   // should re-run only when `batches` has changed.
@@ -19,7 +20,8 @@
 
   function updateMetadata() {
     showMetadataLoading();
-    updateMetadataTimeoutId = debounce(_updateMetadata, updateMetadataTimeoutId);
+    metadataTimeoutId = debounce(_updateMetadata, metadataTimeoutId, MAX_METADATA_FETCH_FREQUENCY_MS);
+    preventDebouncingFirstMetadataRequest();
   }
 
   function _updateMetadata() {
@@ -51,6 +53,14 @@
 
   function compareMetadataByOrder(metadatumA, metadatumB) {
     return metadatumA.order - metadatumB.order;
+  }
+
+  function preventDebouncingFirstMetadataRequest() {
+    setTimeout(resetMetadataTimeoutId, MAX_METADATA_FETCH_FREQUENCY_MS);
+  }
+
+  function resetMetadataTimeoutId() {
+    metadataTimeoutId = null;
   }
 
   function showMetadataLoading() {

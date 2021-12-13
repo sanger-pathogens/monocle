@@ -4,7 +4,6 @@ import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
 
 const BATCHES = ["some batches"];
-const DEBOUNCE_WAIT_MS = 1300;
 const ROLE_BUTTON = "button";
 const ROLE_TABLE = "table";
 
@@ -55,7 +54,7 @@ it("displays resolved metadata w/ each row sorted by order", async () => {
       "Sciurus carolinensis", "90",
       "Ailuropoda melanoleuca", "40"
     ]);
-  }, { timeout: DEBOUNCE_WAIT_MS });
+  });
 });
 
 it("requests metadata w/ the correct arguments", async () => {
@@ -122,36 +121,40 @@ describe("pagination", () => {
     await waitFor(() => {
       expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
         .toBeTruthy();
-    }, { timeout: DEBOUNCE_WAIT_MS });
+    });
   });
 
   it("requests and loads the next page when Next button is clicked", async () => {
+    jest.useFakeTimers();
     const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+    getSampleMetadata.mockClear();
 
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
 
-    await waitFor(() => {
-      expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
-      expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-      const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
-      expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
-    }, { timeout: DEBOUNCE_WAIT_MS });
+    expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
+    jest.runAllTimers();
+    expect(getSampleMetadata).toHaveBeenCalledTimes(1);
+    const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
+    expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
+    jest.useRealTimers();
   });
 
   it("requests and loads the previous page when Previous button is clicked", async () => {
+    jest.useFakeTimers();
     const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
     const nextBtn = getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON });
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
+    getSampleMetadata.mockClear();
 
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }));
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }));
 
-    await waitFor(() => {
-      expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
-      expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-      const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
-      expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
-    }, { timeout: DEBOUNCE_WAIT_MS });
+    expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
+    jest.runAllTimers();
+    expect(getSampleMetadata).toHaveBeenCalledTimes(1);
+    const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
+    expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
+    jest.useRealTimers();
   });
 
   it("requests and loads the first page when First button is clicked", async () => {
@@ -166,6 +169,6 @@ describe("pagination", () => {
       expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(1);
-    }, { timeout: DEBOUNCE_WAIT_MS });
+    });
   });
 });
