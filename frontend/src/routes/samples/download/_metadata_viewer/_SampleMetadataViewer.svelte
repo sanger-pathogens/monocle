@@ -29,6 +29,7 @@
       return;
     }
 
+    // FIXME: prevent duplicate request when a batch is selected for the first time.
     sortedMetadataPromise = getSampleMetadata({
       instKeyBatchDatePairs: batches,
       numRows: NUM_METADATA_ROWS_PER_PAGE,
