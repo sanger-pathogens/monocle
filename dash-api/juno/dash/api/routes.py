@@ -149,7 +149,8 @@ def bulk_download_urls_route(body):
         reads=reads)
     logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
 
-    download_param_file_name = "{}.params.json".format(uuid4().hex)
+    download_token = uuid4().hex
+    download_param_file_name = "{}.params.json".format(download_token)
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
         logging.error("data downloads directory {} does not exist".format(download_param_file_location))
@@ -169,15 +170,10 @@ def bulk_download_urls_route(body):
     file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(public_name_to_lane_files))
     logging.info("wrote download params to {}".format(file_written))
 
-    # TODO change this download URL to a URL to the endpoint that invokes data_download_route()
-    #      (N.B. there will be no requirement here for the randonly-named symlink)
-    #      but just now making the JSON available for download is useful to test we're creating it right
-    download_param_file_url = '/'.join([  monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
-                                          download_param_file_name]
-                                       )
+    download_url = '/'.join([monocle_data.get_bulk_download_route(), download_token])
 
     return call_jsonify({
-        'download_urls': [download_param_file_url]
+        'download_urls': [download_url]
     }), HTTPStatus.OK
 
 def data_download_route(token: str):

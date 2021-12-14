@@ -208,19 +208,21 @@ class TestRoutes(unittest.TestCase):
         download_param_filename = "{}.params.json".format(uuid_hex)
         write_text_file_mock.return_value = download_param_filename
         download_param_location = 'some/dir'
+        download_route = '/data_download_route'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = download_param_location
-        download_symlink = 'downloads/'
-        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        sample_data_service_mock.return_value.get_bulk_download_route.return_value = download_route
+        ####download_symlink = 'downloads/'
+        ####sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         lane_files = {'pubname': ['lane file', 'another lane file']}
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
-            'download_urls': [f'{download_symlink}{download_param_filename}']
+            'download_urls': [f'{download_route}/{uuid_hex}']
         }
         # When
         result = bulk_download_urls_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        sample_data_service_mock.return_value.get_bulk_download_route.assert_called_once()
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
