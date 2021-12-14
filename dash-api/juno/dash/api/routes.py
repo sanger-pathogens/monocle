@@ -169,12 +169,13 @@ def bulk_download_urls_route(body):
     file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(public_name_to_lane_files))
     logging.info("wrote download params to {}".format(file_written))
 
+    # TODO change this download URL to a URL to the endpoint that invokes data_download_route()
+    #      (N.B. there will be no requirement here for the randonly-named symlink)
+    #      but just now making the JSON available for download is useful to test we're creating it right
     download_param_file_url = '/'.join([  monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
                                           download_param_file_name]
                                        )
 
-    # TODO change this download URL to a URL to the endpoint that invokes data_download_route()
-    #      but just now making the JSON available for download is useful to test we're creating it right
     return call_jsonify({
         'download_urls': [download_param_file_url]
     }), HTTPStatus.OK
@@ -206,7 +207,7 @@ def data_download_route(token: str):
        public_name_to_lane_files[this_public_name] = file_paths_as_strings
     logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
        
-    # create the ZIp archive
+    # create the ZIP archive
     zip_file_basename = token
     zip_file_location = download_param_file_location
     zip_files(
@@ -218,6 +219,8 @@ def data_download_route(token: str):
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
         zip_file_basename + ZIP_SUFFIX])
 
+    # TODO change this to a 302 response redirecting the user to the ZIP archive URL
+    #      but just now returning the URL is useful to test we're creating it right
     return call_jsonify({
         'download_urls': [zip_file_url]
     }), HTTPStatus.OK
