@@ -228,18 +228,17 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
         
-    # NOTE this is temporary until data_download_route is rewritten with intended function
-    #      it exists to preserve the unit tests associated with ZIP files that used to be
-    #      in bulk_download_urls_route
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
     @patch.object(ServiceFactory, 'sample_data_service')
     @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
     @patch('dash.api.routes.read_text_file')
     def test_data_download_route(self,
             read_text_file_mock,
+            is_file_mock,
             is_dir_mock,
             sample_data_service_mock,
             zip_files_mock,
@@ -250,6 +249,7 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
+        is_file_mock.return_value = True
         lane_files   = {"pubname": ["/lane file",
                                     "/another lane file"]
                         }
@@ -280,6 +280,32 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
+    def test_data_download_route_return_404(self,
+            is_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            username_mock,
+        ):
+        # Given
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        is_dir_mock.return_value = True
+        is_file_mock.return_value = False
+        mock_token = '123'
+        zip_file_location = 'some/dir'
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        # When
+        result = data_download_route(mock_token)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        self.assertIsInstance(result, Response)
+        self.assertIn('404', result.status)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')

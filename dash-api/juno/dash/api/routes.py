@@ -182,6 +182,8 @@ def data_download_route(token: str):
     Unless the ZIP archive exists (i.e. this download has been requsetd before) the ZIP archive is
     created.
     A 302 response is returned providing a download of the ZIP archive via the static file route.
+    If the JSON file isn't found a 404 is returned (this will happen if the download link that
+    was used in old, and the housekeeping cron job has deleted the JSON file in the interim).
     """
     logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
@@ -190,9 +192,20 @@ def data_download_route(token: str):
     download_param_file_name = "{}.params.json".format(token)
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
-        logging.error("data downloads directory {} does not exist".format(download_param_file_location))
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
-    public_name_to_lane_files = json.loads(read_text_file(os.path.join(download_param_file_location,download_param_file_name)))
+      logging.error("data downloads directory {} does not exist".format(download_param_file_location))
+      raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
+    param_file_path = os.path.join(download_param_file_location,download_param_file_name)
+    # if the JSON file doesn't exist return a 404
+    if not Path(param_file_path).is_file():
+      logging.warning(  "A data download request was made with token {} but {} does not exist. If this is an old token the file may correctly have been deleted.".format(
+                           token,
+                           param_file_path)
+                        )
+      return Response(  'These data are no longer available for download.  Please make a new data download request',
+                        content_type   = 'text/plain; charset=UTF-8',
+                        status         = HTTPStatus.NOT_FOUND
+                        )
+    public_name_to_lane_files = json.loads(read_text_file(param_file_path))
     
     # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
     data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
@@ -253,7 +266,6 @@ def _metadata_as_csv_response(metadata_for_download):
                         headers        = {'Content-Disposition': 'attachment; filename="{}"'.format(metadata_for_download['filename'])},
                         status         = HTTPStatus.OK
                         )
-
 
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
