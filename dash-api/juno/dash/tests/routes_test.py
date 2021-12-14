@@ -244,7 +244,6 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
-    @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
     @patch.object(ServiceFactory, 'sample_data_service')
@@ -258,7 +257,6 @@ class TestRoutes(unittest.TestCase):
             sample_data_service_mock,
             zip_files_mock,
             username_mock,
-            resp_mock
         ):
         # Given
         samples = self.SERVICE_CALL_RETURN_DATA
@@ -276,11 +274,10 @@ class TestRoutes(unittest.TestCase):
         zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        # FIXME need to mock retireval of actual host anme (environment??)
+        download_host = 'http://ts24.dev.pam.sanger.ac.uk/'
         download_symlink = 'downloads/'
         sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
-        expected_payload = {
-            'download_urls': [f'{download_symlink}{zip_file_basename}.zip']
-        }
         # When
         result = data_download_route(mock_token)
         # Then
@@ -291,10 +288,9 @@ class TestRoutes(unittest.TestCase):
             location=zip_file_location
             )
         sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
-        resp_mock.assert_called_once_with(expected_payload)
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
+        self.assertIsInstance(result, Response)
+        self.assertIn('302', result.status)
+        self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')

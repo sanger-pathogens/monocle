@@ -248,12 +248,21 @@ def data_download_route(token: str):
     zip_file_url = '/'.join([
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
         zip_file_basename + ZIP_SUFFIX])
+    
+    # FIXME this needs to be the monocle host the service is deployed on
+    #       read from environment via docker-compose??
+    zip_file_url = 'http://ts24.dev.pam.sanger.ac.uk/' + zip_file_url
+    
+    # TODO demote to info when done testing
+    logging.critical("Redirecting data download to {}".format(zip_file_url))
+    
+    # redirect user to the ZIP file download URL
+    return Response( "Data for these samples are available for download from {}".format(zip_file_url),
+               content_type   = 'text/plain; charset=UTF-8',
+               status         = HTTPStatus.FOUND,
+               headers        = {'Location': zip_file_url},
+               )
 
-    # TODO change this to a 302 response redirecting the user to the ZIP archive URL
-    #      but just now returning the URL is useful to test we're creating it right
-    return call_jsonify({
-        'download_urls': [zip_file_url]
-    }), HTTPStatus.OK
 
 def get_metadata_for_download_route(institution: str, category: str, status: str):
    """
