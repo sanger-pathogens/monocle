@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.exceptions import NotAuthorisedException
-from utils.file import format_file_size, zip_files, ZIP_SUFFIX
+from utils.file import zip_files, ZIP_SUFFIX
 
 
 logger = logging.getLogger()
