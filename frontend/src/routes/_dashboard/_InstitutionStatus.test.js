@@ -67,18 +67,6 @@ it.each([
     .toBeDefined();
 });
 
-it("displays the bulk download link", () => {
-  const { getByRole } = render(InstitutionStatus, {
-    institutionName: INSTITUTION_NAME,
-    batches: { received: 42, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  });
-
-  expect(getByRole("link", { name: "Bulk data download" }))
-    .toBeDefined();
-});
-
 it.each([
   ["batch", { batches: { _ERROR: API_ERROR }, sequencingStatus: {}, pipelineStatus: {} }],
   ["sequencing status", { batches: {}, sequencingStatus: { _ERROR: API_ERROR }, pipelineStatus: {} }],
