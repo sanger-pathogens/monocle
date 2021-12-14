@@ -6,6 +6,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
   import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
+  import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
 
   let dashboardDataPromise = new Promise(() => {});
 
@@ -25,6 +26,7 @@
   <nav>
     <MetadataUploadLink />
     <InsilicoUploadLink style="margin-top: .3rem" />
+    <SampleDataLink />
   </nav>
 
   <LineChart
