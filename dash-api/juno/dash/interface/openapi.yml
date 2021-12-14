@@ -139,6 +139,8 @@ paths:
                 $ref: "#/components/schemas/DownloadInfo"
         "403":
           description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
 
   /bulk_download_urls:
     post:
@@ -166,6 +168,8 @@ paths:
                 $ref: "#/components/schemas/DownloadURLs"
         "403":
           description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
 
   /data_download/{token}:
     get:

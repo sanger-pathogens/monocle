@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 from typing import List
+from urllib.error import HTTPError
 from uuid import uuid4
 
 from dash.api.service.service_factory import ServiceFactory
@@ -122,26 +123,46 @@ def get_metadata_route(body):
                         include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
                         metadata_columns  = metadata_columns,
                         in_silico_columns = in_silico_columns)
+      if metadata is None:
+         return Response(  'No matching samples were found',
+                           content_type   = 'text/plain; charset=UTF-8',
+                           status         = HTTPStatus.NOT_FOUND
+                           )
       return call_jsonify( metadata ), HTTPStatus.OK
 
 def bulk_download_info_route(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
-    return call_jsonify(
-        ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
+    
+    download_info = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
             sample_filters,
             assemblies=assemblies,
             annotations=annotations,
             reads=reads)
-    ), HTTPStatus.OK
+    if download_info is None:
+      return Response(  'No matching samples were found',
+                        content_type   = 'text/plain; charset=UTF-8',
+                        status         = HTTPStatus.NOT_FOUND
+                        )
+    return call_jsonify(download_info), HTTPStatus.OK
 
 def bulk_download_urls_route(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
-    samples = monocle_data.get_filtered_samples(sample_filters)
+    try:
+      samples = monocle_data.get_filtered_samples(sample_filters)
+    # catch 404s -- this means the metadata API found no matching samples
+    except HTTPError as e:
+      if '404' not in str(e):
+         raise e
+      return Response(  'No matching samples were found',
+                        content_type   = 'text/plain; charset=UTF-8',
+                        status         = HTTPStatus.NOT_FOUND
+                        )
+   
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
         assemblies=assemblies,

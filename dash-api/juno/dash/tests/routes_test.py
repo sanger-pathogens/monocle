@@ -5,6 +5,7 @@ from   os            import environ
 import pathlib
 import unittest
 from unittest.mock import patch, Mock
+import urllib
 
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.exceptions import NotAuthorisedException
@@ -180,6 +181,22 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_bulk_download_info_route_return_404(self, sample_data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        assemblies = False
+        annotations = True
+        sample_data_service_mock.return_value.get_bulk_download_info.return_value = None
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = bulk_download_info_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        self.assertIsInstance(result, Response)
+        self.assertIn('404', result.status)
+
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -211,8 +228,6 @@ class TestRoutes(unittest.TestCase):
         download_route = '/data_download_route'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = download_param_location
         sample_data_service_mock.return_value.get_bulk_download_route.return_value = download_route
-        ####download_symlink = 'downloads/'
-        ####sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         lane_files = {'pubname': ['lane file', 'another lane file']}
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
@@ -227,7 +242,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
-        
+
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -397,6 +412,21 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_bulk_download_info_route_return_404(self, sample_data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        sample_data_service_mock.return_value.get_metadata.return_value = None
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_metadata_route({'sample filters': sample_filters})
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        self.assertIsInstance(result, Response)
+        self.assertIn('404', result.status)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
