@@ -204,7 +204,7 @@ def data_download_route(token: str):
     created.
     A 303 response is returned providing a download of the ZIP archive via the static file route.
     If the JSON file isn't found a 404 is returned (this will happen if the download link that
-    was used in old, and the housekeeping cron job has deleted the JSON file in the interim).
+    was used is old, and the housekeeping cron job has deleted the JSON file in the interim).
     """
     logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
