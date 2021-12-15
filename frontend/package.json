@@ -15,8 +15,8 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.7",
-    "@sveltejs/adapter-node": "^1.0.0-next.27",
+    "@babel/preset-env": "^7.16.4",
+    "@sveltejs/adapter-node": "next",
     "@sveltejs/kit": "next",
     "@testing-library/svelte": "^3.0.3",
     "babel-jest": "^27.0.6",
@@ -25,9 +25,9 @@
     "eslint-plugin-svelte3": "^3.2.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.0.6",
-    "svelte": "^3.43.1",
+    "svelte": "^3.44.2",
     "svelte-jester": "^1.8.2",
-    "svelte-select": "^4.4.3"
+    "svelte-select": "^4.4.6"
   },
   "_id": "Monocle frontend@0.0.1",
   "jest": {

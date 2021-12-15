@@ -92,26 +92,26 @@
 
 
 <form on:submit|preventDefault={onFileSubmit} aria-labelledby={ariaLabelledby || null}>
-	<fieldset disabled={uploading}>
-		<input
-			bind:files
-			type="file"
-			{accept}
-			multiple
-		>
-		
-		<button type="submit" class="primary" disabled={files.length === 0}>
-			Upload
-		</button>
-	</fieldset>
+  <fieldset disabled={uploading}>
+    <input
+      bind:files
+      type="file"
+      {accept}
+      multiple
+    >
+
+    <button type="submit" class="primary" disabled={files.length === 0}>
+      Upload
+    </button>
+  </fieldset>
 </form>
 
 {#if uploading}
-	<LoadingIndicator />
+  <LoadingIndicator />
 {/if}
 
 {#if validationErrors.length}
-	<ValidationErrorList errors={validationErrors} />
+  <ValidationErrorList errors={validationErrors} />
 {/if}
 
 
