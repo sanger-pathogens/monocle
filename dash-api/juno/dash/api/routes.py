@@ -231,10 +231,12 @@ def data_download_route(token: str):
     # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
     data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
     for this_public_name in public_name_to_lane_files:
-       file_paths_as_strings = []
+       complete_file_paths = []
        for this_file in public_name_to_lane_files[this_public_name]:
-          file_paths_as_strings.append( Path(data_inst_view_path + this_file) )
-       public_name_to_lane_files[this_public_name] = file_paths_as_strings
+          if '/' == this_file[0]:
+             this_file = str(this_file)[1:]
+          complete_file_paths.append( Path(data_inst_view_path, this_file) )
+       public_name_to_lane_files[this_public_name] = complete_file_paths
     logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
        
     # create the ZIP archive
