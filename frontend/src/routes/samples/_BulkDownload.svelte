@@ -140,7 +140,7 @@
   {#if downloadLink}
     <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
     <a
-      href={`/${downloadLink}`}
+      href={downloadLink}
       target="_blank"
       class="download-link"
       download

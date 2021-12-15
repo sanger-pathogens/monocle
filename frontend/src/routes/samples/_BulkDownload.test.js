@@ -19,7 +19,7 @@ jest.mock("$lib/utils/debounce.js", () => {
 
 jest.mock("$lib/dataLoading.js", () => ({
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
-  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"]))
+  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["/fake-download-url"]))
 }));
 
 const ANNOTATIONS_LABEL = "Annotations";
@@ -185,7 +185,7 @@ describe("on form submit", () => {
       fetch);
     await waitFor(() => {
       const downloadLink = getByRole("link", { name: "Download samples" });
-      expect(downloadLink.href.endsWith("fake-download-url")).toBeTruthy();
+      expect(downloadLink.href).toBe(`${window.location.origin}/fake-download-url`);
       expect(downloadLink.download).toBe("");
       expect(downloadLink.target).toBe("_blank");
     });
