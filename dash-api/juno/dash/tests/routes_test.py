@@ -195,7 +195,7 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
-        self.assertIn('404', result.status)
+        self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.call_jsonify')
@@ -274,8 +274,7 @@ class TestRoutes(unittest.TestCase):
         zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
-        # FIXME need to mock retireval of actual host anme (environment??)
-        download_host = 'http://ts24.dev.pam.sanger.ac.uk/'
+        download_host = '/'
         download_symlink = 'downloads/'
         sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         # When
@@ -289,7 +288,7 @@ class TestRoutes(unittest.TestCase):
             )
         sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         self.assertIsInstance(result, Response)
-        self.assertIn('302', result.status)
+        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
         self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
@@ -316,7 +315,7 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
-        self.assertIn('404', result.status)
+        self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
@@ -422,7 +421,7 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
-        self.assertIn('404', result.status)
+        self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
@@ -459,7 +458,7 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME,
                                                                                 sample_filters = sample_filters)
         self.assertIsInstance(result, Response)
-        self.assertIn('404', result.status)
+        self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.get_host_name')

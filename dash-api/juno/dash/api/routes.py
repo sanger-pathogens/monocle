@@ -202,7 +202,7 @@ def data_download_route(token: str):
     The token identifies a JSON file that holds the parameter required to create the ZIP archive.
     Unless the ZIP archive exists (i.e. this download has been requsetd before) the ZIP archive is
     created.
-    A 302 response is returned providing a download of the ZIP archive via the static file route.
+    A 303 response is returned providing a download of the ZIP archive via the static file route.
     If the JSON file isn't found a 404 is returned (this will happen if the download link that
     was used in old, and the housekeeping cron job has deleted the JSON file in the interim).
     """
@@ -246,20 +246,15 @@ def data_download_route(token: str):
         location=zip_file_location
         )
     zip_file_url = '/'.join([
+        '', # host name; using an empty string gets a leading '/' (required for relative URL)
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
         zip_file_basename + ZIP_SUFFIX])
-    
-    # FIXME this needs to be the monocle host the service is deployed on
-    #       read from environment via docker-compose??
-    zip_file_url = 'http://ts24.dev.pam.sanger.ac.uk/' + zip_file_url
-    
-    # TODO demote to info when done testing
-    logging.critical("Redirecting data download to {}".format(zip_file_url))
+    logging.info("Redirecting data download to {}".format(zip_file_url))
     
     # redirect user to the ZIP file download URL
     return Response( "Data for these samples are available for download from {}".format(zip_file_url),
                content_type   = 'text/plain; charset=UTF-8',
-               status         = HTTPStatus.FOUND,
+               status         = HTTPStatus.SEE_OTHER,
                headers        = {'Location': zip_file_url},
                )
 
