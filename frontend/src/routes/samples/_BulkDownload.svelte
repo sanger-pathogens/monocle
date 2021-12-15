@@ -145,7 +145,7 @@
       class="download-link"
       download
     >
-      Download samples
+      Download samples (for large sample sizes downloading starts in a minute)
     </a>
   {:else}
     <LoadingIndicator
