@@ -4,7 +4,8 @@
 
   const STYLE_SELECT_CONTAINER = `
     flex-grow: 1;
-    order: -1
+    align-self: baseline;
+    width: 100%
   `;
   
   export let batchList;
@@ -29,34 +30,36 @@ function selectBatches() {
 </script>
 
 
-<div class="buttons-container">
-  <button
-    type="button"
-    on:click={selectBatches}
-    class="compact"
-  >
-    Select all
-  </button>
+<div class="container">
+  <Select
+    noOptionsMessage={"No batches"}
+    bind:value={selectedBatches}
+    items={batchList}
+    groupBy={groupBatchesBy}
+    showIndicator={true}
+    isClearable={false}
+    isMulti={true}
+    containerStyles={STYLE_SELECT_CONTAINER}
+  />
 
-  <button
-    type="button"
-    on:click={deselectBatches}
-    class="compact"
-  >
-    Clear
-  </button>
+  <div class="buttons-container">
+    <button
+      type="button"
+      on:click={selectBatches}
+      class="compact"
+    >
+      Select all
+    </button>
+
+    <button
+      type="button"
+      on:click={deselectBatches}
+      class="compact"
+    >
+      Clear
+    </button>
+  </div>
 </div>
-
-<Select
-  noOptionsMessage={"No batches"}
-  bind:value={selectedBatches}
-  items={batchList}
-  groupBy={groupBatchesBy}
-  showIndicator={true}
-  isClearable={false}
-  isMulti={true}
-  containerStyles={STYLE_SELECT_CONTAINER}
-/>
 
 
 <style>
@@ -67,14 +70,30 @@ function selectBatches() {
   --multiSelectInputPadding: 0 0 0 .9rem;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 44rem;
+}
+
 .buttons-container {
   display: flex;
   flex-shrink: 0;
   margin-left: .5rem;
+  order: -1;
 }
+
 @media (min-width: 480px) {
+  .container {
+    flex-direction: row;
+  }
+
   .buttons-container {
     flex-direction: column;
+    order: 0;
   }
 } 
 

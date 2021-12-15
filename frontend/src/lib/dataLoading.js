@@ -76,6 +76,33 @@ export function getInstitutions(fetch) {
     "get_institutions", "institutions", fetch);
 }
 
+export function getSampleMetadata({
+  instKeyBatchDatePairs,
+  numRows,
+  startRow
+},
+fetch
+) {
+  const payload = {
+    "sample filters": {
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+    }
+  };
+  if (Number.isInteger(numRows)) {
+    payload["num rows"] = numRows;
+  }
+  if (Number.isInteger(startRow)) {
+    payload["start row"] = startRow;
+  }
+
+  return fetchDashboardApiResource(
+    "get_metadata", null, fetch, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify(payload)
+    });
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);
@@ -132,7 +159,7 @@ function collateInstitutionStatus({
     }));
 }
 
-function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs) {
+function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {
   return instKeyBatchDatePairs.map(([instKey, batchDate]) => (
     { "institution key": instKey, "batch date": batchDate }
   ));
