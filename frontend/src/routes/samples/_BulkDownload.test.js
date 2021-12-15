@@ -118,7 +118,7 @@ it("debounces the download estimate request", async () => {
 
 describe("on form submit", () => {
   const LOADING_MESSAGE =
-    "Please wait: generating a file archive can take several minutes if thousands of samples are involved.";
+    "Please wait: generating a download link can take a while if thousands of samples are involved.";
 
   global.fetch = "fake fetch";
 

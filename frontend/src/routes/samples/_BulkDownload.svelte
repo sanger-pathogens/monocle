@@ -149,7 +149,7 @@
     </a>
   {:else}
     <LoadingIndicator
-      message="Please wait: generating a file archive can take several minutes if thousands of samples are involved."
+      message="Please wait: generating a download link can take a while if thousands of samples are involved."
     />
   {/if}
 {/if}
