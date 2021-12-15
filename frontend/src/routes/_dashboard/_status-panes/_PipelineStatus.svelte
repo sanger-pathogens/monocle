@@ -9,7 +9,6 @@
 
   const CHART_LABELS = ["Pending", "Succeeded", "Failed"];
   const FAIL_MESSAGES_TITLE = "Pipeline Failures";
-  const LABEL_BULK_DOWNLOAD = "Bulk data download";
 
   const {
     sequencedSuccess,
@@ -63,24 +62,5 @@
         title={FAIL_MESSAGES_TITLE}
       />
     {/if}
-
-    <a
-      href="/samples/download"
-      aria-label={LABEL_BULK_DOWNLOAD}
-      title={LABEL_BULK_DOWNLOAD}
-    >
-      Bulk data <DownloadIcon color="var(--text-muted)" />
-    </a>
   {/if}
 </StatusPane>
-
-<style>
-a {
-  color: var(--form-text);
-  font-weight: 100;
-  white-space: nowrap;
-}
-a:hover, a:visited, a:link, a:active {
-  text-decoration: none;
-}
-</style>

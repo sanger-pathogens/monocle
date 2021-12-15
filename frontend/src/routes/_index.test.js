@@ -69,17 +69,28 @@ describe("after data fetching", () => {
     });
   });
 
-  it("displays the menu w/ the upload links", async () => {
+  it("displays the menu w/ the upload and data viewer links", async () => {
+    const domainName = window.location.host;
     const { findByRole } = render(DashboardPage);
 
-    const uploadLinksContainer = await findByRole("navigation");
+    const linksContainer = await findByRole("navigation");
 
-    const metadataUploadLink = within(uploadLinksContainer)
-      .findByRole("link", { name: "Upload metadata" });
-    expect(metadataUploadLink).toBeDefined();
-    const insilicoUploadLink = within(uploadLinksContainer)
+    // FIXME: mock `session.user.role` and uncomment the test
+    //const metadataUploadLink = await within(linksContainer)
+    //  .findByRole("link", { name: "Upload metadata" });
+    //expect(metadataUploadLink).toBeDefined();
+    //expect(metadataUploadLink.href).toMatch(
+    //  new RegExp(`${domainName}/metadata-upload`));
+    const insilicoUploadLink = await within(linksContainer)
       .findByRole("link", { name: "Upload in-silico data" });
     expect(insilicoUploadLink).toBeDefined();
+    expect(insilicoUploadLink.href).toMatch(
+      new RegExp(`${domainName}/in-silico-upload`));
+    const dataViewerLink = await within(linksContainer)
+      .findByRole("link", { name: "View and download sample data" });
+    expect(dataViewerLink).toBeDefined();
+    expect(dataViewerLink.href).toMatch(
+      new RegExp(`${domainName}/samples`));
   });
 
   it("displays status for each institution", async () => {
