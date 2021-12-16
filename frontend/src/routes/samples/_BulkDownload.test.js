@@ -186,7 +186,7 @@ describe("on form submit", () => {
     await waitFor(() => {
       const downloadLink = getByRole("link", { name: "Download samples (for large sample sizes downloading starts in a minute)" });
       expect(downloadLink.href).toBe(`${window.location.origin}/fake-download-url`);
-      expect(downloadLink.download).toBe("");
+      expect(downloadLink.getAttribute("download")).toBeNull();
       expect(downloadLink.target).toBe("_blank");
     });
   });

@@ -143,7 +143,6 @@
       href={downloadLink}
       target="_blank"
       class="download-link"
-      download
     >
       Download samples (for large sample sizes downloading starts in a minute)
     </a>
