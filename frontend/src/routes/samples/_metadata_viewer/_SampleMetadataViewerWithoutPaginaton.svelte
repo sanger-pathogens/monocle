@@ -33,7 +33,7 @@
 
 
 {#if metadataPromise}
-  <table>
+  <table class="dense">
     <tr>
       <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#each). -->
@@ -113,12 +113,5 @@ table {
 
 .no-data-row {
   text-align: center;
-}
-
-@media (min-width: 1278px) {
-  td, th {
-    padding-top: .85rem;
-    padding-bottom: .85rem;
-  }
 }
 </style>
