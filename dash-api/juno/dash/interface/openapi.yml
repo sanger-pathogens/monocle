@@ -139,6 +139,8 @@ paths:
                 $ref: "#/components/schemas/DownloadInfo"
         "403":
           description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
 
   /bulk_download_urls:
     post:
@@ -163,10 +165,46 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DownloadInfo"
+                $ref: "#/components/schemas/DownloadURLs"
         "403":
           description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
 
+  /data_download/{token}:
+    get:
+      operationId: dash.api.routes.data_download_route
+      summary: "For data download (assembly/annotation/reads in ZIP archive).  Response is a 302 redirecting to static file route for the download."
+      parameters:
+        - in: header
+          name: X-Remote-User
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+        - name: "token"
+          in: path
+          description: "Download token (generated and embeded in URL(s) by /bulk_download_urls)"
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 32
+            pattern: ^[a-f0-9]+$
+      responses:
+        "302":
+          description: "The data are available."
+          headers:
+            Location:
+              description: ""
+              schema:
+                type: string
+                format: uri
+        "403":
+          description: "Download token missing or invalid."
+        "404":
+          description: "The data are not available (bad or expired token)."
+          
   /get_progress:
     get:
       operationId: dash.api.routes.get_progress_route
@@ -246,7 +284,9 @@ paths:
                 type: string
         "403":
           description: "Authorization information is missing or invalid."
-
+        "404":
+          description: "No samples were found that matched the request criteria."
+          
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
@@ -900,6 +940,17 @@ components:
         size_zipped:
           type: string
           readOnly: true
+
+    DownloadURLs:
+      type: object
+      required:
+        - download_urls
+      properties:
+        download_urls:
+          type: array
+          items:
+            type: string
+            format: uri
 
     ProjectProgress:
       type: object

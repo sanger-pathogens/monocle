@@ -38,8 +38,8 @@ def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_
     compression=ZIP_DEFLATED,
     compresslevel=ZIP_COMPRESSION_LEVEL) as zfile:
     for dir_name, files in dir_name_to_files.items():
-      for file in files:
+      for this_file in files:
         try:
-          zfile.write(file, PurePath(dir_name, file.name))
+          zfile.write(this_file, PurePath(dir_name, this_file.name))
         except FileNotFoundError:
-          logging.debug(f'Excluding non-existent file from download: {file}')
+          logging.debug(f'Excluding non-existent file from download: {this_file}')

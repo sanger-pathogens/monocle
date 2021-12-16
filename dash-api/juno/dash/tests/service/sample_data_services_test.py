@@ -41,6 +41,9 @@ class MonocleSampleDataTest(TestCase):
 
    # this is the path to the actual data directory, i.e. the target of the data download symlinks
    mock_inst_view_dir = 'dash/tests/mock_data/monocle_juno_institution_view'
+   
+   # this is the route used to download data
+   mock_download_route = '/data_route_via_nginx'
 
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
@@ -476,7 +479,7 @@ class MonocleSampleDataTest(TestCase):
 
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_zip_download_location(self):
-      download_location = self.monocle_data.get_zip_download_location()
+      download_location = self.monocle_data.get_bulk_download_location()
 
       self.assertEqual(PurePath(self.mock_inst_view_dir, 'downloads'), download_location)
 
@@ -485,14 +488,24 @@ class MonocleSampleDataTest(TestCase):
       del environ['DATA_INSTITUTION_VIEW']
 
       with self.assertRaises(DataSourceConfigError):
-         self.monocle_data.get_zip_download_location()
+         self.monocle_data.get_bulk_download_location()
 
    def test_get_zip_download_location_raises_if_data_config_is_corrupt(self):
       monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
       monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
       with self.assertRaises(DataSourceConfigError):
-         monocle_data_with_bad_config.get_zip_download_location()
+         monocle_data_with_bad_config.get_bulk_download_location()
+
+   def test_get_bulk_download_route(self):
+      download_route = self.monocle_data.get_bulk_download_route()
+      self.assertEqual(self.mock_download_route, download_route)
+
+   def test_get_bulk_download_route_reject_bad_config(self):
+      monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
+      monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
+      with self.assertRaises(DataSourceConfigError):
+         monocle_data_with_bad_config.get_bulk_download_route()
 
    @patch.object(MonocleSampleData,       'make_download_symlink')
    @patch.object(Monocle_Download_Client, 'in_silico_data')

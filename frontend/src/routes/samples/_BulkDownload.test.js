@@ -19,7 +19,7 @@ jest.mock("$lib/utils/debounce.js", () => {
 
 jest.mock("$lib/dataLoading.js", () => ({
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
-  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["fake-download-url"]))
+  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["/fake-download-url"]))
 }));
 
 const ANNOTATIONS_LABEL = "Annotations";
@@ -118,7 +118,7 @@ it("debounces the download estimate request", async () => {
 
 describe("on form submit", () => {
   const LOADING_MESSAGE =
-    "Please wait: generating a file archive can take several minutes if thousands of samples are involved.";
+    "Please wait: generating a download link can take a while if thousands of samples are involved.";
 
   global.fetch = "fake fetch";
 
@@ -184,8 +184,8 @@ describe("on form submit", () => {
       {assemblies: true, annotations: true},
       fetch);
     await waitFor(() => {
-      const downloadLink = getByRole("link", { name: "Download samples" });
-      expect(downloadLink.href.endsWith("fake-download-url")).toBeTruthy();
+      const downloadLink = getByRole("link", { name: "Download samples (for large sample sizes downloading starts in a minute)" });
+      expect(downloadLink.href).toBe(`${window.location.origin}/fake-download-url`);
       expect(downloadLink.download).toBe("");
       expect(downloadLink.target).toBe("_blank");
     });
