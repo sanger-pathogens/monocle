@@ -434,7 +434,18 @@ class MonocleSampleData:
           return data_source_config['data_download']['download_route']
       except KeyError as err:
           self._download_config_error(err)
-                    
+          
+   def get_bulk_download_max_samples_per_zip(self):
+      data_source_config = self._load_data_source_config()
+      try:
+          max_samples_per_zip = int(data_source_config['data_download']['max_samples_per_zip'])
+      except (KeyError, ValueError) as err:
+          self._download_config_error(err)
+      if not max_samples_per_zip > 0:
+          self._download_config_error("data source config data_download.max_samples_per_zip must be a positive integer, not \"{}\"".format(max_samples_per_zip))
+      return max_samples_per_zip
+      
+
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
       This acts as a wrapper for get_csv_download().

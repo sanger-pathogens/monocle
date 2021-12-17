@@ -1,15 +1,15 @@
-from flask import Response
-from http import HTTPStatus
-import json
-from   os            import environ
-import pathlib
-import unittest
-from unittest.mock import patch, Mock
-import urllib
+from     flask          import Response
+from     http           import HTTPStatus
+import   json
+from     os             import environ
+import   pathlib
+import   unittest
+from     unittest.mock  import call, patch, Mock
+import   urllib
 
-from dash.api.service.service_factory import ServiceFactory
-from dash.api.exceptions import NotAuthorisedException
-from dash.api.routes import *
+from dash.api.service.service_factory  import ServiceFactory
+from dash.api.exceptions               import NotAuthorisedException
+from dash.api.routes                   import *
 
 class TestRoutes(unittest.TestCase):
     """ Test class for the routes module """
@@ -224,11 +224,16 @@ class TestRoutes(unittest.TestCase):
         uuid4_mock.return_value.hex = uuid_hex
         download_param_filename = "{}.params.json".format(uuid_hex)
         write_text_file_mock.return_value = download_param_filename
-        download_param_location = 'some/dir'
-        download_route = '/data_download_route'
-        sample_data_service_mock.return_value.get_bulk_download_location.return_value = download_param_location
-        sample_data_service_mock.return_value.get_bulk_download_route.return_value = download_route
-        lane_files = {'pubname': ['lane file', 'another lane file']}
+        download_param_location        = 'some/dir'
+        download_route                 = '/data_download_route'
+        download_max_samples_per_zip   = 100 # any number exceeding items in lane_files is OK
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value            = download_param_location
+        sample_data_service_mock.return_value.get_bulk_download_route.return_value               = download_route
+        sample_data_service_mock.return_value.get_bulk_download_max_samples_per_zip.return_value = download_max_samples_per_zip
+        lane_files = {  'pubname': [   '/'.join([os.environ['DATA_INSTITUTION_VIEW'],'lane file']), 
+                                       '/'.join([os.environ['DATA_INSTITUTION_VIEW'],'another lane file'])
+                                       ]
+                        }
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
             'download_urls': [f'{download_route}/{uuid_hex}']
@@ -238,6 +243,60 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_bulk_download_route.assert_called_once()
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.uuid4')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('dash.api.routes.write_text_file')
+    def test_get_bulk_download_urls_route_multiple_urls(self,
+            write_text_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            uuid4_mock,
+            username_mock,
+            resp_mock
+        ):
+        # Given
+        batches = ['2020-09-04', '2021-01-30']
+        assemblies = False
+        annotations = True
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
+        is_dir_mock.return_value = True
+        uuid_hex = '123'
+        uuid4_mock.return_value.hex = uuid_hex
+        download_param_filename = "{}.params.json".format(uuid_hex)
+        write_text_file_mock.return_value = download_param_filename
+        download_param_location        = 'some/dir'
+        download_route                 = '/data_download_route'
+        download_max_samples_per_zip   = 3
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value            = download_param_location
+        sample_data_service_mock.return_value.get_bulk_download_route.return_value               = download_route
+        sample_data_service_mock.return_value.get_bulk_download_max_samples_per_zip.return_value = download_max_samples_per_zip
+        lane_files = {}
+        for i in range((download_max_samples_per_zip * 2) +1): # will create enough items to require 3 download URLs
+            lane_files["pubname_{}".format(i)] = [ '/'.join([self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file for pubname_{}".format(i)]),
+                                                   '/'.join([self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file for pubname_{}".format(i)])
+                                                   ]
+        sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
+        expected_payload = {
+            # this should have 3 values in array
+            'download_urls': [f'{download_route}/{uuid_hex}', f'{download_route}/{uuid_hex}', f'{download_route}/{uuid_hex}']
+        }
+        # When
+        result = bulk_download_urls_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        # should be called 3 times
+        sample_data_service_mock.return_value.get_bulk_download_route.assert_has_calls([call(),call(),call()])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)

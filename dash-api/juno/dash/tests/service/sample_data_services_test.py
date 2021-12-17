@@ -45,6 +45,9 @@ class MonocleSampleDataTest(TestCase):
    # this is the route used to download data
    mock_download_route = '/data_route_via_nginx'
 
+   # maximum nuumber of sampels per ZIP archive
+   mock_download_max_samples_per_zip = 200
+
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
 
@@ -506,6 +509,23 @@ class MonocleSampleDataTest(TestCase):
       monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
       with self.assertRaises(DataSourceConfigError):
          monocle_data_with_bad_config.get_bulk_download_route()
+
+   def test_get_bulk_download_max_samples_per_zip(self):
+      download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip()
+      self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
+
+   def test_get_bulk_download_max_samples_per_zip_reject_bad_config(self):
+      monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)
+      monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
+      with self.assertRaises(DataSourceConfigError):
+         monocle_data_with_bad_config.get_bulk_download_max_samples_per_zip()
+
+
+
+
+
+
+
 
    @patch.object(MonocleSampleData,       'make_download_symlink')
    @patch.object(Monocle_Download_Client, 'in_silico_data')
