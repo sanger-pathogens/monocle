@@ -4,7 +4,7 @@ import json
 from   os            import environ
 import pathlib
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 import urllib
 
 from dash.api.service.service_factory import ServiceFactory
@@ -262,6 +262,58 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
+        # assigning list to side_effect returns next value each time mocked function is called
+        # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
+        is_file_mock.side_effect = [False, True]
+        lane_files   = {"pubname": ["/lane file",
+                                    "/another lane file"]
+                        }
+        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
+                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
+                        }
+        read_text_file_mock.return_value = json.dumps(lane_files)
+        mock_token = '123'
+        zip_file_basename = mock_token
+        zip_file_location = 'some/dir'
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        download_host = '/'
+        download_symlink = 'downloads/'
+        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        # When
+        result = data_download_route(mock_token)
+        # Then
+        ###pathlib.Path.is_file = real_is_file # reset is_file so later tests are not affected
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_called_once_with(
+            files_to_zip,
+            basename=zip_file_basename,
+            location=zip_file_location
+            )
+        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        self.assertIsInstance(result, Response)
+        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
+        self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+        
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
+    @patch('dash.api.routes.read_text_file')
+    def test_data_download_route_reuse_existing_zip_file(self,
+            read_text_file_mock,
+            is_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            zip_files_mock,
+            username_mock,
+        ):
+        # Given
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        is_dir_mock.return_value = True
+        # mock existence of ZIP archive (JSON file not checked)
         is_file_mock.return_value = True
         lane_files   = {"pubname": ["/lane file",
                                     "/another lane file"]
@@ -281,11 +333,7 @@ class TestRoutes(unittest.TestCase):
         result = data_download_route(mock_token)
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        zip_files_mock.assert_called_once_with(
-            files_to_zip,
-            basename=zip_file_basename,
-            location=zip_file_location
-            )
+        zip_files_mock.assert_not_called()
         sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
@@ -306,6 +354,7 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
+        # mock non-existence of the ZIP archive and the JSON file with params
         is_file_mock.return_value = False
         mock_token = '123'
         zip_file_location = 'some/dir'
