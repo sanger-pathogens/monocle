@@ -11,7 +11,7 @@
 
   let downloadEstimate = {};
   let downloadLinksRequested;
-  let downloadLink;
+  let downloadToken;
   let formValues = {
     annotations: true,
     assemblies: true
@@ -64,11 +64,11 @@
     if (downloadLinksRequested) {
       getBulkDownloadUrls(batches, formValues, fetch)
         .then((downloadLinks = []) => {
-          downloadLink = downloadLinks[0];
-          if (!downloadLink) {
+          if (downloadLinks.length === 0) {
             console.error("The list of download URLs returned from the server is empty.");
             return Promise.reject();
           }
+          downloadToken = downloadLinks[0].split("/").pop();
         })
         .catch(() => {
           downloadLinksRequested = false;
@@ -137,14 +137,14 @@
 </form>
 
 {#if downloadLinksRequested}
-  {#if downloadLink}
+  {#if downloadToken}
     <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
     <a
-      href={downloadLink}
+      href="/samples/download/{downloadToken}"
       target="_blank"
       class="download-link"
     >
-      Download samples (for large sample sizes downloading starts in a minute)
+      Download samples
     </a>
   {:else}
     <LoadingIndicator
