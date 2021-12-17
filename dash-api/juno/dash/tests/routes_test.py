@@ -282,7 +282,6 @@ class TestRoutes(unittest.TestCase):
         # When
         result = data_download_route(mock_token)
         # Then
-        ###pathlib.Path.is_file = real_is_file # reset is_file so later tests are not affected
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         zip_files_mock.assert_called_once_with(
             files_to_zip,
