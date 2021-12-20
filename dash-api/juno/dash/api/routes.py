@@ -219,49 +219,54 @@ def data_download_route(token: str):
     """
     logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
-
-    # read params from JSON file on disk containing
-    download_param_file_name = "{}.params.json".format(token)
+    
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
-      logging.error("data downloads directory {} does not exist".format(download_param_file_location))
-      raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
-    param_file_path = os.path.join(download_param_file_location,download_param_file_name)
-    # if the JSON file doesn't exist return a 404
-    if not Path(param_file_path).is_file():
-      logging.warning(  "A data download request was made with token {} but {} does not exist. If this is an old token the file may correctly have been deleted.".format(
-                           token,
-                           param_file_path)
-                        )
-      return Response(  'These data are no longer available for download.  Please make a new data download request',
-                        content_type   = 'text/plain; charset=UTF-8',
-                        status         = HTTPStatus.NOT_FOUND
-                        )
-    public_name_to_lane_files = json.loads(read_text_file(param_file_path))
-    
-    # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
-    data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
-    for this_public_name in public_name_to_lane_files:
-       complete_file_paths = []
-       for this_file in public_name_to_lane_files[this_public_name]:
-          if '/' == this_file[0]:
-             this_file = str(this_file)[1:]
-          complete_file_paths.append( Path(data_inst_view_path, this_file) )
-       public_name_to_lane_files[this_public_name] = complete_file_paths
-    logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
-       
-    # create the ZIP archive
+       logging.error("data downloads directory {} does not exist".format(download_param_file_location))
+       raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
+      
     zip_file_basename = token
-    zip_file_location = download_param_file_location
-    zip_files(
-        public_name_to_lane_files,
-        basename=zip_file_basename,
-        location=zip_file_location
-        )
+    zip_file_name     = zip_file_basename + ZIP_SUFFIX
+    if Path(download_param_file_location,zip_file_name).is_file():
+      logging.info("reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
+    else:
+      # read params from JSON file on disk containing
+      download_param_file_name = "{}.params.json".format(token)
+      param_file_path = os.path.join(download_param_file_location,download_param_file_name)
+      # if the JSON file doesn't exist return a 404
+      if not Path(param_file_path).is_file():
+         logging.warning(  "A data download request was made with token {} but {} does not exist. If this is an old token the file may correctly have been deleted.".format(
+                              token,
+                              param_file_path)
+                           )
+         return Response(  'These data are no longer available for download.  Please make a new data download request',
+                           content_type   = 'text/plain; charset=UTF-8',
+                           status         = HTTPStatus.NOT_FOUND
+                           )
+      public_name_to_lane_files = json.loads(read_text_file(param_file_path))
+      
+      # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
+      data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
+      for this_public_name in public_name_to_lane_files:
+         complete_file_paths = []
+         for this_file in public_name_to_lane_files[this_public_name]:
+            if '/' == this_file[0]:
+               this_file = str(this_file)[1:]
+            complete_file_paths.append( Path(data_inst_view_path, this_file) )
+         public_name_to_lane_files[this_public_name] = complete_file_paths
+      logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
+       
+      # create the ZIP archive
+      zip_file_location = download_param_file_location
+      zip_files(
+         public_name_to_lane_files,
+         basename=zip_file_basename,
+         location=zip_file_location
+         )
     zip_file_url = '/'.join([
         '', # host name; using an empty string gets a leading '/' (required for relative URL)
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
-        zip_file_basename + ZIP_SUFFIX])
+        zip_file_name])
     logging.info("Redirecting data download to {}".format(zip_file_url))
     
     # redirect user to the ZIP file download URL
