@@ -1,18 +1,19 @@
-import logging
-from flask import jsonify, request, Response
-from datetime import datetime
-import errno
-from http import HTTPStatus
-import json
-import os
-from pathlib import Path
-from typing import List
-from urllib.error import HTTPError
-from uuid import uuid4
+import   logging
+from     flask          import jsonify, request, Response
+from     datetime       import datetime
+import   errno
+from     http           import HTTPStatus
+from     itertools      import islice
+import   json
+import   os
+from     pathlib        import Path
+from     typing         import List
+from     urllib.error   import HTTPError
+from     uuid           import uuid4
 
-from dash.api.service.service_factory import ServiceFactory
-from dash.api.exceptions import NotAuthorisedException
-from utils.file import zip_files, ZIP_SUFFIX
+from dash.api.service.service_factory  import ServiceFactory
+from dash.api.exceptions               import NotAuthorisedException
+from utils.file                        import zip_files, ZIP_SUFFIX
 
 
 logger = logging.getLogger()
@@ -170,8 +171,6 @@ def bulk_download_urls_route(body):
         reads=reads)
     logging.debug("Public name to data files: {}".format(public_name_to_lane_files))
 
-    download_token = uuid4().hex
-    download_param_file_name = "{}.params.json".format(download_token)
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
         logging.error("data downloads directory {} does not exist".format(download_param_file_location))
@@ -187,14 +186,26 @@ def bulk_download_urls_route(body):
           # (b) ensure downlaods don't break if we move the data to a new directory
           file_paths_as_strings.append( str(this_file)[len(data_inst_view_path):] )
        public_name_to_lane_files[this_public_name] = file_paths_as_strings
+
+    # limit the number of samples to be included in each ZIP archive
+    max_samples_per_zip = monocle_data.get_bulk_download_max_samples_per_zip()
     
-    file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(public_name_to_lane_files))
-    logging.info("wrote download params to {}".format(file_written))
-
-    download_url = '/'.join([monocle_data.get_bulk_download_route(), download_token])
-
+    download_url_list = []
+    start = 0
+    total = len(public_name_to_lane_files)
+    num_downloads    = round( (total / max_samples_per_zip + 0.5) )
+    samples_in_each  = round( (total / num_downloads       + 0.5) )
+    while total > start:
+      this_zip_archive_contents = dict( islice(public_name_to_lane_files.items(), start, (start+samples_in_each), 1) )
+      download_token = uuid4().hex
+      download_param_file_name = "{}.params.json".format(download_token)
+      file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(this_zip_archive_contents))
+      logging.debug("wrote download params for samples {} to {} to {}".format((start+1), (start+samples_in_each), file_written))
+      download_url_list.append( '/'.join([monocle_data.get_bulk_download_route(), download_token]) )
+      start += samples_in_each
+      
     return call_jsonify({
-        'download_urls': [download_url]
+        'download_urls': download_url_list
     }), HTTPStatus.OK
 
 def data_download_route(token: str):

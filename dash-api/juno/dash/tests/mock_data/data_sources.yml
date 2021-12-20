@@ -39,3 +39,4 @@ data_download:
    cross_institution_dir : 'downloads'
    url_path              : 'files/downloads'
    download_route        : '/data_route_via_nginx'
+   max_samples_per_zip   : 200
