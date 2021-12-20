@@ -11,7 +11,7 @@
 
   let downloadEstimate = {};
   let downloadLinksRequested;
-  let downloadLink;
+  let downloadLinks = [];
   let formValues = {
     annotations: true,
     assemblies: true
@@ -63,12 +63,12 @@
       confirm("You won't be able to change the download parameters if you proceed.");
     if (downloadLinksRequested) {
       getBulkDownloadUrls(batches, formValues, fetch)
-        .then((downloadLinks = []) => {
-          downloadLink = downloadLinks[0];
-          if (!downloadLink) {
+        .then((downloadLinksFromResponse = []) => {
+          if (downloadLinksFromResponse.length === 0) {
             console.error("The list of download URLs returned from the server is empty.");
             return Promise.reject();
           }
+          downloadLinks = downloadLinksFromResponse;
         })
         .catch(() => {
           downloadLinksRequested = false;
@@ -137,10 +137,26 @@
 </form>
 
 {#if downloadLinksRequested}
-  {#if downloadLink}
-    <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
+  {#if downloadLinks.length > 1}
+    <h3>Download links</h3>
+    <p>For large sample sizes downloading starts in a minute.</p>
+    <ol>
+      {#each downloadLinks as downloadLink (downloadLink)}
+        <li>
+          <a
+            href={downloadLink}
+            target="_blank"
+            class="download-link"
+            download
+          >
+            {`${downloadLink.split("/").pop()}.zip`}
+          </a>
+        </li>
+      {/each}
+    </ol>
+  {:else if downloadLinks.length}
     <a
-      href={downloadLink}
+      href={downloadLinks[0]}
       target="_blank"
       class="download-link"
       download
@@ -181,6 +197,19 @@ button[type=submit] {
   display: block;
   margin-top: 2.5rem;
   margin-left: .9rem;
+}
+
+ol {
+  display: flex;
+  flex-wrap: wrap;
+}
+ol li {
+  margin-right: 2.4rem;
+}
+
+p {
+  font-size: .9rem;
+  text-align: center;
 }
 
 .download-link {
