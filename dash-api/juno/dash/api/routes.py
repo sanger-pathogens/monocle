@@ -196,11 +196,11 @@ def bulk_download_urls_route(body):
     num_downloads    = round( (total / max_samples_per_zip + 0.5) )
     samples_in_each  = round( (total / num_downloads       + 0.5) )
     while total > start:
-      this_zip_archive_contents = dict(islice(public_name_to_lane_files.items(),start,(start+samples_in_each),1))
+      this_zip_archive_contents = dict( islice(public_name_to_lane_files.items(), start, (start+samples_in_each), 1) )
       download_token = uuid4().hex
       download_param_file_name = "{}.params.json".format(download_token)
       file_written = write_text_file(os.path.join(download_param_file_location,download_param_file_name), json.dumps(this_zip_archive_contents))
-      logging.debug("wrote download params for samples {} to {} to {}".format((start+1),(start+samples_in_each),file_written))
+      logging.debug("wrote download params for samples {} to {} to {}".format((start+1), (start+samples_in_each), file_written))
       download_url_list.append( '/'.join([monocle_data.get_bulk_download_route(), download_token]) )
       start += samples_in_each
       
