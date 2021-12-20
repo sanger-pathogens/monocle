@@ -46,16 +46,16 @@ def get_lane_ids(db):
     return lane_ids
 
 
-def update_relative_abundance(lane_id, data_dir, species, qc_data):
+def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
 
-    kraken_report = Path(f'{data_dir}/{lane_id}_kraken.report').absolute()
+    kraken_report = Path(f'{kraken_data_dir}/{lane_id}_kraken.report').absolute()
 
     # Get relative abundance for species
     if os.path.exists(kraken_report):
         rel_abnd = _get_relative_abundance(kraken_report, species)
         # Get lane id and create directory
         lane_id = os.path.basename(kraken_report).split('_kraken.report')[0]
-        _mkdir(lane_id)
+        _mkdir(f'{QC_DIR}/{lane_id}')
         # Update QC data
         qc_info = {
             "species": species,
@@ -86,34 +86,30 @@ def _get_sequencing_status_data(sample_ids):
     return SequencingStatus().get_multiple_samples(sample_ids)
 
 
-def get_institutions(sample_metadata):
-    name_to_id = {}
-    # set_up = False stops MonocleSampleData instantiating lots of objects we don't need...
-    dashboard_data = MonocleSampleData(set_up=False)
-    # ...but that means we need to give it a SampleMetadata
-    dashboard_data.sample_metadata = sample_metadata
-    institutions = dashboard_data.get_institutions()
-    for this_institution_id in institutions.keys():
-        name_to_id[ institutions[this_institution_id]['name'] ] = this_institution_id
-    return name_to_id
-
-
-if __name__ == '__main__':
+def get_arguments():
     parser = argparse.ArgumentParser(description='Get QC data')
     parser.add_argument("-D", "--kraken_data_dir", help="Data file directory for kraken report")
     parser.add_argument("-S", "--species", help="Species name e.g. 'Streptococcus agalactiae'")
     parser.add_argument("-L", "--log_level", help="Logging level [default: WARNING]", choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='WARNING')
-    options = parser.parse_args(argv[1:])
 
-    logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=options.log_level)
+    return parser
+
+
+def main():
+    parser = get_arguments()
+    args = parser.parse_args()
+
+    logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=args.log_level)
 
     sample_metadata = SampleMetadata()
     lane_ids = get_lane_ids(sample_metadata)
 
     for lane_id in lane_ids:
-        qc_data = QCData(f'{QC_DIR}/{lane_id}/qc_data.json')
-        qc_data = update_relative_abundance(lane_id, options.data_dir, options.species, qc_data)
+        qc_data = update_relative_abundance(lane_id, args.kraken_data_dir, args.species, QCData(f'{QC_DIR}/{lane_id}/qc_data.json'))
         ## TODO: Get more QC data - might want to put these functions as methods in a QCProcess class
+        # Write updated qc data
+        qc_data.write_file()
 
-    # Write updated qc data
-    qc_data.write_file()
+
+if __name__ == '__main__':
+    sys.exit(main())
