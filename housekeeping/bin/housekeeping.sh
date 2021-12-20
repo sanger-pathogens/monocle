@@ -15,11 +15,25 @@ NGINX_SERVICE_CONF_TEMP_MOVE="${NGINX_SERVICE_CONF}.TEMP_MOVE"
 NGINX_MAINTENACE_CONF="nginx.service_maintenance.conf" # returns 503 to all requests
 
 BULK_DOWNLOAD_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_institution_view/downloads/"
-BULK_DOWNLOAD_GLOB="*.zip"
-BULK_DOWNLOAD_EXPIRY="14"     # age in days when matching files should be deleted
+# ZIP archives are big, and will be automaticallty recreated is needed, so
+# we can delete these quite aggressively
+BULK_DOWNLOAD_ZIP_GLOB="*.zip"
+BULK_DOWNLOAD_ZIP_EXPIRY="7"
+# JSON files hold params for downloads; not too big, and deleting these
+# will mean the download link gioven to the user will cease to work,
+# so these shouldn't be agressively tidied.
+# Note these provide password-less downloads (by design, to enable sharing)
+# they shouldn't be left indefinitely.
+BULK_DOWNLOAD_JSON_GLOB="*.json"
+BULK_DOWNLOAD_JSON_EXPIRY="30"
 
 WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_web_root/downloads/"
-WEB_DOWNLOAD_LINK_EXPIRY="30" # age in days when links should be deleted
+# These are only symlinks so no space issues.
+# Note these provide password-less downloads (by design, to enable sharing)
+# they shouldn't be left indefinitely.
+WEB_DOWNLOAD_LINK_EXPIRY="30"
+
+
 
 restart_proxy_container() {
    local LOG_FILE=/tmp/proxy_restart.out
@@ -46,7 +60,8 @@ enable_service_access() {
 
 delete_expired_bulk_download_files() {
    chmod "$TEMP_READBLE_DIR_MODE" "$BULK_DOWNLOAD_DIR"
-   find "$BULK_DOWNLOAD_DIR" -name "$BULK_DOWNLOAD_GLOB" -follow -mtime +"$BULK_DOWNLOAD_EXPIRY" -exec rm {} \;
+   find "$BULK_DOWNLOAD_DIR" -name "$BULK_DOWNLOAD_ZIP_GLOB"  -follow -mtime +"$BULK_DOWNLOAD_ZIP_EXPIRY"  -exec rm {} \;
+   find "$BULK_DOWNLOAD_DIR" -name "$BULK_DOWNLOAD_JSON_GLOB" -follow -mtime +"$BULK_DOWNLOAD_JSON_EXPIRY" -exec rm {} \;
    chmod "$NORMAL_UNREADBLE_DIR_MODE" "$BULK_DOWNLOAD_DIR"
 }
 
@@ -55,6 +70,7 @@ delete_expired_web_download_links() {
    find "$WEB_DOWNLOAD_LINK_DIR" -type l -mtime +"$WEB_DOWNLOAD_LINK_EXPIRY" -exec rm {} \;
    chmod "$NORMAL_UNREADBLE_DIR_MODE" "$WEB_DOWNLOAD_LINK_DIR"
 }
+
 
 
 disable_service_access
