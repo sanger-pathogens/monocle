@@ -10,6 +10,7 @@ variables:
   DATA_VIEW_CONTEXT:        "data_view"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
+  QC_DATA_CONTEXT:          "qc-data"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -88,7 +89,7 @@ Data view unit tests:
   artifacts:
     when: always
     paths:
-      - data_view/htmlcov
+      - ${DATA_VIEW_CONTEXT}/htmlcov
 
 
 Metadata unit tests:
@@ -168,6 +169,26 @@ Docker tags for merge:
             echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
             docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
          done
+
+
+QC data unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    - cd "${QC_DATA_CONTEXT}"
+  script:
+    - ./unittests.sh
+    - coverage report --fail-under 60
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${QC_DATA_CONTEXT}/htmlcov
 
 
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
