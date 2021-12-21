@@ -10,30 +10,41 @@
 
   export let downloadToken;
 
+  const HTTP_TIMEOUT_STATUS_CODE = 504;
   const downloadUrl = `/data_download/${downloadToken}`
 
   const prepareDownloadPromise = new Promise((resolve, reject) => {
     // We don't use `fetch` here to avoid browser-specific timeouts.
     const ajaxRequest = new XMLHttpRequest();
-    const onDownloadPrepared = () => {
-      window.location.assign(ajaxRequest.responseURL);
-      resolve();
+    const onLoad = (event) => {
+      // At least the 504 Gateway Timeout error ends up in the "load" event and not in "error" event (ie it's treated as
+      // success. Don't ask me why.
+      if (ajaxRequest.status >= 400) {
+        onError(event);
+      }
+      else {
+        window.location.assign(ajaxRequest.responseURL);
+        resolve();
+      }
     };
     const onError = () => {
       const status = ajaxRequest.status;
-      console.error(`GET ${downloadUrl} error: ${ajaxRequest.statusText}`);
+      console.error(`GET ${downloadUrl} error: ${ajaxRequest.statusText || "uknown"}`);
       if (status >= 400 && status < 500) {
         reject("Download might have expired. Please close the tab and start new download.");
       }
+      else if (status === HTTP_TIMEOUT_STATUS_CODE) {
+        reject("Timeout error. Please reduce the download size and try again.");
+      }
       else {
-        reject("Download error. Please try again by reloading the page.");
+        reject("Download error. Please try again by reloading the page or try to reduce the download size.");
       }
     };
     const onCancel = () => {
       console.error("Download was cancelled. Refresh the page to start again.");
     };
 
-    ajaxRequest.addEventListener("load", onDownloadPrepared);
+    ajaxRequest.addEventListener("load", onLoad);
 
     ajaxRequest.addEventListener("error", onError);
     ajaxRequest.addEventListener("abort", onCancel);
