@@ -37,11 +37,12 @@ docker run  -u `id -u`:`id -g` \
 # Doing this here should ensure that any new lanes/data get md5 files added asap.
 # If this step proves too slow, we may need to consider moving it to separate cron entry
 # or changing the job frequency.
-for DIR in $(find ${HOME}/monocle_juno_institution_view -follow -mindepth 2 -maxdepth 2 -type d)
+MD5_ROOT_DIR="${HOME}/monocle_juno_institution_view"
+for DIR in $(find "$MD5_ROOT_DIR" -follow -mindepth 2 -maxdepth 2 -type d -not -path "${MD5_ROOT_DIR}/downloads" 2>&1 | grep -v '/downloads.: Permission denied')
 do
-    cd "${DIR}"
-    if ls * > /dev/null 2>&1
-    then
-        md5sum $(ls * | grep -v '\.md5$') >$(basename "${DIR}").md5
-    fi
+   cd "${DIR}"
+   if ls * > /dev/null 2>&1
+   then
+      md5sum $(ls * | grep -v '\.md5$') >$(basename "${DIR}").md5
+   fi
 done
