@@ -10,9 +10,9 @@ import argparse
 from sys import argv
 import logging
 
-from dash.api.service.DataSources.sample_metadata        import SampleMetadata
-from dash.api.service.DataSources.sequencing_status      import SequencingStatus
-from dash.api.service.DataServices.sample_data_services  import MonocleSampleData
+from dash.api.service.DataSources.sample_metadata           import SampleMetadata
+from dash.api.service.DataSources.sequencing_status         import SequencingStatus
+from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 
 INITIAL_DIR = Path().absolute()
 OUTPUT_SUBDIR='monocle_juno_institution_view'
@@ -50,7 +50,7 @@ def _get_public_names_with_lane_ids(institution, db):
   logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
 
   if not public_names_to_sample_id:
-    logging.warning(f'No public names found for {institution}')
+    logging.info(f'No public names found for {institution}')
     return {}
 
   has_lanes = False
@@ -75,7 +75,7 @@ def _get_public_names_with_lane_ids(institution, db):
       logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
   if not has_lanes:
-    logging.warning(f'No lanes found for {institution}')
+    logging.info(f'No lanes found for {institution}')
 
   return public_names_to_lane_ids
 
@@ -131,8 +131,8 @@ def _create_symlink_to(path_to_file, symlink_name):
 
 def get_institutions(sample_metadata):
    name_to_id = {}
-   # set_up = False stops MonocleSampleData instantiating lots of objects we don't need...
-   dashboard_data = MonocleSampleData(set_up=False)
+   # set_up = False stops MonocleSampleTracking instantiating lots of objects we don't need...
+   dashboard_data = MonocleSampleTracking(set_up=False)
    # ...but that means we need to give it a SampleMetadata
    dashboard_data.sample_metadata = sample_metadata
    institutions = dashboard_data.get_institutions()
