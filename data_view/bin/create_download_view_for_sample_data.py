@@ -50,7 +50,7 @@ def _get_public_names_with_lane_ids(institution, db):
   logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
 
   if not public_names_to_sample_id:
-    logging.warning(f'No public names found for {institution}')
+    logging.info(f'No public names found for {institution}')
     return {}
 
   has_lanes = False
@@ -75,7 +75,7 @@ def _get_public_names_with_lane_ids(institution, db):
       logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
   if not has_lanes:
-    logging.warning(f'No lanes found for {institution}')
+    logging.info(f'No lanes found for {institution}')
 
   return public_names_to_lane_ids
 
