@@ -23,6 +23,7 @@ QC_DIR = 'monocle_pipeline_qc'
 
 def get_lane_ids(db):
     """Get lane ids for each insitution"""
+
     lane_ids = []
     institutions = list(db.get_institution_names())
 
@@ -47,6 +48,7 @@ def get_lane_ids(db):
 
 
 def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
+    """Update the QC data for a lane with the relative abundance of a species from the kraken report"""
 
     kraken_report = Path(f'{kraken_data_dir}/{lane_id}_kraken.report').absolute()
 
@@ -71,6 +73,7 @@ def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
 
 
 def _get_relative_abundance(kraken_report, species):
+    """Get the relative abundance for a species from the kraken report"""
 
     file = open(kraken_report, "r")
     for line in file:
@@ -83,6 +86,8 @@ def _get_relative_abundance(kraken_report, species):
 
 
 def _get_sequencing_status_data(sample_ids):
+    """Get the sequencing status of sample ids from the dash API"""
+
     return SequencingStatus().get_multiple_samples(sample_ids)
 
 
@@ -104,10 +109,10 @@ def main():
     sample_metadata = SampleMetadata()
     lane_ids = get_lane_ids(sample_metadata)
 
+    # Update the QC data file for each line
     for lane_id in lane_ids:
         qc_data = update_relative_abundance(lane_id, args.kraken_data_dir, args.species, QCData(f'{QC_DIR}/{lane_id}/qc_data.json'))
-        ## TODO: Get more QC data - might want to put these functions as methods in a QCProcess class
-        # Write updated qc data
+        ## TODO: Get more QC data
         qc_data.write_file()
 
 

@@ -25,10 +25,11 @@ class QCData:
 
 
     def update(self, qc_metric, qc_info):
-        """Reads the qc data in the qc data json file and returns updated qc data dictionary"""
+        """Reads the qc data in the json file and updates the qc dictionary"""
 
         if qc_metric in self.qc_data:
             existing_vals = [item['value'] for item in self.qc_data[qc_metric]]
+            # Append qc data if the value is new
             if qc_info['value'] not in existing_vals:
                 self.qc_data[qc_metric].append(qc_info)
         else:

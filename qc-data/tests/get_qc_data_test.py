@@ -117,9 +117,11 @@ class DB():
 TEST_DATA_DIR = 'tests/test_data'
 LANE_ID1 = 'test_lane1'
 LANE_ID2 = 'test_lane2'
+LANE_ID3 = 'test_lane3'
 TEST_KRAKEN_REPORT = f'{TEST_DATA_DIR}/{LANE_ID1}_kraken.report'
 TEST_JSON1 = f'{TEST_DATA_DIR}/{LANE_ID1}/qc_data.json'
 TEST_JSON2 = f'{TEST_DATA_DIR}/{LANE_ID2}/qc_data.json'
+TEST_JSON3 = f'{TEST_DATA_DIR}/{LANE_ID3}/qc_data.json'
 
 class GetQCData(TestCase):
 
@@ -171,6 +173,24 @@ class GetQCData(TestCase):
         }
 
         qc_data = update_relative_abundance(LANE_ID1, TEST_DATA_DIR, "Streptococcus agalactiae", QCData(TEST_JSON1))
+
+        self.assertEqual(expected, qc_data.get_data())
+
+
+    @patch('bin.get_qc_data.datetime')
+    def test_update_relative_abundance_with_no_initial_qc_data(self, mock_datetime):
+        mock_datetime.now = Mock(return_value=datetime(2021, 12, 21))
+        expected = {
+            "rel_abundance": [
+                {
+                    "species": "Streptococcus agalactiae",
+                    "value": "92.38",
+                    "timestamp": "2021-12-21 00:00:00"
+                }
+            ]
+        }
+
+        qc_data = update_relative_abundance(LANE_ID3, TEST_DATA_DIR, "Streptococcus agalactiae", QCData(TEST_JSON3))
 
         self.assertEqual(expected, qc_data.get_data())
 
