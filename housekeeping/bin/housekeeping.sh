@@ -21,12 +21,22 @@ BULK_DOWNLOAD_EXPIRY="14"     # age in days when matching files should be delete
 WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_web_root/downloads/"
 WEB_DOWNLOAD_LINK_EXPIRY="30" # age in days when links should be deleted
 
+RESTART_COUNT=0
+MAX_RESTART=10
+
 restart_proxy_container() {
    local LOG_FILE=/tmp/proxy_restart.out
    docker-compose restart "$NGINX_CONTAINER" > "$LOG_FILE" 2>&1
+   # if restart fails, attempt restart with the service config NGINX_SERVICE_CONF
    if [ $? != 0 ]; then
       echo "Failed to restart container ${NGINX_CONTAINER}:"
       cat "$LOG_FILE" && rm "$LOG_FILE"
+      if [[ RESTART_COUNT -lt MAX_RESTART ]]; then
+         echo "Attempting restart with normal service config (${NGINX_SERVICE_CONF})"
+         enable_service_access
+         RESTART_COUNT=$((RESTART_COUNT+1))
+         sleep 10
+      fi
       exit 255
    fi
 }

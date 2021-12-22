@@ -1,15 +1,15 @@
-from flask import Response
-from http import HTTPStatus
-import json
-from   os            import environ
-import pathlib
-import unittest
-from unittest.mock import patch, Mock
-import urllib
+from     flask          import Response
+from     http           import HTTPStatus
+import   json
+from     os             import environ
+import   pathlib
+import   unittest
+from     unittest.mock  import call, patch, Mock
+import   urllib
 
-from dash.api.service.service_factory import ServiceFactory
-from dash.api.exceptions import NotAuthorisedException
-from dash.api.routes import *
+from dash.api.service.service_factory  import ServiceFactory
+from dash.api.exceptions               import NotAuthorisedException
+from dash.api.routes                   import *
 
 class TestRoutes(unittest.TestCase):
     """ Test class for the routes module """
@@ -224,11 +224,16 @@ class TestRoutes(unittest.TestCase):
         uuid4_mock.return_value.hex = uuid_hex
         download_param_filename = "{}.params.json".format(uuid_hex)
         write_text_file_mock.return_value = download_param_filename
-        download_param_location = 'some/dir'
-        download_route = '/data_download_route'
-        sample_data_service_mock.return_value.get_bulk_download_location.return_value = download_param_location
-        sample_data_service_mock.return_value.get_bulk_download_route.return_value = download_route
-        lane_files = {'pubname': ['lane file', 'another lane file']}
+        download_param_location        = 'some/dir'
+        download_route                 = '/data_download_route'
+        download_max_samples_per_zip   = 100 # any number exceeding items in lane_files is OK
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value            = download_param_location
+        sample_data_service_mock.return_value.get_bulk_download_route.return_value               = download_route
+        sample_data_service_mock.return_value.get_bulk_download_max_samples_per_zip.return_value = download_max_samples_per_zip
+        lane_files = {  'pubname': [   '/'.join([os.environ['DATA_INSTITUTION_VIEW'],'lane file']), 
+                                       '/'.join([os.environ['DATA_INSTITUTION_VIEW'],'another lane file'])
+                                       ]
+                        }
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
         expected_payload = {
             'download_urls': [f'{download_route}/{uuid_hex}']
@@ -238,6 +243,60 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_bulk_download_route.assert_called_once()
+        resp_mock.assert_called_once_with(expected_payload)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.uuid4')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('dash.api.routes.write_text_file')
+    def test_get_bulk_download_urls_route_multiple_urls(self,
+            write_text_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            uuid4_mock,
+            username_mock,
+            resp_mock
+        ):
+        # Given
+        batches = ['2020-09-04', '2021-01-30']
+        assemblies = False
+        annotations = True
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
+        is_dir_mock.return_value = True
+        uuid_hex = '123'
+        uuid4_mock.return_value.hex = uuid_hex
+        download_param_filename = "{}.params.json".format(uuid_hex)
+        write_text_file_mock.return_value = download_param_filename
+        download_param_location        = 'some/dir'
+        download_route                 = '/data_download_route'
+        download_max_samples_per_zip   = 3
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value            = download_param_location
+        sample_data_service_mock.return_value.get_bulk_download_route.return_value               = download_route
+        sample_data_service_mock.return_value.get_bulk_download_max_samples_per_zip.return_value = download_max_samples_per_zip
+        lane_files = {}
+        for i in range((download_max_samples_per_zip * 2) +1): # will create enough items to require 3 download URLs
+            lane_files["pubname_{}".format(i)] = [ '/'.join([self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file for pubname_{}".format(i)]),
+                                                   '/'.join([self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file for pubname_{}".format(i)])
+                                                   ]
+        sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
+        expected_payload = {
+            # this should have 3 values in array
+            'download_urls': [f'{download_route}/{uuid_hex}', f'{download_route}/{uuid_hex}', f'{download_route}/{uuid_hex}']
+        }
+        # When
+        result = bulk_download_urls_route({'sample filters':{'batches':batches}, 'assemblies':assemblies, 'annotations':annotations})
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        # should be called 3 times
+        sample_data_service_mock.return_value.get_bulk_download_route.assert_has_calls([call(),call(),call()])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -262,7 +321,9 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
-        is_file_mock.return_value = True
+        # assigning list to side_effect returns next value each time mocked function is called
+        # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
+        is_file_mock.side_effect = [False, True]
         lane_files   = {"pubname": ["/lane file",
                                     "/another lane file"]
                         }
@@ -290,6 +351,51 @@ class TestRoutes(unittest.TestCase):
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
         self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+        
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
+    @patch('dash.api.routes.read_text_file')
+    def test_data_download_route_reuse_existing_zip_file(self,
+            read_text_file_mock,
+            is_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            zip_files_mock,
+            username_mock,
+        ):
+        # Given
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        is_dir_mock.return_value = True
+        # mock existence of ZIP archive (JSON file not checked)
+        is_file_mock.return_value = True
+        lane_files   = {"pubname": ["/lane file",
+                                    "/another lane file"]
+                        }
+        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
+                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
+                        }
+        read_text_file_mock.return_value = json.dumps(lane_files)
+        mock_token = '123'
+        zip_file_basename = mock_token
+        zip_file_location = 'some/dir'
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        download_host = '/'
+        download_symlink = 'downloads/'
+        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        # When
+        result = data_download_route(mock_token)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_not_called()
+        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        self.assertIsInstance(result, Response)
+        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
+        self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
@@ -306,6 +412,7 @@ class TestRoutes(unittest.TestCase):
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
+        # mock non-existence of the ZIP archive and the JSON file with params
         is_file_mock.return_value = False
         mock_token = '123'
         zip_file_location = 'some/dir'

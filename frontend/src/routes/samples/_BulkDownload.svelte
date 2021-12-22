@@ -11,7 +11,7 @@
 
   let downloadEstimate = {};
   let downloadLinksRequested;
-  let downloadToken;
+  let downloadTokens = [];
   let formValues = {
     annotations: true,
     assemblies: true
@@ -68,7 +68,9 @@
             console.error("The list of download URLs returned from the server is empty.");
             return Promise.reject();
           }
-          downloadToken = downloadLinks[0].split("/").pop();
+          const urlSeparator = "/";
+          downloadTokens = downloadLinks.map((downloadLink) =>
+            downloadLink.split(urlSeparator).pop());
         })
         .catch(() => {
           downloadLinksRequested = false;
@@ -137,15 +139,31 @@
 </form>
 
 {#if downloadLinksRequested}
-  {#if downloadToken}
-    <!-- Leading `/` in `href` is needed to make the download path relative to the root URL. -->
+  {#if downloadTokens.length > 1}
+    <h3>Download links</h3>
+    <ol>
+      {#each downloadTokens as downloadToken, i (downloadToken)}
+        <li>
+          <a
+            href="/samples/download/{downloadToken}"
+            target="_blank"
+            class="download-link"
+          >
+            ZIP archive {i + 1} of {downloadTokens.length}
+          </a>
+        </li>
+      {/each}
+    </ol>
+
+  {:else if downloadTokens.length}
     <a
-      href="/samples/download/{downloadToken}"
+      href="/samples/download/{downloadTokens[0]}"
       target="_blank"
       class="download-link"
     >
-      Download samples
+      Download ZIP archive
     </a>
+
   {:else}
     <LoadingIndicator
       message="Please wait: generating a download link can take a while if thousands of samples are involved."
@@ -180,6 +198,20 @@ button[type=submit] {
   display: block;
   margin-top: 2.5rem;
   margin-left: .9rem;
+}
+
+ol {
+  display: flex;
+  flex-wrap: wrap;
+}
+ol li {
+  margin-right: 2rem;
+  list-style: none;
+}
+
+p {
+  font-size: .9rem;
+  text-align: center;
 }
 
 .download-link {

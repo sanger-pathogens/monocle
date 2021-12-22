@@ -19,7 +19,9 @@ jest.mock("$lib/utils/debounce.js", () => {
 
 jest.mock("$lib/dataLoading.js", () => ({
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
-  getBulkDownloadUrls: jest.fn(() => Promise.resolve(["/fake-download-url"]))
+  getBulkDownloadUrls: jest.fn(() => Promise.resolve([
+    "/data/938479879", "/data/asdsd8f90fg", "/data/sdfasdf987", "/data/sdfsd0909", "/data/sdfsdfg98b98s09fd8"
+  ]))
 }));
 
 const ANNOTATIONS_LABEL = "Annotations";
@@ -117,8 +119,10 @@ it("debounces the download estimate request", async () => {
 });
 
 describe("on form submit", () => {
+  const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LOADING_MESSAGE =
     "Please wait: generating a download link can take a while if thousands of samples are involved.";
+  const URL_SEPARATOR = "/";
 
   global.fetch = "fake fetch";
 
@@ -173,7 +177,38 @@ describe("on form submit", () => {
     expect(getByLabelText(LOADING_MESSAGE)).toBeDefined();
   });
 
-  it("requests and displays a download link", async () => {
+  it("requests and displays download links", async () => {
+    const { getByText, getByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
+
+    fireEvent.click(getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL }));
+
+    expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
+    expect(getBulkDownloadUrls).toHaveBeenCalledWith(
+      BATCHES,
+      {assemblies: true, annotations: true},
+      fetch);
+    await waitFor(() => {
+      const ariaRoleHeading = "heading";
+      expect(getByRole(ariaRoleHeading, { name: "Download links" }))
+        .toBeDefined();
+      const downloadUrls = [
+        "/data/938479879", "/data/asdsd8f90fg", "/data/sdfasdf987", "/data/sdfsd0909", "/data/sdfsdfg98b98s09fd8"
+      ];
+      const numLinks = downloadUrls.length;
+      downloadUrls.forEach((downloadUrl, i) => {
+        const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
+        const downloadLink = getByRole("link", { name: `ZIP archive ${i + 1} of ${numLinks}` });
+        expect(downloadLink.href).toBe(
+          `${window.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
+        expect(downloadLink.getAttribute("download")).toBeNull();
+        expect(downloadLink.target).toBe("_blank");
+      });
+    });
+  });
+
+  it("requests and displays a download link when only one link is returned", async () => {
+    const downloadUrl = "/data/some42token";
+    getBulkDownloadUrls.mockResolvedValueOnce([downloadUrl]);
     const { getByRole } = render(BulkDownload, { batches: BATCHES, ariaLabelledby: FAKE_HEADER_ID });
 
     fireEvent.click(getByRole(ROLE_BUTTON, { name: CONFIRM_BUTTON_LABEL }));
@@ -184,8 +219,10 @@ describe("on form submit", () => {
       {assemblies: true, annotations: true},
       fetch);
     await waitFor(() => {
-      const downloadLink = getByRole("link", { name: "Download samples (for large sample sizes downloading starts in a minute)" });
-      expect(downloadLink.href).toBe(`${window.location.origin}/fake-download-url`);
+      const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
+      const downloadLink = getByRole("link", { name: "Download ZIP archive" });
+      expect(downloadLink.href).toBe(
+        `${window.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
       expect(downloadLink.getAttribute("download")).toBeNull();
       expect(downloadLink.target).toBe("_blank");
     });
