@@ -218,4 +218,7 @@ p {
   display: inline-block;
   margin: 2rem 0;
 }
+.download-link:visited {
+  color: var(--color-link-visited);
+}
 </style>
