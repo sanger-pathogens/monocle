@@ -16,6 +16,7 @@
   const prepareDownloadPromise = new Promise((resolve, reject) => {
     // We don't use `fetch` here to avoid browser-specific timeouts.
     const ajaxRequest = new XMLHttpRequest();
+
     const onLoad = (event) => {
       // At least the 504 Gateway Timeout error ends up in the "load" event and not in "error" event (ie it's treated as
       // success. Don't ask me why.
@@ -27,6 +28,7 @@
         resolve();
       }
     };
+
     const onError = () => {
       const status = ajaxRequest.status;
       console.error(`GET ${downloadUrl} error: ${ajaxRequest.statusText || "uknown"}`);
@@ -40,12 +42,12 @@
         reject("Download error. Please try again by reloading the page or try to reduce the download size.");
       }
     };
+
     const onCancel = () => {
-      console.error("Download was cancelled. Refresh the page to start again.");
+      reject("Download was cancelled. Refresh the page to start again or try to reduce the download size.");
     };
 
     ajaxRequest.addEventListener("load", onLoad);
-
     ajaxRequest.addEventListener("error", onError);
     ajaxRequest.addEventListener("abort", onCancel);
 
