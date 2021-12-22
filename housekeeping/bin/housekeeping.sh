@@ -15,7 +15,7 @@ NGINX_SERVICE_CONF_TEMP_MOVE="${NGINX_SERVICE_CONF}.TEMP_MOVE"
 NGINX_MAINTENACE_CONF="nginx.service_maintenance.conf" # returns 503 to all requests
 
 BULK_DOWNLOAD_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_institution_view/downloads/"
-# ZIP archives are big, and will be automaticallty recreated is needed, so
+# ZIP archives are big, and will be automaticallty recreated as needed, so
 # we can delete these quite aggressively
 BULK_DOWNLOAD_ZIP_GLOB="*.zip"
 BULK_DOWNLOAD_ZIP_EXPIRY="7"
@@ -33,14 +33,22 @@ WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_web_root/downloads/"
 # they shouldn't be left indefinitely.
 WEB_DOWNLOAD_LINK_EXPIRY="30"
 
-
+RESTART_COUNT=0
+MAX_RESTART=10
 
 restart_proxy_container() {
    local LOG_FILE=/tmp/proxy_restart.out
    docker-compose restart "$NGINX_CONTAINER" > "$LOG_FILE" 2>&1
+   # if restart fails, attempt restart with the service config NGINX_SERVICE_CONF
    if [ $? != 0 ]; then
       echo "Failed to restart container ${NGINX_CONTAINER}:"
       cat "$LOG_FILE" && rm "$LOG_FILE"
+      if [[ RESTART_COUNT -lt MAX_RESTART ]]; then
+         echo "Attempting restart with normal service config (${NGINX_SERVICE_CONF})"
+         enable_service_access
+         RESTART_COUNT=$((RESTART_COUNT+1))
+         sleep 10
+      fi
       exit 255
    fi
 }
