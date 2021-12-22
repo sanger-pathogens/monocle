@@ -117,11 +117,11 @@
     </fieldset>
 
     <fieldset disabled={true}>
-      <legend>Split download (coming soon)</legend>
+      <legend>Estimated total ZIP size</legend>
       <select>
         {#if downloadEstimate?.sizeZipped}
           <option selected>
-            1 download of {downloadEstimate.sizeZipped}
+            {downloadEstimate.sizeZipped}
           </option>
         {/if}
       </select>
