@@ -50,11 +50,13 @@ describe("on", () => {
       });
     });
 
-    it("shows the download instructions and the download link", async () => {
+    it("shows the download instructions and the download link resolved", async () => {
       const { container, getByRole } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
+      const expectedUrl = `${global.location.origin}/download/url`;
+      xmlHttpRequestMock.responseURL = expectedUrl;
 
       loadCallback();
 
@@ -63,7 +65,8 @@ describe("on", () => {
         expect(instructions).toBe(
           "Your download is ready. You can close this tab once the download starts.\n    (If you don't see a prompt to save the file, follow this download link.)"
         );
-        expect(getByRole("link", { name: "download link" })).toBeDefined();
+        expect(getByRole("link", { name: "download link" }).href)
+          .toBe(expectedUrl);
       });
     });
   });

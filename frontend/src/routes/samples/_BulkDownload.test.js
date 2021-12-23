@@ -199,7 +199,7 @@ describe("on form submit", () => {
         const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
         const downloadLink = getByRole("link", { name: `ZIP archive ${i + 1} of ${numLinks}` });
         expect(downloadLink.href).toBe(
-          `${window.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
+          `${global.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
         expect(downloadLink.getAttribute("download")).toBeNull();
         expect(downloadLink.target).toBe("_blank");
       });
@@ -222,7 +222,7 @@ describe("on form submit", () => {
       const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
       const downloadLink = getByRole("link", { name: "Download ZIP archive" });
       expect(downloadLink.href).toBe(
-        `${window.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
+        `${global.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
       expect(downloadLink.getAttribute("download")).toBeNull();
       expect(downloadLink.target).toBe("_blank");
     });
