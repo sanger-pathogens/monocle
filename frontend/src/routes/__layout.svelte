@@ -36,6 +36,7 @@
   --juno-indigo: #484885;
   --juno-purple: #6868be;
   --color-border: #dfe3e6;
+  --color-link-visited: #663399;
   --color-table-alt-row: #f8f8f8;
   --color-table-hover-row: #f0f0f0;
 

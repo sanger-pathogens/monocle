@@ -27,7 +27,7 @@ jest.mock("$lib/dataLoading.js", () => ({
 const ANNOTATIONS_LABEL = "Annotations";
 const ASSEMBLIES_LABEL = "Assemblies";
 const CONFIRM_BUTTON_LABEL = "Confirm";
-const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "1 download of 7 TB";
+const EXPECTED_DOWNLOAD_ESTIMATE_TEXT = "7 TB";
 const FAKE_HEADER_ID = "section-header";
 const ROLE_BUTTON = "button";
 const ROLE_CHECKBOX = "checkbox";
@@ -119,8 +119,10 @@ it("debounces the download estimate request", async () => {
 });
 
 describe("on form submit", () => {
+  const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LOADING_MESSAGE =
     "Please wait: generating a download link can take a while if thousands of samples are involved.";
+  const URL_SEPARATOR = "/";
 
   global.fetch = "fake fetch";
 
@@ -189,17 +191,16 @@ describe("on form submit", () => {
       const ariaRoleHeading = "heading";
       expect(getByRole(ariaRoleHeading, { name: "Download links" }))
         .toBeDefined();
-      expect(getByText("For large sample sizes downloading starts in a minute."))
-        .toBeDefined();
       const downloadUrls = [
         "/data/938479879", "/data/asdsd8f90fg", "/data/sdfasdf987", "/data/sdfsd0909", "/data/sdfsdfg98b98s09fd8"
       ];
-      const urlSeparator = "/";
-      downloadUrls.forEach((downloadUrl) => {
-        const downloadToken = downloadUrl.split(urlSeparator).pop();
-        const downloadLink = getByRole("link", { name: `${downloadToken}.zip` });
-        expect(downloadLink.href).toBe(`${window.location.origin}${downloadUrl}`);
-        expect(downloadLink.download).toBe("");
+      const numLinks = downloadUrls.length;
+      downloadUrls.forEach((downloadUrl, i) => {
+        const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
+        const downloadLink = getByRole("link", { name: `ZIP archive ${i + 1} of ${numLinks}` });
+        expect(downloadLink.href).toBe(
+          `${global.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
+        expect(downloadLink.getAttribute("download")).toBeNull();
         expect(downloadLink.target).toBe("_blank");
       });
     });
@@ -218,9 +219,11 @@ describe("on form submit", () => {
       {assemblies: true, annotations: true},
       fetch);
     await waitFor(() => {
-      const downloadLink = getByRole("link", { name: "Download samples (for large sample sizes downloading starts in a minute)" });
-      expect(downloadLink.href).toBe(`${window.location.origin}${downloadUrl}`);
-      expect(downloadLink.download).toBe("");
+      const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
+      const downloadLink = getByRole("link", { name: "Download ZIP archive" });
+      expect(downloadLink.href).toBe(
+        `${global.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`);
+      expect(downloadLink.getAttribute("download")).toBeNull();
       expect(downloadLink.target).toBe("_blank");
     });
   });

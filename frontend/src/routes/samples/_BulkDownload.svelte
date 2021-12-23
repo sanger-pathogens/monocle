@@ -11,7 +11,7 @@
 
   let downloadEstimate = {};
   let downloadLinksRequested;
-  let downloadLinks = [];
+  let downloadTokens = [];
   let formValues = {
     annotations: true,
     assemblies: true
@@ -63,12 +63,14 @@
       confirm("You won't be able to change the download parameters if you proceed.");
     if (downloadLinksRequested) {
       getBulkDownloadUrls(batches, formValues, fetch)
-        .then((downloadLinksFromResponse = []) => {
-          if (downloadLinksFromResponse.length === 0) {
+        .then((downloadLinks = []) => {
+          if (downloadLinks.length === 0) {
             console.error("The list of download URLs returned from the server is empty.");
             return Promise.reject();
           }
-          downloadLinks = downloadLinksFromResponse;
+          const urlSeparator = "/";
+          downloadTokens = downloadLinks.map((downloadLink) =>
+            downloadLink.split(urlSeparator).pop());
         })
         .catch(() => {
           downloadLinksRequested = false;
@@ -115,11 +117,11 @@
     </fieldset>
 
     <fieldset disabled={true}>
-      <legend>Split download (coming soon)</legend>
+      <legend>Estimated total ZIP size</legend>
       <select>
         {#if downloadEstimate?.sizeZipped}
           <option selected>
-            1 download of {downloadEstimate.sizeZipped}
+            {downloadEstimate.sizeZipped}
           </option>
         {/if}
       </select>
@@ -137,32 +139,31 @@
 </form>
 
 {#if downloadLinksRequested}
-  {#if downloadLinks.length > 1}
+  {#if downloadTokens.length > 1}
     <h3>Download links</h3>
-    <p>For large sample sizes downloading starts in a minute.</p>
     <ol>
-      {#each downloadLinks as downloadLink (downloadLink)}
+      {#each downloadTokens as downloadToken, i (downloadToken)}
         <li>
           <a
-            href={downloadLink}
+            href="/samples/download/{downloadToken}"
             target="_blank"
             class="download-link"
-            download
           >
-            {`${downloadLink.split("/").pop()}.zip`}
+            ZIP archive {i + 1} of {downloadTokens.length}
           </a>
         </li>
       {/each}
     </ol>
-  {:else if downloadLinks.length}
+
+  {:else if downloadTokens.length}
     <a
-      href={downloadLinks[0]}
+      href="/samples/download/{downloadTokens[0]}"
       target="_blank"
       class="download-link"
-      download
     >
-      Download samples (for large sample sizes downloading starts in a minute)
+      Download ZIP archive
     </a>
+
   {:else}
     <LoadingIndicator
       message="Please wait: generating a download link can take a while if thousands of samples are involved."
@@ -204,7 +205,8 @@ ol {
   flex-wrap: wrap;
 }
 ol li {
-  margin-right: 2.4rem;
+  margin-right: 2rem;
+  list-style: none;
 }
 
 p {
@@ -215,5 +217,8 @@ p {
 .download-link {
   display: inline-block;
   margin: 2rem 0;
+}
+.download-link:visited {
+  color: var(--color-link-visited);
 }
 </style>
