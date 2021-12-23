@@ -5,7 +5,6 @@ import { getSampleMetadata } from "$lib/dataLoading.js";
 
 const BATCHES = ["some batches"];
 const ROLE_BUTTON = "button";
-const ROLE_TABLE = "table";
 
 // Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
@@ -34,9 +33,9 @@ jest.mock("$lib/dataLoading.js", () => ({
 }));
 
 it("isn't displayed if no batches are passed", () => {
-  const { queryByRole } = render(SampleMetadataViewer);
+  const { container } = render(SampleMetadataViewer);
 
-  expect(queryByRole(ROLE_TABLE)).toBeNull();
+  expect(container.innerHTML).toBe("");
 });
 
 it("displays resolved metadata w/ each row sorted by order", async () => {

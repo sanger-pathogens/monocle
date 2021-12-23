@@ -132,6 +132,24 @@ describe.each([
     expectedResult: "as is"
   },
   {
+    fnName: "getSampleMetadata",
+    getResource: getSampleMetadata,
+    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2, asCsv: true }],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "num rows": 14,
+        "start row": 2,
+        "as csv": true
+      })
+    },
+    expectedEndpoints: ["get_metadata"],
+    responsePayload: "blob",
+    expectedResult: "blob"
+  },
+  {
     fnName: "getUserDetails",
     getResource: getUserDetails,
     expectedEndpoints: ["get_user_details"],
@@ -150,6 +168,7 @@ describe.each([
   beforeEach(() => {
     fetch.mockResolvedValue({
       ok: true,
+      blob: () => Promise.resolve(responsePayload),
       json: () => Promise.resolve(responsePayload)
     });
   });

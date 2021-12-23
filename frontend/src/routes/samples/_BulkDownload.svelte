@@ -209,11 +209,6 @@ ol li {
   list-style: none;
 }
 
-p {
-  font-size: .9rem;
-  text-align: center;
-}
-
 .download-link {
   display: inline-block;
   margin: 2rem 0;

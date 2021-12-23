@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
@@ -11,25 +10,21 @@
 
   const PROMISE_STATUS_REJECTED = "rejected";
 
-  let dataPromise = new Promise(() => {});
+  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
+    .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+      if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
+        console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
+        return Promise.reject(batchesSettledPromise.reason);
+      }
+      return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
+    })
+    .catch((err) => {
+      console.error(`Error while fetching batches and institutions: ${err}`);
+      return Promise.reject(err);
+    });
   let selectedBatches = null;
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
-
-  onMount(() => {
-    dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
-      .then(([batchesSettledPromise, institutionsSettledPromise]) => {
-        if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
-          console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
-          return Promise.reject(batchesSettledPromise.reason);
-        }
-        return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
-      })
-      .catch((err) => {
-        console.error(`Error while fetching batches and institutions: ${err}`);
-        return Promise.reject(err);
-      });
-  });
 
   function makeListOfBatches(batches = {}, institutions = {}) {
     return Object.keys(batches)
