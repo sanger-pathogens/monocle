@@ -44,25 +44,29 @@ fi
 MD5_ROOT_DIR="${HOME}/monocle_juno_institution_view"
 for DIR in $(find "$MD5_ROOT_DIR" -follow -mindepth 2 -maxdepth 2 -type d -not -path "${MD5_ROOT_DIR}/downloads" 2>&1 | grep -v '/downloads.: Permission denied')
 do
-   cd "${DIR}"
-   if ls * > /dev/null 2>&1
+   if cd "${DIR}"
    then
-      DATA_FILES=$(ls * | grep -v '\.md5$')
-      MD5_FILE=$(basename "$DIR").md5
-      # see if there are any files newer than the MD5 checksum file
-      # NEW_DATA will also be assigned true if the MD5 checksum file ihas not yet been created
-      NEW_DATA=false
-      for FILE in $(echo $DATA_FILES)
-      do
-         if [ "$FILE" -nt "$MD5_FILE" ]
-         then
-            NEW_DATA=true
-         fi
-      done
-      # create new MD5 checksum file if there are new data files
-      if $NEW_DATA
+      if ls * > /dev/null 2>&1
       then
-         md5sum $(echo $DATA_FILES) > "$MD5_FILE"
+         DATA_FILES=$(ls * | grep -v '\.md5$')
+         MD5_FILE=$(basename "$DIR").md5
+         # see if there are any files newer than the MD5 checksum file
+         # NEW_DATA will also be assigned true if the MD5 checksum file ihas not yet been created
+         NEW_DATA=false
+         for FILE in $(echo $DATA_FILES)
+         do
+            if [ "$FILE" -nt "$MD5_FILE" ]
+            then
+               NEW_DATA=true
+            fi
+         done
+         # create new MD5 checksum file if there are new data files
+         if $NEW_DATA
+         then
+            md5sum $(echo $DATA_FILES) > "$MD5_FILE"
+         fi
       fi
+   else
+      echo "Cannot CWD to ${DIR}: no MD5 checksum file will be created here."
    fi
 done
