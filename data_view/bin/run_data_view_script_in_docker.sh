@@ -47,6 +47,22 @@ do
    cd "${DIR}"
    if ls * > /dev/null 2>&1
    then
-      md5sum $(ls * | grep -v '\.md5$') >$(basename "${DIR}").md5
+      DATA_FILES=$(ls * | grep -v '\.md5$')
+      MD5_FILE=$(basename "$DIR").md5
+      # see if there are any files newer than the MD5 checksum file
+      # NEW_DATA will also be assigned true if the MD5 checksum file ihas not yet been created
+      NEW_DATA=false
+      for FILE in $(echo $DATA_FILES)
+      do
+         if [ "$FILE" -nt "$MD5_FILE" ]
+         then
+            NEW_DATA=true
+         fi
+      done
+      # create new MD5 checksum file if there are new data files
+      if $NEW_DATA
+      then
+         md5sum $(echo $DATA_FILES) > "$MD5_FILE"
+      fi
    fi
 done
