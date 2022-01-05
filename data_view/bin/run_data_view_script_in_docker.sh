@@ -21,7 +21,7 @@
 SAMPLE_DATA_PATH="${HOME}/monocle_juno"
 
 # Using the -u option ensures that file/directories are owned by the application user rather than root
-docker run  -u `id -u`:`id -g` \
+if ! docker run  -u `id -u`:`id -g` \
             --rm \
             --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
             --volume `pwd`/monocle_juno_institution_view:/app/monocle_juno_institution_view  \
@@ -29,10 +29,10 @@ docker run  -u `id -u`:`id -g` \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
             --env "MONOCLE_DATA=/home/<USER>/monocle_juno" \
+            --name "create_download_view_for_sample_data_$$" \
             --network <USER>_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
             python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@
-if [[ 0 != $? ]]
 then
   exit 255
 fi
