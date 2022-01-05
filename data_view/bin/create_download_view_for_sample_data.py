@@ -62,6 +62,7 @@ def _get_public_names_with_lane_ids(institution, db):
       lane_ids_of_one_sample = []
       for sample in seq_data.keys():
         for lane in seq_data[sample]['lanes']:
+          has_lanes = True
           lane_ids_of_one_sample.append(lane['id'])
       if lane_ids_of_one_sample:
         logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
