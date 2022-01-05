@@ -51,10 +51,6 @@ def _get_public_names_with_lane_ids(institution, db):
 
   logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
 
-  if not public_names_to_sample_id:
-    logging.info(f'No public names found for {institution}')
-    return {}
-
   num_lanes = 0
   public_names_to_lane_ids = {}
   for public_name, sample_id in public_names_to_sample_id.items():
