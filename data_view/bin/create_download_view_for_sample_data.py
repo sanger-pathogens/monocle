@@ -18,6 +18,7 @@ INITIAL_DIR = Path().absolute()
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
 def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
+  logging.info('Getting list of institutions')
   institutions = list(db.get_institution_names())
   
   if 0 == len(institutions):
@@ -170,6 +171,7 @@ if __name__ == '__main__':
   # which can be handy
   logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=options.log_level)
 
+  logging.info('Getting sample metadata')
   sample_metadata = SampleMetadata()
 
   create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata), options.data_dir)
