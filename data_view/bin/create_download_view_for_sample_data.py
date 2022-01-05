@@ -53,7 +53,7 @@ def _get_public_names_with_lane_ids(institution, db):
     logging.info(f'No public names found for {institution}')
     return {}
 
-  has_lanes = False
+  num_lanes = 0
   public_names_to_lane_ids = {}
   for public_name, sample_id in public_names_to_sample_id.items():
     # MLWH API can be fragile: catch HTTP errors
@@ -62,21 +62,20 @@ def _get_public_names_with_lane_ids(institution, db):
       lane_ids_of_one_sample = []
       for sample in seq_data.keys():
         for lane in seq_data[sample]['lanes']:
-          has_lanes = True
+          num_lanes += 1
           lane_ids_of_one_sample.append(lane['id'])
       if lane_ids_of_one_sample:
-        logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+        logging.debug(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
         public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
       else:
-        logging.info(f'{institution}: No lanes found for "{public_name}"')
+        logging.debug(f'{institution}: No lanes found for "{public_name}"')
         # We add public names w/ no lanes, as we want to
         # create empty public name directories as well.
         public_names_to_lane_ids[public_name] = []
     except HTTPError as e:
       logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
-  if not has_lanes:
-    logging.info(f'No lanes found for {institution}')
+  logging.info(f'{institution} has a total of {num_lanes} lanes')
 
   return public_names_to_lane_ids
 
