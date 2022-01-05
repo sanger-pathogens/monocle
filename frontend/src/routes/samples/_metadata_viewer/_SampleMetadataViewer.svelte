@@ -5,6 +5,7 @@
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
   export let batches = undefined;
+  export let injectedCreateAnchorElement = undefined;
 
   const MAX_METADATA_FETCH_FREQUENCY_MS = 800
   const NUM_METADATA_ROWS_PER_PAGE = 12;
@@ -94,6 +95,7 @@
         createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
       hiddenDownloadLink.click();
     })
+    .catch((err) => console.error(`Error on creating metadata download: ${err}`))
     .finally(() => {
       isPreparingMetadataDownload = false;
       hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
@@ -102,7 +104,7 @@
   }
 
   function createHiddenDownloadLink(url, fileName) {
-    const a = document.createElement("a");
+    const a = injectedCreateAnchorElement?.() || document.createElement("a");
     a.style = "display: none";
     a.href = url;
     a.download = fileName;
