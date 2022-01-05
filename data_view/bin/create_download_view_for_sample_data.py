@@ -25,8 +25,10 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
   
   else:
     for institution in institutions:
+      logging.info(f'{institution}: getting samples and lane information')
       public_names_to_lane_ids = _get_public_names_with_lane_ids(institution, db)
   
+      logging.info(f'{institution}: creating subdirectories')
       with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
   
         if public_names_to_lane_ids:
