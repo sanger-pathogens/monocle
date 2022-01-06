@@ -39,9 +39,7 @@ MAX_RESTART=10
 
 restart_proxy_container() {
    local LOG_FILE=/tmp/proxy_restart.out
-if [[ RESTART_COUNT -lt 4 ]]; then docker-compose restart "no_such_container" > "$LOG_FILE" 2>&1; else
    docker-compose restart "$NGINX_CONTAINER" > "$LOG_FILE" 2>&1
-fi
    # if restart fails, attempt restart with the service config NGINX_SERVICE_CONF
    if [ $? != 0 ]; then
       echo "Failed to restart container ${NGINX_CONTAINER}:"
