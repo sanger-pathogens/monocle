@@ -5,7 +5,6 @@ import { getSampleMetadata } from "$lib/dataLoading.js";
 
 const BATCHES = ["some batches"];
 const ROLE_BUTTON = "button";
-const ROLE_TABLE = "table";
 
 // Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
@@ -34,9 +33,9 @@ jest.mock("$lib/dataLoading.js", () => ({
 }));
 
 it("isn't displayed if no batches are passed", () => {
-  const { queryByRole } = render(SampleMetadataViewer);
+  const { container } = render(SampleMetadataViewer);
 
-  expect(queryByRole(ROLE_TABLE)).toBeNull();
+  expect(container.innerHTML).toBe("<div></div>");
 });
 
 it("displays resolved metadata w/ each row sorted by order", async () => {
@@ -80,6 +79,83 @@ it("debounces the metadata request when batches change", async () => {
   });
 
   expect(debounce).toHaveBeenCalledTimes(3);
+});
+
+describe("metadata download button", () => {
+  const DOWNLOAD_URL = "some/url";
+  const LABEL_METADATA_DOWNLOAD_BUTTON = "Download metadata";
+
+  global.URL.createObjectURL = () => DOWNLOAD_URL;
+  global.URL.revokeObjectURL = () => {};
+
+  it("requests metadata CSV on click", async () => {
+    const { findByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+    getSampleMetadata.mockClear();
+
+    const metadataDownloadButton = await findByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
+    await fireEvent.click(metadataDownloadButton);
+
+    expect(getSampleMetadata).toHaveBeenCalledTimes(1);
+    expect(getSampleMetadata).toHaveBeenCalledWith(
+      { "asCsv": true, "instKeyBatchDatePairs": BATCHES },
+      fetch);
+  });
+
+  it("is disabled and shows the loading text while waiting for the metadata CSV", async () => {
+    const { findByRole, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+
+    const metadataDownloadButton = await findByRole("button", { name: LABEL_METADATA_DOWNLOAD_BUTTON });
+    await fireEvent.click(metadataDownloadButton);
+
+    expect(metadataDownloadButton.disabled).toBeTruthy();
+    expect(getByRole(ROLE_BUTTON, { name: "Preparing download" }))
+      .toBeDefined();
+  });
+
+  it("hides the loading state, frees resources, and downloads metadata CSV once it's prepared", async () => {
+    const hiddenDownloadLink = document.createElement("a");
+    hiddenDownloadLink.click = jest.fn();
+    const createAnchorElement = () => hiddenDownloadLink;
+    const { findByRole, getByRole } = render(SampleMetadataViewer, {
+      batches: BATCHES,
+      injectedCreateAnchorElement: createAnchorElement
+    });
+    global.URL.revokeObjectURL = jest.fn();
+
+    const metadataDownloadButton = await findByRole("button", { name: LABEL_METADATA_DOWNLOAD_BUTTON });
+    fireEvent.click(metadataDownloadButton);
+
+    await waitFor(() => {
+      expect(hiddenDownloadLink.click).toHaveBeenCalledTimes(1);
+      expect(hiddenDownloadLink.href).toBe(`${global.location.href}${DOWNLOAD_URL}`);
+      expect(hiddenDownloadLink.download).toBe("monocle-sample-metadata.csv");
+      expect(hiddenDownloadLink.style.display).toBe("none");
+      expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);
+      expect(hiddenDownloadLink.parentElement).toBeNull();
+    });
+  });
+
+  it("frees resources on download fail", async () => {
+    const hiddenDownloadLink = document.createElement("a");
+    hiddenDownloadLink.click = () => {
+      throw "some error";
+    };
+    const createAnchorElement = () => hiddenDownloadLink;
+    const { findByRole, getByRole } = render(SampleMetadataViewer, {
+      batches: BATCHES,
+      injectedCreateAnchorElement: createAnchorElement
+    });
+    global.URL.revokeObjectURL = jest.fn();
+
+    const metadataDownloadButton = await findByRole("button", { name: LABEL_METADATA_DOWNLOAD_BUTTON });
+    fireEvent.click(metadataDownloadButton);
+
+    await waitFor(() => {
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);
+      expect(hiddenDownloadLink.parentElement).toBeNull();
+    });
+  });
 });
 
 describe("pagination", () => {
