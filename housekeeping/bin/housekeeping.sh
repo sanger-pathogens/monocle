@@ -34,22 +34,31 @@ WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_web_root/downloads/"
 WEB_DOWNLOAD_LINK_EXPIRY="30"
 
 RESTART_COUNT=0
+RESTART_WAIT=10
 MAX_RESTART=10
 
 restart_proxy_container() {
    local LOG_FILE=/tmp/proxy_restart.out
+if [[ RESTART_COUNT -lt 4 ]]; then docker-compose restart "no_such_container" > "$LOG_FILE" 2>&1; else
    docker-compose restart "$NGINX_CONTAINER" > "$LOG_FILE" 2>&1
+fi
    # if restart fails, attempt restart with the service config NGINX_SERVICE_CONF
    if [ $? != 0 ]; then
       echo "Failed to restart container ${NGINX_CONTAINER}:"
       cat "$LOG_FILE" && rm "$LOG_FILE"
-      if [[ RESTART_COUNT -lt MAX_RESTART ]]; then
-         echo "Attempting restart with normal service config (${NGINX_SERVICE_CONF})"
-         enable_service_access
-         RESTART_COUNT=$((RESTART_COUNT+1))
-         sleep 10
+      RESTART_COUNT=$((RESTART_COUNT+1))
+      if [[ RESTART_COUNT -lt $((MAX_RESTART+1)) ]]; then
+         echo "Will attempting restart ${RESTART_COUNT}/${MAX_RESTART} with normal service config (${NGINX_SERVICE_CONF}) in ${RESTART_WAIT} seconds"
+         sleep "$RESTART_WAIT"
+         restart_proxy_container
+      else
+         echo "Restart limit reached"
+         exit 255
       fi
-      exit 255
+   else
+      if [[ RESTART_COUNT -gt 0 ]]; then
+         echo "Successfully restarted container ${NGINX_CONTAINER} at attempt ${RESTART_COUNT}."
+      fi
    fi
 }
 
