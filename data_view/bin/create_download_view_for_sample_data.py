@@ -18,6 +18,7 @@ INITIAL_DIR = Path().absolute()
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
 def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
+  logging.info('Getting list of institutions')
   institutions = list(db.get_institution_names())
   
   if 0 == len(institutions):
@@ -25,8 +26,10 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
   
   else:
     for institution in institutions:
+      logging.info(f'{institution}: getting samples and lane information')
       public_names_to_lane_ids = _get_public_names_with_lane_ids(institution, db)
   
+      logging.info(f'{institution}: creating subdirectories')
       with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
   
         if public_names_to_lane_ids:
@@ -49,11 +52,7 @@ def _get_public_names_with_lane_ids(institution, db):
 
   logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
 
-  if not public_names_to_sample_id:
-    logging.info(f'No public names found for {institution}')
-    return {}
-
-  has_lanes = False
+  num_lanes = 0
   public_names_to_lane_ids = {}
   for public_name, sample_id in public_names_to_sample_id.items():
     # MLWH API can be fragile: catch HTTP errors
@@ -62,20 +61,20 @@ def _get_public_names_with_lane_ids(institution, db):
       lane_ids_of_one_sample = []
       for sample in seq_data.keys():
         for lane in seq_data[sample]['lanes']:
+          num_lanes += 1
           lane_ids_of_one_sample.append(lane['id'])
       if lane_ids_of_one_sample:
-        logging.info(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+        logging.debug(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
         public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
       else:
-        logging.info(f'{institution}: No lanes found for "{public_name}"')
+        logging.debug(f'{institution}: No lanes found for "{public_name}"')
         # We add public names w/ no lanes, as we want to
         # create empty public name directories as well.
         public_names_to_lane_ids[public_name] = []
     except HTTPError as e:
       logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
 
-  if not has_lanes:
-    logging.info(f'No lanes found for {institution}')
+  logging.info(f'{institution} has a total of {num_lanes} lanes')
 
   return public_names_to_lane_ids
 
@@ -172,6 +171,7 @@ if __name__ == '__main__':
   # which can be handy
   logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=options.log_level)
 
+  logging.info('Getting sample metadata')
   sample_metadata = SampleMetadata()
 
   create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata), options.data_dir)
