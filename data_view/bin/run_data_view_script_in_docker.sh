@@ -42,8 +42,16 @@ fi
 # If this step proves too slow, we may need to consider moving it to separate cron entry
 # or changing the job frequency.
 MD5_ROOT_DIR="${HOME}/monocle_juno_institution_view"
-for DIR in $(find "$MD5_ROOT_DIR" -follow -mindepth 2 -maxdepth 2 -type d -not -path "${MD5_ROOT_DIR}/downloads" 2>&1 | grep -v '/downloads.: Permission denied')
+DOWNLOADS_DIR="${MD5_ROOT_DIR}/downloads"
+# be careful with this for loop:  DIR may include a space so patterns like
+# `for DIR $(ls pattern | some | pipe)` won't work as expected
+for DIR in ${MD5_ROOT_DIR}/*/*/
 do
+   # don't attempt to look in the downloads directory
+   if [[ $DIR == *"${DOWNLOADS_DIR}"* ]]
+   then
+      continue
+   fi
    if cd "${DIR}"
    then
       if ls * > /dev/null 2>&1
