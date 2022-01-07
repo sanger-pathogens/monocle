@@ -1,9 +1,9 @@
 <script>
-  import { session } from "$app/stores";
   import { USER_ROLE_ADMIN } from "$lib/constants.js";
   import InsilicoUploadIcon from "$lib/components/icons/InsilicoUploadIcon.svelte";
 
   export let style = undefined;
+  export let session;
 
   const LINK_TITLE = "Upload in-silico data";
 

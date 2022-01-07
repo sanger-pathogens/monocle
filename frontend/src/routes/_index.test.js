@@ -1,11 +1,12 @@
 import { render, waitFor, within } from "@testing-library/svelte";
+import { writable } from "svelte/store";
 // eslint-disable-next-line no-unused-vars
-import { session } from "$app/stores";
 import {
   getInstitutionStatus,
   // eslint-disable-next-line no-unused-vars
   getProjectProgress
 } from "$lib/dataLoading.js";
+import { USER_ROLE_ADMIN } from "$lib/constants.js";
 import DashboardPage from "./index.svelte";
 
 const INSTITUTIONS = [{
@@ -22,20 +23,15 @@ const INSTITUTIONS = [{
   pipelineStatus: {}
 }];
 
-// Mocking this module for the whole file is a workaround
-// for Jest's not parsing SvelteKit's $app modules.
-jest.mock("$app/stores", async () => {
-  const { writable } = await import("svelte/store");
-  return { session: writable() };
-});
-
 jest.mock("$lib/dataLoading.js", () => ({
   getInstitutionStatus: jest.fn(() => Promise.resolve(INSTITUTIONS)),
   getProjectProgress: () => Promise.resolve()
 }));
 
 it("shows the loading indicator", () => {
-  const { getByLabelText } = render(DashboardPage);
+  const { getByLabelText } = render(DashboardPage, { session: writable(
+    { user: { role: USER_ROLE_ADMIN } })
+  });
 
   expect(getByLabelText("please wait")).toBeDefined();
 });
@@ -43,7 +39,9 @@ it("shows the loading indicator", () => {
 it("shows an error message if data fetching rejects", async () => {
   getInstitutionStatus.mockRejectedValueOnce();
 
-  const { getByText } = render(DashboardPage);
+  const { getByText } = render(DashboardPage, { session: writable(
+    { user: { role: USER_ROLE_ADMIN } })
+  });
 
   await waitFor(() => {
     expect(getByText("An unexpected error occured during page loading. Please try again by reloading the page."))
@@ -53,7 +51,9 @@ it("shows an error message if data fetching rejects", async () => {
 
 describe("after data fetching", () => {
   it("hides the loading indicator", async () => {
-    const { queryByLabelText } = render(DashboardPage);
+    const { queryByLabelText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
     await waitFor(() => {
       expect(queryByLabelText("please wait")).toBeNull();
@@ -61,7 +61,9 @@ describe("after data fetching", () => {
   });
 
   it("displays the project progress chart w/ a Y-axis label", async () => {
-    const { getByText } = render(DashboardPage);
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
     await waitFor(() => {
       expect(getByText("Project Progress")).toBeDefined();
@@ -70,31 +72,35 @@ describe("after data fetching", () => {
   });
 
   it("displays the menu w/ the upload and data viewer links", async () => {
+    const ROLE_LINK = "link";
     const domainName = window.location.host;
-    const { findByRole } = render(DashboardPage);
+    const { findByRole } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
     const linksContainer = await findByRole("navigation");
 
-    // FIXME: mock `session.user.role` and uncomment the test
-    //const metadataUploadLink = await within(linksContainer)
-    //  .findByRole("link", { name: "Upload metadata" });
-    //expect(metadataUploadLink).toBeDefined();
-    //expect(metadataUploadLink.href).toMatch(
-    //  new RegExp(`${domainName}/metadata-upload`));
+    const metadataUploadLink = await within(linksContainer)
+      .findByRole(ROLE_LINK, { name: "Upload metadata" });
+    expect(metadataUploadLink).toBeDefined();
+    expect(metadataUploadLink.href).toMatch(
+      new RegExp(`${domainName}/metadata-upload`));
     const insilicoUploadLink = await within(linksContainer)
-      .findByRole("link", { name: "Upload in-silico data" });
+      .findByRole(ROLE_LINK, { name: "Upload in-silico data" });
     expect(insilicoUploadLink).toBeDefined();
     expect(insilicoUploadLink.href).toMatch(
       new RegExp(`${domainName}/in-silico-upload`));
     const dataViewerLink = await within(linksContainer)
-      .findByRole("link", { name: "View and download sample data" });
+      .findByRole(ROLE_LINK, { name: "View and download sample data" });
     expect(dataViewerLink).toBeDefined();
     expect(dataViewerLink.href).toMatch(
       new RegExp(`${domainName}/samples`));
   });
 
   it("displays status for each institution", async () => {
-    const { getByText } = render(DashboardPage);
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
     await waitFor(() => {
       INSTITUTIONS.forEach(({ name }) => {
@@ -109,7 +115,9 @@ describe("after data fetching", () => {
   it("displays a message when the list of institutions is empty", async () => {
     getInstitutionStatus.mockResolvedValueOnce([]);
 
-    const { getByText } = render(DashboardPage);
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
     await waitFor(() => {
       expect(getByText("No institutions found for this account", { exact: false }))

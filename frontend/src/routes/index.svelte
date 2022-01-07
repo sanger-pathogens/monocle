@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { session as appSession } from "$app/stores";
   import { getInstitutionStatus, getProjectProgress } from "$lib/dataLoading.js";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
@@ -7,6 +8,8 @@
   import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
   import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
   import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
+
+  export let session = appSession;
 
   let dashboardDataPromise = new Promise(() => {});
 
@@ -24,8 +27,8 @@
 
 {:then [institutions = [], projectProgress = {}]}
   <nav>
-    <MetadataUploadLink />
-    <InsilicoUploadLink style="margin-top: .3rem" />
+    <MetadataUploadLink {session} />
+    <InsilicoUploadLink {session} style="margin-top: .3rem" />
     <SampleDataLink />
   </nav>
 

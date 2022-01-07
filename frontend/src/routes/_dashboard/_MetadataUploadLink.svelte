@@ -1,7 +1,8 @@
 <script>
-  import { session } from "$app/stores";
   import { USER_ROLE_ADMIN } from "$lib/constants.js";
   import UploadIcon from "$lib/components/icons/UploadIcon.svelte";
+
+  export let session;
 
   const LINK_TITLE = "Upload metadata";
 
