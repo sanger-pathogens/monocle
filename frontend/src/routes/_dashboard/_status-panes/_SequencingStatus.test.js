@@ -50,7 +50,7 @@ it("displays the download button", () => {
 it("displays the download failed button inside the failure messages dialog", async () => {
   const downloadButtonText = `Download metadata for ${FAILED} samples that failed sequencing`;
 
-  const { queryByRole } = render(SequencingStatus, {
+  const { getByRole, queryByRole } = render(SequencingStatus, {
     sequencingStatus: {
       received: RECEIVED,
       completed: RECEIVED,
@@ -63,7 +63,7 @@ it("displays the download failed button inside the failure messages dialog", asy
 
   await fireEvent.click(queryByRole("button", { name: "Show failed" }));
 
-  expect(queryByRole("button", { name: downloadButtonText }))
+  expect(getByRole("button", { name: downloadButtonText }))
     .toBeDefined();
 });
 

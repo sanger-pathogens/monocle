@@ -22,9 +22,11 @@ it("shows the dialog on the upload success event", async () => {
 
   await fireEvent.submit(getByRole("form"));
 
-  expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE }))
+  expect(getByRole(ROLE_DIALOG))
     .toBeDefined();
-  expect(queryByRole("link", { name: "go to the dashboard" }))
+  expect(getByRole("heading", { name: DIALOG_TITLE }))
+    .toBeDefined();
+  expect(getByRole("link", { name: "go to the dashboard" }))
     .toBeDefined();
 });
 

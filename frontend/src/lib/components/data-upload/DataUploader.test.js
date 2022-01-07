@@ -36,8 +36,8 @@ describe("file uploading", () => {
     await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
     
     expect(inputContainer.disabled).toBeTruthy();
-    expect(inputContainer.querySelector("input[type=file]")).toBeDefined();
-    expect(inputContainer.querySelector("button")).toBeDefined();
+    expect(inputContainer.querySelector("input[type=file]")).not.toBeNull();
+    expect(inputContainer.querySelector("button")).not.toBeNull();
   });
 
   it("makes the correct API call for each file", async () => {
@@ -212,14 +212,13 @@ describe("the loading indicator", () => {
   const LOADING_LABEL_TEXT = "please wait";
 
   it("shown when uploading is in progress", async () => {
-    const { container, queryByLabelText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
-    const loadingIndicator = queryByLabelText(LOADING_LABEL_TEXT);
+    const { container, getByLabelText, queryByLabelText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
 
-    expect(loadingIndicator).toBeNull();
+    expect(queryByLabelText(LOADING_LABEL_TEXT)).toBeNull();
 
     await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
 
-    expect(loadingIndicator).toBeDefined();
+    expect(getByLabelText(LOADING_LABEL_TEXT)).toBeDefined();
   });
 
   it("is hidden after uploading resolves", async () => {

@@ -15,20 +15,20 @@ describe("w/ errors", () => {
   }];
 
   it("shows the intro text", () => {
-    const { queryByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
+    const { getByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
   
-    expect(queryByText(/couldn't be uploaded because of the validation errors/))
+    expect(getByText(/couldn't be uploaded because of the validation errors/))
       .toBeDefined();
   });
 
   it("shows the list of errors", () => {
-    const { container, queryAllByText, queryByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
+    const { container, getByText, queryAllByText } = render(ValidationErrorList, { errors: VALIDATION_ERRORS });
   
     expect(queryAllByText(/\.txt/)).toHaveLength(VALIDATION_ERRORS.length);
     expect(container.querySelectorAll("li")).toHaveLength(3);
-    expect(queryByText("some error")).toBeDefined();
-    expect(queryByText("invalid")).toBeDefined();
-    expect(queryByText("invalid i think")).toBeDefined();
+    expect(getByText("some error")).toBeDefined();
+    expect(getByText("invalid")).toBeDefined();
+    expect(getByText("invalid i think")).toBeDefined();
   });
   
   it("collapses error lists for all but the first file", () => {

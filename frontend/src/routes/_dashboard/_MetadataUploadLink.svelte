@@ -1,11 +1,12 @@
 <script>
-  import { session } from "$app/stores";
+  import { USER_ROLE_ADMIN } from "$lib/constants.js";
   import UploadIcon from "$lib/components/icons/UploadIcon.svelte";
 
-  const LINK_TITLE = "Upload metadata";
-  const ROLE_ADMIN = "admin";
+  export let session;
 
-  $: isAdmin = $session?.user?.role === ROLE_ADMIN;
+  const LINK_TITLE = "Upload metadata";
+
+  $: isAdmin = $session?.user?.role === USER_ROLE_ADMIN;
 </script>
 
 
