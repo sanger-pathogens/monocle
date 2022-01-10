@@ -1,14 +1,19 @@
 <script>
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
+  import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import {
     getBatches,
-    getInstitutions
+    getInstitutions,
+    getSampleMetadata
   } from "$lib/dataLoading.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
+
+  export let injectedCreateAnchorElement = undefined;
 
   const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
     .then(([batchesSettledPromise, institutionsSettledPromise]) => {
@@ -22,6 +27,7 @@
       console.error(`Error while fetching batches and institutions: ${err}`);
       return Promise.reject(err);
     });
+  let isPreparingMetadataDownload = false;
   let selectedBatches = null;
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
@@ -53,6 +59,41 @@
       group: institutionName || institutionKey
     };
   }
+
+  function downloadMetadata() {
+    if (!selectedBatches?.length) {
+      return;
+    }
+
+    isPreparingMetadataDownload = true;
+
+    let csvBlobUrl;
+    let hiddenDownloadLink;
+    getSampleMetadata({
+      instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+      asCsv: true
+    }, fetch)
+    .then((csvBlob) => {
+      csvBlobUrl = URL.createObjectURL(csvBlob);
+      hiddenDownloadLink = document.body.appendChild(
+        createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
+      hiddenDownloadLink.click();
+    })
+    .catch((err) => console.error(`Error on creating metadata download: ${err}`))
+    .finally(() => {
+      isPreparingMetadataDownload = false;
+      hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
+      URL.revokeObjectURL(csvBlobUrl);
+    });
+  }
+
+  function createHiddenDownloadLink(url, fileName) {
+    const a = injectedCreateAnchorElement?.() || document.createElement("a");
+    a.style = "display: none";
+    a.href = url;
+    a.download = fileName;
+    return a;
+  }
 </script>
 
 
@@ -69,6 +110,32 @@
       {batchList}
     />
   </section>
+
+  {#if selectedBatches?.length}
+    <div class="download-btns">
+      <button
+        aria-label="Download samples (FIXME GB)"
+        class="compact"
+        type="button"
+      >
+        Samples (FIXME GB) <DownloadIcon />
+      </button>
+
+      <button
+        aria-label={isPreparingMetadataDownload ? null : "Download metadata"}
+        on:click={downloadMetadata}
+        class="compact"
+        type="button"
+        disabled={isPreparingMetadataDownload}
+      >
+        {#if isPreparingMetadataDownload}
+          Preparing download <LoadingIcon />
+        {:else}
+          Metadata <DownloadIcon />
+        {/if}
+      </button>
+    </div>
+  {/if}
 
   <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
 
@@ -90,6 +157,10 @@
 .batch-selection-section {
   margin-bottom: 2.6rem;
   width: 100%;
+}
+
+.download-btns button {
+  margin-right: 1rem;
 }
 </style>
 
