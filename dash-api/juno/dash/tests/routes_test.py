@@ -1,4 +1,4 @@
-from     flask          import Response
+from     flask          import request, Response
 from     http           import HTTPStatus
 import   json
 from     os             import environ
@@ -309,7 +309,9 @@ class TestRoutes(unittest.TestCase):
     @patch('pathlib.Path.is_dir')
     @patch('pathlib.Path.is_file')
     @patch('dash.api.routes.read_text_file')
+    @patch('dash.api.routes.call_request_headers')
     def test_data_download_route(self,
+            request_headers_mock,
             read_text_file_mock,
             is_file_mock,
             is_dir_mock,
@@ -318,6 +320,7 @@ class TestRoutes(unittest.TestCase):
             username_mock,
         ):
         # Given
+        request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
@@ -352,6 +355,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
         self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
         
+    import flask
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
@@ -359,7 +363,9 @@ class TestRoutes(unittest.TestCase):
     @patch('pathlib.Path.is_dir')
     @patch('pathlib.Path.is_file')
     @patch('dash.api.routes.read_text_file')
+    @patch('dash.api.routes.call_request_headers')
     def test_data_download_route_reuse_existing_zip_file(self,
+            request_headers_mock,
             read_text_file_mock,
             is_file_mock,
             is_dir_mock,
@@ -368,6 +374,7 @@ class TestRoutes(unittest.TestCase):
             username_mock,
         ):
         # Given
+        request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
@@ -402,13 +409,16 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     @patch('pathlib.Path.is_dir')
     @patch('pathlib.Path.is_file')
+    @patch('dash.api.routes.call_request_headers')
     def test_data_download_route_return_404(self,
+            request_headers_mock,
             is_file_mock,
             is_dir_mock,
             sample_data_service_mock,
             username_mock,
         ):
         # Given
+        request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True

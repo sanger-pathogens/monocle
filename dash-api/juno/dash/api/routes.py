@@ -220,6 +220,8 @@ def data_download_route(token: str):
     logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
     
+    logging.info("Data download request headers:\n{}".format(call_request_headers()))
+    
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
        logging.error("data downloads directory {} does not exist".format(download_param_file_location))
@@ -228,8 +230,9 @@ def data_download_route(token: str):
     zip_file_basename = token
     zip_file_name     = zip_file_basename + ZIP_SUFFIX
     if Path(download_param_file_location,zip_file_name).is_file():
-      logging.info("reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
+      logging.info("Reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
     else:
+      logging.info("Creating ZIP file {}/{}".format(download_param_file_location,zip_file_name))
       # read params from JSON file on disk containing
       download_param_file_name = "{}.params.json".format(token)
       param_file_path = os.path.join(download_param_file_location,download_param_file_name)
@@ -263,6 +266,7 @@ def data_download_route(token: str):
          basename=zip_file_basename,
          location=zip_file_location
          )
+
     zip_file_url = '/'.join([
         '', # host name; using an empty string gets a leading '/' (required for relative URL)
         monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
@@ -313,6 +317,10 @@ def _metadata_as_csv_response(metadata_for_download):
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
     return jsonify(args)
+ 
+def call_request_headers():
+    """ Wraps flask.request.headers to make testing easier """
+    return request.headers
  
 def write_text_file(filename, content) -> str:
     with open(filename, 'w') as textfile:
