@@ -320,7 +320,8 @@ class TestRoutes(unittest.TestCase):
             username_mock,
         ):
         # Given
-        request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
+        mock_host = 'mock_host.sanger.ac.uk'
+        request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
@@ -338,7 +339,7 @@ class TestRoutes(unittest.TestCase):
         zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
-        download_host = '/'
+        download_host = mock_host
         download_symlink = 'downloads/'
         sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         # When
@@ -353,9 +354,61 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
-        self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+        self.assertEqual("https://{}/{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
+    @patch('dash.api.routes.read_text_file')
+    @patch('dash.api.routes.call_request_headers')
+    def test_data_download_route_no_proxy(self,
+            request_headers_mock,
+            read_text_file_mock,
+            is_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            zip_files_mock,
+            username_mock,
+        ):
+        # Given
+        request_headers_mock.return_value = {}
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        is_dir_mock.return_value = True
+        # assigning list to side_effect returns next value each time mocked function is called
+        # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
+        is_file_mock.side_effect = [False, True]
+        lane_files   = {"pubname": ["/lane file",
+                                    "/another lane file"]
+                        }
+        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
+                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
+                        }
+        read_text_file_mock.return_value = json.dumps(lane_files)
+        mock_token = '123'
+        zip_file_basename = mock_token
+        zip_file_location = 'some/dir'
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        download_host = ''
+        download_symlink = 'downloads/'
+        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        # When
+        result = data_download_route(mock_token)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_called_once_with(
+            files_to_zip,
+            basename=zip_file_basename,
+            location=zip_file_location
+            )
+        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        self.assertIsInstance(result, Response)
+        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
+        self.assertEqual("{}/{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
         
-    import flask
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
@@ -374,7 +427,8 @@ class TestRoutes(unittest.TestCase):
             username_mock,
         ):
         # Given
-        request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
+        mock_host = 'mock_host.sanger.ac.uk'
+        request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
@@ -391,7 +445,7 @@ class TestRoutes(unittest.TestCase):
         zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
-        download_host = '/'
+        download_host = mock_host
         download_symlink = 'downloads/'
         sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
         # When
@@ -402,7 +456,56 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
-        self.assertEqual("{}{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+        self.assertEqual("https://{}/{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch('dash.api.routes.zip_files')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.is_file')
+    @patch('dash.api.routes.read_text_file')
+    @patch('dash.api.routes.call_request_headers')
+    def test_data_download_route_reuse_existing_zip_file(self,
+            request_headers_mock,
+            read_text_file_mock,
+            is_file_mock,
+            is_dir_mock,
+            sample_data_service_mock,
+            zip_files_mock,
+            username_mock,
+        ):
+        # Given
+        mock_host = 'mock_host.sanger.ac.uk'
+        request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
+        samples = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        is_dir_mock.return_value = True
+        # mock existence of ZIP archive (JSON file not checked)
+        is_file_mock.return_value = True
+        lane_files   = {"pubname": ["/lane file",
+                                    "/another lane file"]
+                        }
+        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
+                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
+                        }
+        read_text_file_mock.return_value = json.dumps(lane_files)
+        mock_token = '123'
+        zip_file_basename = mock_token
+        zip_file_location = 'some/dir'
+        sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
+        download_host = mock_host
+        download_symlink = 'downloads/'
+        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
+        # When
+        result = data_download_route(mock_token)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        zip_files_mock.assert_not_called()
+        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
+        self.assertIsInstance(result, Response)
+        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
+        self.assertEqual("https://{}/{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')

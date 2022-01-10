@@ -3,6 +3,7 @@ from     flask          import jsonify, request, Response
 from     datetime       import datetime
 import   errno
 from     http           import HTTPStatus
+from     http.client    import HTTPS_PORT
 from     itertools      import islice
 import   json
 import   os
@@ -266,11 +267,23 @@ def data_download_route(token: str):
          basename=zip_file_basename,
          location=zip_file_location
          )
-
-    zip_file_url = '/'.join([
-        '', # host name; using an empty string gets a leading '/' (required for relative URL)
-        monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
-        zip_file_name])
+      
+    # look for Sanger proxy HTTP headers indicating the hostname as known to the client
+    # so this can be used for the data download redirect
+    try:
+       headers = call_request_headers()
+       uri_scheme_hostname = "{}://{}".format(  ('https' if HTTPS_PORT == int(headers['X-Forwarded-Port']) else 'http'),
+                                                headers['X-Forwarded-Host']
+                                                )
+    except KeyError:
+       # proxy HTTP headers not found -- hopefully not an error, but an request on the internal network
+       logging.info("Cannot find Sanger proxy header X-Forwarded-Host and/or X-Forwarded-Port (hopefully this is a request on the internal network?)")
+       uri_scheme_hostname = ''
+       
+    zip_file_url = '/'.join(  [  uri_scheme_hostname,
+                                 monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
+                                 zip_file_name]
+                              )
     logging.info("Redirecting data download to {}".format(zip_file_url))
     
     # redirect user to the ZIP file download URL
