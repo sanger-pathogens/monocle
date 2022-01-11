@@ -62,7 +62,7 @@ it("requests metadata w/ the correct arguments", async () => {
   await waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
-      numRows: 12,
+      numRows: 16,
       startRow: 1
     }, fetch);
   });
@@ -86,7 +86,7 @@ describe("pagination", () => {
   const LABEL_NEXT_BUTTON = "Next page";
   const LABEL_PREV_BUTTON = "Previous page";
   const LABEL_LOADING_INDICATOR = "please wait";
-  const NUM_METADATA_ROWS_PER_PAGE = 12;
+  const NUM_METADATA_ROWS_PER_PAGE = 16;
 
   beforeEach(() => {
     getSampleMetadata.mockClear();
