@@ -274,7 +274,7 @@ select:disabled,
 textarea:disabled,
 .disabled {
   cursor: not-allowed;
-  opacity: .3;
+  opacity: .2;
   pointer-events: none;
 }
 
@@ -399,16 +399,18 @@ a:hover {
   text-decoration: underline
 }
 
-code,
 samp,
 time {
-  background: #efefef;
   background: var(--background);
-  color: #000;
   color: var(--code);
   padding: 2.5px 5px;
   border-radius: 6px;
   font-size: 1em
+}
+code {
+  color: var(--code);
+  font-size: 1rem;
+  padding: 0 .1rem;
 }
 
 pre>code {

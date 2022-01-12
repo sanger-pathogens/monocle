@@ -1,6 +1,11 @@
 <script>
+  import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
+
   export let message = undefined;
   export let midscreen = false;
+  export let simple = false;
+
+  const STYLE_LOADING_ICON = "fill: var(--text-main)";
 
   const style = midscreen ?
     "position: absolute; transform: translateX(-50%); left: 50vw; top: 37vh" :
@@ -8,32 +13,46 @@
 </script>
 
 
-{#if message}
-  <p aria-hidden="true">{message}</p>
-{/if}
-<!-- The markup and CSS are based on https://codepen.io/Bidji/pen/emajjq -->
-<div
-  aria-label={message || "please wait"}
-  aria-live="polite"
-  class="cssload-wrap"
-  {style}
->
-  <div aria-hidden="true" class="cssload-container">
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
-    <span class="cssload-dots"></span>
+{#if simple}
+  <p aria-label={message || "please wait"} aria-live="polite">
+    <LoadingIcon style={STYLE_LOADING_ICON} />
+    {#if message}
+      {message}
+    {/if}
+  </p>
+
+{:else}
+  {#if message}
+    <p aria-hidden="true">{message}</p>
+  {/if}
+  <!-- The markup and CSS are based on https://codepen.io/Bidji/pen/emajjq -->
+  <div
+    aria-label={message || "please wait"}
+    aria-live="polite"
+    class="cssload-wrap"
+    {style}
+  >
+    <div aria-hidden="true" class="cssload-container">
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+      <span class="cssload-dots"></span>
+    </div>
   </div>
-</div>
+{/if}
 
 
 <style>
+p {
+  font-weight: 200;
+}
+
 .cssload-wrap {
   text-align: center;
   line-height: 62px;

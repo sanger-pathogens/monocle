@@ -81,6 +81,13 @@ main {
   text-decoration: none;
 }
 
+:global(button),
+:global([role=button]),
+:global(input[type="button"]),
+:global(input[type="submit"]) {
+  border-color: var(--color-border);
+}
+
 :global(button.compact),
 :global([role=button].compact),
 :global(input[type="button"].compact),

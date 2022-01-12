@@ -59,7 +59,7 @@
   max-height: 85vh;
   overflow-y: auto;
   max-width: 40rem;
-  padding: 1rem;
+  padding: 1.2rem;
   position: relative;
 }
 
@@ -67,14 +67,10 @@
   position: absolute;
   top: .3rem;
   right: .6rem;
-  background: rgba(0, 0, 0, 0);
-  border-radius: 50%;
+  border: none;
   color: gray;
-  font-size: .9rem;
-  margin: 0;
-  padding: 0;
-  height: 1.3rem;
-  width: 1.3rem;
+  font-size: 1.2rem;
+  padding: .2rem .5rem;
 }
 .close-icon-btn:hover {
   color: black;
