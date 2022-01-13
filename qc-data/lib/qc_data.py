@@ -39,7 +39,7 @@ class QCData:
     def write_file(self):
         """Overwrites file with updated qc data"""
 
-        dir = dirname(self.file_path)
+        dir = os.path.dirname(self.file_path)
         if not os.path.exists(dir):
            os.makedirs(dir)
 
