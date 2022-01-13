@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os.path
+import os
 import json
 
 class QCData:
@@ -38,6 +38,10 @@ class QCData:
 
     def write_file(self):
         """Overwrites file with updated qc data"""
+
+        dir = dirname(self.file_path)
+        if not os.path.exists(dir):
+           os.makedirs(dir)
 
         with open(self.file_path, 'w') as outfile:
             json_object = json.dumps(self.qc_data)
