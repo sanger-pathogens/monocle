@@ -93,9 +93,19 @@ def _get_sequencing_status_data(sample_ids):
 
 def get_arguments():
     parser = argparse.ArgumentParser(description='Get QC data')
-    parser.add_argument("-D", "--kraken_data_dir", help="Data file directory for kraken report")
-    parser.add_argument("-S", "--species", help="Species name e.g. 'Streptococcus agalactiae'")
-    parser.add_argument("-L", "--log_level", help="Logging level [default: WARNING]", choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='WARNING')
+    default_monocle_data_path = os.environ.get('MONOCLE_DATA', '.') + '/kraken_report'
+    default_log_level='WARNING'
+    parser.add_argument("-D", "--kraken_data_dir",
+                        help="Data file directory for kraken report [default: {}]; can use MONOCLE_DATA environment variable to set parent directory".format(default_monocle_data_path),
+                        default=default_monocle_data_path
+                        )
+    parser.add_argument("-S", "--species",
+                        help="Species name e.g. 'Streptococcus agalactiae'")
+    parser.add_argument("-L", "--log_level",
+                        help="Logging level [default: {}]".format(default_log_level),
+                        choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
+                        default=default_log_level
+                        )
 
     return parser
 
