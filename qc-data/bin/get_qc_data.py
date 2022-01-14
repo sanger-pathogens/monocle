@@ -102,7 +102,7 @@ def get_arguments():
                         default=default_monocle_data_path
                         )
     parser.add_argument("-S", "--species",
-                        help="Species name e.g. 'Streptococcus agalactiae'")
+                        help="Species name, e.g. 'Streptococcus agalactiae' or 'Streptococcus pneumoniae'")
     parser.add_argument("-L", "--log_level",
                         help="Logging level [default: {}]".format(default_log_level),
                         choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'],
