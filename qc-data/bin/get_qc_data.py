@@ -15,7 +15,6 @@ import re
 from dash.api.service.DataSources.sample_metadata        import SampleMetadata
 from dash.api.service.DataSources.sequencing_status      import SequencingStatus
 
-from lib._mkdir import _mkdir
 from lib.qc_data import QCData
 
 QC_DIR = 'monocle_pipeline_qc'
@@ -57,9 +56,6 @@ def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
     if os.path.exists(kraken_report):
         rel_abnd = _get_relative_abundance(kraken_report, species)
         if rel_abnd is not None:
-            # Get lane id and create directory
-            lane_id = os.path.basename(kraken_report).split('_kraken.report')[0]
-            _mkdir(f'{QC_DIR}/{lane_id}')
             # Update QC data
             qc_info = {
                   "species": species,

@@ -39,9 +39,9 @@ class QCData:
     def write_file(self):
         """Overwrites file with updated qc data"""
 
-        dir = os.path.dirname(self.file_path)
-        if not os.path.exists(dir):
-           os.makedirs(dir)
+        qc_dir = os.path.dirname(self.file_path)
+        if not os.path.exists(qc_dir):
+           os.makedirs(qc_dir)
 
         with open(self.file_path, 'w') as outfile:
             json_object = json.dumps(self.qc_data)
