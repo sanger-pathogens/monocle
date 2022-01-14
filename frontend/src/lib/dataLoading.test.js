@@ -4,6 +4,7 @@ import {
   getBulkDownloadUrls,
   getInstitutionStatus,
   getProjectProgress,
+  getSampleMetadata,
   getUserDetails
 } from "./dataLoading.js";
 
@@ -13,7 +14,7 @@ const INST_KEY_BATCH_DATE_PAIRS = [
 ];
 const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, batchDate]) => (
   { "institution key": instKey, "batch date": batchDate }
-))
+));
 const DASHBOARD_API_URL = "/dashboard-api";
 
 const fetch = jest.fn();
@@ -114,6 +115,41 @@ describe.each([
     }
   },
   {
+    fnName: "getSampleMetadata",
+    getResource: getSampleMetadata,
+    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2 }],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "num rows": 14,
+        "start row": 2
+      })
+    },
+    expectedEndpoints: ["get_metadata"],
+    responsePayload: "as is",
+    expectedResult: "as is"
+  },
+  {
+    fnName: "getSampleMetadata",
+    getResource: getSampleMetadata,
+    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2, asCsv: true }],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "num rows": 14,
+        "start row": 2,
+        "as csv": true
+      })
+    },
+    expectedEndpoints: ["get_metadata"],
+    responsePayload: "blob",
+    expectedResult: "blob"
+  },
+  {
     fnName: "getUserDetails",
     getResource: getUserDetails,
     expectedEndpoints: ["get_user_details"],
@@ -132,6 +168,7 @@ describe.each([
   beforeEach(() => {
     fetch.mockResolvedValue({
       ok: true,
+      blob: () => Promise.resolve(responsePayload),
       json: () => Promise.resolve(responsePayload)
     });
   });

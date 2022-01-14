@@ -16,7 +16,6 @@ from   DataSources.pipeline_status           import PipelineStatus
 from   DataSources.metadata_download         import MetadataDownload, Monocle_Download_Client
 from   DataSources.user_data                 import UserData
 from   DataServices.sample_tracking_services import MonocleSampleTracking
-from   utils.file                            import format_file_size
 
 INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'

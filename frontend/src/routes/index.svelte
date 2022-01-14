@@ -1,13 +1,17 @@
 <script>
   import { onMount } from "svelte";
-  import { getInstitutionStatus, getProjectProgress } from "../dataLoading.js";
+  import { session as appSession } from "$app/stores";
+  import { getInstitutionStatus, getProjectProgress } from "$lib/dataLoading.js";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
   import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
+  import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
 
-  let dashboardDataPromise = Promise.resolve();
+  export let session = appSession;
+
+  let dashboardDataPromise = new Promise(() => {});
 
   onMount(() => {
     dashboardDataPromise = Promise.all([
@@ -23,8 +27,9 @@
 
 {:then [institutions = [], projectProgress = {}]}
   <nav>
-    <MetadataUploadLink />
-    <InsilicoUploadLink style="margin-top: .3rem" />
+    <MetadataUploadLink {session} />
+    <InsilicoUploadLink {session} style="margin-top: .3rem" />
+    <SampleDataLink />
   </nav>
 
   <LineChart
@@ -45,7 +50,7 @@
     <p>No institutions found for this account. This may be an error, so please try to reload the page or to log out and log in again.</p>
   {/each}
 
-{:catch error}
+{:catch}
   <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
 
 {/await}

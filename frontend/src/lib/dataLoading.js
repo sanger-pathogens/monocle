@@ -1,3 +1,4 @@
+const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const HTTP_POST = "POST";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
@@ -76,6 +77,47 @@ export function getInstitutions(fetch) {
     "get_institutions", "institutions", fetch);
 }
 
+export function getSampleMetadata({
+  instKeyBatchDatePairs,
+  numRows,
+  startRow,
+  asCsv
+},
+fetch
+) {
+  const payload = {
+    "sample filters": {
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+    }
+  };
+  if (Number.isInteger(numRows)) {
+    payload["num rows"] = numRows;
+  }
+  if (Number.isInteger(startRow)) {
+    payload["start row"] = startRow;
+  }
+
+  if (asCsv === true) {
+    payload["as csv"] = true;
+    return fetch(`${DASHBOARD_API_ENDPOINT}/get_metadata`, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify(payload)
+    })
+    .then((response) =>
+      response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
+    .catch((err) =>
+      logErrorOnFetchResource(err, "get_metadata"));
+  }
+
+  return fetchDashboardApiResource(
+    "get_metadata", null, fetch, {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify(payload)
+    });
+}
+
 export function getUserDetails(fetch) {
   return fetchDashboardApiResource(
     "get_user_details", "user_details", fetch);
@@ -98,19 +140,21 @@ function getPipelineStatus(fetch) {
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   return (fetchOptions ?
-    fetch(`/dashboard-api/${endpoint}`, fetchOptions) :
-    fetch(`/dashboard-api/${endpoint}`)
+    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
+    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
   )
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
-    .catch((err) => {
-      console.error(resourceKey ?
-        `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
-        `Error while fetching resource from endpoint ${endpoint}: ${err}`
-      );
-      return Promise.reject(err);
-    });
+    .catch((err) => logErrorOnFetchResource(err, endpoint, resourceKey));
+}
+
+function logErrorOnFetchResource(err, endpoint, resourceKey) {
+  console.error(resourceKey ?
+    `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
+    `Error while fetching resource from endpoint ${endpoint}: ${err}`
+  );
+  return Promise.reject(err);
 }
 
 function collateInstitutionStatus({
@@ -132,7 +176,7 @@ function collateInstitutionStatus({
     }));
 }
 
-function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs) {
+export function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {
   return instKeyBatchDatePairs.map(([instKey, batchDate]) => (
     { "institution key": instKey, "batch date": batchDate }
   ));

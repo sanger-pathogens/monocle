@@ -15,7 +15,7 @@ it("is closed when the close button is clicked", async () => {
     render(Dialog, { isOpen: true });
 
   expect(container.querySelector(DIALOG_SELECTOR))
-    .toBeDefined();
+    .not.toBeNull();
 
   await fireEvent.click(getByLabelText(CLOSE_BTN_LABEL));
 
@@ -27,7 +27,7 @@ it("is closed when the background is clicked", async () => {
   const { container } = render(Dialog, { isOpen: true });
 
   expect(container.querySelector(DIALOG_SELECTOR))
-    .toBeDefined();
+    .not.toBeNull();
 
   const background = container.querySelector(DIALOG_SELECTOR);
   await fireEvent.click(background);
@@ -41,6 +41,6 @@ it("isn't closed when the content is clicked", async () => {
 
   await fireEvent.click(container.querySelector(".content"));
 
-  expect(container.querySelector(DIALOG_SELECTOR)).toBeDefined();
+  expect(container.querySelector(DIALOG_SELECTOR)).not.toBeNull();
 });
 

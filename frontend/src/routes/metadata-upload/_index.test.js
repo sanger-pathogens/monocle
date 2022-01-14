@@ -12,17 +12,22 @@ it("is rendered w/ the data upload form", () => {
 it("shows the dialog on the upload success event", async () => {
   const DIALOG_TITLE = "Upload success";
   const ROLE_DIALOG = "dialog";
+  const ROLE_HEADING = "heading";
 
   const { getByRole, queryByRole } = render(UploadingPage);
 
-  expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE }))
+  expect(queryByRole(ROLE_DIALOG))
     .toBeNull();
+  expect(queryByRole(ROLE_HEADING, { name: DIALOG_TITLE }))
+    .toBeDefined();
 
   await fireEvent.submit(getByRole("form"));
 
-  expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE }))
+  expect(getByRole(ROLE_DIALOG))
     .toBeDefined();
-  expect(queryByRole("link", { name: "go to the dashboard" }))
+  expect(getByRole(ROLE_HEADING, { name: DIALOG_TITLE }))
+    .toBeDefined();
+  expect(getByRole("link", { name: "go to the dashboard" }))
     .toBeDefined();
 });
 

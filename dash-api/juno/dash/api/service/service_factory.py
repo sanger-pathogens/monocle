@@ -54,7 +54,7 @@ class ServiceFactory:
         return UserService(username)
 
     @staticmethod
-    def data_service(username: str) -> DataService:
+    def sample_data_service(username: str) -> DataService:
         if not ServiceFactory.TEST_MODE:
             return DataService(username)
         else:

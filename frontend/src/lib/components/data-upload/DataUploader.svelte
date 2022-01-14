@@ -12,8 +12,13 @@
   let uploading = false;
   let validationErrors = [];
 
+  // `files` is referenced here only to indicate Svelte's reactive statemnt that `clearValidationErrors()`
+  // should be run each time `files` changes. (See https://svelte.dev/docs#3_$_marks_a_statement_as_reactive.)
+  $: clearValidationErrors(files);
+
   function onFileSubmit() {
     uploading = true;
+    clearValidationErrors();
 
     uploadFiles(emitUploadSuccess)
       .catch(onUploadError)
@@ -88,30 +93,34 @@
       []
     );
   }
+
+  function clearValidationErrors() {
+    validationErrors = [];
+  }
 </script>
 
 
 <form on:submit|preventDefault={onFileSubmit} aria-labelledby={ariaLabelledby || null}>
-	<fieldset disabled={uploading}>
-		<input
-			bind:files
-			type="file"
-			{accept}
-			multiple
-		>
-		
-		<button type="submit" class="primary" disabled={files.length === 0}>
-			Upload
-		</button>
-	</fieldset>
+  <fieldset disabled={uploading}>
+    <input
+      bind:files
+      type="file"
+      {accept}
+      multiple
+    >
+
+    <button type="submit" class="primary" disabled={files.length === 0}>
+      Upload
+    </button>
+  </fieldset>
 </form>
 
 {#if uploading}
-	<LoadingIndicator />
+  <LoadingIndicator />
 {/if}
 
 {#if validationErrors.length}
-	<ValidationErrorList errors={validationErrors} />
+  <ValidationErrorList errors={validationErrors} />
 {/if}
 
 

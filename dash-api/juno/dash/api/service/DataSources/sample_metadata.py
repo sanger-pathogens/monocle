@@ -146,8 +146,8 @@ class Monocle_Client:
             request_headers = {'Content-type': 'application/json;charset=utf-8'}
         try:
             logging.info("request to Metadata API: {}".format(request_url))
+            logging.debug("\nRequest to metadata API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
             http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
-            logging.info("\nRequest to metadata API:\nURL = {}\nheaders = {}\nPOST data = {}".format(request_url,request_headers,request_data))
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))

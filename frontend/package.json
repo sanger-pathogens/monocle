@@ -15,19 +15,20 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.7",
-    "@sveltejs/adapter-node": "^1.0.0-next.27",
+    "@babel/preset-env": "^7.16.4",
+    "@sveltejs/adapter-node": "next",
     "@sveltejs/kit": "next",
     "@testing-library/svelte": "^3.0.3",
-    "babel-jest": "^27.0.6",
+    "babel-jest": "^27.4.6",
+    "babel-plugin-transform-vite-meta-env": "^1.0.3",
     "eslint": "^7.32.0",
     "eslint-plugin-jest": "^24.5.2",
     "eslint-plugin-svelte3": "^3.2.1",
     "frappe-charts": "^1.6.2",
-    "jest": "^27.0.6",
-    "svelte": "^3.43.1",
-    "svelte-jester": "^1.8.2",
-    "svelte-select": "^4.4.3"
+    "jest": "^27.4.7",
+    "svelte": "^3.44.2",
+    "svelte-jester": "^2.1.5",
+    "svelte-select": "^4.4.6"
   },
   "_id": "Monocle frontend@0.0.1",
   "jest": {
@@ -41,8 +42,7 @@
       "^.+\\.svelte$": "svelte-jester"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!svelte-select)",
-      ".svelte-kit/"
+      "node_modules/(?!svelte-select)"
     ],
     "moduleNameMapper": {
       "^\\$lib(.*)$": "<rootDir>/src/lib$1",

@@ -67,22 +67,10 @@ it.each([
     .toBeDefined();
 });
 
-it("displays the bulk download link", () => {
-  const { getByRole } = render(InstitutionStatus, {
-    institutionName: INSTITUTION_NAME,
-    batches: { received: 42, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  });
-
-  expect(getByRole("link", { name: "Bulk data download" }))
-    .toBeDefined();
-});
-
 it.each([
- ["batch", { batches: { _ERROR: API_ERROR }, sequencingStatus: {}, pipelineStatus: {} }],
- ["sequencing status", { batches: {}, sequencingStatus: { _ERROR: API_ERROR }, pipelineStatus: {} }],
- ["pipeline status", { batches: {}, sequencingStatus: {}, pipelineStatus: { _ERROR: API_ERROR } }]
+  ["batch", { batches: { _ERROR: API_ERROR }, sequencingStatus: {}, pipelineStatus: {} }],
+  ["sequencing status", { batches: {}, sequencingStatus: { _ERROR: API_ERROR }, pipelineStatus: {} }],
+  ["pipeline status", { batches: {}, sequencingStatus: {}, pipelineStatus: { _ERROR: API_ERROR } }]
 ])("displays an institution name and an API error if %s response has the error field", (endpointName, props) => {
   const { getByRole, getByText, queryByRole } = render(InstitutionStatus, {
     institutionName: INSTITUTION_NAME,

@@ -2,6 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import DataUploader from "./DataUploader.svelte";
 
 const FILE = "file";
+const FORM_TAG_NAME = "form";
 const UPLOAD_URL = "/data";
 
 it("enables the upload button only when the input has a file", async () => {
@@ -32,11 +33,11 @@ describe("file uploading", () => {
 
     expect(inputContainer.disabled).toBeFalsy();
 
-    await fireEvent.submit(container.querySelector("form"));
+    await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
     
     expect(inputContainer.disabled).toBeTruthy();
-    expect(inputContainer.querySelector("input[type=file]")).toBeDefined();
-    expect(inputContainer.querySelector("button")).toBeDefined();
+    expect(inputContainer.querySelector("input[type=file]")).not.toBeNull();
+    expect(inputContainer.querySelector("button")).not.toBeNull();
   });
 
   it("makes the correct API call for each file", async () => {
@@ -48,7 +49,7 @@ describe("file uploading", () => {
       Promise.resolve({ ok: true })
     );
     
-    await fireEvent.submit(container.querySelector("form"));
+    await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
     
     expect(fetch).toHaveBeenCalledTimes(FILES.length);
     FILES.forEach((file, i) => {
@@ -74,7 +75,7 @@ describe("file uploading", () => {
       Promise.resolve({ ok: true })
     );
     
-    fireEvent.submit(container.querySelector("form"));
+    fireEvent.submit(container.querySelector(FORM_TAG_NAME));
     
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(FILES.length);
@@ -82,30 +83,6 @@ describe("file uploading", () => {
     });
   });
   
-  it("displays validation errors", async () => {
-    let validationErrorElements;
-    const { container, queryAllByText } = render(DataUploader, {
-      files: FILES,
-      uploadUrl: UPLOAD_URL
-    });
-    const validationError = "some validation error";
-    global.fetch = jest.fn(() => Promise.resolve({
-      ok: false,
-      json: () => Promise.resolve(validationError)
-    }));
-
-    validationErrorElements = queryAllByText(validationError);
-    expect(validationErrorElements).toHaveLength(0);
-
-    fireEvent.submit(container.querySelector("form"));
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(FILES.length);
-      validationErrorElements = queryAllByText(validationError);
-      expect(validationErrorElements).toHaveLength(FILES.length);
-    });
-  });
-
   it("displays an error on fetch error", async () => {
     const { container } = render(DataUploader, {
       files: FILES,
@@ -117,7 +94,7 @@ describe("file uploading", () => {
     );
     global.alert = jest.fn();
 
-    fireEvent.submit(container.querySelector("form"));
+    fireEvent.submit(container.querySelector(FORM_TAG_NAME));
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
@@ -141,7 +118,7 @@ describe("file uploading", () => {
     }));
     global.alert = jest.fn();
 
-    fireEvent.submit(container.querySelector("form"));
+    fireEvent.submit(container.querySelector(FORM_TAG_NAME));
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(2);
@@ -151,20 +128,97 @@ describe("file uploading", () => {
       );
     });
   });
+
+  describe("validation errors", () => {
+    const VALIDATION_ERROR = "some validation error";
+
+    beforeEach(() => {
+      global.fetch = jest.fn(() => Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve(VALIDATION_ERROR)
+      }));
+    });
+
+    it("are displayed on upload validation error", async () => {
+      let validationErrorElements;
+      const { container, queryAllByText } = render(DataUploader, {
+        files: FILES,
+        uploadUrl: UPLOAD_URL
+      });
+
+      validationErrorElements = queryAllByText(VALIDATION_ERROR);
+      expect(validationErrorElements).toHaveLength(0);
+
+      fireEvent.submit(container.querySelector(FORM_TAG_NAME));
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledTimes(FILES.length);
+        validationErrorElements = queryAllByText(VALIDATION_ERROR);
+        expect(validationErrorElements).toHaveLength(FILES.length);
+      });
+    });
+
+    it("are hidden on clicking submit", async () => {
+      let validationErrorElements;
+      const { container, queryAllByText } = render(DataUploader, {
+        files: FILES,
+        uploadUrl: UPLOAD_URL
+      });
+
+      validationErrorElements = queryAllByText(VALIDATION_ERROR);
+      expect(validationErrorElements).toHaveLength(0);
+
+      fireEvent.submit(container.querySelector(FORM_TAG_NAME));
+
+      await waitFor(() => {
+        validationErrorElements = queryAllByText(VALIDATION_ERROR);
+        expect(validationErrorElements).toHaveLength(FILES.length);
+      });
+
+      await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
+
+      validationErrorElements = queryAllByText(VALIDATION_ERROR);
+      expect(validationErrorElements).toHaveLength(0);
+    });
+
+    it("are hidden on input file change", async () => {
+      let validationErrorElements;
+      const { component, container, queryAllByText } = render(DataUploader, {
+        files: FILES,
+        uploadUrl: UPLOAD_URL
+      });
+
+      validationErrorElements = queryAllByText(VALIDATION_ERROR);
+      expect(validationErrorElements).toHaveLength(0);
+
+      fireEvent.submit(container.querySelector(FORM_TAG_NAME));
+
+      await waitFor(() => {
+        validationErrorElements = queryAllByText(VALIDATION_ERROR);
+        expect(validationErrorElements).toHaveLength(FILES.length);
+      });
+
+      component.$set({ files: [] });
+
+      await waitFor(() => {
+        validationErrorElements = queryAllByText(VALIDATION_ERROR);
+        expect(validationErrorElements).toHaveLength(0);
+      });
+    });
+  });
 });
 
 describe("the loading indicator", () => {
   const LOADING_LABEL_TEXT = "please wait";
 
   it("shown when uploading is in progress", async () => {
-    const { container, queryByLabelText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
-    const loadingIndicator = queryByLabelText(LOADING_LABEL_TEXT);
+    const { container, getByLabelText, queryByLabelText } = render(DataUploader, { uploadUrl: UPLOAD_URL });
 
-    expect(loadingIndicator).toBeNull();
+    expect(queryByLabelText(LOADING_LABEL_TEXT)).toBeNull();
 
-    await fireEvent.submit(container.querySelector("form"));
+    await fireEvent.submit(container.querySelector(FORM_TAG_NAME));
 
-    expect(loadingIndicator).toBeDefined();
+    expect(getByLabelText(LOADING_LABEL_TEXT)).toBeDefined();
   });
 
   it("is hidden after uploading resolves", async () => {
@@ -176,7 +230,7 @@ describe("the loading indicator", () => {
 
     expect(loadingIndicator).toBeNull();
 
-    fireEvent.submit(container.querySelector("form"));
+    fireEvent.submit(container.querySelector(FORM_TAG_NAME));
 
     await waitFor(() =>
       expect(loadingIndicator).toBeNull()

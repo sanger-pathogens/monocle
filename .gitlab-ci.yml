@@ -63,7 +63,7 @@ Dashboard API unit tests:
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 85
+    - coverage report --show-missing --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
@@ -103,7 +103,7 @@ Metadata unit tests:
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 85
+    - coverage report --show-missing --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:

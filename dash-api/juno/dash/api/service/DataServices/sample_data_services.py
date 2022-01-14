@@ -74,7 +74,7 @@ class MonocleSampleData:
       Optional flags:
       'include_in_silico' if in silico data should be retrieved and merged into the metadata.
       
-      By default, returns array of samples that match the filter(s); each sample is a dict containing the metadata
+      Returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico data.  Metadata and in silico data are represented with the same format:
       a dict of fields, where each dict value is a dict with the name, column position (order) and value
       for that field.
@@ -90,10 +90,19 @@ class MonocleSampleData:
          },
          ...
       ]
+      
+      If no samples were found, returns None
       """
 
       # get_filtered_samples filters the samples for us, from the sequencing status data
-      filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
+      try:
+         filtered_samples = self.get_filtered_samples(sample_filters, disable_public_name_fetch=True)
+      # catch 404s -- this means the metadata API found no matching samples
+      except urllib.error.HTTPError as e:
+         if '404' not in str(e):
+            raise e
+         return None
+
       # be careful using total_num_matching_samples in following lines, as this is the complete
       # number of samples, but pagination params mean we may below be working with a smaller
       # (possibly empty) list of samples
@@ -225,14 +234,21 @@ class MonocleSampleData:
       Pass sample filters dict (describes the filters applied in the front end)
       and an optional boolean flag per assembly, annotation, and reads types of lane files.
       Returns a dict w/ a summary for an expected sample bulk download.
-
       {
          num_samples: <int>,
          size: <str>,
          size_zipped: <str>
       }
+      If no samples were found, returns None
       """
-      filtered_samples = self.get_filtered_samples(sample_filters)
+      try:
+         filtered_samples = self.get_filtered_samples(sample_filters)
+      # catch 404s -- this means the metadata API found no matching samples
+      except urllib.error.HTTPError as e:
+         if '404' not in str(e):
+            raise e
+         return None
+      
       public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
          filtered_samples,
          assemblies=kwargs.get('assemblies', False),
@@ -402,7 +418,7 @@ class MonocleSampleData:
             lane_file_names.append(f'{lane_id}{file_suffix}')
       return lane_file_names
 
-   def get_zip_download_location(self):
+   def get_bulk_download_location(self):
       data_source_config      = self._load_data_source_config()
       if DATA_INST_VIEW_ENVIRON not in environ:
          return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
@@ -411,8 +427,25 @@ class MonocleSampleData:
           return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
       except KeyError as err:
           self._download_config_error(err)
+
+   def get_bulk_download_route(self):
+      data_source_config = self._load_data_source_config()
+      try:
+          return data_source_config['data_download']['download_route']
+      except KeyError as err:
+          self._download_config_error(err)
           
-          
+   def get_bulk_download_max_samples_per_zip(self):
+      data_source_config = self._load_data_source_config()
+      try:
+          max_samples_per_zip = int(data_source_config['data_download']['max_samples_per_zip'])
+      except (KeyError, ValueError) as err:
+          self._download_config_error(err)
+      if not max_samples_per_zip > 0:
+          self._download_config_error("data source config data_download.max_samples_per_zip must be a positive integer, not \"{}\"".format(max_samples_per_zip))
+      return max_samples_per_zip
+      
+
    def get_metadata_for_download(self, download_hostname, institution, category, status):
       """
       This acts as a wrapper for get_csv_download().
