@@ -20,8 +20,8 @@ The script can be run in a dash-api container.
 - The `--volume` options make the qc-data code, config files and kraken reports
   available in the container; and mount he output directory on the host
   so the QC data files are available.
-- The `--env` option sets MONOCLE_DATA in the container rnvironment, which
-  is where the kraken_report directory can be found.
+- The `--env` option sets MONOCLE_DATA in the container environment, which
+  is where the kraken_report directory has been mounted in the container.
 - The `--user` option will run the container as the user that starts it, so
   the output files are owned by that user rather than by root.
 

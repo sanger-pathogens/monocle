@@ -33,7 +33,8 @@ def get_lane_ids(db):
         logging.info(f'{institution}: {len(sample_ids)} sample ids')
 
         if not sample_ids:
-            logging.warning(f'No sample ids found for {institution}')
+            # we expect institutions without samples => this could be noisy in a cron job => INFO
+            logging.info(f'No sample ids found for {institution}')
 
         for sample_id in sample_ids:
             try:
@@ -55,19 +56,20 @@ def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
     # Get relative abundance for species
     if os.path.exists(kraken_report):
         rel_abnd = _get_relative_abundance(kraken_report, species)
-        # Get lane id and create directory
-        lane_id = os.path.basename(kraken_report).split('_kraken.report')[0]
-        _mkdir(f'{QC_DIR}/{lane_id}')
-        # Update QC data
-        qc_info = {
-            "species": species,
-            "value": rel_abnd,
-            "timestamp": str(datetime.now())}
-
-        qc_data.update('rel_abundance', qc_info)
+        if rel_abnd is not None:
+            # Get lane id and create directory
+            lane_id = os.path.basename(kraken_report).split('_kraken.report')[0]
+            _mkdir(f'{QC_DIR}/{lane_id}')
+            # Update QC data
+            qc_info = {
+                  "species": species,
+                  "value": rel_abnd,
+                  "timestamp": str(datetime.now())}
+            qc_data.update('rel_abundance', qc_info)
 
     else:
-        logging.warning(f'No kraken report found for {lane_id}.')
+        # we expect lanes without kraken reports => this could be noisy in a cron job => INFO
+        logging.info(f'No kraken report found for {lane_id}.')
 
     return qc_data
 
@@ -75,12 +77,16 @@ def update_relative_abundance(lane_id, kraken_data_dir, species, qc_data):
 def _get_relative_abundance(kraken_report, species):
     """Get the relative abundance for a species from the kraken report"""
 
+    rel_abnd = None
     file = open(kraken_report, "r")
     for line in file:
         if re.search(f'{species}$', line):
             rel_abnd = line.split('\t')[0].split(' ')[1]
             file.close()
             break
+         
+    if rel_abnd is None:
+        logging.warning(f'Species \"{species}\" not found in kraken report{kraken_report}.')
 
     return rel_abnd
 
