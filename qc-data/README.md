@@ -1,18 +1,30 @@
 # QC Data Service
 
+
+
 ## Running unit tests in situ
 
+The unit tests need to be run inside a dash-api container.  The `latest` version can be used
+provided this branch does not require any dash-api chnages that have been made since the latest release.
+
+If you need a more recent docker image from this branch, use `TAG="commit-"$(git rev-parse --short=8 HEAD)`
+(remember you will need to push the commit and wait for the pipeline to build the image).
+
 ```
-cd dash-api/juno
-docker build --rm -t dash-api:test .
-cd ../../
-docker run -v `pwd`/qc-data:/app/qc-data -v `pwd`/qc-data/unittests.sh:/app/unittests.sh -it --rm dash-api:test /app/unittests.sh
+TAG="latest"
+IMAGE="gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:${TAG}"
+docker pull "$IMAGE"
+docker run -it --rm  \
+           --volume `pwd`:/app/qc-data \
+           --volume `pwd`/unittests.sh:/app/unittests.sh \
+           "$IMAGE" \
+           bash -c "/app/unittests.sh && cd qc-data && coverage report"
 ```
 
 
 ## Running the get_qc_data.py script
 
-The script can be run in a dash-api container.
+The script can be run in a dash-api container (as with unit tests: see note above).
 
 - API queries need to be made, a Monocle service must be running.
 - The `--network` option attaches the container to the Monocle service docker
@@ -26,6 +38,9 @@ The script can be run in a dash-api container.
   the output files are owned by that user rather than by root.
 
 ```
+TAG="latest"
+IMAGE="gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:${TAG}"
+docker pull "$IMAGE"
 docker run -it --rm \
            --user    `id -u`:`id -g` \
            --volume  `pwd`/qc-data:/app/qc-data \
@@ -35,6 +50,7 @@ docker run -it --rm \
            --volume  `pwd`/monocle_pipeline_qc:/app/monocle_pipeline_qc \
            --env     "MONOCLE_DATA=/home/monocle/monocle_juno" \
            --env     "PYTHONPATH=/app:/app/qc-data" \
-           --network monocle_default dash-api:test \
+           --network monocle_default \
+           "$IMAGE" \
            bash -c "python3 ./qc-data/bin/get_qc_data.py"
 ```
