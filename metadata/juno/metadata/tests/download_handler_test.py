@@ -2,7 +2,7 @@ import unittest
 import json
 from unittest.mock import patch, Mock
 from metadata.tests.test_data import *
-from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler
+from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler, DownloadQCDataHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
 
@@ -226,7 +226,7 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             data = json.load(cfg)
             sprd_def = SpreadsheetDefinition(2, data['in_silico_data']['spreadsheet_definition'])
             handler = DownloadInSilicoHandler(self.dao_mock, sprd_def)
-            results = handler.create_download_response([TEST_LANE_1, TEST_LANE_2])
+            results = handler.create_download_response([TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2])
             self.assertIsNotNone(results)
             self.assertEqual(len(results), 2)
             # Sample 1
@@ -290,3 +290,88 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             self.assertEqual(results[1]['cps_type'][value_field_name], 'III')
             self.assertEqual(results[1]['ST'][value_field_name], 'ST-II')
             self.assertEqual(results[1]['adhP'][value_field_name], '3')
+
+class TestDownloadQCHandler(unittest.TestCase):
+    """ Unit tests for the DownloadQCDataHandler class """
+
+    CONFIG_FILE = 'config.json'
+
+    def setUp(self) -> None:
+        fields = {
+            "column_1": {
+                "title": "COLUMN_1_NAME"
+            },
+            "column_2": {
+                "title": "COLUMN_2_NAME"
+            },
+            "column_3": {
+                "title": "COLUMN_3_NAME"
+            }
+        }
+
+        with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
+            self.dao_mock = dao_mock
+            self.test_spreadsheet_def = SpreadsheetDefinition(5, fields)
+            self.under_test = DownloadQCDataHandler(self.dao_mock, self.test_spreadsheet_def)
+
+    def test_append_to_dict(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', 'test_value1')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'name': 'COLUMN_1_NAME',
+                'value': 'test_value1'
+            }
+        )
+
+        self.under_test._append_to_dict(results, 'column_2', 'test_value2')
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            results['column_2'],
+            {
+                'order': 2,
+                'name': 'COLUMN_2_NAME',
+                'value': 'test_value2'
+            }
+        )
+
+    def test_append_to_dict_novalue(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', None)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'name': 'COLUMN_1_NAME',
+                'value': ''
+            }
+        )
+
+    def test_read_download_in_silico_data(self) -> None:
+        keys = ['key1', 'key2']
+        mock_retval = [Mock(), Mock()]
+        self.dao_mock.get_download_qc_data.return_value = mock_retval
+        qc_data_list = self.under_test.read_download_qc_data(keys)
+        self.dao_mock.get_download_qc_data.assert_called_once_with(keys)
+        self.assertEqual(qc_data_list, mock_retval)
+
+    def test_create_download_response(self) -> None:
+        value_field_name = 'value'
+        with open(self.CONFIG_FILE) as cfg:
+            data = json.load(cfg)
+            sprd_def = SpreadsheetDefinition(2, data['qc_data']['spreadsheet_definition'])
+            handler = DownloadQCDataHandler(self.dao_mock, sprd_def)
+            results = handler.create_download_response([TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2])
+            self.assertIsNotNone(results)
+            self.assertEqual(len(results), 2)
+            # Sample 1
+            self.assertEqual(results[0]['lane_id'][value_field_name], '50000_2#282')
+            self.assertEqual(results[0]['rel_abun_sa'][value_field_name], '93.21')
+            ## Sample 2
+            self.assertEqual(results[1]['lane_id'][value_field_name], '50000_2#287')
+            self.assertEqual(results[1]['rel_abun_sa'][value_field_name], '68.58')

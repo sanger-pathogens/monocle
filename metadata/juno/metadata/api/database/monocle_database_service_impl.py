@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.qc_data import QCData
 from metadata.api.model.institution import Institution
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -33,7 +34,7 @@ class Connector:
 
 
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
-    """ DAO for metadata and in silico data access """
+    """ DAO for metadata,in silico data and QC data access """
 
     DASHBOARD_API_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
     DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
@@ -268,6 +269,25 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
                 twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
             FROM in_silico
+            WHERE
+                lane_id IN :lanes""")
+
+    DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
+    
+    INSERT_OR_UPDATE_QC_DATA_SQL = text(""" \
+            INSERT INTO qc_data (
+                lane_id, rel_abun_sa
+            ) VALUES (
+                :lane_id, :rel_abun_sa
+            ) ON DUPLICATE KEY UPDATE
+                lane_id = :lane_id,
+                rel_abun_sa = :rel_abun_sa
+            """)
+    
+    SELECT_LANES_QC_DATA_SQL = text(""" \
+            SELECT
+                lane_id, rel_abun_sa
+            FROM qc_data
             WHERE
                 lane_id IN :lanes""")
 
@@ -624,6 +644,27 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         logger.info("update_lane_in_silico_data completed")
 
+    def update_lane_qc_data(self, qc_data_list: List[QCData]) -> None:
+        """ Update sample QC data in the database """
+
+        if not qc_data_list:
+            return
+
+        logger.info(
+            "update_lane_qc_data: About to write {} upload samples to the database...".format(len(qc_data_list))
+        )
+
+        # Use a transaction...
+        with self.connector.get_transactional_connection() as con:
+            for qc_data in qc_data_list:
+                con.execute(
+                    self.INSERT_OR_UPDATE_QC_DATA_SQL,
+                    lane_id=self.convert_string(qc_data.lane_id),
+                    rel_abun_sa=self.convert_string(qc_data.rel_abun_sa)
+                )
+
+        logger.info("update_lane_qc_data completed")
+
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download metadata for given list of samples """
 
@@ -790,6 +831,28 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         RPOBGBS_2_variant=row['RPOBGBS_2_variant'],
                         RPOBGBS_3_variant=row['RPOBGBS_3_variant'],
                         RPOBGBS_4_variant=row['RPOBGBS_4_variant']
+                    )
+                )
+
+        return results
+
+    def get_download_qc_data(self, keys: List[str]) -> List[QCData]:
+        """ Get download QC data for given list of lane keys """
+
+        if len(keys) == 0:
+            return []
+
+        results = []
+        lane_ids = tuple(keys)
+
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
+
+            for row in rs:
+                results.append(
+                    QCData(
+                        lane_id=row['lane_id'],
+                        rel_abun_sa=row['rel_abun_sa']
                     )
                 )
 

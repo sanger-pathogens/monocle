@@ -4,7 +4,7 @@ from flask import Config
 from injector import singleton, Module, provider
 from metadata.api.configuration import *
 from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
-from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler
+from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler, DownloadQCDataHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, Connector
 from metadata.api.database.monocle_database_service_noop_impl import MonocleDatabaseServiceNoOpImpl
@@ -59,3 +59,7 @@ class MetadataApiModule(Module):
     @provider
     def download_in_silico_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> DownloadInSilicoHandler:
         return DownloadInSilicoHandler(metadata_dao, read_spreadsheet_definition_config(config['in_silico_data']))
+
+    @provider
+    def download_qc_data_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> DownloadQCDataHandler:
+        return DownloadQCDataHandler(metadata_dao, read_spreadsheet_definition_config(config['qc_data']))
