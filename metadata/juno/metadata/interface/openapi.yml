@@ -208,19 +208,18 @@ components:
       type: object
       required:
         - lane_id
+      example: {"lane_id": "24936_2#76", "rel_abun_sa": 87.43}
       properties:
         lane_id:
           type: string
           minLength: 3
           maxLength: 16
           pattern: ^[0-9_#]+$
-          example: ["24936_2#76", "24937_1#22"]
         rel_abun_sa:
           type: number
           format: float
           minimum: 0
           maximum: 100
-          example: ["87.43", "97.26"]
     
     ValidationErrors:
       description: "Error response"
