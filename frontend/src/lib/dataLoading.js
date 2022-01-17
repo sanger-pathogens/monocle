@@ -104,10 +104,10 @@ fetch
       headers: JSON_HEADERS,
       body: JSON.stringify(payload)
     })
-    .then((response) =>
-      response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
-    .catch((err) =>
-      logErrorOnFetchResource(err, "get_metadata"));
+      .then((response) =>
+        response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
+      .catch((err) =>
+        logErrorOnFetchResource(err, "get_metadata"));
   }
 
   return fetchDashboardApiResource(

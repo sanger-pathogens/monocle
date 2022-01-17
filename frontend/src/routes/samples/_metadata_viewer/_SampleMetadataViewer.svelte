@@ -5,7 +5,7 @@
 
   export let batches = undefined;
 
-  const MAX_METADATA_FETCH_FREQUENCY_MS = 800
+  const MAX_METADATA_FETCH_FREQUENCY_MS = 800;
   const NUM_METADATA_ROWS_PER_PAGE = 16;
 
   let isLastPage = false;

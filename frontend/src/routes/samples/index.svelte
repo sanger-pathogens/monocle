@@ -116,18 +116,18 @@
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
       asCsv: true
     }, fetch)
-    .then((csvBlob) => {
-      csvBlobUrl = URL.createObjectURL(csvBlob);
-      hiddenDownloadLink = document.body.appendChild(
-        createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
-      hiddenDownloadLink.click();
-    })
-    .catch((err) => console.error(`Error on creating metadata download: ${err}`))
-    .finally(() => {
-      isPreparingMetadataDownload = false;
-      hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
-      URL.revokeObjectURL(csvBlobUrl);
-    });
+      .then((csvBlob) => {
+        csvBlobUrl = URL.createObjectURL(csvBlob);
+        hiddenDownloadLink = document.body.appendChild(
+          createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
+        hiddenDownloadLink.click();
+      })
+      .catch((err) => console.error(`Error on creating metadata download: ${err}`))
+      .finally(() => {
+        isPreparingMetadataDownload = false;
+        hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
+        URL.revokeObjectURL(csvBlobUrl);
+      });
   }
 
   function createHiddenDownloadLink(url, fileName) {

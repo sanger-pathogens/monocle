@@ -3,7 +3,7 @@
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
 
-  let downloadEstimateLatest;
+  let downloadEstimateLatest = undefined;
   export let ariaLabelledby;
   export let batches = undefined;
   export { downloadEstimateLatest as downloadEstimate };
@@ -104,7 +104,7 @@
             {#if estimate}
               {estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"} of {estimate.sizeZipped}
             {:else}
-              <LoadingIcon label="Estimating. Please wait" />
+              <LoadingIcon label="Estimating the download size. Please wait" />
             {/if}
           {:else}
             0

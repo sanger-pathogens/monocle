@@ -1,13 +1,25 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import debounce from "$lib/utils/debounce.js";
 import {
   getBatches,
+  getBulkDownloadInfo,
   getInstitutions,
   getSampleMetadata
 } from "$lib/dataLoading.js";
 import DataViewerPage from "./index.svelte";
 
+// Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
+jest.mock("$lib/utils/debounce.js", () => {
+  const originalDebounce = jest.requireActual("$lib/utils/debounce.js");
+  return {
+    __esModule: true,
+    default: jest.fn(originalDebounce.default)
+  };
+});
+
 jest.mock("$lib/dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
+  getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
   getInstitutions: jest.fn(() => Promise.resolve()),
   getSampleMetadata: jest.fn(() => Promise.resolve())
 }));
@@ -59,13 +71,6 @@ describe("once batches are fetched", () => {
     await waitFor(() => {
       expect(queryByLabelText("please wait")).toBeNull();
     });
-  });
-
-  it("displays the bulk download form", async () => {
-    const { findByRole } = render(DataViewerPage);
-
-    const bulkDownloadForm = await findByRole("form", { name: "Download selected samples" });
-    expect(bulkDownloadForm).toBeDefined();
   });
 
   describe("batch selector", () => {
@@ -152,6 +157,96 @@ describe("once batches are fetched", () => {
     }
   });
 
+  describe("bulk download button", () => {
+    const ALT_ZIP_SIZE = "13 TB";
+    const LABEL_ASSEMBLIES = "Assemblies";
+    const LABEL_LOADING_DOWNLOAD_BUTTON = "Download samples";
+    const ROLE_CHECKBOX = "checkbox";
+
+    it("displays a loading indicator as part of its label while download estimate is being fetched", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage);
+
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      await fireEvent.click(selectAllBtn);
+
+      expect(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }).querySelector(".spinner"))
+        .not.toBeNull();
+    });
+
+    it("updates the download estimate if selected batches change", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage);
+
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      fireEvent.click(selectAllBtn);
+
+      await waitFor(() => {
+        expect(getByRole(ROLE_BUTTON, { name: "Download samples of size 7 TB" }))
+          .toBeDefined();
+      });
+
+      const clearBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
+      fireEvent.click(clearBtn);
+      getBulkDownloadInfo.mockResolvedValueOnce({ size: "42 TB", size_zipped: ALT_ZIP_SIZE });
+      fireEvent.click(selectAllBtn);
+
+      await waitFor(() => {
+        expect(getByRole(ROLE_BUTTON, { name: `Download samples of size ${ALT_ZIP_SIZE}` }))
+          .toBeDefined();
+      });
+    });
+
+    it("updates the download estimate if selected data types change", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage);
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      fireEvent.click(selectAllBtn);
+      let downloadButton;
+
+      await waitFor(() => {
+        downloadButton = getByRole(ROLE_BUTTON, { name: "Download samples of size 7 TB" });
+        expect(downloadButton).toBeDefined();
+      });
+
+      // Open the bulk download dialog.
+      await fireEvent.click(downloadButton);
+      getBulkDownloadInfo.mockResolvedValueOnce({ size: "42 TB", size_zipped: ALT_ZIP_SIZE });
+      fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+
+      await waitFor(() => {
+        expect(getByRole(ROLE_BUTTON, { name: `Download samples of size ${ALT_ZIP_SIZE}` }))
+          .toBeDefined();
+      });
+    });
+
+    it("debounces the download estimate request", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage);
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      await fireEvent.click(selectAllBtn);
+      // Open the bulk download dialog.
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
+      debounce.mockClear();
+
+      fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+
+      expect(debounce).toHaveBeenCalledTimes(1);
+    });
+
+    it("doesn't request download estimate if the form isn't complete", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage);
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      await fireEvent.click(selectAllBtn);
+      // Open the bulk download dialog.
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
+
+      // Deselect data types.
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      getBulkDownloadInfo.mockClear();
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: "Annotations" }));
+
+      expect(getBulkDownloadInfo).not.toHaveBeenCalled();
+    });
+  });
+
   describe("metadata download button", () => {
     const DOWNLOAD_URL = "some/url";
     const LABEL_METADATA_DOWNLOAD_BUTTON = "Download metadata";
@@ -196,7 +291,7 @@ describe("once batches are fetched", () => {
       const hiddenDownloadLink = document.createElement("a");
       hiddenDownloadLink.click = jest.fn();
       const createAnchorElement = () => hiddenDownloadLink;
-      const { findByRole, getByRole } = render(DataViewerPage, {
+      const { findByRole } = render(DataViewerPage, {
         injectedCreateAnchorElement: createAnchorElement
       });
       const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
@@ -223,7 +318,7 @@ describe("once batches are fetched", () => {
         throw "some error";
       };
       const createAnchorElement = () => hiddenDownloadLink;
-      const { findByRole, getByRole } = render(DataViewerPage, {
+      const { findByRole } = render(DataViewerPage, {
         injectedCreateAnchorElement: createAnchorElement
       });
       const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });

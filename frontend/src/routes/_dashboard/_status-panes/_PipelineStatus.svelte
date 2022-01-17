@@ -1,5 +1,4 @@
 <script>
-  import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import DownloadButtons from "../_DownloadButtons.svelte";
   import FailMessages from "../_FailMessages.svelte";
   import StatusPane from "./_StatusPane.svelte";
