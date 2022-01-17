@@ -1,0 +1,2 @@
+# when testing the `monocle_pipeline_qc` output directory may be created locally; and we don't want it in the repo
+monocle_pipeline_qc

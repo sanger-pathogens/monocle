@@ -3,6 +3,7 @@ from     flask          import jsonify, request, Response
 from     datetime       import datetime
 import   errno
 from     http           import HTTPStatus
+from     http.client    import HTTPS_PORT
 from     itertools      import islice
 import   json
 import   os
@@ -220,6 +221,8 @@ def data_download_route(token: str):
     logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
     
+    logging.info("Data download request headers:\n{}".format(call_request_headers()))
+    
     download_param_file_location = monocle_data.get_bulk_download_location()
     if not Path(download_param_file_location).is_dir():
        logging.error("data downloads directory {} does not exist".format(download_param_file_location))
@@ -228,8 +231,9 @@ def data_download_route(token: str):
     zip_file_basename = token
     zip_file_name     = zip_file_basename + ZIP_SUFFIX
     if Path(download_param_file_location,zip_file_name).is_file():
-      logging.info("reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
+      logging.info("Reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
     else:
+      logging.info("Creating ZIP file {}/{}".format(download_param_file_location,zip_file_name))
       # read params from JSON file on disk containing
       download_param_file_name = "{}.params.json".format(token)
       param_file_path = os.path.join(download_param_file_location,download_param_file_name)
@@ -263,10 +267,23 @@ def data_download_route(token: str):
          basename=zip_file_basename,
          location=zip_file_location
          )
-    zip_file_url = '/'.join([
-        '', # host name; using an empty string gets a leading '/' (required for relative URL)
-        monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
-        zip_file_name])
+      
+    # look for Sanger proxy HTTP headers indicating the hostname as known to the client
+    # so this can be used for the data download redirect
+    try:
+       headers = call_request_headers()
+       uri_scheme_hostname = "{}://{}".format(  ('https' if HTTPS_PORT == int(headers['X-Forwarded-Port']) else 'http'),
+                                                headers['X-Forwarded-Host']
+                                                )
+    except KeyError:
+       # proxy HTTP headers not found -- hopefully not an error, but an request on the internal network
+       logging.info("Cannot find Sanger proxy header X-Forwarded-Host and/or X-Forwarded-Port (hopefully this is a request on the internal network?)")
+       uri_scheme_hostname = ''
+       
+    zip_file_url = '/'.join(  [  uri_scheme_hostname,
+                                 monocle_data.make_download_symlink(cross_institution=True).rstrip('/'),
+                                 zip_file_name]
+                              )
     logging.info("Redirecting data download to {}".format(zip_file_url))
     
     # redirect user to the ZIP file download URL
@@ -313,6 +330,10 @@ def _metadata_as_csv_response(metadata_for_download):
 def call_jsonify(args) -> str:
     """ Split out jsonify call to make testing easier """
     return jsonify(args)
+ 
+def call_request_headers():
+    """ Wraps flask.request.headers to make testing easier """
+    return request.headers
  
 def write_text_file(filename, content) -> str:
     with open(filename, 'w') as textfile:
