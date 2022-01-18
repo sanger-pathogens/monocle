@@ -186,6 +186,14 @@ def get_download_qc_data_route(body: list, download_handler: DownloadQCDataHandl
     else:
         return result, HTTP_NOT_FOUND_STATUS
 
+
+@inject
+def delete_all_qc_data_route(dao: MonocleDatabaseService):
+    """ Delete all QC data to the database """
+    dao.delete_all_qc_data()
+    return HTTP_SUCCEEDED_STATUS
+
+
 @inject
 def get_institution_names_route(dao: MonocleDatabaseService):
     """ Download all institution names from the database """
