@@ -23,8 +23,8 @@
   on:uploadSuccess={openDialog}
 />
 
-<Dialog bind:isOpen={uploadSuccessDialogOpen}>
-  <h3>Upload success</h3>
+<Dialog bind:isOpen={uploadSuccessDialogOpen} ariaLabelledby="dialog-title">
+  <h3 id="dialog-title">Upload success</h3>
 
   <p>All <em>in silico</em> data were successfully uploaded.</p>
   <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>

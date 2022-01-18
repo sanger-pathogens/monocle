@@ -15,7 +15,7 @@
     Show failed
   </button>
 
-  <Dialog bind:isOpen={dialogOpen}>
+  <Dialog bind:isOpen={dialogOpen} ariaLabel={title}>
     <h4>{title}</h4>
 
     <table>

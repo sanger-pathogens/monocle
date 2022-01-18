@@ -1,18 +1,14 @@
 <script>
   import debounce from "$lib/utils/debounce.js";
-  import { getSampleMetadata, transformInstKeyBatchDatePairsIntoPayload } from "$lib/dataLoading.js";
-  import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
+  import { getSampleMetadata } from "$lib/dataLoading.js";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
   export let batches = undefined;
-  export let injectedCreateAnchorElement = undefined;
 
-  const MAX_METADATA_FETCH_FREQUENCY_MS = 800
-  const NUM_METADATA_ROWS_PER_PAGE = 12;
+  const MAX_METADATA_FETCH_FREQUENCY_MS = 800;
+  const NUM_METADATA_ROWS_PER_PAGE = 16;
 
   let isLastPage = false;
-  let isPreparingMetadataDownload = false;
-  let shouldShowMetadataDownloadButton;
   let pageNum = 1;
   let sortedMetadataPromise;
   let metadataTimeoutId;
@@ -21,9 +17,6 @@
   // should re-run only when `batches` has changed.
   $: setToFirstPage(batches);
   $: updateMetadata(batches, pageNum);
-  $: if (!batches?.length) {
-    shouldShowMetadataDownloadButton = false;
-  }
 
   function updateMetadata() {
     showMetadataLoading();
@@ -46,8 +39,7 @@
         const sortedMetadata = sortMetadataByOrder(metadataResponse.samples);
         isLastPage = metadataResponse["last row"] >= metadataResponse["total rows"];
         return sortedMetadata;
-      })
-      .finally(() => shouldShowMetadataDownloadButton = true);
+      });
   }
 
   function sortMetadataByOrder(unsortedMetadata = []) {
@@ -76,41 +68,6 @@
     sortedMetadataPromise = new Promise(() => {});
   }
 
-  function downloadMetadata() {
-    if (!batches?.length) {
-      return;
-    }
-
-    isPreparingMetadataDownload = true;
-
-    let csvBlobUrl;
-    let hiddenDownloadLink;
-    getSampleMetadata({
-      instKeyBatchDatePairs: batches,
-      asCsv: true
-    }, fetch)
-    .then((csvBlob) => {
-      csvBlobUrl = URL.createObjectURL(csvBlob);
-      hiddenDownloadLink = document.body.appendChild(
-        createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
-      hiddenDownloadLink.click();
-    })
-    .catch((err) => console.error(`Error on creating metadata download: ${err}`))
-    .finally(() => {
-      isPreparingMetadataDownload = false;
-      hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
-      URL.revokeObjectURL(csvBlobUrl);
-    });
-  }
-
-  function createHiddenDownloadLink(url, fileName) {
-    const a = injectedCreateAnchorElement?.() || document.createElement("a");
-    a.style = "display: none";
-    a.href = url;
-    a.download = fileName;
-    return a;
-  }
-
   function incrementPage() {
     pageNum += 1;
   }
@@ -133,20 +90,6 @@
 
 {#if batches?.length}
   <section>
-    {#if shouldShowMetadataDownloadButton}
-    <button
-      on:click={downloadMetadata}
-      class="compact"
-      type="button"
-      disabled={isPreparingMetadataDownload}
-    >
-      {#if isPreparingMetadataDownload}
-        Preparing download <LoadingIcon />
-      {:else}
-        Download metadata
-      {/if}
-    </button>
-    {/if}
 
     <SampleMetadataViewerWithoutPaginaton metadataPromise={sortedMetadataPromise} />
 

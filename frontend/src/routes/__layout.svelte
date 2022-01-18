@@ -67,8 +67,25 @@ main {
   font-size: 1.1rem;
 }
 
+:global(table.dense td) {
+  font-size: .95rem;
+  padding: .3rem;
+}
+@media (min-width: 1278px) {
+  :global(table.dense td) {
+    padding: .5rem;
+  }
+}
+
 :global(a[role=button]):hover {
   text-decoration: none;
+}
+
+:global(button),
+:global([role=button]),
+:global(input[type="button"]),
+:global(input[type="submit"]) {
+  border-color: var(--color-border);
 }
 
 :global(button.compact),

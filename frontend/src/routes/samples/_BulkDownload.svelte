@@ -1,56 +1,28 @@
 <script>
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import debounce from "$lib/utils/debounce.js";
-  import {
-    getBulkDownloadInfo,
-    getBulkDownloadUrls
-  } from "$lib/dataLoading.js";
+  import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
+  import { getBulkDownloadUrls } from "$lib/dataLoading.js";
 
+  let downloadEstimateLatest = undefined;
   export let ariaLabelledby;
   export let batches = undefined;
+  export { downloadEstimateLatest as downloadEstimate };
+  export let formValues;
 
-  let downloadEstimate = {};
+  let downloadEstimateCurrentDownload;
   let downloadLinksRequested;
   let downloadTokens = [];
-  let formValues = {
-    annotations: true,
-    assemblies: true
-  };
-  let updateDownloadEstimateTimeoutId;
+
+  $: estimate = downloadEstimateCurrentDownload || downloadEstimateLatest;
 
   $: formComplete = batches?.length &&
       (formValues.annotations || formValues.assemblies);
 
-  // These arguments are passed just to indicate to Svelte that this reactive statement
-  // should re-run only when one of the args has changed.
-  $: updateDownloadEstimate(batches, formValues);
-
-  function updateDownloadEstimate() {
-    unsetDownloadEstimate();
-    updateDownloadEstimateTimeoutId = debounce(_updateDownloadEstimate, updateDownloadEstimateTimeoutId);
-  }
-
-  function _updateDownloadEstimate() {
-    if (!formComplete) {
-      return;
+  // Freeze the download estimate once the form is submitted.
+  $: {
+    if (downloadLinksRequested && !downloadEstimateCurrentDownload) {
+      downloadEstimateCurrentDownload = downloadEstimateLatest;
     }
-
-    getBulkDownloadInfo(
-      batches,
-      formValues,
-      fetch
-    )
-      // eslint-disable-next-line no-unused-vars
-      .then(({size, size_zipped}) => {
-        // Commented out because BE currently doesn't compress for performace reasons:
-        // downloadEstimate.size = size;
-        downloadEstimate.sizeZipped = size_zipped;
-      })
-      .catch(unsetDownloadEstimate);
-  }
-
-  function unsetDownloadEstimate() {
-    downloadEstimate = {};
   }
 
   function onSubmit() {
@@ -59,24 +31,32 @@
       return;
     }
 
-    downloadLinksRequested =
-      confirm("You won't be able to change the download parameters if you proceed.");
-    if (downloadLinksRequested) {
-      getBulkDownloadUrls(batches, formValues, fetch)
-        .then((downloadLinks = []) => {
-          if (downloadLinks.length === 0) {
-            console.error("The list of download URLs returned from the server is empty.");
-            return Promise.reject();
-          }
-          const urlSeparator = "/";
-          downloadTokens = downloadLinks.map((downloadLink) =>
-            downloadLink.split(urlSeparator).pop());
-        })
-        .catch(() => {
-          downloadLinksRequested = false;
-          alert("Error while generating a download link. Please try again.");
-        });
-    }
+    downloadLinksRequested = true;
+    getBulkDownloadUrls(batches, formValues, fetch)
+      .then((downloadLinks = []) => {
+        // If the form has been reset meanwhile, do nothing.
+        if (!downloadLinksRequested) {
+          return;
+        }
+
+        if (downloadLinks.length === 0) {
+          console.error("The list of download URLs returned from the server is empty.");
+          return Promise.reject();
+        }
+        const urlSeparator = "/";
+        downloadTokens = downloadLinks.map((downloadLink) =>
+          downloadLink.split(urlSeparator).pop());
+      })
+      .catch(() => {
+        resetForm();
+        alert("Error while generating a download link. Please try again.");
+      });
+  }
+
+  function resetForm() {
+    downloadEstimateCurrentDownload = null;
+    downloadTokens = [];
+    downloadLinksRequested = false;
   }
 </script>
 
@@ -116,69 +96,89 @@
       -->
     </fieldset>
 
-    <fieldset disabled={true}>
-      <legend>Estimated total ZIP size</legend>
-      <select>
-        {#if downloadEstimate?.sizeZipped}
-          <option selected>
-            {downloadEstimate.sizeZipped}
-          </option>
-        {/if}
-      </select>
+    <fieldset>
+      <dl>
+        <dt>Total size:</dt>
+        <dd>
+          {#if formComplete}
+            {#if estimate}
+              {estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"} of {estimate.sizeZipped}
+            {:else}
+              <LoadingIcon label="Estimating the download size. Please wait" />
+            {/if}
+          {:else}
+            0
+          {/if}
+        </dd>
+      </dl>
     </fieldset>
-
-    <button
-      type="submit"
-      class="primary"
-      disabled={!formComplete}
-    >
-      Confirm
-    </button>
-
   </fieldset>
+
+  <button
+    type="submit"
+    class="primary"
+    disabled={!formComplete || downloadLinksRequested}
+  >
+    Confirm
+  </button>
+
+  {#if downloadLinksRequested}
+    <button
+      type="button"
+      class="compact"
+      on:click={resetForm}
+    >
+      Reset
+    </button>
+  {/if}
 </form>
 
 {#if downloadLinksRequested}
-  {#if downloadTokens.length > 1}
-    <h3>Download links</h3>
-    <ol>
-      {#each downloadTokens as downloadToken, i (downloadToken)}
-        <li>
-          <a
-            href="/samples/download/{downloadToken}"
-            target="_blank"
-            class="download-link"
-          >
-            ZIP archive {i + 1} of {downloadTokens.length}
-          </a>
-        </li>
-      {/each}
-    </ol>
+  <div class="links-section">
+    {#if downloadTokens.length > 1}
+      <h3>Download links</h3>
+      <ol>
+        {#each downloadTokens as downloadToken, i (downloadToken)}
+          <li>
+            <a
+              href="/samples/download/{downloadToken}"
+              target="_blank"
+              class="download-link"
+            >
+              ZIP archive {i + 1} of {downloadTokens.length}
+            </a>
+          </li>
+        {/each}
+      </ol>
 
-  {:else if downloadTokens.length}
-    <a
-      href="/samples/download/{downloadTokens[0]}"
-      target="_blank"
-      class="download-link"
-    >
-      Download ZIP archive
-    </a>
+    {:else if downloadTokens.length}
+      <a
+        href="/samples/download/{downloadTokens[0]}"
+        target="_blank"
+        class="download-link"
+      >
+        Download ZIP archive
+      </a>
 
-  {:else}
-    <LoadingIndicator
-      message="Please wait: generating a download link can take a while if thousands of samples are involved."
-    />
-  {/if}
+    {:else}
+      <LoadingIndicator
+        message="Please wait: generating a download link can take a while if thousands of samples are involved."
+        simple={true}
+      />
+    {/if}
+  </div>
 {/if}
 
 
 <style>
 form {
+  margin-bottom: 1.5rem;
   width: var(--width-reading);
   max-width: 100%;
 }
 
 form > fieldset {
+  margin-bottom: 0;
   padding: 0;
 }
 
@@ -189,24 +189,32 @@ form > fieldset {
   align-items: flex-start;
 }
 
-select {
-  min-width: 12rem;
-  max-width: 90%;
+dl {
+  display: flex;
+}
+dt {
+  font-weight: 200;
 }
 
 button[type=submit] {
-  display: block;
+  display: inline-block;
   margin-top: 2.5rem;
   margin-left: .9rem;
+  margin-right: 1rem;
 }
 
 ol {
   display: flex;
   flex-wrap: wrap;
+  padding-left: 1rem;
 }
 ol li {
   margin-right: 2rem;
   list-style: none;
+}
+
+.links-section {
+  margin-left: 1rem;
 }
 
 .download-link {

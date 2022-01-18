@@ -1,7 +1,10 @@
 <script>
   import { fade } from "svelte/transition";
 
+  export let ariaLabel = undefined;
+  export let ariaLabelledby = undefined;
   export let isOpen = false;
+  export let persistState = false;
 
   let dialogBackground;
 
@@ -11,9 +14,13 @@
 </script>
 
 
-{#if isOpen}
+{#if persistState || isOpen}
+  <!-- To persist state of the dialog we need to hide it w/ the inline `style` below, instead of simply not rendering it. -->
   <div
     role="dialog"
+    aria-label={ariaLabel}
+    aria-labelledby={ariaLabelledby}
+    style={persistState && !isOpen ? "display: none" : null}
     bind:this={dialogBackground}
     on:click={(event) => event.target === dialogBackground && close()}
     in:fade={{ duration: 90 }}
@@ -49,10 +56,10 @@
   background: #fff;
   border-radius: 3px;
   box-shadow: 0 .2rem .4rem rgba(48 ,55 ,66, .3);
-  max-height: 98vh;
+  max-height: 85vh;
   overflow-y: auto;
   max-width: 40rem;
-  padding: 1rem;
+  padding: 1.2rem;
   position: relative;
 }
 
@@ -60,14 +67,10 @@
   position: absolute;
   top: .3rem;
   right: .6rem;
-  background: rgba(0, 0, 0, 0);
-  border-radius: 50%;
+  border: none;
   color: gray;
-  font-size: .9rem;
-  margin: 0;
-  padding: 0;
-  height: 1.3rem;
-  width: 1.3rem;
+  font-size: 1.2rem;
+  padding: .2rem .5rem;
 }
 .close-icon-btn:hover {
   color: black;
