@@ -894,7 +894,7 @@
     "upload_validation_enabled": true,
     "spreadsheet_definition": {
          "lane_id": {
-         "title": "Sample_id",
+         "title": "lane_id",
          "mandatory": true,
          "max_length": 256,
          "regex": "^\\d+_\\d+#\\d+$",
