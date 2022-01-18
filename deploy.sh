@@ -313,8 +313,10 @@ then
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
     # QC data scripts
-    scp -r -o ControlPath=%C $SCP_PORT_ARG qc-data/bin $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin
-    scp -r -o ControlPath=%C $SCP_PORT_ARG qc-data/lib $REMOTE_USER@$REMOTE_HOST:~/qc-data/lib
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/run_get_qc_data_in_docker.sh $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/run_get_qc_data_in_docker.sh
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/get_qc_data.py               $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/get_qc_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/update_qc_data_db_table.py   $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/update_qc_data_db_table.py
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/lib/qc_data.py                   $REMOTE_USER@$REMOTE_HOST:~/qc-data/lib/qc_data.py
 
     # hopusekeeping script(s)
     scp -o ControlPath=%C $SCP_PORT_ARG housekeeping/bin/housekeeping.sh $REMOTE_USER@$REMOTE_HOST:~/housekeeping.sh
