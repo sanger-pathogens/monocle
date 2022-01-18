@@ -10,8 +10,8 @@ monocle_metadata_api:
    samples_key             : 'samples'
    download_in_silico_data : '/metadata/download_in_silico_data'
    in_silico_data_key      : 'download'
-   qc_data_upload          : '/qc-data-upload'
-   qc_data_delete_all      : '/delete_all_qc_data'
+   qc_data_upload          : '/metadata/qc-data-upload'
+   qc_data_delete_all      : '/metadata/delete_all_qc_data'
    qc_data_key             : 'download'
 mlwh_rest_api:
    mlwh_api_config         : 'mlwh-api.yml'
