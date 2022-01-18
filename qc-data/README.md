@@ -37,13 +37,16 @@ The script can be run in a dash-api container (as with unit tests: see note abov
 - The `--user` option will run the container as the user that starts it, so
   the output files are owned by that user rather than by root.
 
+This can be run from outside the qc-data directory, but host path used to volume
+mount `/app/qc-data` will need to be altered accordingly. 
+  
 ```
 TAG="latest"
 IMAGE="gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:${TAG}"
 docker pull "$IMAGE"
 docker run -it --rm \
            --user    `id -u`:`id -g` \
-           --volume  `pwd`/qc-data:/app/qc-data \
+           --volume  `pwd`:/app/qc-data \
            --volume  `pwd`/monocle_juno:/home/monocle/monocle_juno \
            --volume  `pwd`/my.cnf:/app/my.cnf \
            --volume  `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
@@ -53,4 +56,23 @@ docker run -it --rm \
            --network monocle_default \
            "$IMAGE" \
            bash -c "python3 ./qc-data/bin/get_qc_data.py"
+```
+
+## Running the update_qc_data_db_table.py script 
+
+This is essentially the same as running `get_qc_data.py`, though some of options used
+with that script are not needed in this case:
+
+```
+TAG="latest"
+IMAGE="gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:${TAG}"
+docker pull "$IMAGE"
+docker run -it --rm \
+           --user    `id -u`:`id -g` \
+           --volume  `pwd`:/app/qc-data \
+           --volume  `pwd`/monocle_pipeline_qc:/app/monocle_pipeline_qc \
+           --env     "PYTHONPATH=/app:/app/qc-data" \
+           --network monocle_default \
+           "$IMAGE" \
+           bash -c "python3 ./qc-data/bin/update_qc_data_db_table.py"
 ```
