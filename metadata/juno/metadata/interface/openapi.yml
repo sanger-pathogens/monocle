@@ -216,7 +216,7 @@ components:
       type: object
       required:
         - lane_id
-      example: {"lane_id": "24936_2#76", "rel_abun_sa": 87.43}
+      example: {"lane_id": "39214_1#341", "rel_abun_sa": 80.74}
       properties:
         lane_id:
           type: string
@@ -260,7 +260,7 @@ components:
         maxLength: 16
         pattern: ^[0-9_#]+$
       minItems: 1
-      example: ["24936_2#76", "24937_1#22"]
+      example: ["39214_1#341", "32820_2#33"]
 
     DownloadField:
       type: object
@@ -761,6 +761,6 @@ components:
             properties:
               lane_id:
                 $ref: "#/components/schemas/DownloadField"
-              cps_type:
+              rel_abun_sa:
                 $ref: "#/components/schemas/DownloadField"
 
