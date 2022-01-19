@@ -37,7 +37,8 @@ GetMetadataInputDefaults = {  "as csv"             : False,
                                                       "country",
                                                       "collection_year",
                                                       "host_species",
-                                                      "isolation_source"],
+                                                      "isolation_source",
+                                                      "serotype"],
                               "in silico columns"  : ["ST"],
                               }
 
