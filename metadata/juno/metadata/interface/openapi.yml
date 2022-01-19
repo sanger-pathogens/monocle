@@ -143,7 +143,7 @@ paths:
       summary: "Delete all QC data"
       responses:
         "200":
-          description: "The deletion was succeeded"
+          description: "The deletion was successful."
 
   /institutions:
     get:
