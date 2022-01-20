@@ -14,7 +14,7 @@ it("displays data passed", () => {
     },
   });
 
-  expect(container.querySelector("h4").textContent)
+  expect(container.querySelector("h3").textContent)
     .toBe(`${completed} of ${RECEIVED} Samples Sequenced`);
   expect(getByText("% completed", { exact: false }))
     .toBeDefined();
@@ -28,7 +28,7 @@ it("displays a special heading when all samples are sequenced", () => {
     },
   });
 
-  expect(container.querySelector("h4").textContent)
+  expect(container.querySelector("h3").textContent)
     .toBe(`All ${RECEIVED} Samples Sequenced`);
 });
 

@@ -6,7 +6,7 @@
   export let height = 320;
   export let xLabels = [];
   export let yLabel = "";
-  export let title;
+  export let title = undefined;
 
   const chartOptions = {
     title,
@@ -47,11 +47,6 @@
 
 
 <style>
-/* TODO: is there a way to style dynamic elements w/o "polluting" global CSS? */
-:global(.frappe-chart .title) {
-  font-size: 1rem;
-}
-
 .container {
   position: relative;
   margin: 0 auto;

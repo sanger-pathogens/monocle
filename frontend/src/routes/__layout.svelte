@@ -58,6 +58,10 @@ main {
   max-width: 100%;
 }
 
+:global(.frappe-chart .title) {
+  font-size: 1rem;
+}
+
 :global([role=dialog] .content > h1),
 :global([role=dialog] .content > h2),
 :global([role=dialog] .content > h3),
