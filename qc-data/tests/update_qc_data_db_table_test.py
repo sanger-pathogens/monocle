@@ -1,9 +1,14 @@
 import argparse
+import json
+from   operator         import itemgetter
 import os
-from   unittest      import TestCase
-from   unittest.mock import patch
+from   unittest         import TestCase
+from   unittest.mock    import patch
+import urllib.request
+
 
 from bin.update_qc_data_db_table import (
+    qc_data_file_name,
     get_api_config,
     _make_request,
     _find_files,
@@ -19,8 +24,49 @@ TEST_API_CONFIG   = {   'base_url'           : 'http://mock.metadata.api',
                         'qc_data_upload'     : '/metadata/mock_upload_endpoint',
                         'qc_data_delete_all' : '/metadata/mock_delete_endpoint'
                         }
-TEST_DATA_DIR     = 'tests/test_data'
 TEST_ENVIRONMENT  = {'MONOCLE_PIPELINE_QC_DATA': 'other/dir'}
+TEST_DATA_DIR     = 'tests/update_qc_test_data'
+# test lanes IDs must match names of subdirectories in TEST_DATA_DIR
+TEST_LANE1_ID     = "test_lane1"
+TEST_LANE2_ID     = "test_lane2"
+# species, timestamps and rel abundance values must match contents of JSON files under TEST_DATA_DIR
+TEST_SPECIES      = "Streptococcus agalactiae"
+TEST_TIMESTAMP1   = "2021-12-15 09:32:59"
+TEST_TIMESTAMP2   = "2021-12-21 00:00:00"
+TEST_REL_ABUN_SA1 = "97.65"
+TEST_REL_ABUN_SA2 = "92.38"
+TEST_UPLOAD       = [   {
+                           "lane_id"      : TEST_LANE1_ID,
+                           "rel_abun_sa"  : float(TEST_REL_ABUN_SA1)
+                           }
+                        ]
+
+EXPECTED_LANE1_DATA     =  {  "lane_id"      : TEST_LANE1_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : TEST_REL_ABUN_SA1,
+                                                                           "timestamp" : TEST_TIMESTAMP1
+                                                                           }
+                                                                        ]
+                                                }
+                              }
+EXPECTED_LANE2_DATA    =   {  "lane_id"      : TEST_LANE2_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : TEST_REL_ABUN_SA2,
+                                                                           "timestamp" : TEST_TIMESTAMP2
+                                                                           }
+                                                                        ]
+                                                }
+                              }
+EXPECTED_REQUEST_BODY   = [   {  'lane_id'      : TEST_LANE1_ID,
+                                 'rel_abun_sa'  : float(TEST_REL_ABUN_SA1)
+                                 },
+                              {  'lane_id'      : TEST_LANE2_ID,
+                                 'rel_abun_sa'  : float(TEST_REL_ABUN_SA2)
+                                 }
+                              ]
+EXPECTED_FILES          = [   os.path.join(TEST_DATA_DIR, TEST_LANE1_ID, qc_data_file_name),
+                              os.path.join(TEST_DATA_DIR, TEST_LANE2_ID, qc_data_file_name)
+                              ]
 
 class UpdateQCDataDBTable(TestCase):
 
@@ -28,25 +74,50 @@ class UpdateQCDataDBTable(TestCase):
       # TODO add tests
       pass
    
-   def test_make_request(self):
-      # TODO add tests
-      pass
-   
+   @patch('urllib.request.Request')
+   @patch('urllib.request.urlopen')
+   def test_make_request_GET(self, mock_urlopen, mock_request):
+      mock_request_url = TEST_API_CONFIG['base_url']+TEST_API_CONFIG['qc_data_delete_all']
+      mock_urlopen.return_value = urllib.request.Request(mock_request_url)
+      response = _make_request(mock_request_url)
+      mock_request.assert_called_with(mock_request_url, data=None, headers={})
+      
+   @patch('urllib.request.Request')
+   @patch('urllib.request.urlopen')
+   def test_make_request_POST(self, mock_urlopen, mock_request):
+      mock_request_url = TEST_API_CONFIG['base_url']+TEST_API_CONFIG['qc_data_delete_all']
+      mock_urlopen.return_value = urllib.request.Request(mock_request_url)
+      response = _make_request(mock_request_url, post_data=TEST_UPLOAD)
+      mock_request.assert_called_with(mock_request_url,
+                                      data    = str(json.dumps(TEST_UPLOAD)).encode('utf-8'),
+                                      headers = {'Content-type': 'application/json;charset=utf-8'})
+
    def test_find_files(self):
-      # TODO add tests
-      pass
+      files_found = _find_files(qc_data_file_name, TEST_DATA_DIR)
+      # order of arrays doesn't matter
+      self.assertEqual(sorted(files_found), sorted(EXPECTED_FILES))
+      
+   @patch('bin.update_qc_data_db_table._find_files')
+   def test_get_qc_data(self, mock_find_files):
+      mock_find_files.return_value = EXPECTED_FILES
+      qc_data  = _get_qc_data(TEST_DATA_DIR)
+      expected = [EXPECTED_LANE2_DATA, EXPECTED_LANE1_DATA]
+      # order of arrays doesn't matter
+      self.assertEqual(sorted(qc_data, key=itemgetter('lane_id')), sorted(expected, key=itemgetter('lane_id')))
+      
+   @patch('bin.update_qc_data_db_table._get_qc_data')
+   def test_get_update_request_body(self, mock_get_qc_data):
+      mock_get_qc_data.return_value = [EXPECTED_LANE1_DATA, EXPECTED_LANE2_DATA]
+      request_body = _get_update_request_body(TEST_DATA_DIR)
+      self.assertEqual(request_body, EXPECTED_REQUEST_BODY)
    
-   def test_get_qc_data(self):
-      # TODO add tests
-      pass
-   
-   def test_get_update_request_body(self):
-      # TODO add tests
-      pass
-   
-   def test_update_database(self):
-      # TODO add tests
-      pass
+   @patch('bin.update_qc_data_db_table._get_update_request_body')
+   @patch('bin.update_qc_data_db_table._make_request')
+   def test_update_database(self, mock_make_request, mock_get_update_request_body):
+      mock_get_update_request_body.return_value = TEST_UPLOAD
+      update_database(TEST_DATA_DIR, TEST_API_CONFIG)
+      mock_make_request.assert_called_once_with(   TEST_API_CONFIG['base_url'] + TEST_API_CONFIG['qc_data_upload'],
+                                                   post_data = TEST_UPLOAD)
 
    @patch('bin.update_qc_data_db_table._make_request')
    def test_delete_qc_data_from_database(self, mock_make_request):

@@ -4,7 +4,6 @@ import json
 import logging
 import os.path
 import sys
-#import urllib.parse
 import urllib.request
 import yaml
 
@@ -99,7 +98,7 @@ def _get_update_request_body(qc_dir):
           this_value    = float(this_rel_abundance['value'])
           if this_species in rel_abun_species:
              request_property = rel_abun_species[this_species]
-             logging.debug("{} has rel abubndance {}; adding to request as property {}".format(this_species,this_value,request_property))
+             logging.debug("{} has rel abundance {}; adding to request as property {}".format(this_species,this_value,request_property))
              this_lane_request_data[request_property] = this_value
        # add request data to array with data for all lanes
        request_data.append(this_lane_request_data)
