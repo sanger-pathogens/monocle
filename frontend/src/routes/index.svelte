@@ -32,12 +32,14 @@
     <SampleDataLink />
   </nav>
 
-  <LineChart
-    title="Project Progress"
-    datasets={projectProgress.datasets}
-    xLabels={projectProgress.dates}
-    yLabel="# of samples"
-  />
+  <article>
+    <h2>Project Progress</h2>
+    <LineChart
+      datasets={projectProgress.datasets}
+      xLabels={projectProgress.dates}
+      yLabel="# of samples"
+    />
+  </article>
 
   {#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
     <InstitutionStatus
@@ -76,6 +78,10 @@ nav {
   nav {
     margin-right: -8rem;
   }
+}
+
+article {
+  max-width: 100%;
 }
 </style>
 
