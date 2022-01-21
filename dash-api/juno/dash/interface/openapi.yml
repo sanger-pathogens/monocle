@@ -437,11 +437,11 @@ components:
         in silico:
           description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
           type: boolean
-          default: false
+          default: true
         qc data:
           description: "Set this flag to true to include in QC data with the metadata (ignored when 'as csv' is true)"
           type: boolean
-          default: false
+          default: true
         start row:
           description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
           type: integer

@@ -28,8 +28,8 @@ DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 # to they have to be set by the route :-/
 GetMetadataInputDefaults = {  "as csv"             : False,
                               "csv filename"       : "monocle.csv",
-                              "in silico"          : False,
-                              "qc data"            : False,
+                              "in silico"          : True,
+                              "qc data"            : True,
                               "num rows"           : 20,
                               "metadata columns"   : ["submitting_institution",
                                                       "public_name",
