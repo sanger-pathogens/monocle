@@ -87,7 +87,7 @@ class Monocle_Download_Client:
    def in_silico_data(self, lane_id_list):
       endpoint = self.config['download_in_silico_data']
       logging.debug("{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
-      # this request will return a 404 of there are no in silico results for these samples
+      # this request will return a 404 if there are no in silico results for these samples
       # this is not an error, so a 404 must be caught, and an empty results set returned
       try:
          response = self.make_request( endpoint, post_data = lane_id_list )
@@ -104,7 +104,7 @@ class Monocle_Download_Client:
    def qc_data(self, lane_id_list):
       endpoint = self.config['download_qc_data']
       logging.debug("{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
-      # this request will return a 404 of there are no QC data results for these samples
+      # this request will return a 404 if there are no QC data results for these samples
       # this is not an error, so a 404 must be caught, and an empty results set returned
       try:
          response = self.make_request( endpoint, post_data = lane_id_list )

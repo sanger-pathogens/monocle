@@ -223,7 +223,7 @@ class MonocleSampleData:
 
       Returns the combined metadata structure
       """
-      # in silco data must be retrieved using lane IDs
+      # QC data must be retrieved using lane IDs
       lane_id_list = []
       # also need to track which lane(s) are associated with each sample
       sample_to_lanes_lookup = {}
