@@ -8,6 +8,7 @@ import urllib.request
 
 
 from bin.update_qc_data_db_table import (
+    data_sources_config,
     qc_data_file_name,
     get_api_config,
     _make_request,
@@ -20,6 +21,9 @@ from bin.update_qc_data_db_table import (
     main
 )
 
+TEST_CONFIG       = 'tests/test_data_sources.yml'
+TEST_CONFIG_BAD   = 'tests/test_data_sources_bad.yml'
+# must mtach contents of TEST_CONFIG
 TEST_API_CONFIG   = {   'base_url'           : 'http://mock.metadata.api',
                         'qc_data_upload'     : '/metadata/mock_upload_endpoint',
                         'qc_data_delete_all' : '/metadata/mock_delete_endpoint'
@@ -71,9 +75,15 @@ EXPECTED_FILES          = [   os.path.join(TEST_DATA_DIR, TEST_LANE1_ID, qc_data
 class UpdateQCDataDBTable(TestCase):
 
    def test_get_api_config(self):
-      # TODO add tests
-      pass
+      config = get_api_config(TEST_CONFIG)
+      for expected_key in TEST_API_CONFIG:
+         self.assertIn(expected_key, config)
+         self.assertEqual(config.get(expected_key), TEST_API_CONFIG.get(expected_key))
    
+   def test_get_api_config_reject_bad_config(self):
+      with self.assertRaises(KeyError):
+         get_api_config(TEST_CONFIG_BAD)
+      
    @patch('urllib.request.Request')
    @patch('urllib.request.urlopen')
    def test_make_request_GET(self, mock_urlopen, mock_request):

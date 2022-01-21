@@ -1,0 +1,4 @@
+monocle_metadata_api:
+   base_url                : 'http://mock.metadata.api'
+   qc_data_delete_all      : '/metadata/mock_delete_endpoint'
+   qc_data_key             : 'download'

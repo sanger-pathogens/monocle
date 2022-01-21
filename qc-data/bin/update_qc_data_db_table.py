@@ -28,14 +28,14 @@ required_config_params  = [   'base_url',
 
 
 
-def get_api_config():
-    with open(data_sources_config, 'r') as config_file:
+def get_api_config(config_file_name):
+    with open(config_file_name, 'r') as config_file:
        data_sources = yaml.load(config_file, Loader=yaml.FullLoader)
        config = data_sources[data_source]
     for required_param in required_config_params:
        if not required_param in config:
              logging.error("data source config file {} does not provide the required paramter {}.{}".format(
-                data_sources_config, data_source, required_param))
+                config_file_name, data_source, required_param))
              raise KeyError
     return config
 
@@ -135,7 +135,7 @@ def main():
     parser = get_arguments()
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=args.log_level)
-    api_config = get_api_config()
+    api_config = get_api_config(data_sources_config)
     delete_qc_data_from_database(api_config)
     update_database(args.pipeline_qc_dir, api_config)
 
