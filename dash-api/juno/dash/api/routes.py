@@ -29,6 +29,7 @@ DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 GetMetadataInputDefaults = {  "as csv"             : False,
                               "csv filename"       : "monocle.csv",
                               "in silico"          : False,
+                              "qc data"            : False,
                               "num rows"           : 20,
                               "metadata columns"   : ["submitting_institution",
                                                       "public_name",
@@ -39,6 +40,7 @@ GetMetadataInputDefaults = {  "as csv"             : False,
                                                       "host_species",
                                                       "isolation_source"],
                               "in silico columns"  : ["ST"],
+                              "qc data columns"    : ["rel_abun_sa"],
                               }
 
 
@@ -104,6 +106,7 @@ def get_metadata_route(body):
     csv_filename        = body.get('csv filename',       GetMetadataInputDefaults['csv filename'])
     metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
     in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
+    qc_data_columns     = body.get('qc data columns',    GetMetadataInputDefaults['qc data columns'])
     if return_as_csv:
       # note the metadata CSV here does not include data download URLs
       # this is because the sample filters could match samples from multiple institutions, and download
@@ -117,14 +120,18 @@ def get_metadata_route(body):
          metadata_columns = None
       if '_ALL' == in_silico_columns[0]:
          in_silico_columns = None
+      if '_ALL' == qc_data_columns[0]:
+         qc_data_columns = None
       metadata = ServiceFactory.sample_data_service(
                      get_authenticated_username(request)).get_metadata(
                         sample_filters,
                         start_row         = body.get('start row', None),
                         num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
                         include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+                        include_qc_data   = body.get('qc data',   GetMetadataInputDefaults['qc data']),
                         metadata_columns  = metadata_columns,
-                        in_silico_columns = in_silico_columns)
+                        in_silico_columns = in_silico_columns,
+                        qc_data_columns   = qc_data_columns)
       if metadata is None:
          return Response(  'No matching samples were found',
                            content_type   = 'text/plain; charset=UTF-8',
