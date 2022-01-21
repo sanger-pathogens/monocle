@@ -95,7 +95,7 @@ def _get_sequencing_status_data(sample_ids):
 
 def get_arguments():
     parser = argparse.ArgumentParser(description='Get QC data')
-    default_monocle_data_path = os.environ.get('MONOCLE_DATA', '.') + '/kraken_report'
+    default_monocle_data_path = os.path.join( os.environ.get('MONOCLE_DATA', '.'), 'kraken_report' )
     default_log_level='WARNING'
     parser.add_argument("-D", "--kraken_data_dir",
                         help="Data file directory for kraken report [default: {}]; can use MONOCLE_DATA environment variable to set parent directory".format(default_monocle_data_path),

@@ -1,5 +1,6 @@
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.qc_data import QCData
 
 """ Some test data to use in unit tests... """
 
@@ -127,7 +128,7 @@ TEST_SAMPLE_2 = Metadata(
     linezolid='24',
     linezolid_method='method24')
 
-TEST_LANE_1 = InSilicoData(
+TEST_LANE_IN_SILICO_1 = InSilicoData(
     lane_id='50000_2#282',
     cps_type='III',
     ST='ST-I',
@@ -190,7 +191,7 @@ TEST_LANE_1 = InSilicoData(
     RPOBGBS_3_variant = '',
     RPOBGBS_4_variant = '')
 
-TEST_LANE_2 = InSilicoData(
+TEST_LANE_IN_SILICO_2 = InSilicoData(
     lane_id='50000_2#287',
     cps_type='III',
     ST='ST-II',
@@ -252,3 +253,11 @@ TEST_LANE_2 = InSilicoData(
     RPOBGBS_2_variant = '',
     RPOBGBS_3_variant = '',
     RPOBGBS_4_variant = '')
+
+TEST_LANE_QC_DATA_1 = QCData(
+    lane_id='50000_2#282',
+    rel_abun_sa='93.21')
+
+TEST_LANE_QC_DATA_2 = QCData(
+    lane_id='50000_2#287',
+    rel_abun_sa='68.58')

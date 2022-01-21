@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-# This runs `get_qc_data.py`, for Streptococcus agalactiae, inside a
-# `monocle-dash-api` container.  Using the -u option ensures that
-# file/directories are owned by the application user rather than root.
+# This runs `get_qc_data.py`, for Streptococcus agalactiae, followed
+# by update_qc_data_db_table.py.    These are run within a
+# `monocle-dash-api` container in order to provide access to the APIs.
+# 
+# Using the -u option ensures that file/directories are owned by the
+# application user rather than root.
 # 
 # Volume mounts required are:
 # - the s3 bucket (source data) directory as SAMPLE_DATA_PATH
@@ -17,8 +20,6 @@
 # 
 # The s3 bucket is mounted as SAMPLE_DATA_PATH to that target of the symlinks
 # has the same path within the container as on the host machine.
-# 
-# Any arguments provided will be passed to the script
 
 SAMPLE_DATA_PATH="${HOME}/monocle_juno"
 OUTPUT_DIR="${HOME}/monocle_juno_pipeline_qc"
@@ -34,4 +35,4 @@ docker run  -u `id -u`:`id -g` \
          --network <USER>_default \
          --name "get_qc_data_$$" \
          gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
-         python3 ./qc-data/bin/get_qc_data.py --species 'Streptococcus agalactiae' $@
+         bash -c "python3 ./qc-data/bin/get_qc_data.py --species 'Streptococcus agalactiae' && python3 ./qc-data/bin/update_qc_data_db_table.py"

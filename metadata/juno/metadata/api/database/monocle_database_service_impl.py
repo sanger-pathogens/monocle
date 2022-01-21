@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.qc_data import QCData
 from metadata.api.model.institution import Institution
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -33,7 +34,7 @@ class Connector:
 
 
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
-    """ DAO for metadata and in silico data access """
+    """ DAO for metadata,in silico data and QC data access """
 
     DASHBOARD_API_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
     DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
@@ -271,6 +272,25 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             WHERE
                 lane_id IN :lanes""")
 
+    DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
+    
+    INSERT_OR_UPDATE_QC_DATA_SQL = text(""" \
+            INSERT INTO qc_data (
+                lane_id, rel_abun_sa
+            ) VALUES (
+                :lane_id, :rel_abun_sa
+            ) ON DUPLICATE KEY UPDATE
+                lane_id = :lane_id,
+                rel_abun_sa = :rel_abun_sa
+            """)
+    
+    SELECT_LANES_QC_DATA_SQL = text(""" \
+            SELECT
+                lane_id, rel_abun_sa
+            FROM qc_data
+            WHERE
+                lane_id IN :lanes""")
+
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
@@ -364,8 +384,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
 
-            for row in rs:
-                results.append(row['name'])
+        for row in rs:
+            results.append(row['name'])
 
         return results
 
@@ -397,71 +417,71 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
-            for row in rs:
-                results.append(
-                    Metadata(
-                        sanger_sample_id=row['sample_id'],
-                        lane_id=row['lane_id'],
-                        submitting_institution=row['submitting_institution_id'],
-                        supplier_sample_name=row['supplier_sample_name'],
-                        public_name=row['public_name'],
-                        host_status=row['host_status'],
-                        study_name=row['study_name'],
-                        study_ref=row['study_ref'],
-                        selection_random=row['selection_random'],
-                        country=row['country'],
-                        county_state=row['county_state'],
-                        city=row['city'],
-                        collection_year=str(row['collection_year']),
-                        collection_month=str(row['collection_month']),
-                        collection_day=str(row['collection_day']),
-                        host_species=row['host_species'],
-                        gender=row['gender'],
-                        age_group=row['age_group'],
-                        age_years=str(row['age_years']),
-                        age_months=str(row['age_months']),
-                        age_weeks=str(row['age_weeks']),
-                        age_days=str(row['age_days']),
-                        disease_type=row['disease_type'],
-                        disease_onset=row['disease_onset'],
-                        isolation_source=row['isolation_source'],
-                        serotype=row['serotype'],
-                        serotype_method=row['serotype_method'],
-                        infection_during_pregnancy=row['infection_during_pregnancy'],
-                        maternal_infection_type=row['maternal_infection_type'],
-                        gestational_age_weeks=str(row['gestational_age_weeks']),
-                        birth_weight_gram=str(row['birthweight_gram']),
-                        apgar_score=str(row['apgar_score']),
-                        ceftizoxime=row['ceftizoxime'],
-                        ceftizoxime_method=row['ceftizoxime_method'],
-                        cefoxitin=row['cefoxitin'],
-                        cefoxitin_method=row['cefoxitin_method'],
-                        cefotaxime=row['cefotaxime'],
-                        cefotaxime_method=row['cefotaxime_method'],
-                        cefazolin=row['cefazolin'],
-                        cefazolin_method=row['cefazolin_method'],
-                        ampicillin=row['ampicillin'],
-                        ampicillin_method=row['ampicillin_method'],
-                        penicillin=row['penicillin'],
-                        penicillin_method=row['penicillin_method'],
-                        erythromycin=row['erythromycin'],
-                        erythromycin_method=row['erythromycin_method'],
-                        clindamycin=row['clindamycin'],
-                        clindamycin_method=row['clindamycin_method'],
-                        tetracycline=row['tetracycline'],
-                        tetracycline_method=row['tetracycline_method'],
-                        levofloxacin=row['levofloxacin'],
-                        levofloxacin_method=row['levofloxacin_method'],
-                        ciprofloxacin=row['ciprofloxacin'],
-                        ciprofloxacin_method=row['ciprofloxacin_method'],
-                        daptomycin=row['daptomycin'],
-                        daptomycin_method=row['daptomycin_method'],
-                        vancomycin=row['vancomycin'],
-                        vancomycin_method=row['vancomycin_method'],
-                        linezolid=row['linezolid'],
-                        linezolid_method=row['linezolid_method']
-                    )
-                )
+        for row in rs:
+            results.append(
+               Metadata(
+                  sanger_sample_id=row['sample_id'],
+                  lane_id=row['lane_id'],
+                  submitting_institution=row['submitting_institution_id'],
+                  supplier_sample_name=row['supplier_sample_name'],
+                  public_name=row['public_name'],
+                  host_status=row['host_status'],
+                  study_name=row['study_name'],
+                  study_ref=row['study_ref'],
+                  selection_random=row['selection_random'],
+                  country=row['country'],
+                  county_state=row['county_state'],
+                  city=row['city'],
+                  collection_year=str(row['collection_year']),
+                  collection_month=str(row['collection_month']),
+                  collection_day=str(row['collection_day']),
+                  host_species=row['host_species'],
+                  gender=row['gender'],
+                  age_group=row['age_group'],
+                  age_years=str(row['age_years']),
+                  age_months=str(row['age_months']),
+                  age_weeks=str(row['age_weeks']),
+                  age_days=str(row['age_days']),
+                  disease_type=row['disease_type'],
+                  disease_onset=row['disease_onset'],
+                  isolation_source=row['isolation_source'],
+                  serotype=row['serotype'],
+                  serotype_method=row['serotype_method'],
+                  infection_during_pregnancy=row['infection_during_pregnancy'],
+                  maternal_infection_type=row['maternal_infection_type'],
+                  gestational_age_weeks=str(row['gestational_age_weeks']),
+                  birth_weight_gram=str(row['birthweight_gram']),
+                  apgar_score=str(row['apgar_score']),
+                  ceftizoxime=row['ceftizoxime'],
+                  ceftizoxime_method=row['ceftizoxime_method'],
+                  cefoxitin=row['cefoxitin'],
+                  cefoxitin_method=row['cefoxitin_method'],
+                  cefotaxime=row['cefotaxime'],
+                  cefotaxime_method=row['cefotaxime_method'],
+                  cefazolin=row['cefazolin'],
+                  cefazolin_method=row['cefazolin_method'],
+                  ampicillin=row['ampicillin'],
+                  ampicillin_method=row['ampicillin_method'],
+                  penicillin=row['penicillin'],
+                  penicillin_method=row['penicillin_method'],
+                  erythromycin=row['erythromycin'],
+                  erythromycin_method=row['erythromycin_method'],
+                  clindamycin=row['clindamycin'],
+                  clindamycin_method=row['clindamycin_method'],
+                  tetracycline=row['tetracycline'],
+                  tetracycline_method=row['tetracycline_method'],
+                  levofloxacin=row['levofloxacin'],
+                  levofloxacin_method=row['levofloxacin_method'],
+                  ciprofloxacin=row['ciprofloxacin'],
+                  ciprofloxacin_method=row['ciprofloxacin_method'],
+                  daptomycin=row['daptomycin'],
+                  daptomycin_method=row['daptomycin_method'],
+                  vancomycin=row['vancomycin'],
+                  vancomycin_method=row['vancomycin_method'],
+                  linezolid=row['linezolid'],
+                  linezolid_method=row['linezolid_method']
+               )
+            )
 
         return results
 
@@ -624,6 +644,27 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         logger.info("update_lane_in_silico_data completed")
 
+    def update_lane_qc_data(self, qc_data_list: List[QCData]) -> None:
+        """ Update sample QC data in the database """
+
+        if not qc_data_list:
+            return
+
+        logger.info(
+            "update_lane_qc_data: About to write {} upload samples to the database...".format(len(qc_data_list))
+        )
+
+        # Use a transaction...
+        with self.connector.get_transactional_connection() as con:
+            for qc_data in qc_data_list:
+                con.execute(
+                    self.INSERT_OR_UPDATE_QC_DATA_SQL,
+                    lane_id=self.convert_string(qc_data.lane_id),
+                    rel_abun_sa=self.convert_string(qc_data.rel_abun_sa)
+                )
+
+        logger.info("update_lane_qc_data completed")
+
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download metadata for given list of samples """
 
@@ -643,71 +684,71 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sample_ids)
 
-            for row in rs:
-                results.append(
-                    Metadata(
-                        sanger_sample_id=row['sample_id'],
-                        lane_id=row['lane_id'],
-                        submitting_institution=row['submitting_institution_id'],
-                        supplier_sample_name=row['supplier_sample_name'],
-                        public_name=row['public_name'],
-                        host_status=row['host_status'],
-                        study_name=row['study_name'],
-                        study_ref=row['study_ref'],
-                        selection_random=row['selection_random'],
-                        country=row['country'],
-                        county_state=row['county_state'],
-                        city=row['city'],
-                        collection_year=str(row['collection_year']),
-                        collection_month=str(row['collection_month']),
-                        collection_day=str(row['collection_day']),
-                        host_species=row['host_species'],
-                        gender=row['gender'],
-                        age_group=row['age_group'],
-                        age_years=str(row['age_years']),
-                        age_months=str(row['age_months']),
-                        age_weeks=str(row['age_weeks']),
-                        age_days=str(row['age_days']),
-                        disease_type=row['disease_type'],
-                        disease_onset=row['disease_onset'],
-                        isolation_source=row['isolation_source'],
-                        serotype=row['serotype'],
-                        serotype_method=row['serotype_method'],
-                        infection_during_pregnancy=row['infection_during_pregnancy'],
-                        maternal_infection_type=row['maternal_infection_type'],
-                        gestational_age_weeks=str(row['gestational_age_weeks']),
-                        birth_weight_gram=str(row['birthweight_gram']),
-                        apgar_score=str(row['apgar_score']),
-                        ceftizoxime=row['ceftizoxime'],
-                        ceftizoxime_method=row['ceftizoxime_method'],
-                        cefoxitin=row['cefoxitin'],
-                        cefoxitin_method=row['cefoxitin_method'],
-                        cefotaxime=row['cefotaxime'],
-                        cefotaxime_method=row['cefotaxime_method'],
-                        cefazolin=row['cefazolin'],
-                        cefazolin_method=row['cefazolin_method'],
-                        ampicillin=row['ampicillin'],
-                        ampicillin_method=row['ampicillin_method'],
-                        penicillin=row['penicillin'],
-                        penicillin_method=row['penicillin_method'],
-                        erythromycin=row['erythromycin'],
-                        erythromycin_method=row['erythromycin_method'],
-                        clindamycin=row['clindamycin'],
-                        clindamycin_method=row['clindamycin_method'],
-                        tetracycline=row['tetracycline'],
-                        tetracycline_method=row['tetracycline_method'],
-                        levofloxacin=row['levofloxacin'],
-                        levofloxacin_method=row['levofloxacin_method'],
-                        ciprofloxacin=row['ciprofloxacin'],
-                        ciprofloxacin_method=row['ciprofloxacin_method'],
-                        daptomycin=row['daptomycin'],
-                        daptomycin_method=row['daptomycin_method'],
-                        vancomycin=row['vancomycin'],
-                        vancomycin_method=row['vancomycin_method'],
-                        linezolid=row['linezolid'],
-                        linezolid_method=row['linezolid_method']
-                    )
-                )
+        for row in rs:
+            results.append(
+               Metadata(
+                  sanger_sample_id=row['sample_id'],
+                  lane_id=row['lane_id'],
+                  submitting_institution=row['submitting_institution_id'],
+                  supplier_sample_name=row['supplier_sample_name'],
+                  public_name=row['public_name'],
+                  host_status=row['host_status'],
+                  study_name=row['study_name'],
+                  study_ref=row['study_ref'],
+                  selection_random=row['selection_random'],
+                  country=row['country'],
+                  county_state=row['county_state'],
+                  city=row['city'],
+                  collection_year=str(row['collection_year']),
+                  collection_month=str(row['collection_month']),
+                  collection_day=str(row['collection_day']),
+                  host_species=row['host_species'],
+                  gender=row['gender'],
+                  age_group=row['age_group'],
+                  age_years=str(row['age_years']),
+                  age_months=str(row['age_months']),
+                  age_weeks=str(row['age_weeks']),
+                  age_days=str(row['age_days']),
+                  disease_type=row['disease_type'],
+                  disease_onset=row['disease_onset'],
+                  isolation_source=row['isolation_source'],
+                  serotype=row['serotype'],
+                  serotype_method=row['serotype_method'],
+                  infection_during_pregnancy=row['infection_during_pregnancy'],
+                  maternal_infection_type=row['maternal_infection_type'],
+                  gestational_age_weeks=str(row['gestational_age_weeks']),
+                  birth_weight_gram=str(row['birthweight_gram']),
+                  apgar_score=str(row['apgar_score']),
+                  ceftizoxime=row['ceftizoxime'],
+                  ceftizoxime_method=row['ceftizoxime_method'],
+                  cefoxitin=row['cefoxitin'],
+                  cefoxitin_method=row['cefoxitin_method'],
+                  cefotaxime=row['cefotaxime'],
+                  cefotaxime_method=row['cefotaxime_method'],
+                  cefazolin=row['cefazolin'],
+                  cefazolin_method=row['cefazolin_method'],
+                  ampicillin=row['ampicillin'],
+                  ampicillin_method=row['ampicillin_method'],
+                  penicillin=row['penicillin'],
+                  penicillin_method=row['penicillin_method'],
+                  erythromycin=row['erythromycin'],
+                  erythromycin_method=row['erythromycin_method'],
+                  clindamycin=row['clindamycin'],
+                  clindamycin_method=row['clindamycin_method'],
+                  tetracycline=row['tetracycline'],
+                  tetracycline_method=row['tetracycline_method'],
+                  levofloxacin=row['levofloxacin'],
+                  levofloxacin_method=row['levofloxacin_method'],
+                  ciprofloxacin=row['ciprofloxacin'],
+                  ciprofloxacin_method=row['ciprofloxacin_method'],
+                  daptomycin=row['daptomycin'],
+                  daptomycin_method=row['daptomycin_method'],
+                  vancomycin=row['vancomycin'],
+                  vancomycin_method=row['vancomycin_method'],
+                  linezolid=row['linezolid'],
+                  linezolid_method=row['linezolid_method']
+               )
+            )
         logger.debug(
             "get_download_metadata: Pulled records of samples {} from the database...".format(results)
         )
@@ -726,71 +767,98 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
 
-            for row in rs:
-                results.append(
-                    InSilicoData(
-                        lane_id=row['lane_id'],
-                        cps_type=row['cps_type'],
-                        ST=row['ST'],
-                        adhP=row['adhP'],
-                        pheS=row['pheS'],
-                        atr=row['atr'],
-                        glnA=row['glnA'],
-                        sdhA=row['sdhA'],
-                        glcK=row['glcK'],
-                        tkt=row['tkt'],
-                        twenty_three_S1=row['twenty_three_S1'],
-                        twenty_three_S3=row['twenty_three_S3'],
-                        AAC6APH2=row['AAC6APH2'],
-                        AADECC=row['AADECC'],
-                        ANT6=row['ANT6'],
-                        APH3III=row['APH3III'],
-                        APH3OTHER=row['APH3OTHER'],
-                        CATPC194=row['CATPC194'],
-                        CATQ=row['CATQ'],
-                        ERMA=row['ERMA'],
-                        ERMB=row['ERMB'],
-                        ERMT=row['ERMT'],
-                        LNUB=row['LNUB'],
-                        LNUC=row['LNUC'],
-                        LSAC=row['LSAC'],
-                        MEFA=row['MEFA'],
-                        MPHC=row['MPHC'],
-                        MSRA=row['MSRA'],
-                        MSRD=row['MSRD'],
-                        FOSA=row['FOSA'],
-                        GYRA=row['GYRA'],
-                        PARC=row['PARC'],
-                        RPOBGBS_1=row['RPOBGBS_1'],
-                        RPOBGBS_2=row['RPOBGBS_2'],
-                        RPOBGBS_3=row['RPOBGBS_3'],
-                        RPOBGBS_4=row['RPOBGBS_4'],
-                        SUL2=row['SUL2'],
-                        TETB=row['TETB'],
-                        TETL=row['TETL'],
-                        TETM=row['TETM'],
-                        TETO=row['TETO'],
-                        TETS=row['TETS'],
-                        ALP1=row['ALP1'],
-                        ALP23=row['ALP23'],
-                        ALPHA=row['ALPHA'],
-                        HVGA=row['HVGA'],
-                        PI1=row['PI1'],
-                        PI2A1=row['PI2A1'],
-                        PI2A2=row['PI2A2'],
-                        PI2B=row['PI2B'],
-                        RIB=row['RIB'],
-                        SRR1=row['SRR1'],
-                        SRR2=row['SRR2'],
-                        twenty_three_S1_variant=row['twenty_three_S1_variant'],
-                        twenty_three_S3_variant=row['twenty_three_S3_variant'],
-                        GYRA_variant=row['GYRA_variant'],
-                        PARC_variant=row['PARC_variant'],
-                        RPOBGBS_1_variant=row['RPOBGBS_1_variant'],
-                        RPOBGBS_2_variant=row['RPOBGBS_2_variant'],
-                        RPOBGBS_3_variant=row['RPOBGBS_3_variant'],
-                        RPOBGBS_4_variant=row['RPOBGBS_4_variant']
-                    )
-                )
+        for row in rs:
+            results.append(
+               InSilicoData(
+                  lane_id=row['lane_id'],
+                  cps_type=row['cps_type'],
+                  ST=row['ST'],
+                  adhP=row['adhP'],
+                  pheS=row['pheS'],
+                  atr=row['atr'],
+                  glnA=row['glnA'],
+                  sdhA=row['sdhA'],
+                  glcK=row['glcK'],
+                  tkt=row['tkt'],
+                  twenty_three_S1=row['twenty_three_S1'],
+                  twenty_three_S3=row['twenty_three_S3'],
+                  AAC6APH2=row['AAC6APH2'],
+                  AADECC=row['AADECC'],
+                  ANT6=row['ANT6'],
+                  APH3III=row['APH3III'],
+                  APH3OTHER=row['APH3OTHER'],
+                  CATPC194=row['CATPC194'],
+                  CATQ=row['CATQ'],
+                  ERMA=row['ERMA'],
+                  ERMB=row['ERMB'],
+                  ERMT=row['ERMT'],
+                  LNUB=row['LNUB'],
+                  LNUC=row['LNUC'],
+                  LSAC=row['LSAC'],
+                  MEFA=row['MEFA'],
+                  MPHC=row['MPHC'],
+                  MSRA=row['MSRA'],
+                  MSRD=row['MSRD'],
+                  FOSA=row['FOSA'],
+                  GYRA=row['GYRA'],
+                  PARC=row['PARC'],
+                  RPOBGBS_1=row['RPOBGBS_1'],
+                  RPOBGBS_2=row['RPOBGBS_2'],
+                  RPOBGBS_3=row['RPOBGBS_3'],
+                  RPOBGBS_4=row['RPOBGBS_4'],
+                  SUL2=row['SUL2'],
+                  TETB=row['TETB'],
+                  TETL=row['TETL'],
+                  TETM=row['TETM'],
+                  TETO=row['TETO'],
+                  TETS=row['TETS'],
+                  ALP1=row['ALP1'],
+                  ALP23=row['ALP23'],
+                  ALPHA=row['ALPHA'],
+                  HVGA=row['HVGA'],
+                  PI1=row['PI1'],
+                  PI2A1=row['PI2A1'],
+                  PI2A2=row['PI2A2'],
+                  PI2B=row['PI2B'],
+                  RIB=row['RIB'],
+                  SRR1=row['SRR1'],
+                  SRR2=row['SRR2'],
+                  twenty_three_S1_variant=row['twenty_three_S1_variant'],
+                  twenty_three_S3_variant=row['twenty_three_S3_variant'],
+                  GYRA_variant=row['GYRA_variant'],
+                  PARC_variant=row['PARC_variant'],
+                  RPOBGBS_1_variant=row['RPOBGBS_1_variant'],
+                  RPOBGBS_2_variant=row['RPOBGBS_2_variant'],
+                  RPOBGBS_3_variant=row['RPOBGBS_3_variant'],
+                  RPOBGBS_4_variant=row['RPOBGBS_4_variant']
+               )
+            )
 
         return results
+
+    def get_download_qc_data(self, keys: List[str]) -> List[QCData]:
+        """ Get download QC data for given list of lane keys """
+
+        if len(keys) == 0:
+            return []
+
+        results = []
+        lane_ids = tuple(keys)
+
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
+
+        for row in rs:
+            results.append(
+               QCData(
+                  lane_id=row['lane_id'],
+                  rel_abun_sa=row['rel_abun_sa']
+               )
+            )
+
+        return results
+
+    def delete_all_qc_data(self):
+        """ Delete all QC data """
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.DELETE_ALL_QC_DATA_SQL)
