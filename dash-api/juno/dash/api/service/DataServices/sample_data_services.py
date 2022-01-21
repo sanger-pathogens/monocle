@@ -70,7 +70,7 @@ class MonocleSampleData:
       Pass sample filters dict (describes the filters applied in the front end)
       If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
       num_rows is ignored unless start_rows is defined. Passing start_row without num_rows is an error.
-      Optionally pass lists metadata_columns, in_silico_columns and QC data columns to specify which metadata
+      Optionally pass lists of metadata_columns, in_silico_columns and QC data columns to specify which metadata,
       in silico, and QC data (respectively) columns are returned.
       Optional flags:
       'include_in_silico' if in silico data should be retrieved and merged into the metadata.
