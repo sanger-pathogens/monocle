@@ -19,7 +19,7 @@ class MetadataDownloadTest(TestCase):
    # this pattern should match a container on the docker network
    base_url_regex          = '^http://[\w\-]+$'
    endpoint_regex          = '(/[\w\-\.]+)+'
-   # metadata and in silico data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
+   # metadata, in silico and QC data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
    mock_download_param     = ['5903STDY8059053:31663_7#43']
    mock_bad_download       =  """{  "wrong key":
                                        {  "does": "not matter what appears here"
@@ -289,6 +289,18 @@ class MetadataDownloadTest(TestCase):
                                  "RPOBGBS_4_variant": {"order": 60, "name": "RPOBGBS_4_variant", "value": ""}
                                  }
 
+   mock_qc_data_download  =  """{  "download": [
+                                       {  "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+                                          "rel_abun_sa":    {"order": 1,  "name": "rel_abun_sa", "value": "86.54"}
+                                          }
+                                    ]
+                                 }"""
+
+   # these are the metadata as they should be returned by MetadataDownload.get_qc_data()
+   # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
+   expected_qc_data = { "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
+                        "rel_abun_sa":    {"order": 1,  "name": "rel_abun_sa", "value": "86.54"}
+                        }
 
    def setUp(self):
       self.download           = MetadataDownload(set_up=False)
@@ -367,15 +379,30 @@ class MetadataDownloadTest(TestCase):
       self.assertEqual(this_lane, self.expected_in_silico_data, msg="returned in silico data differ from expected data")
 
    @patch.object(Monocle_Download_Client, 'make_request')
-   def test_reject_bad_download_in_silico_data_response(self, mock_request):
+   def test_download_qc_data(self, mock_request):
+      mock_request.return_value = self.mock_qc_data_download
+      lanes = self.download.get_qc_data(self.mock_download_param)
+      # response should be list of dict
+      self.assertIsInstance(lanes, type(['a', 'list']))
+      this_lane = lanes[0]
+      self.assertIsInstance(this_lane, type({'a': 'dict'}))
+      # check all the expected keys are present
+      for expected_key in self.expected_qc_data.keys():
+         self.assertTrue(expected_key in this_lane, msg="required key '{}' not found in lane dict".format(expected_key))
+      # check data are correct
+      self.maxDiff = None
+      self.assertEqual(this_lane, self.expected_qc_data, msg="returned QC data differ from expected data")
+
+   @patch.object(Monocle_Download_Client, 'make_request')
+   def test_reject_bad_download_qc_data_response(self, mock_request):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_download
-         self.download.get_in_silico_data(self.mock_download_param[0])
+         self.download.get_qc_data(self.mock_download_param[0])
 
    @patch.object(urllib.request, 'urlopen')
-   def test_download_in_silico_data__when_no_in_silico_data_available(self, mock_urlopen):
+   def test_download_qc_data_when_no_qc_data_available(self, mock_urlopen):
       mock_urlopen.side_effect = urllib.error.HTTPError('not found', 404, '', '', '')
-      lanes = self.download.get_in_silico_data(self.mock_download_param)
+      lanes = self.download.get_qc_data(self.mock_download_param)
       # response should be and empty list in case of a 404
       self.assertIsInstance(lanes, type(['a', 'list']))
       self.assertEqual(len(lanes), 0, msg="list was not empty as expected")

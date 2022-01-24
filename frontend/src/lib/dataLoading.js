@@ -109,6 +109,10 @@ fetch
       .catch((err) =>
         logErrorOnFetchResource(err, "get_metadata"));
   }
+  else {
+    payload["in silico"] = false;
+    payload["qc data"] = false;
+  }
 
   return fetchDashboardApiResource(
     "get_metadata", null, fetch, {
