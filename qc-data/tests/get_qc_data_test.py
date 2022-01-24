@@ -114,7 +114,7 @@ class DB():
       return INSTITUTIONS[2]['samples']
     return []
 
-TEST_DATA_DIR = 'tests/test_data'
+TEST_DATA_DIR = 'tests/get_qc_test_data'
 LANE_ID1 = 'test_lane1'
 LANE_ID2 = 'test_lane2'
 LANE_ID3 = 'test_lane3'
@@ -131,7 +131,7 @@ class GetQCData(TestCase):
             patch('bin.get_qc_data._get_sequencing_status_data',
                   get_sequencing_status_data
             ).start()
-            patch('bin.get_qc_data.QC_DIR', 'tests/test_data').start()
+            patch('bin.get_qc_data.QC_DIR', TEST_DATA_DIR).start()
         except Exception as e:
             cls.tearDownClass()
             raise

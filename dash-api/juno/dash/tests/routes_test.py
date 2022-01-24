@@ -555,8 +555,10 @@ class TestRoutes(unittest.TestCase):
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
                                                                               metadata_columns  = GetMetadataInputDefaults['metadata columns'],
-                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'])
+                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'],
+                                                                              qc_data_columns   = GetMetadataInputDefaults['qc data columns'])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -571,19 +573,22 @@ class TestRoutes(unittest.TestCase):
         sample_filters     = {'batches':batches}
         metadata_columns   = ['_ALL']
         in_silico_columns  = ['_ALL']
+        qc_data_columns    = ['_ALL']
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
-        result = get_metadata_route({'sample filters': sample_filters, 'metadata columns': metadata_columns, 'in silico columns':in_silico_columns})
+        result = get_metadata_route({'sample filters': sample_filters, 'metadata columns': metadata_columns, 'in silico columns':in_silico_columns, 'qc data columns':qc_data_columns})
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
                                                                               num_rows          = GetMetadataInputDefaults['num rows'],
                                                                               include_in_silico = GetMetadataInputDefaults['in silico'],
+                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
                                                                               metadata_columns  = None,
-                                                                              in_silico_columns = None)
+                                                                              in_silico_columns = None,
+                                                                              qc_data_columns   = None)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -599,30 +604,36 @@ class TestRoutes(unittest.TestCase):
         start_row          = 21
         num_rows           = 20
         include_in_silico  = True
+        include_qc_data    = True
         return_as_csv      = GetMetadataInputDefaults['as csv']
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
+        qc_data_columns    = ['rel_abun_sa']
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({  'sample filters'     : sample_filters,
-                                 'start row'          : start_row,
-                                 'num rows'           : num_rows,
-                                 'in silico'          : include_in_silico,
-                                 'as csv'             : return_as_csv,
-                                 'metadata columns'   : metadata_columns,
-                                 'in silico columns'  : in_silico_columns
-                                 }
-                              )
+                                       'start row'          : start_row,
+                                       'num rows'           : num_rows,
+                                       'in silico'          : include_in_silico,
+                                       'qc data'            : include_qc_data,
+                                       'as csv'             : return_as_csv,
+                                       'metadata columns'   : metadata_columns,
+                                       'in silico columns'  : in_silico_columns,
+                                       'qc data columns'    : qc_data_columns
+                                       }
+                                    )
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
                                                                               include_in_silico = include_in_silico,
+                                                                              include_qc_data   = include_qc_data,
                                                                               metadata_columns  = metadata_columns,
-                                                                              in_silico_columns = in_silico_columns)
+                                                                              in_silico_columns = in_silico_columns,
+                                                                              qc_data_columns   = qc_data_columns)
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)

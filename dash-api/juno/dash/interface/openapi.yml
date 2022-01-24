@@ -437,7 +437,11 @@ components:
         in silico:
           description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
           type: boolean
-          default: false
+          default: true
+        qc data:
+          description: "Set this flag to true to include in QC data with the metadata (ignored when 'as csv' is true)"
+          type: boolean
+          default: true
         start row:
           description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
           type: integer
@@ -485,6 +489,16 @@ components:
             - "ST"
           example:
             - "ST"
+        qc data columns:
+          description: "List of QC data columns that should be returned (as defined by the QCData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
+          type: array
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_]*$
+          default:
+            - "rel_abun_sa"
+          example:
+            - "rel_abun_sa"
 
     GetMetadataOutput:
       type: object
@@ -509,7 +523,7 @@ components:
 
     CombinedSampleMetadata:
       type: object
-      description: "Sample manifest metadata plus in silico data (may be extended to inclide QC data in future)"
+      description: "Sample manifest metadata plus in silico and QC data"
       required:
         - metadata
       properties:
@@ -517,6 +531,8 @@ components:
           $ref: "#/components/schemas/Metadata"
         in silico:
           $ref: "#/components/schemas/InSilicoData"
+        qc data:
+          $ref: "#/components/schemas/QCData"
 
     Metadata:
       type: object
@@ -871,6 +887,17 @@ components:
         GYRA_variant:
           $ref: "#/components/schemas/DownloadField"
         PARC_variant:
+          $ref: "#/components/schemas/DownloadField"
+
+    QCData:
+      type: object
+      required:
+       - "lane_id"
+       - "rel_abun_sa"
+      properties:
+        lane_id:
+          $ref: "#/components/schemas/DownloadField"
+        rel_abun_sa:
           $ref: "#/components/schemas/DownloadField"
 
     DownloadField:

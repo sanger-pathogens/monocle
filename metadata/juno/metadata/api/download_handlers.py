@@ -3,6 +3,7 @@ from typing import Dict, List, Any
 from metadata.lib.download_handler import DownloadHandler
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.qc_data import QCData
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
@@ -96,7 +97,7 @@ class DownloadInSilicoHandler(DownloadHandler):
 
     def read_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
         """
-            Return a list of metadata objects that correspond to the given sample id/lane id key values.
+            Return a list of in silico data objects that correspond to the given sample id/lane id key values.
         """
         dao = self.get_dao()
         return dao.get_download_in_silico_data(keys)
@@ -170,6 +171,32 @@ class DownloadInSilicoHandler(DownloadHandler):
             self._append_to_dict(record_dict, 'RPOBGBS_2_variant', entry.RPOBGBS_2_variant),
             self._append_to_dict(record_dict, 'RPOBGBS_3_variant', entry.RPOBGBS_3_variant),
             self._append_to_dict(record_dict, 'RPOBGBS_4_variant', entry.RPOBGBS_4_variant)
+
+            response.append(record_dict)
+
+        return response
+
+
+class DownloadQCDataHandler(DownloadHandler):
+    """ Construct API QC data download response message data structures """
+
+    def read_download_qc_data(self, keys: List[str]) -> List[QCData]:
+        """
+            Return a list of QC data objects that correspond to the given sample id/lane id key values.
+        """
+        dao = self.get_dao()
+        return dao.get_download_qc_data(keys)
+
+    def create_download_response(self, download: [QCData]) -> List[Dict[Any, Any]]:
+        """ Create the correct data structure for download responses """
+
+        response: List[Dict[Any, Any]] = []
+
+        for entry in download:
+            record_dict = {}
+            self.__field_index = 1
+            self._append_to_dict(record_dict, 'lane_id', entry.lane_id),
+            self._append_to_dict(record_dict, 'rel_abun_sa', entry.rel_abun_sa)
 
             response.append(record_dict)
 

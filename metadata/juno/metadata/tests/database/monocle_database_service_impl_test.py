@@ -510,7 +510,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
 
     def test_update_lane_in_silico_data(self) -> None:
-        in_silico_data_list = [TEST_LANE_1, TEST_LANE_2]
+        in_silico_data_list = [TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2]
         self.under_test.update_lane_in_silico_data(in_silico_data_list)
         calls = [
             call(
@@ -645,6 +645,23 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
         self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
 
+    def test_update_lane_qc_data(self) -> None:
+        qc_data_list = [TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2]
+        self.under_test.update_lane_qc_data(qc_data_list)
+        calls = [
+            call(
+                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_QC_DATA_SQL,
+                lane_id='50000_2#282',
+                rel_abun_sa='93.21',
+            ),
+            call(
+                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_QC_DATA_SQL,
+                lane_id='50000_2#287',
+                rel_abun_sa='68.58',
+            )
+        ]
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+
     def test_update_sample_metadata_noinput(self) -> None:
         metadata_list = []
         self.under_test.update_sample_metadata(metadata_list)
@@ -654,11 +671,19 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.transactional_connection.get_connection.assert_not_called()
 
     def test_update_lane_in_silico_data_noinput(self) -> None:
-        in_silic_data_list = []
-        self.under_test.update_sample_metadata(in_silic_data_list)
+        in_silico_data_list = []
+        self.under_test.update_sample_metadata(in_silico_data_list)
         self.transactional_connection.get_connection.assert_not_called()
-        in_silic_data_list = None
-        self.under_test.update_sample_metadata(in_silic_data_list)
+        in_silico_data_list = None
+        self.under_test.update_sample_metadata(in_silico_data_list)
+        self.transactional_connection.get_connection.assert_not_called()
+        
+    def test_update_lane_qc_data_noinput(self) -> None:
+        qc_data_list = []
+        self.under_test.update_sample_metadata(qc_data_list)
+        self.transactional_connection.get_connection.assert_not_called()
+        qc_data_list = None
+        self.under_test.update_sample_metadata(qc_data_list)
         self.transactional_connection.get_connection.assert_not_called()
 
     def test_get_download_metadata(self) -> None:
@@ -951,7 +976,26 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         in_silico_data = self.under_test.get_download_in_silico_data(input_list)
         self.assertIsNotNone(in_silico_data)
         self.assertEqual(len(in_silico_data), 2)
-        self.assertEqual(in_silico_data[0], TEST_LANE_1)
-        self.assertEqual(in_silico_data[1], TEST_LANE_2)
+        self.assertEqual(in_silico_data[0], TEST_LANE_IN_SILICO_1)
+        self.assertEqual(in_silico_data[1], TEST_LANE_IN_SILICO_2)
         self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_IN_SILICO_SQL,
                                                    lanes=('50000_2#282', '50000_2#287'))
+        
+    def test_get_download_qc_data(self) -> None:
+
+        input_list = ['50000_2#282', '50000_2#287']
+        # Fake a returned result set...
+        self.connection.execute.return_value = [
+            dict(lane_id='50000_2#282',
+                rel_abun_sa='93.21'),
+            dict(lane_id='50000_2#287',
+                rel_abun_sa='68.58')]
+
+        qc_data = self.under_test.get_download_qc_data(input_list)
+        self.assertIsNotNone(qc_data)
+        self.assertEqual(len(qc_data), 2)
+        self.assertEqual(qc_data[0], TEST_LANE_QC_DATA_1)
+        self.assertEqual(qc_data[1], TEST_LANE_QC_DATA_2)
+        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_LANES_QC_DATA_SQL,
+                                                   lanes=('50000_2#282', '50000_2#287'))
+

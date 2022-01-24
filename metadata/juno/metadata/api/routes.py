@@ -5,8 +5,9 @@ import connexion
 import re
 from flask import jsonify, request
 from injector import inject
+from metadata.api.model.qc_data import QCData
 from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
-from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler
+from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler, DownloadQCDataHandler
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 
 
@@ -110,6 +111,25 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
 
 
 @inject
+def update_qc_data_route(body: list, dao: MonocleDatabaseService):
+    """ Upload a QC data to the database """
+    try:
+      qc_data_updates = []
+      for update in body:
+         qc_data_updates.append( QCData(lane_id     = update['lane_id'],
+                                        rel_abun_sa = update.get('rel_abun_sa', None)
+                                        )
+                                 )
+      if qc_data_updates:
+         dao.update_lane_qc_data(qc_data_updates)
+      return HTTP_SUCCEEDED_STATUS
+   
+    except KeyError as e:
+      logging.error("{}\nQC data is missing required value: this should have been blocked by the OpenAPI spec. for this endpoint!".format(e))
+      return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+
+@inject
 def compare_sample_metadata(body: list):
     # TODO do we need to compare before we update the db? TBD
     pass
@@ -148,6 +168,31 @@ def get_download_in_silico_data_route(body: list, download_handler: DownloadInSi
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_download_qc_data_route(body: list, download_handler: DownloadQCDataHandler):
+    """ Download QC data from the database """
+    keys = body
+    try:
+        qc_data_list = download_handler.read_download_qc_data(keys)
+    except ValueError as ve:
+        logger.error(str(ve))
+        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json({'download': download_handler.create_download_response(qc_data_list)})
+
+    if len(qc_data_list) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+
+@inject
+def delete_all_qc_data_route(dao: MonocleDatabaseService):
+    """ Delete all QC data to the database """
+    dao.delete_all_qc_data()
+    return HTTP_SUCCEEDED_STATUS
+
 
 @inject
 def get_institution_names_route(dao: MonocleDatabaseService):

@@ -124,7 +124,9 @@ describe.each([
       body: JSON.stringify({
         "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
         "num rows": 14,
-        "start row": 2
+        "start row": 2,
+        "in silico": false,
+        "qc data": false
       })
     },
     expectedEndpoints: ["get_metadata"],
