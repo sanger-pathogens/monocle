@@ -44,7 +44,22 @@ TEST_UPLOAD       = [   {
                            "rel_abun_sa"  : float(TEST_REL_ABUN_SA1)
                            }
                         ]
-
+TEST_LANE1_DATA_BLANK   = {  "lane_id"      : TEST_LANE1_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : "",
+                                                                           "timestamp" : TEST_TIMESTAMP1
+                                                                           }
+                                                                        ]
+                                                }
+                              }
+TEST_LANE1_DATA_INVALID = {  "lane_id"      : TEST_LANE1_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : "not a number",
+                                                                           "timestamp" : TEST_TIMESTAMP1
+                                                                           }
+                                                                        ]
+                                                }
+                              }
 EXPECTED_LANE1_DATA     =  {  "lane_id"      : TEST_LANE1_ID,
                               "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
                                                                            "value"     : TEST_REL_ABUN_SA1,
@@ -68,6 +83,12 @@ EXPECTED_REQUEST_BODY   = [   {  'lane_id'      : TEST_LANE1_ID,
                                  'rel_abun_sa'  : float(TEST_REL_ABUN_SA2)
                                  }
                               ]
+EXPECTED_REQUEST_BODY_LANE1_BLANK   = [   {  'lane_id'      : TEST_LANE1_ID
+                                             },
+                                          {  'lane_id'      : TEST_LANE2_ID,
+                                             'rel_abun_sa'  : float(TEST_REL_ABUN_SA2)
+                                             }
+                                       ]
 EXPECTED_FILES          = [   os.path.join(TEST_DATA_DIR, TEST_LANE1_ID, qc_data_file_name),
                               os.path.join(TEST_DATA_DIR, TEST_LANE2_ID, qc_data_file_name)
                               ]
@@ -120,6 +141,18 @@ class UpdateQCDataDBTable(TestCase):
       mock_get_qc_data.return_value = [EXPECTED_LANE1_DATA, EXPECTED_LANE2_DATA]
       request_body = _get_update_request_body(TEST_DATA_DIR)
       self.assertEqual(request_body, EXPECTED_REQUEST_BODY)
+  
+   @patch('bin.update_qc_data_db_table._get_qc_data')
+   def test_get_update_request_body_lane_with_missing_rel_abun(self, mock_get_qc_data):
+      mock_get_qc_data.return_value = [TEST_LANE1_DATA_BLANK, EXPECTED_LANE2_DATA]
+      request_body = _get_update_request_body(TEST_DATA_DIR)
+      self.assertEqual(request_body, EXPECTED_REQUEST_BODY_LANE1_BLANK)
+  
+   @patch('bin.update_qc_data_db_table._get_qc_data')
+   def test_get_update_request_body_lane_with_invalid_rel_abun(self, mock_get_qc_data):
+      mock_get_qc_data.return_value = [TEST_LANE1_DATA_INVALID, EXPECTED_LANE2_DATA]
+      with self.assertRaises(ValueError):
+         _get_update_request_body(TEST_DATA_DIR)
    
    @patch('bin.update_qc_data_db_table._get_update_request_body')
    @patch('bin.update_qc_data_db_table._make_request')
