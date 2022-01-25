@@ -5,6 +5,7 @@ from metadata.api.model.institution import Institution
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
 from metadata.tests.test_data import *
 from metadata.api.database.monocle_database_service_impl import ProtocolError
+from sqlalchemy.exc import OperationalError
 
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
@@ -437,6 +438,40 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         ]
         samples_ids = self.under_test.get_filtered_samples({})
         self.assertEqual(samples_ids, ['9999STDY8113123', '9999STDY8113124'])
+
+    def test_get_distinct_values(self) -> None:
+        self.connection.execute.return_value = [
+           {"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}, {"serotype":None},
+           ]
+        expected = {
+           "serotype": ["II","III","Ia","Ib","NULL"],
+           }
+        values = self.under_test.get_distinct_values(["serotype"])
+        self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_FIELD_VALUES_SQL.format("serotype"))
+        self.assertEqual(values, expected)
+
+    def test_get_distinct_values_multiple_fields(self) -> None:
+        self.connection.execute.side_effect = [
+           [{"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}],
+           [{"collection_year":2010},{"collection_year":2011}]
+           ]
+        expected = {
+           "serotype":        ["II","III","Ia","Ib"],
+           "collection_year": ["2010", "2011"]
+           }
+        values = self.under_test.get_distinct_values(["serotype","collection_year"])
+        self.assertEqual(self.connection.execute.call_count, 2)
+        self.assertEqual(values, expected)
+
+    def test_get_distinct_values_reject_request_if_bad_field_name(self) -> None:
+        self.connection.execute.side_effect = [
+           [{"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}],
+           OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
+           ]
+        expected = None
+        values = self.under_test.get_distinct_values(["serotype","collection_year"])
+        self.assertEqual(self.connection.execute.call_count, 2)
+        self.assertEqual(values, expected)
 
     def test_update_sample_metadata(self) -> None:
         metadata_list = [TEST_SAMPLE_1, TEST_SAMPLE_2]
