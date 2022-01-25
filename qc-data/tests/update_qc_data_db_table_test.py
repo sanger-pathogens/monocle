@@ -34,16 +34,36 @@ TEST_DATA_DIR     = 'tests/update_qc_test_data'
 TEST_LANE1_ID     = "test_lane1"
 TEST_LANE2_ID     = "test_lane2"
 # species, timestamps and rel abundance values must match contents of JSON files under TEST_DATA_DIR
-TEST_SPECIES      = "Streptococcus agalactiae"
-TEST_TIMESTAMP1   = "2021-12-15 09:32:59"
-TEST_TIMESTAMP2   = "2021-12-21 00:00:00"
-TEST_REL_ABUN_SA1 = "97.65"
-TEST_REL_ABUN_SA2 = "92.38"
-TEST_UPLOAD       = [   {
-                           "lane_id"      : TEST_LANE1_ID,
-                           "rel_abun_sa"  : float(TEST_REL_ABUN_SA1)
-                           }
-                        ]
+TEST_SPECIES            = "Streptococcus agalactiae"
+TEST_TIMESTAMP1         = "2021-12-15 09:32:59"
+TEST_TIMESTAMP2         = "2021-12-21 00:00:00"
+TEST_REL_ABUN_SA1       = "97.65"
+TEST_REL_ABUN_SA2       = "92.38"
+TEST_TIMESTAMP1_EARLY   = "2021-07-23 11:45:00"
+TEST_REL_ABUN_SA1_EARLY  = "37.52"
+TEST_UPLOAD             = [   {
+                              "lane_id"      : TEST_LANE1_ID,
+                              "rel_abun_sa"  : float(TEST_REL_ABUN_SA1)
+                              }
+                           ]
+# Note this includes two values for TEST_SPECIES; the one with the latest timestamp should be returned,
+# the other ignored.  The other species should be ignored.
+TEST_LANE1_DATA         =  {  "lane_id"      : TEST_LANE1_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : TEST_REL_ABUN_SA1_EARLY,
+                                                                           "timestamp" : TEST_TIMESTAMP1_EARLY
+                                                                           },
+                                                                        {  "species"   : TEST_SPECIES,
+                                                                           "value"     : TEST_REL_ABUN_SA1,
+                                                                           "timestamp" : TEST_TIMESTAMP1
+                                                                           },
+                                                                        {  "species"   : "A species we're not interested in",
+                                                                           "value"     : "12.34",
+                                                                           "timestamp" : "2021-11-03 17:51:10"
+                                                                           }
+                                                                        ]
+                                                }
+                              }
 TEST_LANE1_DATA_BLANK   = {  "lane_id"      : TEST_LANE1_ID,
                               "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
                                                                            "value"     : "",
@@ -60,6 +80,16 @@ TEST_LANE1_DATA_INVALID = {  "lane_id"      : TEST_LANE1_ID,
                                                                         ]
                                                 }
                               }
+TEST_LANE2_DATA         =   { "lane_id"      : TEST_LANE2_ID,
+                              "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
+                                                                           "value"     : TEST_REL_ABUN_SA2,
+                                                                           "timestamp" : TEST_TIMESTAMP2
+                                                                           }
+                                                                        ]
+                                                }
+                              }
+
+# EXPECTED... vars are the return values we should get when the test succeeds
 EXPECTED_LANE1_DATA     =  {  "lane_id"      : TEST_LANE1_ID,
                               "qc_data"      : {   "rel_abundance" : [  {  "species"   : TEST_SPECIES,
                                                                            "value"     : TEST_REL_ABUN_SA1,
@@ -138,7 +168,7 @@ class UpdateQCDataDBTable(TestCase):
       
    @patch('bin.update_qc_data_db_table._get_qc_data')
    def test_get_update_request_body(self, mock_get_qc_data):
-      mock_get_qc_data.return_value = [EXPECTED_LANE1_DATA, EXPECTED_LANE2_DATA]
+      mock_get_qc_data.return_value = [TEST_LANE1_DATA, TEST_LANE2_DATA]
       request_body = _get_update_request_body(TEST_DATA_DIR)
       self.assertEqual(request_body, EXPECTED_REQUEST_BODY)
   

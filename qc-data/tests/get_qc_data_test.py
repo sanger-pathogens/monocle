@@ -123,6 +123,9 @@ TEST_JSON1 = f'{TEST_DATA_DIR}/{LANE_ID1}/qc_data.json'
 TEST_JSON2 = f'{TEST_DATA_DIR}/{LANE_ID2}/qc_data.json'
 TEST_JSON3 = f'{TEST_DATA_DIR}/{LANE_ID3}/qc_data.json'
 
+TEST_KRAKEN_REPORT_NO_LEADING_WHITESPACE        = f'{TEST_DATA_DIR}/{LANE_ID3}_kraken.report.no_leading_whitespace'
+TEST_KRAKEN_REPORT_MULTIPLE_LEADING_WHITESPACE  = f'{TEST_DATA_DIR}/{LANE_ID3}_kraken.report.multiple_leading_whitespace'
+
 class GetQCData(TestCase):
 
     @classmethod
@@ -151,6 +154,25 @@ class GetQCData(TestCase):
 
     def test_get_relative_abundance(self):
         actual = _get_relative_abundance(TEST_KRAKEN_REPORT, "Streptococcus agalactiae")
+
+        self.assertEqual("92.38", actual)
+
+
+    def test_get_relative_abundance_multiple_leading_whitespace(self):
+        """
+        Tests parsing of kraken report when there is more than one whitespace prior to relative abundance number.
+        This case is known to occur when relative abundance is <10.
+        """
+        actual = _get_relative_abundance(TEST_KRAKEN_REPORT_MULTIPLE_LEADING_WHITESPACE, "Streptococcus agalactiae")
+
+        self.assertEqual("2.38", actual)
+
+    def test_get_relative_abundance_no_leading_whitespace(self):
+        """
+        Tests parsing of kraken report when there is no whitespace prior to relative abundance number
+        This case is not expected, but the code is intended to work if this happens so we'll test it.
+        """
+        actual = _get_relative_abundance(TEST_KRAKEN_REPORT_NO_LEADING_WHITESPACE, "Streptococcus agalactiae")
 
         self.assertEqual("92.38", actual)
 
