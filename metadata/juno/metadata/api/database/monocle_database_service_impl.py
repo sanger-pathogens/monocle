@@ -3,8 +3,9 @@ import json
 import urllib.parse
 import urllib.request
 from flask import request
-from typing import List
+from typing import List, Dict
 from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
@@ -185,7 +186,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             FROM api_sample
             WHERE {} IN :values"""
 
-    DELETE_ALL_IN_SILICO_SQL = text("""delete from in_silico""")
+    #DISTINCT_FIELD_VALUES_SQL = text(""" \
+            #SELECT DISTINCT :field FROM api_sample""")
+    DISTINCT_FIELD_VALUES_SQL = """ \
+            SELECT DISTINCT {} FROM api_sample"""
 
     INSERT_OR_UPDATE_IN_SILICO_SQL = text(""" \
             INSERT INTO in_silico (
@@ -410,6 +414,34 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 sample_ids = [row['sample_id'] for row in rs]
 
         return sample_ids
+
+    def get_distinct_values(self, fields: list) -> Dict:
+        """
+        Return a distinct values found in db for each field name passed.
+        If any of the field names passed are non-existent, returns None
+        """
+        distinct_values = {}
+        with self.connector.get_connection() as con:
+          for this_field in fields:
+            try:
+              rs = con.execute(self.DISTINCT_FIELD_VALUES_SQL.format(this_field))
+              these_distinct_values = []
+              for row in rs:
+                if row[this_field] is None:
+                  these_distinct_values.append('NULL')
+                else:
+                  these_distinct_values.append(str(row[this_field]))
+                if len(these_distinct_values) > 0:
+                  distinct_values[ this_field ] = sorted(these_distinct_values)
+              logging.info("distinct {} values: {}".format(this_field, ', '.join(distinct_values[this_field])) )
+            except OperationalError as e:
+              if 'Unknown column' in str(e):
+                logging.error("attempted to get distinct values from unknown field \"{}\"".format(this_field))
+                return None
+              else:
+                raise e
+
+        return distinct_values
 
     def get_samples(self) -> List[Metadata]:
         """ Retrieve all sample records """

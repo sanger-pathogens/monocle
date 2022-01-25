@@ -1,6 +1,6 @@
 from flask import request
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.qc_data import QCData
@@ -28,6 +28,11 @@ class MonocleDatabaseService(ABC):
     @abstractmethod
     def get_filtered_samples(self, filters: dict) -> List:
         """ Return a list of samples ids"""
+        pass
+     
+    @abstractmethod
+    def get_distinct_values(self, fields: list) -> Dict:
+        """ Return a distinct values found in db for each field name passed"""
         pass
 
     @abstractmethod
