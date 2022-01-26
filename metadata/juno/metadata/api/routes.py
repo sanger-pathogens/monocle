@@ -241,19 +241,22 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
 def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
     """ Download distinct values present in the database for certain fields """
     fields = body
-    if not _validate_field_names(fields):
-        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+    result = _get_distinct_values_common('metadata', fields, dao)
+    return result
 
-    distinct_values = dao.get_distinct_values('metadata', fields)
-    # get_distinct_values() will return None if it is passed a non-existent field name
-    if distinct_values is None:
-      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
-    result = convert_to_json(distinct_values)
+@inject
+def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
+    """ Download distinct values present in the database for certain fields """
+    fields = body
+    result = _get_distinct_values_common('in silico', fields, dao)
+    return result
 
-    if len(distinct_values) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
+@inject
+def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
+    """ Download distinct values present in the database for certain fields """
+    fields = body
+    result = _get_distinct_values_common('qc data', fields, dao)
+    return result
 
 @inject
 def get_institutions(dao: MonocleDatabaseService):
@@ -269,6 +272,22 @@ def get_institutions(dao: MonocleDatabaseService):
     result = convert_to_json({'institutions': institutions})
 
     if len(institutions) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+     
+def _get_distinct_values_common(field_type, fields, dao):
+    """ Download distinct values present in the database for certain fields """
+    if not _validate_field_names(fields):
+        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+    distinct_values = dao.get_distinct_values(field_type, fields)
+    # get_distinct_values() will return None if it is passed a non-existent field name
+    if distinct_values is None:
+      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
+    result = convert_to_json(distinct_values)
+
+    if len(distinct_values) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS

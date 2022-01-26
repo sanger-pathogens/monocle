@@ -191,6 +191,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     DISTINCT_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM api_sample"""
 
+    DISTINCT_IN_SILICO_FIELD_VALUES_SQL = """ \
+            SELECT DISTINCT {} FROM in_silico"""
+
+    DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
+            SELECT DISTINCT {} FROM qc_data"""
+
     INSERT_OR_UPDATE_IN_SILICO_SQL = text(""" \
             INSERT INTO in_silico (
                 lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
@@ -423,8 +429,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         If any of the field names passed are non-existent, returns None
         """
         sql_query =  {  'metadata':    self.DISTINCT_FIELD_VALUES_SQL,
-                        'in silico':   self.DISTINCT_FIELD_VALUES_SQL,
-                        'qc data':     self.DISTINCT_FIELD_VALUES_SQL
+                        'in silico':   self.DISTINCT_IN_SILICO_FIELD_VALUES_SQL,
+                        'qc data':     self.DISTINCT_QC_DATA_FIELD_VALUES_SQL
                         }
         if field_type not in sql_query.keys():
           raise ValueError("{} must be passed one of {}, not {}".format(__class__.__name__, ', '.join(sql_query.keys()), field_type))

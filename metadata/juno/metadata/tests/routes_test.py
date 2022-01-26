@@ -254,6 +254,116 @@ class TestRoutes(unittest.TestCase):
           under_test = mar.get_distinct_values_route({looks_iffy_to_me_guv: 'any search term'}, dao_mock)
           self.assertEqual(under_test, ('Invalid arguments provided', 400))
 
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_in_silico_values_route(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {mock_query[0]:['something'], mock_query[1]:['a value', 'another value', 'one more']}
+        mock_json       = 'expected'
+        mocked_jsoncall.return_value               = mock_json
+        dao_mock.get_distinct_values.return_value  = mock_response 
+        distinct_values, http_status = mar.get_distinct_in_silico_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'in silico', mock_query )
+        self.assertEqual(distinct_values, mock_json)
+        self.assertEqual(http_status, 200)
+        
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_in_silico_values_route_no_return(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = mock_response 
+        distinct_values, http_status = mar.get_distinct_in_silico_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'in silico', mock_query )
+        self.assertEqual(distinct_values, mock_json)
+        self.assertEqual(http_status, 404)
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_in_silico_values_route_bad_field(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['anything']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = None 
+        distinct_values, http_status = mar.get_distinct_in_silico_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'in silico', mock_query )
+        self.assertEqual(distinct_values, 'Invalid field name provided')
+        self.assertEqual(http_status, 400)
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_in_silico_values_route_stop_injection(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = mock_response 
+        for looks_iffy_to_me_guv in [  'serotype="Ia"; DO something NASTY; --',
+                                       'actually anything with -- in it',
+                                       'no semi; colons either',
+                                       'wildcards % are right out'
+                                       ]:
+          under_test = mar.get_distinct_in_silico_values_route({looks_iffy_to_me_guv: 'any search term'}, dao_mock)
+          self.assertEqual(under_test, ('Invalid arguments provided', 400))
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_qc_data_values_route(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {mock_query[0]:['something'], mock_query[1]:['a value', 'another value', 'one more']}
+        mock_json       = 'expected'
+        mocked_jsoncall.return_value               = mock_json
+        dao_mock.get_distinct_values.return_value  = mock_response 
+        distinct_values, http_status = mar.get_distinct_qc_data_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'qc data', mock_query )
+        self.assertEqual(distinct_values, mock_json)
+        self.assertEqual(http_status, 200)
+        
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_qc_data_values_route_no_return(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = mock_response 
+        distinct_values, http_status = mar.get_distinct_qc_data_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'qc data', mock_query )
+        self.assertEqual(distinct_values, mock_json)
+        self.assertEqual(http_status, 404)
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_qc_data_values_route_bad_field(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['anything']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = None 
+        distinct_values, http_status = mar.get_distinct_qc_data_values_route(mock_query, dao_mock)
+        dao_mock.get_distinct_values.assert_called_once_with( 'qc data', mock_query )
+        self.assertEqual(distinct_values, 'Invalid field name provided')
+        self.assertEqual(http_status, 400)
+
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_distinct_qc_data_values_route_stop_injection(self, mocked_jsoncall, dao_mock):
+        mock_query      = ['field1', 'field2']
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_distinct_values.return_value = mock_response 
+        for looks_iffy_to_me_guv in [  'serotype="Ia"; DO something NASTY; --',
+                                       'actually anything with -- in it',
+                                       'no semi; colons either',
+                                       'wildcards % are right out'
+                                       ]:
+          under_test = mar.get_distinct_qc_data_values_route({looks_iffy_to_me_guv: 'any search term'}, dao_mock)
+          self.assertEqual(under_test, ('Invalid arguments provided', 400))
+
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_authenticated_username')
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions')
     @patch('metadata.api.routes.convert_to_json')
