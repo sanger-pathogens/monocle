@@ -902,7 +902,7 @@ class MonocleSampleData:
    
    def _get_file_size(self, path_instance):
       try:
-         logging.debug("counting size of download file: {}  {size}".format(path_instance,path_instance.stat().st_size))
+         logging.debug("counting size of download file: {}  {}".format(path_instance,path_instance.stat().st_size))
          return path_instance.stat().st_size
       except OSError as err:
          logging.info(f'Failed to open file {path_instance}: {err}')
