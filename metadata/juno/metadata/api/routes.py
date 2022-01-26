@@ -244,7 +244,7 @@ def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
     if not _validate_field_names(fields):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
-    distinct_values = dao.get_distinct_values(fields)
+    distinct_values = dao.get_distinct_values('metadata', fields)
     # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS

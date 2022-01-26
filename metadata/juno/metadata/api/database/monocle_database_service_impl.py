@@ -415,16 +415,24 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return sample_ids
 
-    def get_distinct_values(self, fields: list) -> Dict:
+    def get_distinct_values(self, field_type: str, fields: list) -> Dict:
         """
         Return a distinct values found in db for each field name passed.
+        Pass the field type ('metadata', 'in silico' or 'qc data') and
+        a list of names of the fields of interest.
         If any of the field names passed are non-existent, returns None
         """
+        sql_query =  {  'metadata':    self.DISTINCT_FIELD_VALUES_SQL,
+                        'in silico':   self.DISTINCT_FIELD_VALUES_SQL,
+                        'qc data':     self.DISTINCT_FIELD_VALUES_SQL
+                        }
+        if field_type not in sql_query.keys():
+          raise ValueError("{} must be passed one of {}, not {}".format(__class__.__name__, ', '.join(sql_query.keys()), field_type))
         distinct_values = {}
         with self.connector.get_connection() as con:
           for this_field in fields:
             try:
-              rs = con.execute(self.DISTINCT_FIELD_VALUES_SQL.format(this_field))
+              rs = con.execute(sql_query[field_type].format(this_field))
               these_distinct_values = []
               for row in rs:
                 if row[this_field] is None:

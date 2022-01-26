@@ -446,7 +446,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         expected = {
            "serotype": ["II","III","Ia","Ib","NULL"],
            }
-        values = self.under_test.get_distinct_values(["serotype"])
+        values = self.under_test.get_distinct_values('metadata', ["serotype"])
         self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_FIELD_VALUES_SQL.format("serotype"))
         self.assertEqual(values, expected)
 
@@ -459,7 +459,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            "serotype":        ["II","III","Ia","Ib"],
            "collection_year": ["2010", "2011"]
            }
-        values = self.under_test.get_distinct_values(["serotype","collection_year"])
+        values = self.under_test.get_distinct_values('metadata', ["serotype","collection_year"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 
@@ -469,7 +469,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
            ]
         expected = None
-        values = self.under_test.get_distinct_values(["serotype","collection_year"])
+        values = self.under_test.get_distinct_values('metadata', ["serotype","collection_year"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 

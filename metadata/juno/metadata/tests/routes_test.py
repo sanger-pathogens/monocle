@@ -208,7 +208,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value               = mock_json
         dao_mock.get_distinct_values.return_value  = mock_response 
         distinct_values, http_status = mar.get_distinct_values_route(mock_query, dao_mock)
-        dao_mock.get_distinct_values.assert_called_once_with( mock_query )
+        dao_mock.get_distinct_values.assert_called_once_with( 'metadata', mock_query )
         self.assertEqual(distinct_values, mock_json)
         self.assertEqual(http_status, 200)
         
@@ -221,7 +221,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value              = mock_json
         dao_mock.get_distinct_values.return_value = mock_response 
         distinct_values, http_status = mar.get_distinct_values_route(mock_query, dao_mock)
-        dao_mock.get_distinct_values.assert_called_once_with( mock_query )
+        dao_mock.get_distinct_values.assert_called_once_with( 'metadata', mock_query )
         self.assertEqual(distinct_values, mock_json)
         self.assertEqual(http_status, 404)
 
@@ -234,7 +234,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value              = mock_json
         dao_mock.get_distinct_values.return_value = None 
         distinct_values, http_status = mar.get_distinct_values_route(mock_query, dao_mock)
-        dao_mock.get_distinct_values.assert_called_once_with( mock_query )
+        dao_mock.get_distinct_values.assert_called_once_with( 'metadata', mock_query )
         self.assertEqual(distinct_values, 'Invalid field name provided')
         self.assertEqual(http_status, 400)
 
