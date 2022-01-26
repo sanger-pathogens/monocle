@@ -226,17 +226,10 @@ def get_samples_route(dao: MonocleDatabaseService):
 def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
     filters = body
-    try:
-        allowed_filters_regex = re.compile(FIELD_NAME_REGEX)
-        for this_filter in filters:
-          logging.debug("checking filter name {}".format(this_filter))
-          if not allowed_filters_regex.match(this_filter):
-            raise ValueError("filter name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_filter))
-        samples = dao.get_filtered_samples(filters)
-    except ValueError as ve:
-        logger.error(str(ve))
+    if not _validate_field_names(filters):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
-
+     
+    samples = dao.get_filtered_samples(filters)
     result = convert_to_json(samples)
 
     if len(samples) > 0:
@@ -248,21 +241,13 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
 def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
     """ Download distinct values present in the database for certain fields """
     fields = body
-    try:
-        allowed_fields_regex = re.compile(FIELD_NAME_REGEX)
-        for this_field in fields:
-          logging.debug("checking field name {}".format(this_field))
-          if not allowed_fields_regex.match(this_field):
-            raise ValueError("field name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_field))
-        distinct_values = dao.get_distinct_values(fields)
-    except ValueError as ve:
-        logger.error(str(ve))
+    if not _validate_field_names(fields):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
-    # passing a non-existent field name will cause None to be returned
+    distinct_values = dao.get_distinct_values(fields)
+    # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
-
     result = convert_to_json(distinct_values)
 
     if len(distinct_values) > 0:
@@ -288,3 +273,17 @@ def get_institutions(dao: MonocleDatabaseService):
     else:
         return result, HTTP_NOT_FOUND_STATUS
      
+def _validate_field_names(names):
+    try:
+        field_names_regex = re.compile(FIELD_NAME_REGEX)
+        for this_name in names:
+          logging.debug("checking field name {}".format(this_name))
+          if not field_names_regex.match(this_name):
+            raise ValueError("field name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_name))
+    except ValueError as ve:
+        logger.error(str(ve))
+        return False
+     
+    return True
+
+   
