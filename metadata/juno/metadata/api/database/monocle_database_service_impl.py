@@ -434,7 +434,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         }
         if field_type not in sql_query.keys():
           raise ValueError("{} must be passed one of {}, not {}".format(__class__.__name__, ', '.join(sql_query.keys()), field_type))
-        distinct_values = {}
+        distinct_values = []
         with self.connector.get_connection() as con:
           for this_field in fields:
             try:
@@ -445,16 +445,19 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                   these_distinct_values.append('NULL')
                 else:
                   these_distinct_values.append(str(row[this_field]))
-                if len(these_distinct_values) > 0:
-                  distinct_values[ this_field ] = sorted(these_distinct_values)
-              logging.info("distinct {} values: {}".format(this_field, ', '.join(distinct_values[this_field])) )
+              if len(these_distinct_values) > 0:
+                distinct_values.append({  "name": this_field,
+                                          "values": sorted(these_distinct_values)
+                                          }
+                                       )
+              
             except OperationalError as e:
               if 'Unknown column' in str(e):
                 logging.error("attempted to get distinct values from unknown field \"{}\"".format(this_field))
                 return None
               else:
                 raise e
-
+          logging.info("distinct {} values: {}".format(field_type, 'distinct_values'))
         return distinct_values
 
     def get_samples(self) -> List[Metadata]:

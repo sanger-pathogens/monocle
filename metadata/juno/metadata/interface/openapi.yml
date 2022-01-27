@@ -447,11 +447,11 @@ components:
               - "field"
               - "distinct_values"
             properties:
-              field:
+              name:
                 type: string
                 description: "The name of the metadata field"
                 readOnly: true
-              distinct_values:
+              values:
                 type: array
                 items:
                   type: string

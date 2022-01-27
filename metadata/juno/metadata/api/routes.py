@@ -285,7 +285,8 @@ def _get_distinct_values_common(field_type, fields, dao):
     # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
-    result = convert_to_json(distinct_values)
+   
+    result = convert_to_json( {"distinct values": distinct_values} )
 
     if len(distinct_values) > 0:
         return result, HTTP_SUCCEEDED_STATUS

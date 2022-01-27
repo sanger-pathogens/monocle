@@ -1,5 +1,6 @@
 import unittest
 import flask
+import logging
 from unittest.mock import patch, Mock, call
 from metadata.api.model.institution import Institution
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
@@ -443,11 +444,12 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.connection.execute.return_value = [
            {"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}, {"serotype":None},
            ]
-        expected = {
-           "serotype": ["II","III","Ia","Ib","NULL"],
-           }
+        expected = [
+           {"name": "serotype", "values": ["II","III","Ia","Ib","NULL"]}
+           ]
         values = self.under_test.get_distinct_values('metadata', ["serotype"])
         self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_FIELD_VALUES_SQL.format("serotype"))
+        #logging.critical("\nEXPECTED:\n{}\nGOT:{}".format(expected, values))
         self.assertEqual(values, expected)
 
     def test_get_distinct_values_multiple_fields(self) -> None:
@@ -455,10 +457,10 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            [{"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}],
            [{"age_years":23},{"age_years":31}]
            ]
-        expected = {
-           "serotype":  ["II","III","Ia","Ib"],
-           "age_years": ["23", "31"]
-           }
+        expected = [
+           {"name": "serotype",  "values": ["II","III","Ia","Ib"]},
+           {"name": "age_years", "values": ["23", "31"]}
+           ]
         values = self.under_test.get_distinct_values('metadata', ["serotype","age_years"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
@@ -477,9 +479,9 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.connection.execute.return_value = [
            {"ST":"1"}, {"ST":"17"}, {"ST":None},
            ]
-        expected = {
-           "ST": ["1", "17", "NULL"],
-           }
+        expected = [
+           {"name": "ST",  "values": ["1", "17", "NULL"]}
+           ]
         values = self.under_test.get_distinct_values('in silico', ["ST"])
         self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_IN_SILICO_FIELD_VALUES_SQL.format("ST"))
         self.assertEqual(values, expected)
@@ -498,9 +500,9 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.connection.execute.return_value = [
            {"rel_abun_sa": 1.46}, {"rel_abun_sa": 92.93}, {"rel_abun_sa":None},
            ]
-        expected = {
-           "rel_abun_sa": ["1.46","92.93","NULL"],
-           }
+        expected = [
+           {"name": "rel_abun_sa",  "values": ["1.46","92.93","NULL"]},
+           ]
         values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa"])
         self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_QC_DATA_FIELD_VALUES_SQL.format("rel_abun_sa"))
         self.assertEqual(values, expected)
