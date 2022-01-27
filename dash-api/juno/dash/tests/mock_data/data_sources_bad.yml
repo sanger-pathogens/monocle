@@ -9,6 +9,9 @@ monocle_metadata_api:
    in_silico_data_key      : 'download'
    qc_data_upload          : '/metadata/qc-data-upload'
    qc_data_delete_all      : '/metadata/delete_all_qc_data'
+   qc_data_key             : 'download'
+   distinct_qc_data_values       : '/metadata/distinct_qc_data_values'
+   distinct_values_key           : 'distinct values'
 mlwh_rest_api:
    mlwh_api_config   : 'dash/tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'

@@ -139,6 +139,30 @@ def get_metadata_route(body):
                            )
       return call_jsonify( metadata ), HTTPStatus.OK
 
+def get_distinct_values_route(body):
+    """ Return distinct values found in metadata, in silico or QC data fields """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    monocle_data  = ServiceFactory.sample_data_service(get_authenticated_username(request))
+    field_types   = ['metadata', 'in silico', 'qc data']
+    
+    # validate *types* of field named in request
+    for this_key in body:
+      if this_key not in field_types:
+         logging.info("{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(__name__, this_key, field_types))
+         return "Invalid field type {}: should be one of {}".format(this_key, field_types), HTTPStatus.BAD_REQUEST
+
+    distinct_values_request = body
+    distinct_values = monocle_data.get_distinct_values(distinct_values_request)
+    
+    if distinct_values is None:
+    # this means a non-existent field was asked for => customized 404
+       return 'One or more of the requested fields could not be found', HTTPStatus.NOT_FOUND
+
+    response_dict = {
+        'distinct values': distinct_values
+    }
+    return call_jsonify( response_dict ), HTTPStatus.OK
+
 def bulk_download_info_route(body):
     """ Get download estimate in reponse to the user's changing parameters on the bulk download page """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))

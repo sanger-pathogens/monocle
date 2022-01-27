@@ -282,6 +282,7 @@ def _get_distinct_values_common(field_type, fields, dao):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
     distinct_values = dao.get_distinct_values(field_type, fields)
+    logging.debug("DAO returned distinct values: {}".format(distinct_values))
     # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS

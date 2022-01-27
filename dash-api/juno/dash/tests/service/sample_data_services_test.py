@@ -284,9 +284,9 @@ class MonocleSampleDataTest(TestCase):
       self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
       self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
       # mock metadata_download
-      self.monocle_data.metadata_source = MetadataDownload(set_up=False)
-      self.monocle_data.metadata_source.dl_client = Monocle_Download_Client(set_up=False)
-      self.monocle_data.metadata_source.dl_client.set_up(self.test_config)
+      self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
+      self.monocle_data.metadata_download_source.dl_client = Monocle_Download_Client(set_up=False)
+      self.monocle_data.metadata_download_source.dl_client.set_up(self.test_config)
       # load mock data
       self.get_mock_data()
 
@@ -448,8 +448,7 @@ class MonocleSampleDataTest(TestCase):
                                                                   metadata_columns=['public_name'],
                                                                   in_silico_columns=["some_in_silico_thing"],
                                                                   include_in_silico=True)
-      # TODO
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata)
 
    @patch.object(SampleMetadata, 'get_samples')

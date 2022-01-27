@@ -17,6 +17,7 @@ import urllib.error
 from   utils.file             import format_file_size
 
 import DataServices.sample_tracking_services
+import DataSources.sample_metadata
 import DataSources.metadata_download
 
 API_ERROR_KEY = '_ERROR'
@@ -59,7 +60,8 @@ class MonocleSampleData:
       # only set to False if you know what you're doing
       if set_up:
          self.updated                     = datetime.now()
-         self.metadata_source             = DataSources.metadata_download.MetadataDownload()
+         self.metadata_download_source    = DataSources.metadata_download.MetadataDownload()
+         self.sample_metadata_source      = DataSources.sample_metadata.SampleMetadata()
          self.data_source_config_name     = 'data_sources.yml'
          
 
@@ -143,7 +145,7 @@ class MonocleSampleData:
          logging.error("{}.get_filtered_samples returned one or more samples without a sample ID (expected 'sample_id' key)".format(__class__.__name__))
          raise
       logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
-      metadata = self.metadata_source.get_metadata(sample_id_list)
+      metadata = self.metadata_download_source.get_metadata(sample_id_list)
 
       # combined_metadata is the structure to be returned
       combined_metadata = [ {'metadata': m} for m in metadata ]
@@ -185,14 +187,14 @@ class MonocleSampleData:
          except KeyError:
             logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
             raise
-      in_silico_data = self.metadata_source.get_in_silico_data(lane_id_list)
-      logging.debug("{}.metadata_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
+      in_silico_data = self.metadata_download_source.get_in_silico_data(lane_id_list)
+      logging.debug("{}.metadata_download_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data))
       lane_to_in_silico_lookup = {}
       for this_in_silico_data in in_silico_data:
          try:
             lane_to_in_silico_lookup[this_in_silico_data['lane_id']['value']] = this_in_silico_data
          except KeyError:
-            logging.error("{}.metadata_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
+            logging.error("{}.metadata_download_source.get_in_silico_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
             raise
 
       for combined_metadata_item in combined_metadata:
@@ -238,14 +240,14 @@ class MonocleSampleData:
          except KeyError:
             logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
             raise
-      qc_data = self.metadata_source.get_qc_data(lane_id_list)
-      logging.debug("{}.metadata_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
+      qc_data = self.metadata_download_source.get_qc_data(lane_id_list)
+      logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
       lane_to_qc_data_lookup = {}
       for this_qc_data in qc_data:
          try:
             lane_to_qc_data_lookup[this_qc_data['lane_id']['value']] = this_qc_data
          except KeyError:
-            logging.error("{}.metadata_source.get_qc_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
+            logging.error("{}.metadata_download_source.get_qc_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(__class__.__name__))
             raise
 
       for combined_metadata_item in combined_metadata:
@@ -298,6 +300,22 @@ class MonocleSampleData:
                   del qc_data[this_column]
       return combined_metadata
    
+   
+   def get_distinct_values(self, fields):
+      """
+      Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
+      as keys; values are arrays of field names.
+      Returns array of GetDistinctValuesOutput objects (as deined in OpenAPI spec.)
+      or None in event of a non-existent field being named in the request
+      """
+      try:
+         distinct_values = self.sample_metadata_source.get_distinct_values(fields)
+      except urllib.error.HTTPError as e:
+         if '404' not in str(e):
+            e
+         return None
+      
+      return distinct_values
 
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
@@ -404,10 +422,10 @@ class MonocleSampleData:
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-      logging.info("{}.metadata_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}.metadata_download_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
       #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
-      logging.info("{}.metadata_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      logging.info("{}.metadata_download_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
       for this_sample in filtered_samples:
          if this_sample['sample_id'] in matching_samples_ids:
@@ -678,7 +696,7 @@ class MonocleSampleData:
 
       # retrieve the sample metadata and load into DataFrame
       logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
-      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_source.get_metadata(list(samples_for_download.keys())))
+      metadata,metadata_col_order   = self._metadata_download_to_pandas_data(self.metadata_download_source.get_metadata(list(samples_for_download.keys())))
       metadata_df                   = pandas.DataFrame(metadata)
 
       # IMPORTANT
@@ -699,7 +717,7 @@ class MonocleSampleData:
       for this_sample in samples_for_download.keys():
          lanes_for_download.extend(samples_for_download[this_sample])
       logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
-      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_in_silico_data(lanes_for_download))
+      in_silico_data,in_silico_data_col_order = self._metadata_download_to_pandas_data(self.metadata_download_source.get_in_silico_data(lanes_for_download))
       if len(in_silico_data) > 0:
          in_silico_data_df = pandas.DataFrame(in_silico_data)
          logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
@@ -712,7 +730,7 @@ class MonocleSampleData:
          
       # if there are any QC data, these are merged into the metadata DataFrame
       logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
-      qc_data,qc_data_col_order = self._metadata_download_to_pandas_data(self.metadata_source.get_qc_data(lanes_for_download))
+      qc_data,qc_data_col_order = self._metadata_download_to_pandas_data(self.metadata_download_source.get_qc_data(lanes_for_download))
       if len(qc_data) > 0:
          qc_data_df = pandas.DataFrame(qc_data)
          logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))

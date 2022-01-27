@@ -286,7 +286,39 @@ paths:
           description: "Authorization information is missing or invalid."
         "404":
           description: "No samples were found that matched the request criteria."
-          
+ 
+  /get_distinct_values:
+    post:
+      operationId: dash.api.routes.get_distinct_values_route
+      summary: "Return distinct values found in metadata, in silico or QC data fields"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetDistinctValuesInput"
+      responses:
+        "200":
+          description: "The operation was successful."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distinct values:
+                    $ref: "#/components/schemas/GetDistinctValuesOutput"
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "One or more of the requested fields not recognised."
+ 
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
@@ -365,7 +397,6 @@ components:
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
        example: "NatRefLab"
 
-
     InstitutionName:
        description: "The name of the institution."
        type: string
@@ -416,6 +447,20 @@ components:
       example:
         serotype: ["Ia", "IV"]
 
+    DataFieldTypes:
+       description: "The type of data field:  metadata, in silico, or QC data"
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^(metadata)|(in silico)|(qc data)$
+       
+    DataFieldName:
+       description: "The Names of a metadata, in silico data, or QC data field."
+       type: string
+       minLength: 1
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9_]*$
+       
     GetMetadataInput:
       type: object
       required:
@@ -519,6 +564,49 @@ components:
           items:
             $ref: "#/components/schemas/CombinedSampleMetadata"
 
+    GetDistinctValuesInput:
+      type: object
+      properties:
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataFieldName"
+          example: ["serotype", "age_group"]
+        in silico:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataFieldName"
+          example: ["ST", "cps_type"]
+        qc data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DataFieldName"
+          example: ["rel_abun_sa"]
+          
+    GetDistinctValuesOutput:
+      type: array
+      items:
+        type: object
+        properties:
+          field type:
+            description: "The type of field"
+            $ref: "#/components/schemas/DataFieldTypes"
+            readOnly: true
+          fields:
+            description: "A list of fields for which distinct values are required."
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/DataFieldName"
+                  readOnly: true
+                values:
+                  type: array
+                  items:
+                    type: string
+                    readOnly: true
+            
     CombinedSampleMetadata:
       type: object
       description: "Sample manifest metadata plus in silico and QC data"
