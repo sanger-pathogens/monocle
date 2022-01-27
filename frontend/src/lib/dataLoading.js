@@ -42,33 +42,21 @@ export function getBatches(fetch) {
   return fetchDashboardApiResource("get_batches", "batches", fetch);
 }
 
-export function getBulkDownloadInfo(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+export function getBulkDownloadInfo(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_info", null, fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify({
-        "sample filters": {
-          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-        },
-        assemblies,
-        annotations
-      })
+      body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
 }
 
-export function getBulkDownloadUrls(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+export function getBulkDownloadUrls(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify({
-        "sample filters": {
-          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-        },
-        assemblies,
-        annotations
-      })
+      body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
 }
 
@@ -79,6 +67,7 @@ export function getInstitutions(fetch) {
 
 export function getSampleMetadata({
   instKeyBatchDatePairs,
+  metadataFilter,
   numRows,
   startRow,
   asCsv
@@ -90,6 +79,11 @@ fetch
       batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
     }
   };
+
+  if (metadataFilter) {
+    payload["sample filters"].metadata = metadataFilter;
+  }
+
   if (Number.isInteger(numRows)) {
     payload["num rows"] = numRows;
   }
@@ -178,6 +172,27 @@ function collateInstitutionStatus({
       },
       key: institutionKey
     }));
+}
+
+function prepareBulkDownloadPayload({
+  instKeyBatchDatePairs,
+  metadataFilter,
+  assemblies,
+  annotations
+}) {
+  const payload = {
+    "sample filters": {
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+    },
+    assemblies,
+    annotations
+  };
+
+  if (metadataFilter) {
+    payload["sample filters"].metadata = metadataFilter;
+  }
+
+  return payload;
 }
 
 export function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {
