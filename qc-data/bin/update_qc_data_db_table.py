@@ -2,6 +2,7 @@ import argparse
 import http.client
 import json
 import logging
+from   operator         import itemgetter
 import os.path
 import sys
 import urllib.request
@@ -93,21 +94,32 @@ def _get_update_request_body(qc_dir):
        qc_data = this_lane['qc_data']
        # construct a dict with request data for this lane
        this_lane_request_data = {'lane_id': lane_id}
-       for this_rel_abundance in qc_data.get('rel_abundance', []):
+       # qc_data include multiple relative abundance values: sort in reverse order of timestamp, and
+       # only use the first (i.e. most recent) value for each species
+       species_already_found = {}
+       for this_rel_abundance in reversed(   sorted(  qc_data.get('rel_abundance', []),
+                                                      key=itemgetter('timestamp')
+                                                      )
+                                             ):
           this_species = this_rel_abundance['species']
           if this_species in rel_abun_species:
-             try:
-                request_property = rel_abun_species[this_species]
-                this_value = float(this_rel_abundance['value'])
-                logging.debug("{} has {} rel abundance {}; adding to request as property {}".format(lane_id,this_species,this_value,request_property))
-                this_lane_request_data[request_property] = this_value
-             except ValueError as e:
-                value_as_string = this_rel_abundance['value']
-                if 0 == len(value_as_string):
-                   logging.warning("{} has missing {} rel abundance".format(lane_id,this_species))
-                else:
-                   logging.error("lane {} has invalid {} relative abundance data: \"{}\"".format(lane_id,this_species,this_rel_abundance))
-                   raise e
+             if this_species not in species_already_found:
+                # if we reach this line, this_rel_abundance contains the most recent relative abundance value for this_species
+                try:
+                   request_property = rel_abun_species[this_species]
+                   this_value = float(this_rel_abundance['value'])
+                   logging.debug("{} has {} rel abundance {}; adding to request as property {}".format(lane_id,this_species,this_value,request_property))
+                   this_lane_request_data[request_property] = this_value
+                   # creating a value in species_already_found will cause us to ignore any further (older)
+                   # instances of this_rel_abundance that might exist for this_species
+                   species_already_found[this_species] = True
+                except ValueError as e:
+                   value_as_string = this_rel_abundance['value']
+                   if 0 == len(value_as_string):
+                      logging.warning("{} has missing {} rel abundance".format(lane_id,this_species))
+                   else:
+                      logging.error("lane {} has invalid {} relative abundance data: \"{}\"".format(lane_id,this_species,this_rel_abundance))
+                      raise e
        # add request data to array with data for all lanes
        request_data.append(this_lane_request_data)
 

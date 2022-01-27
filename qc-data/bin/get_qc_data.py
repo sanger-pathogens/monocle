@@ -77,7 +77,7 @@ def _get_relative_abundance(kraken_report, species):
     file = open(kraken_report, "r")
     for line in file:
         if re.search(f'{species}$', line):
-            rel_abnd = line.split('\t')[0].split(' ')[1]
+            rel_abnd = line.split('\t')[0].lstrip().split(' ')[0]
             file.close()
             break
          
