@@ -388,7 +388,7 @@ class MonocleSampleDataTest(TestCase):
       self.assertIsNone( self.monocle_data.get_distinct_values(self.mock_distinct_values_query) )
 
    @patch.object(Monocle_Client,  'make_request')
-   def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
+   def test_get_distinct_values_reraise_HTTPError_if_not_404(self, mock_request):
       mock_request.side_effect  = HTTPError('/nowhere', '400', 'some other bad request', 'yes', 'no')
       with self.assertRaises(HTTPError):
          self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
