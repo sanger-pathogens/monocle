@@ -60,6 +60,14 @@ export function getBulkDownloadUrls(params, fetch) {
     });
 }
 
+export function getDistinctColumnValues({ columns }, fetch) {
+  return fetchDashboardApiResource("FIXME", undefined, fetch, {
+    method: HTTP_POST,
+    headers: JSON_HEADERS,
+    body: JSON.stringify("FIXME")
+  });
+}
+
 export function getInstitutions(fetch) {
   return fetchDashboardApiResource(
     "get_institutions", "institutions", fetch);

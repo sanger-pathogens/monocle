@@ -1,13 +1,21 @@
 <script>
   import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import FilterIcon from "$lib/components/icons/FilterIcon.svelte";
+  import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import Filter from "./_Filter.svelte";
+  import { filterStore } from "../_stores.js";
 
   export let metadataPromise = undefined;
 
+  const COLOR_INACTIVE_FILTER = "silver";
+  const DATA_TYPE_METADATA = "metadata";
+
+  let columnOfOpenFilter;
   let isError;
   let isLoading;
   let metadata;
-  let metadataColumnHeaders = [];
+  let columns = [];
 
   $: {
     if (metadataPromise) {
@@ -16,7 +24,7 @@
       metadataPromise
         .then((sortedMetadata) => {
           metadata = sortedMetadata;
-          metadataColumnHeaders = extractColumnHeadersFromMetadata(sortedMetadata);
+          columns = extractColumnsFromMetadata(sortedMetadata);
         })
         .catch((err) => {
           console.error(err);
@@ -26,8 +34,19 @@
     }
   }
 
-  function extractColumnHeadersFromMetadata(metadata = []) {
-    return metadata[0]?.metadata?.map(({ name }) => name) || [];
+  function extractColumnsFromMetadata(sortedMetadata = []) {
+    return sortedMetadata[0]?.[DATA_TYPE_METADATA]?.map(
+      ({ key, name }) => ({ key, name, dataType: DATA_TYPE_METADATA })
+    ) || [];
+  }
+
+  function toggleFilterMenu(clickedColumn) {
+    if (!columnOfOpenFilter) {
+      columnOfOpenFilter = clickedColumn;
+      return;
+    }
+    const isSameColumn = columnOfOpenFilter.name === clickedColumn.name && columnOfOpenFilter.dataType === clickedColumn.dataType;
+    columnOfOpenFilter = isSameColumn ? undefined : clickedColumn;
   }
 </script>
 
@@ -35,16 +54,31 @@
 {#if metadataPromise}
   <table class="dense">
     <tr>
-      <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
-       https://svelte.dev/docs#each). -->
-      {#each metadataColumnHeaders as columnName (columnName)}
-        <th>{columnName}</th>
+      <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+       https://svelte.dev/docs#template-syntax-each). -->
+      {#each columns as column (`${column.key}:${column.dataType}`)}
+        {@const { name: columnName } = column}
+        <th>
+          {columnName}
+          <button
+            aria-label="Toggle the filter menu for column {columnName}"
+            title="Toggle filter menu"
+            on:click={() => toggleFilterMenu(column)}
+            class="filter-btn"
+          >
+            {#if columnOfOpenFilter?.name !== columnName}
+              <FilterIcon width="17" height="17" color={$filterStore[column.dataType][column.key] ? undefined : COLOR_INACTIVE_FILTER} />
+            {:else}
+              <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.key] ? undefined : COLOR_INACTIVE_FILTER} />
+            {/if}
+          </button>
+        </th>
       {/each}
     </tr>
 
     {#if isError}
       <tr>
-        <td colspan={metadataColumnHeaders.length || 1}>
+        <td colspan={columns.length || 1}>
           Error while fetching metadata. Please <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the error persists.
         </td>
       </tr>
@@ -54,16 +88,16 @@
       {#if metadata?.length}
         {#each metadata as sample}
           <tr class="data-row" class:loading={isLoading} aria-live="polite">
-            <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
-             https://svelte.dev/docs#each). -->
-            {#each sample.metadata as { name: columnName, value } (columnName)}
+            <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+             https://svelte.dev/docs#template-syntax-each). -->
+            {#each sample.metadata as { name: columnName, value } (`${columnName}:metadata`)}
               <td>{value}</td>
             {/each}
           </tr>
         {/each}
       {:else if !isLoading}
         <tr>
-          <td class="no-data-row" colspan={metadataColumnHeaders.length || 1}>
+          <td class="no-data-row" colspan={columns.length || 1}>
             No data. Try to refresh or change a filter.
           </td>
         </tr>
@@ -71,7 +105,7 @@
 
       {#if isLoading}
         <tr class="loading-indicator-row" class:no-metadata={!metadata || metadata.length === 0}>
-          <td colspan={metadataColumnHeaders.length || 1}>
+          <td colspan={columns.length || 1}>
             <LoadingIndicator />
           </td>
         </tr>
@@ -79,6 +113,8 @@
 
     {/if}
   </table>
+
+  <Filter bind:column={columnOfOpenFilter} />
 {/if}
 
 
@@ -88,6 +124,18 @@ table {
   min-height: 9rem;
   overflow-x: auto;
   position: relative;
+}
+
+th {
+  white-space: nowrap;
+}
+
+.filter-btn {
+  border: none;
+  margin: 0;
+  padding: .1rem .2rem 0;
+  position: relative;
+  top: .1rem;
 }
 
 .loading-indicator-row {

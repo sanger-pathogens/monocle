@@ -20,7 +20,7 @@
     role="dialog"
     aria-label={ariaLabel}
     aria-labelledby={ariaLabelledby}
-    style={persistState && !isOpen ? "display: none" : null}
+    style:display={persistState && !isOpen ? "none" : null}
     bind:this={dialogBackground}
     on:click={(event) => event.target === dialogBackground && close()}
     in:fade={{ duration: 90 }}
