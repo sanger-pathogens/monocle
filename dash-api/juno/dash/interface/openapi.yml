@@ -447,12 +447,13 @@ components:
       example:
         serotype: ["Ia", "IV"]
 
-    DataFieldTypes:
+    DataFieldType:
        description: "The type of data field:  metadata, in silico, or QC data"
        type: string
        minLength: 1
        maxLength: 20
        pattern: ^(metadata)(in silico)(qc data)$
+       #example: "metadata"
        
     DataFieldName:
        description: "The Names of a metadata, in silico data, or QC data field."
@@ -460,6 +461,8 @@ components:
        minLength: 1
        maxLength: 256
        pattern: ^[a-zA-Z0-9_]*$
+       #example: "serotype"
+
        
     GetMetadataInput:
       type: object
@@ -564,24 +567,41 @@ components:
           items:
             $ref: "#/components/schemas/CombinedSampleMetadata"
 
+    #GetDistinctValuesInput:
+      #type: object
+      #properties:
+        #metadata:
+          #type: array
+          #items:
+            #$ref: "#/components/schemas/DataFieldName"
+          #example: ["serotype", "age_group"]
+        #in silico:
+          #type: array
+          #items:
+            #$ref: "#/components/schemas/DataFieldName"
+          #example: ["ST", "cps_type"]
+        #qc data:
+          #type: array
+          #items:
+            #$ref: "#/components/schemas/DataFieldName"
+          #example: ["rel_abun_sa"]
+
     GetDistinctValuesInput:
-      type: object
-      properties:
-        metadata:
-          type: array
-          items:
-            $ref: "#/components/schemas/DataFieldName"
-          example: ["serotype", "age_group"]
-        in silico:
-          type: array
-          items:
-            $ref: "#/components/schemas/DataFieldName"
-          example: ["ST", "cps_type"]
-        qc data:
-          type: array
-          items:
-            $ref: "#/components/schemas/DataFieldName"
-          example: ["rel_abun_sa"]
+      type: array
+      items:
+        type: object
+        properties:
+          field type:
+            description: "The type of field"
+            $ref: "#/components/schemas/DataFieldType"
+          fields:
+            description: "A list of fields for which distinct values are required."
+            type: array
+            items:
+              $ref: "#/components/schemas/DataFieldName"
+        example:
+          field type: "metadata"
+          fields:     ["serotype", "age_group"]
           
     GetDistinctValuesOutput:
       type: array
@@ -590,7 +610,7 @@ components:
         properties:
           field type:
             description: "The type of field"
-            $ref: "#/components/schemas/DataFieldTypes"
+            $ref: "#/components/schemas/DataFieldType"
             readOnly: true
           fields:
             description: "A list of fields for which distinct values are required."
@@ -606,6 +626,15 @@ components:
                   items:
                     type: string
                     readOnly: true
+        example:
+          field type: "metadata"
+          fields:     [ {  name: "serotype",
+                           values: ["Ia", "Ib", "III"]
+                           },
+                        {  name: "age_group",
+                           values: ["adult"]
+                           }
+                        ]
             
     CombinedSampleMetadata:
       type: object
