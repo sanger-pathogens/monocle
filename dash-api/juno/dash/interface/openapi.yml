@@ -415,13 +415,13 @@ components:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^(sequencing)|(pipeline)$
+       pattern: ^(sequencing)(pipeline)$
        
     DashboardMetadataDownloadStatus:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^(successful)|(failed)$
+       pattern: ^(successful)(failed)$
 
     SampleFilters:
       type: object
@@ -452,7 +452,7 @@ components:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^(metadata)|(in silico)|(qc data)$
+       pattern: ^(metadata)(in silico)(qc data)$
        
     DataFieldName:
        description: "The Names of a metadata, in silico data, or QC data field."
