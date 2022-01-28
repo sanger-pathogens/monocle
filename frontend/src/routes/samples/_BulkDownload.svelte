@@ -2,6 +2,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
+  import { filterStore } from "./_stores.js";
 
   let downloadEstimateLatest = undefined;
   export let ariaLabelledby;
@@ -32,7 +33,11 @@
     }
 
     downloadLinksRequested = true;
-    getBulkDownloadUrls(batches, formValues, fetch)
+    getBulkDownloadUrls({
+      instKeyBatchDatePairs: batches,
+      metadataFilter: $filterStore.metadata,
+      ...formValues
+    }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
         if (!downloadLinksRequested) {

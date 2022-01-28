@@ -4,15 +4,16 @@
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
-  import BatchSelector from "./_BatchSelector.svelte";
-  import BulkDownload from "./_BulkDownload.svelte";
-  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import {
     getBatches,
     getBulkDownloadInfo,
     getInstitutions,
     getSampleMetadata
   } from "$lib/dataLoading.js";
+  import BatchSelector from "./_BatchSelector.svelte";
+  import BulkDownload from "./_BulkDownload.svelte";
+  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
+  import { filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
@@ -46,7 +47,7 @@
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when some of the arguments have changed.
-  $: updateDownloadEstimate(selectedBatches, bulkDownloadFormValues);
+  $: updateDownloadEstimate(selectedBatches, $filterStore, bulkDownloadFormValues);
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
@@ -60,11 +61,11 @@
       return;
     }
 
-    getBulkDownloadInfo(
-      selectedInstKeyBatchDatePairs,
-      bulkDownloadFormValues,
-      fetch
-    )
+    getBulkDownloadInfo({
+      instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+      metadataFilter: $filterStore.metadata,
+      ...bulkDownloadFormValues,
+    }, fetch)
       .then(({num_samples, size_zipped}) => {
         bulkDownloadEstimate = { numSamples: num_samples, sizeZipped: size_zipped };
       })
@@ -114,6 +115,7 @@
     let hiddenDownloadLink;
     getSampleMetadata({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+      metadataFilter: $filterStore.metadata,
       asCsv: true
     }, fetch)
       .then((csvBlob) => {
