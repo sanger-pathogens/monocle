@@ -304,6 +304,17 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/GetDistinctValuesInput"
+            example:
+              [ {  "field type": "metadata",
+                   "fields":     ["serotype", "age_group"]
+                   },
+                {  "field type": "in silico",
+                   "fields":     ["ST", "cps_type"]
+                   },
+                {  "field type": "qc data",
+                   "fields":     ["rel_abun_sa"]
+                   }
+                ]
       responses:
         "200":
           description: "The operation was successful."
@@ -314,6 +325,35 @@ paths:
                 properties:
                   distinct values:
                     $ref: "#/components/schemas/GetDistinctValuesOutput"
+              example:
+                { "distinct values": [
+                     {  "field type": "metadata",
+                        "fields":     [   {  "name":     "serotype",
+                                             "values":   ["Ia", "Ib", "III"]
+                                             },
+                                          {  "name":     "age_group",
+                                             "values":   ["adult", "adolescent", "infant"]
+                                             }
+                                       ]
+                        },
+                     {  "field type": "in silico",
+                        "fields":      [  {  "name": "ST",
+                                             "values": ["1", "1*", "10", "103", "103*?"]
+                                             },
+                                          {  "name": "cps_type",
+                                             "values": ["II", "III", "III/V", "Ia/II"]
+                                             }
+                                          ]
+                        },
+                     {  "field type": "qc data",
+                        "fields":      [  {  "name": "rel_abun_sa",
+                                             "values": ["0.01", "76.04", "84.46", "91.23", "99.10"]
+                                             }
+                                          ]
+                        }
+                  ]}
+                                
+                    
         "403":
           description: "Authorization information is missing or invalid."
         "404":
@@ -565,25 +605,6 @@ components:
           items:
             $ref: "#/components/schemas/CombinedSampleMetadata"
 
-    #GetDistinctValuesInput:
-      #type: object
-      #properties:
-        #metadata:
-          #type: array
-          #items:
-            #$ref: "#/components/schemas/DataFieldName"
-          #example: ["serotype", "age_group"]
-        #in silico:
-          #type: array
-          #items:
-            #$ref: "#/components/schemas/DataFieldName"
-          #example: ["ST", "cps_type"]
-        #qc data:
-          #type: array
-          #items:
-            #$ref: "#/components/schemas/DataFieldName"
-          #example: ["rel_abun_sa"]
-
     GetDistinctValuesInput:
       type: array
       items:
@@ -597,9 +618,6 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/DataFieldName"
-        example:
-          field type: "metadata"
-          fields:     ["serotype", "age_group"]
           
     GetDistinctValuesOutput:
       type: array
@@ -624,15 +642,6 @@ components:
                   items:
                     type: string
                     readOnly: true
-        example:
-          field type: "metadata"
-          fields:     [ {  name: "serotype",
-                           values: ["Ia", "Ib", "III"]
-                           },
-                        {  name: "age_group",
-                           values: ["adult"]
-                           }
-                        ]
             
     CombinedSampleMetadata:
       type: object
