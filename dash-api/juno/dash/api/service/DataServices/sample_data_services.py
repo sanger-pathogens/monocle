@@ -312,7 +312,7 @@ class MonocleSampleData:
          distinct_values = self.sample_metadata_source.get_distinct_values(fields)
       except urllib.error.HTTPError as e:
          if '404' not in str(e):
-            e
+            raise e
          return None
       
       return distinct_values

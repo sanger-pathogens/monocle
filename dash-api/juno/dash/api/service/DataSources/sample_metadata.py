@@ -72,7 +72,7 @@ class SampleMetadata:
        """
        Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
        as keys; values are arrays of field names.
-       Returns array of GetDistinctValuesOutput objects (as deined in OpenAPI spec.)
+       Returns array of GetDistinctValuesOutput objects (as defined in OpenAPI spec.)
        """
        results = []
        for this_field_type in fields:

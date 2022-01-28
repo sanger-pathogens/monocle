@@ -4,7 +4,7 @@ from   copy          import deepcopy
 from   datetime      import datetime
 import logging
 import urllib.request
-import urllib.error
+from   urllib.error  import HTTPError
 from   os            import environ
 from   pandas.errors import MergeError
 from   pathlib       import Path, PurePath
@@ -237,6 +237,23 @@ class MonocleSampleDataTest(TestCase):
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
    mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
+   
+   mock_distinct_values_query =     {  "metadata":    ["field1", "field2"],
+                                       "in silico":   ["field3"]
+                                       }
+   bad_distinct_values_query  =     {  "metadata":    ["field1", "field2"],
+                                       "NO SUCH TYPE":["field3"]
+                                       }
+   mock_distinct_values       =     [  { "name": "field1", "values": ["a", "b"] },
+                                       { "name": "field2", "values": ["d", "e"] }
+                                       ]
+   mock_distinct_in_silico_values = [  { "name": "field3", "values": ["f", "g", "h"] }
+                                       ]
+   
+   expected_distinct_values   =     [  { 'field type': 'metadata',    'fields': mock_distinct_values },
+                                       { 'field type': 'in silico',   'fields': mock_distinct_in_silico_values }
+                                       ]            
+
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
 "fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","","","","'''+mock_download_url+'''/fake_public_name_1"
@@ -271,7 +288,8 @@ class MonocleSampleDataTest(TestCase):
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_sample_tracking = MonocleSampleTracking(set_up=False)
    monocle_data            = MonocleSampleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
-   monocle_data.data_source_config_name = test_config
+   monocle_data.data_source_config_name   = test_config
+   monocle_data.sample_metadata_source    = SampleMetadata()
 
    @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
@@ -346,6 +364,34 @@ class MonocleSampleDataTest(TestCase):
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
+
+   @patch.object(Monocle_Client,  'distinct_values')
+   @patch.object(Monocle_Client,  'distinct_in_silico_values')
+   def test_get_distinct_values(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_distinct_values, distinct_values))
+      self.assertEqual(self.expected_distinct_values, distinct_values)
+
+   @patch.object(Monocle_Client,  'distinct_values')
+   @patch.object(Monocle_Client,  'distinct_in_silico_values')
+   def test_get_distinct_values_bad_field_type(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      with self.assertRaises(ValueError):
+         self.monocle_data.get_distinct_values(self.bad_distinct_values_query)
+
+   @patch.object(Monocle_Client,  'make_request')
+   def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
+      mock_request.side_effect  = HTTPError('/nowhere', '404', 'something about an unknown field', 'yes', 'no')
+      self.assertIsNone( self.monocle_data.get_distinct_values(self.mock_distinct_values_query) )
+
+   @patch.object(Monocle_Client,  'make_request')
+   def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
+      mock_request.side_effect  = HTTPError('/nowhere', '400', 'some other bad request', 'yes', 'no')
+      with self.assertRaises(HTTPError):
+         self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
