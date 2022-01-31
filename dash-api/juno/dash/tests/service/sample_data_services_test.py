@@ -138,27 +138,27 @@ class MonocleSampleDataTest(TestCase):
                                        }
                                     ]
 
-   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
-                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
+                                          "some_other_column":    {"order": 2, "title": "Something_Made_Up", "value": ""                   },
                                           # note use of `None`, which should end up in CSV as ""
-                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": None                 },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     },
-                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake_public_name_1" }
+                                          "another_fake_column":  {"order": 3, "title": "Also_Made_Up",      "value": None                 },
+                                          "lane_id":              {"order": 4, "title": "Lane_ID",           "value": "fake_lane_id_1"     },
+                                          "public_name":          {"order": 5, "title": "Public_Name",       "value": "fake_public_name_1" }
                                           },
-                                       {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
-                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
-                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
-                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
+                                       {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
+                                          "some_other_column":    {"order": 2, "title": "Something_Made_Up", "value": ""                   },
+                                          "another_fake_column":  {"order": 3, "title": "Also_Made_Up",      "value": "whatevs"            },
+                                          "lane_id":              {"order": 4, "title": "Lane_ID",           "value": "fake_lane_id_2"     },
+                                          "public_name":          {"order": 5, "title": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_3"  },
-                                          "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                          "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "fake_lane_id_3"  },
+                                          "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                          "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
                                        ]
-   mock_qc_data               =     [  {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "fake_lane_id_3"  },
-                                          "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              },
+   mock_qc_data               =     [  {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "fake_lane_id_3"  },
+                                          "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              },
                                           }
                                        ]
    # the return value when no in silico data are available
@@ -166,20 +166,20 @@ class MonocleSampleDataTest(TestCase):
    # the return value when no QC data are available
    qc_data_available_not_available =  []
    # these contain a bad lane ID, so it should be ignored and *not* merged into the metadata download
-   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "this_is_a_bad_id"},
-                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "this_is_a_bad_id"},
+                                                   "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                                    },
-                                                {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
-                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "fake_lane_id_2"  },
+                                                   "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                                    }
                                              ]
-   mock_qc_data_bad_lane_id               =  [  {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "this_is_a_bad_id"},
-                                                   "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              }
+   mock_qc_data_bad_lane_id               =  [  {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "this_is_a_bad_id"},
+                                                   "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              }
                                                    },
-                                                {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "fake_lane_id_2"  },
-                                                   "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              }
+                                                {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "fake_lane_id_2"  },
+                                                   "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              }
                                                    }
                                              ]
 

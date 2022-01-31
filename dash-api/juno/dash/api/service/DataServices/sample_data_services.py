@@ -851,9 +851,9 @@ class MonocleSampleData:
          # get_metadata returns dicts incl. an item item `order` which should be used to sort columns
          for this_column in sorted(this_row, key=lambda col: (this_row[col]['order'])):
             if first_row:
-               col_order.append( this_row[this_column]['name'] )
+               col_order.append( this_row[this_column]['title'] )
             # get_metadata returns dicts incl. items `name` and `value`for name & value of each column
-            pandas_row[this_row[this_column]['name']] = this_row[this_column]['value']
+            pandas_row[this_row[this_column]['title']] = this_row[this_column]['value']
          pandas_data.append( pandas_row )
          first_row = False
       return pandas_data,col_order
