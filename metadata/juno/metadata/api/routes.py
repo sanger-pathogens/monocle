@@ -285,15 +285,12 @@ def _get_distinct_values_common(field_type, fields, dao):
     logging.debug("DAO returned distinct values: {}".format(distinct_values))
     # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
-      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
+      return 'Invalid field name provided', HTTP_NOT_FOUND_STATUS
    
     result = convert_to_json( {"distinct values": distinct_values} )
 
-    if len(distinct_values) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-     
+    return result, HTTP_SUCCEEDED_STATUS
+
 def _validate_field_names(names):
     try:
         field_names_regex = re.compile(FIELD_NAME_REGEX)

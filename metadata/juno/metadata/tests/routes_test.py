@@ -223,7 +223,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'metadata', mock_query )
         self.assertEqual(distinct_values, mock_json)
-        self.assertEqual(http_status, 404)
+        self.assertEqual(http_status, 200)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
@@ -236,7 +236,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'metadata', mock_query )
         self.assertEqual(distinct_values, 'Invalid field name provided')
-        self.assertEqual(http_status, 400)
+        self.assertEqual(http_status, 404)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
@@ -278,7 +278,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_in_silico_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'in silico', mock_query )
         self.assertEqual(distinct_values, mock_json)
-        self.assertEqual(http_status, 404)
+        self.assertEqual(http_status, 200)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
@@ -291,7 +291,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_in_silico_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'in silico', mock_query )
         self.assertEqual(distinct_values, 'Invalid field name provided')
-        self.assertEqual(http_status, 400)
+        self.assertEqual(http_status, 404)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
@@ -333,7 +333,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_qc_data_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'qc data', mock_query )
         self.assertEqual(distinct_values, mock_json)
-        self.assertEqual(http_status, 404)
+        self.assertEqual(http_status, 200)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
@@ -346,7 +346,7 @@ class TestRoutes(unittest.TestCase):
         distinct_values, http_status = mar.get_distinct_qc_data_values_route(mock_query, dao_mock)
         dao_mock.get_distinct_values.assert_called_once_with( 'qc data', mock_query )
         self.assertEqual(distinct_values, 'Invalid field name provided')
-        self.assertEqual(http_status, 400)
+        self.assertEqual(http_status, 404)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
