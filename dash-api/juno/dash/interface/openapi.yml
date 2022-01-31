@@ -305,14 +305,14 @@ paths:
             schema:
               $ref: "#/components/schemas/GetDistinctValuesInput"
             example:
-              [ {  "field type": "metadata",
-                   "fields":     ["serotype", "age_group"]
+              [ {  "field type":    "metadata",
+                   "field names":   ["serotype", "age_group"]
                    },
-                {  "field type": "in silico",
-                   "fields":     ["ST", "cps_type"]
+                {  "field type":    "in silico",
+                   "field names":   ["ST", "cps_type"]
                    },
-                {  "field type": "qc data",
-                   "fields":     ["rel_abun_sa"]
+                {  "field type":    "qc data",
+                   "field names":   ["rel_abun_sa"]
                    }
                 ]
       responses:
@@ -613,7 +613,7 @@ components:
           field type:
             description: "The type of field"
             $ref: "#/components/schemas/DataFieldType"
-          fields:
+          field names:
             description: "A list of fields for which distinct values are required."
             type: array
             items:
