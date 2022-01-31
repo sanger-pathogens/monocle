@@ -305,8 +305,10 @@ class MonocleSampleData:
       """
       Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
       as keys; values are arrays of field names.
-      Returns array of GetDistinctValuesOutput objects (as deined in OpenAPI spec.)
+      Returns array of GetDistinctValuesOutput objects (as defined in OpenAPI spec.)
       or None in event of a non-existent field being named in the request
+      This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
+      except that 404 are caught and result in returning `None`
       """
       try:
          distinct_values = self.sample_metadata_source.get_distinct_values(fields)

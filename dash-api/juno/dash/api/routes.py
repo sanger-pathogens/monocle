@@ -157,7 +157,7 @@ def get_distinct_values_route(body):
          logging.critical("{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(__name__, this_field_type, field_types))
          return "Invalid field type {}: should be one of {}".format(this_field_type, field_types), HTTPStatus.BAD_REQUEST
       fields_types_found.append(this_field_type)
-      distinct_values_request[this_field_type] = this_obj['fields']
+      distinct_values_request[this_field_type] = this_obj['field names']
 
     distinct_values = monocle_data.get_distinct_values(distinct_values_request)
     
