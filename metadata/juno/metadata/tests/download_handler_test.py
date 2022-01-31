@@ -37,7 +37,7 @@ class TestDownloadMetadataHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': 'test_value1'
             }
         )
@@ -48,7 +48,7 @@ class TestDownloadMetadataHandler(unittest.TestCase):
             results['column_2'],
             {
                 'order': 2,
-                'name': 'COLUMN_2_NAME',
+                'title': 'COLUMN_2_NAME',
                 'value': 'test_value2'
             }
         )
@@ -62,7 +62,7 @@ class TestDownloadMetadataHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )
@@ -182,7 +182,7 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': 'test_value1'
             }
         )
@@ -193,7 +193,7 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             results['column_2'],
             {
                 'order': 2,
-                'name': 'COLUMN_2_NAME',
+                'title': 'COLUMN_2_NAME',
                 'value': 'test_value2'
             }
         )
@@ -207,7 +207,7 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )
@@ -322,7 +322,7 @@ class TestDownloadQCHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': 'test_value1'
             }
         )
@@ -333,7 +333,7 @@ class TestDownloadQCHandler(unittest.TestCase):
             results['column_2'],
             {
                 'order': 2,
-                'name': 'COLUMN_2_NAME',
+                'title': 'COLUMN_2_NAME',
                 'value': 'test_value2'
             }
         )
@@ -347,7 +347,7 @@ class TestDownloadQCHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )

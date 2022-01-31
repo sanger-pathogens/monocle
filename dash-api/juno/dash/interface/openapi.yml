@@ -1025,7 +1025,7 @@ components:
     DownloadField:
       type: object
       required:
-        - "name"
+        - "title"
         - "value"
         - "order"
       properties:
@@ -1033,7 +1033,7 @@ components:
           type: integer
           description: "An ordering integer index for the field"
           readOnly: true
-        name:
+        title:
           type: string
           description: "The name of the metadata field"
           readOnly: true

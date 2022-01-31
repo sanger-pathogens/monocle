@@ -18,7 +18,7 @@ class DownloadHandler:
 
         response_dict[key] = {
                 'order': self.__field_index,
-                'name': self.__spreadsheet_def.get_column_name(key),
+                'title': self.__spreadsheet_def.get_column_name(key),
                 'value': value
             }
 

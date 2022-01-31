@@ -80,19 +80,19 @@ class MonocleSampleData:
       
       Returns array of samples that match the filter(s); each sample is a dict containing the metadata
       and (if requested) in silico & QC data.  Metadata, in silico and QC data are represented with the same format:
-      a dict of fields, where each dict value is a dict with the name, column position (order) and value
+      a dict of fields, where each dict value is a dict with the title, column position (order) and value
       for that field.
       [
-         { metadata: { 'metadata_field_1' : {'name': 'field name', order: 1, value: 'the value'},
-                       'metadata_field_2' : {'name': 'another field name', order: 2, value: 'another value'},
+         { metadata: { 'metadata_field_1' : {'title': 'field name', order: 1, value: 'the value'},
+                       'metadata_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
                         ...
                         },
-          'in silico' :{   'in_silico_field_1' : {'name': 'field name', order: 1, value: 'the value'},
-                           'in_silico_field_2' : {'name': 'another field name', order: 2, value: 'another value'},
+          'in silico' :{   'in_silico_field_1' : {'title': 'field name', order: 1, value: 'the value'},
+                           'in_silico_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
                         ...
                         },
-          'qc data'   :{   'qc_data_field_1' : {'name': 'field name', order: 1, value: 'the value'},
-                           'qc_data_field_2' : {'name': 'another field name', order: 2, value: 'another value'},
+          'qc data'   :{   'qc_data_field_1' : {'title': 'field name', order: 1, value: 'the value'},
+                           'qc_data_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
                         ...
                         }
          },
