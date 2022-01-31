@@ -607,6 +607,7 @@ components:
 
     GetDistinctValuesInput:
       type: array
+      minItems: 1
       items:
         type: object
         properties:
@@ -616,6 +617,7 @@ components:
           field names:
             description: "A list of fields for which distinct values are required."
             type: array
+            minItems: 1
             items:
               $ref: "#/components/schemas/DataFieldName"
           

@@ -151,10 +151,10 @@ def get_distinct_values_route(body):
     for this_obj in body:
       this_field_type = this_obj['field type']
       if this_field_type in fields_types_found:
-         logging.critical("{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(__name__, this_field_type, field_types))
-         return "Field type {} was included in the reuest more than once".format(this_field_type), HTTPStatus.BAD_REQUEST
+         logging.info("{}.get_distinct_values_route() was passed field type {} more than once".format(__name__, this_field_type))
+         return "Field type {} was included in the reuqest more than once".format(this_field_type), HTTPStatus.BAD_REQUEST
       if this_field_type not in field_types:
-         logging.critical("{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(__name__, this_field_type, field_types))
+         logging.info("{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(__name__, this_field_type, field_types))
          return "Invalid field type {}: should be one of {}".format(this_field_type, field_types), HTTPStatus.BAD_REQUEST
       fields_types_found.append(this_field_type)
       distinct_values_request[this_field_type] = this_obj['field names']
