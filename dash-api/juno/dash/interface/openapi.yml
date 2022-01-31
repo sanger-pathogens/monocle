@@ -495,7 +495,7 @@ components:
        pattern: ^metadata|in silico|qc data$
        
     DataFieldName:
-       description: "The Names of a metadata, in silico data, or QC data field."
+       description: "The name of a metadata, in silico data, or QC data field."
        type: string
        minLength: 1
        maxLength: 256
