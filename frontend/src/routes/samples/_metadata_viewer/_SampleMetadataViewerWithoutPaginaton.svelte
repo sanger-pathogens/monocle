@@ -27,7 +27,7 @@
   }
 
   function extractColumnHeadersFromMetadata(metadata = []) {
-    return metadata[0]?.metadata?.map(({ name }) => name) || [];
+    return metadata[0]?.metadata?.map(({ title }) => title) || [];
   }
 </script>
 
@@ -35,10 +35,10 @@
 {#if metadataPromise}
   <table class="dense">
     <tr>
-      <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+      <!-- `(columnTitle)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#each). -->
-      {#each metadataColumnHeaders as columnName (columnName)}
-        <th>{columnName}</th>
+      {#each metadataColumnHeaders as columnTitle (columnTitle)}
+        <th>{columnTitle}</th>
       {/each}
     </tr>
 
@@ -54,9 +54,9 @@
       {#if metadata?.length}
         {#each metadata as sample}
           <tr class="data-row" class:loading={isLoading} aria-live="polite">
-            <!-- `(columnName)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
+            <!-- `(columnTitle)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
              https://svelte.dev/docs#each). -->
-            {#each sample.metadata as { name: columnName, value } (columnName)}
+            {#each sample.metadata as { title: columnTitle, value } (columnTitle)}
               <td>{value}</td>
             {/each}
           </tr>
