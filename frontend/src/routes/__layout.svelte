@@ -36,6 +36,7 @@
   --juno-indigo: #484885;
   --juno-purple: #6868be;
   --color-border: #dfe3e6;
+  --color-danger: #e66969;
   --color-link-visited: #663399;
   --color-table-alt-row: #f8f8f8;
   --color-table-hover-row: #f0f0f0;
@@ -71,6 +72,10 @@ main {
   font-size: 1.1rem;
 }
 
+:global(table.dense th) {
+  font-size: .95rem;
+  padding: .5rem;
+}
 :global(table.dense td) {
   font-size: .95rem;
   padding: .3rem;
@@ -105,6 +110,13 @@ main {
   background: var(--background-body);
   color: var(--juno-indigo);
   border: 1px solid var(--juno-indigo);
+  font-weight: 300;
+}
+
+:global(button.danger),
+:global([role=button].danger) {
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
   font-weight: 300;
 }
 </style>
