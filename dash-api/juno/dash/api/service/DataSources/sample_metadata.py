@@ -67,10 +67,38 @@ class SampleMetadata:
         results_list = self.monocle_client.filters(filters)
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
+     
+    def get_distinct_values(self, fields):
+       """
+       Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
+       as keys; values are arrays of field names.
+       Returns array of GetDistinctValuesOutput objects (as defined in OpenAPI spec.)
+       """
+       results = []
+       for this_field_type in fields:
+          field_list = fields[this_field_type]
+          if 'metadata' == this_field_type:
+             this_field_list = self.monocle_client.distinct_values(field_list)
+          elif 'in silico' == this_field_type:
+             this_field_list = self.monocle_client.distinct_in_silico_values(field_list)
+          elif 'qc data' == this_field_type:
+             this_field_list = self.monocle_client.distinct_qc_data_values(field_list)
+          else:
+             logging.info("{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(__class__.__name__, this_field_type))
+             raise ValueError("{} is not a recognised field type".format(this_field_type))
+          results.append(  {  "field type":  this_field_type,
+                              "fields":      this_field_list
+                              }
+                           )
+
+       logging.debug("{}.get_distinct_values() got {}".format(__class__.__name__, results))
+       return results
+
 
 
 class ProtocolError(Exception):
     pass
+
 
 
 class Monocle_Client:
@@ -83,6 +111,10 @@ class Monocle_Client:
                               'filters',
                               'institutions_key',
                               'samples_key',
+                              'distinct_values',
+                              'distinct_in_silico_values',
+                              'distinct_qc_data_values',
+                              'distinct_values_key'
                               ]
 
     def __init__(self, set_up=True):
@@ -130,7 +162,26 @@ class Monocle_Client:
         # current implementation works, but is inconsistent with other endpoints
         results = json.loads(response)
         return results
-
+     
+    def distinct_values(self,fields):
+        endpoint = self.config['distinct_values']
+        return self._distinct_values_common(endpoint, fields)
+     
+    def distinct_in_silico_values(self,fields):
+        endpoint = self.config['distinct_in_silico_values']
+        return self._distinct_values_common(endpoint, fields)
+     
+    def distinct_qc_data_values(self,fields):
+        endpoint = self.config['distinct_qc_data_values']
+        return self._distinct_values_common(endpoint, fields)
+     
+    def _distinct_values_common(self,endpoint,fields):
+        logging.debug("{}.distinct_values() using endpoint {}".format(__class__.__name__, endpoint))
+        response = self.make_request(endpoint, post_data=fields)
+        logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
+        results = json.loads(response)
+        return results[self.config['distinct_values_key']]
+     
     def make_request(self, endpoint, post_data=None):
         request_url = self.config['base_url'] + endpoint
         request_data = None
@@ -151,9 +202,13 @@ class Monocle_Client:
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))
-        except urllib.error.HTTPError:
-            logging.error("HTTP error during Metadata API request {}".format(request_url))
-            raise
+        except urllib.error.HTTPError as e:
+            msg = "HTTP error during Metadata API request {}\nData:\n{}\n{}".format(request_url,request_data,e)
+            if '404' in str(e):
+                logging.info(msg)
+            else:
+                logging.error(msg)
+            raise e
         return response_as_string
 
     def parse_response(self, response_as_string, required_keys=[]):

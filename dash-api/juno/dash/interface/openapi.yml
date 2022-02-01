@@ -286,7 +286,79 @@ paths:
           description: "Authorization information is missing or invalid."
         "404":
           description: "No samples were found that matched the request criteria."
-          
+ 
+  /get_distinct_values:
+    post:
+      operationId: dash.api.routes.get_distinct_values_route
+      summary: "Return distinct values found in metadata, in silico or QC data fields"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetDistinctValuesInput"
+            example:
+              [ {  "field type":    "metadata",
+                   "field names":   ["serotype", "age_group"]
+                   },
+                {  "field type":    "in silico",
+                   "field names":   ["ST", "cps_type"]
+                   },
+                {  "field type":    "qc data",
+                   "field names":   ["rel_abun_sa"]
+                   }
+                ]
+      responses:
+        "200":
+          description: "The operation was successful."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distinct values:
+                    $ref: "#/components/schemas/GetDistinctValuesOutput"
+              example:
+                { "distinct values": [
+                     {  "field type": "metadata",
+                        "fields":     [   {  "name":     "serotype",
+                                             "values":   ["Ia", "Ib", "III"]
+                                             },
+                                          {  "name":     "age_group",
+                                             "values":   ["adult", "adolescent", "infant"]
+                                             }
+                                       ]
+                        },
+                     {  "field type": "in silico",
+                        "fields":      [  {  "name": "ST",
+                                             "values": ["1", "1*", "10", "103", "103*?"]
+                                             },
+                                          {  "name": "cps_type",
+                                             "values": ["II", "III", "III/V", "Ia/II"]
+                                             }
+                                          ]
+                        },
+                     {  "field type": "qc data",
+                        "fields":      [  {  "name": "rel_abun_sa",
+                                             "values": ["0.01", "76.04", "84.46", "91.23", "99.10"]
+                                             }
+                                          ]
+                        }
+                  ]}
+                                
+                    
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "One or more of the requested fields not recognised."
+ 
   /get_metadata_for_download/{institution}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
@@ -365,7 +437,6 @@ components:
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
        example: "NatRefLab"
 
-
     InstitutionName:
        description: "The name of the institution."
        type: string
@@ -384,13 +455,13 @@ components:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^(sequencing)|(pipeline)$
+       pattern: ^sequencing|pipeline$
        
     DashboardMetadataDownloadStatus:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^(successful)|(failed)$
+       pattern: ^successful|failed$
 
     SampleFilters:
       type: object
@@ -416,6 +487,21 @@ components:
       example:
         serotype: ["Ia", "IV"]
 
+    DataFieldType:
+       description: "The type of data field:  metadata, in silico, or QC data"
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^metadata|in silico|qc data$
+       
+    DataFieldName:
+       description: "The name of a metadata, in silico data, or QC data field."
+       type: string
+       minLength: 1
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9_]*$
+
+       
     GetMetadataInput:
       type: object
       required:
@@ -521,6 +607,46 @@ components:
           items:
             $ref: "#/components/schemas/CombinedSampleMetadata"
 
+    GetDistinctValuesInput:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        properties:
+          field type:
+            description: "The type of field"
+            $ref: "#/components/schemas/DataFieldType"
+          field names:
+            description: "A list of fields for which distinct values are required."
+            type: array
+            minItems: 1
+            items:
+              $ref: "#/components/schemas/DataFieldName"
+          
+    GetDistinctValuesOutput:
+      type: array
+      items:
+        type: object
+        properties:
+          field type:
+            description: "The type of field"
+            $ref: "#/components/schemas/DataFieldType"
+            readOnly: true
+          fields:
+            description: "A list of fields for which distinct values are required."
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  $ref: "#/components/schemas/DataFieldName"
+                  readOnly: true
+                values:
+                  type: array
+                  items:
+                    type: string
+                    readOnly: true
+            
     CombinedSampleMetadata:
       type: object
       description: "Sample manifest metadata plus in silico and QC data"
@@ -903,7 +1029,7 @@ components:
     DownloadField:
       type: object
       required:
-        - "name"
+        - "title"
         - "value"
         - "order"
       properties:
@@ -911,7 +1037,7 @@ components:
           type: integer
           description: "An ordering integer index for the field"
           readOnly: true
-        name:
+        title:
           type: string
           description: "The name of the metadata field"
           readOnly: true

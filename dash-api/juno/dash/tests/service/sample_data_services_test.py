@@ -4,7 +4,7 @@ from   copy          import deepcopy
 from   datetime      import datetime
 import logging
 import urllib.request
-import urllib.error
+from   urllib.error  import HTTPError
 from   os            import environ
 from   pandas.errors import MergeError
 from   pathlib       import Path, PurePath
@@ -138,27 +138,27 @@ class MonocleSampleDataTest(TestCase):
                                        }
                                     ]
 
-   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
-                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
+   mock_metadata              =     [  {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_1"   },
+                                          "some_other_column":    {"order": 2, "title": "Something_Made_Up", "value": ""                   },
                                           # note use of `None`, which should end up in CSV as ""
-                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": None                 },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_1"     },
-                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake_public_name_1" }
+                                          "another_fake_column":  {"order": 3, "title": "Also_Made_Up",      "value": None                 },
+                                          "lane_id":              {"order": 4, "title": "Lane_ID",           "value": "fake_lane_id_1"     },
+                                          "public_name":          {"order": 5, "title": "Public_Name",       "value": "fake_public_name_1" }
                                           },
-                                       {  "sanger_sample_id":     {"order": 1, "name": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
-                                          "some_other_column":    {"order": 2, "name": "Something_Made_Up", "value": ""                   },
-                                          "another_fake_column":  {"order": 3, "name": "Also_Made_Up",      "value": "whatevs"            },
-                                          "lane_id":              {"order": 4, "name": "Lane_ID",           "value": "fake_lane_id_2"     },
-                                          "public_name":          {"order": 5, "name": "Public_Name",       "value": "fake public name 2" }
+                                       {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_2"   },
+                                          "some_other_column":    {"order": 2, "title": "Something_Made_Up", "value": ""                   },
+                                          "another_fake_column":  {"order": 3, "title": "Also_Made_Up",      "value": "whatevs"            },
+                                          "lane_id":              {"order": 4, "title": "Lane_ID",           "value": "fake_lane_id_2"     },
+                                          "public_name":          {"order": 5, "title": "Public_Name",       "value": "fake public name 2" }
                                           }
                                        ]
-   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_3"  },
-                                          "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                          "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+   mock_in_silico_data        =     [  {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "fake_lane_id_3"  },
+                                          "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                          "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                           }
                                        ]
-   mock_qc_data               =     [  {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "fake_lane_id_3"  },
-                                          "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              },
+   mock_qc_data               =     [  {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "fake_lane_id_3"  },
+                                          "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              },
                                           }
                                        ]
    # the return value when no in silico data are available
@@ -166,20 +166,20 @@ class MonocleSampleDataTest(TestCase):
    # the return value when no QC data are available
    qc_data_available_not_available =  []
    # these contain a bad lane ID, so it should be ignored and *not* merged into the metadata download
-   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "this_is_a_bad_id"},
-                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+   mock_in_silico_data_bad_lane_id        =  [  {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "this_is_a_bad_id"},
+                                                   "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                                    },
-                                                {  "lane_id":                 {"order": 1, "name": "Sample_id",               "value": "fake_lane_id_2"  },
-                                                   "some_in_silico_thing":    {"order": 2, "name": "In_Silico_Thing",         "value": "pos"             },
-                                                   "another_in_silico_thing": {"order": 3, "name": "Another_In_Silico_Thing", "value": "neg"             }
+                                                {  "lane_id":                 {"order": 1, "title": "Sample_id",               "value": "fake_lane_id_2"  },
+                                                   "some_in_silico_thing":    {"order": 2, "title": "In_Silico_Thing",         "value": "pos"             },
+                                                   "another_in_silico_thing": {"order": 3, "title": "Another_In_Silico_Thing", "value": "neg"             }
                                                    }
                                              ]
-   mock_qc_data_bad_lane_id               =  [  {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "this_is_a_bad_id"},
-                                                   "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              }
+   mock_qc_data_bad_lane_id               =  [  {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "this_is_a_bad_id"},
+                                                   "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              }
                                                    },
-                                                {  "lane_id":                 {"order": 1, "name": "lane_id",                 "value": "fake_lane_id_2"  },
-                                                   "some_qc_thing":           {"order": 2, "name": "QC_Thing",                "value": "42"              }
+                                                {  "lane_id":                 {"order": 1, "title": "lane_id",                 "value": "fake_lane_id_2"  },
+                                                   "some_qc_thing":           {"order": 2, "title": "QC_Thing",                "value": "42"              }
                                                    }
                                              ]
 
@@ -237,6 +237,23 @@ class MonocleSampleDataTest(TestCase):
    mock_download_host         =     'mock.host'
    mock_download_path         =     'path/incl/mock/download/symlink'
    mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
+   
+   mock_distinct_values_query =     {  "metadata":    ["field1", "field2"],
+                                       "in silico":   ["field3"]
+                                       }
+   bad_distinct_values_query  =     {  "metadata":    ["field1", "field2"],
+                                       "NO SUCH TYPE":["field3"]
+                                       }
+   mock_distinct_values       =     [  { "name": "field1", "values": ["a", "b"] },
+                                       { "name": "field2", "values": ["d", "e"] }
+                                       ]
+   mock_distinct_in_silico_values = [  { "name": "field3", "values": ["f", "g", "h"] }
+                                       ]
+   
+   expected_distinct_values   =     [  { 'field type': 'metadata',    'fields': mock_distinct_values },
+                                       { 'field type': 'in silico',   'fields': mock_distinct_in_silico_values }
+                                       ]            
+
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
 "fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","","","","'''+mock_download_url+'''/fake_public_name_1"
@@ -271,7 +288,8 @@ class MonocleSampleDataTest(TestCase):
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_sample_tracking = MonocleSampleTracking(set_up=False)
    monocle_data            = MonocleSampleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
-   monocle_data.data_source_config_name = test_config
+   monocle_data.data_source_config_name   = test_config
+   monocle_data.sample_metadata_source    = SampleMetadata()
 
    @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
@@ -284,9 +302,9 @@ class MonocleSampleDataTest(TestCase):
       self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
       self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
       # mock metadata_download
-      self.monocle_data.metadata_source = MetadataDownload(set_up=False)
-      self.monocle_data.metadata_source.dl_client = Monocle_Download_Client(set_up=False)
-      self.monocle_data.metadata_source.dl_client.set_up(self.test_config)
+      self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
+      self.monocle_data.metadata_download_source.dl_client = Monocle_Download_Client(set_up=False)
+      self.monocle_data.metadata_download_source.dl_client.set_up(self.test_config)
       # load mock data
       self.get_mock_data()
 
@@ -346,6 +364,34 @@ class MonocleSampleDataTest(TestCase):
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
+
+   @patch.object(Monocle_Client,  'distinct_values')
+   @patch.object(Monocle_Client,  'distinct_in_silico_values')
+   def test_get_distinct_values(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_distinct_values, distinct_values))
+      self.assertEqual(self.expected_distinct_values, distinct_values)
+
+   @patch.object(Monocle_Client,  'distinct_values')
+   @patch.object(Monocle_Client,  'distinct_in_silico_values')
+   def test_get_distinct_values_bad_field_type(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      with self.assertRaises(ValueError):
+         self.monocle_data.get_distinct_values(self.bad_distinct_values_query)
+
+   @patch.object(Monocle_Client,  'make_request')
+   def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
+      mock_request.side_effect  = HTTPError('/nowhere', '404', 'message including the words Invalid field', 'yes', 'no')
+      self.assertIsNone( self.monocle_data.get_distinct_values(self.mock_distinct_values_query) )
+
+   @patch.object(Monocle_Client,  'make_request')
+   def test_get_distinct_values_reraise_HTTPError_if_not_404(self, mock_request):
+      mock_request.side_effect  = HTTPError('/nowhere', '400', 'any other 4xx response', 'yes', 'no')
+      with self.assertRaises(HTTPError):
+         self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -448,8 +494,7 @@ class MonocleSampleDataTest(TestCase):
                                                                   metadata_columns=['public_name'],
                                                                   in_silico_columns=["some_in_silico_thing"],
                                                                   include_in_silico=True)
-      # TODO
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata))
       self.assertEqual(self.mock_combined_metadata_in_silico_filtered, filtered_samples_metadata)
 
    @patch.object(SampleMetadata, 'get_samples')

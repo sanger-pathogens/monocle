@@ -194,6 +194,72 @@ paths:
         "404":
           description: "No data could be found for the given filters"
 
+  /distinct_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_values_route
+      summary: "Gather distinct metadata values for certain fields"
+      requestBody:
+        description: "A list of fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldsList"
+            example: ["serotype", "age_group"]
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct metadata values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_in_silico_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_in_silico_values_route
+      summary: "Gather distinct in silico data values for certain fields"
+      requestBody:
+        description: "A list of in silico fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldsList"
+            example: ["cps_type","ST"]
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct in silico values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_qc_data_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_qc_data_values_route
+      summary: "Gather distinct QC data values for certain fields"
+      requestBody:
+        description: "A list of QC data fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FieldsList"
+            example: ["rel_abun_sa"]
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct QC data values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
 components:
   schemas:
 
@@ -265,7 +331,7 @@ components:
     DownloadField:
       type: object
       required:
-        - "name"
+        - "title"
         - "value"
         - "order"
       properties:
@@ -273,7 +339,7 @@ components:
           type: integer
           description: "An ordering integer index for the field"
           readOnly: true
-        name:
+        title:
           type: string
           description: "The name of the metadata field"
           readOnly: true
@@ -357,6 +423,41 @@ components:
       # but not double hyphens to prevent -- injections
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
 
+    FieldName:
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^[a-zA-Z0-9_]*$
+      
+    FieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/FieldName"
+      minItems: 1
+
+    DistinctValues:
+      description: "Object containing an array of fields, and the distinct values from the db for each"
+      type: object
+      properties:
+        distinct_values:
+          type: array
+          items:
+            type: object
+            required:
+              - "field"
+              - "distinct_values"
+            properties:
+              name:
+                type: string
+                description: "The name of the metadata field"
+                readOnly: true
+              values:
+                type: array
+                items:
+                  type: string
+                  description: "The value of the metadata field"
+                  readOnly: true
+
     Institutions:
       description: "Object with list of institutions."
       type: object
@@ -379,7 +480,7 @@ components:
         pattern: ^[a-zA-Z0-9]*$
       minItems: 1
       example: ["5903STDY8059122", "5903STDY8059054"]
-
+      
     Metadata:
       description: "Object containing an array of sample ids and their metadata"
       type: object
