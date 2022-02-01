@@ -14,6 +14,10 @@ monocle_metadata_api:
    qc_data_upload          : '/metadata/qc-data-upload'
    qc_data_delete_all      : '/metadata/delete_all_qc_data'
    qc_data_key             : 'download'
+   distinct_values               : '/metadata/distinct_values'
+   distinct_in_silico_values     : '/metadata/distinct_in_silico_values'
+   distinct_qc_data_values       : '/metadata/distinct_qc_data_values'
+   distinct_values_key           : 'distinct values'
 mlwh_rest_api:
    mlwh_api_config         : 'mlwh-api.yml'
    swagger                 : '/sequencing/data/ui/'

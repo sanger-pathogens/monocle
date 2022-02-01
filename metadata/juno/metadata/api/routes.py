@@ -21,7 +21,7 @@ UPLOAD_EXTENSION = '.xlsx'
 
 # regex for names allowed for filters; interpolated into SQL, so must prevent injection
 # (this is easy in practice, as it only has to match column names we choose to sue the the db schema)
-FILTER_NAME_REGEX = '^[a-zA-Z0-9_]+$'
+FIELD_NAME_REGEX = '^[a-zA-Z0-9_]+$'
 
 def convert_to_json(samples):
     return jsonify(samples)
@@ -226,23 +226,37 @@ def get_samples_route(dao: MonocleDatabaseService):
 def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
     filters = body
-    try:
-        allowed_filters_regex = re.compile(FILTER_NAME_REGEX)
-        for this_filter in filters:
-          logging.debug("checking filter name {}".format(this_filter))
-          if not allowed_filters_regex.match(this_filter):
-            raise ValueError("filter name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_filter))
-        samples = dao.get_filtered_samples(filters)
-    except ValueError as ve:
-        logger.error(str(ve))
+    if not _validate_field_names(filters):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
-
+     
+    samples = dao.get_filtered_samples(filters)
     result = convert_to_json(samples)
 
     if len(samples) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
+    """ Download distinct values present in the database for certain fields """
+    fields = body
+    result = _get_distinct_values_common('metadata', fields, dao)
+    return result
+
+@inject
+def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
+    """ Download distinct values present in the database for certain fields """
+    fields = body
+    result = _get_distinct_values_common('in silico', fields, dao)
+    return result
+
+@inject
+def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
+    """ Download distinct values present in the database for certain fields """
+    fields = body
+    result = _get_distinct_values_common('qc data', fields, dao)
+    return result
 
 @inject
 def get_institutions(dao: MonocleDatabaseService):
@@ -261,3 +275,33 @@ def get_institutions(dao: MonocleDatabaseService):
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
+     
+def _get_distinct_values_common(field_type, fields, dao):
+    """ Download distinct values present in the database for certain fields """
+    if not _validate_field_names(fields):
+        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+
+    distinct_values = dao.get_distinct_values(field_type, fields)
+    logging.debug("DAO returned distinct values: {}".format(distinct_values))
+    # get_distinct_values() will return None if it is passed a non-existent field name
+    if distinct_values is None:
+      return 'Invalid field name provided', HTTP_NOT_FOUND_STATUS
+   
+    result = convert_to_json( {"distinct values": distinct_values} )
+
+    return result, HTTP_SUCCEEDED_STATUS
+
+def _validate_field_names(names):
+    try:
+        field_names_regex = re.compile(FIELD_NAME_REGEX)
+        for this_name in names:
+          logging.debug("checking field name {}".format(this_name))
+          if not field_names_regex.match(this_name):
+            raise ValueError("field name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_name))
+    except ValueError as ve:
+        logger.error(str(ve))
+        return False
+     
+    return True
+
+   

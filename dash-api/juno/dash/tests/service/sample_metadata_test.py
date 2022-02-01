@@ -35,6 +35,12 @@ class SampleMetadataTest(TestCase):
 
    mock_get_filtered_sample_ids = """[  "fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3" ]"""
 
+   mock_distinct_values                =  """{ "distinct values": [ {"name": "field1", "values": ["a", "b"]}, { "name": "field2", "values": ["d", "e"] } ] }"""
+   
+   mock_distinct_in_silico_values      =  """{ "distinct values": [ { "name": "field3", "values": ["f", "g", "h"] } ] }"""
+
+   mock_distinct_qc_data_values        =  """{ "distinct values": [ { "name": "field4", "values": ["i"] } ] }"""
+   
    mock_institution_names  = """{ "institutions":   [  "Ministry of Health, Central laboratories",
                                                       "National Reference Laboratories",
                                                       "The Chinese University of Hong Kong"
@@ -45,7 +51,11 @@ class SampleMetadataTest(TestCase):
    expected_sample_ids = ['5903STDY8059053', '5903STDY8059055']
    expected_institution_names = ['Ministry of Health, Central laboratories', 'National Reference Laboratories', 'The Chinese University of Hong Kong']
    required_sample_dict_keys  = ['sample_id', 'public_name', 'host_status', 'serotype', 'submitting_institution_id']
-
+   
+   expected_distinct_values            = [ { 'field type': 'metadata',   'fields': [ { "name": "field1", "values": ["a", "b"]}, { "name": "field2", "values": ["d", "e"] } ] } ]
+   expected_distinct_in_silico_values  = [ { 'field type': 'in silico',  'fields': [ { "name": "field3", "values": ["f", "g", "h"] } ] } ]
+   expected_distinct_qc_data_values    = [ { 'field type': 'qc data',    'fields': [ { "name": "field4", "values": ["i"] } ] } ]
+   
    def setUp(self):
       self.sample_metadata = SampleMetadata(set_up=False)
       self.sample_metadata.monocle_client = Monocle_Client(set_up=False)
@@ -106,6 +116,28 @@ class SampleMetadataTest(TestCase):
       mock_query.return_value = self.mock_get_filtered_sample_ids
       samples = self.sample_metadata.get_filtered_sample_ids({'any_filter_name': ['any', 'list', 'of', 'values']})
       self.assertIsInstance(samples, type(['a list']))
+      
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_distinct_values(self,mock_query):
+      mock_query.return_value = self.mock_distinct_values
+      distinct_values = self.sample_metadata.get_distinct_values({'metadata': ['field1', 'field2']})
+      self.assertIsInstance(distinct_values, type(['a list']))
+      self.assertEqual(self.expected_distinct_values, distinct_values)
+
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_distinct_in_silico_values(self,mock_query):
+      mock_query.return_value = self.mock_distinct_in_silico_values
+      distinct_values = self.sample_metadata.get_distinct_values({'in silico': ['field3']})
+      self.assertIsInstance(distinct_values, type(['a list']))
+      self.assertEqual(self.expected_distinct_in_silico_values, distinct_values)
+
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_distinct_qc_data_values(self,mock_query):
+      mock_query.return_value = self.mock_distinct_qc_data_values
+      distinct_values = self.sample_metadata.get_distinct_values({'qc data': ['field4']})
+      self.assertIsInstance(distinct_values, type(['a list']))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_qc_data_values, distinct_values))
+      self.assertEqual(self.expected_distinct_qc_data_values, distinct_values)
 
    @patch.object(Monocle_Client, 'make_request')
    def test_reject_bad_get_sample_response(self, mock_request):

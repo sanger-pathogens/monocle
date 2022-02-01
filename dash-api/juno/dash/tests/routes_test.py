@@ -639,6 +639,72 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_distinct_values_route(self, sample_data_service_mock, username_mock, resp_mock):
+        # Given
+        mock_request = [   {   "field type":"metadata",  "field names": ["serotype", "age_group"] },
+                           {   "field type":"in silico", "field names": ["ST"] },
+                           {   "field type":"qc data",   "field names": ["rel_abun_sa"] }
+                           ]
+        expected_data_service_request = { "metadata":    ["serotype", "age_group"],
+                                          "in silico":   ["ST"],
+                                          "qc data":     ["rel_abun_sa"]
+                                          }
+        expected_payload   = 'payload'
+        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_distinct_values_route(mock_request)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_distinct_values.assert_has_calls([
+           call( expected_data_service_request )
+           ])
+
+        
+        resp_mock.assert_called_once_with({'distinct values': expected_payload})
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_distinct_values_route_bad_field_type(self, sample_data_service_mock, username_mock, resp_mock):
+        # Given
+        bad_request = [ {   "field type":"metadata",        "field names": ["doesn't matter what is here, the bad key should be caught before it is looked at"] },
+                        {   "field type":"bad field type",  "field names": ["doesn't matter either"] },
+                        {   "field type":"qc data",         "field names": ["still doesn't matter"] }
+                        ]
+        expected_payload   = 'payload'
+        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_distinct_values_route(bad_request)
+        # Then
+        self.assertEqual(resp_mock.call_count, 0)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result[0], str)
+        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_distinct_values_route_bad_field_name(self, sample_data_service_mock, username_mock, resp_mock):
+        # Given
+        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadtaa API barf is mocked"] } ]
+        sample_data_service_mock.return_value.get_distinct_values.return_value = None
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_distinct_values_route(bad_request)
+        # Then
+        self.assertEqual(resp_mock.call_count, 0)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result[0], str)
+        self.assertEqual(result[1], HTTPStatus.NOT_FOUND)
+        
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_bulk_download_info_route_return_404(self, sample_data_service_mock, username_mock):
