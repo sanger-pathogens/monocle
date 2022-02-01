@@ -15,15 +15,10 @@
   $: values = $distinctColumnValuesStore[columnDataType]?.[columnKey];
 
   if (!values && column) {
-    // FIXME
-    //getDistinctColumnValues({ columns: [columnKey] }, fetch)
-    Promise.resolve()
-      .then((distinctValuesFromResponse) => {
-        distinctColumnValuesStore.update((distinctColumnValues) => {
-          distinctColumnValues[columnDataType][columnKey] = ["A", "B", "C", "CRS", "WHO"];
-          return distinctColumnValues;
-        });
-      });
+    getDistinctColumnValues([column], fetch)
+      .then((distinctValuesResponse) =>
+        distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)
+      );
   }
 
   function applyFilter() {
