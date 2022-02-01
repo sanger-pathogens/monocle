@@ -2,6 +2,7 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
+  getDistinctColumnValues,
   getInstitutionStatus,
   getProjectProgress,
   getSampleMetadata,
@@ -16,6 +17,7 @@ const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, bat
   { "institution key": instKey, "batch date": batchDate }
 ));
 const DASHBOARD_API_URL = "/dashboard-api";
+const DATA_TYPE_METADATA = "metadata";
 const FILTERS = {
   metadataFilter: { serotype: ["1a", "1b"], country: ["AU"] }
 };
@@ -79,6 +81,33 @@ describe.each([
       download_urls: ["fake_url"],
     },
     expectedResult: ["fake_url"]
+  },
+  {
+    fnName: "getDistinctColumnValues",
+    getResource: getDistinctColumnValues,
+    args: [[{
+      name: "age_group",
+      dataType: DATA_TYPE_METADATA
+    }, {
+      name: "ST",
+      dataType: "in silico"
+    }, {
+      name: "serotype",
+      dataType: DATA_TYPE_METADATA
+    }]],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([
+        { "field type": DATA_TYPE_METADATA, "field names": ["age_group", "serotype"] },
+        { "field type": "in silico", "field names": ["ST"] }
+      ])
+    },
+    expectedEndpoints: ["get_distinct_values"],
+    responsePayload: {
+      "distinct values": "inner response payload",
+    },
+    expectedResult: "inner response payload"
   },
   {
     fnName: "getInstitutionStatus",

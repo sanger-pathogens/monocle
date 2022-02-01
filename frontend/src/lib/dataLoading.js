@@ -60,11 +60,24 @@ export function getBulkDownloadUrls(params, fetch) {
     });
 }
 
-export function getDistinctColumnValues({ columns }, fetch) {
-  return fetchDashboardApiResource("FIXME", undefined, fetch, {
+export function getDistinctColumnValues(columns, fetch) {
+  const { payload } = columns.reduce((accum, column) => {
+      const { payload, dataTypeToPayloadIndex } = accum;
+      let payloadIndex = dataTypeToPayloadIndex[column.dataType];
+      if (payloadIndex === undefined) {
+        payloadIndex = payload.length;
+        dataTypeToPayloadIndex[column.dataType] = payloadIndex;
+        payload.push({ "field type": column.dataType, "field names": [] });
+      }
+      payload[payloadIndex]["field names"].push(column.name);
+      return accum;
+    }, { payload: [], dataTypeToPayloadIndex: {} }
+  );
+
+  return fetchDashboardApiResource("get_distinct_values", "distinct values", fetch, {
     method: HTTP_POST,
     headers: JSON_HEADERS,
-    body: JSON.stringify("FIXME")
+    body: JSON.stringify(payload)
   });
 }
 
