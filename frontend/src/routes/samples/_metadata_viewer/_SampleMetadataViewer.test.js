@@ -21,13 +21,13 @@ jest.mock("$lib/dataLoading.js", () => ({
     "last row": 4,
     samples: [{
       metadata: {
-        qc: { name: "QC", value: "90", order: 7 },
-        host_species: { name: "Host species", value: "Sciurus carolinensis", order: 2 }
+        qc: { title: "QC", value: "90", order: 7 },
+        host_species: { title: "Host species", value: "Sciurus carolinensis", order: 2 }
       }
     }, {
       metadata: {
-        host_species: { name: "Host species", value: "Ailuropoda melanoleuca", order: 2 },
-        qc: { name: "QC", value: "40", order: 7 }
+        host_species: { title: "Host species", value: "Ailuropoda melanoleuca", order: 2 },
+        qc: { title: "QC", value: "40", order: 7 }
       }
     }] }))
 }));

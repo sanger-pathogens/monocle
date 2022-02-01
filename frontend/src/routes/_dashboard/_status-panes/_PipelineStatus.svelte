@@ -22,17 +22,17 @@
 
 <StatusPane grow>
   {#if sequencedSuccess === 0}
-    <h4>
+    <h3>
       No Pipelines Started
-    </h4>
+    </h3>
   {:else}
-    <h4>
+    <h3>
       {#if pending > 0}
         <code>{completed}</code> of <code>{sequencedSuccess}</code> Sample Pipelines Completed
       {:else}
         All <code>{completed}</code> Sample Pipelines Completed
       {/if}
-    </h4>
+    </h3>
 
     <StatusChart
       labels={CHART_LABELS}

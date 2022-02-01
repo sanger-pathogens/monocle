@@ -6,9 +6,9 @@
 
 
 <StatusPane>
-  <h4>
+  <h3>
     <code>{batches.received}</code> Sample{batches.received === 1 ? "" : "s"} Received
-  </h4>
+  </h3>
 
   <table>
     <tr>
