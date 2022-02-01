@@ -36,7 +36,7 @@
 
   function extractColumnsFromMetadata(sortedMetadata = []) {
     return sortedMetadata[0]?.[DATA_TYPE_METADATA]?.map(
-      ({ key, name }) => ({ key, name, dataType: DATA_TYPE_METADATA })
+      ({ name, title }) => ({ name, title, dataType: DATA_TYPE_METADATA })
     ) || [];
   }
 
@@ -56,22 +56,25 @@
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#template-syntax-each). -->
-      {#each columns as column (`${column.key}:${column.dataType}`)}
-        {@const { name: columnName } = column}
+      {#each columns as column (`${column.name}:${column.dataType}`)}
+        {@const { title: columnTitle } = column}
         <th>
-          {columnName}
+          {columnTitle}
           <button
-            aria-label="Toggle the filter menu for column {columnName}"
+            aria-label="Toggle the filter menu for column {columnTitle}"
             title="Toggle filter menu"
             on:click={() => toggleFilterMenu(column)}
             class="filter-btn"
           >
-            {#if columnOfOpenFilter?.name !== columnName}
-              <FilterIcon width="17" height="17" color={$filterStore[column.dataType][column.key] ? undefined : COLOR_INACTIVE_FILTER} />
+            {#if columnOfOpenFilter?.title !== columnTitle}
+              <FilterIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? undefined : COLOR_INACTIVE_FILTER} />
             {:else}
-              <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.key] ? undefined : COLOR_INACTIVE_FILTER} />
+              <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? undefined : COLOR_INACTIVE_FILTER} />
             {/if}
           </button>
+          {#if columnOfOpenFilter?.title === columnTitle}
+            <Filter bind:column={columnOfOpenFilter} />
+          {/if}
         </th>
       {/each}
     </tr>
@@ -90,8 +93,8 @@
           <tr class="data-row" class:loading={isLoading} aria-live="polite">
             <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
              https://svelte.dev/docs#template-syntax-each). -->
-            {#each sample.metadata as { name: columnName, value } (`${columnName}:metadata`)}
-              <td>{value}</td>
+            {#each sample.metadata as metadata (`${metadata.name}:metadata`)}
+              <td>{metadata.value}</td>
             {/each}
           </tr>
         {/each}
@@ -113,8 +116,6 @@
 
     {/if}
   </table>
-
-  <Filter bind:column={columnOfOpenFilter} />
 {/if}
 
 
@@ -127,6 +128,8 @@ table {
 }
 
 th {
+  /* Column headers must remain `relative`ly positioned for the filter to be correctly positioned for rightmost headers. */
+  position: relative;
   white-space: nowrap;
 }
 

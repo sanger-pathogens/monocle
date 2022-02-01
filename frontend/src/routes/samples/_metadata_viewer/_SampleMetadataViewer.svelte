@@ -48,9 +48,9 @@
 
   function transformSampleMetadataToSorted({ metadata }) {
     return { metadata: Object.keys(metadata)
-      .map((columnKey) => {
-        metadata[columnKey].key = columnKey;
-        return metadata[columnKey];
+      .map((columnName) => {
+        metadata[columnName].name = columnName;
+        return metadata[columnName];
       })
       .sort(compareMetadataByOrder)
     };
