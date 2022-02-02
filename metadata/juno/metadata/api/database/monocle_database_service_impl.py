@@ -407,14 +407,21 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
-                    new_sample_ids = []
+                  new_sample_ids = []
+                  try:
                     rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
                     new_sample_ids.extend([row['sample_id'] for row in rs])
                     if len(sample_ids) > 0:
-                        tmp_ids = [id for id in new_sample_ids if id in sample_ids]
-                        sample_ids = tmp_ids
+                      tmp_ids = [id for id in new_sample_ids if id in sample_ids]
+                      sample_ids = tmp_ids
                     else:
-                        sample_ids = new_sample_ids
+                      sample_ids = new_sample_ids
+                  except OperationalError as e:
+                    if 'Unknown column' in str(e):
+                      logging.error("attempted to apply filter to unknown field \"{}\"".format(filter))
+                      return None
+                    else:
+                      raise e
             else:
                 rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
                 sample_ids = [row['sample_id'] for row in rs]

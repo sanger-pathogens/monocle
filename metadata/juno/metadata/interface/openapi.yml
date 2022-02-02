@@ -351,30 +351,30 @@ components:
     MetadataFilters:
       type: object
       properties:
-        city:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Itacurube"]
-        country:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Brazil"]
-        county_state:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Pernambuco"]
-        host_species:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["human"]
-        host_status:
-          $ref: "#/components/schemas/HostStatusFilterList"
-        serotype:
-          $ref: "#/components/schemas/SerotypeFilterList"
+         city:
+            type: array
+            items:
+               $ref: "#/components/schemas/WordsFilter"
+            example: ["Itacurube"]
+         country:
+            type: array
+            items:
+               $ref: "#/components/schemas/WordsFilter"
+            example: ["Brazil"]
+         county_state:
+            type: array
+            items:
+               $ref: "#/components/schemas/WordsFilter"
+            example: ["Pernambuco"]
+         host_species:
+            type: array
+            items:
+               $ref: "#/components/schemas/WordsFilter"
+            example: ["human"]
+         host_status:
+            $ref: "#/components/schemas/HostStatusFilterList"
+         serotype:
+            $ref: "#/components/schemas/SerotypeFilterList"
 
     #InSilicoDataFilters:
     #  type: object

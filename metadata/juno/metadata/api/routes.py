@@ -230,6 +230,11 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
      
     samples = dao.get_filtered_samples(filters)
+    logging.debug("DAO returned sample IDs: {}".format(samples))
+    # samples() will return None if it is passed a non-existent field name
+    if samples is None:
+      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
+
     result = convert_to_json(samples)
 
     if len(samples) > 0:
@@ -298,6 +303,8 @@ def _validate_field_names(names):
           logging.debug("checking field name {}".format(this_name))
           if not field_names_regex.match(this_name):
             raise ValueError("field name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_name))
+          else:
+            logging.info("field name \"{}\" is valid".format(this_name))
     except ValueError as ve:
         logger.error(str(ve))
         return False

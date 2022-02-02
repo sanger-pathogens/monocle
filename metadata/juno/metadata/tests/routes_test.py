@@ -183,6 +183,18 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
+    @patch('metadata.api.routes.convert_to_json')
+    def test_get_filtered_samples_route_bad_field_name(self, mocked_jsoncall, dao_mock):
+        mock_query      = {"bad_field_name": ['anything']}
+        mock_response   = {}
+        mock_json       = ''
+        mocked_jsoncall.return_value              = mock_json
+        dao_mock.get_filtered_samples.return_value = None 
+        filtered_samples, http_status = mar.get_filtered_samples_route(mock_query, dao_mock)
+        dao_mock.get_filtered_samples.assert_called_once_with( mock_query )
+        self.assertEqual(filtered_samples, 'Invalid field name provided')
+        self.assertEqual(http_status, 400)
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
     @patch('metadata.api.routes.convert_to_json')

@@ -108,37 +108,44 @@ def get_metadata_route(body):
     metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
     in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
     qc_data_columns     = body.get('qc data columns',    GetMetadataInputDefaults['qc data columns'])
-    if return_as_csv:
-      # note the metadata CSV here does not include data download URLs
-      # this is because the sample filters could match samples from multiple institutions, and download
-      # links for multiple institutions are not currently supported with CSV metadata downloads
-      return  _metadata_as_csv_response(
-                  ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
-                  )
-    else:
-      # setting column filter params to '_ALL' means all columns should be returned
-      if '_ALL' == metadata_columns[0]:
-         metadata_columns = None
-      if '_ALL' == in_silico_columns[0]:
-         in_silico_columns = None
-      if '_ALL' == qc_data_columns[0]:
-         qc_data_columns = None
-      metadata = ServiceFactory.sample_data_service(
-                     get_authenticated_username(request)).get_metadata(
-                        sample_filters,
-                        start_row         = body.get('start row', None),
-                        num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
-                        include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-                        include_qc_data   = body.get('qc data',   GetMetadataInputDefaults['qc data']),
-                        metadata_columns  = metadata_columns,
-                        in_silico_columns = in_silico_columns,
-                        qc_data_columns   = qc_data_columns)
-      if metadata is None:
-         return Response(  'No matching samples were found',
-                           content_type   = 'text/plain; charset=UTF-8',
-                           status         = HTTPStatus.NOT_FOUND
-                           )
-      return call_jsonify( metadata ), HTTPStatus.OK
+    
+    try:
+      if return_as_csv:
+         # note the metadata CSV here does not include data download URLs
+         # this is because the sample filters could match samples from multiple institutions, and download
+         # links for multiple institutions are not currently supported with CSV metadata downloads
+         return  _metadata_as_csv_response(
+                     ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
+                     )
+      else:
+         # setting column filter params to '_ALL' means all columns should be returned
+         if '_ALL' == metadata_columns[0]:
+            metadata_columns = None
+         if '_ALL' == in_silico_columns[0]:
+            in_silico_columns = None
+         if '_ALL' == qc_data_columns[0]:
+            qc_data_columns = None
+         metadata = ServiceFactory.sample_data_service(
+                        get_authenticated_username(request)).get_metadata(
+                           sample_filters,
+                           start_row         = body.get('start row', None),
+                           num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
+                           include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
+                           include_qc_data   = body.get('qc data',   GetMetadataInputDefaults['qc data']),
+                           metadata_columns  = metadata_columns,
+                           in_silico_columns = in_silico_columns,
+                           qc_data_columns   = qc_data_columns)
+         if metadata is None:
+            return Response(  'No matching samples were found',
+                              content_type   = 'text/plain; charset=UTF-8',
+                              status         = HTTPStatus.NOT_FOUND
+                              )
+         return call_jsonify( metadata ), HTTPStatus.OK
+    except HTTPError as e:
+      if '400' in str(e):
+          return 'Bad request', HTTPStatus.BAD_REQUEST
+      raise e
+
 
 def get_distinct_values_route(body):
     """ Return distinct values found in metadata, in silico or QC data fields """
@@ -176,11 +183,16 @@ def bulk_download_info_route(body):
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     
-    download_info = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
-            sample_filters,
-            assemblies=assemblies,
-            annotations=annotations,
-            reads=reads)
+    try:
+      download_info = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
+               sample_filters,
+               assemblies=assemblies,
+               annotations=annotations,
+               reads=reads)
+    except HTTPError as e:
+      if '400' in str(e):
+          return 'Bad request', HTTPStatus.BAD_REQUEST
+      raise e
     if download_info is None:
       return Response(  'No matching samples were found',
                         content_type   = 'text/plain; charset=UTF-8',
@@ -192,17 +204,19 @@ def bulk_download_urls_route(body):
     """ Get download links to ZIP files w/ lanes corresponding to the request parameters """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
-    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
     try:
+      monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
       samples = monocle_data.get_filtered_samples(sample_filters)
-    # catch 404s -- this means the metadata API found no matching samples
+    # catch 404 and 400s from metadta API
     except HTTPError as e:
-      if '404' not in str(e):
-         raise e
-      return Response(  'No matching samples were found',
-                        content_type   = 'text/plain; charset=UTF-8',
-                        status         = HTTPStatus.NOT_FOUND
-                        )
+      if '404' in str(e):
+         return Response(  'No matching samples were found',
+                           content_type   = 'text/plain; charset=UTF-8',
+                           status         = HTTPStatus.NOT_FOUND
+                           )
+      elif '400' in str(e):
+         return 'Bad request', HTTPStatus.BAD_REQUEST
+      raise e
    
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples,
