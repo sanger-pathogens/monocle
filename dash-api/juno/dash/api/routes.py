@@ -207,7 +207,7 @@ def bulk_download_urls_route(body):
     try:
       monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
       samples = monocle_data.get_filtered_samples(sample_filters)
-    # catch 404 and 400s from metadta API
+    # catch 404 and 400s from metadata API
     except HTTPError as e:
       if '404' in str(e):
          return Response(  'No matching samples were found',

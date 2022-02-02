@@ -746,7 +746,7 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_distinct_values_route_bad_field_name(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadtaa API barf is mocked"] } ]
+        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadata API barf is mocked"] } ]
         sample_data_service_mock.return_value.get_distinct_values.return_value = None
         username_mock.return_value = self.TEST_USER
         # When
