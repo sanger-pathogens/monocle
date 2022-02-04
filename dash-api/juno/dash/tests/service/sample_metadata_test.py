@@ -48,9 +48,9 @@ class SampleMetadataTest(TestCase):
                                  }"""
                      
 
-   expected_sample_ids = ['5903STDY8059053', '5903STDY8059055']
+   expected_sanger_sample_ids = ['5903STDY8059053', '5903STDY8059055']
    expected_institution_names = ['Ministry of Health, Central laboratories', 'National Reference Laboratories', 'The Chinese University of Hong Kong']
-   required_sample_dict_keys  = ['sample_id', 'public_name', 'host_status', 'serotype', 'submitting_institution']
+   required_sample_dict_keys  = ['sanger_sample_id', 'public_name', 'host_status', 'serotype', 'submitting_institution']
    
    expected_distinct_values            = [ { 'field type': 'metadata',   'fields': [ { "name": "field1", "values": ["a", "b"]}, { "name": "field2", "values": ["d", "e"] } ] } ]
    expected_distinct_in_silico_values  = [ { 'field type': 'in silico',  'fields': [ { "name": "field3", "values": ["f", "g", "h"] } ] } ]
@@ -79,7 +79,7 @@ class SampleMetadataTest(TestCase):
          doomed = Monocle_Client(set_up=False)
          doomed.set_up(self.test_config)
          doomed.config['base_url'] = self.bad_api_host
-         endpoint = doomed.config['samples'] + self.expected_sample_ids[0]
+         endpoint = doomed.config['samples'] + self.expected_sanger_sample_ids[0]
          doomed.make_request(endpoint)
 
    def test_reject_bad_endpoint(self):
@@ -87,7 +87,7 @@ class SampleMetadataTest(TestCase):
          doomed = Monocle_Client(set_up=False)
          doomed.set_up(self.test_config)
          doomed.config['base_url'] = self.genuine_api_host
-         endpoint = self.bad_api_endpoint + self.expected_sample_ids[0]
+         endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
          doomed.make_request(endpoint)
 
 
@@ -143,5 +143,5 @@ class SampleMetadataTest(TestCase):
    def test_reject_bad_get_sample_response(self, mock_request):
       with self.assertRaises(ProtocolError):
          mock_request.return_value = self.mock_bad_get_sample
-         self.sample_metadata.get_samples(self.expected_sample_ids[0])
+         self.sample_metadata.get_samples(self.expected_sanger_sample_ids[0])
 

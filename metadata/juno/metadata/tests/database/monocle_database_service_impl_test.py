@@ -106,7 +106,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
     def test_get_samples(self) -> None:
         # Fake a returned result set...
         self.connection.execute.return_value = [
-            dict(sample_id='9999STDY8113123',
+            dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution='UniversityA',
                 supplier_sample_name='SUPPLIER_1',
@@ -166,7 +166,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 vancomycin_method='method13',
                 linezolid='14',
                 linezolid_method='method14'),
-            dict(sample_id='9999STDY8113124',
+            dict(sanger_sample_id='9999STDY8113124',
                  lane_id='2000_2#11',
                  submitting_institution='UniversityB',
                  supplier_sample_name='SUPPLIER_2',
@@ -245,7 +245,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_filtered_samples(self) -> None:
         self.connection.execute.return_value = [
-                dict(sample_id='9999STDY8113123',
+                dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution='UniversityA',
                 supplier_sample_name='SUPPLIER_1',
@@ -316,7 +316,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_filtered_samples_nofilters(self) -> None:
         self.connection.execute.return_value = [
-            dict(sample_id='9999STDY8113123',
+            dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution='UniversityA',
                 supplier_sample_name='SUPPLIER_1',
@@ -376,7 +376,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 vancomycin_method='method13',
                 linezolid='14',
                 linezolid_method='method14'),
-            dict(sample_id='9999STDY8113124',
+            dict(sanger_sample_id='9999STDY8113124',
                  lane_id='2000_2#11',
                  submitting_institution='UniversityB',
                  supplier_sample_name='SUPPLIER_2',
@@ -770,7 +770,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         input_list = ['9999STDY8113123', '9999STDY8113124']
         # Fake a returned result set...
         self.connection.execute.return_value = [
-            dict(sample_id='9999STDY8113123',
+            dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
                 submitting_institution='UniversityA',
                 supplier_sample_name='SUPPLIER_1',
@@ -830,7 +830,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 vancomycin_method='method13',
                 linezolid='14',
                 linezolid_method='method14'),
-            dict(sample_id='9999STDY8113124',
+            dict(sanger_sample_id='9999STDY8113124',
                  lane_id='2000_2#11',
                  submitting_institution='UniversityB',
                  supplier_sample_name='SUPPLIER_2',

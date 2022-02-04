@@ -46,7 +46,7 @@ class SampleMetadata:
                # TODO  see if we can now replace this, and simply return `results_list`, except with
                #       `lane_id` removed from each item in `results_list` (unless `exclude_lane_id`
                #       is False)
-               this_sample = {'sample_id'                   : this_result['sanger_sample_id'],
+               this_sample = {'sanger_sample_id'         : this_result['sanger_sample_id'],
                               'submitting_institution'   : this_result['submitting_institution'],
                               'public_name'                 : this_result['public_name'],
                               'host_status'                 : this_result['host_status'],

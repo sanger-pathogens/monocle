@@ -56,10 +56,10 @@ class MonocleSampleDataTest(TestCase):
                                     'Fake institution Two'
                                     ]
    mock_bad_institution_name  = "This Institution Does Not Exist"
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
+   mock_samples               = [   {'sanger_sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sanger_sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sanger_sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sanger_sample_id': 'fake_sample_id_4', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
@@ -120,19 +120,19 @@ class MonocleSampleDataTest(TestCase):
 
    mock_filtered_samples      = [   {  'creation_datetime': '2020-04-29T11:03:35Z',
                                        'lanes': ['fake_lane_id_1', 'fake_lane_id_2', 'fake_lane_id_3'],
-                                       'sample_id': 'fake_sample_id_1',
+                                       'sanger_sample_id': 'fake_sample_id_1',
                                        'inst_key': 'FakOne',
                                        'public_name': 'SCN9A_1'
                                        },
                                     {  'creation_datetime': '2021-05-02T10:31:49Z',
                                        'lanes': ['fake_lane_id_5'],
-                                       'sample_id': 'fake_sample_id_3',
+                                       'sanger_sample_id': 'fake_sample_id_3',
                                        'inst_key': 'FakTwo',
                                        'public_name': 'SCN9A_3'
                                        },
                                     {  'creation_datetime': '2021-05-02T14:07:23Z',
                                        'lanes': ['fake_lane_id_6'],
-                                       'sample_id': 'fake_sample_id_4',
+                                       'sanger_sample_id': 'fake_sample_id_4',
                                        'inst_key': 'FakTwo',
                                        'public_name': 'SCN9A_4'
                                        }

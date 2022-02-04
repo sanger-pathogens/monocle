@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `api_sample`;
 
 CREATE TABLE `api_sample` (
   `lane_id` varchar(256) DEFAULT NULL,
-  `sample_id` varchar(256) NOT NULL,
+  `sanger_sample_id` varchar(256) NOT NULL,
   `public_name` varchar(256) NOT NULL,
   `host_status` varchar(256) DEFAULT NULL,
   `serotype` varchar(7) DEFAULT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE `api_sample` (
   `tetracycline_method` varchar(60),
   `vancomycin` varchar(30),
   `vancomycin_method` varchar(60),
-  PRIMARY KEY (`sample_id`),
+  PRIMARY KEY (`sanger_sample_id`),
   KEY `api_sample_submitting_institution_fk` (`submitting_institution`),
   CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution`) REFERENCES `api_institution` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
