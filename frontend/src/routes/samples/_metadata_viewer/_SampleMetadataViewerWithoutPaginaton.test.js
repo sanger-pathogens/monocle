@@ -97,7 +97,7 @@ describe("on error", () => {
     const { findByText } = render(SimpleSampleMetadataViewer,
       { metadataPromise: Promise.reject() });
 
-    const errorElement = await findByText(/^Error while fetching metadata/);
+    const errorElement = await findByText(/^An error occured while fetching metadata/);
     expect(errorElement).toBeDefined();
   });
 });

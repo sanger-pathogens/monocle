@@ -67,9 +67,9 @@
             class="filter-btn"
           >
             {#if columnOfOpenFilter?.title !== columnTitle}
-              <FilterIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? undefined : COLOR_INACTIVE_FILTER} />
+              <FilterIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? null : COLOR_INACTIVE_FILTER} />
             {:else}
-              <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? undefined : COLOR_INACTIVE_FILTER} />
+              <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? null : COLOR_INACTIVE_FILTER} />
             {/if}
           </button>
           {#if columnOfOpenFilter?.title === columnTitle}
@@ -81,8 +81,8 @@
 
     {#if isError}
       <tr>
-        <td colspan={columns.length || 1}>
-          Error while fetching metadata. Please <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the error persists.
+        <td colspan={columns.length || 1} class="error-msg">
+          An error occured while fetching metadata. Please <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the error persists.
         </td>
       </tr>
 
@@ -131,6 +131,10 @@ th {
   /* Column headers must remain `relative`ly positioned for the filter to be correctly positioned for rightmost headers. */
   position: relative;
   white-space: nowrap;
+}
+
+.error-msg {
+  padding-top: 3rem;
 }
 
 .filter-btn {
