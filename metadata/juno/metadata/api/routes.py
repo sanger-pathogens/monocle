@@ -225,9 +225,14 @@ def get_samples_route(dao: MonocleDatabaseService):
 @inject
 def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
-    filters = body
-    if not _validate_field_names(filters):
-        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+    filters = {}
+    for this_filter in body:
+       logging.critical("\n******************************\n{}".format(this_filter))
+       this_field    = this_filter['name']
+       these_values  = this_filter['values']
+       if not _validate_field_names([this_field]):
+          return "name \"{}\" is not a valid metadata field name".format(this_field), HTTP_BAD_REQUEST_STATUS
+       filters[this_field] = these_values
      
     samples = dao.get_filtered_samples(filters)
     logging.debug("DAO returned sample IDs: {}".format(samples))

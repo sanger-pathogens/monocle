@@ -168,7 +168,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
         fakeDB.get_filtered_samples = MagicMock(return_value=['sample1', 'sample2'])
-        under_test = mar.get_filtered_samples_route({'serotype': 'IA'}, fakeDB)
+        under_test = mar.get_filtered_samples_route([{'name':'serotype', 'values':['IA']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
@@ -179,20 +179,21 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
         fakeDB.get_filtered_samples = MagicMock(return_value=[])
-        under_test = mar.get_filtered_samples_route({'serotype': 'None'}, fakeDB)
+        under_test = mar.get_filtered_samples_route([{'name':'serotype', 'values':['None']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
     def test_get_filtered_samples_route_bad_field_name(self, mocked_jsoncall, dao_mock):
-        mock_query      = {"bad_field_name": ['anything']}
+        mock_field_name = 'bad_field_name'
+        mock_values     = ['anything']
         mock_response   = {}
         mock_json       = ''
         mocked_jsoncall.return_value              = mock_json
         dao_mock.get_filtered_samples.return_value = None 
-        filtered_samples, http_status = mar.get_filtered_samples_route(mock_query, dao_mock)
-        dao_mock.get_filtered_samples.assert_called_once_with( mock_query )
+        filtered_samples, http_status = mar.get_filtered_samples_route([{'name':mock_field_name, 'values':mock_values}], dao_mock)
+        dao_mock.get_filtered_samples.assert_called_once_with( {mock_field_name: mock_values} )
         self.assertEqual(filtered_samples, 'Invalid field name provided')
         self.assertEqual(http_status, 400)
 
@@ -208,8 +209,8 @@ class TestRoutes(unittest.TestCase):
                                        'no semi; colons either',
                                        'wildcards % are right out'
                                        ]:
-          under_test = mar.get_filtered_samples_route({looks_iffy_to_me_guv: 'any search term'}, fakeDB)
-          self.assertEqual(under_test, ('Invalid arguments provided', 400))
+          under_test = mar.get_filtered_samples_route([{'name':looks_iffy_to_me_guv, 'values':['any search term']}], fakeDB)
+          self.assertEqual(under_test[1], 400)
       
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')

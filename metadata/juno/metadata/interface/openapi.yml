@@ -178,12 +178,12 @@ paths:
       operationId: metadata.api.routes.get_filtered_samples_route
       summary: "Gather filtered sample records"
       requestBody:
-        description: "A dictionary of filters with lists of values"
+        description: "An array of metadata filters"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MetadataFilters"
+              $ref: "#/components/schemas/FiltersInput"
       responses:
         "200":
           description: "List of sample ids"
@@ -347,75 +347,31 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
+          
+          
+    FiltersInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/MetadataFilters"
+      minItems: 1
 
     MetadataFilters:
       type: object
       properties:
-         city:
+         name:
+            description: "The name of the metadata field"
+            $ref: "#/components/schemas/FieldName"
+         values:
             type: array
             items:
-               $ref: "#/components/schemas/WordsFilter"
-            example: ["Itacurube"]
-         country:
-            type: array
-            items:
-               $ref: "#/components/schemas/WordsFilter"
-            example: ["Brazil"]
-         county_state:
-            type: array
-            items:
-               $ref: "#/components/schemas/WordsFilter"
-            example: ["Pernambuco"]
-         host_species:
-            type: array
-            items:
-               $ref: "#/components/schemas/WordsFilter"
-            example: ["human"]
-         host_status:
-            $ref: "#/components/schemas/HostStatusFilterList"
-         serotype:
-            $ref: "#/components/schemas/SerotypeFilterList"
-
-    #InSilicoDataFilters:
-    #  type: object
-    #  properties:
-    #    ST:
-    #      $ref: "#/components/schemas/MLSTFilterList"
-
-    HostStatusFilterList:
-      description: "List of host status strings"
-      type: array
-      items:
-         type: string
-         minLength: 1
-         maxLength: 32
-         pattern: ^(carriage|invasive disease|non-invasive disease)$
-         example: "carriage"
-
-    #MLSTFilterList:
-    #  description: "List of MLST strings"
-    #  type: array
-    #  item:
-    #    type: string
-    #    minlength: 1
-    #    maxLength: 8
-    #    pattern: ^([0-9|(NF)]\*?\??)+$
-    #    # Can include values like 123, 123*, 123?, 123*?, NT, NT*, NT? or NT*?
-    #    example: "123*?"
-
-    SerotypeFilterList:
-      description: "List of serotype strings"
-      type: array
-      items:
-         type: string
-         minLength: 1
-         maxLength: 5
-         pattern: ^[ivxIVX]+[abcd]?|(NT)$
-         # Can also include just NT meaning non-typable
-         example: "Ia"
-
-    WordsFilter:
-      description: "A string (including strings with whitespace)"
+               description: "List of desired values of the metadata field"
+               $ref: "#/components/schemas/FieldValueFilter"
+      example: {  "name":        "serotype", "values": ["Ia", "Ib", "II"],
+                  "age_group":   "adult"
+                  }
+         
+    FieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
       minLength: 1
       maxLength: 256
@@ -424,6 +380,7 @@ components:
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
 
     FieldName:
+      description: "Valid metadata field name (alphanumeric and underscore only)"
       type: string
       minLength: 1
       maxLength: 256
