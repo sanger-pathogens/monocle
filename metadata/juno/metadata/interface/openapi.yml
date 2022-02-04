@@ -73,7 +73,7 @@ paths:
       operationId: metadata.api.routes.get_download_metadata_route
       summary: "Download the metadata for the given download keys"
       requestBody:
-        description: "A list of sampleId keys"
+        description: "A list of Sanger sample IDs"
         required: true
         content:
           application/json:
@@ -96,7 +96,7 @@ paths:
       operationId: metadata.api.routes.get_download_in_silico_data_route
       summary: "Download the in silico data for the given download keys"
       requestBody:
-        description: "A list of laneId keys"
+        description: "A list of lane IDs"
         required: true
         content:
           application/json:
@@ -119,7 +119,7 @@ paths:
       operationId: metadata.api.routes.get_download_qc_data_route
       summary: "Download the QC data for the given download keys"
       requestBody:
-        description: "A list of laneId keys"
+        description: "A list of lane IDs"
         required: true
         content:
           application/json:
@@ -307,7 +307,7 @@ components:
           readOnly: true
 
     DownloadSampleKeys:
-      description: "A list of sampleId keys"
+      description: "A list of Sanger sample IDs"
       type: array
       items:
         type: string
@@ -318,7 +318,7 @@ components:
       example: ["5903STDY8059122", "5903STDY8059054"]
 
     DownloadLaneKeys:
-      description: "A list of laneId keys"
+      description: "A list of lane IDs"
       type: array
       items:
         type: string
