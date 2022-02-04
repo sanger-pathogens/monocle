@@ -152,14 +152,6 @@ class Monocle_Client:
         logging.debug("{}.filters() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        # FIXME (for the metadata API, not the dashboard API)
-        # the filters endpount returns a response like
-        #    ['a', 'b', 'c']
-        # but really should be
-        #    { 'filters': ['a', 'b', 'c'] }
-        # (then we would pass required_keys=[self.config['filters_key']] to parse_response()
-        # and return results[self.config['filters_key']])
-        # current implementation works, but is inconsistent with other endpoints
         results = json.loads(response)
         return results
      
