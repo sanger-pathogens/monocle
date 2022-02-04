@@ -26,7 +26,7 @@ class MonocleSampleTracking:
    This class exists to convert data between the form in which they are provided by the data sources,
    and whatever form is most convenient for rendering the dashboard.
    """
-   sample_table_inst_key   = 'submitting_institution_id'
+   sample_table_inst_key   = 'submitting_institution'
    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
    sequencing_flags        = {'qc_lib':   'library',

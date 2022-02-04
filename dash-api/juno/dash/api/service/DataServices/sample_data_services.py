@@ -39,7 +39,7 @@ class MonocleSampleData:
    This class exists to convert data between the form in which they are provided by the data sources,
    and whatever form is most convenient for rendering the dashboard.
    """
-   sample_table_inst_key   = 'submitting_institution_id'
+   sample_table_inst_key   = 'submitting_institution'
    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
    sequencing_flags        = {'qc_lib':   'library',
@@ -424,10 +424,10 @@ class MonocleSampleData:
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-      logging.info("{}.metadata_download_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
       #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
-      logging.info("{}.metadata_download_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      logging.info("{}.sample_tracking.sample_metadata.get_filtered_sample_ids returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
       for this_sample in filtered_samples:
          if this_sample['sample_id'] in matching_samples_ids:
@@ -688,7 +688,7 @@ class MonocleSampleData:
                      samples_for_download[this_sample_id].append(this_lane)
                   else:
                      samples_for_download[this_sample_id] = [this_lane]
-         # catch 404s -- this means the metadta API found no matching samples
+         # catch 404s -- this means the metadata API found no matching samples
          except urllib.error.HTTPError as e:
             if '404' not in str(e):
                raise e

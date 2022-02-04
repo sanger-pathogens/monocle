@@ -51,10 +51,10 @@ class MonocleSampleTrackingTest(TestCase):
    mock_institutions          = [   'Fake institution One',
                                     'Fake institution Two'
                                     ]
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
+   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',

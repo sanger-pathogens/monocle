@@ -50,7 +50,7 @@ class SampleMetadataTest(TestCase):
 
    expected_sample_ids = ['5903STDY8059053', '5903STDY8059055']
    expected_institution_names = ['Ministry of Health, Central laboratories', 'National Reference Laboratories', 'The Chinese University of Hong Kong']
-   required_sample_dict_keys  = ['sample_id', 'public_name', 'host_status', 'serotype', 'submitting_institution_id']
+   required_sample_dict_keys  = ['sample_id', 'public_name', 'host_status', 'serotype', 'submitting_institution']
    
    expected_distinct_values            = [ { 'field type': 'metadata',   'fields': [ { "name": "field1", "values": ["a", "b"]}, { "name": "field2", "values": ["d", "e"] } ] } ]
    expected_distinct_in_silico_values  = [ { 'field type': 'in silico',  'fields': [ { "name": "field3", "values": ["f", "g", "h"] } ] } ]

@@ -18,7 +18,7 @@ CREATE TABLE `api_sample` (
   `public_name` varchar(256) NOT NULL,
   `host_status` varchar(256) DEFAULT NULL,
   `serotype` varchar(7) DEFAULT NULL,
-  `submitting_institution_id` varchar(256) NOT NULL,
+  `submitting_institution` varchar(256) NOT NULL,
   `age_days` int(11) DEFAULT NULL,
   `age_group` varchar(30),
   `age_months` int(11) DEFAULT NULL,
@@ -74,8 +74,8 @@ CREATE TABLE `api_sample` (
   `vancomycin` varchar(30),
   `vancomycin_method` varchar(60),
   PRIMARY KEY (`sample_id`),
-  KEY `api_sample_submitting_institution_fk` (`submitting_institution_id`),
-  CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution_id`) REFERENCES `api_institution` (`name`)
+  KEY `api_sample_submitting_institution_fk` (`submitting_institution`),
+  CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution`) REFERENCES `api_institution` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

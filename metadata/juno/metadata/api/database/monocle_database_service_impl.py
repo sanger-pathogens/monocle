@@ -44,7 +44,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     INSERT_OR_UPDATE_SAMPLE_SQL = text(""" \
             INSERT INTO api_sample (
-                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
                 ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
@@ -56,7 +56,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
                 vancomycin, vancomycin_method
             ) VALUES (
-                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution_id,
+                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution,
                 :age_days, :age_group, :age_months, :age_weeks, :age_years, :ampicillin,
                 :ampicillin_method, :apgar_score, :birth_weight_gram, :cefazolin, :cefazolin_method, :cefotaxime,
                 :cefotaxime_method, :cefoxitin, :cefoxitin_method, :ceftizoxime, :ceftizoxime_method,
@@ -73,7 +73,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 public_name = :public_name,
                 host_status = :host_status,
                 serotype = :serotype,
-                submitting_institution_id = :submitting_institution_id,
+                submitting_institution = :submitting_institution,
                 age_days = :age_days,
                 age_group = :age_group,
                 age_months = :age_months,
@@ -131,7 +131,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     SELECT_SAMPLES_SQL = text(""" \
             SELECT
-                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
                 ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
@@ -157,7 +157,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ORDER BY name""")
 
     SELECT_ALL_SAMPLES_SQL = text(""" \
-                SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
                 ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
@@ -172,7 +172,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ORDER BY sample_id""")
 
     FILTER_SAMPLES_IN_SQL = """ \
-            SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+            SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
             age_days, age_group, age_months, age_weeks, age_years, ampicillin,
             ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
             cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
@@ -407,14 +407,21 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
-                    new_sample_ids = []
+                  new_sample_ids = []
+                  try:
                     rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
                     new_sample_ids.extend([row['sample_id'] for row in rs])
                     if len(sample_ids) > 0:
-                        tmp_ids = [id for id in new_sample_ids if id in sample_ids]
-                        sample_ids = tmp_ids
+                      tmp_ids = [id for id in new_sample_ids if id in sample_ids]
+                      sample_ids = tmp_ids
                     else:
-                        sample_ids = new_sample_ids
+                      sample_ids = new_sample_ids
+                  except OperationalError as e:
+                    if 'Unknown column' in str(e):
+                      logging.error("attempted to apply filter to unknown field \"{}\"".format(filter))
+                      return None
+                    else:
+                      raise e
             else:
                 rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
                 sample_ids = [row['sample_id'] for row in rs]
@@ -471,7 +478,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                Metadata(
                   sanger_sample_id=row['sample_id'],
                   lane_id=row['lane_id'],
-                  submitting_institution=row['submitting_institution_id'],
+                  submitting_institution=row['submitting_institution'],
                   supplier_sample_name=row['supplier_sample_name'],
                   public_name=row['public_name'],
                   host_status=row['host_status'],
@@ -555,7 +562,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     public_name=metadata.public_name,
                     host_status=self.convert_string(metadata.host_status),
                     serotype=self.convert_string(metadata.serotype),
-                    submitting_institution_id=metadata.submitting_institution,
+                    submitting_institution=metadata.submitting_institution,
                     age_days=self.convert_int(metadata.age_days),
                     age_group=self.convert_string(metadata.age_group),
                     age_months=self.convert_int(metadata.age_months),
@@ -738,7 +745,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                Metadata(
                   sanger_sample_id=row['sample_id'],
                   lane_id=row['lane_id'],
-                  submitting_institution=row['submitting_institution_id'],
+                  submitting_institution=row['submitting_institution'],
                   supplier_sample_name=row['supplier_sample_name'],
                   public_name=row['public_name'],
                   host_status=row['host_status'],
