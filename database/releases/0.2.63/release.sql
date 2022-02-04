@@ -1,6 +1,7 @@
 
 
-ALTER TABLE api_sample CHANGE submitting_institution_id submitting_institution varchar(256);
+ALTER TABLE api_sample CHANGE submitting_institution_id  submitting_institution  varchar(256);
+ALTER TABLE api_sample CHANGE birthweight_gram           birth_weight_gram       int(11);
 
 
 --

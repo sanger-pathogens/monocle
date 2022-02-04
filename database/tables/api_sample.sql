@@ -27,7 +27,7 @@ CREATE TABLE `api_sample` (
   `ampicillin` varchar(30),
   `ampicillin_method` varchar(60),
   `apgar_score` smallint(6) DEFAULT NULL,
-  `birthweight_gram` int(11) DEFAULT NULL,
+  `birth_weight_gram` int(11) DEFAULT NULL,
   `cefazolin` varchar(30),
   `cefazolin_method` varchar(60),
   `cefotaxime` varchar(30),
