@@ -17,7 +17,7 @@
 
 
 <article>
-  <h3>{institutionName}</h3>
+  <h2>{institutionName}</h2>
 
   {#if apiError}
     <p>⚠️ {apiError}</p>
@@ -46,7 +46,7 @@ article:first-of-type {
   margin-top: 1.5rem;
 }
 
-h3 {
+h2 {
   margin-top: 1rem;
   width: 100%;
 }

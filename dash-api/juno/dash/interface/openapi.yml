@@ -554,6 +554,7 @@ components:
             - "collection_year"
             - "host_species"
             - "isolation_source"
+            - "serotype"
           example:
             - "submitting_institution"
             - "public_name"
@@ -563,6 +564,7 @@ components:
             - "collection_year"
             - "host_species"
             - "isolation_source"
+            - "serotype"
         in silico columns:
           description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array

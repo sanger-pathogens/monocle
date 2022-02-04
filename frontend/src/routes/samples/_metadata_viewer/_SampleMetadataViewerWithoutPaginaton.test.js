@@ -21,9 +21,9 @@ it("shows the loading indicator if the metadata promise is pending", () => {
 
 describe("on metadata resolved", () => {
   const METADATA = [{
-    metadata: [{ name: "Sample ID", value: "1a" }, { name: "Country", value: "UK" }]
+    metadata: [{ title: "Sample ID", value: "1a" }, { title: "Country", value: "UK" }]
   }, {
-    metadata: [{ name: "Sample ID", value: "2b" }, { name: "Country", value: "UA" }]
+    metadata: [{ title: "Sample ID", value: "2b" }, { title: "Country", value: "UA" }]
   }];
 
   it("hides the loading indicator", async () => {
@@ -61,8 +61,8 @@ describe("on metadata resolved", () => {
 
   function expectMetadataToBeShown(getByRole) {
     expect(getByRole(ROLE_TABLE)).toBeDefined();
-    METADATA[0].metadata.forEach(({ name }) => {
-      expect(getByRole(ROLE_COLUMN_HEADER, { name })).toBeDefined();
+    METADATA[0].metadata.forEach(({ title }) => {
+      expect(getByRole(ROLE_COLUMN_HEADER, { name: title })).toBeDefined();
     });
     METADATA.forEach(({ metadata: sampleMetadata }) => {
       sampleMetadata.forEach(({ value }) => {

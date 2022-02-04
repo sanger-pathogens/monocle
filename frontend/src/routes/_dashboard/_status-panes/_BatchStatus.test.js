@@ -17,7 +17,7 @@ const BATCHES = {
 it("displays the total number of samples received", () => {
   const { container } = render(BatchStatus, { batches: BATCHES });
 
-  expect(container.querySelector("h4").textContent)
+  expect(container.querySelector("h3").textContent)
     .toBe(`${BATCHES.received} Samples Received`);
 });
 

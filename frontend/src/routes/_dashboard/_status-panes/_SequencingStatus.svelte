@@ -16,13 +16,13 @@
 
 
 <StatusPane grow>
-  <h4>
+  <h3>
     {#if pending}
       <code>{completed}</code> of <code>{received}</code> Samples Sequenced
     {:else}
       All <code>{completed}</code> Samples Sequenced
     {/if}
-  </h4>
+  </h3>
 
   <StatusChart
     labels={CHART_LABELS}
