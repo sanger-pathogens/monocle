@@ -366,9 +366,7 @@ components:
             items:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
-      example: {  "name":        "serotype", "values": ["Ia", "Ib", "II"],
-                  "age_group":   "adult"
-                  }
+      example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
          
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
