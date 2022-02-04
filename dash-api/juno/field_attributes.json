@@ -1,0 +1,389 @@
+{
+   "metadata" : {
+      "Sample Identifiers" : {
+         "lane_id" : {
+            "filter type" : "none"
+         },
+         "sanger_sample_id" : {
+            "filter type" : "none"
+         },
+         "public_name" : {
+            "filter type" : "none"
+         },
+         "supplier_sample_name" : {
+            "filter type" : "none"
+         }
+      },
+      "Study Identifiers" : {
+         "study_name" : {
+            "filter type" : "none"
+         },
+         "study_ref" : {
+            "filter type" : "none"
+         },
+         "submitting_institution" : {
+            "filter type" : "discrete"
+         }
+      },
+      "Collection Information" : {
+         "selection_random" : {
+            "filter type" : "discrete"
+         },
+         "country" : {
+            "filter type" : "discrete"
+         },
+         "county_state" : {
+            "filter type" : "discrete"
+         },
+         "city" : {
+            "filter type" : "discrete"
+         },
+         "collection_year" : {
+            "filter type" : "numeric"
+         },
+         "collection_month" : {
+            "filter type" : "discrete"
+         },
+         "collection_day" : {
+            "filter type" : "discrete"
+         }
+      },
+      "Host Information" : {
+         "host_species" : {
+            "filter type" : "discrete"
+         },
+         "gender" : {
+            "filter type" : "discrete"
+         },
+         "age_group" : {
+            "filter type" : "discrete"
+         },
+         "age_years" : {
+            "filter type" : "numeric"
+         },
+         "age_months" : {
+            "filter type" : "numeric"
+         },
+         "age_weeks" : {
+            "filter type" : "numeric"
+         },
+         "age_days" : {
+            "filter type" : "numeric"
+         },
+         "host_status" : {
+            "filter type" : "discrete"
+         },
+         "disease_type" : {
+            "filter type" : "discrete"
+         },
+         "disease_onset" : {
+            "filter type" : "discrete"
+         },
+         "isolation_source" : {
+            "filter type" : "discrete"
+         },
+         "infection_during_pregnancy" : {
+            "filter type" : "discrete"
+         },
+         "maternal_infection_type" : {
+            "filter type" : "discrete"
+         },
+         "gestational_age_weeks" : {
+            "filter type" : "numeric"
+         },
+         "birth_weight_gram" : {
+            "filter type" : "numeric"
+         },
+         "apgar_score" : {
+            "filter type" : "discrete"
+         }
+      },
+      "Serotyping" : {
+         "serotype" : {
+            "filter type" : "discrete"
+         },
+         "serotype_method" : {
+            "filter type" : "discrete"
+         }
+      },
+      "Antimicrobial susceptibility" : {
+         "ampicillin" : {
+            "filter type" : "discrete"
+         },
+         "ampicillin_method" : {
+            "filter type" : "discrete"
+         },
+         "cefazolin" : {
+            "filter type" : "discrete"
+         },
+         "cefazolin_method" : {
+            "filter type" : "discrete"
+         },
+         "cefotaxime" : {
+            "filter type" : "discrete"
+         },
+         "cefotaxime_method" : {
+            "filter type" : "discrete"
+         },
+         "cefoxitin" : {
+            "filter type" : "discrete"
+         },
+         "cefoxitin_method" : {
+            "filter type" : "discrete"
+         },
+         "ceftizoxime" : {
+            "filter type" : "discrete"
+         },
+         "ceftizoxime_method" : {
+            "filter type" : "discrete"
+         },
+         "ciprofloxacin" : {
+            "filter type" : "discrete"
+         },
+         "ciprofloxacin_method" : {
+            "filter type" : "discrete"
+         },
+         "clindamycin" : {
+            "filter type" : "discrete"
+         },
+         "clindamycin_method" : {
+            "filter type" : "discrete"
+         },
+         "daptomycin" : {
+            "filter type" : "discrete"
+         },
+         "daptomycin_method" : {
+            "filter type" : "discrete"
+         },
+         "erythromycin" : {
+            "filter type" : "discrete"
+         },
+         "erythromycin_method" : {
+            "filter type" : "discrete"
+         },
+         "levofloxacin" : {
+            "filter type" : "discrete"
+         },
+         "levofloxacin_method" : {
+            "filter type" : "discrete"
+         },
+         "linezolid" : {
+            "filter type" : "discrete"
+         },
+         "linezolid_method" : {
+            "filter type" : "discrete"
+         },
+         "penicillin" : {
+            "filter type" : "discrete"
+         },
+         "penicillin_method" : {
+            "filter type" : "discrete"
+         },
+         "tetracycline" : {
+            "filter type" : "discrete"
+         },
+         "tetracycline_method" : {
+            "filter type" : "discrete"
+         },
+         "vancomycin" : {
+            "filter type" : "discrete"
+         },
+         "vancomycin_method" : {
+            "filter type" : "discrete"
+         }
+      }
+   },
+   "in silico" : {
+      "Serotype" : {
+         "cps_type" : {
+            "filter type" : "discrete"
+         }
+      },
+      "MLST and allele frequencies" : {
+         "ST" : {
+            "filter type" : "discrete"
+         },
+         "adhP" : {
+            "filter type" : "discrete"
+         },
+         "pheS" : {
+            "filter type" : "discrete"
+         },
+         "atr" : {
+            "filter type" : "discrete"
+         },
+         "glnA" : {
+            "filter type" : "discrete"
+         },
+         "sdhA" : {
+            "filter type" : "discrete"
+         },
+         "glcK" : {
+            "filter type" : "discrete"
+         },
+         "tkt" : {
+            "filter type" : "discrete"
+         }
+      },
+      "AMR alleles" : {
+         "AAC6APH2" : {
+            "filter type" : "discrete"
+         },
+         "AADECC" : {
+            "filter type" : "discrete"
+         },
+         "ANT6" : {
+            "filter type" : "discrete"
+         },
+         "APH3III" : {
+            "filter type" : "discrete"
+         },
+         "APH3OTHER" : {
+            "filter type" : "discrete"
+         },
+         "CATPC194" : {
+            "filter type" : "discrete"
+         },
+         "CATQ" : {
+            "filter type" : "discrete"
+         },
+         "ERMA" : {
+            "filter type" : "discrete"
+         },
+         "ERMB" : {
+            "filter type" : "discrete"
+         },
+         "ERMT" : {
+            "filter type" : "discrete"
+         },
+         "FOSA" : {
+            "filter type" : "discrete"
+         },
+         "GYRA" : {
+            "filter type" : "discrete"
+         },
+         "LNUB" : {
+            "filter type" : "discrete"
+         },
+         "LNUC" : {
+            "filter type" : "discrete"
+         },
+         "LSAC" : {
+            "filter type" : "discrete"
+         },
+         "MEFA" : {
+            "filter type" : "discrete"
+         },
+         "MPHC" : {
+            "filter type" : "discrete"
+         },
+         "MSRA" : {
+            "filter type" : "discrete"
+         },
+         "MSRD" : {
+            "filter type" : "discrete"
+         },
+         "PARC" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_1" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_2" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_3" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_4" : {
+            "filter type" : "discrete"
+         },
+         "SUL2" : {
+            "filter type" : "discrete"
+         },
+         "TETB" : {
+            "filter type" : "discrete"
+         },
+         "TETL" : {
+            "filter type" : "discrete"
+         },
+         "TETM" : {
+            "filter type" : "discrete"
+         },
+         "TETO" : {
+            "filter type" : "discrete"
+         },
+         "TETS" : {
+            "filter type" : "discrete"
+         }
+      },
+      "Surface proteins" : {
+         "ALP1" : {
+            "filter type" : "discrete"
+         },
+         "ALP23" : {
+            "filter type" : "discrete"
+         },
+         "ALPHA" : {
+            "filter type" : "discrete"
+         },
+         "HVGA" : {
+            "filter type" : "discrete"
+         },
+         "PI1" : {
+            "filter type" : "discrete"
+         },
+         "PI2A1" : {
+            "filter type" : "discrete"
+         },
+         "PI2A2" : {
+            "filter type" : "discrete"
+         },
+         "PI2B" : {
+            "filter type" : "discrete"
+         },
+         "RIB" : {
+            "filter type" : "discrete"
+         },
+         "SRR1" : {
+            "filter type" : "discrete"
+         },
+         "SRR2" : {
+            "filter type" : "discrete"
+         }
+      },
+      "AMR variants" : {
+         "twenty_three_S1_variant" : {
+            "filter type" : "discrete"
+         },
+         "twenty_three_S3_variant" : {
+            "filter type" : "discrete"
+         },
+         "GYRA_variant" : {
+            "filter type" : "discrete"
+         },
+         "PARC_variant" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_1_variant" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_2_variant" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_3_variant" : {
+            "filter type" : "discrete"
+         },
+         "RPOBGBS_4_variant" : {
+            "filter type" : "discrete"
+         }
+      }
+   },
+   "qc data" : {
+      "Pipeline QC" : {
+         "rel_abun_sa" : {
+            "filter type" : "numeric"
+         }
+      }
+   }
+}
