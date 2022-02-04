@@ -227,7 +227,6 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
     filters = {}
     for this_filter in body:
-       logging.critical("\n******************************\n{}".format(this_filter))
        this_field    = this_filter['name']
        these_values  = this_filter['values']
        if not _validate_field_names([this_field]):
