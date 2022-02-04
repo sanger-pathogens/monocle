@@ -424,10 +424,10 @@ class MonocleSampleData:
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-      logging.info("{}.metadata_download_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
       #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
-      logging.info("{}.metadata_download_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      logging.info("{}.sample_tracking.sample_metadata.get_filtered_sample_ids returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
       for this_sample in filtered_samples:
          if this_sample['sample_id'] in matching_samples_ids:
