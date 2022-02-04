@@ -64,7 +64,12 @@ class SampleMetadata:
         Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
-        results_list = self.monocle_client.filters(filters)
+        filters_payload = []
+        for this_field in filters:
+          these_values = filters[this_field]
+          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          filters_payload.append( {'name': this_field, 'values': these_values} )
+        results_list = self.monocle_client.filters(filters_payload)
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
