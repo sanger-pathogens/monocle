@@ -12,16 +12,13 @@
   const NARROW_SCREEN_BREAKPOINT = 600;
 
   let filterContainerElement;
-  let exclude = false;
-  let selectedValues = $filterStore[columnDataType]?.[columnName]?.map(
+  let exclude = $filterStore[columnDataType][columnName]?.exclude;
+  let selectedValues = $filterStore[columnDataType][columnName]?.values.map(
     (value) => ({ label: value, value }));
 
-  // FIXME: account for exclude
-  $: hasChanges = true || savedState.exclude !== exclude ||
-    savedState.values.size !== (selectedValues?.length || 0) ||
-    selectedValues && !selectedValues.every(({ value }) => savedState.values.has(value));
+  $: hasChanges = _hasChanges(savedState, selectedValues, exclude);
   // Save filter state for `hasChanges` each time a filter is applied or removed.
-  $: savedState = getState($filterStore[columnDataType]?.[columnName]);
+  $: savedState = $filterStore[columnDataType][columnName] || { values: [] };
   $: values = $distinctColumnValuesStore[columnDataType]?.[columnName];
 
   if (!values && column) {
@@ -44,11 +41,10 @@
 
   function applyFilter() {
     filterStore.update((filters) => {
-      const selectedValuesAsStrings = selectedValues?.map(({ value }) => value) || [];
-      const selectedValuesSet = new Set(selectedValuesAsStrings);
-      filters[columnDataType][columnName] = exclude ?
-        values.filter((value) => !selectedValuesSet.has(value)) :
-        selectedValuesAsStrings;
+      filters[columnDataType][columnName] = {
+        values: selectedValues?.map(({ value }) => value) || [],
+        exclude
+      };
       return filters;
     });
   }
@@ -71,11 +67,13 @@
     filterContainerElement.style.right = "0";
   }
 
-  function getState() {
-    return {
-      values: new Set($filterStore[columnDataType]?.[columnName]),
-      exclude
-    };
+  function _hasChanges() {
+    if (savedState.exclude !== exclude) {
+      return true;
+    }
+    const savedStateValuesSet = new Set(savedState.values);
+    return savedStateValuesSet.size !== (selectedValues?.length || 0) ||
+      selectedValues && !selectedValues.every(({ value }) => savedStateValuesSet.has(value));
   }
 </script>
 
@@ -105,14 +103,14 @@
   <button
     class="primary compact"
     on:click={() => {applyFilter(); closeFilter();}}
-    disabled={!hasChanges}
+    disabled={!values || !hasChanges}
   >
     Apply and close
   </button>
   <button
     class="primary compact"
     on:click={applyFilter}
-    disabled={!hasChanges}
+    disabled={!values || !hasChanges}
   >
     Apply
   </button>
