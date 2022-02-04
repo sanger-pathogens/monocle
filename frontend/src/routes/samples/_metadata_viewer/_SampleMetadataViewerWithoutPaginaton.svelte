@@ -122,7 +122,7 @@
 <style>
 table {
   display: block;
-  min-height: 9rem;
+  min-height: 21rem;
   overflow-x: auto;
   position: relative;
 }
@@ -147,11 +147,11 @@ th {
 
 .loading-indicator-row {
   position: absolute;
-  bottom: 38%;
-  left: 40%;
+  bottom: 30%;
+  left: 43%;
 }
 .loading-indicator-row.no-metadata {
-  bottom: 5%;
+  bottom: 50%;
 }
 
 .data-row.loading {
