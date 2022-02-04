@@ -13,7 +13,7 @@
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
-  import { filterStore } from "./_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
@@ -63,7 +63,7 @@
 
     getBulkDownloadInfo({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-      metadataFilter: $filterStore.metadata,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
       ...bulkDownloadFormValues,
     }, fetch)
       .then(({num_samples, size_zipped}) => {
@@ -115,7 +115,7 @@
     let hiddenDownloadLink;
     getSampleMetadata({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-      metadataFilter: $filterStore.metadata,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
       asCsv: true
     }, fetch)
       .then((csvBlob) => {

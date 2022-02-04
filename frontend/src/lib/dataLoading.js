@@ -1,4 +1,5 @@
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
+const DATA_TYPES = ["metadata", "in silico", "qc data"];
 const HTTP_POST = "POST";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
@@ -88,7 +89,7 @@ export function getInstitutions(fetch) {
 
 export function getSampleMetadata({
   instKeyBatchDatePairs,
-  metadataFilter,
+  filter,
   numRows,
   startRow,
   asCsv
@@ -101,9 +102,7 @@ fetch
     }
   };
 
-  if (metadataFilter) {
-    payload["sample filters"].metadata = metadataFilter;
-  }
+  addFiltersToPayload({ ...filter, payload });
 
   if (Number.isInteger(numRows)) {
     payload["num rows"] = numRows;
@@ -197,7 +196,7 @@ function collateInstitutionStatus({
 
 function prepareBulkDownloadPayload({
   instKeyBatchDatePairs,
-  metadataFilter,
+  filter,
   assemblies,
   annotations
 }) {
@@ -209,11 +208,30 @@ function prepareBulkDownloadPayload({
     annotations
   };
 
-  if (metadataFilter) {
-    payload["sample filters"].metadata = metadataFilter;
-  }
+  addFiltersToPayload({ ...filter, payload });
 
   return payload;
+}
+
+function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }) {
+  DATA_TYPES.forEach((dataType) => {
+    const filterStateForDataType = filterState[dataType] || {};
+    const columnNames = Object.keys(filterStateForDataType);
+    if (columnNames.length) {
+      const payloadFilter = {};
+      columnNames.forEach((columnName) => {
+        if (filterStateForDataType[columnName].exclude) {
+          const valuesToExclude = new Set(filterStateForDataType[columnName].values);
+          payloadFilter[columnName] = distinctColumnValues[dataType][columnName].filter((columnValue) =>
+            !valuesToExclude.has(columnValue));
+        }
+        else {
+          payloadFilter[columnName] = filterStateForDataType[columnName].values;
+        }
+      });
+      payload["sample filters"][dataType] = payloadFilter;
+    }
+  });
 }
 
 export function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {

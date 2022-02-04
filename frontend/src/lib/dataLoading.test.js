@@ -18,8 +18,22 @@ const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, bat
 ));
 const DASHBOARD_API_URL = "/dashboard-api";
 const DATA_TYPE_METADATA = "metadata";
-const FILTERS = {
-  metadataFilter: { serotype: ["1a", "1b"], country: ["AU"] }
+
+const DISTINCT_COLUMN_VALUES = {
+  metadata: {
+    serotype: ["1a", "1b", "NT"],
+    country: ["doesn't", " mattter"]
+  },
+  "in silico": {
+    ST: ["doesn't", " mattter"]
+  }
+};
+const FILTER_STATE = {
+  metadata: {
+    serotype: { values: ["1a", "1b"], exclude: true },
+    country: { values: ["AU"] }
+  },
+  "in silico": { ST: { values: ["x", "y"] } }
 };
 
 const fetch = jest.fn();
@@ -41,7 +55,7 @@ describe.each([
     getResource: getBulkDownloadInfo,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      ...FILTERS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
       annotations: false
     }],
@@ -49,7 +63,11 @@ describe.each([
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS, metadata: FILTERS.metadataFilter },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         assemblies: true,
         annotations: false
       })
@@ -63,7 +81,7 @@ describe.each([
     getResource: getBulkDownloadUrls,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      ...FILTERS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
       annotations: false
     }],
@@ -71,7 +89,11 @@ describe.each([
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS, metadata: FILTERS.metadataFilter },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         assemblies: true,
         annotations: false
       })
@@ -159,12 +181,21 @@ describe.each([
   {
     fnName: "getSampleMetadata",
     getResource: getSampleMetadata,
-    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, ...FILTERS, numRows: 14, startRow: 2 }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      numRows: 14,
+      startRow: 2
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS, metadata: FILTERS.metadataFilter },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         "num rows": 14,
         "start row": 2,
         "in silico": false,
@@ -178,12 +209,22 @@ describe.each([
   {
     fnName: "getSampleMetadata",
     getResource: getSampleMetadata,
-    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, ...FILTERS, numRows: 14, startRow: 2, asCsv: true }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      numRows: 14,
+      startRow: 2,
+      asCsv: true
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS, metadata: FILTERS.metadataFilter },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         "num rows": 14,
         "start row": 2,
         "as csv": true

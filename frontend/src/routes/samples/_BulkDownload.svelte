@@ -2,7 +2,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
-  import { filterStore } from "./_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   let downloadEstimateLatest = undefined;
   export let ariaLabelledby;
@@ -35,7 +35,7 @@
     downloadLinksRequested = true;
     getBulkDownloadUrls({
       instKeyBatchDatePairs: batches,
-      metadataFilter: $filterStore.metadata,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
       ...formValues
     }, fetch)
       .then((downloadLinks = []) => {
