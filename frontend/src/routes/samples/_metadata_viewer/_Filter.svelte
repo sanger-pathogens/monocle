@@ -154,6 +154,8 @@ article {
   padding: 0 1.2rem .6rem;
   width: 25rem;
   max-width: 98vw;
+  /* This value should be less than `z-index` in the dialog component, lest the filter is shown on top of the bulk download dialog. */
+  z-index: 5;
 }
 
 h4 {
