@@ -64,7 +64,12 @@ class SampleMetadata:
         Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
-        results_list = self.monocle_client.filters(filters)
+        filters_payload = []
+        for this_field in filters:
+          these_values = filters[this_field]
+          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          filters_payload.append( {'name': this_field, 'values': these_values} )
+        results_list = self.monocle_client.filters(filters_payload)
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
@@ -152,14 +157,6 @@ class Monocle_Client:
         logging.debug("{}.filters() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        # FIXME (for the metadata API, not the dashboard API)
-        # the filters endpount returns a response like
-        #    ['a', 'b', 'c']
-        # but really should be
-        #    { 'filters': ['a', 'b', 'c'] }
-        # (then we would pass required_keys=[self.config['filters_key']] to parse_response()
-        # and return results[self.config['filters_key']])
-        # current implementation works, but is inconsistent with other endpoints
         results = json.loads(response)
         return results
      
@@ -204,7 +201,8 @@ class Monocle_Client:
                 logging.debug("response from Metadata API: {}".format(response_as_string))
         except urllib.error.HTTPError as e:
             msg = "HTTP error during Metadata API request {}\nData:\n{}\n{}".format(request_url,request_data,e)
-            if '404' in str(e):
+            logging.error("Metadata API response: {} {}".format(e.code,e.read().decode('utf-8')))
+            if '404' in str(e) or '400' in str(e):
                 logging.info(msg)
             else:
                 logging.error(msg)
