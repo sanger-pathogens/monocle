@@ -44,9 +44,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     INSERT_OR_UPDATE_SAMPLE_SQL = text(""" \
             INSERT INTO api_sample (
-                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
                 ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
                 collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
@@ -56,7 +56,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
                 vancomycin, vancomycin_method
             ) VALUES (
-                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution_id,
+                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution,
                 :age_days, :age_group, :age_months, :age_weeks, :age_years, :ampicillin,
                 :ampicillin_method, :apgar_score, :birth_weight_gram, :cefazolin, :cefazolin_method, :cefotaxime,
                 :cefotaxime_method, :cefoxitin, :cefoxitin_method, :ceftizoxime, :ceftizoxime_method,
@@ -73,7 +73,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 public_name = :public_name,
                 host_status = :host_status,
                 serotype = :serotype,
-                submitting_institution_id = :submitting_institution_id,
+                submitting_institution = :submitting_institution,
                 age_days = :age_days,
                 age_group = :age_group,
                 age_months = :age_months,
@@ -82,7 +82,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ampicillin = :ampicillin,
                 ampicillin_method = :ampicillin_method,
                 apgar_score = :apgar_score,
-                birthweight_gram = :birth_weight_gram,
+                birth_weight_gram = :birth_weight_gram,
                 cefazolin = :cefazolin,
                 cefazolin_method = :cefazolin_method,
                 cefotaxime = :cefotaxime,
@@ -131,9 +131,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     SELECT_SAMPLES_SQL = text(""" \
             SELECT
-                sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
                 ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
                 collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
@@ -144,7 +144,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 vancomycin, vancomycin_method
             FROM api_sample
             WHERE
-                sample_id IN :samples""")
+                sanger_sample_id IN :samples""")
 
     SELECT_INSTITUTIONS_SQL = text(""" \
                 SELECT name, country, latitude, longitude
@@ -157,9 +157,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ORDER BY name""")
 
     SELECT_ALL_SAMPLES_SQL = text(""" \
-                SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+                SELECT sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
                 age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
                 cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
                 ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
                 collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
@@ -169,12 +169,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
                 vancomycin, vancomycin_method
                 FROM api_sample
-                ORDER BY sample_id""")
+                ORDER BY sanger_sample_id""")
 
     FILTER_SAMPLES_IN_SQL = """ \
-            SELECT sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution_id,
+            SELECT sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
             age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-            ampicillin_method, apgar_score, birthweight_gram, cefazolin, cefazolin_method, cefotaxime,
+            ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
             cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
             ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
             collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
@@ -403,19 +403,19 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         """ Get sample ids where their columns' values are in specified filters """
         # TODO: Also consider other filters such as greater than/less than...
 
-        sample_ids = []
+        sanger_sample_ids = []
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
-                  new_sample_ids = []
+                  new_sanger_sample_ids = []
                   try:
                     rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
-                    new_sample_ids.extend([row['sample_id'] for row in rs])
-                    if len(sample_ids) > 0:
-                      tmp_ids = [id for id in new_sample_ids if id in sample_ids]
-                      sample_ids = tmp_ids
+                    new_sanger_sample_ids.extend([row['sanger_sample_id'] for row in rs])
+                    if len(sanger_sample_ids) > 0:
+                      tmp_ids = [id for id in new_sanger_sample_ids if id in sanger_sample_ids]
+                      sanger_sample_ids = tmp_ids
                     else:
-                      sample_ids = new_sample_ids
+                      sanger_sample_ids = new_sanger_sample_ids
                   except OperationalError as e:
                     if 'Unknown column' in str(e):
                       logging.error("attempted to apply filter to unknown field \"{}\"".format(filter))
@@ -424,9 +424,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                       raise e
             else:
                 rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
-                sample_ids = [row['sample_id'] for row in rs]
+                sanger_sample_ids = [row['sanger_sample_id'] for row in rs]
 
-        return sample_ids
+        return sanger_sample_ids
 
     def get_distinct_values(self, field_type: str, fields: list) -> Dict:
         """
@@ -476,9 +476,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         for row in rs:
             results.append(
                Metadata(
-                  sanger_sample_id=row['sample_id'],
+                  sanger_sample_id=row['sanger_sample_id'],
                   lane_id=row['lane_id'],
-                  submitting_institution=row['submitting_institution_id'],
+                  submitting_institution=row['submitting_institution'],
                   supplier_sample_name=row['supplier_sample_name'],
                   public_name=row['public_name'],
                   host_status=row['host_status'],
@@ -506,7 +506,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                   infection_during_pregnancy=row['infection_during_pregnancy'],
                   maternal_infection_type=row['maternal_infection_type'],
                   gestational_age_weeks=str(row['gestational_age_weeks']),
-                  birth_weight_gram=str(row['birthweight_gram']),
+                  birth_weight_gram=str(row['birth_weight_gram']),
                   apgar_score=str(row['apgar_score']),
                   ceftizoxime=row['ceftizoxime'],
                   ceftizoxime_method=row['ceftizoxime_method'],
@@ -562,7 +562,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     public_name=metadata.public_name,
                     host_status=self.convert_string(metadata.host_status),
                     serotype=self.convert_string(metadata.serotype),
-                    submitting_institution_id=metadata.submitting_institution,
+                    submitting_institution=metadata.submitting_institution,
                     age_days=self.convert_int(metadata.age_days),
                     age_group=self.convert_string(metadata.age_group),
                     age_months=self.convert_int(metadata.age_months),
@@ -728,24 +728,24 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             return []
 
         results = []
-        sample_ids = tuple(keys)
+        sanger_sample_ids = tuple(keys)
 
         logger.info(
-            "get_download_metadata: About to pull {} sample records from the database...".format(len(sample_ids))
+            "get_download_metadata: About to pull {} sample records from the database...".format(len(sanger_sample_ids))
         )
         logger.debug(
-            "get_download_metadata: Pulling sample ids {} from the database...".format(sample_ids)
+            "get_download_metadata: Pulling sample ids {} from the database...".format(sanger_sample_ids)
         )
 
         with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sample_ids)
+            rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sanger_sample_ids)
 
         for row in rs:
             results.append(
                Metadata(
-                  sanger_sample_id=row['sample_id'],
+                  sanger_sample_id=row['sanger_sample_id'],
                   lane_id=row['lane_id'],
-                  submitting_institution=row['submitting_institution_id'],
+                  submitting_institution=row['submitting_institution'],
                   supplier_sample_name=row['supplier_sample_name'],
                   public_name=row['public_name'],
                   host_status=row['host_status'],
@@ -773,7 +773,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                   infection_during_pregnancy=row['infection_during_pregnancy'],
                   maternal_infection_type=row['maternal_infection_type'],
                   gestational_age_weeks=str(row['gestational_age_weeks']),
-                  birth_weight_gram=str(row['birthweight_gram']),
+                  birth_weight_gram=str(row['birth_weight_gram']),
                   apgar_score=str(row['apgar_score']),
                   ceftizoxime=row['ceftizoxime'],
                   ceftizoxime_method=row['ceftizoxime_method'],

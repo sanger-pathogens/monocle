@@ -40,15 +40,14 @@ class SampleMetadata:
         samples = []
         for this_result in results_list:
             if institutions is None or this_result['submitting_institution'] in institutions:
-               # for historical reasons, get_samples() should return a list of dicts with
-               # changes to sanger_sample_id
-               # TODO just return `results_list` and tweak the code that calls get_samples(); it should
-               #      only require that the use of the old keys `sample_id` and `submitting_institution_id`
-               #      is replaced with 'sanger_sample_id' and 'submitting_institution', respectively.
-               #      **But** lane ID would need to be removed from each item in results_list (unless
-               #      exclude_lane_id is False).
-               this_sample = {'sample_id'                   : this_result['sanger_sample_id'],
-                              'submitting_institution_id'   : this_result['submitting_institution'],
+               # For historical reasons the following code was needed to replace the old keys
+               # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
+               # 'submitting_institution', respectively.
+               # TODO  see if we can now replace this, and simply return `results_list`, except with
+               #       `lane_id` removed from each item in `results_list` (unless `exclude_lane_id`
+               #       is False)
+               this_sample = {'sanger_sample_id'         : this_result['sanger_sample_id'],
+                              'submitting_institution'   : this_result['submitting_institution'],
                               'public_name'                 : this_result['public_name'],
                               'host_status'                 : this_result['host_status'],
                               'serotype'                    : this_result['serotype']

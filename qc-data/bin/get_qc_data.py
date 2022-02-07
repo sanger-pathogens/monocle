@@ -27,22 +27,22 @@ def get_lane_ids(db):
     institutions = list(db.get_institution_names())
 
     for institution in institutions:
-        sample_ids = [sample["sample_id"] for sample in db.get_samples(institutions=[institution])]
+        sanger_sample_ids = [sample["sanger_sample_id"] for sample in db.get_samples(institutions=[institution])]
 
-        logging.info(f'{institution}: {len(sample_ids)} sample ids')
+        logging.info(f'{institution}: {len(sanger_sample_ids)} sample ids')
 
-        if not sample_ids:
+        if not sanger_sample_ids:
             # we expect institutions without samples => this could be noisy in a cron job => INFO
             logging.info(f'No sample ids found for {institution}')
 
-        for sample_id in sample_ids:
+        for sanger_sample_id in sanger_sample_ids:
             try:
-                seq_data = _get_sequencing_status_data([sample_id])
+                seq_data = _get_sequencing_status_data([sanger_sample_id])
                 for sample in seq_data.keys():
                     for lane in seq_data[sample]['lanes']:
                         lane_ids.append(lane['id'])
             except HTTPError as e:
-                logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution, sample_id, repr(e)))
+                logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution, sanger_sample_id, repr(e)))
 
     return lane_ids
 
@@ -87,10 +87,10 @@ def _get_relative_abundance(kraken_report, species):
     return rel_abnd
 
 
-def _get_sequencing_status_data(sample_ids):
+def _get_sequencing_status_data(sanger_sample_ids):
     """Get the sequencing status of sample ids from the dash API"""
 
-    return SequencingStatus().get_multiple_samples(sample_ids)
+    return SequencingStatus().get_multiple_samples(sanger_sample_ids)
 
 
 def get_arguments():
