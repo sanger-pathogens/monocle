@@ -277,4 +277,13 @@ describe.each([
 
     expect(result).toEqual(expectedResult);
   });
+
+  it("resolves 404 Not Found to `undefined`", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404
+    });
+
+    await expect(getResource(...args, fetch)).resolves.toBeUndefined();
+  });
 });

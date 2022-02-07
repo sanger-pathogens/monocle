@@ -1,5 +1,7 @@
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const DATA_TYPES = ["metadata", "in silico", "qc data"];
+const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
+const FETCH_ERROR_UNKNOWN = "unknown error";
 const HTTP_POST = "POST";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
@@ -121,7 +123,7 @@ fetch
       .then((response) =>
         response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
       .catch((err) =>
-        logErrorOnFetchResource(err, "get_metadata"));
+        handleFetchError(err, "get_metadata"));
   }
   else {
     payload["in silico"] = false;
@@ -164,10 +166,13 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
-    .catch((err) => logErrorOnFetchResource(err, endpoint, resourceKey));
+    .catch((err) => handleFetchError(err, endpoint, resourceKey));
 }
 
-function logErrorOnFetchResource(err, endpoint, resourceKey) {
+function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
+  if (err.startsWith?.(FETCH_ERROR_PATTER_NOT_FOUND)) {
+    return Promise.resolve();
+  }
   console.error(resourceKey ?
     `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
     `Error while fetching resource from endpoint ${endpoint}: ${err}`
