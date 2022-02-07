@@ -301,6 +301,22 @@ class TestRoutes(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
+        
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_bulk_download_urls_route_return_400(self, sample_data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        # When
+        result = bulk_download_urls_route({'sample filters': sample_filters})
+        # Then
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
+        
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
@@ -639,6 +655,42 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
 
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_route_bad_request(self, sample_data_service_mock, username_mock, resp_mock):
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        start_row          = 21
+        num_rows           = 20
+        include_in_silico  = True
+        include_qc_data    = True
+        return_as_csv      = GetMetadataInputDefaults['as csv']
+        metadata_columns   = ['submitting_institution', 'public_name']
+        in_silico_columns  = ['ST']
+        qc_data_columns    = ['rel_abun_sa']
+        expected_payload   = 'payload'
+        username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        
+        result = get_metadata_route({  'sample filters'     : sample_filters,
+                                       'start row'          : start_row,
+                                       'num rows'           : num_rows,
+                                       'in silico'          : include_in_silico,
+                                       'qc data'            : include_qc_data,
+                                       'as csv'             : return_as_csv,
+                                       'metadata columns'   : metadata_columns,
+                                       'in silico columns'  : in_silico_columns,
+                                       'qc data columns'    : qc_data_columns
+                                       }
+                                    )
+
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
+
+
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
@@ -694,7 +746,7 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_distinct_values_route_bad_field_name(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadtaa API barf is mocked"] } ]
+        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadata API barf is mocked"] } ]
         sample_data_service_mock.return_value.get_distinct_values.return_value = None
         username_mock.return_value = self.TEST_USER
         # When
@@ -719,6 +771,21 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
+
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_bulk_download_info_route_return_400(self, sample_data_service_mock, username_mock):
+        # Given
+        batches = self.SERVICE_CALL_RETURN_DATA
+        sample_filters     = {'batches':batches}
+        sample_data_service_mock.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_metadata_route({'sample filters': sample_filters})
+        # Then
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
 
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')

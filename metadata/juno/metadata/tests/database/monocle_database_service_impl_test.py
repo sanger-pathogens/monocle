@@ -314,6 +314,13 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         samples_ids = self.under_test.get_filtered_samples({'serotype': ['None']})
         self.assertEqual(samples_ids, [])
 
+    def test_get_filtered_samples_reject_request_if_bad_field_name(self) -> None:
+        self.connection.execute.side_effect = OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
+        expected = None
+        samples_ids = self.under_test.get_filtered_samples({"bad_field_name": ['anything']})
+        self.assertEqual(self.connection.execute.call_count, 1)
+        self.assertEqual(samples_ids, expected)
+
     def test_get_filtered_samples_nofilters(self) -> None:
         self.connection.execute.return_value = [
             dict(sanger_sample_id='9999STDY8113123',
