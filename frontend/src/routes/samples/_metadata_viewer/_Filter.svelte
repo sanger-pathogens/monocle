@@ -4,6 +4,7 @@
   import Select from "svelte-select/src/Select.svelte";
   import BinIcon from "$lib/components/icons/BinIcon.svelte";
   import { getDistinctColumnValues } from "$lib/dataLoading.js";
+  import RemoveFilterButtons from "./_RemoveFilterButtons.svelte";
   import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
   export let column = undefined;
@@ -47,12 +48,6 @@
       };
       return filters;
     });
-  }
-
-  function removeAllFilters() {
-    if (confirm("Remove filters for ALL columns?")) {
-      filterStore.removeAllFilters();
-    }
   }
 
   function closeFilter() {
@@ -121,25 +116,14 @@
     Close
   </button>
 
-  <!-- FIXME: a11y -->
   <span class="dropdown-menu">
     <span aria-hidden="true" class="menu-trigger" tabindex="0">
       <BinIcon />
     </span>
-    <div class="menu">
-      <button
-        on:click={() => filterStore.removeFilter(column)}
-        class="compact"
-      >
-        Remove filter
-      </button>
-      <button
-        on:click={removeAllFilters}
-        class="danger compact"
-      >
-        Remove all filters
-      </button>
+    <div aria-hidden="true" class="menu">
+      <RemoveFilterButtons {column} />
     </div>
+    <RemoveFilterButtons screenReaderOnly={true} {column} />
   </span>
 </article>
 
@@ -175,13 +159,6 @@ h4 {
   list-style: none;
   position: absolute;
   transform: translateX(-44%);
-}
-.menu button {
-  border: none;
-  margin-right: 0;
-}
-.menu button:last-child {
-  margin-bottom: .2rem;
 }
 .menu-trigger {
   cursor: pointer;

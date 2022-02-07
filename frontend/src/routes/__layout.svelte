@@ -119,4 +119,12 @@ main {
   border: 1px solid var(--color-danger);
   font-weight: 300;
 }
+
+:global(.sr-only) {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
 </style>
