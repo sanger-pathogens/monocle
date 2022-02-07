@@ -186,7 +186,7 @@ paths:
               $ref: "#/components/schemas/MetadataFilters"
       responses:
         "200":
-          description: "List of sample ids"
+          description: "List of Sanger sample ids"
           content:
             application/json:
               schema:
@@ -482,7 +482,7 @@ components:
       example: ["5903STDY8059122", "5903STDY8059054"]
       
     Metadata:
-      description: "Object containing an array of sample ids and their metadata"
+      description: "Object containing an array of Sanger sample ids and their metadata"
       type: object
       properties:
         metadata:
