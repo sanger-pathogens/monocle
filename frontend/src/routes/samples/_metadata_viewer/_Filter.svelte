@@ -10,7 +10,7 @@
   export let column = undefined;
   let { name: columnName, dataType: columnDataType } = column || {};
 
-  const NARROW_SCREEN_BREAKPOINT = 600;
+  const NARROW_SCREEN_BREAKPOINT = 810;
 
   let filterContainerElement;
   let exclude = $filterStore[columnDataType][columnName]?.exclude;
@@ -33,7 +33,7 @@
   onMount(() => {
     const screenWidth = document.documentElement.clientWidth;
     if (screenWidth <= NARROW_SCREEN_BREAKPOINT) {
-      //FIXME
+      positionFilterLeftmost();
     }
     else if (isFilterPastMiddleOfScreen(screenWidth)) {
       positionFilterToLeftOfNextColumn();
@@ -60,6 +60,11 @@
 
   function positionFilterToLeftOfNextColumn() {
     filterContainerElement.style.right = "0";
+  }
+
+  function positionFilterLeftmost() {
+    filterContainerElement.style.left =
+      `-${filterContainerElement.parentNode.getBoundingClientRect().left - 21}px`;
   }
 
   function _hasChanges() {
@@ -137,7 +142,7 @@ article {
   box-shadow: -2px 2px 8px 0 rgba(0, 0, 0, .2);
   padding: 0 1.2rem .6rem;
   width: 25rem;
-  max-width: 98vw;
+  max-width: 83vw;
   /* This value should be less than `z-index` in the dialog component, lest the filter is shown on top of the bulk download dialog. */
   z-index: 5;
 }
