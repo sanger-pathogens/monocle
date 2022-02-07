@@ -441,11 +441,9 @@ class MonocleSampleDataTest(TestCase):
       """
       mock_get_filtered_samples.return_value = []
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
+      self.assertIsNone(filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico_and_qc = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True,include_qc_data=True)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata_plus_in_silico_and_qc))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[], 'in silico':[], 'qc data':[]}}, filtered_samples_metadata_plus_in_silico_and_qc)
+      self.assertIsNone(filtered_samples_metadata_plus_in_silico_and_qc)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -457,11 +455,9 @@ class MonocleSampleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs}, start_row=9999, num_rows=1)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
+      self.assertIsNone(filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True, start_row=9999, num_rows=1)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[], 'in silico':[]}}, filtered_samples_metadata_plus_in_silico)
+      self.assertIsNone(filtered_samples_metadata_plus_in_silico)
 
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):

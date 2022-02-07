@@ -130,13 +130,8 @@ class MonocleSampleData:
 
       # if filters or pagination results in an empty samples list, return an empty response
       if 1 > len(filtered_samples):
-         logging.info("no matching samples: returning empty response")
-         no_samples = {'metadata':[]}
-         if include_in_silico:
-            no_samples['in silico'] = []
-         if include_qc_data:
-            no_samples['qc data'] = []
-         return {'samples': no_samples, 'total rows':0, 'last row': 0}
+         logging.info("no matching samples: {} is returning None".format(__class__.__name__))
+         return None
 
       # the samples IDs can be used to get the sample metadata
       try:
