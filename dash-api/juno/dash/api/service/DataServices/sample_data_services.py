@@ -688,7 +688,7 @@ class MonocleSampleData:
                      samples_for_download[this_sample_id].append(this_lane)
                   else:
                      samples_for_download[this_sample_id] = [this_lane]
-         # catch 404s -- this means the metadta API found no matching samples
+         # catch 404s -- this means the metadata API found no matching samples
          except urllib.error.HTTPError as e:
             if '404' not in str(e):
                raise e
