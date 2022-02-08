@@ -51,10 +51,10 @@ class MonocleSampleTrackingTest(TestCase):
    mock_institutions          = [   'Fake institution One',
                                     'Fake institution Two'
                                     ]
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
+   mock_samples               = [   {'sanger_sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sanger_sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sanger_sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sanger_sample_id': 'fake_sample_id_4', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
@@ -130,8 +130,8 @@ class MonocleSampleTrackingTest(TestCase):
                                   'FakTwo' : { '_ERROR': 'Server Error: Records cannot be collected at this time. Please try again later.' }
                                     }
 
-   expected_sample_data       = {   'FakOne': [{'sample_id': 'fake_sample_id_1', 'public_name': f'{PUBLIC_NAME}_1'}, {'sample_id': 'fake_sample_id_2', 'public_name': f'{PUBLIC_NAME}_2'}],
-                                    'FakTwo': [{'sample_id': 'fake_sample_id_3', 'public_name': f'{PUBLIC_NAME}_3'}, {'sample_id': 'fake_sample_id_4', 'public_name': f'{PUBLIC_NAME}_4'}]
+   expected_sample_data       = {   'FakOne': [{'sanger_sample_id': 'fake_sample_id_1', 'public_name': f'{PUBLIC_NAME}_1'}, {'sanger_sample_id': 'fake_sample_id_2', 'public_name': f'{PUBLIC_NAME}_2'}],
+                                    'FakTwo': [{'sanger_sample_id': 'fake_sample_id_3', 'public_name': f'{PUBLIC_NAME}_3'}, {'sanger_sample_id': 'fake_sample_id_4', 'public_name': f'{PUBLIC_NAME}_4'}]
                                     }
    expected_seq_status        = {   'FakOne': mock_seq_status,
                                     'FakTwo': mock_seq_status

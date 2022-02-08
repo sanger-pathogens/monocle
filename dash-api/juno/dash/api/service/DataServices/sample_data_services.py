@@ -39,7 +39,7 @@ class MonocleSampleData:
    This class exists to convert data between the form in which they are provided by the data sources,
    and whatever form is most convenient for rendering the dashboard.
    """
-   sample_table_inst_key   = 'submitting_institution_id'
+   sample_table_inst_key   = 'submitting_institution'
    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
    sequencing_flags        = {'qc_lib':   'library',
@@ -130,22 +130,17 @@ class MonocleSampleData:
 
       # if filters or pagination results in an empty samples list, return an empty response
       if 1 > len(filtered_samples):
-         logging.info("no matching samples: returning empty response")
-         no_samples = {'metadata':[]}
-         if include_in_silico:
-            no_samples['in silico'] = []
-         if include_qc_data:
-            no_samples['qc data'] = []
-         return {'samples': no_samples, 'total rows':0, 'last row': 0}
+         logging.info("no matching samples: {} is returning None".format(__class__.__name__))
+         return None
 
       # the samples IDs can be used to get the sample metadata
       try:
-         sample_id_list = [ s['sample_id'] for s in filtered_samples ]
+         sanger_sample_id_list = [ s['sanger_sample_id'] for s in filtered_samples ]
       except KeyError:
-         logging.error("{}.get_filtered_samples returned one or more samples without a sample ID (expected 'sample_id' key)".format(__class__.__name__))
+         logging.error("{}.get_filtered_samples returned one or more samples without a sample ID (expected 'sanger_sample_id' key)".format(__class__.__name__))
          raise
-      logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sample_id_list)))
-      metadata = self.metadata_download_source.get_metadata(sample_id_list)
+      logging.info("sample filters {} resulted in {} samples being returned".format(sample_filters,len(sanger_sample_id_list)))
+      metadata = self.metadata_download_source.get_metadata(sanger_sample_id_list)
 
       # combined_metadata is the structure to be returned
       combined_metadata = [ {'metadata': m} for m in metadata ]
@@ -177,13 +172,13 @@ class MonocleSampleData:
       # also need to track which lane(s) are associated with each sample
       sample_to_lanes_lookup = {}
       for this_sample in filtered_samples:
-         sample_to_lanes_lookup[this_sample['sample_id']] = []
+         sample_to_lanes_lookup[this_sample['sanger_sample_id']] = []
          try:
             # remember, some samples may legitimately have no lanes
             for this_lane_id in this_sample['lanes']:
                if this_lane_id is not None:
                   lane_id_list.append(this_lane_id)
-                  sample_to_lanes_lookup[this_sample['sample_id']].append(this_lane_id)
+                  sample_to_lanes_lookup[this_sample['sanger_sample_id']].append(this_lane_id)
          except KeyError:
             logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
             raise
@@ -198,15 +193,15 @@ class MonocleSampleData:
             raise
 
       for combined_metadata_item in combined_metadata:
-         this_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
+         this_sanger_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
          # now get in silico data for this sample's lane(s)
          # some samples may legitimately have no lanes
-         for this_lane_id in sample_to_lanes_lookup.get(this_sample_id, []):
+         for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
             # some lanes may legitimately have no in silico data
             this_lane_in_silico_data = lane_to_in_silico_lookup.get(this_lane_id, None)
             if this_lane_in_silico_data is not None:
                if 'in silico' in combined_metadata_item:
-                  message = "sample {} has more than one lane with in silico data, which is not supported".format(this_sample_id)
+                  message = "sample {} has more than one lane with in silico data, which is not supported".format(this_sanger_sample_id)
                   logging.error(message)
                   raise ValueError(message)
                else:
@@ -230,13 +225,13 @@ class MonocleSampleData:
       # also need to track which lane(s) are associated with each sample
       sample_to_lanes_lookup = {}
       for this_sample in filtered_samples:
-         sample_to_lanes_lookup[this_sample['sample_id']] = []
+         sample_to_lanes_lookup[this_sample['sanger_sample_id']] = []
          try:
             # remember, some samples may legitimately have no lanes
             for this_lane_id in this_sample['lanes']:
                if this_lane_id is not None:
                   lane_id_list.append(this_lane_id)
-                  sample_to_lanes_lookup[this_sample['sample_id']].append(this_lane_id)
+                  sample_to_lanes_lookup[this_sample['sanger_sample_id']].append(this_lane_id)
          except KeyError:
             logging.error("{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(__class__.__name__))
             raise
@@ -251,15 +246,15 @@ class MonocleSampleData:
             raise
 
       for combined_metadata_item in combined_metadata:
-         this_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
+         this_sanger_sample_id = combined_metadata_item['metadata']['sanger_sample_id']['value']
          # now get QC data for this sample's lane(s)
          # some samples may legitimately have no lanes
-         for this_lane_id in sample_to_lanes_lookup.get(this_sample_id, []):
+         for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
             # some lanes may legitimately have no QC data
             this_lane_qc_data = lane_to_qc_data_lookup.get(this_lane_id, None)
             if this_lane_qc_data is not None:
                if 'qc data' in combined_metadata_item:
-                  message = "sample {} has more than one lane with QC data, which is not supported".format(this_sample_id)
+                  message = "sample {} has more than one lane with QC data, which is not supported".format(this_sanger_sample_id)
                   logging.error(message)
                   raise ValueError(message)
                else:
@@ -388,32 +383,32 @@ class MonocleSampleData:
          if institution_key in institution_keys
       ]
       if not disable_public_name_fetch:
-         sample_id_to_public_name = self._get_sample_id_to_public_name_dict(institution_names)
+         sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
       filtered_samples = []
       sequencing_status_data = deepcopy( self.sample_tracking.get_sequencing_status() )
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
          inst_key         = this_inst_key_batch_date_pair['institution key']
          batch_date_stamp = this_inst_key_batch_date_pair['batch date']
          try:
-            samples = [(sample_id, sample) for sample_id, sample in sequencing_status_data[inst_key].items() if sample]
+            samples = [(sanger_sample_id, sample) for sanger_sample_id, sample in sequencing_status_data[inst_key].items() if sample]
          except KeyError:
             logging.warning(f'No key "{inst_key}" in sequencing status data.')
             continue
-         for sample_id, sample in samples:
+         for sanger_sample_id, sample in samples:
             if self.sample_tracking.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
                # `sample` contains all sequencing status data (because it was copy from the dict returned by
                # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                for this_key in list(sample.keys()):
                   if 'lanes' == this_key:
                      sample[this_key] = [ l['id'] for l in sample[this_key] ]
-                  elif this_key not in ['creation_datetime', 'inst_key', 'public_name', 'sample_id']:
+                  elif this_key not in ['creation_datetime', 'inst_key', 'public_name', 'sanger_sample_id']:
                      del sample[this_key]
                # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
                # add it as otherwise functions that call get_filtered_samples() wouldn't have access to the sample ID
-               sample['sample_id']  = sample_id
+               sample['sanger_sample_id']  = sanger_sample_id
                sample['inst_key']   = inst_key
                if not disable_public_name_fetch:
-                  sample['public_name'] = sample_id_to_public_name[sample_id]
+                  sample['public_name'] = sanger_sample_id_to_public_name[sanger_sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
 
@@ -424,32 +419,32 @@ class MonocleSampleData:
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-      logging.info("{}.metadata_download_source.filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
       #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
-      logging.info("{}.metadata_download_source.filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
+      logging.info("{}.sample_tracking.sample_metadata.get_filtered_sample_ids returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
       for this_sample in filtered_samples:
-         if this_sample['sample_id'] in matching_samples_ids:
-            logging.debug("sample {} matches metadata filters".format(this_sample['sample_id']))
+         if this_sample['sanger_sample_id'] in matching_samples_ids:
+            logging.debug("sample {} matches metadata filters".format(this_sample['sanger_sample_id']))
             intersection.append(this_sample)
       filtered_samples = intersection
       logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
 
 
-   def _get_sample_id_to_public_name_dict(self, institutions):
-      sample_id_to_public_name = {}
+   def _get_sanger_sample_id_to_public_name_dict(self, institutions):
+      sanger_sample_id_to_public_name = {}
       for sample in self.sample_tracking.sample_metadata.get_samples(institutions=institutions):
-         sample_id = sample['sample_id']
+         sanger_sample_id = sample['sanger_sample_id']
          try:
             public_name = sample['public_name']
          except KeyError:
-            logging.error(f'No public name for sample {sample_id}')
-            sample_id_to_public_name[sample_id] = UNKNOWN_PUBLIC_NAME
+            logging.error(f'No public name for sample {sanger_sample_id}')
+            sanger_sample_id_to_public_name[sanger_sample_id] = UNKNOWN_PUBLIC_NAME
          else:
-            sample_id_to_public_name[sample_id] = public_name
-      return sample_id_to_public_name
+            sanger_sample_id_to_public_name[sanger_sample_id] = public_name
+      return sanger_sample_id_to_public_name
 
    def get_public_name_to_lane_files_dict(self, samples, **kwargs):
       """
@@ -682,13 +677,13 @@ class MonocleSampleData:
             filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
             # extract what we need from seq status data
             for this_sample in filtered_samples:
-               this_sample_id = this_sample['sample_id']
+               this_sanger_sample_id = this_sample['sanger_sample_id']
                for this_lane in this_sample['lanes']:
-                  if this_sample_id in samples_for_download:
-                     samples_for_download[this_sample_id].append(this_lane)
+                  if this_sanger_sample_id in samples_for_download:
+                     samples_for_download[this_sanger_sample_id].append(this_lane)
                   else:
-                     samples_for_download[this_sample_id] = [this_lane]
-         # catch 404s -- this means the metadta API found no matching samples
+                     samples_for_download[this_sanger_sample_id] = [this_lane]
+         # catch 404s -- this means the metadata API found no matching samples
          except urllib.error.HTTPError as e:
             if '404' not in str(e):
                raise e
@@ -707,7 +702,7 @@ class MonocleSampleData:
       # it is possible, but rarely (perhaps never in practice) happens, that a sample may have multiple lane IDs;
       # in this case they are all put into the lane ID cell
       logging.info("REMINDER: the lane IDs returned by the metadata API are ignored, and the lanes IDs provided by MLWH for each sample are provided in the metadata download!")
-      metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sample_id]) for this_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
+      metadata_df = metadata_df.assign( Lane_ID = [ ' '.join(samples_for_download[this_sanger_sample_id]) for this_sanger_sample_id in metadata_df['Sanger_Sample_ID'].tolist() ] )
 
       # if required, add download links to metadata DataFrame
       if download_base_url is not None:
@@ -785,16 +780,16 @@ class MonocleSampleData:
       # note that the status can only be found by *lane* ID, so we need to look up lanes that match the requirements
       # then the sample ID associated with each matchuing lane gets pushed onto a list that we can use for the metadata download request
       filtered_samples = {}
-      for this_sample_id in sequencing_status_data[institution_data_key].keys():
-         if this_sample_id == API_ERROR_KEY:
+      for this_sanger_sample_id in sequencing_status_data[institution_data_key].keys():
+         if this_sanger_sample_id == API_ERROR_KEY:
             if sequencing_status_data[institution_data_key][
-               this_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
+               this_sanger_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
                logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
                raise KeyError("{} has no sample data".format(institution))
             else:
                continue
 
-         for this_lane in sequencing_status_data[institution_data_key][this_sample_id]['lanes']:
+         for this_lane in sequencing_status_data[institution_data_key][this_sanger_sample_id]['lanes']:
 
             if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
                # lane completed sequencing, though possibly failed
@@ -825,10 +820,10 @@ class MonocleSampleData:
                      elif 'failed' == status and this_pipeline_status['FAILED']:
                         want_this_lane = True
                if want_this_lane:
-                  if this_sample_id in filtered_samples:
-                     filtered_samples[this_sample_id].append(this_lane['id'])
+                  if this_sanger_sample_id in filtered_samples:
+                     filtered_samples[this_sanger_sample_id].append(this_lane['id'])
                   else:
-                     filtered_samples[this_sample_id] = [this_lane['id']]
+                     filtered_samples[this_sanger_sample_id] = [this_lane['id']]
       logging.info("Found {} samples from {} with {} status {}".format(len(filtered_samples.keys()),institution,category,status))
       
       return filtered_samples

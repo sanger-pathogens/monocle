@@ -225,11 +225,20 @@ def get_samples_route(dao: MonocleDatabaseService):
 @inject
 def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database """
-    filters = body
-    if not _validate_field_names(filters):
-        return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
+    filters = {}
+    for this_filter in body:
+       this_field    = this_filter['name']
+       these_values  = this_filter['values']
+       if not _validate_field_names([this_field]):
+          return "name \"{}\" is not a valid metadata field name".format(this_field), HTTP_BAD_REQUEST_STATUS
+       filters[this_field] = these_values
      
     samples = dao.get_filtered_samples(filters)
+    logging.debug("DAO returned sample IDs: {}".format(samples))
+    # samples() will return None if it is passed a non-existent field name
+    if samples is None:
+      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
+
     result = convert_to_json(samples)
 
     if len(samples) > 0:
@@ -298,6 +307,8 @@ def _validate_field_names(names):
           logging.debug("checking field name {}".format(this_name))
           if not field_names_regex.match(this_name):
             raise ValueError("field name \"{}\" is not valid (only alphanumerics and '_' may be used)".format(this_name))
+          else:
+            logging.info("field name \"{}\" is valid".format(this_name))
     except ValueError as ve:
         logger.error(str(ve))
         return False

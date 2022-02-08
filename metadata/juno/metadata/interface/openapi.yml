@@ -73,7 +73,7 @@ paths:
       operationId: metadata.api.routes.get_download_metadata_route
       summary: "Download the metadata for the given download keys"
       requestBody:
-        description: "A list of sampleId keys"
+        description: "A list of Sanger sample IDs"
         required: true
         content:
           application/json:
@@ -96,7 +96,7 @@ paths:
       operationId: metadata.api.routes.get_download_in_silico_data_route
       summary: "Download the in silico data for the given download keys"
       requestBody:
-        description: "A list of laneId keys"
+        description: "A list of lane IDs"
         required: true
         content:
           application/json:
@@ -119,7 +119,7 @@ paths:
       operationId: metadata.api.routes.get_download_qc_data_route
       summary: "Download the QC data for the given download keys"
       requestBody:
-        description: "A list of laneId keys"
+        description: "A list of lane IDs"
         required: true
         content:
           application/json:
@@ -178,15 +178,15 @@ paths:
       operationId: metadata.api.routes.get_filtered_samples_route
       summary: "Gather filtered sample records"
       requestBody:
-        description: "A dictionary of filters with lists of values"
+        description: "An array of metadata filters"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/MetadataFilters"
+              $ref: "#/components/schemas/FiltersInput"
       responses:
         "200":
-          description: "List of sample ids"
+          description: "List of Sanger sample ids"
           content:
             application/json:
               schema:
@@ -307,7 +307,7 @@ components:
           readOnly: true
 
     DownloadSampleKeys:
-      description: "A list of sampleId keys"
+      description: "A list of Sanger sample IDs"
       type: array
       items:
         type: string
@@ -318,7 +318,7 @@ components:
       example: ["5903STDY8059122", "5903STDY8059054"]
 
     DownloadLaneKeys:
-      description: "A list of laneId keys"
+      description: "A list of lane IDs"
       type: array
       items:
         type: string
@@ -347,75 +347,29 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
+          
+          
+    FiltersInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/MetadataFilters"
+      minItems: 1
 
     MetadataFilters:
       type: object
       properties:
-        city:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Itacurube"]
-        country:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Brazil"]
-        county_state:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["Pernambuco"]
-        host_species:
-          type: array
-          items:
-            $ref: "#/components/schemas/WordsFilter"
-          example: ["human"]
-        host_status:
-          $ref: "#/components/schemas/HostStatusFilterList"
-        serotype:
-          $ref: "#/components/schemas/SerotypeFilterList"
-
-    #InSilicoDataFilters:
-    #  type: object
-    #  properties:
-    #    ST:
-    #      $ref: "#/components/schemas/MLSTFilterList"
-
-    HostStatusFilterList:
-      description: "List of host status strings"
-      type: array
-      items:
-         type: string
-         minLength: 1
-         maxLength: 32
-         pattern: ^(carriage|invasive disease|non-invasive disease)$
-         example: "carriage"
-
-    #MLSTFilterList:
-    #  description: "List of MLST strings"
-    #  type: array
-    #  item:
-    #    type: string
-    #    minlength: 1
-    #    maxLength: 8
-    #    pattern: ^([0-9|(NF)]\*?\??)+$
-    #    # Can include values like 123, 123*, 123?, 123*?, NT, NT*, NT? or NT*?
-    #    example: "123*?"
-
-    SerotypeFilterList:
-      description: "List of serotype strings"
-      type: array
-      items:
-         type: string
-         minLength: 1
-         maxLength: 5
-         pattern: ^[ivxIVX]+[abcd]?|(NT)$
-         # Can also include just NT meaning non-typable
-         example: "Ia"
-
-    WordsFilter:
-      description: "A string (including strings with whitespace)"
+         name:
+            description: "The name of the metadata field"
+            $ref: "#/components/schemas/FieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the metadata field"
+               $ref: "#/components/schemas/FieldValueFilter"
+      example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
+         
+    FieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
       minLength: 1
       maxLength: 256
@@ -424,10 +378,11 @@ components:
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
 
     FieldName:
+      description: "Valid metadata field name (alphanumeric and underscore only)"
       type: string
       minLength: 1
       maxLength: 256
-      pattern: ^[a-zA-Z0-9_]*$
+      pattern: ^sanger_sample_id|lane_id|submitting_institution|supplier_sample_name|public_name|host_status|study_name|study_ref|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|disease_type|disease_onset|isolation_source|serotype|serotype_method|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
       
     FieldsList:
       type: array
@@ -482,7 +437,7 @@ components:
       example: ["5903STDY8059122", "5903STDY8059054"]
       
     Metadata:
-      description: "Object containing an array of sample ids and their metadata"
+      description: "Object containing an array of Sanger sample ids and their metadata"
       type: object
       properties:
         metadata:

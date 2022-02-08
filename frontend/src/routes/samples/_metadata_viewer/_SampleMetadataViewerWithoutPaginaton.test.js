@@ -62,7 +62,7 @@ describe("on metadata resolved", () => {
   function expectMetadataToBeShown(getByRole) {
     expect(getByRole(ROLE_TABLE)).toBeDefined();
     METADATA[0].metadata.forEach(({ title }) => {
-      expect(getByRole(ROLE_COLUMN_HEADER, { name })).toBeDefined();
+      expect(getByRole(ROLE_COLUMN_HEADER, { name: title })).toBeDefined();
     });
     METADATA.forEach(({ metadata: sampleMetadata }) => {
       sampleMetadata.forEach(({ value }) => {
