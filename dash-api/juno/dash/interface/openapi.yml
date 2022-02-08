@@ -481,7 +481,6 @@ components:
           type: string
           minLength: 1
           maxLength: 256
-          pattern: ^\S*$
         minItems: 1
       minItems: 0
       example:
