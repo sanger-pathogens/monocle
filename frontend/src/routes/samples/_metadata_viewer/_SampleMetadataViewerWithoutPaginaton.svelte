@@ -100,8 +100,15 @@
         {/each}
       {:else if !isLoading}
         <tr>
-          <td class="no-data-row" colspan={columns.length || 1}>
-            No data. Try to refresh or change a filter.
+          <td class="no-data" colspan={columns.length || 1}>
+            {#if columns.length}
+              No samples found. Try to change a filter.
+            {:else}
+              No samples found. Try to
+              <button on:click={filterStore.removeAllFilters} class="compact">
+                remove filters
+              </button>
+            {/if}
           </td>
         </tr>
       {/if}
@@ -133,7 +140,7 @@ th {
   white-space: nowrap;
 }
 
-.error-msg {
+.error-msg, .no-data {
   padding-top: 3rem;
 }
 
@@ -166,7 +173,7 @@ th {
   background: var(--color-table-hover-row);
 }
 
-.no-data-row {
+.no-data {
   text-align: center;
 }
 </style>
