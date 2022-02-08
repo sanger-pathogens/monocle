@@ -20,7 +20,6 @@ import { writable } from "svelte/store";
     }
   ```
 */
-// FIXME unit test
 function createDistinctColumnValuesStore() {
   const { update, subscribe } = writable({ metadata: {}, "in silico": {}, "qc data": {} });
 
