@@ -34,6 +34,12 @@
     }
   }
 
+  $: {
+    if (columns.length === 0) {
+      closeFilter();
+    }
+  }
+
   function extractColumnsFromMetadata(sortedMetadata = []) {
     return sortedMetadata[0]?.[DATA_TYPE_METADATA]?.map(
       ({ name, title }) => ({ name, title, dataType: DATA_TYPE_METADATA })
@@ -46,7 +52,16 @@
       return;
     }
     const isSameColumn = columnOfOpenFilter.name === clickedColumn.name && columnOfOpenFilter.dataType === clickedColumn.dataType;
-    columnOfOpenFilter = isSameColumn ? undefined : clickedColumn;
+    if (isSameColumn) {
+      closeFilter();
+    }
+    else {
+      columnOfOpenFilter = clickedColumn;
+    }
+  }
+
+  function closeFilter() {
+    columnOfOpenFilter = undefined;
   }
 </script>
 
