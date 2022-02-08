@@ -43,6 +43,8 @@
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
+  $: filterStore.removeAllFilters(selectedBatches);
+
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
