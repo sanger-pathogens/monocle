@@ -24,7 +24,9 @@
       metadataPromise
         .then((sortedMetadata) => {
           metadata = sortedMetadata;
-          columns = extractColumnsFromMetadata(sortedMetadata);
+          if (sortedMetadata.length) {
+            columns = extractColumnsFromMetadata(sortedMetadata);
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -116,14 +118,7 @@
       {:else if !isLoading}
         <tr>
           <td class="no-data" colspan={columns.length || 1}>
-            {#if columns.length}
-              No samples found. Try to change a filter.
-            {:else}
-              No samples found. Try to
-              <button on:click={filterStore.removeAllFilters} class="compact">
-                remove filters
-              </button>
-            {/if}
+            No samples found. Try different batches or filters.
           </td>
         </tr>
       {/if}
