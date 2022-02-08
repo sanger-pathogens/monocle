@@ -47,17 +47,17 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
 
 
 def _get_public_names_with_lane_ids(institution, db):
-  public_names_to_sample_id = {
-    sample["public_name"]: sample["sample_id"] for sample in db.get_samples(institutions=[institution])}
+  public_names_to_sanger_sample_id = {
+    sample["public_name"]: sample["sanger_sample_id"] for sample in db.get_samples(institutions=[institution])}
 
-  logging.info(f'{institution}: {len(public_names_to_sample_id)} public names')
+  logging.info(f'{institution}: {len(public_names_to_sanger_sample_id)} public names')
 
   num_lanes = 0
   public_names_to_lane_ids = {}
-  for public_name, sample_id in public_names_to_sample_id.items():
+  for public_name, sanger_sample_id in public_names_to_sanger_sample_id.items():
     # MLWH API can be fragile: catch HTTP errors
     try:
-      seq_data = _get_sequencing_status_data([sample_id])
+      seq_data = _get_sequencing_status_data([sanger_sample_id])
       lane_ids_of_one_sample = []
       for sample in seq_data.keys():
         for lane in seq_data[sample]['lanes']:
@@ -79,8 +79,8 @@ def _get_public_names_with_lane_ids(institution, db):
   return public_names_to_lane_ids
 
 
-def _get_sequencing_status_data(sample_ids):
-  return SequencingStatus().get_multiple_samples(sample_ids)
+def _get_sequencing_status_data(sanger_sample_ids):
+  return SequencingStatus().get_multiple_samples(sanger_sample_ids)
 
 
 def _create_public_name_dir_with_symlinks(public_name, lane_id, institution, data_dir):

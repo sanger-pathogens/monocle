@@ -46,27 +46,27 @@ INSTITUTIONS = {
 
 SAMPLE_IDS = ['a', 'b', 'c', 'd', 'e']
 PUBLIC_NAMES = list(
-  map(lambda sample_id: sample_id * 2, SAMPLE_IDS))
+  map(lambda sanger_sample_id: sanger_sample_id * 2, SAMPLE_IDS))
 INSTITUTION_WITHOUT_LANES = {
   'name': INSTITUTIONS['institutions']['FacPhaSueCanUni']['name'],
   'id': 'FacPhaSueCanUni',
   'samples': [
-    {'public_name': PUBLIC_NAMES[4], 'sample_id': SAMPLE_IDS[4]}
+    {'public_name': PUBLIC_NAMES[4], 'sanger_sample_id': SAMPLE_IDS[4]}
   ]
 }
 INSTITUTIONS_WITH_PUBLIC_NAMES = [{
   'name': INSTITUTIONS['institutions']['NatRefLab']['name'],
   'id': 'NatRefLab',
   'samples': [
-    {'public_name': PUBLIC_NAMES[0], 'sample_id': SAMPLE_IDS[0]},
-    {'public_name': PUBLIC_NAMES[1], 'sample_id': SAMPLE_IDS[1]}
+    {'public_name': PUBLIC_NAMES[0], 'sanger_sample_id': SAMPLE_IDS[0]},
+    {'public_name': PUBLIC_NAMES[1], 'sanger_sample_id': SAMPLE_IDS[1]}
   ]
 }, {
   'name': INSTITUTIONS['institutions']['WelSanIns']['name'],
   'id': 'WelSanIns',
   'samples': [
-    {'public_name': PUBLIC_NAMES[2], 'sample_id': SAMPLE_IDS[2]},
-    {'public_name': PUBLIC_NAMES[3], 'sample_id': SAMPLE_IDS[3]}
+    {'public_name': PUBLIC_NAMES[2], 'sanger_sample_id': SAMPLE_IDS[2]},
+    {'public_name': PUBLIC_NAMES[3], 'sanger_sample_id': SAMPLE_IDS[3]}
   ]
 },
   INSTITUTION_WITHOUT_LANES
@@ -98,8 +98,8 @@ SEQUENCING_STATUS_DATA = {
   }
 }
 
-def get_sequencing_status_data(sample_ids):
-  return SEQUENCING_STATUS_DATA[sample_ids[0]]
+def get_sequencing_status_data(sanger_sample_ids):
+  return SEQUENCING_STATUS_DATA[sanger_sample_ids[0]]
 
 class DB():
   def get_institution_names(self):

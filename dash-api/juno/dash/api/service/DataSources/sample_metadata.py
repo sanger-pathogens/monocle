@@ -40,15 +40,14 @@ class SampleMetadata:
         samples = []
         for this_result in results_list:
             if institutions is None or this_result['submitting_institution'] in institutions:
-               # for historical reasons, get_samples() should return a list of dicts with
-               # changes to sanger_sample_id
-               # TODO just return `results_list` and tweak the code that calls get_samples(); it should
-               #      only require that the use of the old keys `sample_id` and `submitting_institution_id`
-               #      is replaced with 'sanger_sample_id' and 'submitting_institution', respectively.
-               #      **But** lane ID would need to be removed from each item in results_list (unless
-               #      exclude_lane_id is False).
-               this_sample = {'sample_id'                   : this_result['sanger_sample_id'],
-                              'submitting_institution_id'   : this_result['submitting_institution'],
+               # For historical reasons the following code was needed to replace the old keys
+               # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
+               # 'submitting_institution', respectively.
+               # TODO  see if we can now replace this, and simply return `results_list`, except with
+               #       `lane_id` removed from each item in `results_list` (unless `exclude_lane_id`
+               #       is False)
+               this_sample = {'sanger_sample_id'         : this_result['sanger_sample_id'],
+                              'submitting_institution'   : this_result['submitting_institution'],
                               'public_name'                 : this_result['public_name'],
                               'host_status'                 : this_result['host_status'],
                               'serotype'                    : this_result['serotype']
@@ -64,7 +63,12 @@ class SampleMetadata:
         Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
-        results_list = self.monocle_client.filters(filters)
+        filters_payload = []
+        for this_field in filters:
+          these_values = filters[this_field]
+          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          filters_payload.append( {'name': this_field, 'values': these_values} )
+        results_list = self.monocle_client.filters(filters_payload)
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
@@ -152,14 +156,6 @@ class Monocle_Client:
         logging.debug("{}.filters() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        # FIXME (for the metadata API, not the dashboard API)
-        # the filters endpount returns a response like
-        #    ['a', 'b', 'c']
-        # but really should be
-        #    { 'filters': ['a', 'b', 'c'] }
-        # (then we would pass required_keys=[self.config['filters_key']] to parse_response()
-        # and return results[self.config['filters_key']])
-        # current implementation works, but is inconsistent with other endpoints
         results = json.loads(response)
         return results
      
@@ -204,7 +200,8 @@ class Monocle_Client:
                 logging.debug("response from Metadata API: {}".format(response_as_string))
         except urllib.error.HTTPError as e:
             msg = "HTTP error during Metadata API request {}\nData:\n{}\n{}".format(request_url,request_data,e)
-            if '404' in str(e):
+            logging.error("Metadata API response: {} {}".format(e.code,e.read().decode('utf-8')))
+            if '404' in str(e) or '400' in str(e):
                 logging.info(msg)
             else:
                 logging.error(msg)

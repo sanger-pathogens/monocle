@@ -14,11 +14,11 @@ DROP TABLE IF EXISTS `api_sample`;
 
 CREATE TABLE `api_sample` (
   `lane_id` varchar(256) DEFAULT NULL,
-  `sample_id` varchar(256) NOT NULL,
+  `sanger_sample_id` varchar(256) NOT NULL,
   `public_name` varchar(256) NOT NULL,
   `host_status` varchar(256) DEFAULT NULL,
   `serotype` varchar(7) DEFAULT NULL,
-  `submitting_institution_id` varchar(256) NOT NULL,
+  `submitting_institution` varchar(256) NOT NULL,
   `age_days` int(11) DEFAULT NULL,
   `age_group` varchar(30),
   `age_months` int(11) DEFAULT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE `api_sample` (
   `ampicillin` varchar(30),
   `ampicillin_method` varchar(60),
   `apgar_score` smallint(6) DEFAULT NULL,
-  `birthweight_gram` int(11) DEFAULT NULL,
+  `birth_weight_gram` int(11) DEFAULT NULL,
   `cefazolin` varchar(30),
   `cefazolin_method` varchar(60),
   `cefotaxime` varchar(30),
@@ -73,9 +73,9 @@ CREATE TABLE `api_sample` (
   `tetracycline_method` varchar(60),
   `vancomycin` varchar(30),
   `vancomycin_method` varchar(60),
-  PRIMARY KEY (`sample_id`),
-  KEY `api_sample_submitting_institution_fk` (`submitting_institution_id`),
-  CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution_id`) REFERENCES `api_institution` (`name`)
+  PRIMARY KEY (`sanger_sample_id`),
+  KEY `api_sample_submitting_institution_fk` (`submitting_institution`),
+  CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution`) REFERENCES `api_institution` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
