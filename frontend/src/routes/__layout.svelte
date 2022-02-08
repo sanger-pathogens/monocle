@@ -78,6 +78,7 @@ main {
 }
 :global(table.dense td) {
   font-size: .95rem;
+  line-height: 1.2;
   padding: .3rem;
 }
 @media (min-width: 1278px) {

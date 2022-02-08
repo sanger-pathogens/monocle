@@ -139,7 +139,7 @@
 <style>
 table {
   display: block;
-  min-height: 21rem;
+  min-height: 23rem;
   overflow-x: auto;
   position: relative;
 }
@@ -164,8 +164,8 @@ th {
 
 .loading-indicator-row {
   position: absolute;
-  bottom: 30%;
-  left: 43%;
+  bottom: 32%;
+  left: 42%;
 }
 .loading-indicator-row.no-metadata {
   bottom: 50%;
@@ -181,9 +181,5 @@ th {
 
 .data-row:hover {
   background: var(--color-table-hover-row);
-}
-
-.no-data {
-  text-align: center;
 }
 </style>
