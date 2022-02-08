@@ -46,12 +46,12 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
         samples = tuple(keys)
         lane_id  = 0
 
-        for sample_id in samples:
+        for sanger_sample_id in samples:
 
             lane_id += 1
             results.append(
                 Metadata(
-                    sanger_sample_id=sample_id,
+                    sanger_sample_id=sanger_sample_id,
                     lane_id=f'lane_{str(lane_id)}',
                     submitting_institution='My institution',
                     supplier_sample_name='CUHK_GBS2WT_00',

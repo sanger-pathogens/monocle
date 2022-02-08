@@ -56,10 +56,10 @@ class MonocleSampleDataTest(TestCase):
                                     'Fake institution Two'
                                     ]
    mock_bad_institution_name  = "This Institution Does Not Exist"
-   mock_samples               = [   {'sample_id': 'fake_sample_id_1', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
-                                    {'sample_id': 'fake_sample_id_2', 'submitting_institution_id': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
-                                    {'sample_id': 'fake_sample_id_3', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
-                                    {'sample_id': 'fake_sample_id_4', 'submitting_institution_id': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
+   mock_samples               = [   {'sanger_sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
+                                    {'sanger_sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
+                                    {'sanger_sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
+                                    {'sanger_sample_id': 'fake_sample_id_4', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_4'}
                                     ]
    mock_seq_status            = {   '_ERROR': None,
                                     'fake_sample_id_1': {   'mock data': 'anything', 'creation_datetime': '2020-04-29T11:03:35Z',
@@ -120,19 +120,19 @@ class MonocleSampleDataTest(TestCase):
 
    mock_filtered_samples      = [   {  'creation_datetime': '2020-04-29T11:03:35Z',
                                        'lanes': ['fake_lane_id_1', 'fake_lane_id_2', 'fake_lane_id_3'],
-                                       'sample_id': 'fake_sample_id_1',
+                                       'sanger_sample_id': 'fake_sample_id_1',
                                        'inst_key': 'FakOne',
                                        'public_name': 'SCN9A_1'
                                        },
                                     {  'creation_datetime': '2021-05-02T10:31:49Z',
                                        'lanes': ['fake_lane_id_5'],
-                                       'sample_id': 'fake_sample_id_3',
+                                       'sanger_sample_id': 'fake_sample_id_3',
                                        'inst_key': 'FakTwo',
                                        'public_name': 'SCN9A_3'
                                        },
                                     {  'creation_datetime': '2021-05-02T14:07:23Z',
                                        'lanes': ['fake_lane_id_6'],
-                                       'sample_id': 'fake_sample_id_4',
+                                       'sanger_sample_id': 'fake_sample_id_4',
                                        'inst_key': 'FakTwo',
                                        'public_name': 'SCN9A_4'
                                        }
@@ -441,11 +441,9 @@ class MonocleSampleDataTest(TestCase):
       """
       mock_get_filtered_samples.return_value = []
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs})
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
+      self.assertIsNone(filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico_and_qc = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True,include_qc_data=True)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata_plus_in_silico_and_qc))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[], 'in silico':[], 'qc data':[]}}, filtered_samples_metadata_plus_in_silico_and_qc)
+      self.assertIsNone(filtered_samples_metadata_plus_in_silico_and_qc)
 
    @patch.object(Monocle_Download_Client,  'in_silico_data')
    @patch.object(Monocle_Download_Client,  'metadata')
@@ -457,11 +455,9 @@ class MonocleSampleDataTest(TestCase):
       mock_metadata_fetch.return_value       = self.mock_metadata
       mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
       filtered_samples_metadata = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs}, start_row=9999, num_rows=1)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[]}}, filtered_samples_metadata)
+      self.assertIsNone(filtered_samples_metadata)
       filtered_samples_metadata_plus_in_silico = self.monocle_data.get_metadata({'batches': self.inst_key_batch_date_pairs},include_in_silico=True, start_row=9999, num_rows=1)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
-      self.assertEqual({'last row':0, 'total rows':0, 'samples':{'metadata':[], 'in silico':[]}}, filtered_samples_metadata_plus_in_silico)
+      self.assertIsNone(filtered_samples_metadata_plus_in_silico)
 
    @patch.object(Monocle_Download_Client,  'metadata')
    def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
