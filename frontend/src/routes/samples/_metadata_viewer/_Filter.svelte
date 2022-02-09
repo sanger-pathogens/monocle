@@ -86,8 +86,8 @@
   <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
 
   <label>
-    Exclude selected values
     <input type="checkbox" bind:checked={exclude} />
+    <em>Exclude</em> samples with the selected values
   </label>
 
   <Select
