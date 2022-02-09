@@ -72,7 +72,7 @@ class SampleMetadata:
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
-    def get_distinct_values(self, fields):
+    def get_distinct_values(self, fields, institutions):
        """
        Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
        as keys; values are arrays of field names.
@@ -82,11 +82,11 @@ class SampleMetadata:
        for this_field_type in fields:
           field_list = fields[this_field_type]
           if 'metadata' == this_field_type:
-             this_field_list = self.monocle_client.distinct_values(field_list)
+             this_field_list = self.monocle_client.distinct_values(field_list, institutions)
           elif 'in silico' == this_field_type:
-             this_field_list = self.monocle_client.distinct_in_silico_values(field_list)
+             this_field_list = self.monocle_client.distinct_in_silico_values(field_list, institutions)
           elif 'qc data' == this_field_type:
-             this_field_list = self.monocle_client.distinct_qc_data_values(field_list)
+             this_field_list = self.monocle_client.distinct_qc_data_values(field_list, institutions)
           else:
              logging.info("{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(__class__.__name__, this_field_type))
              raise ValueError("{} is not a recognised field type".format(this_field_type))
@@ -159,21 +159,24 @@ class Monocle_Client:
         results = json.loads(response)
         return results
      
-    def distinct_values(self,fields):
+    def distinct_values(self,fields, institutions):
         endpoint = self.config['distinct_values']
-        return self._distinct_values_common(endpoint, fields)
+        return self._distinct_values_common(endpoint, fields, institutions)
      
-    def distinct_in_silico_values(self,fields):
+    def distinct_in_silico_values(self,fields, institutions):
         endpoint = self.config['distinct_in_silico_values']
-        return self._distinct_values_common(endpoint, fields)
+        return self._distinct_values_common(endpoint, fields, institutions)
      
-    def distinct_qc_data_values(self,fields):
+    def distinct_qc_data_values(self,fields, institutions):
         endpoint = self.config['distinct_qc_data_values']
-        return self._distinct_values_common(endpoint, fields)
+        return self._distinct_values_common(endpoint, fields, institutions)
      
-    def _distinct_values_common(self,endpoint,fields):
+    def _distinct_values_common(self,endpoint,fields, institutions):
         logging.debug("{}.distinct_values() using endpoint {}".format(__class__.__name__, endpoint))
-        response = self.make_request(endpoint, post_data=fields)
+        query = { "fields":         fields,
+                  "institutions":   institutions
+                  }
+        response = self.make_request(endpoint, post_data=query)
         logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results[self.config['distinct_values_key']]
