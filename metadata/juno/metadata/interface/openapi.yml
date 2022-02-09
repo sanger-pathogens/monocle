@@ -206,15 +206,15 @@ paths:
             schema:
               type: object
               required:
-              - fields
-              - institutions
+                - fields
+                - institutions
               properties:
-              fields:
-                $ref: "#/components/schemas/MetadataFieldsList"
-              institutions:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FieldValueFilter"
+                fields:
+                  $ref: "#/components/schemas/MetadataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
             example: { "fields": ["serotype", "age_group"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
@@ -238,15 +238,15 @@ paths:
             schema:
               type: object
               required:
-              - fields
-              - institutions
+                - fields
+                - institutions
               properties:
-              fields:
-                $ref: "#/components/schemas/InSilicoFieldsList"
-              institutions:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FieldValueFilter"
+                fields:
+                  $ref: "#/components/schemas/InSilicoFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
             example: { "fields": ["cps_type","ST"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
@@ -270,15 +270,15 @@ paths:
             schema:
               type: object
               required:
-              - fields
-              - institutions
+                - fields
+                - institutions
               properties:
-              fields:
-                $ref: "#/components/schemas/QCDataFieldsList"
-              institutions:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FieldValueFilter"
+                fields:
+                  $ref: "#/components/schemas/QCDataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
             example: { "fields": ["rel_abun_sa"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":

@@ -172,10 +172,10 @@ class Monocle_Client:
         return self._distinct_values_common(endpoint, fields, institutions)
      
     def _distinct_values_common(self,endpoint,fields, institutions):
-        logging.debug("{}.distinct_values() using endpoint {}".format(__class__.__name__, endpoint))
         query = { "fields":         fields,
                   "institutions":   institutions
                   }
+        logging.debug("{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint, query))
         response = self.make_request(endpoint, post_data=query)
         logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
