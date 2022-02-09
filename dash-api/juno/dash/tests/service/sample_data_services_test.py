@@ -371,6 +371,8 @@ class MonocleSampleDataTest(TestCase):
       mock_distinct_values_fetch.return_value            = self.mock_distinct_values
       mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
       distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
+      mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
+      mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_distinct_values, distinct_values))
       self.assertEqual(self.expected_distinct_values, distinct_values)
 

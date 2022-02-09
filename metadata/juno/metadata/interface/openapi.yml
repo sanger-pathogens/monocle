@@ -204,8 +204,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["serotype", "age_group"]
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/MetadataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["serotype", "age_group"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -226,8 +236,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["cps_type","ST"]
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/InSilicoFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["cps_type","ST"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct in silico values found."
@@ -248,8 +268,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["rel_abun_sa"]
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/QCDataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["rel_abun_sa"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
@@ -360,7 +390,7 @@ components:
       properties:
          name:
             description: "The name of the metadata field"
-            $ref: "#/components/schemas/FieldName"
+            $ref: "#/components/schemas/MetadataFieldName"
          values:
             type: array
             items:
@@ -377,17 +407,56 @@ components:
       # but not double hyphens to prevent -- injections
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
 
-    FieldName:
+    MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"
       type: string
       minLength: 1
       maxLength: 256
       pattern: ^sanger_sample_id|lane_id|submitting_institution|supplier_sample_name|public_name|host_status|study_name|study_ref|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|disease_type|disease_onset|isolation_source|serotype|serotype_method|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
-      
-    FieldsList:
+
+    InSilicoFieldName:
+      description: "Valid metadata field name (alphanumeric and underscore only)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|GYRA_variant|PARC_variant$
+
+    QCDataFieldName:
+      description: "Valid metadata field name (alphanumeric and underscore only)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^rel_abun_sa$
+
+    DistinctValuesInput:
+      type: object
+      required:
+        - fields
+        - institutions
+      properties:
+        fields:
+          $ref: "#/components/schemas/MetadataFieldsList"
+        institutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldValueFilter"
+    
+    MetadataFieldsList:
       type: array
       items:
-        $ref: "#/components/schemas/FieldName"
+        $ref: "#/components/schemas/MetadataFieldName"
+      minItems: 1
+
+    InSilicoFieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFieldName"
+      minItems: 1
+
+    QCDataFieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/QCDataFieldName"
       minItems: 1
 
     DistinctValues:

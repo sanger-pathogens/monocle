@@ -187,9 +187,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             WHERE {} IN :values"""
 
     #DISTINCT_FIELD_VALUES_SQL = text(""" \
-            #SELECT DISTINCT :field FROM api_sample""")
+            #SELECT DISTINCT :field FROM api_sample WHERE submitting_institution IN :institutions""")
     DISTINCT_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM api_sample"""
+            SELECT DISTINCT {} FROM api_sample WHERE submitting_institution IN :institutions"""
 
     DISTINCT_IN_SILICO_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM in_silico"""
@@ -428,11 +428,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return sanger_sample_ids
 
-    def get_distinct_values(self, field_type: str, fields: list) -> Dict:
+    def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """
-        Return a distinct values found in db for each field name passed.
-        Pass the field type ('metadata', 'in silico' or 'qc data') and
-        a list of names of the fields of interest.
+        Return distinct values found in db for each field name passed,
+        from samples from certain instititons.
+        Pass the field type ('metadata', 'in silico' or 'qc data');
+        a list of names of the fields of interest; and a list of institution
+        names.
         If any of the field names passed are non-existent, returns None
         """
         sql_query =  {  'metadata':    self.DISTINCT_FIELD_VALUES_SQL,
@@ -445,7 +447,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
           for this_field in fields:
             try:
-              rs = con.execute(sql_query[field_type].format(this_field))
+              rs = con.execute( text(sql_query[field_type].format(this_field)), institutions = tuple(institutions) )
               these_distinct_values = []
               for row in rs:
                 if row[this_field] is None:

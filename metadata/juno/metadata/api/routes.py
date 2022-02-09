@@ -249,22 +249,25 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
 @inject
 def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
     """ Download distinct values present in the database for certain fields """
-    fields = body
-    result = _get_distinct_values_common('metadata', fields, dao)
+    fields       = body['fields']
+    institutions = body['institutions']
+    result = _get_distinct_values_common('metadata', fields, institutions, dao)
     return result
 
 @inject
 def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
     """ Download distinct values present in the database for certain fields """
-    fields = body
-    result = _get_distinct_values_common('in silico', fields, dao)
+    fields       = body['fields']
+    institutions = body['institutions']
+    result = _get_distinct_values_common('in silico', fields, institutions, dao)
     return result
 
 @inject
 def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
     """ Download distinct values present in the database for certain fields """
-    fields = body
-    result = _get_distinct_values_common('qc data', fields, dao)
+    fields       = body['fields']
+    institutions = body['institutions']
+    result = _get_distinct_values_common('qc data', fields, institutions, dao)
     return result
 
 @inject
@@ -285,12 +288,12 @@ def get_institutions(dao: MonocleDatabaseService):
     else:
         return result, HTTP_NOT_FOUND_STATUS
      
-def _get_distinct_values_common(field_type, fields, dao):
+def _get_distinct_values_common(field_type, fields, institutions, dao):
     """ Download distinct values present in the database for certain fields """
     if not _validate_field_names(fields):
         return 'Invalid arguments provided', HTTP_BAD_REQUEST_STATUS
 
-    distinct_values = dao.get_distinct_values(field_type, fields)
+    distinct_values = dao.get_distinct_values(field_type, fields, institutions)
     logging.debug("DAO returned distinct values: {}".format(distinct_values))
     # get_distinct_values() will return None if it is passed a non-existent field name
     if distinct_values is None:
