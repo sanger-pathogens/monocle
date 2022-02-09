@@ -305,8 +305,9 @@ class MonocleSampleData:
       This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
       except that 404 are caught and result in returning `None`
       """
+      institutions = [ this_institution['db_key'] for this_institution in self.sample_tracking.get_institutions().values() ]
       try:
-         distinct_values = self.sample_metadata_source.get_distinct_values(fields)
+         distinct_values = self.sample_metadata_source.get_distinct_values(fields, institutions)
       except urllib.error.HTTPError as e:
          if '404' not in str(e):
             raise e

@@ -97,7 +97,7 @@ class SampleMetadataTest(TestCase):
    def test_institution_names(self,mock_query):
       mock_query.return_value = self.mock_institution_names
       names = self.sample_metadata.get_institution_names()
-      self.assertIsInstance(names, type(['a list']))
+      self.assertIsInstance(names, list)
       for expected in self.expected_institution_names:
          self.assertTrue(expected in names, msg="expected institution name '{}' not found in institution names".format(expected))
 
@@ -105,37 +105,37 @@ class SampleMetadataTest(TestCase):
    def test_samples(self,mock_query):
       mock_query.return_value = self.mock_get_samples
       samples = self.sample_metadata.get_samples()
-      self.assertIsInstance(samples, type(['a list']))
+      self.assertIsInstance(samples, list)
       for this_sample in samples:
          for required in self.required_sample_dict_keys:
             self.assertTrue(required in this_sample, msg="required key '{}' not found in sample dict".format(required))
-            self.assertIsInstance(this_sample[required], type('a string'), msg="sample item {} should be a string".format(required))
+            self.assertIsInstance(this_sample[required], str, msg="sample item {} should be a string".format(required))
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_filters(self,mock_query):
       mock_query.return_value = self.mock_get_filtered_sample_ids
       samples = self.sample_metadata.get_filtered_sample_ids({'any_filter_name': ['any', 'list', 'of', 'values']})
-      self.assertIsInstance(samples, type(['a list']))
+      self.assertIsInstance(samples, list)
       
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_distinct_values(self,mock_query):
       mock_query.return_value = self.mock_distinct_values
-      distinct_values = self.sample_metadata.get_distinct_values({'metadata': ['field1', 'field2']})
-      self.assertIsInstance(distinct_values, type(['a list']))
+      distinct_values = self.sample_metadata.get_distinct_values({'metadata': ['field1', 'field2']}, ['institution A'])
+      self.assertIsInstance(distinct_values, list)
       self.assertEqual(self.expected_distinct_values, distinct_values)
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_distinct_in_silico_values(self,mock_query):
       mock_query.return_value = self.mock_distinct_in_silico_values
-      distinct_values = self.sample_metadata.get_distinct_values({'in silico': ['field3']})
-      self.assertIsInstance(distinct_values, type(['a list']))
+      distinct_values = self.sample_metadata.get_distinct_values({'in silico': ['field3']}, ['institution A'])
+      self.assertIsInstance(distinct_values, list)
       self.assertEqual(self.expected_distinct_in_silico_values, distinct_values)
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_distinct_qc_data_values(self,mock_query):
       mock_query.return_value = self.mock_distinct_qc_data_values
-      distinct_values = self.sample_metadata.get_distinct_values({'qc data': ['field4']})
-      self.assertIsInstance(distinct_values, type(['a list']))
+      distinct_values = self.sample_metadata.get_distinct_values({'qc data': ['field4']}, ['institution A'])
+      self.assertIsInstance(distinct_values, list)
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_qc_data_values, distinct_values))
       self.assertEqual(self.expected_distinct_qc_data_values, distinct_values)
 
