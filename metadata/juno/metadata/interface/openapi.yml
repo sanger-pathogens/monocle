@@ -380,10 +380,23 @@ components:
           
           
     FiltersInput:
-      type: array
-      items:
-        $ref: "#/components/schemas/MetadataFilters"
-      minItems: 1
+      type: object
+      properties:
+        metadata:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetadataFilters"
+          minItems: 1
+        in silico:
+          type: array
+          items:
+            $ref: "#/components/schemas/InSilicoFilters"
+          minItems: 1
+        qc data:
+          type: array
+          items:
+            $ref: "#/components/schemas/QCDataFilters"
+          minItems: 1
 
     MetadataFilters:
       type: object
@@ -397,7 +410,33 @@ components:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
       example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
-         
+      
+    InSilicoFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the in silico field"
+            $ref: "#/components/schemas/InSilicoFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the in silico field"
+               $ref: "#/components/schemas/FieldValueFilter"
+      example: { "name": "ST",  "values": ["1", "12", "14"] }
+      
+    QCDataFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the QC data field"
+            $ref: "#/components/schemas/QCDataFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the QC data field"
+               $ref: "#/components/schemas/FieldValueFilter"
+      example: { "name": "rel_abun_sa",  "values": ["99.3"] }
+      
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string

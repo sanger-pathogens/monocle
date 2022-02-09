@@ -399,10 +399,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def get_filtered_samples(self, filters: dict) -> List:
+    def get_filtered_samples(self, all_filters: dict) -> List:
         """ Get sample ids where their columns' values are in specified filters """
         # TODO: Also consider other filters such as greater than/less than...
 
+        # TODO  this extracts metadata filters only from the filters (metadata, in silico and/or QC data) passed
+        #       we need to implement filtering on in silico and QC data values
+        filters = all_filters.get('metadata', [])
+        
         sanger_sample_ids = []
         with self.connector.get_connection() as con:
             if len(filters) > 0:
