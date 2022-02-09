@@ -204,8 +204,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["serotype", "age_group"]
+              $ref: "#/components/schemas/DistinctValuesInput"
+            example: { "fields": ["serotype", "age_group"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -226,8 +226,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["cps_type","ST"]
+              $ref: "#/components/schemas/DistinctValuesInput"
+            example: { "fields": ["cps_type","ST"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct in silico values found."
@@ -248,8 +248,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FieldsList"
-            example: ["rel_abun_sa"]
+              $ref: "#/components/schemas/DistinctValuesInput"
+            example: { "fields": ["rel_abun_sa"], "institutions": ["National Reference Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
@@ -384,6 +384,19 @@ components:
       maxLength: 256
       pattern: ^sanger_sample_id|lane_id|submitting_institution|supplier_sample_name|public_name|host_status|study_name|study_ref|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|disease_type|disease_onset|isolation_source|serotype|serotype_method|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
       
+    DistinctValuesInput:
+      type: object
+      required:
+        - fields
+        - institutions
+      properties:
+        fields:
+          $ref: "#/components/schemas/FieldsList"
+        institutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldValueFilter"
+    
     FieldsList:
       type: array
       items:

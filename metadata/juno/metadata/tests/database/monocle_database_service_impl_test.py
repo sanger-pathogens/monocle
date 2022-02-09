@@ -7,6 +7,7 @@ from metadata.api.database.monocle_database_service_impl import MonocleDatabaseS
 from metadata.tests.test_data import *
 from metadata.api.database.monocle_database_service_impl import ProtocolError
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql import text
 
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
@@ -454,12 +455,12 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         expected = [
            {"name": "serotype", "values": ["II","III","Ia","Ib","NULL"]}
            ]
-        values = self.under_test.get_distinct_values('metadata', ["serotype"])
-        self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_FIELD_VALUES_SQL.format("serotype"))
+        values = self.under_test.get_distinct_values('metadata', ["serotype"], ["National Reference Laboratories"])
+        self.connection.execute.assert_called_once()
         #logging.critical("\nEXPECTED:\n{}\nGOT:{}".format(expected, values))
         self.assertEqual(values, expected)
 
-    def test_get_distinct_values_multiple_fields(self) -> None:
+    def test_get_distinct_values_multiple_fields_and_institutions(self) -> None:
         self.connection.execute.side_effect = [
            [{"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}],
            [{"age_years":23},{"age_years":31}]
@@ -468,7 +469,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"name": "serotype",  "values": ["II","III","Ia","Ib"]},
            {"name": "age_years", "values": ["23", "31"]}
            ]
-        values = self.under_test.get_distinct_values('metadata', ["serotype","age_years"])
+        values = self.under_test.get_distinct_values('metadata', ["serotype","age_years"], ["National Reference Laboratories", "The Chinese University of Hong Kong"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 
@@ -478,7 +479,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
            ]
         expected = None
-        values = self.under_test.get_distinct_values('metadata', ["serotype","bad_field_name"])
+        values = self.under_test.get_distinct_values('metadata', ["serotype","bad_field_name"], ["National Reference Laboratories"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 
@@ -489,8 +490,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         expected = [
            {"name": "ST",  "values": ["1", "17", "NULL"]}
            ]
-        values = self.under_test.get_distinct_values('in silico', ["ST"])
-        self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_IN_SILICO_FIELD_VALUES_SQL.format("ST"))
+        values = self.under_test.get_distinct_values('in silico', ["ST"], ["National Reference Laboratories"])
+        self.connection.execute.assert_called_once()
         self.assertEqual(values, expected)
 
     def test_get_distinct_in_silico_values_reject_request_if_bad_field_name(self) -> None:
@@ -499,7 +500,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
            ]
         expected = None
-        values = self.under_test.get_distinct_values('in silico', ["ST","bad_field_name"])
+        values = self.under_test.get_distinct_values('in silico', ["ST","bad_field_name"], ["National Reference Laboratories"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 
@@ -510,8 +511,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         expected = [
            {"name": "rel_abun_sa",  "values": ["1.46","92.93","NULL"]},
            ]
-        values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa"])
-        self.connection.execute.assert_called_once_with(MonocleDatabaseServiceImpl.DISTINCT_QC_DATA_FIELD_VALUES_SQL.format("rel_abun_sa"))
+        values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa"], ["National Reference Laboratories"])
+        self.connection.execute.assert_called_once()
         self.assertEqual(values, expected)
 
     def test_get_distinct_dc_data_values_reject_request_if_bad_field_name(self) -> None:
@@ -520,7 +521,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
            ]
         expected = None
-        values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa","bad_field_name"])
+        values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa","bad_field_name"], ["National Reference Laboratories"])
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
 
