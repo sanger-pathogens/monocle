@@ -112,11 +112,18 @@ class SampleMetadataTest(TestCase):
             self.assertIsInstance(this_sample[required], str, msg="sample item {} should be a string".format(required))
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
-   def test_filters(self,mock_query):
+   def test_filters_all_filter_types(self,mock_query):
       mock_query.return_value = self.mock_get_filtered_sample_ids
-      samples = self.sample_metadata.get_filtered_sample_ids({'any_filter_name': ['any', 'list', 'of', 'values']})
+      mock_filter = {'any_filter_name': ['any', 'list', 'of', 'values']}
+      samples = self.sample_metadata.get_filtered_sample_ids(mock_filter,mock_filter,mock_filter)
       self.assertIsInstance(samples, list)
       
+   @patch('DataSources.sample_metadata.Monocle_Client.make_request')
+   def test_filters_one_filter_type(self,mock_query):
+      mock_query.return_value = self.mock_get_filtered_sample_ids
+      samples = self.sample_metadata.get_filtered_sample_ids(None,{'any_filter_name': ['any', 'list', 'of', 'values']},None)
+      self.assertIsInstance(samples, list)
+
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_distinct_values(self,mock_query):
       mock_query.return_value = self.mock_distinct_values

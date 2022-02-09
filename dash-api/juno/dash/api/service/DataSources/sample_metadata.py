@@ -58,16 +58,33 @@ class SampleMetadata:
                samples.append( this_sample )
         return samples
      
-    def get_filtered_sample_ids(self, filters):
+    def get_filtered_sample_ids(self, metadata_filters, in_silico_filters, qc_data_filters):
         """
         Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
-        filters_payload = []
-        for this_field in filters:
-          these_values = filters[this_field]
-          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
-          filters_payload.append( {'name': this_field, 'values': these_values} )
+        filters_payload = {}
+        if metadata_filters is not None:
+          filters_payload['metadata'] = []
+          for this_field in metadata_filters:
+             filters_payload['metadata'].append({  'name':     this_field,
+                                                   'values':   metadata_filters[this_field]
+                                                   }
+                                                )
+        if in_silico_filters is not None:
+          filters_payload['in silico'] = []
+          for this_field in in_silico_filters:
+             filters_payload['in silico'].append({ 'name':     this_field,
+                                                   'values':   in_silico_filters[this_field]
+                                                   }
+                                                 )
+        if qc_data_filters is not None:
+          filters_payload['qc data'] = []
+          for this_field in qc_data_filters:
+             filters_payload['qc data'].append({   'name':     this_field,
+                                                   'values':   qc_data_filters[this_field]
+                                                   }
+                                                )
         results_list = self.monocle_client.filters(filters_payload)
         logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
@@ -88,7 +105,7 @@ class SampleMetadata:
           elif 'qc data' == this_field_type:
              this_field_list = self.monocle_client.distinct_qc_data_values(field_list, institutions)
           else:
-             logging.info("{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(__class__.__name__, this_field_type))
+             logging.error("{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(__class__.__name__, this_field_type))
              raise ValueError("{} is not a recognised field type".format(this_field_type))
           results.append(  {  "field type":  this_field_type,
                               "fields":      this_field_list
@@ -153,7 +170,8 @@ class Monocle_Client:
 
     def filters(self,filters):
         endpoint = self.config['filters']
-        logging.debug("{}.filters() using endpoint {}".format(__class__.__name__, endpoint))
+        # TODO reduce to DEBUG when done testing
+        logging.critical("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)

@@ -366,7 +366,7 @@ class MonocleSampleData:
       Supports `batches` filter:
          "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
 
-      Also metadata filters, e.g.
+      Also metadata, in silico and QC data filters, e.g.
          "metadata": {"serotype": ["I", "IV"], ...}
 
       """
@@ -414,14 +414,16 @@ class MonocleSampleData:
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
 
       metadata_filters = sample_filters.get('metadata', None)
+      in_silico_filters = sample_filters.get('in silico', None)
+      qc_data_filters = sample_filters.get('qc data', None)
       if metadata_filters is not None:
-         filtered_samples = self._apply_metadata_filters(filtered_samples, metadata_filters)
+         filtered_samples = self._apply_metadata_filters(filtered_samples, metadata_filters, in_silico_filters, qc_data_filters)
 
       return filtered_samples
 
-   def _apply_metadata_filters(self, filtered_samples, metadata_filters):
+   def _apply_metadata_filters(self, filtered_samples, metadata_filters, in_silico_filters, qc_data_filters):
       logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
-      matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
+      matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters, in_silico_filters, qc_data_filters)
       #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
       logging.info("{}.sample_tracking.sample_metadata.get_filtered_sample_ids returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
