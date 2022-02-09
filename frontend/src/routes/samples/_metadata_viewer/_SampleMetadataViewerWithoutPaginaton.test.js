@@ -21,9 +21,13 @@ it("shows the loading indicator if the metadata promise is pending", () => {
 
 describe("on metadata resolved", () => {
   const METADATA = [{
-    metadata: [{ title: "Sample ID", value: "1a" }, { title: "Country", value: "UK" }]
+    metadata: [
+      { title: "Sample ID", name: "sample_id", value: "1a" }, { title: "Country", name: "country", value: "UK" }
+    ]
   }, {
-    metadata: [{ title: "Sample ID", value: "2b" }, { title: "Country", value: "UA" }]
+    metadata: [
+      { title: "Sample ID", name: "sample_id", value: "2b" }, { title: "Country", name: "country", value: "UA" }
+    ]
   }];
 
   it("hides the loading indicator", async () => {
@@ -76,7 +80,7 @@ describe("on metadata resolved", () => {
       { metadataPromise: Promise.resolve([]) });
 
     await waitFor(() => {
-      expect(getByRole(ROLE_TABLE_CELL, { name: "No data. Try to refresh or change a filter." }))
+      expect(getByRole(ROLE_TABLE_CELL, { name: "No samples found. Try different batches or filters." }))
         .toBeDefined();
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });

@@ -1,5 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
+import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -265,11 +267,12 @@ describe("once batches are fetched", () => {
 
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       expect(getSampleMetadata).toHaveBeenCalledWith(
-        { "asCsv": true,
-          "instKeyBatchDatePairs": [
+        { asCsv: true,
+          instKeyBatchDatePairs: [
             ["FioRon", BATCHES[0].date],
             ["FioRon", BATCHES[1].date],
-            ["UlmUni", BATCHES[2].date] ]
+            ["UlmUni", BATCHES[2].date] ],
+          filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) }
         },
         fetch);
     });
