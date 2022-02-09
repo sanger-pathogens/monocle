@@ -15,9 +15,8 @@
   let downloadTokens = [];
 
   $: estimate = downloadEstimateCurrentDownload || downloadEstimateLatest;
-
   $: formComplete = batches?.length &&
-      (formValues.annotations || formValues.assemblies);
+    (formValues.annotations || formValues.assemblies);
 
   // Freeze the download estimate once the form is submitted.
   $: {

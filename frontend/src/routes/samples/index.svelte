@@ -43,6 +43,9 @@
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
+  $: filterActive = Object.keys($filterStore).some((dataType) =>
+    Object.keys($filterStore[dataType] || []).length);
+
   $: filterStore.removeAllFilters(selectedBatches);
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
@@ -195,7 +198,12 @@
     ariaLabelledby="sample-bulk-download-label"
     persistState={true}
   >
-    <h3 id="sample-bulk-download-label">Download samples</h3>
+    <h3 id="sample-bulk-download-label">
+      Download samples
+      {#if filterActive}
+        <em>(filters apply)</em>
+      {/if}
+    </h3>
     <BulkDownload
       ariaLabelledby="sample-bulk-download-label"
       batches={selectedInstKeyBatchDatePairs}
@@ -223,6 +231,10 @@
 }
 .download-btns button {
   margin-right: 1rem;
+}
+
+em {
+  font-weight: 300;
 }
 </style>
 
