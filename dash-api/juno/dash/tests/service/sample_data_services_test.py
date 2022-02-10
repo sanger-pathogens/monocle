@@ -45,8 +45,9 @@ class MonocleSampleDataTest(TestCase):
    # this is the route used to download data
    mock_download_route = '/data_route_via_nginx'
 
-   # maximum nuumber of sampels per ZIP archive
-   mock_download_max_samples_per_zip = 200
+   # maximum nuumber of samples per ZIP archive
+   mock_download_max_samples_per_zip = 100
+   mock_download_max_samples_per_zip_with_reads = 10
 
    # this has mock values for the environment variables set by docker-compose
    mock_environment = {'MONOCLE_DATA': mock_monocle_data_dir, 'DATA_INSTITUTION_VIEW': mock_inst_view_dir}
@@ -596,6 +597,14 @@ class MonocleSampleDataTest(TestCase):
    def test_get_bulk_download_max_samples_per_zip(self):
       download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip()
       self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
+
+   def test_get_bulk_download_max_samples_per_zip(self):
+      download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip(including_reads=False)
+      self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
+
+   def test_get_bulk_download_max_samples_per_zip_including_reads(self):
+      download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip(including_reads=True)
+      self.assertEqual(self.mock_download_max_samples_per_zip_with_reads, download_max_samples_per_zip)
 
    def test_get_bulk_download_max_samples_per_zip_reject_bad_config(self):
       monocle_data_with_bad_config = MonocleSampleData(MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False)

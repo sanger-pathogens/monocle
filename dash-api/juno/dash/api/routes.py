@@ -242,7 +242,13 @@ def bulk_download_urls_route(body):
        public_name_to_lane_files[this_public_name] = file_paths_as_strings
 
     # limit the number of samples to be included in each ZIP archive
-    max_samples_per_zip = monocle_data.get_bulk_download_max_samples_per_zip()
+    max_samples_per_zip  = body.get('max samples per zip',  None)
+    if max_samples_per_zip is not None:
+      if reads:
+         max_samples_per_zip = int( (max_samples_per_zip/10) + 0.5 )
+    else:
+      # if not passed, get value from config file
+      max_samples_per_zip = monocle_data.get_bulk_download_max_samples_per_zip(including_reads=reads)
     
     download_url_list = []
     start = 0
@@ -421,8 +427,8 @@ def get_authenticated_username(req_obj):
 
 def _parse_BulkDownloadInput(BulkDownloadInput):
    """ Parse the BulkDownloadInput request body passed to a POST request handler """
-   sample_filters = BulkDownloadInput['sample filters'] # required
-   assemblies  = BulkDownloadInput.get('assemblies',  False)
-   annotations = BulkDownloadInput.get('annotations', False)
-   reads       = BulkDownloadInput.get('reads',       False)
+   sample_filters = BulkDownloadInput['sample filters']  # required
+   assemblies     = BulkDownloadInput.get('assemblies',  False)
+   annotations    = BulkDownloadInput.get('annotations', False)
+   reads          = BulkDownloadInput.get('reads',       False)
    return(sample_filters, assemblies, annotations, reads)

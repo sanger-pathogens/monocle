@@ -1058,6 +1058,12 @@ components:
           type: boolean
         reads:
           type: boolean
+        max samples per zip:
+          description: "The maximum number of samples in each ZIP archive.  Automatically divided by 10 if reads is true."
+          type:    integer
+          minimum: 1
+          maximum: 200
+          example: 10
 
     InstKeyBatchDatePair:
       type: object
