@@ -90,8 +90,33 @@ class SampleMetadataTest(TestCase):
          endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
          doomed.make_request(endpoint)
 
-
-   #require equivalents of the following tests from monocledb:
+   @patch('DataSources.sample_metadata.Monocle_Client.filters')
+   def test_get_filtered_sample_ids(self,mock_filters_call):
+      mock_filters_call.return_value = []
+      mock_metadata_field  = 'any_filter_field'
+      mock_metadata_values = ['any', 'metadata', 'values']
+      samples = self.sample_metadata.get_filtered_sample_ids({'metadata': {mock_metadata_field:   mock_metadata_values} })
+      mock_filters_call.assert_called_once_with({ 'metadata': [{'name': mock_metadata_field,   'values': mock_metadata_values}] } )
+      
+   @patch('DataSources.sample_metadata.Monocle_Client.filters')
+   def test_get_filtered_sample_ids_multiple_filter_types(self,mock_filters_call):
+      mock_filters_call.return_value = []
+      mock_metadata_field  = 'any_filter_field'
+      mock_in_silico_field = 'any_in_silico_field'
+      mock_qc_data_field   = 'any_qc_data_field'
+      mock_metadata_values = ['any', 'metadata', 'values']
+      mock_in_silico_values = ['any', 'in', 'silico', 'values']
+      mock_qc_data_values  = ['any', 'qc', 'data', 'values']
+      samples = self.sample_metadata.get_filtered_sample_ids(  {  'metadata':    {mock_metadata_field:   mock_metadata_values},
+                                                                  'in silico':   {mock_in_silico_field:  mock_in_silico_values},
+                                                                  'qc data':     {mock_qc_data_field:    mock_qc_data_values}
+                                                                  }
+                                                               )
+      mock_filters_call.assert_called_once_with(   {  'metadata':    [{'name': mock_metadata_field,   'values': mock_metadata_values}],
+                                                      'in silico':   [{'name': mock_in_silico_field,  'values': mock_in_silico_values}],
+                                                      'qc data':     [{'name': mock_qc_data_field,    'values': mock_qc_data_values}]
+                                                      }
+                                                   )
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_institution_names(self,mock_query):
@@ -115,13 +140,15 @@ class SampleMetadataTest(TestCase):
    def test_filters_all_filter_types(self,mock_query):
       mock_query.return_value = self.mock_get_filtered_sample_ids
       mock_filter = {'any_filter_name': ['any', 'list', 'of', 'values']}
-      samples = self.sample_metadata.get_filtered_sample_ids(mock_filter,mock_filter,mock_filter)
-      self.assertIsInstance(samples, list)
+      samples = self.sample_metadata.get_filtered_sample_ids({'metadata':mock_filter, 'in silico':mock_filter, 'qc data':mock_filter})
       
+      self.assertIsInstance(samples, list)
+            
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_filters_one_filter_type(self,mock_query):
       mock_query.return_value = self.mock_get_filtered_sample_ids
-      samples = self.sample_metadata.get_filtered_sample_ids(None,{'any_filter_name': ['any', 'list', 'of', 'values']},None)
+      mock_filter = {'any_filter_name': ['any', 'list', 'of', 'values']}
+      samples = self.sample_metadata.get_filtered_sample_ids({'in silico':mock_filter})
       self.assertIsInstance(samples, list)
 
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
