@@ -465,6 +465,8 @@ components:
 
     SampleFilters:
       type: object
+      required:
+        - batches
       properties:
         batches:
           type: array
