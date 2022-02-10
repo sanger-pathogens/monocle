@@ -322,6 +322,85 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(self.connection.execute.call_count, 1)
         self.assertEqual(samples_ids, expected)
 
+    def test_get_in_silico_filtered_lanes(self) -> None:
+        self.connection.execute.return_value = [
+                {'lane_id':  '2000_2#10',
+                'cps_type':  'anything',
+                'ST':  '14',
+                'adhP':  'anything',
+                'pheS':  'anything',
+                'atr':  'anything',
+                'glnA':  'anything',
+                'sdhA':  'anything',
+                'glcK':  'anything',
+                'tkt':  'anything',
+                '23S1':  'anything',
+                '23S3':  'anything',
+                'AAC6APH2':  'anything',
+                'AADECC':  'anything',
+                'ANT6':  'anything',
+                'APH3III':  'anything',
+                'APH3OTHER':  'anything',
+                'CATPC194':  'anything',
+                'CATQ':  'anything',
+                'ERMA':  'anything',
+                'ERMB':  'anything',
+                'ERMT':  'anything',
+                'LNUB':  'anything',
+                'LNUC':  'anything',
+                'LSAC':  'anything',
+                'MEFA':  'anything',
+                'MPHC':  'anything',
+                'MSRA':  'anything',
+                'MSRD':  'anything',
+                'FOSA':  'anything',
+                'GYRA':  'anything',
+                'PARC':  'anything',
+                'RPOBGBS-1':  'anything',
+                'RPOBGBS-2':  'anything',
+                'RPOBGBS-3':  'anything',
+                'RPOBGBS-4':  'anything',
+                'SUL2':  'anything',
+                'TETB':  'anything',
+                'TETL':  'anything',
+                'TETM':  'anything',
+                'TETO':  'anything',
+                'TETS':  'anything',
+                'ALP1':  'anything',
+                'ALP23':  'anything',
+                'ALPHA':  'anything',
+                'HVGA':  'anything',
+                'PI1':  'anything',
+                'PI2A1':  'anything',
+                'PI2A2':  'anything',
+                'PI2B':  'anything',
+                'RIB':  'anything',
+                'SRR1':  'anything',
+                'SRR2':  'anything',
+                '23S1_variant':  'anything',
+                '23S3_variant':  'anything',
+                'GYRA_variant':  'anything',
+                'PARC_variant':  'anything',
+                'RPOBGBS-1_variant':  'anything',
+                'RPOBGBS-2_variant':  'anything',
+                'RPOBGBS-3_variant':  'anything',
+                'RPOBGBS-4_variant':  'anything'}
+        ]
+        lanes_ids = self.under_test.get_in_silico_filtered_lanes({'ST': ['14']})
+        self.assertEqual(lanes_ids, ['2000_2#10'])
+
+    def test_get_in_silico_filtered_lanes_noresults(self) -> None:
+        self.connection.execute.return_value = []
+        samples_ids = self.under_test.get_filtered_samples({'ST': ['None']})
+        self.assertEqual(samples_ids, [])
+
+    def test_get_in_silico_filtered_lanes_reject_request_if_bad_field_name(self) -> None:
+        self.connection.execute.side_effect = OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
+        expected = None
+        samples_ids = self.under_test.get_filtered_samples({"bad_field_name": ['anything']})
+        self.assertEqual(self.connection.execute.call_count, 1)
+        self.assertEqual(samples_ids, expected)
+
     def test_get_filtered_samples_nofilters(self) -> None:
         self.connection.execute.return_value = [
             dict(sanger_sample_id='9999STDY8113123',

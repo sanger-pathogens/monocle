@@ -224,7 +224,7 @@ def get_samples_route(dao: MonocleDatabaseService):
 
 @inject
 def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
-    """ Download sample ids from the database """
+    """ Download sample ids from the database for samples matching the metadata filters passed"""
     filters = {}
     for this_filter in body:
        this_field    = this_filter['name']
@@ -235,13 +235,37 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
      
     samples = dao.get_filtered_samples(filters)
     logging.debug("DAO returned sample IDs: {}".format(samples))
-    # samples() will return None if it is passed a non-existent field name
+    # get_filtered_samples() will return None if it is passed a non-existent field name
     if samples is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
 
     result = convert_to_json(samples)
 
     if len(samples) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+@inject
+def get_in_silico_filtered_lanes_route(body: dict, dao: MonocleDatabaseService):
+    """ Download lane ids from the database for lanes matching the in silico filters passed"""
+    filters = {}
+    for this_filter in body:
+       this_field    = this_filter['name']
+       these_values  = this_filter['values']
+       if not _validate_field_names([this_field]):
+          return "name \"{}\" is not a valid in silico field name".format(this_field), HTTP_BAD_REQUEST_STATUS
+       filters[this_field] = these_values
+     
+    lanes = dao.get_in_silico_filtered_lanes(filters)
+    logging.debug("DAO returned lanes IDs: {}".format(lanes))
+    # get_in_silico_filtered_lanes() will return None if it is passed a non-existent field name
+    if lanes is None:
+      return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json(lanes)
+
+    if len(lanes) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS

@@ -31,6 +31,11 @@ class MonocleDatabaseService(ABC):
         pass
      
     @abstractmethod
+    def get_in_silico_filtered_lanes(self, filters: dict) -> List:
+        """ Return a list of lane ids"""
+        pass
+     
+    @abstractmethod
     def get_distinct_values(self, fields: list) -> Dict:
         """ Return a distinct values found in db for each field name passed"""
         pass

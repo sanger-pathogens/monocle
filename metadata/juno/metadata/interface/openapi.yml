@@ -176,7 +176,7 @@ paths:
   /filters:
     post:
       operationId: metadata.api.routes.get_filtered_samples_route
-      summary: "Gather filtered sample records"
+      summary: "Filter samples according to metadata values, and return matching Sanger sample IDs"
       requestBody:
         description: "An array of metadata filters"
         required: true
@@ -191,6 +191,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Samples"
+        "404":
+          description: "No data could be found for the given filters"
+          
+  /filters_in_silico:
+    post:
+      operationId: metadata.api.routes.get_in_silico_filtered_lanes_route
+      summary: "Filter lanes according to in silico data values, and return matching lane IDs"
+      requestBody:
+        description: "An array of in silico filters"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FiltersInSilicoInput"
+      responses:
+        "200":
+          description: "List of lane ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lanes"
         "404":
           description: "No data could be found for the given filters"
 
@@ -397,7 +418,26 @@ components:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
       example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
-         
+      
+    FiltersInSilicoInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFilters"
+      minItems: 1
+
+    InSilicoFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        ST: ["1", "12", "14"]
+
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
@@ -504,6 +544,16 @@ components:
         pattern: ^[a-zA-Z0-9]*$
       minItems: 1
       example: ["5903STDY8059122", "5903STDY8059054"]
+
+    Lanes:
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]
       
     Metadata:
       description: "Object containing an array of Sanger sample ids and their metadata"
