@@ -413,13 +413,11 @@ class MonocleSampleData:
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
 
-      metadata_filters = {}
-      for filter_type in ['metadata', 'in silico', 'qc data']:
-         filter_value = sample_filters.get(filter_type, None)
-         if filter_value is not None:
-            metadata_filters[filter_type] = filter_value
-      if metadata_filters:
-         filtered_samples = self._apply_metadata_filters(filtered_samples, metadata_filters)
+      # if filters based on metadata and/or in silico data were passed, filter the results
+      if 'metadata' in sample_filters:
+         filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['metadata'])
+      if 'in silico' in sample_filters:
+         filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['in silico'])
 
       return filtered_samples
 
@@ -436,7 +434,24 @@ class MonocleSampleData:
       filtered_samples = intersection
       logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
-
+   
+   def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
+      logging.info("{}._apply_in_silico_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      matching_lane_ids    = self.sample_tracking.sample_metadata.get_in_silico_filtered_lane_ids(in_silico_filters)
+      logging.info("{}.sample_tracking.sample_metadata.get_in_silico_filtered_lane_ids returned {} lanes".format(__class__.__name__, len(matching_lane_ids)))
+      intersection = []
+      # TODO  implement this!
+      #       the commenetd out code is from _apply_metadata_filters()
+      #       this function will be different as it has to match LANE IDs not sample IDs
+      #       (in silico data do not have sample IDs)
+      logging.warning(">>> Sample filtering on in silico data is not yet implemented <<<")
+      #for this_sample in filtered_samples:
+         #if this_sample['sanger_sample_id'] in matching_samples_ids:
+            #logging.debug("sample {} matches metadata filters".format(this_sample['sanger_sample_id']))
+            #intersection.append(this_sample)
+      #filtered_samples = intersection
+      #logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
+      return filtered_samples
 
    def _get_sanger_sample_id_to_public_name_dict(self, institutions):
       sanger_sample_id_to_public_name = {}

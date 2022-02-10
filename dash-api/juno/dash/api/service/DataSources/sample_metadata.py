@@ -63,20 +63,32 @@ class SampleMetadata:
         Pass a list of filters, as defined by the metadata API /filters endpoint.
         Returns a list of sample IDs matching the filter conditions
         """
-        filters_payload = {}
-        # this_filter_type currently one of `metadata`, `in silico` or `qc data`
-        for this_filter_type in metadata_filters:
-          filters_payload[this_filter_type] = []
-          these_filters = metadata_filters[this_filter_type]
-          for this_field in these_filters:
-            filters_payload[this_filter_type].append( {  'name':     this_field,
-                                                         'values':   these_filters[this_field]
-                                                         }
-                                                      )
-        logging.debug("{}.get_filters() created filters payload {}".format(__class__.__name__, filters_payload))
+        filters_payload = []
+        for this_field in metadata_filters:
+          these_values = metadata_filters[this_field]
+          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          filters_payload.append( {'name': this_field, 'values': these_values} )
+        logging.debug("{}.get_filtered_sample_ids() created filters payload {}".format(__class__.__name__, filters_payload))
         
         results_list = self.monocle_client.filters(filters_payload)
-        logging.info("{}.get_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
+        logging.info("{}.get_filtered_sample_ids() got {} results(s)".format(__class__.__name__, len(results_list)))
+        return results_list
+     
+    def get_in_silico_filtered_lane_ids(self, in_silico_filters):
+        """
+        Pass a list of filters, as defined by the metadata API /filters_in_silico endpoint.
+        Returns a list of lane IDs matching the filter conditions.
+        (N.B. in silico data are identifier only by lane ID, not by sample ID)
+        """
+        filters_payload = []
+        for this_field in in_silico_filters:
+          these_values = in_silico_filters[this_field]
+          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          filters_payload.append( {'name': this_field, 'values': these_values} )
+        logging.debug("{}.get_filtered_sample_ids() created filters payload {}".format(__class__.__name__, filters_payload))
+        
+        results_list = self.monocle_client.filters_in_silico(filters_payload)
+        logging.info("{}.get_filtered_sample_ids() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
     def get_distinct_values(self, fields, institutions):
@@ -120,6 +132,7 @@ class Monocle_Client:
                               'institutions',
                               'samples',
                               'filters',
+                              'filters_in_silico',
                               'institutions_key',
                               'samples_key',
                               'distinct_values',
@@ -160,6 +173,14 @@ class Monocle_Client:
 
     def filters(self,filters):
         endpoint = self.config['filters']
+        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
+        response = self.make_request(endpoint, post_data=filters)
+        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
+        results = json.loads(response)
+        return results
+     
+    def filters_in_silico(self,filters):
+        endpoint = self.config['filters_in_silico']
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
