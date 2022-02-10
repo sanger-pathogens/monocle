@@ -223,7 +223,7 @@ def get_samples_route(dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
+def get_samples_filtered_by_metadata_route(body: dict, dao: MonocleDatabaseService):
     """ Download sample ids from the database for samples matching the metadata filters passed"""
     filters = {}
     for this_filter in body:
@@ -233,9 +233,9 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
           return "name \"{}\" is not a valid metadata field name".format(this_field), HTTP_BAD_REQUEST_STATUS
        filters[this_field] = these_values
      
-    samples = dao.get_filtered_samples(filters)
+    samples = dao.get_samples_filtered_by_metadata(filters)
     logging.debug("DAO returned sample IDs: {}".format(samples))
-    # get_filtered_samples() will return None if it is passed a non-existent field name
+    # get_samples_filtered_by_metadata() will return None if it is passed a non-existent field name
     if samples is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
 
@@ -247,7 +247,7 @@ def get_filtered_samples_route(body: dict, dao: MonocleDatabaseService):
         return result, HTTP_NOT_FOUND_STATUS
 
 @inject
-def get_in_silico_filtered_lanes_route(body: dict, dao: MonocleDatabaseService):
+def get_lanes_filtered_by_in_silico_data_route(body: dict, dao: MonocleDatabaseService):
     """ Download lane ids from the database for lanes matching the in silico filters passed"""
     filters = {}
     for this_filter in body:
@@ -257,9 +257,9 @@ def get_in_silico_filtered_lanes_route(body: dict, dao: MonocleDatabaseService):
           return "name \"{}\" is not a valid in silico field name".format(this_field), HTTP_BAD_REQUEST_STATUS
        filters[this_field] = these_values
      
-    lanes = dao.get_in_silico_filtered_lanes(filters)
+    lanes = dao.get_lanes_filtered_by_in_silico_data(filters)
     logging.debug("DAO returned lanes IDs: {}".format(lanes))
-    # get_in_silico_filtered_lanes() will return None if it is passed a non-existent field name
+    # get_lanes_filtered_by_in_silico_data() will return None if it is passed a non-existent field name
     if lanes is None:
       return 'Invalid field name provided', HTTP_BAD_REQUEST_STATUS
 

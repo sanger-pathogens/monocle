@@ -415,7 +415,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def get_filtered_samples(self, filters: dict) -> List:
+    def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """ Get sample ids where their columns' values are in specified filters """
         # TODO: Also consider other filters such as greater than/less than...
 
@@ -444,7 +444,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return sanger_sample_ids
 
-    def get_in_silico_filtered_lanes(self, filters: dict) -> List:
+    def get_lanes_filtered_by_in_silico_data(self, filters: dict) -> List:
         """ Get lane ids from in silico data that match the specified filters """
         # TODO: Also consider other filters such as greater than/less than...
 

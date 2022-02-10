@@ -161,106 +161,106 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples_filtered_by_metadata')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_route_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_samples_filtered_by_metadata_route_jsonified(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['sample1', 'sample2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
-        fakeDB.get_filtered_samples = MagicMock(return_value=['sample1', 'sample2'])
-        under_test = mar.get_filtered_samples_route([{'name':'serotype', 'values':['IA']}], fakeDB)
+        fakeDB.get_samples_filtered_by_metadata = MagicMock(return_value=['sample1', 'sample2'])
+        under_test = mar.get_samples_filtered_by_metadata_route([{'name':'serotype', 'values':['IA']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples_filtered_by_metadata')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_route_no_return(self, mocked_jsoncall, mocked_query):
+    def test_get_samples_filtered_by_metadata_route_no_return(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_filtered_samples = MagicMock(return_value=[])
-        under_test = mar.get_filtered_samples_route([{'name':'serotype', 'values':['None']}], fakeDB)
+        fakeDB.get_samples_filtered_by_metadata = MagicMock(return_value=[])
+        under_test = mar.get_samples_filtered_by_metadata_route([{'name':'serotype', 'values':['None']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_route_bad_field_name(self, mocked_jsoncall, dao_mock):
+    def test_get_samples_filtered_by_metadata_route_bad_field_name(self, mocked_jsoncall, dao_mock):
         mock_field_name = 'bad_field_name'
         mock_values     = ['anything']
         mock_response   = {}
         mock_json       = ''
         mocked_jsoncall.return_value              = mock_json
-        dao_mock.get_filtered_samples.return_value = None 
-        filtered_samples, http_status = mar.get_filtered_samples_route([{'name':mock_field_name, 'values':mock_values}], dao_mock)
-        dao_mock.get_filtered_samples.assert_called_once_with( {mock_field_name: mock_values} )
+        dao_mock.get_samples_filtered_by_metadata.return_value = None 
+        filtered_samples, http_status = mar.get_samples_filtered_by_metadata_route([{'name':mock_field_name, 'values':mock_values}], dao_mock)
+        dao_mock.get_samples_filtered_by_metadata.assert_called_once_with( {mock_field_name: mock_values} )
         self.assertEqual(filtered_samples, 'Invalid field name provided')
         self.assertEqual(http_status, 400)
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_filtered_samples')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples_filtered_by_metadata')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_filtered_samples_route_stop_injection(self, mocked_jsoncall, mocked_query):
+    def test_get_samples_filtered_by_metadata_route_stop_injection(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['sample1', 'sample2']
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_filtered_samples = MagicMock(return_value=[])
+        fakeDB.get_samples_filtered_by_metadata = MagicMock(return_value=[])
         for looks_iffy_to_me_guv in [  'serotype="Ia"; DO something NASTY; --',
                                        'actually anything with -- in it',
                                        'no semi; colons either',
                                        'wildcards % are right out'
                                        ]:
-          under_test = mar.get_filtered_samples_route([{'name':looks_iffy_to_me_guv, 'values':['any search term']}], fakeDB)
+          under_test = mar.get_samples_filtered_by_metadata_route([{'name':looks_iffy_to_me_guv, 'values':['any search term']}], fakeDB)
           self.assertEqual(under_test[1], 400)
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_in_silico_filtered_lanes')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_in_silico_data')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_in_silico_filtered_lanes_route_jsonified(self, mocked_jsoncall, mocked_query):
+    def test_get_lanes_filtered_by_in_silico_data_route_jsonified(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['lane1', 'lane2']
         mocked_jsoncall.return_value = 'expected'
         fakeDB = MagicMock()
-        fakeDB.get_in_silico_filtered_lanes = MagicMock(return_value=['lane1', 'lane2'])
-        under_test = mar.get_in_silico_filtered_lanes_route([{'name':'ST', 'values':['14']}], fakeDB)
+        fakeDB.get_lanes_filtered_by_in_silico_data = MagicMock(return_value=['lane1', 'lane2'])
+        under_test = mar.get_lanes_filtered_by_in_silico_data_route([{'name':'ST', 'values':['14']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('expected', 200))
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_in_silico_filtered_lanes')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_in_silico_data')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_in_silico_filtered_lanes_route_no_return(self, mocked_jsoncall, mocked_query):
+    def test_get_lanes_filtered_by_in_silico_data_route_no_return(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = []
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_in_silico_filtered_lanes = MagicMock(return_value=[])
-        under_test = mar.get_in_silico_filtered_lanes_route([{'name':'ST', 'values':['None']}], fakeDB)
+        fakeDB.get_lanes_filtered_by_in_silico_data = MagicMock(return_value=[])
+        under_test = mar.get_lanes_filtered_by_in_silico_data_route([{'name':'ST', 'values':['None']}], fakeDB)
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ('', 404))
 
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_in_silico_filtered_lanes_route_bad_field_name(self, mocked_jsoncall, dao_mock):
+    def test_get_lanes_filtered_by_in_silico_data_route_bad_field_name(self, mocked_jsoncall, dao_mock):
         mock_field_name = 'bad_field_name'
         mock_values     = ['anything']
         mock_response   = {}
         mock_json       = ''
         mocked_jsoncall.return_value = mock_json
-        dao_mock.get_in_silico_filtered_lanes.return_value = None 
-        filtered_samples, http_status = mar.get_in_silico_filtered_lanes_route([{'name':mock_field_name, 'values':mock_values}], dao_mock)
-        dao_mock.get_in_silico_filtered_lanes.assert_called_once_with( {mock_field_name: mock_values} )
+        dao_mock.get_lanes_filtered_by_in_silico_data.return_value = None 
+        filtered_samples, http_status = mar.get_lanes_filtered_by_in_silico_data_route([{'name':mock_field_name, 'values':mock_values}], dao_mock)
+        dao_mock.get_lanes_filtered_by_in_silico_data.assert_called_once_with( {mock_field_name: mock_values} )
         self.assertEqual(filtered_samples, 'Invalid field name provided')
         self.assertEqual(http_status, 400)
 
-    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_in_silico_filtered_lanes')
+    @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_in_silico_data')
     @patch('metadata.api.routes.convert_to_json')
-    def test_get_in_silico_filtered_lanes_route_stop_injection(self, mocked_jsoncall, mocked_query):
+    def test_get_lanes_filtered_by_in_silico_data_route_stop_injection(self, mocked_jsoncall, mocked_query):
         mocked_query.return_value = ['lane1', 'lane2']
         mocked_jsoncall.return_value = ''
         fakeDB = MagicMock()
-        fakeDB.get_in_silico_filtered_lanes = MagicMock(return_value=[])
+        fakeDB.get_lanes_filtered_by_in_silico_data = MagicMock(return_value=[])
         for looks_iffy_to_me_guv in [  'ST="Ia"; DO something NASTY; --',
                                        'actually anything with -- in it',
                                        'no semi; colons either',
                                        'wildcards % are right out'
                                        ]:
-          under_test = mar.get_in_silico_filtered_lanes_route([{'name':looks_iffy_to_me_guv, 'values':['any search term']}], fakeDB)
+          under_test = mar.get_lanes_filtered_by_in_silico_data_route([{'name':looks_iffy_to_me_guv, 'values':['any search term']}], fakeDB)
           self.assertEqual(under_test[1], 400)
       
     @patch('metadata.api.database.monocle_database_service.MonocleDatabaseService')

@@ -33,7 +33,7 @@ class SampleMetadataTest(TestCase):
                                              ]
                               }"""
 
-   mock_get_filtered_sample_ids = """[  "fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3" ]"""
+   mock_get_samples_matching_metadata_filters = """[  "fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3" ]"""
 
    mock_distinct_values                =  [ {"name": "field1", "values": ["a", "b"]}, { "name": "field2", "values": ["d", "e"] } ]
    
@@ -113,15 +113,15 @@ class SampleMetadataTest(TestCase):
             self.assertIsInstance(this_sample[required], str, msg="sample item {} should be a string".format(required))
             
    @patch('DataSources.sample_metadata.Monocle_Client.filters')
-   def test_get_filtered_sample_ids(self,mock_filters):
+   def test_get_samples_matching_metadata_filters(self,mock_filters):
       mock_filters.return_value = []
-      samples = self.sample_metadata.get_filtered_sample_ids({self.mock_metadata_field: self.mock_metadata_values})
+      samples = self.sample_metadata.get_samples_matching_metadata_filters({self.mock_metadata_field: self.mock_metadata_values})
       mock_filters.assert_called_once_with([{'name': self.mock_metadata_field, 'values': self.mock_metadata_values}])
       
    @patch('DataSources.sample_metadata.Monocle_Client.filters_in_silico')
-   def test_get_in_silico_filtered_lane_ids(self,mock_filters_in_silico):
+   def test_get_lanes_matching_in_silico_filters(self,mock_filters_in_silico):
       mock_filters_in_silico.return_value = []
-      samples = self.sample_metadata.get_in_silico_filtered_lane_ids({self.mock_in_silico_field: self.mock_in_silico_values})
+      samples = self.sample_metadata.get_lanes_matching_in_silico_filters({self.mock_in_silico_field: self.mock_in_silico_values})
       mock_filters_in_silico.assert_called_once_with([{'name': self.mock_in_silico_field, 'values': self.mock_in_silico_values}])
       
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
@@ -129,14 +129,14 @@ class SampleMetadataTest(TestCase):
       mock_query.return_value = '[]'
       mock_payload = [{'name': self.mock_metadata_field,   'values': self.mock_metadata_values}]
       self.sample_metadata.monocle_client.filters(mock_payload)
-      mock_query.assert_called_once_with('/metadata/filters', post_data=mock_payload)
+      mock_query.assert_called_once_with('/metadata/sample_ids_matching_metadata', post_data=mock_payload)
       
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')
    def test_filters_in_silico(self,mock_query):
       mock_query.return_value = '[]'
       mock_payload = [{'name': self.mock_in_silico_field,   'values': self.mock_in_silico_values}]
       self.sample_metadata.monocle_client.filters_in_silico(mock_payload)
-      mock_query.assert_called_once_with('/metadata/filters_in_silico', post_data=mock_payload)
+      mock_query.assert_called_once_with('/metadata/lane_ids_matching_in_silico_data', post_data=mock_payload)
 
    @patch('DataSources.sample_metadata.Monocle_Client.distinct_values')
    @patch('DataSources.sample_metadata.Monocle_Client.distinct_in_silico_values')

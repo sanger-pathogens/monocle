@@ -244,7 +244,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertIsNotNone(samples)
         self.assertEqual(len(samples), 0)
 
-    def test_get_filtered_samples(self) -> None:
+    def test_get_samples_filtered_by_metadata(self) -> None:
         self.connection.execute.return_value = [
                 dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
@@ -307,22 +307,22 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 linezolid='14',
                 linezolid_method='method14')
         ]
-        samples_ids = self.under_test.get_filtered_samples({'serotype': ['IV']})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({'serotype': ['IV']})
         self.assertEqual(samples_ids, ['9999STDY8113123'])
 
-    def test_get_filtered_samples_noresults(self) -> None:
+    def test_get_samples_filtered_by_metadata_noresults(self) -> None:
         self.connection.execute.return_value = []
-        samples_ids = self.under_test.get_filtered_samples({'serotype': ['None']})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({'serotype': ['None']})
         self.assertEqual(samples_ids, [])
 
-    def test_get_filtered_samples_reject_request_if_bad_field_name(self) -> None:
+    def test_get_samples_filtered_by_metadata_reject_request_if_bad_field_name(self) -> None:
         self.connection.execute.side_effect = OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
         expected = None
-        samples_ids = self.under_test.get_filtered_samples({"bad_field_name": ['anything']})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({"bad_field_name": ['anything']})
         self.assertEqual(self.connection.execute.call_count, 1)
         self.assertEqual(samples_ids, expected)
 
-    def test_get_in_silico_filtered_lanes(self) -> None:
+    def test_get_lanes_filtered_by_in_silico_data(self) -> None:
         self.connection.execute.return_value = [
                 {'lane_id':  '2000_2#10',
                 'cps_type':  'anything',
@@ -386,22 +386,22 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 'RPOBGBS-3_variant':  'anything',
                 'RPOBGBS-4_variant':  'anything'}
         ]
-        lanes_ids = self.under_test.get_in_silico_filtered_lanes({'ST': ['14']})
+        lanes_ids = self.under_test.get_lanes_filtered_by_in_silico_data({'ST': ['14']})
         self.assertEqual(lanes_ids, ['2000_2#10'])
 
-    def test_get_in_silico_filtered_lanes_noresults(self) -> None:
+    def test_get_lanes_filtered_by_in_silico_data_noresults(self) -> None:
         self.connection.execute.return_value = []
-        samples_ids = self.under_test.get_filtered_samples({'ST': ['None']})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({'ST': ['None']})
         self.assertEqual(samples_ids, [])
 
-    def test_get_in_silico_filtered_lanes_reject_request_if_bad_field_name(self) -> None:
+    def test_get_lanes_filtered_by_in_silico_data_reject_request_if_bad_field_name(self) -> None:
         self.connection.execute.side_effect = OperationalError('mock params', 'mock orig', 'mock message including the substring Unknown column')
         expected = None
-        samples_ids = self.under_test.get_filtered_samples({"bad_field_name": ['anything']})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({"bad_field_name": ['anything']})
         self.assertEqual(self.connection.execute.call_count, 1)
         self.assertEqual(samples_ids, expected)
 
-    def test_get_filtered_samples_nofilters(self) -> None:
+    def test_get_samples_filtered_by_metadata_nofilters(self) -> None:
         self.connection.execute.return_value = [
             dict(sanger_sample_id='9999STDY8113123',
                 lane_id='2000_2#10',
@@ -524,7 +524,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                  linezolid='24',
                  linezolid_method='method24')
         ]
-        samples_ids = self.under_test.get_filtered_samples({})
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({})
         self.assertEqual(samples_ids, ['9999STDY8113123', '9999STDY8113124'])
 
     def test_get_distinct_values(self) -> None:

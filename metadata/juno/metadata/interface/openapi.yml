@@ -173,9 +173,9 @@ paths:
         "404":
           description: "No data could be found for the given institutions or filters"
 
-  /filters:
+  /sample_ids_matching_metadata:
     post:
-      operationId: metadata.api.routes.get_filtered_samples_route
+      operationId: metadata.api.routes.get_samples_filtered_by_metadata_route
       summary: "Filter samples according to metadata values, and return matching Sanger sample IDs"
       requestBody:
         description: "An array of metadata filters"
@@ -194,9 +194,9 @@ paths:
         "404":
           description: "No data could be found for the given filters"
           
-  /filters_in_silico:
+  /lane_ids_matching_in_silico_data:
     post:
-      operationId: metadata.api.routes.get_in_silico_filtered_lanes_route
+      operationId: metadata.api.routes.get_lanes_filtered_by_in_silico_data_route
       summary: "Filter lanes according to in silico data values, and return matching lane IDs"
       requestBody:
         description: "An array of in silico filters"
