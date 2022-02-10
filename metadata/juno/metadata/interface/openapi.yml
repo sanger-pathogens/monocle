@@ -427,25 +427,33 @@ components:
 
     InSilicoFilters:
       type: object
-      additionalProperties:
-        type: array
-        items:
-          type: string
-          minLength: 1
-          maxLength: 256
-        minItems: 1
-      minItems: 0
-      example:
-        ST: ["1", "12", "14"]
+      properties:
+         name:
+            description: "The name of the in silico field"
+            $ref: "#/components/schemas/InSilicoFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the in silico field"
+               $ref: "#/components/schemas/InSilicoFieldValueFilter"
+      example: { "name": "ST",  "values": ["1", "12", "14"] }
 
     FieldValueFilter:
-      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
       minLength: 1
       maxLength: 256
       # Allows one whitespace but not two or more together and allows single
       # but not double hyphens to prevent -- injections
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
+      
+    InSilicoFieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      # only alphanumerics, '*' and '/'
+      pattern: ^([a-zA-Z0-9_\*/]+)$
 
     MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"
