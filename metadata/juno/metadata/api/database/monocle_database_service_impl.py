@@ -171,6 +171,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 FROM api_sample
                 ORDER BY sanger_sample_id""")
 
+    SELECT_ALL_IN_SILICO_SQL = text(""" \
+                SELECT lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
+                CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
+                SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
+                twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
+                FROM in_silico
+                ORDER BY lane_id""")
+    
     FILTER_SAMPLES_IN_SQL = """ \
             SELECT sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
             age_days, age_group, age_months, age_weeks, age_years, ampicillin,
@@ -184,6 +192,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
             vancomycin, vancomycin_method
             FROM api_sample
+            WHERE {} IN :values"""
+
+    IN_SILICO_FILTER_LANES_IN_SQL = """ \
+            SELECT lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
+            CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
+            SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
+            twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
+            FROM in_silico
             WHERE {} IN :values"""
 
     #DISTINCT_FIELD_VALUES_SQL = text(""" \
@@ -399,14 +415,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def get_filtered_samples(self, all_filters: dict) -> List:
+    def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """ Get sample ids where their columns' values are in specified filters """
         # TODO: Also consider other filters such as greater than/less than...
 
-        # TODO  this extracts metadata filters only from the filters (metadata, in silico and/or QC data) passed
-        #       we need to implement filtering on in silico and QC data values
-        filters = all_filters.get('metadata', [])
-        
         sanger_sample_ids = []
         with self.connector.get_connection() as con:
             if len(filters) > 0:
@@ -431,6 +443,35 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 sanger_sample_ids = [row['sanger_sample_id'] for row in rs]
 
         return sanger_sample_ids
+
+    def get_lanes_filtered_by_in_silico_data(self, filters: dict) -> List:
+        """ Get lane ids from in silico data that match the specified filters """
+        # TODO: Also consider other filters such as greater than/less than...
+
+        lane_ids = []
+        with self.connector.get_connection() as con:
+            if len(filters) > 0:
+                for filter, values in filters.items():
+                  new_lane_ids = []
+                  try:
+                    rs = con.execute(text(self.IN_SILICO_FILTER_LANES_IN_SQL.format(filter)), values = tuple(values))
+                    new_lane_ids.extend([row['lane_id'] for row in rs])
+                    if len(lane_ids) > 0:
+                      tmp_ids = [id for id in new_lane_ids if id in lane_ids]
+                      lane_ids = tmp_ids
+                    else:
+                      lane_ids = new_lane_ids
+                  except OperationalError as e:
+                    if 'Unknown column' in str(e):
+                      logging.error("attempted to apply filter to unknown field \"{}\"".format(filter))
+                      return None
+                    else:
+                      raise e
+            else:
+                rs = con.execute(self.SELECT_ALL_IN_SILICO_SQL)
+                lane_ids = [row['lane_id'] for row in rs]
+
+        return lane_ids
 
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """

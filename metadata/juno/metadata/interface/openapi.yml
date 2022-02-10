@@ -173,10 +173,10 @@ paths:
         "404":
           description: "No data could be found for the given institutions or filters"
 
-  /filters:
+  /sample_ids_matching_metadata:
     post:
-      operationId: metadata.api.routes.get_filtered_samples_route
-      summary: "Gather filtered sample records"
+      operationId: metadata.api.routes.get_samples_filtered_by_metadata_route
+      summary: "Filter samples according to metadata values, and return matching Sanger sample IDs"
       requestBody:
         description: "An array of metadata filters"
         required: true
@@ -191,6 +191,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Samples"
+        "404":
+          description: "No data could be found for the given filters"
+          
+  /lane_ids_matching_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_lanes_filtered_by_in_silico_data_route
+      summary: "Filter lanes according to in silico data values, and return matching lane IDs"
+      requestBody:
+        description: "An array of in silico filters"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FiltersInSilicoInput"
+      responses:
+        "200":
+          description: "List of lane ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lanes"
         "404":
           description: "No data could be found for the given filters"
 
@@ -380,23 +401,10 @@ components:
           
           
     FiltersInput:
-      type: object
-      properties:
-        metadata:
-          type: array
-          items:
-            $ref: "#/components/schemas/MetadataFilters"
-          minItems: 1
-        in silico:
-          type: array
-          items:
-            $ref: "#/components/schemas/InSilicoFilters"
-          minItems: 1
-        qc data:
-          type: array
-          items:
-            $ref: "#/components/schemas/QCDataFilters"
-          minItems: 1
+      type: array
+      items:
+        $ref: "#/components/schemas/MetadataFilters"
+      minItems: 1
 
     MetadataFilters:
       type: object
@@ -411,6 +419,12 @@ components:
                $ref: "#/components/schemas/FieldValueFilter"
       example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
       
+    FiltersInSilicoInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFilters"
+      minItems: 1
+
     InSilicoFilters:
       type: object
       properties:
@@ -421,30 +435,25 @@ components:
             type: array
             items:
                description: "List of desired values of the in silico field"
-               $ref: "#/components/schemas/FieldValueFilter"
+               $ref: "#/components/schemas/InSilicoFieldValueFilter"
       example: { "name": "ST",  "values": ["1", "12", "14"] }
-      
-    QCDataFilters:
-      type: object
-      properties:
-         name:
-            description: "The name of the QC data field"
-            $ref: "#/components/schemas/QCDataFieldName"
-         values:
-            type: array
-            items:
-               description: "List of desired values of the QC data field"
-               $ref: "#/components/schemas/FieldValueFilter"
-      example: { "name": "rel_abun_sa",  "values": ["99.3"] }
-      
+
     FieldValueFilter:
-      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
       minLength: 1
       maxLength: 256
       # Allows one whitespace but not two or more together and allows single
       # but not double hyphens to prevent -- injections
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
+      
+    InSilicoFieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      # only alphanumerics, '*' and '/'
+      pattern: ^([a-zA-Z0-9_\*/]+)$
 
     MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"
@@ -543,6 +552,16 @@ components:
         pattern: ^[a-zA-Z0-9]*$
       minItems: 1
       example: ["5903STDY8059122", "5903STDY8059054"]
+
+    Lanes:
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]
       
     Metadata:
       description: "Object containing an array of Sanger sample ids and their metadata"

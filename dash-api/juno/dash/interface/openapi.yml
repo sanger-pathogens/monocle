@@ -465,6 +465,8 @@ components:
 
     SampleFilters:
       type: object
+      required:
+        - batches
       properties:
         batches:
           type: array
@@ -474,8 +476,6 @@ components:
           $ref: "#/components/schemas/MetadataFilters"
         in silico:
           $ref: "#/components/schemas/InSilicoFilters"
-        qc data:
-          $ref: "#/components/schemas/QCDataFilters"
 
     MetadataFilters:
       type: object
@@ -488,7 +488,7 @@ components:
         minItems: 1
       minItems: 0
       example:
-        serotype: ["Ia", "IV"]
+        age_group: ["adult"]
 
     InSilicoFilters:
       type: object
@@ -502,19 +502,6 @@ components:
       minItems: 0
       example:
         ST: ["1", "12", "14"]
-
-    QCDataFilters:
-      type: object
-      additionalProperties:
-        type: array
-        items:
-          type: string
-          minLength: 1
-          maxLength: 256
-        minItems: 1
-      minItems: 0
-      example:
-        rel_abun_sa: ["99.3"]
 
     DataFieldType:
        description: "The type of data field:  metadata, in silico, or QC data"
