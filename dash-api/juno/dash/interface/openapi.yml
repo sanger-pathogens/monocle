@@ -488,7 +488,7 @@ components:
         minItems: 1
       minItems: 0
       example:
-        serotype: ["Ia", "IV"]
+        age_group: ["adult"]
 
     InSilicoFilters:
       type: object
