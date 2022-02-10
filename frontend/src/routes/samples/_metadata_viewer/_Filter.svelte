@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   // We need to import the source Svelte component because Jest doesn't recognise the compiled JS code provided by the library.
   import Select from "svelte-select/src/Select.svelte";
-  import BinIcon from "$lib/components/icons/BinIcon.svelte";
+  import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import { getDistinctColumnValues } from "$lib/dataLoading.js";
   import RemoveFilterButtons from "./_RemoveFilterButtons.svelte";
   import { distinctColumnValuesStore, filterStore } from "../_stores.js";
@@ -78,59 +78,61 @@
 </script>
 
 
-<article
-  role="dialog"
-  aria-labelledby="filter-menu-heading"
-  bind:this={filterContainerElement}
->
-  <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
-
-  <label>
-    <input type="checkbox" bind:checked={exclude} />
-    <em>Exclude</em> samples with the selected values
-  </label>
-
-  <Select
-    noOptionsMessage={"No matches"}
-    isMulti={true}
-    bind:value={selectedValues}
-    items={values}
-    isWaiting={!values}
-    showIndicator={true}
-    containerStyles="margin-bottom: 2.2rem"
-  />
-
-  <button
-    class="primary compact"
-    on:click={() => {applyFilter(); closeFilter();}}
-    disabled={!values || !hasChanges}
+{#if column}
+  <article
+    role="dialog"
+    aria-labelledby="filter-menu-heading"
+    bind:this={filterContainerElement}
   >
-    Apply and close
-  </button>
-  <button
-    class="primary compact"
-    on:click={applyFilter}
-    disabled={!values || !hasChanges}
-  >
-    Apply
-  </button>
-  <button
-    class="compact"
-    on:click={closeFilter}
-  >
-    Close
-  </button>
+    <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
 
-  <span class="dropdown-menu">
-    <span aria-hidden="true" class="menu-trigger" tabindex="0">
-      <BinIcon />
+    <label>
+      <input type="checkbox" bind:checked={exclude} />
+      <em>Exclude</em> samples with the selected values
+    </label>
+
+    <Select
+      noOptionsMessage={"No matches"}
+      isMulti={true}
+      bind:value={selectedValues}
+      items={values}
+      isWaiting={!values}
+      showIndicator={true}
+      containerStyles="margin-bottom: 2.2rem"
+    />
+
+    <button
+      class="primary compact"
+      on:click={() => {applyFilter(); closeFilter();}}
+      disabled={!values || !hasChanges}
+    >
+      Apply and close
+    </button>
+    <button
+      class="primary compact"
+      on:click={applyFilter}
+      disabled={!values || !hasChanges}
+    >
+      Apply
+    </button>
+    <button
+      class="compact"
+      on:click={closeFilter}
+    >
+      Close
+    </button>
+
+    <span class="dropdown-menu">
+      <span aria-hidden="true" class="menu-trigger" tabindex="0">
+        <RemoveFilterIcon color="var(--text-muted)" />
+      </span>
+      <div aria-hidden="true" class="menu">
+        <RemoveFilterButtons {column} />
+      </div>
+      <RemoveFilterButtons screenReaderOnly={true} {column} />
     </span>
-    <div aria-hidden="true" class="menu">
-      <RemoveFilterButtons {column} />
-    </div>
-    <RemoveFilterButtons screenReaderOnly={true} {column} />
-  </span>
-</article>
+  </article>
+{/if}
 
 
 <style>

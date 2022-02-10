@@ -18,7 +18,7 @@
     on:click={() => filterStore.removeFilter(column)}
     class="sr-only"
   >
-    Remove filter
+    Remove this filter
   </button>
   <button
     aria-hidden="false"
@@ -33,7 +33,7 @@
     on:click={() => filterStore.removeFilter(column)}
     class="compact"
   >
-    Remove filter
+    Remove this filter
   </button>
   <button
     on:click={removeAllFilters}
