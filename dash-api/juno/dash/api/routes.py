@@ -246,6 +246,8 @@ def bulk_download_urls_route(body):
     if max_samples_per_zip is not None:
       if reads:
          max_samples_per_zip = int( (max_samples_per_zip/10) + 0.5 )
+         if max_samples_per_zip < 1:
+            max_samples_per_zip = 1 
     else:
       # if not passed, get value from config file
       max_samples_per_zip = monocle_data.get_bulk_download_max_samples_per_zip(including_reads=reads)
