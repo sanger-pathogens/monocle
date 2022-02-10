@@ -417,14 +417,18 @@ class MonocleSampleData:
       if 'metadata' in sample_filters:
          filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['metadata'])
       if 'in silico' in sample_filters:
-         filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['in silico'])
-
+         filtered_samples = self._apply_in_silico_filters(filtered_samples, sample_filters['in silico'])
+      # TODO either implement this, or remove this waning if QC data filtering definitely isn't wanted
+      #      (expect it will be the latter)
+      if 'qc data' in sample_filters:
+         logging.warning("FILTERING BY QC DATA IS NOT IMPLEMENTED")
+      
+      logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
       logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids = self.sample_tracking.sample_metadata.get_filtered_sample_ids(metadata_filters)
-      #########matching_samples_ids = ['5903STDY8113176', '5903STDY8113175']
       logging.info("{}.sample_tracking.sample_metadata.get_filtered_sample_ids returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
       intersection = []
       for this_sample in filtered_samples:
@@ -432,25 +436,21 @@ class MonocleSampleData:
             logging.debug("sample {} matches metadata filters".format(this_sample['sanger_sample_id']))
             intersection.append(this_sample)
       filtered_samples = intersection
-      logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
+      logging.info("sample list filtered by metadata contains {} samples".format(len(filtered_samples)))
       return filtered_samples
    
    def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
       logging.info("{}._apply_in_silico_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
-      matching_lane_ids    = self.sample_tracking.sample_metadata.get_in_silico_filtered_lane_ids(in_silico_filters)
+      matching_lane_ids = self.sample_tracking.sample_metadata.get_in_silico_filtered_lane_ids(in_silico_filters)
       logging.info("{}.sample_tracking.sample_metadata.get_in_silico_filtered_lane_ids returned {} lanes".format(__class__.__name__, len(matching_lane_ids)))
       intersection = []
-      # TODO  implement this!
-      #       the commenetd out code is from _apply_metadata_filters()
-      #       this function will be different as it has to match LANE IDs not sample IDs
-      #       (in silico data do not have sample IDs)
-      logging.warning(">>> Sample filtering on in silico data is not yet implemented <<<")
-      #for this_sample in filtered_samples:
-         #if this_sample['sanger_sample_id'] in matching_samples_ids:
-            #logging.debug("sample {} matches metadata filters".format(this_sample['sanger_sample_id']))
-            #intersection.append(this_sample)
-      #filtered_samples = intersection
-      #logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
+      for this_sample in filtered_samples:
+         this_sample_matching_lanes_ids = list(filter(lambda x: x in this_sample['lanes'], matching_lane_ids))
+         if this_sample_matching_lanes_ids:
+            logging.debug("Sample {} matches in silico filters based on lane(s) {}".format(this_sample['sanger_sample_id'],this_sample['lanes'],this_sample_matching_lanes_ids))
+            intersection.append(this_sample)
+      filtered_samples = intersection
+      logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))
       return filtered_samples
 
    def _get_sanger_sample_id_to_public_name_dict(self, institutions):
