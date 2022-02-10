@@ -1,6 +1,7 @@
 <script>
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
@@ -144,6 +145,12 @@
     a.download = fileName;
     return a;
   }
+
+  function removeAllFilters() {
+    if (confirm("Remove all filters?")) {
+      filterStore.removeAllFilters();
+    }
+  }
 </script>
 
 
@@ -162,7 +169,7 @@
   </section>
 
   {#if selectedBatches?.length}
-    <div class="download-btns">
+    <div class="btn-group">
       <button
         aria-label="Download samples{bulkDownloadEstimate ? ` of size ${bulkDownloadEstimate.sizeZipped}` : ''}"
         on:click={() => shouldDisplayBulkDownload = true}
@@ -189,6 +196,15 @@
         {:else}
           Metadata <DownloadIcon />
         {/if}
+      </button>
+
+      <button
+        on:click={removeAllFilters}
+        class="compact remove-filters-btn"
+        disabled={!filterActive ? true : null}
+        type="button"
+      >
+        Remove all filters <RemoveFilterIcon width="24" />
       </button>
     </div>
   {/if}
@@ -226,11 +242,16 @@
   width: 100%;
 }
 
-.download-btns {
+.btn-group {
   margin-bottom: .5rem;
 }
-.download-btns button {
+.btn-group button {
   margin-right: 1rem;
+}
+
+.remove-filters-btn {
+  display: inline-flex;
+  margin-left: 4rem;
 }
 
 em {
