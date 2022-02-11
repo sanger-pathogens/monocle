@@ -10,4 +10,8 @@ RUN pip install pipenv coverage==5.5 \
 # add rest of code
 COPY . /app
 
-CMD ["gunicorn", "-w 2", "-b :80", "metadata.wsgi"]
+ENV      GUNICORN_PORT=80
+ENV      GUNICORN_WORKERS=2
+ENV      GUNICORN_TIMEOUT=60
+EXPOSE   "$GUNICORN_PORT"
+CMD      gunicorn -w "${GUNICORN_WORKERS}" -t "${GUNICORN_TIMEOUT}" -b ":${GUNICORN_PORT}" metadata.wsgi
