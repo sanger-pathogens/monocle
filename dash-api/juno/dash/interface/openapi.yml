@@ -1062,8 +1062,8 @@ components:
           description: "The maximum number of samples in each ZIP archive.  Automatically divided by 10 if reads is true."
           type:    integer
           minimum: 1
-          maximum: 200
-          example: 10
+          maximum: 500
+          example: 25
 
     InstKeyBatchDatePair:
       type: object
