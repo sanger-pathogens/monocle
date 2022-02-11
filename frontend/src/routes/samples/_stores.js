@@ -21,7 +21,7 @@ import { writable } from "svelte/store";
   ```
 */
 function createDistinctColumnValuesStore() {
-  const { update, subscribe } = writable({ metadata: {}, "in silico": {}, "qc data": {} });
+  const { update, set, subscribe } = writable({ metadata: {}, "in silico": {}, "qc data": {} });
 
   return {
     subscribe,
@@ -31,7 +31,9 @@ function createDistinctColumnValuesStore() {
           storedDistinctValues[dataType][column.name] = column.values));
 
       return storedDistinctValues;
-    })
+    }),
+    // This function is used for tests only.
+    _reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} })
   };
 }
 
