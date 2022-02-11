@@ -89,7 +89,7 @@
               <FilterMenuIcon width="17" height="17" color={$filterStore[column.dataType][column.name] ? null : COLOR_INACTIVE_FILTER} />
             {/if}
           </button>
-          {#if columnOfOpenFilter?.title === columnTitle}
+          {#if columnOfOpenFilter && columnOfOpenFilter.title === columnTitle}
             <Filter bind:column={columnOfOpenFilter} />
           {/if}
         </th>

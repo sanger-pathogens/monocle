@@ -4,16 +4,15 @@
   import Select from "svelte-select/src/Select.svelte";
   import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import { getDistinctColumnValues } from "$lib/dataLoading.js";
-  import RemoveFilterButtons from "./_RemoveFilterButtons.svelte";
   import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
-  export let column = undefined;
+  export let column;
   let { name: columnName, dataType: columnDataType } = column || {};
 
   const NARROW_SCREEN_BREAKPOINT = 810;
 
   let filterContainerElement;
-  let exclude = $filterStore[columnDataType][columnName]?.exclude;
+  let exclude = $filterStore[columnDataType][columnName]?.exclude || false;
   let selectedValues = $filterStore[columnDataType][columnName]?.values.map(
     (value) => ({ label: value, value }));
 
@@ -22,11 +21,13 @@
   $: savedState = $filterStore[columnDataType][columnName] || { values: [] };
   $: values = $distinctColumnValuesStore[columnDataType]?.[columnName];
 
-  if (!values && column) {
-    getDistinctColumnValues([column], fetch)
-      .then((distinctValuesResponse) =>
-        distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)
-      );
+  $: {
+    if (!values && column) {
+      getDistinctColumnValues([column], fetch)
+        .then((distinctValuesResponse) =>
+          distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)
+        );
+    }
   }
 
   // Waiting for the component to "mount" because we need DOM element `filterContainerElement` to be present.
@@ -68,7 +69,7 @@
   }
 
   function _hasChanges() {
-    if (savedState.exclude !== exclude) {
+    if (Boolean(savedState.exclude) !== exclude && selectedValues?.length) {
       return true;
     }
     const savedStateValuesSet = new Set(savedState.values);
