@@ -447,7 +447,7 @@ class MonocleSampleData:
       for this_sample in filtered_samples:
          this_sample_matching_lanes_ids = list(filter(lambda x: x in this_sample['lanes'], matching_lane_ids))
          if this_sample_matching_lanes_ids:
-            logging.debug("Sample {} matches in silico filters based on lane(s) {}".format(this_sample['sanger_sample_id'],this_sample['lanes'],this_sample_matching_lanes_ids))
+            logging.debug("Sample {} matches in silico filters based on lane(s) {}".format(this_sample['sanger_sample_id'],this_sample_matching_lanes_ids))
             intersection.append(this_sample)
       filtered_samples = intersection
       logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))

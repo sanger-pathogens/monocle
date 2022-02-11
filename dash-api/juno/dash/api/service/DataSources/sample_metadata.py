@@ -66,7 +66,7 @@ class SampleMetadata:
         filters_payload = []
         for this_field in metadata_filters:
           these_values = metadata_filters[this_field]
-          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          assert ( isinstance(these_values, list) ), "{}.get_samples_matching_metadata_filters() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
           filters_payload.append( {'name': this_field, 'values': these_values} )
         logging.debug("{}.get_samples_matching_metadata_filters() created filters payload {}".format(__class__.__name__, filters_payload))
         
@@ -83,12 +83,12 @@ class SampleMetadata:
         filters_payload = []
         for this_field in in_silico_filters:
           these_values = in_silico_filters[this_field]
-          assert ( isinstance(these_values, list) ), "{}.metadata() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
+          assert ( isinstance(these_values, list) ), "{}.get_lanes_matching_in_silico_filters() expects metadata filter value to be a list, not {}".format(__class__.__name__,type(these_values))
           filters_payload.append( {'name': this_field, 'values': these_values} )
-        logging.debug("{}.get_samples_matching_metadata_filters() created filters payload {}".format(__class__.__name__, filters_payload))
+        logging.debug("{}.get_lanes_matching_in_silico_filters() created filters payload {}".format(__class__.__name__, filters_payload))
         
         results_list = self.monocle_client.filters_in_silico(filters_payload)
-        logging.info("{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
+        logging.info("{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results_list)))
         return results_list
      
     def get_distinct_values(self, fields, institutions):
