@@ -121,11 +121,9 @@ main {
   font-weight: 300;
 }
 
-:global(.sr-only) {
-  position: absolute !important;
-  height: 1px;
-  width: 1px;
-  overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
+:global(.icon-btn) {
+  border: none;
+  margin-top: .25rem;
+  padding: .3rem .3rem .1rem;
 }
 </style>

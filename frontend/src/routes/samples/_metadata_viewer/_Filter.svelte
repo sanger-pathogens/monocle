@@ -121,16 +121,15 @@
     >
       Close
     </button>
-
-    <span class="dropdown-menu">
-      <span aria-hidden="true" class="menu-trigger" tabindex="0">
-        <RemoveFilterIcon color="var(--text-muted)" />
-      </span>
-      <div aria-hidden="true" class="menu">
-        <RemoveFilterButtons {column} />
-      </div>
-      <RemoveFilterButtons screenReaderOnly={true} {column} />
-    </span>
+    <button
+      title="Remove this filter"
+      aria-label={`Remove the filter for column ${column.title}`}
+      on:click={() => filterStore.removeFilter(column)}
+      class="remove-filter-btn icon-btn"
+      disabled={! $filterStore[columnDataType][columnName]}
+    >
+      <RemoveFilterIcon color="var(--text-muted)" />
+    </button>
   </article>
 {/if}
 
@@ -153,29 +152,7 @@ h4 {
   margin-top: revert;
 }
 
-.dropdown-menu {
+.remove-filter-btn {
   float: right;
-  margin-top: .4rem;
-  position: relative;
-}
-.menu {
-  background: var(--background-body);
-  border: 1px solid var(--color-border);
-  box-shadow: -2px 2px 8px 0 rgba(0, 0, 0, .2);
-  display: none;
-  list-style: none;
-  position: absolute;
-  transform: translateX(-44%);
-}
-.menu-trigger {
-  cursor: pointer;
-  padding: 0 1rem .5rem;
-}
-.dropdown-menu:focus-within .menu,
-.menu-trigger:hover ~ .menu,
-.menu-trigger:focus ~ .menu,
-.menu:hover {
-  display: flex;
-  flex-direction: column;
 }
 </style>
