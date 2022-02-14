@@ -112,6 +112,32 @@ paths:
                       $ref: "#/components/schemas/InstitutionPipelineStatus"
         "403":
           description: "Authorization information is missing or invalid."
+          
+  /get_field_attributes:
+    get:
+      operationId: dash.api.routes.get_field_attributes_route
+      summary: "Return attrubutes of metadata, in silico and QC data fields."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      responses:
+        "200":
+          description: "The operation was successful. Returned data is a JSON obnject describing metadata, in silico and QC data fields."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  field_attributes:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/FieldAttributes"
+        "403":
+          description: "Authorization information is missing or invalid."
 
   /bulk_download_info:
     post:
@@ -659,6 +685,40 @@ components:
         qc data:
           $ref: "#/components/schemas/QCData"
 
+    FieldAttributes:
+      type: object
+      properties:
+        field type:
+          type: object
+          properties:
+            category:
+              type: object
+              properties:
+                field:
+                  type: object
+                  properties:
+                    display:
+                      description: "Flag indicating if this field should be displayed"
+                      type: boolean
+                    order:
+                      description: "Sort order for this field (1 = first column, etc.)"
+                      type: integer
+                      minimum: 1
+                    spreadsheet heading:
+                      description: "The column heading for this field when loaded from a spreadsheet"
+                      type: string
+                      minLength: 2
+                      maxLength: 256
+                    display name:
+                      description: "The name of this field that should be used for display"
+                      type: string
+                      minLength: 2
+                      maxLength: 256
+                    filter type:
+                      description: "The type of filter that should be used with this field: \"discrete\", \"numeric\", or \"none\""
+                      type: string
+                      pattern: ^discrete|numeric|none$
+    
     Metadata:
       type: object
       required:
