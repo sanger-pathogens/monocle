@@ -134,8 +134,7 @@ paths:
                 properties:
                   field_attributes:
                     type: object
-                    additionalProperties:
-                      $ref: "#/components/schemas/FieldAttributes"
+                    $ref: "#/components/schemas/FieldAttributes"
         "403":
           description: "Authorization information is missing or invalid."
 
@@ -687,37 +686,79 @@ components:
 
     FieldAttributes:
       type: object
+      readOnly: true
       properties:
-        field type:
+        metadata:
           type: object
           properties:
-            category:
-              type: object
-              properties:
-                field:
-                  type: object
-                  properties:
-                    display:
-                      description: "Flag indicating if this field should be displayed"
-                      type: boolean
-                    order:
-                      description: "Sort order for this field (1 = first column, etc.)"
-                      type: integer
-                      minimum: 1
-                    spreadsheet heading:
-                      description: "The column heading for this field when loaded from a spreadsheet"
-                      type: string
-                      minLength: 2
-                      maxLength: 256
-                    display name:
-                      description: "The name of this field that should be used for display"
-                      type: string
-                      minLength: 2
-                      maxLength: 256
-                    filter type:
-                      description: "The type of filter that should be used with this field: \"discrete\", \"numeric\", or \"none\""
-                      type: string
-                      pattern: ^discrete|numeric|none$
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/FieldCategory"
+        in silico:
+          type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/FieldCategory"
+        qc data:
+          type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/FieldCategory"
+          
+    FieldCategory:
+      description: "A category of fields, grouped together as they describe conceptually related values."
+      type: object
+      readOnly: true
+      properties:
+        name:
+          description: "The name of the category."
+          type: string
+        fields:
+          description: "A list of fields in the category."
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldDescription"
+        
+    FieldDescription:
+      description: "A description of a field"
+      type: object
+      readOnly: true
+      required:
+        - name
+        - display
+        - order
+        - spreadsheet heading
+        - display name
+        - filter type
+      properties:
+        name:
+          description: "The name of the field"
+        display:
+          description: "Flag indicating if this field should be displayed"
+          type: boolean
+        order:
+          description: "Sort order for this field (1 = first column, etc.)"
+          type: integer
+          minimum: 1
+        spreadsheet heading:
+          description: "The column heading for this field when loaded from a spreadsheet"
+          type: string
+          minLength: 2
+          maxLength: 256
+        display name:
+          description: "The name of this field that should be used for display"
+          type: string
+          minLength: 2
+          maxLength: 256
+        filter type:
+          description: "The type of filter that should be used with this field: \"discrete\", \"numeric\", or \"none\""
+          type: string
+          pattern: ^discrete|numeric|none$
     
     Metadata:
       type: object
