@@ -129,7 +129,7 @@
       class="remove-filter-btn icon-btn"
       disabled={! $filterStore[columnDataType][columnName]}
     >
-      <RemoveFilterIcon color="var(--text-muted)" />
+      <RemoveFilterIcon />
     </button>
   </article>
 {/if}

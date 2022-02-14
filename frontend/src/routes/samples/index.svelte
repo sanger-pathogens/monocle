@@ -204,7 +204,7 @@
         disabled={!filterActive ? true : null}
         type="button"
       >
-        Remove all filters <RemoveFilterIcon width="24" />
+        Remove all filters <RemoveFilterIcon width="24" height="17" />
       </button>
     </div>
   {/if}
