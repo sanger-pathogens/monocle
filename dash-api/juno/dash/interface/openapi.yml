@@ -742,11 +742,11 @@ components:
           description: "Flag indicating if this field should be displayed"
           type: boolean
         order:
-          description: "Sort order for this field (1 = first column, etc.)"
+          description: "Sort order for this field (1 = first column, etc.) in spreadsheet format.  Note that this format ignores the field categories!"
           type: integer
           minimum: 1
         spreadsheet heading:
-          description: "The column heading for this field when loaded from a spreadsheet"
+          description: "The heading for this field in spreadsheet format"
           type: string
           minLength: 2
           maxLength: 256
