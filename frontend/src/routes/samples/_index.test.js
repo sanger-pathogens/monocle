@@ -126,11 +126,11 @@ describe("once batches are fetched", () => {
 
     it("ignores institutions w/ no batches", async () => {
       const institutionWithoutBatches = "XyzUni";
-      const batches_payload = {
+      const batchesPayload = {
         ...BATCHES_PAYLOAD,
         [institutionWithoutBatches]: { _ERROR: "no batches" }
       };
-      getBatches.mockResolvedValueOnce(batches_payload);
+      getBatches.mockResolvedValueOnce(batchesPayload);
       const { findByRole, getByText, queryByText } = render(DataViewerPage);
 
       const selector = await findByRole("textbox");

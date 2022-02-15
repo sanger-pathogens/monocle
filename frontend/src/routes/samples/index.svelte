@@ -44,10 +44,10 @@
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
+  $: filterStore.removeAllFilters(selectedBatches);
+
   $: filterActive = Object.keys($filterStore).some((dataType) =>
     Object.keys($filterStore[dataType] || []).length);
-
-  $: filterStore.removeAllFilters(selectedBatches);
 
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
 
