@@ -191,8 +191,25 @@ paths:
             minLength: 16
             maxLength: 32
             pattern: ^[a-f0-9]+$
+        - name: "redirect"
+          in: query
+          description: "Flag indicating if the resposne should be a 303 redirect to the download location"
+          required: false
+          schema:
+            type: boolean
+            default: true
       responses:
-        "302":
+        "200":
+          description: "The operation was successful. Return data provides the download location."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download location:
+                    type: string
+                    format: uri
+        "303":
           description: "The data are available."
           headers:
             Location:
@@ -200,6 +217,14 @@ paths:
               schema:
                 type: string
                 format: uri
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download location:
+                    type: string
+                    format: uri
         "403":
           description: "Download token missing or invalid."
         "404":
