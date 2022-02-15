@@ -90,6 +90,28 @@ describe("once batches are fetched", () => {
       .toBeTruthy();
   });
 
+  it("disables the filter removal button on batches change", async () => {
+    const filterRemovalLabel = /^Remove all filters/;
+    const { findByRole, getByRole, getByText } = render(DataViewerPage);
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+    await fireEvent.click(selectAllBtn);
+    filterStore.update((filters) => {
+      filters.metadata.someColumn = { values: ["some value"] };
+      return filters;
+    });
+
+    await waitFor(() => {
+      expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
+        .toBeFalsy();
+    });
+
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: "Clear" }));
+    await fireEvent.click(selectAllBtn);
+
+    expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
+      .toBeTruthy();
+  });
+
   describe("batch selector", () => {
     it("displays a list of available batches and their institutions when clicked", async () => {
       const institutionsPayload = Object.keys(BATCHES_PAYLOAD)
