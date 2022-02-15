@@ -423,7 +423,7 @@ def wait_for_zipfile_ready(filename) -> bool:
     if not complete_zipfile(filename):
       if ( time() - start_waiting ) > 120:
         return False
-      logging.debug("waiting for ZIP file {} to be completed".format(expected_zipfile))
+      logging.debug("waiting for ZIP file {} to be completed".format(filename))
       sleep(6)
     return True
    
