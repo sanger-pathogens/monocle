@@ -223,7 +223,7 @@
                   "order"              : 32,
                   "spreadsheet heading": "Apgar_score",
                   "display name"       : "Apgar score",
-                  "filter type"        : "discrete"
+                  "filter type"        : "numeric"
                }
             ]
          },
