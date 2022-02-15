@@ -341,7 +341,6 @@ class TestRoutes(unittest.TestCase):
         mock_host = 'mock_host.sanger.ac.uk'
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
-        samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
@@ -400,7 +399,6 @@ class TestRoutes(unittest.TestCase):
         mock_host = 'mock_host.sanger.ac.uk'
         request_args_mock.return_value = {'redirect': 'false'}
         request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
-        samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
@@ -456,7 +454,7 @@ class TestRoutes(unittest.TestCase):
         # Given
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {}
-        samples = self.SERVICE_CALL_RETURN_DATA
+
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
@@ -513,7 +511,7 @@ class TestRoutes(unittest.TestCase):
         mock_host = 'mock_host.sanger.ac.uk'
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
-        samples = self.SERVICE_CALL_RETURN_DATA
+
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # mock existence of ZIP archive (JSON file not checked)
@@ -565,7 +563,7 @@ class TestRoutes(unittest.TestCase):
         mock_host = 'mock_host.sanger.ac.uk'
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
-        samples = self.SERVICE_CALL_RETURN_DATA
+
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # mock existence of ZIP archive (JSON file not checked)
@@ -612,7 +610,6 @@ class TestRoutes(unittest.TestCase):
         # Given
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {'X-Forwarded-Host': 'mock_host.sanger.ac.uk', 'X-Forwarded-Port': '443'}
-        samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # mock non-existence of the ZIP archive and the JSON file with params
