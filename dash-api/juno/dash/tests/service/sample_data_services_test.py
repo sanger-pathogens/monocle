@@ -56,6 +56,11 @@ class MonocleSampleDataTest(TestCase):
                                     'Fake institution Two'
                                     ]
    mock_bad_institution_name  = "This Institution Does Not Exist"
+   mock_sample_id_list        = [   'fake_sample_id_1',
+                                    'fake_sample_id_2',
+                                    'fake_sample_id_3',
+                                    'fake_sample_id_4'
+                                    ]
    mock_samples               = [   {'sanger_sample_id': 'fake_sample_id_1', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_1'},
                                     {'sanger_sample_id': 'fake_sample_id_2', 'submitting_institution': 'Fake institution One', 'public_name': f'{PUBLIC_NAME}_2'},
                                     {'sanger_sample_id': 'fake_sample_id_3', 'submitting_institution': 'Fake institution Two', 'public_name': f'{PUBLIC_NAME}_3'},
@@ -520,6 +525,19 @@ class MonocleSampleDataTest(TestCase):
 
       expected_samples = self.mock_filtered_samples
       self.assertEqual(expected_samples, actual_samples)
+
+   @patch.object(SampleMetadata, 'get_samples')
+   @patch.object(SampleMetadata, 'get_samples_matching_metadata_filters')
+   def test_get_filtered_samples_with_metadata_filter(self, get_samples_matching_metadata_filters_mock, get_sample_metadata_mock):
+      get_sample_metadata_mock.return_value     = self.mock_samples
+      get_samples_matching_metadata_filters_mock.return_value = self.mock_sample_id_list
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'metadata': {'serotype':['Ia','Ib']}})
+
+      expected_samples = self.mock_filtered_samples
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      self.assertEqual(expected_samples, actual_samples)
+
+
 
    @patch.object(Path, 'exists', return_value=True)
    @patch.dict(environ, mock_environment, clear=True)

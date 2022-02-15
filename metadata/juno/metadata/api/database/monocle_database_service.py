@@ -26,8 +26,13 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_filtered_samples(self, filters: dict) -> List:
+    def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """ Return a list of samples ids"""
+        pass
+     
+    @abstractmethod
+    def get_lanes_filtered_by_in_silico_data(self, filters: dict) -> List:
+        """ Return a list of lane ids"""
         pass
      
     @abstractmethod

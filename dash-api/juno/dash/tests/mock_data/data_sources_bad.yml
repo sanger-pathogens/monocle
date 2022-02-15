@@ -3,6 +3,7 @@ monocle_metadata_api:
    swagger           : '/metadata/ui/'
    metadata_key      : 'download'
    institutions      : '/metadata/institutions'
+   filter_by_in_silico     : '/metadata/lane_ids_matching_in_silico_data'
    institutions_key  : 'institutions'
    samples_key       : 'samples'
    download_in_silico_data : '/metadata/download_in_silico_data'
@@ -10,8 +11,8 @@ monocle_metadata_api:
    qc_data_upload          : '/metadata/qc-data-upload'
    qc_data_delete_all      : '/metadata/delete_all_qc_data'
    qc_data_key             : 'download'
-   distinct_qc_data_values       : '/metadata/distinct_qc_data_values'
-   distinct_values_key           : 'distinct values'
+   distinct_qc_data_values : '/metadata/distinct_qc_data_values'
+   distinct_values_key     : 'distinct values'
 mlwh_rest_api:
    mlwh_api_config   : 'dash/tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
