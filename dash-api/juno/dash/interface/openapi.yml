@@ -191,8 +191,26 @@ paths:
             minLength: 16
             maxLength: 32
             pattern: ^[a-f0-9]+$
+        - name: "redirect"
+          in: query
+          description: "Flag indicating if the resposne should be a 303 redirect to the download location.  Test in swagger with \"false\", otherwise swagger UI will follow the redirect in the response and download the ZIP archive."
+          required: false
+          schema:
+            type: boolean
+            default: true
+            example: false
       responses:
-        "302":
+        "200":
+          description: "The operation was successful. Return data provides the download location."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  download location:
+                    type: string
+                    format: uri
+        "303":
           description: "The data are available."
           headers:
             Location:

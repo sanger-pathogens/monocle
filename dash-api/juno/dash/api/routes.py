@@ -247,8 +247,8 @@ def bulk_download_urls_route(body):
     download_url_list = []
     start = 0
     total = len(public_name_to_lane_files)
-    num_downloads    = round( (total / max_samples_per_zip + 0.5) )
-    samples_in_each  = round( (total / num_downloads       + 0.5) )
+    num_downloads    = round( (total / max_samples_per_zip + 0.5001) )
+    samples_in_each  = round( (total / num_downloads       + 0.5001) )
     while total > start:
       this_zip_archive_contents = dict( islice(public_name_to_lane_files.items(), start, (start+samples_in_each), 1) )
       download_token = uuid4().hex
@@ -267,11 +267,14 @@ def data_download_route(token: str):
     The token identifies a JSON file that holds the parameter required to create the ZIP archive.
     Unless the ZIP archive exists (i.e. this download has been requsetd before) the ZIP archive is
     created.
-    A 303 response is returned providing a download of the ZIP archive via the static file route.
+    By default 303 response is returned providing a download of the ZIP archive via the static file route;
+    but if the query uses `?redirect=false` then the resp[onse is a 200 with the static download
+    route in the response body.
     If the JSON file isn't found a 404 is returned (this will happen if the download link that
     was used is old, and the housekeeping cron job has deleted the JSON file in the interim).
     """
-    logging.info("endpoint handler {} was passed token = {}".format(__name__,token))
+    redirect_wanted = 'true' == call_request_args().get('redirect', 'true').lower()
+    logging.info("endpoint handler {} was passed token = {} , redirect flag({}) = {}".format(__name__, token, type(redirect_wanted), redirect_wanted))
     monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
     
     logging.info("Data download request headers:\n{}".format(call_request_headers()))
@@ -339,13 +342,15 @@ def data_download_route(token: str):
                               )
     logging.info("Redirecting data download to {}".format(zip_file_url))
     
-    # redirect user to the ZIP file download URL
-    return Response( "Data for these samples are available for download from {}".format(zip_file_url),
-               content_type   = 'text/plain; charset=UTF-8',
-               status         = HTTPStatus.SEE_OTHER,
-               headers        = {'Location': zip_file_url},
-               )
-
+    if redirect_wanted:
+      # redirect user to the ZIP file download URL
+      return Response( "Data for these samples are available for download from {}".format(zip_file_url),
+                  content_type   = 'text/plain; charset=UTF-8',
+                  status         = HTTPStatus.SEE_OTHER,
+                  headers        = {'Location': zip_file_url},
+                  )
+    else:
+      return call_jsonify({'download location': zip_file_url}), HTTPStatus.OK
 
 def get_metadata_for_download_route(institution: str, category: str, status: str):
    """
@@ -387,7 +392,11 @@ def call_jsonify(args) -> str:
 def call_request_headers():
     """ Wraps flask.request.headers to make testing easier """
     return request.headers
- 
+
+def call_request_args():
+    """ Wraps flask.request.args to make testing easier """
+    return request.args
+
 def write_text_file(filename, content) -> str:
     with open(filename, 'w') as textfile:
       textfile.write(content)
