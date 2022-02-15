@@ -247,8 +247,8 @@ def bulk_download_urls_route(body):
     download_url_list = []
     start = 0
     total = len(public_name_to_lane_files)
-    num_downloads    = round( (total / max_samples_per_zip + 0.5) )
-    samples_in_each  = round( (total / num_downloads       + 0.5) )
+    num_downloads    = round( (total / max_samples_per_zip + 0.5001) )
+    samples_in_each  = round( (total / num_downloads       + 0.5001) )
     while total > start:
       this_zip_archive_contents = dict( islice(public_name_to_lane_files.items(), start, (start+samples_in_each), 1) )
       download_token = uuid4().hex
