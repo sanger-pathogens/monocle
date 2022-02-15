@@ -491,6 +491,7 @@ class TestRoutes(unittest.TestCase):
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
     @patch('dash.api.routes.zip_files')
+    @patch('dash.api.routes.wait_for_zipfile_ready')
     @patch.object(ServiceFactory, 'sample_data_service')
     @patch('pathlib.Path.is_dir')
     @patch('pathlib.Path.is_file')
@@ -504,8 +505,9 @@ class TestRoutes(unittest.TestCase):
             is_file_mock,
             is_dir_mock,
             sample_data_service_mock,
+            wait_for_zipfile_ready_mock,
             zip_files_mock,
-            username_mock,
+            username_mock
         ):
         # Given
         mock_host = 'mock_host.sanger.ac.uk'
@@ -516,6 +518,7 @@ class TestRoutes(unittest.TestCase):
         is_dir_mock.return_value = True
         # mock existence of ZIP archive (JSON file not checked)
         is_file_mock.return_value = True
+        wait_for_zipfile_ready_mock.return_value = True
         lane_files   = {"pubname": ["/lane file",
                                     "/another lane file"]
                         }
@@ -542,55 +545,28 @@ class TestRoutes(unittest.TestCase):
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
-    @patch('dash.api.routes.zip_files')
+    @patch('dash.api.routes.wait_for_zipfile_ready')
     @patch.object(ServiceFactory, 'sample_data_service')
-    @patch('pathlib.Path.is_dir')
     @patch('pathlib.Path.is_file')
-    @patch('dash.api.routes.read_text_file')
-    @patch('dash.api.routes.call_request_headers')
     @patch('dash.api.routes.call_request_args')
-    def test_data_download_route_reuse_existing_zip_file(self,
+    def test_data_download_route_reuse_existing_zip_file_timeout(self,
             request_args_mock,
-            request_headers_mock,
-            read_text_file_mock,
             is_file_mock,
-            is_dir_mock,
             sample_data_service_mock,
-            zip_files_mock,
-            username_mock,
+            wait_for_zipfile_ready_mock,
+            username_mock
         ):
         # Given
-        mock_host = 'mock_host.sanger.ac.uk'
         request_args_mock.return_value = {}
-        request_headers_mock.return_value = {'X-Forwarded-Host': mock_host, 'X-Forwarded-Port': '443'}
-
         username_mock.return_value = self.TEST_USER
-        is_dir_mock.return_value = True
         # mock existence of ZIP archive (JSON file not checked)
         is_file_mock.return_value = True
-        lane_files   = {"pubname": ["/lane file",
-                                    "/another lane file"]
-                        }
-        files_to_zip = {"pubname": [Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"lane file"),
-                                    Path(self.MOCK_ENVIRONMENT['DATA_INSTITUTION_VIEW'],"another lane file")]
-                        }
-        read_text_file_mock.return_value = json.dumps(lane_files)
+        wait_for_zipfile_ready_mock.return_value = False
         mock_token = '123'
-        zip_file_basename = mock_token
         zip_file_location = 'some/dir'
         sample_data_service_mock.return_value.get_bulk_download_location.return_value = zip_file_location
-        download_host = mock_host
-        download_symlink = 'downloads/'
-        sample_data_service_mock.return_value.make_download_symlink.return_value = download_symlink
-        # When
-        result = data_download_route(mock_token)
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        zip_files_mock.assert_not_called()
-        sample_data_service_mock.return_value.make_download_symlink.assert_called_once_with(cross_institution=True)
-        self.assertIsInstance(result, Response)
-        self.assertIn(str(HTTPStatus.SEE_OTHER.value), result.status)
-        self.assertEqual("https://{}/{}{}.zip".format(download_host,download_symlink,mock_token), result.headers['Location'])
+        with self.assertRaises(RuntimeError):
+          result = data_download_route(mock_token)
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch('dash.api.routes.get_authenticated_username')
