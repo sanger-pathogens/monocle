@@ -245,7 +245,7 @@
                }
             ]
          },
-         {  "name"   : "Antimicrobial susceptibility",
+         {  "name"   : "Antimicrobial Susceptibility",
             "fields" : [
                {  "name"               : "ceftizoxime",
                   "display"            : true,
@@ -469,7 +469,7 @@
                }
             ]
          },
-         {  "name"   : "MLST and allele frequencies",
+         {  "name"   : "MLST and Allele Frequencies",
             "fields" : [
                {  "name"               : "ST",
                   "display"            : true,
@@ -543,7 +543,7 @@
                }
             ]
          },
-         {  "name"   : "AMR alleles",
+         {  "name"   : "AMR Alleles",
             "fields" : [
                {  "name"               : "AAC6APH2",
                   "display"            : true,
@@ -757,7 +757,7 @@
                }
             ]
          },
-         {  "name"   : "Surface proteins",
+         {  "name"   : "Surface Proteins",
             "fields" : [
                {  "name"               : "ALP1",
                   "display"            : true,
@@ -838,7 +838,7 @@
                }
             ]
          },
-         {  "name"   : "AMR variants",
+         {  "name"   : "AMR Variants",
             "fields" : [
                {  "name"               : "twenty_three_S1_variant",
                   "display"            : true,
