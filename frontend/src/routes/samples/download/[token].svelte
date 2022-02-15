@@ -6,6 +6,7 @@
 </script>
 
 <script>
+  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
 
   export let downloadToken;
@@ -13,7 +14,7 @@
   const HTTP_TIMEOUT_STATUS_CODE = 504;
 
   const prepareDownloadPromise = new Promise((resolve, reject) => {
-    const downloadUrl = `/data_download/${downloadToken}`;
+    const downloadUrl = `/data_download/${downloadToken}?redirect=false`;
     // We don't use `fetch` here to avoid browser-specific timeouts.
     const ajaxRequest = new XMLHttpRequest();
 
@@ -24,8 +25,20 @@
         onError(event);
       }
       else {
-        window.location.assign(ajaxRequest.responseURL);
-        resolve(ajaxRequest.responseURL);
+        let zipFileUrl;
+        try {
+          zipFileUrl = JSON.parse(ajaxRequest.responseText)["download location"];
+          if (!zipFileUrl?.trim?.()) {
+            throw `"download location" key in the response text is falsy: ${ajaxRequest.responseText}`;
+          }
+        }
+        catch (err) {
+          console.error(`Cannot parse JSON response: ${err}`);
+          reject(
+            `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`);
+        }
+        window.location.assign(zipFileUrl);
+        resolve(zipFileUrl);
       }
     };
 
@@ -52,6 +65,7 @@
     ajaxRequest.addEventListener("abort", onCancel);
 
     ajaxRequest.open("GET", downloadUrl);
+    ajaxRequest.setRequestHeader("Content-Type", "application/json");
     ajaxRequest.send();
   });
 </script>
@@ -69,6 +83,6 @@
   </p>
 
 {:catch error}
-  <p>{error}</p>
+  <p>{@html error}</p>
 
 {/await}

@@ -1,4 +1,5 @@
 import { render, waitFor } from "@testing-library/svelte";
+import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
 import InterstitialPage from "./[token].svelte";
 
 const DOWNLOAD_TOKEN = "some42token";
@@ -8,7 +9,8 @@ const LABEL_LOADING_INDICATOR =
 const xmlHttpRequestMock = {
   addEventListener: jest.fn(),
   open: jest.fn(),
-  send: jest.fn()
+  send: jest.fn(),
+  setRequestHeader: jest.fn()
 };
 
 global.XMLHttpRequest = jest.fn(() => xmlHttpRequestMock);
@@ -25,7 +27,9 @@ it("sends the request to prepare download", () => {
   render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
 
   expect(xmlHttpRequestMock.open).toHaveBeenCalledTimes(1);
-  expect(xmlHttpRequestMock.open).toHaveBeenCalledWith("GET", `/data_download/${DOWNLOAD_TOKEN}`);
+  expect(xmlHttpRequestMock.open).toHaveBeenCalledWith(
+    "GET", `/data_download/${DOWNLOAD_TOKEN}?redirect=false`);
+  expect(xmlHttpRequestMock.setRequestHeader).toHaveBeenCalledWith("Content-Type", "application/json");
   expect(xmlHttpRequestMock.send).toHaveBeenCalledTimes(1);
 });
 
@@ -56,7 +60,7 @@ describe("on", () => {
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
       const expectedUrl = `${global.location.origin}/download/url`;
-      xmlHttpRequestMock.responseURL = expectedUrl;
+      xmlHttpRequestMock.responseText = `{\"download location\":\"${expectedUrl}\"}`;
 
       loadCallback();
 
@@ -129,6 +133,22 @@ describe("on", () => {
       await waitFor(() => {
         expect(getByText("Download might have expired. Please close the tab and start new download."))
           .toBeDefined();
+      });
+    });
+
+    it("shows an error on failing to parse the success response", async () => {
+      const { container } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
+        (args) => args[0] === EVENT_NAME_LOAD
+      )[1];
+      xmlHttpRequestMock.status = 200;
+      xmlHttpRequestMock.responseText = 42;
+
+      errorCallback();
+
+      await waitFor(() => {
+        expect(container.querySelector("p").innerHTML).toBe(
+          `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`);
       });
     });
 
