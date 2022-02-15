@@ -4,7 +4,7 @@ from functools     import reduce
 from pathlib       import Path, PurePath
 from zipfile       import ZipFile, ZIP_DEFLATED
 
-from utils.file    import format_file_size, zip_files, ZIP_COMPRESSION_LEVEL, WRITE_MODE
+from utils.file    import format_file_size, zip_files, ZIP_COMPRESSION_LEVEL, WRITE_MODE, complete_zipfile
 
 PUBLIC_NAME_TO_LANE_FILES = {
   'pub_name_1': [PurePath('a_file.txt'), PurePath('another_file.fastq')],
@@ -12,6 +12,10 @@ PUBLIC_NAME_TO_LANE_FILES = {
 }
 BASENAME = 'batches'
 ZIP_FILE_NAME = BASENAME + '.zip'
+
+GOOD_ZIP_FILE     = 'dash/tests/mock_data/zip/good.zip'
+MANGLED_ZIP_FILE  = 'dash/tests/mock_data/zip/mangled.zip'
+EMPTY_ZIP_FILE    = 'dash/tests/mock_data/zip/empty.zip'
 
 class TestFileUtil(TestCase):
 
@@ -100,3 +104,8 @@ class TestFileUtil(TestCase):
     # Instantiating `ZipFile` creates an empty ZIP archive even if `write()` isn't called.
     self.ZipFileMock.assert_called_once_with(
       expected_zip_file_full_name, mode=WRITE_MODE, compression=ZIP_DEFLATED, compresslevel=ZIP_COMPRESSION_LEVEL)
+    
+  def test_complete_zipfile(self):
+    self.assertTrue(  complete_zipfile(GOOD_ZIP_FILE)    )
+    self.assertFalse( complete_zipfile(MANGLED_ZIP_FILE) )
+    self.assertFalse( complete_zipfile(EMPTY_ZIP_FILE)   )

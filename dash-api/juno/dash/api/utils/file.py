@@ -1,7 +1,7 @@
 import logging
 from pathlib import PurePath
 from subprocess import check_output
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_DEFLATED, is_zipfile
 
 CURRENT_FOLDER = '.'
 ENCODING_UTF_8 = 'UTF-8'
@@ -23,6 +23,23 @@ def format_file_size(bytes, call_cli=check_output):
   except BaseException as err:
     logging.error(f'Couldn\'t format argument `{bytes}` to file size: {err}')
     return f'{bytes} B'
+ 
+def complete_zipfile(filename):
+   """
+   Pass a file name.  Returns true if this is a complete ZIP file, otherwise false.
+   Currently tests only that it is a valid ZIP file with at least one file, so could be
+   improved.  It will correctly detect a ZIP file that has only partially been written
+   and return False.
+   """
+   # valid ZIP file
+   if not is_zipfile(filename):
+     return False
+   # contains at least one file
+   with ZipFile(filename) as zip:
+     if 1 > len(zip.namelist()):
+        return False
+   # passes all tests above
+   return True
 
 def zip_files(dir_name_to_files, *, basename, location=CURRENT_FOLDER, injected_zip_file_lib=ZipFile):
   no_files = not dir_name_to_files or all(

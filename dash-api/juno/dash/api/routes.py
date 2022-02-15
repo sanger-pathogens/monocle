@@ -8,13 +8,14 @@ from     itertools      import islice
 import   json
 import   os
 from     pathlib        import Path
+from     time           import sleep, time
 from     typing         import List
 from     urllib.error   import HTTPError
 from     uuid           import uuid4
 
 from dash.api.service.service_factory  import ServiceFactory
 from dash.api.exceptions               import NotAuthorisedException
-from utils.file                        import zip_files, ZIP_SUFFIX
+from dash.api.utils.file               import zip_files, ZIP_SUFFIX, complete_zipfile
 
 
 logger = logging.getLogger()
@@ -287,8 +288,18 @@ def data_download_route(token: str):
     zip_file_basename = token
     zip_file_name     = zip_file_basename + ZIP_SUFFIX
     if Path(download_param_file_location,zip_file_name).is_file():
+      # The ZIP file exists. This means we have a repeat download request.
+      # If the ZIP file is complete, we can just use it for the download immediately.
+      # If is is not complete, this mostly likely indicates a user has clicked a download link
+      # repeatedly, or clicked the browser 'reload' button, whilst waiting for the download.
+      # Our best option here is to wait and hope the ZIP file is completeted shortly.
+      expected_zipfile = os.path.join(download_param_file_location,zip_file_name)
+      if not wait_for_zipfile_ready(expected_zipfile):
+        # returns false when timed out
+        raise RuntimeError( "Timed out waiting for ZIP file {} to be created".format(expected_zipfile) )
       logging.info("Reusing existing ZIP file {}/{}".format(download_param_file_location,zip_file_name))
     else:
+      # the ZIP file does not exist, so wwe ceate it.
       logging.info("Creating ZIP file {}/{}".format(download_param_file_location,zip_file_name))
       # read params from JSON file on disk containing
       download_param_file_name = "{}.params.json".format(token)
@@ -406,7 +417,16 @@ def read_text_file(filename) -> str:
     with open(filename, 'r') as textfile:
       content = textfile.read()
     return content
-
+   
+def wait_for_zipfile_ready(filename) -> bool:
+    start_waiting = time()
+    if not complete_zipfile(filename):
+      if ( time() - start_waiting ) > 120:
+        return False
+      logging.debug("waiting for ZIP file {} to be completed".format(expected_zipfile))
+      sleep(6)
+    return True
+   
 def get_host_name(req_obj):
    return req_obj.host
 
