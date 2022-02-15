@@ -1,4 +1,7 @@
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
+const DATA_TYPES = ["metadata", "in silico", "qc data"];
+const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
+const FETCH_ERROR_UNKNOWN = "unknown error";
 const HTTP_POST = "POST";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
@@ -42,34 +45,43 @@ export function getBatches(fetch) {
   return fetchDashboardApiResource("get_batches", "batches", fetch);
 }
 
-export function getBulkDownloadInfo(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+export function getBulkDownloadInfo(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_info", null, fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify({
-        "sample filters": {
-          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-        },
-        assemblies,
-        annotations
-      })
+      body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
 }
 
-export function getBulkDownloadUrls(instKeyBatchDatePairs, { assemblies, annotations }, fetch) {
+export function getBulkDownloadUrls(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify({
-        "sample filters": {
-          batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-        },
-        assemblies,
-        annotations
-      })
+      body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
+}
+
+export function getDistinctColumnValues(columns, fetch) {
+  const { payload } = columns.reduce((accum, column) => {
+      const { payload, dataTypeToPayloadIndex } = accum;
+      let payloadIndex = dataTypeToPayloadIndex[column.dataType];
+      if (payloadIndex === undefined) {
+        payloadIndex = payload.length;
+        dataTypeToPayloadIndex[column.dataType] = payloadIndex;
+        payload.push({ "field type": column.dataType, "field names": [] });
+      }
+      payload[payloadIndex]["field names"].push(column.name);
+      return accum;
+    }, { payload: [], dataTypeToPayloadIndex: {} }
+  );
+
+  return fetchDashboardApiResource("get_distinct_values", "distinct values", fetch, {
+    method: HTTP_POST,
+    headers: JSON_HEADERS,
+    body: JSON.stringify(payload)
+  });
 }
 
 export function getInstitutions(fetch) {
@@ -79,6 +91,7 @@ export function getInstitutions(fetch) {
 
 export function getSampleMetadata({
   instKeyBatchDatePairs,
+  filter,
   numRows,
   startRow,
   asCsv
@@ -90,6 +103,9 @@ fetch
       batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
     }
   };
+
+  addFiltersToPayload({ ...filter, payload });
+
   if (Number.isInteger(numRows)) {
     payload["num rows"] = numRows;
   }
@@ -107,7 +123,7 @@ fetch
       .then((response) =>
         response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
       .catch((err) =>
-        logErrorOnFetchResource(err, "get_metadata"));
+        handleFetchError(err, "get_metadata"));
   }
   else {
     payload["in silico"] = false;
@@ -150,10 +166,13 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
-    .catch((err) => logErrorOnFetchResource(err, endpoint, resourceKey));
+    .catch((err) => handleFetchError(err, endpoint, resourceKey));
 }
 
-function logErrorOnFetchResource(err, endpoint, resourceKey) {
+function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
+  if (err.startsWith?.(FETCH_ERROR_PATTER_NOT_FOUND)) {
+    return Promise.resolve();
+  }
   console.error(resourceKey ?
     `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
     `Error while fetching resource from endpoint ${endpoint}: ${err}`
@@ -178,6 +197,46 @@ function collateInstitutionStatus({
       },
       key: institutionKey
     }));
+}
+
+function prepareBulkDownloadPayload({
+  instKeyBatchDatePairs,
+  filter,
+  assemblies,
+  annotations
+}) {
+  const payload = {
+    "sample filters": {
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+    },
+    assemblies,
+    annotations
+  };
+
+  addFiltersToPayload({ ...filter, payload });
+
+  return payload;
+}
+
+function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }) {
+  DATA_TYPES.forEach((dataType) => {
+    const filterStateForDataType = filterState[dataType] || {};
+    const columnNames = Object.keys(filterStateForDataType);
+    if (columnNames.length) {
+      const payloadFilter = {};
+      columnNames.forEach((columnName) => {
+        if (filterStateForDataType[columnName].exclude) {
+          const valuesToExclude = new Set(filterStateForDataType[columnName].values);
+          payloadFilter[columnName] = distinctColumnValues[dataType][columnName].filter((columnValue) =>
+            !valuesToExclude.has(columnValue));
+        }
+        else {
+          payloadFilter[columnName] = filterStateForDataType[columnName].values;
+        }
+      });
+      payload["sample filters"][dataType] = payloadFilter;
+    }
+  });
 }
 
 export function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {

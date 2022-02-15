@@ -2,6 +2,7 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
+  getDistinctColumnValues,
   getInstitutionStatus,
   getProjectProgress,
   getSampleMetadata,
@@ -16,6 +17,24 @@ const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, bat
   { "institution key": instKey, "batch date": batchDate }
 ));
 const DASHBOARD_API_URL = "/dashboard-api";
+const DATA_TYPE_METADATA = "metadata";
+
+const DISTINCT_COLUMN_VALUES = {
+  metadata: {
+    serotype: ["1a", "1b", "NT"],
+    country: ["doesn't", " mattter"]
+  },
+  "in silico": {
+    ST: ["doesn't", " mattter"]
+  }
+};
+const FILTER_STATE = {
+  metadata: {
+    serotype: { values: ["1a", "1b"], exclude: true },
+    country: { values: ["AU"] }
+  },
+  "in silico": { ST: { values: ["x", "y"] } }
+};
 
 const fetch = jest.fn();
 
@@ -34,12 +53,21 @@ describe.each([
   {
     fnName: "getBulkDownloadInfo",
     getResource: getBulkDownloadInfo,
-    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      assemblies: true,
+      annotations: false
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         assemblies: true,
         annotations: false
       })
@@ -51,12 +79,21 @@ describe.each([
   {
     fnName: "getBulkDownloadUrls",
     getResource: getBulkDownloadUrls,
-    args: [INST_KEY_BATCH_DATE_PAIRS, { assemblies: true, annotations: false }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      assemblies: true,
+      annotations: false
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         assemblies: true,
         annotations: false
       })
@@ -66,6 +103,33 @@ describe.each([
       download_urls: ["fake_url"],
     },
     expectedResult: ["fake_url"]
+  },
+  {
+    fnName: "getDistinctColumnValues",
+    getResource: getDistinctColumnValues,
+    args: [[{
+      name: "age_group",
+      dataType: DATA_TYPE_METADATA
+    }, {
+      name: "ST",
+      dataType: "in silico"
+    }, {
+      name: "serotype",
+      dataType: DATA_TYPE_METADATA
+    }]],
+    expectedFetchOpts: {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([
+        { "field type": DATA_TYPE_METADATA, "field names": ["age_group", "serotype"] },
+        { "field type": "in silico", "field names": ["ST"] }
+      ])
+    },
+    expectedEndpoints: ["get_distinct_values"],
+    responsePayload: {
+      "distinct values": "inner response payload",
+    },
+    expectedResult: "inner response payload"
   },
   {
     fnName: "getInstitutionStatus",
@@ -117,12 +181,21 @@ describe.each([
   {
     fnName: "getSampleMetadata",
     getResource: getSampleMetadata,
-    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2 }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      numRows: 14,
+      startRow: 2
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         "num rows": 14,
         "start row": 2,
         "in silico": false,
@@ -136,12 +209,22 @@ describe.each([
   {
     fnName: "getSampleMetadata",
     getResource: getSampleMetadata,
-    args: [{ instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS, numRows: 14, startRow: 2, asCsv: true }],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      numRows: 14,
+      startRow: 2,
+      asCsv: true
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        "sample filters": { batches: INST_KEY_BATCH_DATE_OBJECTS },
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
         "num rows": 14,
         "start row": 2,
         "as csv": true
@@ -193,5 +276,14 @@ describe.each([
     const result = await getResource(...args, fetch);
 
     expect(result).toEqual(expectedResult);
+  });
+
+  it("resolves 404 Not Found to `undefined`", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404
+    });
+
+    await expect(getResource(...args, fetch)).resolves.toBeUndefined();
   });
 });

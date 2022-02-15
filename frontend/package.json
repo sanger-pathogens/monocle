@@ -26,7 +26,7 @@
     "eslint-plugin-svelte3": "^3.2.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.4.7",
-    "svelte": "^3.44.2",
+    "svelte": "^3.46.3",
     "svelte-jester": "^2.1.5",
     "svelte-select": "^4.4.6"
   },

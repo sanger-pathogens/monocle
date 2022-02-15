@@ -2,6 +2,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
+  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   let downloadEstimateLatest = undefined;
   export let ariaLabelledby;
@@ -14,9 +15,8 @@
   let downloadTokens = [];
 
   $: estimate = downloadEstimateCurrentDownload || downloadEstimateLatest;
-
   $: formComplete = batches?.length &&
-      (formValues.annotations || formValues.assemblies);
+    (formValues.annotations || formValues.assemblies);
 
   // Freeze the download estimate once the form is submitted.
   $: {
@@ -32,7 +32,11 @@
     }
 
     downloadLinksRequested = true;
-    getBulkDownloadUrls(batches, formValues, fetch)
+    getBulkDownloadUrls({
+      instKeyBatchDatePairs: batches,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      ...formValues
+    }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
         if (!downloadLinksRequested) {

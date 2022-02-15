@@ -1,7 +1,9 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
-import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
+import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
+import { distinctColumnValuesStore, filterStore } from "../_stores.js";
+import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
 
 const BATCHES = ["some batches"];
 const ROLE_BUTTON = "button";
@@ -41,12 +43,12 @@ it("isn't displayed if no batches are passed", () => {
 it("displays resolved metadata w/ each row sorted by order", async () => {
   const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
+  const expectedColumnHeaders = ["Host species", "QC"];
   await waitFor(() => {
     // Data rows + the header row
     expect(getAllByRole("row")).toHaveLength(3);
-    const actualColumnHeaderContents = getAllByRole("columnheader")
-      .map(({ textContent }) => textContent);
-    expect(actualColumnHeaderContents).toEqual(["Host species", "QC"]);
+    getAllByRole("columnheader").forEach(({ textContent }, i) =>
+      expect(textContent.startsWith(expectedColumnHeaders[i])).toBeTruthy());
     const actualTableCellContents = getAllByRole("cell")
       .map(({ textContent }) => textContent);
     expect(actualTableCellContents).toEqual([
@@ -62,6 +64,7 @@ it("requests metadata w/ the correct arguments", async () => {
   await waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
+      filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
       numRows: 16,
       startRow: 1
     }, fetch);

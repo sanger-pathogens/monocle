@@ -1,5 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
+import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -73,6 +75,43 @@ describe("once batches are fetched", () => {
     });
   });
 
+  it("removes all filters on clicking the filter removal button", async () => {
+    const { findByRole, getByRole } = render(DataViewerPage);
+    filterStore.set({ metadata: { someColumn: {} }, "in silico": {}, "qc data": {} });
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+    await fireEvent.click(selectAllBtn);
+    const filterRemovalLabel = /^Remove all filters/;
+    global.confirm = () => true;
+
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }));
+
+    expect(get(filterStore)).toEqual({ metadata: {}, "in silico": {}, "qc data": {} });
+    expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
+      .toBeTruthy();
+  });
+
+  it("disables the filter removal button on batches change", async () => {
+    const filterRemovalLabel = /^Remove all filters/;
+    const { findByRole, getByRole, getByText } = render(DataViewerPage);
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+    await fireEvent.click(selectAllBtn);
+    filterStore.update((filters) => {
+      filters.metadata.someColumn = { values: ["some value"] };
+      return filters;
+    });
+
+    await waitFor(() => {
+      expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
+        .toBeFalsy();
+    });
+
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: "Clear" }));
+    await fireEvent.click(selectAllBtn);
+
+    expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
+      .toBeTruthy();
+  });
+
   describe("batch selector", () => {
     it("displays a list of available batches and their institutions when clicked", async () => {
       const institutionsPayload = Object.keys(BATCHES_PAYLOAD)
@@ -109,11 +148,11 @@ describe("once batches are fetched", () => {
 
     it("ignores institutions w/ no batches", async () => {
       const institutionWithoutBatches = "XyzUni";
-      const batches_payload = {
+      const batchesPayload = {
         ...BATCHES_PAYLOAD,
         [institutionWithoutBatches]: { _ERROR: "no batches" }
       };
-      getBatches.mockResolvedValueOnce(batches_payload);
+      getBatches.mockResolvedValueOnce(batchesPayload);
       const { findByRole, getByText, queryByText } = render(DataViewerPage);
 
       const selector = await findByRole("textbox");
@@ -185,7 +224,7 @@ describe("once batches are fetched", () => {
       });
 
       const clearBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
-      fireEvent.click(clearBtn);
+      await fireEvent.click(clearBtn);
       getBulkDownloadInfo.mockResolvedValueOnce({ size: "42 TB", size_zipped: ALT_ZIP_SIZE });
       fireEvent.click(selectAllBtn);
 
@@ -209,7 +248,7 @@ describe("once batches are fetched", () => {
       // Open the bulk download dialog.
       await fireEvent.click(downloadButton);
       getBulkDownloadInfo.mockResolvedValueOnce({ size: "42 TB", size_zipped: ALT_ZIP_SIZE });
-      fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
 
       await waitFor(() => {
         expect(getByRole(ROLE_BUTTON, { name: `Download samples of size ${ALT_ZIP_SIZE}` }))
@@ -265,11 +304,12 @@ describe("once batches are fetched", () => {
 
       expect(getSampleMetadata).toHaveBeenCalledTimes(1);
       expect(getSampleMetadata).toHaveBeenCalledWith(
-        { "asCsv": true,
-          "instKeyBatchDatePairs": [
+        { asCsv: true,
+          instKeyBatchDatePairs: [
             ["FioRon", BATCHES[0].date],
             ["FioRon", BATCHES[1].date],
-            ["UlmUni", BATCHES[2].date] ]
+            ["UlmUni", BATCHES[2].date] ],
+          filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) }
         },
         fetch);
     });

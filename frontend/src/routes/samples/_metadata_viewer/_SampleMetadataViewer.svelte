@@ -1,6 +1,7 @@
 <script>
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
+  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
   export let batches = undefined;
@@ -16,7 +17,7 @@
   // `batches` is passed just to indicate to Svelte that this reactive statement
   // should re-run only when `batches` has changed.
   $: setToFirstPage(batches);
-  $: updateMetadata(batches, pageNum);
+  $: updateMetadata(batches, pageNum, $filterStore);
 
   function updateMetadata() {
     showMetadataLoading();
@@ -32,6 +33,7 @@
     // FIXME: prevent duplicate request when a batch is selected for the first time.
     sortedMetadataPromise = getSampleMetadata({
       instKeyBatchDatePairs: batches,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
       numRows: NUM_METADATA_ROWS_PER_PAGE,
       startRow: NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1
     }, fetch)
@@ -47,7 +49,11 @@
   }
 
   function transformSampleMetadataToSorted({ metadata }) {
-    return { metadata: Object.values(metadata)
+    return { metadata: Object.keys(metadata)
+      .map((columnName) => {
+        metadata[columnName].name = columnName;
+        return metadata[columnName];
+      })
       .sort(compareMetadataByOrder)
     };
   }

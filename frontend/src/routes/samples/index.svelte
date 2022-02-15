@@ -1,18 +1,20 @@
 <script>
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
-  import BatchSelector from "./_BatchSelector.svelte";
-  import BulkDownload from "./_BulkDownload.svelte";
-  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import {
     getBatches,
     getBulkDownloadInfo,
     getInstitutions,
     getSampleMetadata
   } from "$lib/dataLoading.js";
+  import BatchSelector from "./_BatchSelector.svelte";
+  import BulkDownload from "./_BulkDownload.svelte";
+  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
+  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
@@ -42,11 +44,16 @@
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
+  $: filterStore.removeAllFilters(selectedBatches);
+
+  $: filterActive = Object.keys($filterStore).some((dataType) =>
+    Object.keys($filterStore[dataType] || []).length);
+
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when some of the arguments have changed.
-  $: updateDownloadEstimate(selectedBatches, bulkDownloadFormValues);
+  $: updateDownloadEstimate(selectedBatches, $filterStore, bulkDownloadFormValues);
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
@@ -60,11 +67,11 @@
       return;
     }
 
-    getBulkDownloadInfo(
-      selectedInstKeyBatchDatePairs,
-      bulkDownloadFormValues,
-      fetch
-    )
+    getBulkDownloadInfo({
+      instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      ...bulkDownloadFormValues,
+    }, fetch)
       .then(({num_samples, size_zipped}) => {
         bulkDownloadEstimate = { numSamples: num_samples, sizeZipped: size_zipped };
       })
@@ -114,6 +121,7 @@
     let hiddenDownloadLink;
     getSampleMetadata({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
       asCsv: true
     }, fetch)
       .then((csvBlob) => {
@@ -137,6 +145,12 @@
     a.download = fileName;
     return a;
   }
+
+  function removeAllFilters() {
+    if (confirm("Remove all filters?")) {
+      filterStore.removeAllFilters();
+    }
+  }
 </script>
 
 
@@ -155,7 +169,7 @@
   </section>
 
   {#if selectedBatches?.length}
-    <div class="download-btns">
+    <div class="btn-group">
       <button
         aria-label="Download samples{bulkDownloadEstimate ? ` of size ${bulkDownloadEstimate.sizeZipped}` : ''}"
         on:click={() => shouldDisplayBulkDownload = true}
@@ -183,6 +197,15 @@
           Metadata <DownloadIcon />
         {/if}
       </button>
+
+      <button
+        on:click={removeAllFilters}
+        class="compact remove-filters-btn"
+        disabled={!filterActive ? true : null}
+        type="button"
+      >
+        Remove all filters <RemoveFilterIcon width="24" height="17" />
+      </button>
     </div>
   {/if}
 
@@ -191,7 +214,12 @@
     ariaLabelledby="sample-bulk-download-label"
     persistState={true}
   >
-    <h3 id="sample-bulk-download-label">Download samples</h3>
+    <h3 id="sample-bulk-download-label">
+      Download samples
+      {#if filterActive}
+        <em>(filters apply)</em>
+      {/if}
+    </h3>
     <BulkDownload
       ariaLabelledby="sample-bulk-download-label"
       batches={selectedInstKeyBatchDatePairs}
@@ -214,11 +242,20 @@
   width: 100%;
 }
 
-.download-btns {
+.btn-group {
   margin-bottom: .5rem;
 }
-.download-btns button {
+.btn-group button {
   margin-right: 1rem;
+}
+
+.remove-filters-btn {
+  display: inline-flex;
+  margin-left: 4rem;
+}
+
+em {
+  font-weight: 300;
 }
 </style>
 

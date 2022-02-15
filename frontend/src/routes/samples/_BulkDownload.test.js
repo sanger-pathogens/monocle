@@ -1,7 +1,9 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
+import { get } from "svelte/store";
+import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import BulkDownload from "./_BulkDownload.svelte";
 import {
-  // The next import is needed for the mock to work.
+  // The following import is needed for the mock to work.
   // eslint-disable-next-line no-unused-vars
   getBulkDownloadUrls
 } from "$lib/dataLoading.js";
@@ -179,10 +181,12 @@ describe("on form submit", () => {
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
 
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
-    expect(getBulkDownloadUrls).toHaveBeenCalledWith(
-      BATCHES,
-      {assemblies: true, annotations: true},
-      fetch);
+    expect(getBulkDownloadUrls).toHaveBeenCalledWith({
+        instKeyBatchDatePairs: BATCHES,
+        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        assemblies: true,
+        annotations: true
+      }, fetch);
     await waitFor(() => {
       expect(getByRole(ROLE_HEADING, { name: LABEL_DOWNLOAD_LINKS_HEADER }))
         .toBeDefined();
@@ -213,10 +217,12 @@ describe("on form submit", () => {
     fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
 
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
-    expect(getBulkDownloadUrls).toHaveBeenCalledWith(
-      BATCHES,
-      {assemblies: true, annotations: true},
-      fetch);
+    expect(getBulkDownloadUrls).toHaveBeenCalledWith({
+        instKeyBatchDatePairs: BATCHES,
+        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        assemblies: true,
+        annotations: true
+      }, fetch);
     await waitFor(() => {
       const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
       const downloadLink = getByRole("link", { name: "Download ZIP archive" });
