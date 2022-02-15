@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { fireEvent, render } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 import Filter from "./_Filter.svelte";

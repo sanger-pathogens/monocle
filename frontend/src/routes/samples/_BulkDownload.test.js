@@ -3,7 +3,7 @@ import { get } from "svelte/store";
 import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import BulkDownload from "./_BulkDownload.svelte";
 import {
-  // The next import is needed for the mock to work.
+  // The following import is needed for the mock to work.
   // eslint-disable-next-line no-unused-vars
   getBulkDownloadUrls
 } from "$lib/dataLoading.js";

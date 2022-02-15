@@ -66,5 +66,5 @@ describe("filter store", () => {
       [columnDataType]: { anotherInSilicoColumn: [VALUES[0]] },
       ...metadataFilter
     });
-  })
+  });
 });

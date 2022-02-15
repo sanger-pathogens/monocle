@@ -1,5 +1,9 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { getDistinctColumnValues } from "$lib/dataLoading.js";
+import {
+  // The following import is needed for the mock to work.
+  // eslint-disable-next-line no-unused-vars
+  getDistinctColumnValues
+} from "$lib/dataLoading.js";
 import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 import { filterStore } from "../_stores.js";
 
@@ -135,7 +139,7 @@ describe("on metadata resolved", () => {
         filterState.metadata[columnOfActiveFilter.name] = {};
         return filterState;
       });
-      const { findByRole, getByLabelText, getByRole } =
+      const { findByRole, getByRole } =
         render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
 
       const columnHeaderElementOfActiveFilter = await findByRole("columnheader", { name:
