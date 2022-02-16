@@ -348,16 +348,39 @@ paths:
             schema:
               $ref: "#/components/schemas/GetDistinctValuesInput"
             example:
-              [ {  "field type":    "metadata",
-                   "field names":   ["serotype", "age_group"]
-                   },
-                {  "field type":    "in silico",
-                   "field names":   ["ST", "cps_type"]
-                   },
-                {  "field type":    "qc data",
-                   "field names":   ["rel_abun_sa"]
-                   }
-                ]
+              { "fields":
+                  [  {  "field type":    "metadata",
+                        "field names":   ["serotype", "age_group"]
+                        },
+                     {  "field type":    "in silico",
+                        "field names":   ["ST", "cps_type"]
+                        },
+                     {  "field type":    "qc data",
+                        "field names":   ["rel_abun_sa"]
+                        }
+                     ],
+                "sample filters":
+                  {  "batches": [
+                        {
+                        "institution key": "NatRefLab",
+                        "batch date": "2019-11-15"
+                        }
+                     ],
+                     "metadata": {
+                        "age_group": [
+                        "adult"
+                        ]
+                     },
+                     "in silico": {
+                        "ST": [
+                        "1",
+                        "12",
+                        "14"
+                        ]
+                     }
+                  }
+                }
+                
       responses:
         "200":
           description: "The operation was successful."
@@ -667,20 +690,27 @@ components:
             $ref: "#/components/schemas/CombinedSampleMetadata"
 
     GetDistinctValuesInput:
-      type: array
-      minItems: 1
-      items:
-        type: object
-        properties:
-          field type:
-            description: "The type of field"
-            $ref: "#/components/schemas/DataFieldType"
-          field names:
-            description: "A list of fields for which distinct values are required."
-            type: array
-            minItems: 1
-            items:
-              $ref: "#/components/schemas/DataFieldName"
+      type: object
+      required:
+        - fields
+      properties:
+        fields:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              field type:
+                description: "The type of field"
+                $ref: "#/components/schemas/DataFieldType"
+              field names:
+                description: "A list of fields for which distinct values are required."
+                type: array
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/DataFieldName"
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
           
     GetDistinctValuesOutput:
       type: array

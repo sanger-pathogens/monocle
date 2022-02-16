@@ -859,10 +859,13 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_distinct_values_route(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        mock_request = [   {   "field type":"metadata",  "field names": ["serotype", "age_group"] },
-                           {   "field type":"in silico", "field names": ["ST"] },
-                           {   "field type":"qc data",   "field names": ["rel_abun_sa"] }
-                           ]
+        batches = self.SERVICE_CALL_RETURN_DATA
+        mock_request = {   "fields":   [{   "field type":"metadata",  "field names": ["serotype", "age_group"] },
+                                          {   "field type":"in silico", "field names": ["ST"] },
+                                          {   "field type":"qc data",   "field names": ["rel_abun_sa"] }
+                                          ],
+                           "sample filters" : {'batches':batches}
+                           }
         expected_data_service_request = { "metadata":    ["serotype", "age_group"],
                                           "in silico":   ["ST"],
                                           "qc data":     ["rel_abun_sa"]
@@ -875,9 +878,38 @@ class TestRoutes(unittest.TestCase):
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_distinct_values.assert_has_calls([
-           call( expected_data_service_request )
+           call( expected_data_service_request, sample_filters={'batches':batches} )
            ])
+        
+        resp_mock.assert_called_once_with({'distinct values': expected_payload})
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_distinct_values_route_no_filters(self, sample_data_service_mock, username_mock, resp_mock):
+        # Given
+        mock_request = {   "fields":   [{   "field type":"metadata",  "field names": ["serotype", "age_group"] },
+                                          {   "field type":"in silico", "field names": ["ST"] },
+                                          {   "field type":"qc data",   "field names": ["rel_abun_sa"] }
+                                          ]
+                           }
+        expected_data_service_request = { "metadata":    ["serotype", "age_group"],
+                                          "in silico":   ["ST"],
+                                          "qc data":     ["rel_abun_sa"]
+                                          }
+        expected_payload   = 'payload'
+        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_distinct_values_route(mock_request)
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_distinct_values.assert_has_calls([
+           call( expected_data_service_request, sample_filters=None )
+           ])
         
         resp_mock.assert_called_once_with({'distinct values': expected_payload})
         self.assertIsNotNone(result)
@@ -889,10 +921,13 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_distinct_values_route_bad_field_type(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        bad_request = [ {   "field type":"metadata",        "field names": ["doesn't matter what is here, the bad key should be caught before it is looked at"] },
-                        {   "field type":"bad field type",  "field names": ["doesn't matter either"] },
-                        {   "field type":"qc data",         "field names": ["still doesn't matter"] }
-                        ]
+        batches = self.SERVICE_CALL_RETURN_DATA
+        bad_request = { "fields":   [  {   "field type":"metadata",        "field names": ["doesn't matter what is here, the bad key should be caught before it is looked at"] },
+                                       {   "field type":"bad field type",  "field names": ["doesn't matter either"] },
+                                       {   "field type":"qc data",         "field names": ["still doesn't matter"] }
+                                       ],
+                        "sample filters" : {'batches':batches}
+                        }
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
@@ -909,7 +944,7 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_distinct_values_route_bad_field_name(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        bad_request = [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadata API barf is mocked"] } ]
+        bad_request = {"fields": [ { "field type":"metadata", "field names": ["doesn't matter what's here, the metadata API barf is mocked"] } ] }
         sample_data_service_mock.return_value.get_distinct_values.return_value = None
         username_mock.return_value = self.TEST_USER
         # When

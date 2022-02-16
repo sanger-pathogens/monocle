@@ -315,8 +315,8 @@ class MonocleSampleData:
                   del qc_data[this_column]
       return combined_metadata
    
-   
-   def get_distinct_values(self, fields):
+   # TODO use sample filters
+   def get_distinct_values(self, fields, sample_filters=None):
       """
       Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
       as keys; values are arrays of field names.

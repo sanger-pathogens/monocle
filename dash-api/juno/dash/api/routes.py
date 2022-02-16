@@ -160,10 +160,13 @@ def get_distinct_values_route(body):
     monocle_data  = ServiceFactory.sample_data_service(get_authenticated_username(request))
     field_types   = ['metadata', 'in silico', 'qc data']
     
+    fields_list      = body['fields']
+    sample_filters   = body.get('sample filters', None)
+    
     # validate *types* of field named in request
     fields_types_found = []
     distinct_values_request = {}
-    for this_obj in body:
+    for this_obj in fields_list:
       this_field_type = this_obj['field type']
       if this_field_type in fields_types_found:
          logging.info("{}.get_distinct_values_route() was passed field type {} more than once".format(__name__, this_field_type))
@@ -174,7 +177,7 @@ def get_distinct_values_route(body):
       fields_types_found.append(this_field_type)
       distinct_values_request[this_field_type] = this_obj['field names']
 
-    distinct_values = monocle_data.get_distinct_values(distinct_values_request)
+    distinct_values = monocle_data.get_distinct_values(distinct_values_request, sample_filters=sample_filters )
     
     if distinct_values is None:
     # this means a non-existent field was asked for => customized 404
