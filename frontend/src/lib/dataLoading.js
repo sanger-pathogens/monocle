@@ -203,14 +203,16 @@ function prepareBulkDownloadPayload({
   instKeyBatchDatePairs,
   filter,
   assemblies,
-  annotations
+  annotations,
+  reads
 }) {
   const payload = {
     "sample filters": {
       batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
     },
     assemblies,
-    annotations
+    annotations,
+    reads
   };
 
   addFiltersToPayload({ ...filter, payload });
