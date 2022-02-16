@@ -714,28 +714,41 @@ components:
           
     GetDistinctValuesOutput:
       type: array
+      readOnly: true
       items:
         type: object
         properties:
           field type:
             description: "The type of field"
             $ref: "#/components/schemas/DataFieldType"
-            readOnly: true
           fields:
             description: "A list of fields for which distinct values are required."
             type: array
             items:
               type: object
+              required:
+                - name
+                - values
               properties:
                 name:
                   $ref: "#/components/schemas/DataFieldName"
-                  readOnly: true
                 values:
                   type: array
                   items:
+                    description: "A value of this field that exists in the database"
                     type: string
-                    readOnly: true
-            
+                matches:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        description: "A value of this field that exists in the database"
+                        type: string
+                      number:
+                        description: "The number of filtered samples in which this value occurs"
+                        type: integer
+
     CombinedSampleMetadata:
       type: object
       description: "Sample manifest metadata plus in silico and QC data"

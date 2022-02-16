@@ -315,7 +315,6 @@ class MonocleSampleData:
                   del qc_data[this_column]
       return combined_metadata
    
-   # TODO use sample filters
    def get_distinct_values(self, fields, sample_filters=None):
       """
       Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
@@ -333,8 +332,30 @@ class MonocleSampleData:
             raise e
          return None
       
+      # if sample filters were passed, insert a 'matches' dict into each field in the
+      # response, listing each value and the number of hits
+      if sample_filters is not None:
+         for this_field_type_obj in distinct_values:
+            this_field_type = this_field_type_obj['field type']
+            for this_field_obj in this_field_type_obj['fields']:
+               this_field_obj['matches'] = []
+               this_field   = this_field_obj['name']
+               for this_value in this_field_obj['values']:
+                  this_field_obj['matches'].append(
+                     {  "value":    this_value,
+                        "number":   self._get_number_matching_fields(this_field, this_value, sample_filters)
+                        }
+                     )
+      
       return distinct_values
-
+   
+   # TODO get actual number of matches
+   def _get_number_matching_fields(self, field, value, sample_filters):
+      num_matches = 666
+      # TODO reduce to debug when done testing
+      logging.critical("Field {} value {} is found {} times in the filtered samples".format(field, value,num_matches))
+      return 666
+   
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
       Pass sample filters dict (describes the filters applied in the front end)
