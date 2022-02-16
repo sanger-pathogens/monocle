@@ -37,7 +37,8 @@
   let bulkDownloadEstimate;
   let bulkDownloadFormValues = {
     annotations: true,
-    assemblies: true
+    assemblies: true,
+    reads: false
   };
   let shouldDisplayBulkDownload = false;
   let isPreparingMetadataDownload = false;
@@ -62,7 +63,7 @@
 
   function _updateDownloadEstimate() {
     const bulkDownloadFormIncomplete = !selectedBatches?.length ||
-      (!bulkDownloadFormValues.annotations && !bulkDownloadFormValues.assemblies);
+      (!bulkDownloadFormValues.annotations && !bulkDownloadFormValues.assemblies && !bulkDownloadFormValues.reads);
     if (bulkDownloadFormIncomplete) {
       return;
     }

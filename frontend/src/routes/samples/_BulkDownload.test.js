@@ -14,9 +14,8 @@ jest.mock("$lib/dataLoading.js", () => ({
   ]))
 }));
 
-const ANNOTATIONS_LABEL = "Annotations";
-const ASSEMBLIES_LABEL = "Assemblies";
 const FAKE_HEADER_ID = "section-header";
+const LABEL_ASSEMBLIES = "Assemblies";
 const LABEL_CONFIRM_BUTTON = "Confirm";
 const LABEL_ESTIMATE_LOADING = "Estimating the download size. Please wait";
 const ROLE_BUTTON = "button";
@@ -26,18 +25,18 @@ const BATCHES = ["batch 1", "batch 2"];
 const FORM_VALUES = { annotations: true, assemblies: true };
 
 it("displays the data type checkboxes w/ assemblies and annotations checked", () => {
-  const { getByRole, queryByRole } = render(BulkDownload, {
+  const { getByRole } = render(BulkDownload, {
     batches: BATCHES,
     formValues: FORM_VALUES,
     ariaLabelledby: FAKE_HEADER_ID
   });
 
-  expect(getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL }).checked)
+  expect(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }).checked)
     .toBeTruthy();
-  expect(getByRole(ROLE_CHECKBOX, { name: ANNOTATIONS_LABEL }).checked)
+  expect(getByRole(ROLE_CHECKBOX, { name: "Annotations" }).checked)
     .toBeTruthy();
-  expect(queryByRole(ROLE_CHECKBOX, { name: /^Reads / }))
-    .toBeNull();
+  expect(getByRole(ROLE_CHECKBOX, { name: /^Reads / }).checked)
+    .toBeFalsy();
 });
 
 it("enables the confirm button only when batches are passed and a data type is selected", async () => {
@@ -54,7 +53,7 @@ it("enables the confirm button only when batches are passed and a data type is s
   confirmButton = getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON });
   expect(confirmButton.disabled).toBeTruthy();
 
-  const assembliesCheckbox = getByRole(ROLE_CHECKBOX, { name: ASSEMBLIES_LABEL });
+  const assembliesCheckbox = getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES });
   await fireEvent.click(assembliesCheckbox);
 
   confirmButton = getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON });

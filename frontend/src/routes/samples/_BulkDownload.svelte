@@ -16,7 +16,7 @@
 
   $: estimate = downloadEstimateCurrentDownload || downloadEstimateLatest;
   $: formComplete = batches?.length &&
-    (formValues.annotations || formValues.assemblies);
+    (formValues.annotations || formValues.assemblies || formValues.reads);
 
   // Freeze the download estimate once the form is submitted.
   $: {
@@ -92,12 +92,13 @@
         Annotations
       </label>
 
-      <!-- To be done in a future version of Monocle.
-      <label class="disabled">
-        <input type="checkbox" />
-        Reads ( ⚠️ may increase the size drastically)
+      <label>
+        <input
+          type="checkbox"
+          bind:checked={formValues.reads}
+        />
+        Reads ( ⚠️ may increase the total size drastically)
       </label>
-      -->
     </fieldset>
 
     <fieldset>
