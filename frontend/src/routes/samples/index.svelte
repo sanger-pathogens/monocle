@@ -68,6 +68,7 @@
       return;
     }
 
+    unsetDownloadEstimate();
     getBulkDownloadInfo({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
       filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
