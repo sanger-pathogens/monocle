@@ -540,10 +540,10 @@ class MonocleSampleData:
       except KeyError as err:
           self._download_config_error(err)
           
-   def get_bulk_download_max_samples_per_zip(self):
+   def get_bulk_download_max_samples_per_zip(self, including_reads=False):
       data_source_config = self._load_data_source_config()
       try:
-          max_samples_per_zip = int(data_source_config['data_download']['max_samples_per_zip'])
+          max_samples_per_zip =  int(data_source_config['data_download']['max_samples_per_zip_with_reads']) if including_reads else int(data_source_config['data_download']['max_samples_per_zip'])
       except (KeyError, ValueError) as err:
           self._download_config_error(err)
       if not max_samples_per_zip > 0:
