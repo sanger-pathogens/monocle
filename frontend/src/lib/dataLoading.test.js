@@ -57,7 +57,8 @@ describe.each([
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
-      annotations: false
+      annotations: false,
+      reads: true
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -69,7 +70,8 @@ describe.each([
           "in silico": { ST: ["x", "y"] }
         },
         assemblies: true,
-        annotations: false
+        annotations: false,
+        reads: true
       })
     },
     expectedEndpoints: ["bulk_download_info"],
@@ -83,7 +85,8 @@ describe.each([
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
-      annotations: false
+      annotations: false,
+      reads: true
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -95,7 +98,8 @@ describe.each([
           "in silico": { ST: ["x", "y"] }
         },
         assemblies: true,
-        annotations: false
+        annotations: false,
+        reads: true
       })
     },
     expectedEndpoints: ["bulk_download_urls"],
