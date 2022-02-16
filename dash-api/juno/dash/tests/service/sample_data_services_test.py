@@ -2,6 +2,7 @@ from   unittest      import TestCase
 from   unittest.mock import patch, Mock
 from   copy          import deepcopy
 from   datetime      import datetime
+import json
 import logging
 import urllib.request
 from   urllib.error  import HTTPError
@@ -23,6 +24,9 @@ INSTITUTION_KEY = 'GenWel'
 PUBLIC_NAME = 'SCN9A'
 
 class MonocleSampleDataTest(TestCase):
+
+   test_field_attributes      = 'dash/tests/mock_data/field_attributes.json'
+   test_field_attributes_bad  = 'dash/tests/mock_data/field_attributes_bad.json'
 
    test_config       = 'dash/tests/mock_data/data_sources.yml'
    test_config_bad   = 'dash/tests/mock_data/data_sources_bad.yml'
@@ -293,9 +297,9 @@ class MonocleSampleDataTest(TestCase):
    # create MonocleSampleData object outside setUp() to avoid creating multipe instances
    # this means we use cached data rather than making multiple patched queries to SampleMetadata etc.
    monocle_sample_tracking = MonocleSampleTracking(set_up=False)
-   monocle_data            = MonocleSampleData(MonocleSampleTracking_ref=monocle_sample_tracking, set_up=False)
-   monocle_data.data_source_config_name   = test_config
-   monocle_data.sample_metadata_source    = SampleMetadata()
+   monocle_data            = MonocleSampleData( data_source_config         = test_config,
+                                                metadata_field_config      = test_field_attributes,
+                                                MonocleSampleTracking_ref  = monocle_sample_tracking)
 
    @patch.dict(environ, mock_environment, clear=True)
    def setUp(self):
@@ -319,6 +323,16 @@ class MonocleSampleDataTest(TestCase):
       self.assertIsInstance(self.monocle_data,                 MonocleSampleData)
       self.assertIsInstance(self.monocle_data.sample_tracking, MonocleSampleTracking)
 
+   def test_init_reject_missing_config(self):
+      with self.assertRaises(DataSourceConfigError):
+         MonocleSampleData(   data_source_config         = 'no/such/file',
+                              metadata_field_config      = self.test_field_attributes,
+                              MonocleSampleTracking_ref  = self.monocle_sample_tracking)
+      with self.assertRaises(DataSourceConfigError):
+         MonocleSampleData(   data_source_config         = self.test_config,
+                              metadata_field_config      = 'no/such/file',
+                              MonocleSampleTracking_ref  = self.monocle_sample_tracking)
+
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
@@ -334,6 +348,19 @@ class MonocleSampleDataTest(TestCase):
       self.monocle_sample_tracking.get_institutions()
       self.monocle_sample_tracking.get_samples()
       self.monocle_sample_tracking.get_sequencing_status()
+
+   def test_get_field_attributes(self):
+      json_returned  = self.monocle_data.get_field_attributes()
+      json_test_file = json.load( open(self.test_field_attributes, 'r') )
+      self.assertEqual(json_test_file, json_returned)
+
+   def test_get_field_attributes_reject_bad_json(self):
+      doomed = MonocleSampleData(   data_source_config         = self.test_config,
+                                    metadata_field_config      = self.test_field_attributes_bad,
+                                    MonocleSampleTracking_ref  = self.monocle_sample_tracking)
+      with self.assertRaises(json.decoder.JSONDecodeError):
+         json_returned = doomed.get_field_attributes()
+         
 
    @patch.object(Path,              'exists', return_value=True)
    @patch.object(MonocleSampleData, '_get_file_size')

@@ -4,6 +4,7 @@ from   csv                    import QUOTE_NONE, QUOTE_MINIMAL, QUOTE_NONNUMERIC
 from   datetime               import datetime
 import errno
 from   functools              import reduce
+import json
 import logging
 import os
 from   os                     import environ, path
@@ -19,6 +20,7 @@ from   utils.file             import format_file_size
 import DataServices.sample_tracking_services
 import DataSources.sample_metadata
 import DataSources.metadata_download
+
 
 API_ERROR_KEY = '_ERROR'
 DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
@@ -39,6 +41,8 @@ class MonocleSampleData:
    This class exists to convert data between the form in which they are provided by the data sources,
    and whatever form is most convenient for rendering the dashboard.
    """
+   default_data_source_config    = 'data_sources.yml'
+   default_metadata_field_config = 'field_attributes.json'
    sample_table_inst_key   = 'submitting_institution'
    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
@@ -49,22 +53,38 @@ class MonocleSampleData:
    # date from which progress is counted
    day_zero = datetime(2019,9,17)
 
-   def __init__(self, MonocleSampleTracking_ref=None, set_up=True):
+   def __init__(self, data_source_config=default_data_source_config, metadata_field_config=default_metadata_field_config, MonocleSampleTracking_ref=None, set_up=True):
+      # requite config files; can be passed, default to variables
+      self.data_source_config_name     = data_source_config
+      self.metadata_field_config_name  = metadata_field_config
+      # check config files exist
+      for this_file in [self.data_source_config_name, self.metadata_field_config_name]:
+         if not Path(this_file).is_file():
+            return self._download_config_error("config file {} is missing".format(this_file))
+
       # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
       # if one wasn't passed, create one now
       if MonocleSampleTracking_ref is not None:
          self.sample_tracking   = MonocleSampleTracking_ref
       else:
          self.sample_tracking             = DataServices.sample_tracking_services.MonocleSampleTracking()
+      
       # set_up flag causes data objects to be loaded on instantiation
       # only set to False if you know what you're doing
       if set_up:
          self.updated                     = datetime.now()
          self.metadata_download_source    = DataSources.metadata_download.MetadataDownload()
          self.sample_metadata_source      = DataSources.sample_metadata.SampleMetadata()
-         self.data_source_config_name     = 'data_sources.yml'
-         
 
+
+   def get_field_attributes(self):
+      """
+      Return field attributes JSON object
+      """
+      with open(self.metadata_field_config_name, 'r') as json_file:
+         field_attributes = json.load(json_file)
+      
+      return field_attributes
 
    def get_metadata(self, sample_filters, start_row=None, num_rows=None, metadata_columns=None,
                     in_silico_columns=None, include_in_silico=False, qc_data_columns=None, include_qc_data=False):
@@ -897,9 +917,6 @@ class MonocleSampleData:
       download_dir_param      = 'web_dir'
       download_url_path_param = 'url_path'
       cross_institution_dir_param = 'cross_institution_dir'
-      # get web server directory, and check it exists
-      if not Path(self.data_source_config_name).is_file():
-         return self._download_config_error("data source config file {} missing".format(self.data_source_config_name))
       # read config, check required params
       data_sources = self._load_data_source_config()
       if download_config_section not in data_sources or download_dir_param not in data_sources[download_config_section]:

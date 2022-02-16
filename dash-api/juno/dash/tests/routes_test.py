@@ -162,6 +162,27 @@ class TestRoutes(unittest.TestCase):
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_field_attributes_route(self, sample_data_service_mock, username_mock, resp_mock):
+        # Given
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.SERVICE_CALL_RETURN_DATA
+        username_mock.return_value = self.TEST_USER
+        # When
+        result = get_field_attributes_route()
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
+        resp_mock.assert_called_once_with(
+            {
+                'field_attributes': self.SERVICE_CALL_RETURN_DATA
+            }
+        )
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch('dash.api.routes.call_jsonify')
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_bulk_download_info_route(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA

@@ -99,6 +99,12 @@ def pipeline_status_summary_route():
     }
     return call_jsonify(response_dict), HTTPStatus.OK
 
+def get_field_attributes_route():
+    data = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
+    response_dict = {
+        'field_attributes': data
+    }
+    return call_jsonify(response_dict), HTTPStatus.OK
 
 def get_metadata_route(body):
     """ Get sample metadata based on standard sample filter  """
