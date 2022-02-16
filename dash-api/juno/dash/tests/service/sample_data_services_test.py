@@ -260,10 +260,40 @@ class MonocleSampleDataTest(TestCase):
    mock_distinct_in_silico_values = [  { "name": "field3", "values": ["f", "g", "h"] }
                                        ]
    
-   expected_distinct_values   =     [  { 'field type': 'metadata',    'fields': mock_distinct_values },
-                                       { 'field type': 'in silico',   'fields': mock_distinct_in_silico_values }
+   expected_distinct_values   =     [  {  'field type':  'metadata',
+                                          'fields':      [  { "name": "field1", "values": ["a", "b"] },
+                                                            { "name": "field2", "values": ["d", "e"] }
+                                                            ]
+                                          },
+                                       {  'field type':  'in silico',
+                                          'fields':      [  { "name": "field3", "values": ["f", "g", "h"] }
+                                                            ]
+                                          }
                                        ]            
 
+   mock_distinct_value_num_matching  = 42
+   expected_distinct_values_filtered = [  {  'field type':  'metadata',
+                                             'fields':      [  {  "name":     "field1",
+                                                                  "values":   ["a", "b"],
+                                                                  'matches':  [{'value': 'a', 'number': mock_distinct_value_num_matching},
+                                                                               {'value': 'b', 'number': mock_distinct_value_num_matching}]
+                                                                  },
+                                                               {  "name":     "field2",
+                                                                  "values":   ["d", "e"],
+                                                                  'matches':  [{'value': 'd', 'number': mock_distinct_value_num_matching},
+                                                                               {'value': 'e', 'number': mock_distinct_value_num_matching}]
+                                                                  }
+                                                               ]
+                                             },
+                                          {  'field type':  'in silico',
+                                             'fields':      [  {  "name":     "field3",
+                                                                  "values":   ["f", "g", "h"],
+                                                                  "matches":  [{'value': 'f', 'number': mock_distinct_value_num_matching},
+                                                                               {'value': 'g', 'number': mock_distinct_value_num_matching},
+                                                                               {'value': 'h', 'number': mock_distinct_value_num_matching}]}
+                                                               ]
+                                             }
+                                          ]            
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
 "fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","","","","'''+mock_download_url+'''/fake_public_name_1"
@@ -406,8 +436,25 @@ class MonocleSampleDataTest(TestCase):
       distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
       mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
       mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_distinct_values, distinct_values))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
       self.assertEqual(self.expected_distinct_values, distinct_values)
+
+   @patch.object(Monocle_Client,    'distinct_values')
+   @patch.object(Monocle_Client,    'distinct_in_silico_values')
+   # TODO instead of mocking _get_number_matching_fields (which excludes it from test coverage) we should mock the
+   #      response of the db query that counts the number of matching fields
+   @patch.object(MonocleSampleData, '_get_number_matching_fields')
+   def test_get_distinct_values_with_sample_filters(self, mock_num_matches, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_num_matches.return_value                      = self.mock_distinct_value_num_matching
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
+                                                                        sample_filters = {'batches': self.inst_key_batch_date_pairs}
+                                                                        )
+      mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
+      mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
+      self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
 
    @patch.object(Monocle_Client,  'distinct_values')
    @patch.object(Monocle_Client,  'distinct_in_silico_values')
