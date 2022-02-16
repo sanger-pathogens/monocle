@@ -4,26 +4,27 @@
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
   import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
-  let downloadEstimateLatest = undefined;
+  let _downloadEstimate = undefined;
   export let ariaLabelledby;
   export let batches = undefined;
-  export { downloadEstimateLatest as downloadEstimate };
+  export { _downloadEstimate as downloadEstimate };
   export let formValues;
 
   let downloadEstimateCurrentDownload;
   let downloadLinksRequested;
   let downloadTokens = [];
+  let estimate = _downloadEstimate;
 
-  $: estimate = downloadEstimateCurrentDownload || downloadEstimateLatest;
-  $: formComplete = batches?.length &&
-    (formValues.annotations || formValues.assemblies || formValues.reads);
+  $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
-  // Freeze the download estimate once the form is submitted.
   $: {
-    if (downloadLinksRequested && !downloadEstimateCurrentDownload) {
-      downloadEstimateCurrentDownload = downloadEstimateLatest;
+    if (!shouldFreezeDownloadEstimate) {
+      estimate = _downloadEstimate;
     }
   }
+
+  $: formComplete = batches?.length &&
+    (formValues.annotations || formValues.assemblies || formValues.reads);
 
   function onSubmit() {
     if (!formComplete) {
@@ -61,6 +62,11 @@
     downloadEstimateCurrentDownload = null;
     downloadTokens = [];
     downloadLinksRequested = false;
+    shouldFreezeDownloadEstimate = false;
+  }
+
+  function _shouldFreezeDownloadEstimate() {
+    return downloadLinksRequested && Boolean(estimate);
   }
 </script>
 
