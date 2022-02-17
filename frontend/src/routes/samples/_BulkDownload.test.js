@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
+import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import BulkDownload from "./_BulkDownload.svelte";
@@ -17,7 +17,6 @@ jest.mock("$lib/dataLoading.js", () => ({
 const FAKE_HEADER_ID = "section-header";
 const LABEL_ASSEMBLIES = "Assemblies";
 const LABEL_CONFIRM_BUTTON = "Confirm";
-const LABEL_ESTIMATE_LOADING = "Estimating the download size. Please wait";
 const ROLE_BUTTON = "button";
 const ROLE_CHECKBOX = "checkbox";
 
@@ -73,15 +72,19 @@ it("displays a loading icon when the download estimate isn't passed and the form
     ariaLabelledby: FAKE_HEADER_ID
   });
 
-  expect(getByText(LABEL_ESTIMATE_LOADING)).toBeDefined();
+  expect(getByText("Estimating the download size. Please wait")).toBeDefined();
 });
 
 describe("on form submit", () => {
+  const DOWNLOAD_ESTIMATE = { numSamples: 42, sizeZipped: "9.8GB" };
+  const DOWNLOAD_ESTIMATE_TEXT =
+    `${DOWNLOAD_ESTIMATE.numSamples} samples of ${DOWNLOAD_ESTIMATE.sizeZipped}`;
   const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LABEL_DOWNLOAD_LINKS_HEADER = "Download links";
   const LOADING_MESSAGE =
     "Please wait: generating a download link can take a while if thousands of samples are involved.";
   const ROLE_HEADING = "heading";
+  const SELECTOR_DOWNLOAD_ESTIMATE = "dd";
   const SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";
   const URL_SEPARATOR = "/";
 
@@ -139,35 +142,46 @@ describe("on form submit", () => {
     expect(getByLabelText(LOADING_MESSAGE)).toBeDefined();
   });
 
-  it("freezes the download estimate but only after having an estimate", async () => {
+  it("freezes the download estimate if batches change", async () => {
     const { component, container, getByRole } = render(BulkDownload, {
       batches: BATCHES,
       formValues: FORM_VALUES,
       ariaLabelledby: FAKE_HEADER_ID
     });
-    const selectorDownloadEstimateValue = "dd";
-    const downloadEstimate = { numSamples: 42, sizeZipped: "9.8GB" };
-    const expectedDownloadEstimateText =
-      `${downloadEstimate.numSamples} samples of ${downloadEstimate.sizeZipped}`;
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
+    await component.$set({ downloadEstimate: DOWNLOAD_ESTIMATE });
 
-    expect(container.querySelector(selectorDownloadEstimateValue).textContent)
-      .toBe(LABEL_ESTIMATE_LOADING);
+    expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+      .toBe(DOWNLOAD_ESTIMATE_TEXT);
 
-    await act(() => {
-      component.$set({ downloadEstimate });
+    await component.$set({ batches: ["anything"] });
+    await component.$set({ downloadEstimate: { numSamples: 998, sizeZipped: "70.2TB" } });
+
+    expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+      .toBe(DOWNLOAD_ESTIMATE_TEXT);
+  });
+
+  it("freezes the download estimate if filters change", async () => {
+    const { component, container, getByRole } = render(BulkDownload, {
+      batches: BATCHES,
+      formValues: FORM_VALUES,
+      ariaLabelledby: FAKE_HEADER_ID
     });
 
-    expect(container.querySelector(selectorDownloadEstimateValue).textContent)
-      .toBe(expectedDownloadEstimateText);
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
+    await component.$set({ downloadEstimate: DOWNLOAD_ESTIMATE });
 
-    await act(() => {
-      component.$set({ downloadEstimate: { numSamples: 998, sizeZipped: "70.2TB" } });
-    });
+    expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+      .toBe(DOWNLOAD_ESTIMATE_TEXT);
 
-    expect(container.querySelector(selectorDownloadEstimateValue).textContent)
-      .toBe(expectedDownloadEstimateText);
+    await filterStore.set({ metadata: { someColumn: { values: [] } }, "in silico": {}, "qc data": {} });
+    await component.$set({ downloadEstimate: { numSamples: 998, sizeZipped: "70.2TB" } });
+
+    expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+      .toBe(DOWNLOAD_ESTIMATE_TEXT);
+
+    filterStore.removeAllFilters();
   });
 
   it("requests and displays download links", async () => {
@@ -294,6 +308,30 @@ describe("on form submit", () => {
       expect(queryByLabelText(LOADING_MESSAGE)).toBeNull();
       expectFormToBeReset(component);
     });
+
+    it("updates the download estimate to the latest one", async () => {
+      const { component, container, getByRole } = render(BulkDownload, {
+        batches: BATCHES,
+        downloadEstimate: DOWNLOAD_ESTIMATE,
+        formValues: FORM_VALUES,
+        ariaLabelledby: FAKE_HEADER_ID
+      });
+      const latterDownloadEstimate = { numSamples: 19, sizeZipped: "2.2GB" };
+
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
+      await component.$set({ batches: ["anything"] });
+      await component.$set({ downloadEstimate: latterDownloadEstimate });
+
+      expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+        .toBe(DOWNLOAD_ESTIMATE_TEXT);
+
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESET_BUTTON }));
+
+      const latterDownloadEstimateText =
+        `${latterDownloadEstimate.numSamples} samples of ${latterDownloadEstimate.sizeZipped}`;
+      expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
+        .toBe(latterDownloadEstimateText);
+    })
 
     function expectFormToBeReset({ container, queryByRole, getByRole }) {
       expect(queryByRole(ROLE_HEADING, { name: LABEL_DOWNLOAD_LINKS_HEADER }))

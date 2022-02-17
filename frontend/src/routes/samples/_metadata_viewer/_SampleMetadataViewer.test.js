@@ -1,4 +1,4 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/svelte";
+import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
@@ -74,12 +74,8 @@ it("requests metadata w/ the correct arguments", async () => {
 it("debounces the metadata request when batches change", async () => {
   debounce.mockClear();
   const { component } = render(SampleMetadataViewer, { batches: BATCHES });
-  await act(() => {
-    component.$set({ batches: ["some other batches"] });
-  });
-  await act(() => {
-    component.$set({ batches: BATCHES });
-  });
+  await component.$set({ batches: ["some other batches"] });
+  await component.$set({ batches: BATCHES });
 
   expect(debounce).toHaveBeenCalledTimes(3);
 });

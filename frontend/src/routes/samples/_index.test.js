@@ -92,7 +92,7 @@ describe("once batches are fetched", () => {
 
   it("disables the filter removal button on batches change", async () => {
     const filterRemovalLabel = /^Remove all filters/;
-    const { findByRole, getByRole, getByText } = render(DataViewerPage);
+    const { findByRole, getByRole } = render(DataViewerPage);
     const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
     await fireEvent.click(selectAllBtn);
     filterStore.update((filters) => {

@@ -60,7 +60,7 @@ describe("on", () => {
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
       const expectedUrl = `${global.location.origin}/download/url`;
-      xmlHttpRequestMock.responseText = `{\"download location\":\"${expectedUrl}\"}`;
+      xmlHttpRequestMock.responseText = `{"download location":"${expectedUrl}"}`;
 
       loadCallback();
 
