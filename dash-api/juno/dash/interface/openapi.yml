@@ -392,19 +392,38 @@ paths:
                 { "distinct values": [
                      {  "field type": "metadata",
                         "fields":     [   {  "name":     "serotype",
-                                             "values":   ["Ia", "Ib", "III"]
+                                             "values":   ["Ia", "Ib", "III"],
+                                             "matches":  [  {"value": "Ia",  "number": 0 },
+                                                            {"value": "Ib",  "number": 7 },
+                                                            {"value": "III", "number": 4 }
+                                                            ]
+
                                              },
                                           {  "name":     "age_group",
-                                             "values":   ["adult", "adolescent", "infant"]
+                                             "values":   ["adult", "adolescent", "infant"],
+                                             "matches":  [  {"value": "adult",      "number": 15 },
+                                                            {"value": "adolescent", "number": 7 },
+                                                            {"value": "infant",     "number": 0 }
+                                                            ]
                                              }
                                        ]
                         },
                      {  "field type": "in silico",
                         "fields":      [  {  "name": "ST",
-                                             "values": ["1", "1*", "10", "103", "103*?"]
+                                             "values": ["1", "1*", "10", "103", "103*?"],
+                                             "matches":  [  {"value": "1",     "number": 4 },
+                                                            {"value": "1*",    "number": 3 },
+                                                            {"value": "103",   "number": 0 },
+                                                            {"value": "103*?", "number": 0 }
+                                                            ]
                                              },
                                           {  "name": "cps_type",
-                                             "values": ["II", "III", "III/V", "Ia/II"]
+                                             "values": ["II", "III", "III/V", "Ia/II"],
+                                             "matches":  [  {"value": "II",    "number": 4 },
+                                                            {"value": "III",   "number": 3 },
+                                                            {"value": "III/V", "number": 11 },
+                                                            {"value": "Ia/II", "number": 6 }
+                                                            ]
                                              }
                                           ]
                         }
