@@ -354,9 +354,6 @@ paths:
                         },
                      {  "field type":    "in silico",
                         "field names":   ["ST", "cps_type"]
-                        },
-                     {  "field type":    "qc data",
-                        "field names":   ["rel_abun_sa"]
                         }
                      ],
                 "sample filters":
@@ -408,12 +405,6 @@ paths:
                                              },
                                           {  "name": "cps_type",
                                              "values": ["II", "III", "III/V", "Ia/II"]
-                                             }
-                                          ]
-                        },
-                     {  "field type": "qc data",
-                        "fields":      [  {  "name": "rel_abun_sa",
-                                             "values": ["0.01", "76.04", "84.46", "91.23", "99.10"]
                                              }
                                           ]
                         }

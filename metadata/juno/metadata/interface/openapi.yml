@@ -436,7 +436,7 @@ components:
             items:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
-      example: { "name": "ST",  "values": ["1", "12", "103*?"] }
+      example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
