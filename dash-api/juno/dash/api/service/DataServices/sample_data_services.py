@@ -343,18 +343,37 @@ class MonocleSampleData:
                for this_value in this_field_obj['values']:
                   this_field_obj['matches'].append(
                      {  "value":    this_value,
-                        "number":   self._get_number_matching_fields(this_field, this_value, sample_filters)
+                        "number":   self._get_number_matching_fields(this_field_type, this_field, this_value, sample_filters)
                         }
                      )
       
       return distinct_values
    
-   # TODO get actual number of matches
-   def _get_number_matching_fields(self, field, value, sample_filters):
-      num_matches = 666
+   # TODO consider calling get_filtered_samples() with only "batches" filter in get_distinct_values()
+   #      and passing the filters samples list here; then calling _apply_metadata_filter() etc.
+   #      to count the matchijng samples...
+   def _get_number_matching_fields(self, field_type, field, value, sample_filters):
+      # need a copy of sample_filters because it is going to be modified
+      temp_filters = deepcopy(sample_filters)
+      if field_type in temp_filters:
+         temp_filters[field_type][field] = [value]
+      else:
+         temp_filters[field_type] = {field: [value]}
       # TODO reduce to debug when done testing
-      logging.critical("Field {} value {} is found {} times in the filtered samples".format(field, value,num_matches))
-      return 666
+      logging.critical("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
+      
+      # get number of matches
+      try:
+         matches = self.get_filtered_samples(temp_filters, disable_public_name_fetch=True)
+      except urllib.error.HTTPError as e:
+         if '404' not in str(e):
+            raise e
+         # caught a 404, which means no matches
+         matches = []
+
+      # TODO reduce to debug when done testing
+      logging.critical("found {} instances of {} in {}".format(len(matches),value,field))
+      return len(matches)
    
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
@@ -409,6 +428,16 @@ class MonocleSampleData:
 
       Also metadata, in silico and QC data filters, e.g.
          "metadata": {"serotype": ["I", "IV"], ...}
+         
+      Return format:
+      
+      [  {  'lanes':             ['32820_2#287'],
+            'creation_datetime': '2019-11-15T13:56:07Z',
+            'sanger_sample_id':  '5903STDY8113167',
+            'inst_key':          'NatRefLab',
+            'public_name':       'JN_IL_ST00002'
+            }
+         ]
 
       """
       inst_key_batch_date_pairs = sample_filters['batches']
@@ -454,15 +483,13 @@ class MonocleSampleData:
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
 
-      # if filters based on metadata and/or in silico data were passed, filter the results
+      # if filters based on metadata, in silico or QC data were passed, filter the results
       if 'metadata' in sample_filters:
          filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['metadata'])
       if 'in silico' in sample_filters:
          filtered_samples = self._apply_in_silico_filters(filtered_samples, sample_filters['in silico'])
-      # TODO either implement this, or remove this waning if QC data filtering definitely isn't wanted
-      #      (expect it will be the latter)
       if 'qc data' in sample_filters:
-         logging.warning("FILTERING BY QC DATA IS NOT IMPLEMENTED")
+         filtered_samples = self._apply_qc_data_filters(filtered_samples, sample_filters['qc data'])
       
       logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
@@ -492,6 +519,14 @@ class MonocleSampleData:
             intersection.append(this_sample)
       filtered_samples = intersection
       logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))
+      return filtered_samples
+
+   def _apply_qc_data_filters(self, filtered_samples, qc_data_filters):
+      # TODO we do not currently have a requirement for QC data filters in the FE, but for consistency the
+      #      API requests include them in the request structure.  This warning should alert us if we start
+      #      trying to use QC data filters in the FE and forget they're not actually implemented.
+      logging.warning("FILTERING BY QC DATA IS NOT IMPLEMENTED")
+      logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
       return filtered_samples
 
    def _get_sanger_sample_id_to_public_name_dict(self, institutions):

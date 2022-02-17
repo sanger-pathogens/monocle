@@ -230,8 +230,7 @@ class Monocle_Client:
                 response_as_string = this_response.read().decode('utf-8')
                 logging.debug("response from Metadata API: {}".format(response_as_string))
         except urllib.error.HTTPError as e:
-            msg = "HTTP error during Metadata API request {}\nData:\n{}\n{}".format(request_url,request_data,e)
-            logging.error("Metadata API response: {} {}".format(e.code,e.read().decode('utf-8')))
+            msg = "HTTP error during Metadata API request {}: {} {}\nData:\n{}".format(request_url,e.code,e.read().decode('utf-8'),request_data)
             if '404' in str(e) or '400' in str(e):
                 logging.info(msg)
             else:
