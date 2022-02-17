@@ -1,5 +1,5 @@
 from   unittest      import TestCase
-from   unittest.mock import patch, Mock
+from   unittest.mock import call, patch, Mock
 from   copy          import deepcopy
 from   datetime      import datetime
 import json
@@ -271,29 +271,52 @@ class MonocleSampleDataTest(TestCase):
                                           }
                                        ]            
 
-   mock_distinct_value_num_matching  = 42
-   expected_distinct_values_filtered = [  {  'field type':  'metadata',
-                                             'fields':      [  {  "name":     "field1",
-                                                                  "values":   ["a", "b"],
-                                                                  'matches':  [{'value': 'a', 'number': mock_distinct_value_num_matching},
-                                                                               {'value': 'b', 'number': mock_distinct_value_num_matching}]
-                                                                  },
-                                                               {  "name":     "field2",
-                                                                  "values":   ["d", "e"],
-                                                                  'matches':  [{'value': 'd', 'number': mock_distinct_value_num_matching},
-                                                                               {'value': 'e', 'number': mock_distinct_value_num_matching}]
-                                                                  }
-                                                               ]
-                                             },
-                                          {  'field type':  'in silico',
-                                             'fields':      [  {  "name":     "field3",
-                                                                  "values":   ["f", "g", "h"],
-                                                                  "matches":  [{'value': 'f', 'number': mock_distinct_value_num_matching},
-                                                                               {'value': 'g', 'number': mock_distinct_value_num_matching},
-                                                                               {'value': 'h', 'number': mock_distinct_value_num_matching}]}
-                                                               ]
-                                             }
-                                          ]            
+   mock_distinct_value_num_matching          = 42
+   expected_distinct_values_filtered         = [  {  'field type':  'metadata',
+                                                      'fields':      [  {  "name":     "field1",
+                                                                           "values":   ["a", "b"],
+                                                                           'matches':  [{'value': 'a', 'number': mock_distinct_value_num_matching},
+                                                                                       {'value': 'b', 'number': mock_distinct_value_num_matching}]
+                                                                           },
+                                                                        {  "name":     "field2",
+                                                                           "values":   ["d", "e"],
+                                                                           'matches':  [{'value': 'd', 'number': mock_distinct_value_num_matching},
+                                                                                       {'value': 'e', 'number': mock_distinct_value_num_matching}]
+                                                                           }
+                                                                        ]
+                                                      },
+                                                   {  'field type':  'in silico',
+                                                      'fields':      [  {  "name":     "field3",
+                                                                           "values":   ["f", "g", "h"],
+                                                                           "matches":  [{'value': 'f', 'number': mock_distinct_value_num_matching},
+                                                                                       {'value': 'g', 'number': mock_distinct_value_num_matching},
+                                                                                       {'value': 'h', 'number': mock_distinct_value_num_matching}]}
+                                                                        ]
+                                                      }
+                                                ]            
+
+   expected_distinct_values_filtered_mock_404 = [  {  'field type':  'metadata',
+                                                      'fields':      [  {  "name":     "field1",
+                                                                           "values":   ["a", "b"],
+                                                                           'matches':  [{'value': 'a', 'number': 0},
+                                                                                       {'value': 'b', 'number': 0}]
+                                                                           },
+                                                                        {  "name":     "field2",
+                                                                           "values":   ["d", "e"],
+                                                                           'matches':  [{'value': 'd', 'number': 0},
+                                                                                       {'value': 'e', 'number': 0}]
+                                                                           }
+                                                                        ]
+                                                      },
+                                                   {  'field type':  'in silico',
+                                                      'fields':      [  {  "name":     "field3",
+                                                                           "values":   ["f", "g", "h"],
+                                                                           "matches":  [{'value': 'f', 'number': 0},
+                                                                                       {'value': 'g', 'number': 0},
+                                                                                       {'value': 'h', 'number': 0}]}
+                                                                        ]
+                                                      }
+                                                   ]            
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
 "fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","","","","'''+mock_download_url+'''/fake_public_name_1"
@@ -441,11 +464,38 @@ class MonocleSampleDataTest(TestCase):
 
    @patch.object(Monocle_Client,    'distinct_values')
    @patch.object(Monocle_Client,    'distinct_in_silico_values')
-   # TODO instead of mocking _get_number_matching_fields (which excludes it from test coverage) we should mock the
-   #      response of the db query that counts the number of matching fields
-   @patch.object(MonocleSampleData, '_get_number_matching_fields')
-   def test_get_distinct_values_with_sample_filters(self, mock_num_matches, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-      mock_num_matches.return_value                      = self.mock_distinct_value_num_matching
+   @patch.object(MonocleSampleData, 'get_filtered_samples')
+   def test_get_distinct_values_with_sample_filters(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_get_filtered_samples.return_value             = ['any value' for whatever in range(self.mock_distinct_value_num_matching)]
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
+                                                                        sample_filters = {'batches' : self.inst_key_batch_date_pairs,
+                                                                                          'metadata': {'field2': ['x']}
+                                                                                          }
+                                                                        )
+      mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
+      mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
+      # get_filtered_samples() calls should iterate through self.mock_distinct_values and self.mock_distinct_in_silico_values
+      # the 'batches' and 'metadata' filters from the call above should be passed to these calls
+      # *except* that the metadata filter for 'field2' should NOT be passed to calls for 'field2' values from self.mock_distinct_values
+      mock_get_filtered_samples.assert_has_calls(  [  call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x'], 'field1': ['a']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x'], 'field1': ['b']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['d']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['e']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['f']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['g']}}, disable_public_name_fetch=True),
+                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['h']}}, disable_public_name_fetch=True)
+                                                      ]
+                                                   )
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
+      self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
+
+   @patch.object(Monocle_Client,    'distinct_values')
+   @patch.object(Monocle_Client,    'distinct_in_silico_values')
+   @patch.object(MonocleSampleData, 'get_filtered_samples')
+   def test_get_distinct_values_with_sample_filters_catch_404_in_matching_sample_count(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_get_filtered_samples.side_effect              = HTTPError('/nowhere', '404', 'message including the words Invalid field', 'yes', 'no')
       mock_distinct_values_fetch.return_value            = self.mock_distinct_values
       mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
       distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
@@ -453,8 +503,20 @@ class MonocleSampleDataTest(TestCase):
                                                                         )
       mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
       mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
-      self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered_mock_404, distinct_values_filtered))
+      self.assertEqual(self.expected_distinct_values_filtered_mock_404, distinct_values_filtered)
+
+   @patch.object(Monocle_Client,    'distinct_values')
+   @patch.object(Monocle_Client,    'distinct_in_silico_values')
+   @patch.object(MonocleSampleData, 'get_filtered_samples')
+   def test_get_distinct_values_with_sample_filters_reraise_not_404(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_get_filtered_samples.side_effect              = HTTPError('/nowhere', '400', 'any other 4xx response', 'yes', 'no')
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      with self.assertRaises(HTTPError):
+         self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
+                                                sample_filters = {'batches': self.inst_key_batch_date_pairs}
+                                                )
 
    @patch.object(Monocle_Client,  'distinct_values')
    @patch.object(Monocle_Client,  'distinct_in_silico_values')

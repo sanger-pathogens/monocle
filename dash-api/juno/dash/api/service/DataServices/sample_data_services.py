@@ -359,8 +359,7 @@ class MonocleSampleData:
          temp_filters[field_type][field] = [value]
       else:
          temp_filters[field_type] = {field: [value]}
-      # TODO reduce to debug when done testing
-      logging.critical("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
+      logging.debug("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
       
       # get number of matches
       try:
@@ -371,8 +370,7 @@ class MonocleSampleData:
          # caught a 404, which means no matches
          matches = []
 
-      # TODO reduce to debug when done testing
-      logging.critical("found {} instances of {} in {}".format(len(matches),value,field))
+      logging.debug("found {} instances of {} in {}".format(len(matches),value,field))
       return len(matches)
    
    def get_bulk_download_info(self, sample_filters, **kwargs):
