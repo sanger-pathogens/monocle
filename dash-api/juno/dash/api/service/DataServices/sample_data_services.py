@@ -335,12 +335,12 @@ class MonocleSampleData:
       # if sample filters were passed, insert a 'matches' dict into each field in the
       # response, listing each value and the number of hits
       if sample_filters is not None:
-         # first get all the samples in the batch(es) in the filter
-         # this avoids repeated calls to get_filtered_samples() for iterations through all the field values
          # TODO reduce to INFO when done testing
-         logging.critical("gathering samples in the requested batches (metadata/in silico filters excluded")
-         batch_filter_only = { "batches": sample_filters['batches'] }
-         samples_filtered_by_batch = self.get_filtered_samples(batch_filter_only, disable_public_name_fetch=True)
+         logging.critical("gather metadta so we can see which distinct values are present in the currently selected samples")
+         matching_sample_metadata = self.get_metadata(sample_filters,
+                                                      include_in_silico = 'in silico' in sample_filters,
+                                                      include_qc_data   = 'qc data'   in sample_filters)
+         
          
          # TODO reduce to INFO when done testing
          logging.critical("starting gathering of number of matches for each distinct value")
@@ -352,7 +352,7 @@ class MonocleSampleData:
                for this_value in this_field_obj['values']:
                   this_field_obj['matches'].append(
                      {  "value":    this_value,
-                        "number":   self._get_number_samples_matching_this_field_value(samples_filtered_by_batch, sample_filters, this_field_type, this_field, this_value)
+                        "number":   self._get_number_samples_matching_this_field_value(matching_sample_metadata, this_field_type, this_field, this_value)
                         }
                      )
          # TODO reduce to INFO when done testing
@@ -360,45 +360,19 @@ class MonocleSampleData:
       
       return distinct_values
    
-   def _get_number_samples_matching_this_field_value(self, samples, sample_filters, field_type, field, value):
+   def _get_number_samples_matching_this_field_value(self, matching_sample_metadata, field_type, field, value):
       """
-      Pass a list of samples, the sample filters currently "in play", and a value for a specific field.
-      Returns the number of samples in the list that match the current filters PLUS the field value that is passed.
-      This means "if you add this field & value to the filters you are already using, then you will be left with N samples."
+      Pass metadta for the current samples, and a value for a specific field.
+      Returns the number of samples that match the field value that is passed.
       """
-      # work on local copies of samples list and sample_filters because they are going to be modified
-      temp_samples = deepcopy(samples)
-      temp_filters = deepcopy(sample_filters)
+      num_matches = 0
+      for this_sample in matching_sample_metadata.get("samples",[]):
+         if this_sample[field_type][field]['value'] == value:
+            num_matches += 1
+      # TODO reduce to INFO when done testing
+      logging.debug("found {} instances of {} field {} with value {}".format(num_matches,field_type,field,value))
       
-      # construct a version of the sample filters that included all the filters that were passed
-      # PLUS a filter for the field and value we are trying to count
-      if field_type in temp_filters:
-         temp_filters[field_type][field] = [value]
-      else:
-         temp_filters[field_type] = {field: [value]}
-      logging.debug("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
-      
-      # get number of matches
-      # requires applying metadata, in silico and QC data filters in turn to whittle down the samples list
-      if 'metadata' in temp_filters:
-         temp_samples = self._apply_filter_func(self._apply_metadata_filters,  temp_samples, temp_filters['metadata'])
-      if 'in silico' in temp_filters:
-         temp_samples = self._apply_filter_func(self._apply_in_silico_filters, temp_samples, temp_filters['in silico'])
-      if 'qc data' in temp_filters:
-         temp_samples = self._apply_filter_func(self._apply_qc_data_filters,   temp_samples, temp_filters['qc data'])
-      logging.debug("found {} instances of {} in {}".format(len(temp_samples),value,field))
-      
-      return len(temp_samples)
-   
-   def _apply_filter_func(self, function, samples, filters):
-      try:
-         matches = function(samples, filters)
-      except urllib.error.HTTPError as e:
-         if '404' not in str(e):
-            raise e
-         # caught a 404, which means no matches
-         matches = []
-      return matches
+      return num_matches
          
    def get_bulk_download_info(self, sample_filters, **kwargs):
       """
