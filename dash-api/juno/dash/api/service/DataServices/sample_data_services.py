@@ -521,27 +521,26 @@ class MonocleSampleData:
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
       logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
-      matching_samples_ids = self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters)
-      logging.info("{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(__class__.__name__, len(matching_samples_ids)))
-      intersection = []
-      for this_sample in filtered_samples:
-         if this_sample['sanger_sample_id'] in matching_samples_ids:
-            logging.debug("sample {} matches metadata filters".format(this_sample['sanger_sample_id']))
-            intersection.append(this_sample)
+      matching_samples_ids_set = set(self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters))
+      logging.info("{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(__class__.__name__, len(matching_samples_ids_set)))
+      intersection = [this_sample
+                        for this_sample in filtered_samples
+                           if this_sample['sanger_sample_id'] in matching_samples_ids_set
+                              ]
       filtered_samples = intersection
       logging.info("sample list filtered by metadata contains {} samples".format(len(filtered_samples)))
       return filtered_samples
    
    def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
       logging.info("{}._apply_in_silico_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
-      matching_lane_ids = self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters)
-      logging.info("{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(__class__.__name__, len(matching_lane_ids)))
-      intersection = []
-      for this_sample in filtered_samples:
-         this_sample_matching_lanes_ids = list(filter(lambda x: x in this_sample['lanes'], matching_lane_ids))
-         if this_sample_matching_lanes_ids:
-            logging.debug("Sample {} matches in silico filters based on lane(s) {}".format(this_sample['sanger_sample_id'],this_sample_matching_lanes_ids))
-            intersection.append(this_sample)
+      matching_lanes_ids_set = set(self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters))
+      logging.info("{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(__class__.__name__, len(matching_lanes_ids_set)))
+      intersection = [this_sample
+                        for this_sample in filtered_samples
+                           # if any values in of this_sample['lanes'] occurs in matching_lanes_ids_set
+                           if any(map(lambda v: v in this_sample['lanes'], matching_lanes_ids_set))
+                           ]
+            
       filtered_samples = intersection
       logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))
       return filtered_samples
