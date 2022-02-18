@@ -465,8 +465,13 @@ class MonocleSampleDataTest(TestCase):
    @patch.object(Monocle_Client,    'distinct_values')
    @patch.object(Monocle_Client,    'distinct_in_silico_values')
    @patch.object(MonocleSampleData, 'get_filtered_samples')
-   def test_get_distinct_values_with_sample_filters(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-      mock_get_filtered_samples.return_value             = ['any value' for whatever in range(self.mock_distinct_value_num_matching)]
+   @patch.object(MonocleSampleData, '_apply_metadata_filters')
+   @patch.object(MonocleSampleData, '_apply_in_silico_filters')
+   def test_get_distinct_values_with_sample_filters(self, mock_apply_in_silico_filter, mock_apply_metadata_filter, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_samples_list                                  = ['any value' for whatever in range(self.mock_distinct_value_num_matching)]
+      mock_get_filtered_samples.return_value             = mock_samples_list
+      mock_apply_metadata_filter.return_value            = mock_samples_list
+      mock_apply_in_silico_filter.return_value           = mock_samples_list
       mock_distinct_values_fetch.return_value            = self.mock_distinct_values
       mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
       distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
@@ -476,26 +481,36 @@ class MonocleSampleDataTest(TestCase):
                                                                         )
       mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
       mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
-      # get_filtered_samples() calls should iterate through self.mock_distinct_values and self.mock_distinct_in_silico_values
-      # the 'batches' and 'metadata' filters from the call above should be passed to these calls
-      # *except* that the metadata filter for 'field2' should NOT be passed to calls for 'field2' values from self.mock_distinct_values
-      mock_get_filtered_samples.assert_has_calls(  [  call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x'], 'field1': ['a']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x'], 'field1': ['b']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['d']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['e']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['f']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['g']}}, disable_public_name_fetch=True),
-                                                      call({'batches': self.inst_key_batch_date_pairs, 'metadata':  {'field2': ['x']}, 'in silico': {'field3': ['h']}}, disable_public_name_fetch=True)
-                                                      ]
-                                                   )
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
+      # in this context get_filtered_samples() should be called once with ONLY the batch filter
+      # (this provides a list of samples that is subsequently filtered down by applying
+      # metadta and in silico filters).
+      mock_get_filtered_samples.assert_called_once_with({'batches' : self.inst_key_batch_date_pairs}, disable_public_name_fetch=True)
+      # calls to _apply_metadata_filters() and _apply_in_silico_filters() should iterate through
+      # self.mock_distinct_values and self.mock_distinct_in_silico_values (respectively)
+      # applying metadata and in silico filters (respectively) for each distinct value in turn
+      # We expect to see:
+      #   - that the {'field2': ['x']} filter from the mocked call (above) has been added when metadata filters are applied...
+      #   - ...except when we are looking for the number of samples that match distinct values in field 2
+      #   - that {'field2': ['x']} is ignored when applying in silico filters
+      mock_apply_metadata_filter.assert_has_calls(    [  call(mock_samples_list, {'field2': ['x'], 'field1': ['a']}),
+                                                         call(mock_samples_list, {'field2': ['x'], 'field1': ['b']}),
+                                                         call(mock_samples_list, {'field2': ['d']}),
+                                                         call(mock_samples_list, {'field2': ['e']}),
+                                                         ]
+                                                      )
+      mock_apply_in_silico_filter.assert_has_calls(   [  call(mock_samples_list, {'field3': ['f']}),
+                                                         call(mock_samples_list, {'field3': ['g']}),
+                                                         call(mock_samples_list, {'field3': ['h']})
+                                                         ]
+                                                      )
+            #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
       self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
 
    @patch.object(Monocle_Client,    'distinct_values')
    @patch.object(Monocle_Client,    'distinct_in_silico_values')
-   @patch.object(MonocleSampleData, 'get_filtered_samples')
-   def test_get_distinct_values_with_sample_filters_catch_404_in_matching_sample_count(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-      mock_get_filtered_samples.side_effect              = HTTPError('/nowhere', '404', 'message including the words Invalid field', 'yes', 'no')
+   @patch.object(Monocle_Client,    'make_request')
+   def test_get_distinct_values_with_sample_filters_catch_404_in_matching_sample_count(self, mock_make_request, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_make_request.side_effect                      = HTTPError('/nowhere', '404', 'message including the words Invalid field', 'yes', 'no')
       mock_distinct_values_fetch.return_value            = self.mock_distinct_values
       mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
       distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
@@ -508,9 +523,9 @@ class MonocleSampleDataTest(TestCase):
 
    @patch.object(Monocle_Client,    'distinct_values')
    @patch.object(Monocle_Client,    'distinct_in_silico_values')
-   @patch.object(MonocleSampleData, 'get_filtered_samples')
-   def test_get_distinct_values_with_sample_filters_reraise_not_404(self, mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-      mock_get_filtered_samples.side_effect              = HTTPError('/nowhere', '400', 'any other 4xx response', 'yes', 'no')
+   @patch.object(Monocle_Client,    'make_request')
+   def test_get_distinct_values_with_sample_filters_reraise_not_404(self, mock_make_request, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_make_request.side_effect                      = HTTPError('/nowhere', '400', 'any other 4xx response', 'yes', 'no')
       mock_distinct_values_fetch.return_value            = self.mock_distinct_values
       mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
       with self.assertRaises(HTTPError):
