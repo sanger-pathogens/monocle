@@ -355,10 +355,8 @@ class MonocleSampleData:
    def _get_number_matching_fields(self, field_type, field, value, sample_filters):
       # need a copy of sample_filters because it is going to be modified
       temp_filters = deepcopy(sample_filters)
-      if field_type in temp_filters:
-         temp_filters[field_type][field] = [value]
-      else:
-         temp_filters[field_type] = {field: [value]}
+      
+      temp_filters[field_type][field] = [value]
       logging.debug("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
       
       # get number of matches
