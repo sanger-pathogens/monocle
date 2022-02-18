@@ -445,7 +445,7 @@ components:
       maxLength: 256
       # Allows one whitespace but not two or more together and allows single
       # but not double hyphens to prevent -- injections
-      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
+      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:/\.\(\)\[\]]+)\-?\ ?)+$
       
     InSilicoFieldValueFilter:
       description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
