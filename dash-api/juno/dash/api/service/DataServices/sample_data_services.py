@@ -391,8 +391,9 @@ class MonocleSampleData:
       """
       num_matches = 0
       for this_sample in matching_sample_metadata.get("samples",[]):
-         if this_sample[field_type][field]['value'] == value:
-            num_matches += 1
+         if field_type in this_sample:
+            if this_sample[field_type][field]['value'] == value:
+               num_matches += 1
       logging.debug("found {} instances of {} field {} with value {}".format(num_matches,field_type,field,value))
       
       return num_matches
