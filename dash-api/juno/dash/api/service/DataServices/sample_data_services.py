@@ -372,7 +372,10 @@ class MonocleSampleData:
       
       # construct a version of the sample filters that included all the filters that were passed
       # PLUS a filter for the field and value we are trying to count
-      temp_filters[field_type][field] = [value]
+      if field_type in temp_filters:
+         temp_filters[field_type][field] = [value]
+      else:
+         temp_filters[field_type] = {field: [value]}
       logging.debug("looking for number of instances of {} in field {} with these {} filters: {}".format(value,field,field_type,temp_filters[field_type]))
       
       # get number of matches
