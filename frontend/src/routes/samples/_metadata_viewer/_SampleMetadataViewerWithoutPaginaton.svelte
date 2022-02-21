@@ -6,6 +6,7 @@
   import Filter from "./_Filter.svelte";
   import { filterStore } from "../_stores.js";
 
+  export let batches;
   export let metadataPromise = undefined;
 
   const COLOR_INACTIVE_FILTER = "silver";
@@ -90,7 +91,7 @@
             {/if}
           </button>
           {#if columnOfOpenFilter && columnOfOpenFilter.title === columnTitle}
-            <Filter bind:column={columnOfOpenFilter} />
+            <Filter {batches} bind:column={columnOfOpenFilter} />
           {/if}
         </th>
       {/each}

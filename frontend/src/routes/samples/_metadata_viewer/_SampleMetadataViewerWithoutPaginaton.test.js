@@ -11,20 +11,21 @@ jest.mock("$lib/dataLoading.js", () => ({
   getDistinctColumnValues: jest.fn(() => Promise.resolve([]))
 }));
 
+const BATCHES = [];
 const LABEL_LOADING_INDICATOR = "please wait";
 const ROLE_COLUMN_HEADER = "columnheader";
 const ROLE_TABLE = "table";
 const ROLE_TABLE_CELL = "cell";
 
 it("isn't displayed if a metadata promise isn't passed", () => {
-  const { queryByRole } = render(SimpleSampleMetadataViewer);
+  const { queryByRole } = render(SimpleSampleMetadataViewer, { batches: BATCHES });
 
   expect(queryByRole(ROLE_TABLE)).toBeNull();
 });
 
 it("shows the loading indicator if the metadata promise is pending", () => {
   const { getByLabelText } = render(SimpleSampleMetadataViewer,
-    { metadataPromise: new Promise(() => {})});
+    { metadataPromise: new Promise(() => {}), batches: BATCHES });
 
   expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
 });
@@ -42,7 +43,7 @@ describe("on metadata resolved", () => {
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(SimpleSampleMetadataViewer,
-      { metadataPromise: Promise.resolve(METADATA) });
+      { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
     await waitFor(() => {
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
@@ -51,7 +52,7 @@ describe("on metadata resolved", () => {
 
   it("displays metadata in a table", async () => {
     const { getByRole } = render(SimpleSampleMetadataViewer,
-      { metadataPromise: Promise.resolve(METADATA) });
+      { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
     await waitFor(() => {
       expectMetadataToBeShown(getByRole);
@@ -59,8 +60,8 @@ describe("on metadata resolved", () => {
   });
 
   it("shows the loading indicator and keeps showing old metadata while new metadata is loading", async () => {
-    const { component, findByRole, getByRole, getByLabelText } =
-      render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+    const { component, findByRole, getByRole, getByLabelText } = render(SimpleSampleMetadataViewer,
+      { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
     await findByRole(ROLE_TABLE_CELL, { name: METADATA[0].metadata[0].value });
 
@@ -75,7 +76,7 @@ describe("on metadata resolved", () => {
 
   it("displays a message if there's no metadata", async () => {
     const { getByRole, queryByLabelText } = render(SimpleSampleMetadataViewer,
-      { metadataPromise: Promise.resolve([]) });
+      { metadataPromise: Promise.resolve([]), batches: BATCHES });
 
     await waitFor(() => {
       expect(getByRole(ROLE_TABLE_CELL, { name: "No samples found. Try different batches or filters." }))
@@ -86,7 +87,8 @@ describe("on metadata resolved", () => {
 
   describe("filter column button", () => {
     it("is displayed for each column", async () => {
-      const { getByLabelText } = render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+      const { getByLabelText } = render(SimpleSampleMetadataViewer,
+        { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
       await waitFor(() => {
         METADATA[0].metadata.forEach(({ title }) => {
@@ -97,8 +99,8 @@ describe("on metadata resolved", () => {
     });
 
     it("toggles a filter for a corresponding column", async () => {
-      const { findByLabelText, getByLabelText, queryByLabelText } =
-        render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+      const { findByLabelText, getByLabelText, queryByLabelText } = render(SimpleSampleMetadataViewer,
+        { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
       const columnTitle = METADATA[0].metadata[0].title;
       const filterButton = await findByLabelText(`Toggle the filter menu for column ${columnTitle}`);
 
@@ -116,8 +118,8 @@ describe("on metadata resolved", () => {
     });
 
     it("closes an open filter before opening a filter for another column", async () => {
-      const { findByLabelText, getByLabelText, queryByLabelText } =
-        render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+      const { findByLabelText, getByLabelText, queryByLabelText } = render(SimpleSampleMetadataViewer,
+        { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
       const columnTitle = METADATA[0].metadata[0].title;
       const filterButton = await findByLabelText(`Toggle the filter menu for column ${columnTitle}`);
@@ -139,8 +141,8 @@ describe("on metadata resolved", () => {
         filterState.metadata[columnOfActiveFilter.name] = {};
         return filterState;
       });
-      const { findByRole, getByRole } =
-        render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve(METADATA) });
+      const { findByRole, getByRole } = render(SimpleSampleMetadataViewer,
+        { metadataPromise: Promise.resolve(METADATA), batches: BATCHES });
 
       const columnHeaderElementOfActiveFilter = await findByRole("columnheader", { name:
         new RegExp(`^${columnOfActiveFilter.title}`) });
@@ -167,7 +169,7 @@ describe("on metadata resolved", () => {
 describe("on error", () => {
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(SimpleSampleMetadataViewer,
-      { metadataPromise: Promise.reject() });
+      { metadataPromise: Promise.reject(), batches: BATCHES });
 
     await waitFor(() => {
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
@@ -176,7 +178,7 @@ describe("on error", () => {
 
   it("displays the error", async () => {
     const { findByText } = render(SimpleSampleMetadataViewer,
-      { metadataPromise: Promise.reject() });
+      { metadataPromise: Promise.reject(), batches: BATCHES });
 
     const errorElement = await findByText(/^An error occured while fetching metadata/);
     expect(errorElement).toBeDefined();
