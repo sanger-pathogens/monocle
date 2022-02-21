@@ -1,5 +1,5 @@
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
-const DATA_TYPES = ["metadata", "in silico", "qc data"];
+const DATA_TYPES = ["metadata", "in silico"];
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
 const HTTP_POST = "POST";
@@ -63,19 +63,26 @@ export function getBulkDownloadUrls(params, fetch) {
     });
 }
 
-export function getDistinctColumnValues(columns, fetch) {
-  const { payload } = columns.reduce((accum, column) => {
-      const { payload, dataTypeToPayloadIndex } = accum;
-      let payloadIndex = dataTypeToPayloadIndex[column.dataType];
-      if (payloadIndex === undefined) {
-        payloadIndex = payload.length;
-        dataTypeToPayloadIndex[column.dataType] = payloadIndex;
-        payload.push({ "field type": column.dataType, "field names": [] });
+export function getDistinctColumnValues({ instKeyBatchDatePairs, columns, filter }, fetch) {
+  const payload = {
+    "sample filters": {
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+    }
+  };
+  payload.fields = columns.reduce((accum, column) => {
+      const { fields, dataTypeToFieldsIndex } = accum;
+      let fieldsIndex = dataTypeToFieldsIndex[column.dataType];
+      if (fieldsIndex === undefined) {
+        fieldsIndex = fields.length;
+        dataTypeToFieldsIndex[column.dataType] = fieldsIndex;
+        fields.push({ "field type": column.dataType, "field names": [] });
       }
-      payload[payloadIndex]["field names"].push(column.name);
+      fields[fieldsIndex]["field names"].push(column.name);
       return accum;
-    }, { payload: [], dataTypeToPayloadIndex: {} }
-  );
+    }, { fields: [], dataTypeToFieldsIndex: {} }
+  ).fields;
+
+  addFiltersToPayload({ ...filter, payload });
 
   return fetchDashboardApiResource("get_distinct_values", "distinct values", fetch, {
     method: HTTP_POST,

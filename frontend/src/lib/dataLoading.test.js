@@ -107,23 +107,34 @@ describe.each([
   {
     fnName: "getDistinctColumnValues",
     getResource: getDistinctColumnValues,
-    args: [[{
-      name: "age_group",
-      dataType: DATA_TYPE_METADATA
-    }, {
-      name: "ST",
-      dataType: "in silico"
-    }, {
-      name: "serotype",
-      dataType: DATA_TYPE_METADATA
-    }]],
+    args: [{
+      instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
+      columns: [{
+        name: "age_group",
+        dataType: DATA_TYPE_METADATA
+      }, {
+        name: "ST",
+        dataType: "in silico"
+      }, {
+        name: "serotype",
+        dataType: DATA_TYPE_METADATA
+      }],
+      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+    }],
     expectedFetchOpts: {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify([
-        { "field type": DATA_TYPE_METADATA, "field names": ["age_group", "serotype"] },
-        { "field type": "in silico", "field names": ["ST"] }
-      ])
+      body: JSON.stringify({
+        "sample filters": {
+          batches: INST_KEY_BATCH_DATE_OBJECTS,
+          metadata: { serotype: ["NT"], country: ["AU"] },
+          "in silico": { ST: ["x", "y"] }
+        },
+        fields: [
+          { "field type": DATA_TYPE_METADATA, "field names": ["age_group", "serotype"] },
+          { "field type": "in silico", "field names": ["ST"] }
+        ]
+      })
     },
     expectedEndpoints: ["get_distinct_values"],
     responsePayload: {
