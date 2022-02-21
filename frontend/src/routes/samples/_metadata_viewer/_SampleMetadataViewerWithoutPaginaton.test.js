@@ -1,11 +1,12 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
+import { get } from "svelte/store";
 import {
   // The following import is needed for the mock to work.
   // eslint-disable-next-line no-unused-vars
   getDistinctColumnValues
 } from "$lib/dataLoading.js";
 import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.svelte";
-import { filterStore } from "../_stores.js";
+import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
 jest.mock("$lib/dataLoading.js", () => ({
   getDistinctColumnValues: jest.fn(() => Promise.resolve([]))
@@ -83,6 +84,19 @@ describe("on metadata resolved", () => {
         .toBeDefined();
       expect(queryByLabelText(LABEL_LOADING_INDICATOR)).toBeNull();
     });
+  });
+
+  it("resets distinct column values if batches change", async () => {
+    const { component } = render(SimpleSampleMetadataViewer, { metadataPromise: Promise.resolve([]), batches: BATCHES });
+    distinctColumnValuesStore.updateFromDistinctValuesResponse([{
+      "field type": "metadata",
+      fields: [{ name: "column name", matches: [{ number: 9, value: "some value" }] }]
+    }]);
+
+    await component.$set({ batches: ["something"] });
+
+    expect(get(distinctColumnValuesStore)).toEqual(
+      { metadata: {}, "in silico": {}, "qc data": {} })
   });
 
   describe("filter column button", () => {
