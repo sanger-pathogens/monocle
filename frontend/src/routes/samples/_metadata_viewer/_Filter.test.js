@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/svelte";
+import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 import Filter from "./_Filter.svelte";
@@ -11,6 +11,7 @@ jest.mock("$lib/dataLoading.js", () => ({
   }]))
 }));
 
+const ALTERNATIVE_DISTINCT_VALUES = ["a42", "b42"];
 const BATCHES = [];
 const CLASS_NAME_VALUE_SELECTOR = "selectContainer";
 const DATA_TYPE_METADATA = "metadata";
@@ -49,20 +50,40 @@ it("fetches and displays column values if there are no stored values", async () 
 });
 
 it("displays stored column values instead of fetching new ones", async () => {
-  const alternativeDistinctValues = ["a42", "b42"];
   getDistinctColumnValues.mockClear();
   distinctColumnValuesStore.updateFromDistinctValuesResponse([{
     "field type": DATA_TYPE_METADATA,
     fields: [{ name: COLUMN.name, matches:
-      [{ number: 9, value: alternativeDistinctValues[0] }, { number: 9, value: alternativeDistinctValues[1] }]}]
+      [{ number: 9, value: ALTERNATIVE_DISTINCT_VALUES[0] }, { number: 9, value: ALTERNATIVE_DISTINCT_VALUES[1] }]}]
   }]);
   const { container, getByText } = render(Filter, { batches: BATCHES, column: COLUMN });
 
   await fireEvent.click(queryValueSelectorElement(container));
 
   expect(getDistinctColumnValues).not.toHaveBeenCalled();
-  alternativeDistinctValues.forEach((value) =>
+  ALTERNATIVE_DISTINCT_VALUES.forEach((value) =>
     expect(getByText(value)).toBeDefined());
+});
+
+it("disables the exclusion checkbox if there are no values", () => {
+  const { getByLabelText } = render(Filter, { batches: BATCHES, column: COLUMN });
+
+  expect(getByLabelText(LABEL_EXCLUDE).disabled).toBeTruthy();
+});
+
+it("disables the exclusion checkbox if there is only one value", async () => {
+  const { getByLabelText } = render(Filter, { batches: BATCHES, column: COLUMN });
+
+  await waitFor(() => {
+    expect(getByLabelText(LABEL_EXCLUDE).disabled).toBeFalsy();
+  });
+
+  await distinctColumnValuesStore.updateFromDistinctValuesResponse([{
+    "field type": DATA_TYPE_METADATA,
+    fields: [{ name: COLUMN.name, matches: [{ number: 9, value: ALTERNATIVE_DISTINCT_VALUES[0] }] }]
+  }]);
+
+  expect(getByLabelText(LABEL_EXCLUDE).disabled).toBeTruthy();
 });
 
 it("enables the apply buttons if there's a difference between values selected and ones of the active filter", async () => {

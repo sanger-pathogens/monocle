@@ -93,7 +93,7 @@
     <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
 
     <label>
-      <input type="checkbox" bind:checked={exclude} />
+      <input type="checkbox" bind:checked={exclude} disabled={!values || values.length === 1} />
       <em>Exclude</em> samples with the selected values
     </label>
 
