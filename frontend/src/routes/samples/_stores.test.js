@@ -22,17 +22,17 @@ describe("distinct column values store", () => {
   it("can update values from a distinct values response", () => {
     distinctColumnValuesStore.updateFromDistinctValuesResponse([{
       "field type": "metadata",
-      fields: [{ name: "country", values: VALUES }]
+      fields: [{ name: "country", matches: [{ number: 0, value: VALUES[0] }, { number: 3, value: VALUES[1] }] }]
     }, {
       "field type": "metadata",
-      fields: [{ name: "serotype", values: [] }]
+      fields: [{ name: "serotype", matches: [] }]
     }, {
       "field type": "qc data",
-      fields: [{ name: "rel_abun_sa", values: VALUES }]
+      fields: [{ name: "rel_abun_sa", matches: [{ number: 5, value: VALUES[0] }, { number: 3, value: VALUES[1] }] }]
     }]);
 
     expect(get(distinctColumnValuesStore)).toEqual({
-      metadata: { country: VALUES, serotype: [] },
+      metadata: { country: [VALUES[1]], serotype: [] },
       "qc data": { rel_abun_sa: VALUES },
       "in silico": {}
     });
