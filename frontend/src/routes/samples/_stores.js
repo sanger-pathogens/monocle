@@ -37,8 +37,7 @@ function createDistinctColumnValuesStore() {
 
       return storedDistinctValues;
     }),
-    // This function is used for tests only.
-    _reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} })
+    reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} })
   };
 }
 

@@ -1,13 +1,12 @@
 import { get } from "svelte/store";
 import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
+const INITIAL_STATE = { metadata: {}, "in silico": {}, "qc data": {} };
 const VALUES = ["some value", "another value"];
 
 it("has the expected default value for each store", () => {
-  expect(get(distinctColumnValuesStore)).toEqual(
-    { metadata: {}, "in silico": {}, "qc data": {} });
-  expect(get(filterStore)).toEqual(
-    { metadata: {}, "in silico": {}, "qc data": {} });
+  expect(get(distinctColumnValuesStore)).toEqual(INITIAL_STATE);
+  expect(get(filterStore)).toEqual(INITIAL_STATE);
 });
 
 describe("distinct column values store", () => {
@@ -37,6 +36,16 @@ describe("distinct column values store", () => {
       "in silico": {}
     });
   });
+
+  it("can reset state", () => {
+    distinctColumnValuesStore.updateFromDistinctValuesResponse([{
+      "field type": "metadata",
+      fields: [{ name: "country", matches: [{ number: 0, value: VALUES[0] }, { number: 3, value: VALUES[1] }] }]}]);
+
+    distinctColumnValuesStore.reset();
+
+    expect(get(distinctColumnValuesStore)).toEqual(INITIAL_STATE);
+  });
 });
 
 describe("filter store", () => {
@@ -45,8 +54,7 @@ describe("filter store", () => {
 
     filterStore.removeAllFilters();
 
-    expect(get(filterStore)).toEqual(
-      { metadata: {}, "in silico": {}, "qc data": {} });
+    expect(get(filterStore)).toEqual(INITIAL_STATE);
   });
 
   it("exposes a function to remove a filter for a given column", () => {
