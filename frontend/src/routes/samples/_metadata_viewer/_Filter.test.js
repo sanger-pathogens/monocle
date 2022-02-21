@@ -22,7 +22,7 @@ const LABEL_EXCLUDE = "Exclude samples with the selected values";
 const ROLE_BUTTON = "button";
 
 afterEach(() => {
-  distinctColumnValuesStore._reset();
+  distinctColumnValuesStore.reset();
 });
 
 it("has a column name in the heading", () => {

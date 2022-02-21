@@ -4,7 +4,7 @@
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import Filter from "./_Filter.svelte";
-  import { filterStore } from "../_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
   export let batches;
   export let metadataPromise = undefined;
@@ -17,6 +17,8 @@
   let isLoading;
   let metadata;
   let columns = [];
+
+  $: { distinctColumnValuesStore.reset(batches) }
 
   $: {
     if (metadataPromise) {
