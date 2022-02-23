@@ -188,6 +188,7 @@ describe.each([
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      columns: { metadata: ["some column"], "in silico": ["a column", "another column"] },
       numRows: 14,
       startRow: 2
     }],
@@ -200,6 +201,8 @@ describe.each([
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { ST: ["x", "y"] }
         },
+        "metadata columns": ["some column"],
+        "in silico columns": ["a column", "another column"],
         "num rows": 14,
         "start row": 2,
         "in silico": false,

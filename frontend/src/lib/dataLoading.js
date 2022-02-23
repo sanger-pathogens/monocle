@@ -92,6 +92,7 @@ export function getInstitutions(fetch) {
 export function getSampleMetadata({
   instKeyBatchDatePairs,
   filter,
+  columns,
   numRows,
   startRow,
   asCsv
@@ -105,6 +106,7 @@ fetch
   };
 
   addFiltersToPayload({ ...filter, payload });
+  addColumnsToPayload(columns, payload);
 
   if (Number.isInteger(numRows)) {
     payload["num rows"] = numRows;
@@ -218,6 +220,14 @@ function prepareBulkDownloadPayload({
   addFiltersToPayload({ ...filter, payload });
 
   return payload;
+}
+
+function addColumnsToPayload(columns = {}, payload) {
+  DATA_TYPES.forEach((dataType) => {
+    if (columns[dataType]?.length) {
+      payload[`${dataType} columns`] = columns[dataType];
+    }
+  });
 }
 
 function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }) {
