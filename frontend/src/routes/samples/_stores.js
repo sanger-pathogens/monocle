@@ -32,8 +32,7 @@ const FILTER_TYPE_NONE = "none";
     }, {
       ...
     }],
-    "in silico": [...],
-    "qc data": [...]
+    "in silico": [...]
   }
 ```
 */
@@ -55,8 +54,7 @@ export const columnsStore = createColumnsStore();
   ```
   {
     metadata: ["column_name_1", "column_name_2"],
-    "in silico": [...],
-    "qc data": [...]
+    "in silico": [...]
   }
   ```
 */

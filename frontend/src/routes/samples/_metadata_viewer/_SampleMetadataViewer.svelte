@@ -141,6 +141,8 @@
 
 <style>
 section {
+  position: relative;
+  width: 100%;
   max-width: 100%;
 }
 

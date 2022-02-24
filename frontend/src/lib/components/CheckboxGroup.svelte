@@ -125,6 +125,6 @@ label {
 
 .expand-icon {
   color: var(--text-main);
-  font-size: .8rem;
+  font-size: .7rem;
 }
 </style>

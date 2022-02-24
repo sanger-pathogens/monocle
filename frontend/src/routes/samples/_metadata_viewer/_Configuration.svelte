@@ -66,20 +66,6 @@
             {/each}
           </details>
         {/if}
-
-        {#if $columnsStore["qc data"]?.length}
-          <details>
-            <summary>Quality control (cooming soon)</summary>
-            {#each $columnsStore["qc data"] as { name, columns } (name)}
-              <CheckboxGroup
-                groupName={name}
-                items={columns}
-                itemsName="columns"
-                checkedKey="selected"
-              />
-            {/each}
-          </details>
-        {/if}
       </fieldset>
 
       <fieldset class="end-btns">
@@ -135,7 +121,11 @@ fieldset {
   flex-wrap: wrap;
   justify-content: space-between;
   min-height: 10rem;
-  width: 86vw;
+}
+@media (min-width: 900px) {
+  .all-data-types-container {
+    width: 47rem;
+  }
 }
 
 details {
@@ -158,9 +148,5 @@ summary {
 }
 .end-btns button {
   margin-bottom: .9rem;
-}
-.end-btns button:first-child {
-  padding-left: 4rem;
-  padding-right: 4rem;
 }
 </style>

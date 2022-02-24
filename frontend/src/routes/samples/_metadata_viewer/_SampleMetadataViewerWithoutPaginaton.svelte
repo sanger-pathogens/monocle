@@ -4,6 +4,7 @@
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import Filter from "./_Filter.svelte";
+  import Configuration from "./_Configuration.svelte";
   import { filterStore } from "../_stores.js";
 
   export let metadataPromise = undefined;
@@ -69,6 +70,8 @@
 
 
 {#if metadataPromise}
+  <Configuration />
+
   <table class="dense">
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
