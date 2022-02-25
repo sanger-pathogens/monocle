@@ -11,12 +11,14 @@
 
   const COLOR_INACTIVE_FILTER = "silver";
   const DATA_TYPE_METADATA = "metadata";
+  const NARROW_SCREEN_BREAKPOINT = 880;
 
   let columnOfOpenFilter;
   let isError;
   let isLoading;
   let metadata;
   let columns = [];
+  let screenWidth = window?.innerWidth || NARROW_SCREEN_BREAKPOINT + 1;
 
   $: {
     if (metadataPromise) {
@@ -69,10 +71,12 @@
 </script>
 
 
+<svelte:window on:resize={() => {screenWidth = window.innerWidth}} />
+
 {#if metadataPromise}
   <Configuration />
 
-  <table class="dense">
+  <table class={`dense ${screenWidth > NARROW_SCREEN_BREAKPOINT && columns.length < 6 ? "few-columns" : ""}`}>
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#template-syntax-each). -->
@@ -146,6 +150,10 @@ table {
   min-height: 23rem;
   overflow-x: auto;
   position: relative;
+}
+.few-columns {
+  /* `display: table` is needed to force a full width on the table if there are few columns. */
+  display: table;
 }
 
 th {
