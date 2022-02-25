@@ -55,7 +55,7 @@
 
         {#if $columnsStore["in silico"]?.length}
           <details>
-            <summary>In silico analysis (coming soon)</summary>
+            <summary><i>In silico</i> analysis (coming soon)</summary>
             {#each $columnsStore["in silico"] as { name, columns } (name)}
               <CheckboxGroup
                 groupName={name}
