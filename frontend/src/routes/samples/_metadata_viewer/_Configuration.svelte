@@ -20,12 +20,10 @@
 
 
 <button
-  aria-label="Configure displayed columns"
-  title="Configure displayed columns"
-  class="icon-btn"
   on:click={() => isOpen = true}
+  class="compact"
 >
-  <SettingsIcon />
+  Select columns <SettingsIcon />
 </button>
 
 <Dialog
@@ -101,12 +99,6 @@
 
 
 <style>
-.icon-btn {
-  position: absolute;
-  right: -1rem;
-  top: -2rem;
-}
-
 form {
   display: flex;
   flex-direction: column;

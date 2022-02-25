@@ -4,7 +4,6 @@
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import Filter from "./_Filter.svelte";
-  import Configuration from "./_Configuration.svelte";
   import { filterStore } from "../_stores.js";
 
   export let metadataPromise = undefined;
@@ -74,8 +73,6 @@
 <svelte:window on:resize={() => {screenWidth = window.innerWidth}} />
 
 {#if metadataPromise}
-  <Configuration />
-
   <table class={`dense ${screenWidth > NARROW_SCREEN_BREAKPOINT && columns.length < 6 ? "few-columns" : ""}`}>
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see

@@ -15,6 +15,7 @@
   } from "$lib/dataLoading.js";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
+  import Configuration from "./_metadata_viewer/_Configuration.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import { columnsStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
@@ -235,6 +236,8 @@
       >
         Remove all filters <RemoveFilterIcon width="24" height="17" />
       </button>
+
+      <Configuration />
     </div>
   {/if}
 

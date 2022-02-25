@@ -1,7 +1,7 @@
 <script>
   export let color = undefined;
-  export let height = 19;
-  export let width = 19;
+  export let height = 17;
+  export let width = 17;
 </script>
 
 
