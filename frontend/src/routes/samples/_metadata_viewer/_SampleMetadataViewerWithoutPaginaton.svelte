@@ -114,7 +114,8 @@
             <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
              https://svelte.dev/docs#template-syntax-each). -->
             {#each sample.metadata as metadata (`${metadata.name}:metadata`)}
-              <td>{metadata.value}</td>
+              <!-- The inner <div /> is needed to impose a maximum height on a table cell. -->
+              <td><div>{metadata.value}</div></td>
             {/each}
           </tr>
         {/each}
@@ -151,6 +152,11 @@ th {
   /* Column headers must remain `relative`ly positioned for the filter to be correctly positioned for rightmost headers. */
   position: relative;
   white-space: nowrap;
+}
+
+td > div {
+  max-height: 3.1rem;
+  overflow-y: auto;
 }
 
 .error-msg, .no-data {
