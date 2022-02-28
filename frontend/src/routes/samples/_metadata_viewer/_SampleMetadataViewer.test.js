@@ -25,11 +25,17 @@ jest.mock("$lib/dataLoading.js", () => ({
       metadata: {
         qc: { title: "QC", value: "90", order: 7 },
         host_species: { title: "Host species", value: "Sciurus carolinensis", order: 2 }
+      },
+      "in silico": {
+        ST: { title: "ST", value: "some value", order: 1 }
       }
     }, {
       metadata: {
         host_species: { title: "Host species", value: "Ailuropoda melanoleuca", order: 2 },
         qc: { title: "QC", value: "40", order: 7 }
+      },
+      "in silico": {
+        ST: { title: "ST", value: "another value", order: 1 }
       }
     }] }))
 }));
@@ -43,7 +49,7 @@ it("isn't displayed if no batches are passed", () => {
 it("displays resolved metadata w/ each row sorted by order", async () => {
   const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-  const expectedColumnHeaders = ["Host species", "QC"];
+  const expectedColumnHeaders = ["Host species", "QC", "ST"];
   await waitFor(() => {
     // Data rows + the header row
     expect(getAllByRole("row")).toHaveLength(3);
@@ -52,8 +58,8 @@ it("displays resolved metadata w/ each row sorted by order", async () => {
     const actualTableCellContents = getAllByRole("cell")
       .map(({ textContent }) => textContent);
     expect(actualTableCellContents).toEqual([
-      "Sciurus carolinensis", "90",
-      "Ailuropoda melanoleuca", "40"
+      "Sciurus carolinensis", "90", "some value",
+      "Ailuropoda melanoleuca", "40", "another value"
     ]);
   });
 });

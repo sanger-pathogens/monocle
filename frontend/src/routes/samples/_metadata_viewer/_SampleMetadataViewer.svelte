@@ -1,4 +1,5 @@
 <script>
+  import { DATA_TYPES } from "$lib/constants.js";
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import { columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "../_stores.js";
@@ -50,14 +51,19 @@
     return unsortedMetadata.map(transformSampleMetadataToSorted);
   }
 
-  function transformSampleMetadataToSorted({ metadata }) {
-    return { metadata: Object.keys(metadata)
-      .map((columnName) => {
-        metadata[columnName].name = columnName;
-        return metadata[columnName];
-      })
-      .sort(compareMetadataByOrder)
-    };
+  function transformSampleMetadataToSorted(sampleMetadata) {
+    return DATA_TYPES.reduce((accumSampleMetadata, dataType) => {
+       Object.keys(sampleMetadata[dataType] || {})
+        .map((columnName) => {
+          const column = sampleMetadata[dataType][columnName];
+          column.name = columnName;
+          column.dataType = dataType;
+          return column;
+        })
+        .sort(compareMetadataByOrder)
+        .forEach((sampleMetadata) => accumSampleMetadata.push(sampleMetadata));
+      return accumSampleMetadata;
+    }, []);
   }
 
   function compareMetadataByOrder(metadatumA, metadatumB) {

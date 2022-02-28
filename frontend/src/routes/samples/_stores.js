@@ -60,10 +60,12 @@ export const columnsStore = createColumnsStore();
 */
 // FIXME unit test
 export const columnsToDisplayStore = derived(columnsStore, (columnsState) =>
-  Object.keys(columnsState).reduce((accumDataTypeToColumnNames, dataType) => {
-    accumDataTypeToColumnNames[dataType] = columnsState[dataType].reduce(columnCategoryToColumnNamesReducer, []);
-    return accumDataTypeToColumnNames;
-  }, {}));
+  columnsState ?
+    Object.keys(columnsState).reduce((accumDataTypeToColumnNames, dataType) => {
+      accumDataTypeToColumnNames[dataType] = columnsState[dataType].reduce(columnCategoryToColumnNamesReducer, []);
+      return accumDataTypeToColumnNames;
+    }, {}) :
+    undefined);
 
 function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
   category.columns.forEach((column) => {

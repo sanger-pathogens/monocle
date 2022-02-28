@@ -201,12 +201,10 @@ describe.each([
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { ST: ["x", "y"] }
         },
-        "metadata columns": ["some column"],
-        "in silico columns": ["a column", "another column"],
         "num rows": 14,
         "start row": 2,
-        "in silico": false,
-        "qc data": false
+        "metadata columns": ["some column"],
+        "in silico columns": ["a column", "another column"]
       })
     },
     expectedEndpoints: ["get_metadata"],

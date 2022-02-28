@@ -9,7 +9,6 @@
   export let metadataPromise = undefined;
 
   const COLOR_INACTIVE_FILTER = "silver";
-  const DATA_TYPE_METADATA = "metadata";
   const NARROW_SCREEN_BREAKPOINT = 880;
 
   let columnOfOpenFilter;
@@ -26,8 +25,9 @@
       metadataPromise
         .then((sortedMetadata) => {
           metadata = sortedMetadata;
+          // Only uodate columns if there are data in the response.
           if (sortedMetadata.length) {
-            columns = extractColumnsFromMetadata(sortedMetadata);
+            columns = sortedMetadata[0];
           }
         })
         .catch((err) => {
@@ -42,12 +42,6 @@
     if (columns.length === 0) {
       closeFilter();
     }
-  }
-
-  function extractColumnsFromMetadata(sortedMetadata = []) {
-    return sortedMetadata[0]?.[DATA_TYPE_METADATA]?.map(
-      ({ name, title }) => ({ name, title, dataType: DATA_TYPE_METADATA })
-    ) || [];
   }
 
   function toggleFilterMenu(clickedColumn) {
@@ -114,9 +108,9 @@
           <tr class="data-row" class:loading={isLoading} aria-live="polite">
             <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
              https://svelte.dev/docs#template-syntax-each). -->
-            {#each sample.metadata as metadata (`${metadata.name}:metadata`)}
+            {#each sample as column (`${column.name}:${column.dataType}`)}
               <!-- The inner <div /> is needed to impose a maximum height on a table cell. -->
-              <td><div>{metadata.value}</div></td>
+              <td><div>{column.value}</div></td>
             {/each}
           </tr>
         {/each}

@@ -1,5 +1,6 @@
+import { DATA_TYPES } from "$lib/constants.js";
+
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
-const DATA_TYPES = ["metadata", "in silico"];
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
 const HTTP_POST = "POST";
@@ -1146,7 +1147,6 @@ fetch
   };
 
   addFiltersToPayload({ ...filter, payload });
-  addColumnsToPayload(columns, payload);
 
   if (Number.isInteger(numRows)) {
     payload["num rows"] = numRows;
@@ -1168,8 +1168,7 @@ fetch
         handleFetchError(err, "get_metadata"));
   }
   else {
-    payload["in silico"] = false;
-    payload["qc data"] = false;
+    addColumnsToPayload(columns, payload);
   }
 
   return fetchDashboardApiResource(
@@ -1266,6 +1265,9 @@ function addColumnsToPayload(columns = {}, payload) {
   DATA_TYPES.forEach((dataType) => {
     if (columns[dataType]?.length) {
       payload[`${dataType} columns`] = columns[dataType];
+    }
+    else {
+      payload[dataType] = false;
     }
   });
 }
