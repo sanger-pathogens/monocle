@@ -2,6 +2,7 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
+  getColumns,
   getDistinctColumnValues,
   getInstitutionStatus,
   getProjectProgress,
@@ -107,6 +108,15 @@ describe.each([
       download_urls: ["fake_url"],
     },
     expectedResult: ["fake_url"]
+  },
+  {
+    fnName: "getColumns",
+    getResource: getColumns,
+    expectedEndpoints: ["get_field_attributes"],
+    responsePayload: {
+      "field_attributes": "inner response payload",
+    },
+    expectedResult: "inner response payload"
   },
   {
     fnName: "getDistinctColumnValues",
