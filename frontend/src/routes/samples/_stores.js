@@ -1,4 +1,5 @@
 import { derived, writable } from "svelte/store";
+import { DATA_TYPES } from "$lib/constants.js";
 
 const DEFAULT_COLUMNS = {
   metadata: new Set([
@@ -42,7 +43,14 @@ function createColumnsStore() {
   return {
     set,
     subscribe,
-    setFromColumnsResponse: (columnsResponse) => set(convertColumnsResponseToState(columnsResponse))
+    setFromColumnsResponse: (columnsResponse) => set(convertColumnsResponseToState(columnsResponse)),
+    setToDefault: () => update((columnsState) => {
+      DATA_TYPES.forEach((dataType) =>
+        columnsState[dataType].forEach((category) =>
+          category.columns.forEach((column) =>
+            column.selected = DEFAULT_COLUMNS[dataType]?.has(column.name))));
+      return columnsState;
+    })
   };
 }
 

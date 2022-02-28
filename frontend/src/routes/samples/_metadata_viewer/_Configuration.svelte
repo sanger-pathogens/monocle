@@ -75,16 +75,16 @@
           Apply and close
         </button>
         <button
+          on:click={columnsStore.setToDefault}
+          type="button"
+        >
+          Restore default columns
+        </button>
+        <button
           on:click={() => isOpen = false}
           type="button"
         >
           Close
-        </button>
-        <button
-          disabled
-          type="button"
-        >
-          Restore default columns (coming soon)
         </button>
       </fieldset>
     </form>
