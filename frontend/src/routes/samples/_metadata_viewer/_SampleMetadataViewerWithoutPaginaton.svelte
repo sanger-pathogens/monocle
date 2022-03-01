@@ -64,7 +64,7 @@
 </script>
 
 
-<svelte:window on:resize={() => {screenWidth = window.innerWidth}} />
+<svelte:window on:resize={() => {screenWidth = window.innerWidth;}} />
 
 {#if metadataPromise}
   <table class={`dense ${screenWidth > NARROW_SCREEN_BREAKPOINT && columns.length < 6 ? "few-columns" : ""}`}>

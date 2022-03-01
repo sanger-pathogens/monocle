@@ -57,7 +57,7 @@
   }
 
   function areOnlySomeChecked() {
-    return !(areAllChecked() || areAllUnchecked())
+    return !(areAllChecked() || areAllUnchecked());
   }
 
   function checkItems() {

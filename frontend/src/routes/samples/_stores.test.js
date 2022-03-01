@@ -15,10 +15,10 @@ it("has the expected default value for each store", () => {
 
 it("has a derived store w/ an array of columns per data type to display", () => {
   columnsStore.set({
-      metadata: [{ name: "Category A", columns: [
-        { displayName: "Country", name: "country", selected: true }, { displayName: "Study Reference", name: "study_ref" }] }],
-      "in silico": [{ name: "Category B", columns: [{ displayName: "ST", name: "st", selected: true }] }]
-    });
+    metadata: [{ name: "Category A", columns: [
+      { displayName: "Country", name: "country", selected: true }, { displayName: "Study Reference", name: "study_ref" }] }],
+    "in silico": [{ name: "Category B", columns: [{ displayName: "ST", name: "st", selected: true }] }]
+  });
 
   expect(get(columnsToDisplayStore)).toEqual({
     metadata: ["country"], "in silico": ["st"]

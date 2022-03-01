@@ -331,7 +331,7 @@ describe("on form submit", () => {
         `${latterDownloadEstimate.numSamples} samples of ${latterDownloadEstimate.sizeZipped}`;
       expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
         .toBe(latterDownloadEstimateText);
-    })
+    });
 
     function expectFormToBeReset({ container, queryByRole, getByRole }) {
       expect(queryByRole(ROLE_HEADING, { name: LABEL_DOWNLOAD_LINKS_HEADER }))

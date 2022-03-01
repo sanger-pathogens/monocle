@@ -52,7 +52,7 @@
 
   function transformSampleMetadataToSorted(sampleMetadata) {
     return DATA_TYPES.reduce((accumSampleMetadata, dataType) => {
-       Object.keys(sampleMetadata[dataType] || {})
+      Object.keys(sampleMetadata[dataType] || {})
         .map((columnName) => {
           const column = sampleMetadata[dataType][columnName];
           column.name = columnName;

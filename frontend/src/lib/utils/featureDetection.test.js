@@ -5,7 +5,7 @@ it("returns `true` if `localStorage` is available", () => {
 });
 
 it("returns `false` if `localStorage` isn't available", () => {
-  Storage.prototype.setItem = jest.fn(() => {throw "some error"});
+  Storage.prototype.setItem = jest.fn(() => {throw "some error";});
 
   expect(localStorageAvailable()).toBeFalsy();
 });
