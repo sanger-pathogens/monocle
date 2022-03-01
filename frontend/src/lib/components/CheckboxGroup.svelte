@@ -18,7 +18,7 @@
   let expanded = areOnlySomeChecked();
   let groupCheckbox;
   let numSelectedItems = items.reduce(((accumCount, item) =>
-    item.selected ? accumCount + 1 : accumCount
+    item[checkedKey] ? accumCount + 1 : accumCount
   ), 0);
 
   $: {
@@ -30,7 +30,9 @@
   onMount(() => {
     // `indeterminate` can only be set via JS, not HTML, so we have to use `onMount` to
     // make sure the group checkbox is in the DOM to use it here.
-    groupCheckbox.indeterminate = areOnlySomeChecked(items);
+    if (groupCheckbox) {
+      groupCheckbox.indeterminate = areOnlySomeChecked(items);
+    }
   });
 
   function onGroupCheckboxChange() {
