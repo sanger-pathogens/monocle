@@ -12,6 +12,15 @@
     // Re-assign to trigger reactivity. See
     // https://svelte.dev/docs#component-format-script-2-assignments-are-reactive
     $columnsStore = $columnsStore;
+    saveColumnsStateToLocalStorage();
+  }
+
+  function restoreDefaults() {
+    columnsStore.setToDefault();
+    saveColumnsStateToLocalStorage();
+  }
+
+  function saveColumnsStateToLocalStorage() {
     if (localStorageAvailable()) {
       localStorage.setItem("columnsState", JSON.stringify($columnsStore));
     }
@@ -74,7 +83,7 @@
           Apply and close
         </button>
         <button
-          on:click={columnsStore.setToDefault}
+          on:click={restoreDefaults}
           type="button"
         >
           Restore default columns

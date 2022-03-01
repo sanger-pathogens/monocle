@@ -4,9 +4,10 @@ import { DATA_TYPES } from "$lib/constants.js";
 import { columnsStore } from "../_stores.js";
 import Configuration from "./_Configuration.svelte";
 
-const LABEL_APPLY_AND_CLOSE = "Apply and close"
+const LABEL_APPLY_AND_CLOSE = "Apply and close";
 const LABEL_CLOSE = "Close";
 const LABEL_DIALOG = "Select displayed columns";
+const LABEL_RESTORE = "Restore default columns";
 const LABEL_SETTINGS = /^Select columns/;
 const ROLE_BUTTON = "button";
 
@@ -76,16 +77,16 @@ it("correctly displays a column state", async () => {
     columnsState[dataType].forEach((category) => {
       expect(getByLabelText(new RegExp(`${category.name} `))).toBeDefined();
       category.columns.forEach((column) =>
-        expect(getByLabelText(column.displayName)).toBeDefined())
+        expect(getByLabelText(column.displayName)).toBeDefined());
     }));
 });
 
 it("saves a columns state to the local storage on apply", async () => {
-  const { getByRole, queryByLabelText } = render(Configuration);
+  const { getByRole } = render(Configuration);
   Storage.prototype.setItem = jest.fn();
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }))
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }));
 
   // 2 times because it's first called by the feature detection.
   expect(localStorage.setItem).toHaveBeenCalledTimes(2);
@@ -93,11 +94,34 @@ it("saves a columns state to the local storage on apply", async () => {
     "columnsState", JSON.stringify(get(columnsStore)));
 });
 
+it("saves a columns state to the local storage on restore", async () => {
+  const { getByRole } = render(Configuration);
+  Storage.prototype.setItem = jest.fn();
+
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESTORE }));
+
+  // 2 times because it's first called by the feature detection.
+  expect(localStorage.setItem).toHaveBeenCalledTimes(2);
+  expect(localStorage.setItem).toHaveBeenCalledWith(
+    "columnsState", JSON.stringify(get(columnsStore)));
+});
+
+it("saves a columns state to the local storage on restore", async () => {
+  columnsStore.setToDefault = jest.fn();
+  const { getByRole } = render(Configuration);
+
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESTORE }));
+
+  expect(columnsStore.setToDefault).toHaveBeenCalledTimes(1);
+});
+
 it("closes on apply", async () => {
   const { getByRole, queryByLabelText } = render(Configuration);
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }))
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }));
 
   expect(queryByLabelText(LABEL_DIALOG)).toBeNull();
 });
@@ -106,7 +130,7 @@ it("closes on Close click", async () => {
   const { getByRole, queryByLabelText } = render(Configuration);
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CLOSE }))
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CLOSE }));
 
   expect(queryByLabelText(LABEL_DIALOG)).toBeNull();
 });
@@ -126,7 +150,7 @@ describe("on empty columns state", () => {
     const { getByRole, queryByLabelText } = render(Configuration);
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CLOSE }))
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CLOSE }));
 
     expect(queryByLabelText(LABEL_DIALOG)).toBeNull();
   });
