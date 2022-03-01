@@ -5,6 +5,7 @@ import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
+  getColumns,
   getInstitutions,
   getSampleMetadata
 } from "$lib/dataLoading.js";
@@ -22,6 +23,7 @@ jest.mock("$lib/utils/debounce.js", () => {
 jest.mock("$lib/dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
+  getColumns: jest.fn(() => Promise.resolve({})),
   getInstitutions: jest.fn(() => Promise.resolve()),
   getSampleMetadata: jest.fn(() => Promise.resolve())
 }));
