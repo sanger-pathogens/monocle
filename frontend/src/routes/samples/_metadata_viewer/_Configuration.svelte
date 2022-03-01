@@ -35,7 +35,6 @@
 
   {#if Object.keys($columnsStore || []).length}
     <form>
-      <!-- FIXME remove this outer container? -->
       <fieldset class="all-data-types-container">
         {#if $columnsStore.metadata?.length}
           <details open>
