@@ -66,7 +66,6 @@ export const columnsStore = createColumnsStore();
   }
   ```
 */
-// FIXME unit test
 export const columnsToDisplayStore = derived(columnsStore, (columnsState) =>
   columnsState ?
     Object.keys(columnsState).reduce((accumDataTypeToColumnNames, dataType) => {
