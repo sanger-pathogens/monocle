@@ -90,7 +90,7 @@
 
   {:else}
     <p>Something went wrong. Please try to reload the page and <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a> if the problem persists.</p>
-    <button class="compact" on:click={() => isOpen = false}>
+    <button class="compact close-err-btn" on:click={() => isOpen = false}>
       Close
     </button>
   {/if}
@@ -139,5 +139,11 @@ summary {
 }
 .end-btns button {
   margin-bottom: .9rem;
+}
+
+.close-err-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
