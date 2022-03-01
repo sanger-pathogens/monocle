@@ -2,7 +2,12 @@ import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
-import { distinctColumnValuesStore, filterStore } from "../_stores.js";
+import {
+  columnsStore,
+  columnsToDisplayStore,
+  distinctColumnValuesStore,
+  filterStore
+} from "../_stores.js";
 import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
 
 const BATCHES = ["some batches"];
@@ -71,6 +76,29 @@ it("requests metadata w/ the correct arguments", async () => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
       filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+      numRows: 16,
+      startRow: 1
+    }, fetch);
+  });
+});
+
+it("requests metadata if selected columns change", async () => {
+  getSampleMetadata.mockClear();
+  render(SampleMetadataViewer, { batches: BATCHES });
+
+  await waitFor(() => {
+    expect(getSampleMetadata).toHaveBeenCalledTimes(1);
+  });
+
+  getSampleMetadata.mockClear();
+  columnsStore.set({ metadata: [] });
+
+  await waitFor(() => {
+    expect(getSampleMetadata).toHaveBeenCalledTimes(1);
+    expect(getSampleMetadata).toHaveBeenCalledWith({
+      instKeyBatchDatePairs: BATCHES,
+      filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+      columns: get(columnsToDisplayStore),
       numRows: 16,
       startRow: 1
     }, fetch);

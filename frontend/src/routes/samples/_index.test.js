@@ -114,6 +114,25 @@ describe("once batches are fetched", () => {
       .toBeTruthy();
   });
 
+  it("displays the settings button", async () => {
+    const { findByRole, getByRole } = render(DataViewerPage);
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+
+    await fireEvent.click(selectAllBtn);
+
+    expect(getByRole(ROLE_BUTTON, { name: /^Select columns/ }))
+      .toBeDefined();
+  });
+
+  it("doesn't fetch columns if they are stored in the local storage", async () => {
+    localStorage.setItem("columnsState", "{}");
+    getColumns.mockClear();
+    const { findByRole } = render(DataViewerPage);
+    await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+
+    expect(getColumns).not.toHaveBeenCalled();
+  });
+
   describe("batch selector", () => {
     it("displays a list of available batches and their institutions when clicked", async () => {
       const institutionsPayload = Object.keys(BATCHES_PAYLOAD)

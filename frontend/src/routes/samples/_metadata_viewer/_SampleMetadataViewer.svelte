@@ -18,7 +18,6 @@
   // `batches` is passed just to indicate to Svelte that this reactive statement
   // should re-run only when `batches` has changed.
   $: setToFirstPage(batches);
-  // FIXME unit test request being made on columns change
   $: updateMetadata(batches, pageNum, $columnsToDisplayStore, $filterStore);
 
   function updateMetadata() {
