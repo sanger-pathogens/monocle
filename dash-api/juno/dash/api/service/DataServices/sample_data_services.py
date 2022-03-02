@@ -767,12 +767,13 @@ class MonocleSampleData:
                   'content'   : csv_response_string
                   }
 
-   def metadata_as_csv(self, sample_status=None, sample_filters=None, download_base_url=None):
+   def metadata_as_csv(self, sample_status=None, sample_filters=None, download_base_url=None, include_qc_data=False):
       """
       Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
       params to indicate the samples to be downloads.
       Optionally pass a base URL for the download; if provided, a download URL for each sample
       (this base URL with the public name appended) will be added as an extra column.
+      Optionally set include_qc_data to true if QC data should be included in the CSV.
 
       When available, in silico data for each sample are now also included.
 
@@ -843,18 +844,19 @@ class MonocleSampleData:
          # add silico data columns to the list
          metadata_col_order = metadata_col_order + in_silico_data_col_order
          
-      # if there are any QC data, these are merged into the metadata DataFrame
-      logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
-      qc_data,qc_data_col_order = self._metadata_download_to_pandas_data(self.metadata_download_source.get_qc_data(lanes_for_download))
-      if len(qc_data) > 0:
-         qc_data_df = pandas.DataFrame(qc_data)
-         logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
-         # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
-         # validate to ensure lane ID is unique in both dataframes
-         metadata_df = metadata_df.merge(qc_data_df, left_on='Lane_ID', right_on='lane_id', how='left', validate="one_to_one")
-         del qc_data_df
-         # add QC data columns to the list
-         metadata_col_order = metadata_col_order + qc_data_col_order
+      if include_qc_data:
+         # if there are any QC data, these are merged into the metadata DataFrame
+         logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
+         qc_data,qc_data_col_order = self._metadata_download_to_pandas_data(self.metadata_download_source.get_qc_data(lanes_for_download))
+         if len(qc_data) > 0:
+            qc_data_df = pandas.DataFrame(qc_data)
+            logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
+            # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
+            # validate to ensure lane ID is unique in both dataframes
+            metadata_df = metadata_df.merge(qc_data_df, left_on='Lane_ID', right_on='lane_id', how='left', validate="one_to_one")
+            del qc_data_df
+            # add QC data columns to the list
+            metadata_col_order = metadata_col_order + qc_data_col_order
 
       # list of columns in `metadata_col_order` defines the CSV output
       # remove Sample_id -- this is a duplicate of Lane_ID
