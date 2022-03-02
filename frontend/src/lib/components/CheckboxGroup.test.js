@@ -20,7 +20,7 @@ it("is closed by default if no items are checked", () => {
   expect(getByLabelText(RE_NAME_GROUP).indeterminate).toBeFalsy();
 });
 
-it("is open by default if all items are checked", () => {
+it("is closed by default if all items are checked", () => {
   const { queryByLabelText, getByLabelText } = render(CheckboxGroup, {
     groupName: NAME_GROUP,
     items: [{ displayName: ITEM_NAMES[0], checked: true }] });
