@@ -104,7 +104,7 @@
 {#if batches?.length}
   <section>
 
-    <SampleMetadataViewerWithoutPaginaton metadataPromise={sortedMetadataPromise} />
+    <SampleMetadataViewerWithoutPaginaton {batches} metadataPromise={sortedMetadataPromise} />
 
     <nav>
       <ul>

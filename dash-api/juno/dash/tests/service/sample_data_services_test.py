@@ -1,5 +1,5 @@
 from   unittest      import TestCase
-from   unittest.mock import patch, Mock
+from   unittest.mock import call, patch, Mock
 from   copy          import deepcopy
 from   datetime      import datetime
 import json
@@ -248,6 +248,27 @@ class MonocleSampleDataTest(TestCase):
    mock_download_path         =     'path/incl/mock/download/symlink'
    mock_download_url          =     'https://'+mock_download_host+'/'+mock_download_path
    
+   mock_metadata2             =     [  {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_1"  },
+                                          "field1":               {"order": 1, "title": "Something_Made_Up", "value": "a"                 },
+                                          "field2":               {"order": 2, "title": "Something_Else",    "value": "d"                 }
+                                          },
+                                       {  "sanger_sample_id":     {"order": 1, "title": "Sanger_Sample_ID",  "value": "fake_sample_id_2"  },
+                                          "field1":               {"order": 1, "title": "Something_Made_Up", "value": "b"                 },
+                                          "field2":               {"order": 2, "title": "Something_Else",    "value": "e"                 }
+                                          }
+                                       ]
+   mock_in_silico_data2       =     [  {  "lane_id":              {"order": 1, "title": "Sample_id",         "value": "fake_lane_id_3"    },
+                                          "field3":               {"order": 2, "title": "In_Silico_Thing",   "value": "f"               },
+                                          },
+                                       {  "lane_id":              {"order": 1, "title": "Sample_id",         "value": "fake_lane_id_4"    },
+                                          "field3":               {"order": 2, "title": "In_Silico_Thing",   "value": "g"               },
+                                          },
+                                       {  "lane_id":              {"order": 1, "title": "Sample_id",         "value": "fake_lane_id_5"    },
+                                          "field3":               {"order": 2, "title": "In_Silico_Thing",   "value": "h"               },
+                                          }
+                                       ]
+
+   
    mock_distinct_values_query =     {  "metadata":    ["field1", "field2"],
                                        "in silico":   ["field3"]
                                        }
@@ -260,9 +281,41 @@ class MonocleSampleDataTest(TestCase):
    mock_distinct_in_silico_values = [  { "name": "field3", "values": ["f", "g", "h"] }
                                        ]
    
-   expected_distinct_values   =     [  { 'field type': 'metadata',    'fields': mock_distinct_values },
-                                       { 'field type': 'in silico',   'fields': mock_distinct_in_silico_values }
+   expected_distinct_values   =     [  {  'field type':  'metadata',
+                                          'fields':      [  { "name": "field1", "values": ["a", "b"] },
+                                                            { "name": "field2", "values": ["d", "e"] }
+                                                            ]
+                                          },
+                                       {  'field type':  'in silico',
+                                          'fields':      [  { "name": "field3", "values": ["f", "g", "h"] }
+                                                            ]
+                                          }
                                        ]            
+
+   mock_distinct_value_num_matching          = 42
+   expected_distinct_values_filtered         = [  {  'field type':  'metadata',
+                                                      'fields':      [  {  "name":     "field1",
+                                                                           "values":   ["a", "b"],
+                                                                           'matches':  [  {'value': 'a', 'number': 1},
+                                                                                          {'value': 'b', 'number': 1}]
+                                                                           },
+                                                                        {  "name":     "field2",
+                                                                           "values":   ["d", "e"],
+                                                                           'matches':  [  {'value': 'd', 'number': 1},
+                                                                                          {'value': 'e', 'number': 1}]
+                                                                           }
+                                                                        ]
+                                                      },
+                                                   {  'field type':  'in silico',
+                                                      'fields':      [  {  "name":     "field3",
+                                                                           "values":   ["f", "g", "h"],
+                                                                           "matches":  [  {'value': 'f', 'number': 1},
+                                                                                          {'value': 'g', 'number': 0},
+                                                                                          {'value': 'h', 'number': 0}]
+                                                                           }
+                                                                        ]
+                                                      }
+                                                ]            
 
 
    expected_metadata          = '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
@@ -406,8 +459,44 @@ class MonocleSampleDataTest(TestCase):
       distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
       mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
       mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_distinct_values, distinct_values))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
       self.assertEqual(self.expected_distinct_values, distinct_values)
+
+   @patch.object(Monocle_Client,          'distinct_values')
+   @patch.object(Monocle_Client,          'distinct_in_silico_values')
+   @patch.object(MonocleSampleData,       'get_filtered_samples')
+   @patch.object(Monocle_Download_Client, 'qc_data')
+   @patch.object(Monocle_Download_Client, 'in_silico_data')
+   @patch.object(Monocle_Download_Client, 'metadata')
+   def test_get_distinct_values_with_sample_filters(self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch,
+                                                          mock_get_filtered_samples, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_metadata_fetch.return_value                   = self.mock_metadata2
+      mock_in_silico_data_fetch.return_value             = self.mock_in_silico_data2
+      mock_qc_data_fetch.return_value                    = self.mock_qc_data
+      mock_get_filtered_samples.return_value             = self.mock_filtered_samples
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      distinct_values_filtered = self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
+                                                                        sample_filters = {'batches' : self.inst_key_batch_date_pairs,
+                                                                                          'metadata': {'field2': ['x']}
+                                                                                          }
+                                                                        )
+      mock_distinct_values_fetch.assert_called_once_with(self.mock_distinct_values_query['metadata'], self.mock_institutions)
+      mock_distinct_in_silico_values_fetch.assert_called_once_with(self.mock_distinct_values_query['in silico'], self.mock_institutions)
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
+      self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
+
+   @patch.object(Monocle_Client,          'distinct_values')
+   @patch.object(Monocle_Client,          'distinct_in_silico_values')
+   @patch.object(Monocle_Download_Client, 'metadata')
+   def test_get_distinct_values_with_sample_filters_catch_error(self, mock_metadata_fetch, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
+      mock_metadata_fetch.side_effect                    = HTTPError('/nowhere', '400', 'any other 4xx response', 'yes', 'no')
+      mock_distinct_values_fetch.return_value            = self.mock_distinct_values
+      mock_distinct_in_silico_values_fetch.return_value  = self.mock_distinct_in_silico_values
+      with self.assertRaises(HTTPError):
+         self.monocle_data.get_distinct_values( self.mock_distinct_values_query,
+                                                sample_filters = {'batches': self.inst_key_batch_date_pairs}
+                                                )
 
    @patch.object(Monocle_Client,  'distinct_values')
    @patch.object(Monocle_Client,  'distinct_in_silico_values')

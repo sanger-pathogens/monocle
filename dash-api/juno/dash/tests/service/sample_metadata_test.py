@@ -147,7 +147,7 @@ class SampleMetadataTest(TestCase):
       mock_distinct_qc_data_values.return_value     = self.mock_distinct_qc_data_values
       distinct_values = self.sample_metadata.get_distinct_values({'metadata': ['field1', 'field2'], 'in silico': ['field3'], 'qc data': ['field4']}, ['institution A'])
       self.assertIsInstance(distinct_values, list)
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
       self.assertEqual(self.expected_distinct_values, distinct_values)
       
    @patch('DataSources.sample_metadata.Monocle_Client.make_request')

@@ -105,12 +105,16 @@ function createDistinctColumnValuesStore() {
     updateFromDistinctValuesResponse: (distinctValuesResponse) => update((storedDistinctValues) => {
       distinctValuesResponse.forEach(({ "field type": dataType, fields: columns }) =>
         columns.forEach((column) =>
-          storedDistinctValues[dataType][column.name] = column.values));
+          storedDistinctValues[dataType][column.name] = column.matches.reduce((accumValues, match) => {
+            if (match.number) {
+              accumValues.push(match.value);
+            }
+            return accumValues;
+          }, [])));
 
       return storedDistinctValues;
     }),
-    // This function is used for tests only.
-    _reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} })
+    reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} })
   };
 }
 

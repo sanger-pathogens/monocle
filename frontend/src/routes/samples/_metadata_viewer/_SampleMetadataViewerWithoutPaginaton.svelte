@@ -4,8 +4,9 @@
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import Filter from "./_Filter.svelte";
-  import { filterStore } from "../_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
+  export let batches;
   export let metadataPromise = undefined;
 
   const COLOR_INACTIVE_FILTER = "silver";
@@ -17,6 +18,8 @@
   let metadata;
   let columns = [];
   let screenWidth = window?.innerWidth || NARROW_SCREEN_BREAKPOINT + 1;
+
+  $: { distinctColumnValuesStore.reset(batches) }
 
   $: {
     if (metadataPromise) {
@@ -88,7 +91,7 @@
             {/if}
           </button>
           {#if columnOfOpenFilter && columnOfOpenFilter.title === columnTitle}
-            <Filter bind:column={columnOfOpenFilter} />
+            <Filter {batches} bind:column={columnOfOpenFilter} />
           {/if}
         </th>
       {/each}

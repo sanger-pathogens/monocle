@@ -6,6 +6,7 @@
   import { getDistinctColumnValues } from "$lib/dataLoading.js";
   import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
+  export let batches;
   export let column;
   let { name: columnName, dataType: columnDataType } = column || {};
 
@@ -23,7 +24,11 @@
 
   $: {
     if (!values && column) {
-      getDistinctColumnValues([column], fetch)
+      getDistinctColumnValues({
+        instKeyBatchDatePairs: batches,
+        columns: [column],
+        filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      }, fetch)
         .then((distinctValuesResponse) =>
           distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)
         );
@@ -88,7 +93,7 @@
     <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
 
     <label>
-      <input type="checkbox" bind:checked={exclude} />
+      <input type="checkbox" bind:checked={exclude} disabled={!values || values.length === 1} />
       <em>Exclude</em> samples with the selected values
     </label>
 

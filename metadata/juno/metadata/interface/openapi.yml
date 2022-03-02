@@ -436,7 +436,7 @@ components:
             items:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
-      example: { "name": "ST",  "values": ["1", "12", "14"] }
+      example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
@@ -445,15 +445,15 @@ components:
       maxLength: 256
       # Allows one whitespace but not two or more together and allows single
       # but not double hyphens to prevent -- injections
-      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:\.\(\)\[\]]+)\-?\ ?)+$
+      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:/\.\(\)\[\]]+)\-?\ ?)+$
       
     InSilicoFieldValueFilter:
       description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
       minLength: 1
       maxLength: 256
-      # only alphanumerics, '*' and '/'
-      pattern: ^([a-zA-Z0-9_\*/]+)$
+      # only alphanumerics, '*',  '?', '-' and '/'
+      pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
 
     MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"
