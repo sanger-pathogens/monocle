@@ -874,7 +874,7 @@ class MonocleSampleDataTest(TestCase):
       metadata_as_csv = self.monocle_data.metadata_as_csv( sample_status     = {'institution'  : self.mock_institutions[0],
                                                                                  'category'     : 'sequencing',
                                                                                  'status'       : 'successful'},
-                                                           includeQCData     = True,
+                                                           include_qc_data     = True,
                                                            download_base_url = self.mock_download_url)
 
       self.assertEqual(self.expected_metadata_plus_qc_data, metadata_as_csv)
@@ -905,7 +905,7 @@ class MonocleSampleDataTest(TestCase):
       metadata_as_csv = self.monocle_data.metadata_as_csv(  sample_status     = {'institution'  : self.mock_institutions[0],
                                                                                  'category'     : 'sequencing',
                                                                                  'status'       : 'successful'},
-                                                            includeQCData     = True,
+                                                            include_qc_data     = True,
                                                             download_base_url = self.mock_download_url)
 
       self.assertEqual(self.expected_metadata_when_no_in_silico_or_qc_data, metadata_as_csv)
@@ -967,7 +967,7 @@ class MonocleSampleDataTest(TestCase):
          metadata_as_csv = self.monocle_data.metadata_as_csv(  sample_status     = {'institution'  : self.mock_institutions[0],
                                                                                     'category'     : 'sequencing',
                                                                                     'status'       : 'successful'},
-                                                               includeQCData     = True,
+                                                               include_qc_data     = True,
                                                                download_base_url = self.mock_download_url)
          
    def test_metadata_as_csv_reject_invalid_params(self):
