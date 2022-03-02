@@ -1,13 +1,71 @@
 import { get } from "svelte/store";
-import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+import {
+  columnsStore, columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
 const VALUES = ["some value", "another value"];
 
 it("has the expected default value for each store", () => {
+  expect(get(columnsStore)).toBeUndefined();
+  expect(get(columnsToDisplayStore)).toBeUndefined();
   expect(get(distinctColumnValuesStore)).toEqual(
     { metadata: {}, "in silico": {}, "qc data": {} });
   expect(get(filterStore)).toEqual(
     { metadata: {}, "in silico": {}, "qc data": {} });
+});
+
+it("has a derived store w/ an array of columns per data type to display", () => {
+  columnsStore.set({
+    metadata: [{ name: "Category A", columns: [
+      { displayName: "Country", name: "country", selected: true }, { displayName: "Study Reference", name: "study_ref" }] }],
+    "in silico": [{ name: "Category B", columns: [{ displayName: "ST", name: "st", selected: true }] }]
+  });
+
+  expect(get(columnsToDisplayStore)).toEqual({
+    metadata: ["country"], "in silico": ["st"]
+  });
+});
+
+describe("columns store", () => {
+  it("doesn't expose `update` function", () => {
+    expect(columnsStore.update).toBeUndefined();
+  });
+
+  it("can be set from the columns response", () => {
+    columnsStore.setFromColumnsResponse({
+      metadata: { categories: [{
+        name: "Category A",
+        fields: [{ name: "a", display: false }, { "display name": "Country", name: "country", display: true }]
+      }] },
+      "in silico": { categories: [{
+        name: "Category B",
+        fields: [{ "display name": "C", name: "c", display: true, "filter type": "discrete" }]
+      }, {
+        name: "Category C",
+        fields: [{ name: "d", display: false }]
+      }] }
+    });
+
+    expect(get(columnsStore)).toEqual({
+      metadata: [{ name: "Category A", columns: [{ displayName: "Country", name: "country", selected: true }] }],
+      "in silico": [{ name: "Category B", columns: [{ displayName: "C", name: "c", type: "discrete" }] }]
+    });
+  });
+
+  it("can reset the state to the default", () => {
+    columnsStore.set({
+      metadata: [{ name: "Category A", columns: [
+        { displayName: "Country", name: "country" }, { displayName: "Study Reference", name: "study_ref", selected: true }] }],
+      "in silico": [{ name: "Category B", columns: [{ displayName: "ST", name: "st", type: "discrete" }] }]
+    });
+
+    columnsStore.setToDefault();
+
+    expect(get(columnsStore)).toEqual({
+      metadata: [{ name: "Category A", columns: [
+        { displayName: "Country", name: "country", selected: true }, { displayName: "Study Reference", name: "study_ref", selected: false }] }],
+      "in silico": [{ name: "Category B", columns: [{ displayName: "ST", name: "st", type: "discrete", selected: undefined }] }]
+    });
+  });
 });
 
 describe("distinct column values store", () => {

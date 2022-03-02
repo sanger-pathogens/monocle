@@ -5,6 +5,7 @@ import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
+  getColumns,
   getInstitutions,
   getSampleMetadata
 } from "$lib/dataLoading.js";
@@ -22,6 +23,7 @@ jest.mock("$lib/utils/debounce.js", () => {
 jest.mock("$lib/dataLoading.js", () => ({
   getBatches: jest.fn(() => Promise.resolve()),
   getBulkDownloadInfo: jest.fn(() => Promise.resolve({size: "42 TB", size_zipped: "7 TB"})),
+  getColumns: jest.fn(() => Promise.resolve({})),
   getInstitutions: jest.fn(() => Promise.resolve()),
   getSampleMetadata: jest.fn(() => Promise.resolve())
 }));
@@ -110,6 +112,25 @@ describe("once batches are fetched", () => {
 
     expect(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled)
       .toBeTruthy();
+  });
+
+  it("displays the settings button", async () => {
+    const { findByRole, getByRole } = render(DataViewerPage);
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+
+    await fireEvent.click(selectAllBtn);
+
+    expect(getByRole(ROLE_BUTTON, { name: /^Select columns/ }))
+      .toBeDefined();
+  });
+
+  it("doesn't fetch columns if they are stored in the local storage", async () => {
+    localStorage.setItem("columnsState", "{}");
+    getColumns.mockClear();
+    const { findByRole } = render(DataViewerPage);
+    await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+
+    expect(getColumns).not.toHaveBeenCalled();
   });
 
   describe("batch selector", () => {

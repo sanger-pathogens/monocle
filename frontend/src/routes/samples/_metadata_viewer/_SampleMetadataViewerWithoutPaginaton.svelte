@@ -9,13 +9,14 @@
   export let metadataPromise = undefined;
 
   const COLOR_INACTIVE_FILTER = "silver";
-  const DATA_TYPE_METADATA = "metadata";
+  const NARROW_SCREEN_BREAKPOINT = 880;
 
   let columnOfOpenFilter;
   let isError;
   let isLoading;
   let metadata;
   let columns = [];
+  let screenWidth = window?.innerWidth || NARROW_SCREEN_BREAKPOINT + 1;
 
   $: {
     if (metadataPromise) {
@@ -24,8 +25,9 @@
       metadataPromise
         .then((sortedMetadata) => {
           metadata = sortedMetadata;
+          // Only uodate columns if there are data in the response.
           if (sortedMetadata.length) {
-            columns = extractColumnsFromMetadata(sortedMetadata);
+            columns = sortedMetadata[0];
           }
         })
         .catch((err) => {
@@ -40,12 +42,6 @@
     if (columns.length === 0) {
       closeFilter();
     }
-  }
-
-  function extractColumnsFromMetadata(sortedMetadata = []) {
-    return sortedMetadata[0]?.[DATA_TYPE_METADATA]?.map(
-      ({ name, title }) => ({ name, title, dataType: DATA_TYPE_METADATA })
-    ) || [];
   }
 
   function toggleFilterMenu(clickedColumn) {
@@ -68,8 +64,10 @@
 </script>
 
 
+<svelte:window on:resize={() => {screenWidth = window.innerWidth;}} />
+
 {#if metadataPromise}
-  <table class="dense">
+  <table class={`dense ${screenWidth > NARROW_SCREEN_BREAKPOINT && columns.length < 6 ? "few-columns" : ""}`}>
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#template-syntax-each). -->
@@ -110,8 +108,9 @@
           <tr class="data-row" class:loading={isLoading} aria-live="polite">
             <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
              https://svelte.dev/docs#template-syntax-each). -->
-            {#each sample.metadata as metadata (`${metadata.name}:metadata`)}
-              <td>{metadata.value}</td>
+            {#each sample as column (`${column.name}:${column.dataType}`)}
+              <!-- The inner <div /> is needed to impose a maximum height on a table cell. -->
+              <td><div>{column.value}</div></td>
             {/each}
           </tr>
         {/each}
@@ -143,11 +142,20 @@ table {
   overflow-x: auto;
   position: relative;
 }
+.few-columns {
+  /* `display: table` is needed to force a full width on the table if there are few columns. */
+  display: table;
+}
 
 th {
   /* Column headers must remain `relative`ly positioned for the filter to be correctly positioned for rightmost headers. */
   position: relative;
   white-space: nowrap;
+}
+
+td > div {
+  max-height: 3.1rem;
+  overflow-y: auto;
 }
 
 .error-msg, .no-data {

@@ -2,6 +2,7 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
+  getColumns,
   getDistinctColumnValues,
   getInstitutionStatus,
   getProjectProgress,
@@ -109,6 +110,15 @@ describe.each([
     expectedResult: ["fake_url"]
   },
   {
+    fnName: "getColumns",
+    getResource: getColumns,
+    expectedEndpoints: ["get_field_attributes"],
+    responsePayload: {
+      "field_attributes": "inner response payload",
+    },
+    expectedResult: "inner response payload"
+  },
+  {
     fnName: "getDistinctColumnValues",
     getResource: getDistinctColumnValues,
     args: [[{
@@ -188,6 +198,7 @@ describe.each([
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      columns: { metadata: ["some column"], "in silico": ["a column", "another column"] },
       numRows: 14,
       startRow: 2
     }],
@@ -202,8 +213,8 @@ describe.each([
         },
         "num rows": 14,
         "start row": 2,
-        "in silico": false,
-        "qc data": false
+        "metadata columns": ["some column"],
+        "in silico columns": ["a column", "another column"]
       })
     },
     expectedEndpoints: ["get_metadata"],

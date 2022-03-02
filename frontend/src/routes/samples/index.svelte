@@ -5,27 +5,34 @@
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
+  import { localStorageAvailable } from "$lib/utils/featureDetection.js";
   import {
     getBatches,
     getBulkDownloadInfo,
+    getColumns,
     getInstitutions,
     getSampleMetadata
   } from "$lib/dataLoading.js";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
+  import Configuration from "./_metadata_viewer/_Configuration.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
-  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+  import { columnsStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
 
   export let injectedCreateAnchorElement = undefined;
 
-  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
-    .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch), loadColumnsIntoStore() ])
+    .then(([batchesSettledPromise, institutionsSettledPromise, loadColumnsIntoStorePromise]) => {
       if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
         console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
         return Promise.reject(batchesSettledPromise.reason);
+      }
+      if (loadColumnsIntoStorePromise.status === PROMISE_STATUS_REJECTED) {
+        console.error(`failed to load columns: ${loadColumnsIntoStorePromise.reason}.`);
+        return Promise.reject(loadColumnsIntoStorePromise.reason);
       }
       return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
     })
@@ -55,6 +62,27 @@
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when some of the arguments have changed.
   $: updateDownloadEstimate(selectedBatches, $filterStore, bulkDownloadFormValues);
+
+  function loadColumnsIntoStore() {
+    const isLocalStorageAvailable = localStorageAvailable();
+    let locallySavedColumnsState;
+    if (isLocalStorageAvailable) {
+      locallySavedColumnsState = JSON.parse(localStorage.getItem("columnsState"));
+    }
+    if (locallySavedColumnsState) {
+      columnsStore.set(locallySavedColumnsState);
+      return Promise.resolve();
+    }
+    else {
+      return getColumns(fetch)
+        .then((columnsResponse) => {
+          columnsStore.setFromColumnsResponse(columnsResponse);
+          if (isLocalStorageAvailable) {
+            localStorage.setItem("columnsState", JSON.stringify($columnsStore));
+          }
+        });
+    }
+  }
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
@@ -208,6 +236,8 @@
       >
         Remove all filters <RemoveFilterIcon width="24" height="17" />
       </button>
+
+      <Configuration />
     </div>
   {/if}
 
