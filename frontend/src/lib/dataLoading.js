@@ -1,5 +1,6 @@
+import { DATA_TYPES } from "$lib/constants.js";
+
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
-const DATA_TYPES = ["metadata", "in silico"];
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
 const HTTP_POST = "POST";
@@ -63,6 +64,10 @@ export function getBulkDownloadUrls(params, fetch) {
     });
 }
 
+export function getColumns(fetch) {
+  return fetchDashboardApiResource("get_field_attributes", "field_attributes", fetch);
+}
+
 export function getDistinctColumnValues({ instKeyBatchDatePairs, columns, filter }, fetch) {
   const payload = {
     "sample filters": {
@@ -99,6 +104,7 @@ export function getInstitutions(fetch) {
 export function getSampleMetadata({
   instKeyBatchDatePairs,
   filter,
+  columns,
   numRows,
   startRow,
   asCsv
@@ -133,8 +139,7 @@ fetch
         handleFetchError(err, "get_metadata"));
   }
   else {
-    payload["in silico"] = false;
-    payload["qc data"] = false;
+    addColumnsToPayload(columns, payload);
   }
 
   return fetchDashboardApiResource(
@@ -210,19 +215,32 @@ function prepareBulkDownloadPayload({
   instKeyBatchDatePairs,
   filter,
   assemblies,
-  annotations
+  annotations,
+  reads
 }) {
   const payload = {
     "sample filters": {
       batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
     },
     assemblies,
-    annotations
+    annotations,
+    reads
   };
 
   addFiltersToPayload({ ...filter, payload });
 
   return payload;
+}
+
+function addColumnsToPayload(columns = {}, payload) {
+  DATA_TYPES.forEach((dataType) => {
+    if (columns[dataType]?.length) {
+      payload[`${dataType} columns`] = columns[dataType];
+    }
+    else {
+      payload[dataType] = false;
+    }
+  });
 }
 
 function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }) {

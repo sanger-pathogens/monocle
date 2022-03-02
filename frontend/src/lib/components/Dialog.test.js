@@ -44,4 +44,3 @@ it("isn't closed when the content is clicked", async () => {
 
   expect(getByLabelText(LABEL_DIALOG)).toBeDefined();
 });
-

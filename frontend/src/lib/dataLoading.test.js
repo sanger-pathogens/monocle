@@ -2,6 +2,7 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
+  getColumns,
   getDistinctColumnValues,
   getInstitutionStatus,
   getProjectProgress,
@@ -57,7 +58,8 @@ describe.each([
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
-      annotations: false
+      annotations: false,
+      reads: true
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -69,7 +71,8 @@ describe.each([
           "in silico": { ST: ["x", "y"] }
         },
         assemblies: true,
-        annotations: false
+        annotations: false,
+        reads: true
       })
     },
     expectedEndpoints: ["bulk_download_info"],
@@ -83,7 +86,8 @@ describe.each([
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
       assemblies: true,
-      annotations: false
+      annotations: false,
+      reads: true
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -95,7 +99,8 @@ describe.each([
           "in silico": { ST: ["x", "y"] }
         },
         assemblies: true,
-        annotations: false
+        annotations: false,
+        reads: true
       })
     },
     expectedEndpoints: ["bulk_download_urls"],
@@ -103,6 +108,15 @@ describe.each([
       download_urls: ["fake_url"],
     },
     expectedResult: ["fake_url"]
+  },
+  {
+    fnName: "getColumns",
+    getResource: getColumns,
+    expectedEndpoints: ["get_field_attributes"],
+    responsePayload: {
+      "field_attributes": "inner response payload",
+    },
+    expectedResult: "inner response payload"
   },
   {
     fnName: "getDistinctColumnValues",
@@ -195,6 +209,7 @@ describe.each([
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
       filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      columns: { metadata: ["some column"], "in silico": ["a column", "another column"] },
       numRows: 14,
       startRow: 2
     }],
@@ -209,8 +224,8 @@ describe.each([
         },
         "num rows": 14,
         "start row": 2,
-        "in silico": false,
-        "qc data": false
+        "metadata columns": ["some column"],
+        "in silico columns": ["a column", "another column"]
       })
     },
     expectedEndpoints: ["get_metadata"],

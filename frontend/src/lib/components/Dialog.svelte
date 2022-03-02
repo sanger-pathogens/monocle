@@ -4,6 +4,7 @@
   export let ariaLabel = undefined;
   export let ariaLabelledby = undefined;
   export let isOpen = false;
+  export let isWide = false;
   export let persistState = false;
 
   let dialogBackground;
@@ -25,7 +26,7 @@
     on:click={(event) => event.target === dialogBackground && close()}
     in:fade={{ duration: 90 }}
   >
-    <div class="content">
+    <div class="content" style:max-width={isWide ? "91vw" : "40rem"}>
       <button
         aria-label="Close dialog"
         on:click={close}
@@ -58,7 +59,6 @@
   box-shadow: 0 .2rem .4rem rgba(48 ,55 ,66, .3);
   max-height: 85vh;
   overflow-y: auto;
-  max-width: 40rem;
   padding: 1.2rem;
   position: relative;
 }

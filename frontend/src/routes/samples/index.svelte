@@ -5,27 +5,34 @@
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
+  import { localStorageAvailable } from "$lib/utils/featureDetection.js";
   import {
     getBatches,
     getBulkDownloadInfo,
+    getColumns,
     getInstitutions,
     getSampleMetadata
   } from "$lib/dataLoading.js";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
+  import Configuration from "./_metadata_viewer/_Configuration.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
-  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+  import { columnsStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
 
   export let injectedCreateAnchorElement = undefined;
 
-  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch) ])
-    .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch), loadColumnsIntoStore() ])
+    .then(([batchesSettledPromise, institutionsSettledPromise, loadColumnsIntoStorePromise]) => {
       if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
         console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
         return Promise.reject(batchesSettledPromise.reason);
+      }
+      if (loadColumnsIntoStorePromise.status === PROMISE_STATUS_REJECTED) {
+        console.error(`failed to load columns: ${loadColumnsIntoStorePromise.reason}.`);
+        return Promise.reject(loadColumnsIntoStorePromise.reason);
       }
       return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
     })
@@ -37,7 +44,8 @@
   let bulkDownloadEstimate;
   let bulkDownloadFormValues = {
     annotations: true,
-    assemblies: true
+    assemblies: true,
+    reads: false
   };
   let shouldDisplayBulkDownload = false;
   let isPreparingMetadataDownload = false;
@@ -55,6 +63,27 @@
   // should re-run only when some of the arguments have changed.
   $: updateDownloadEstimate(selectedBatches, $filterStore, bulkDownloadFormValues);
 
+  function loadColumnsIntoStore() {
+    const isLocalStorageAvailable = localStorageAvailable();
+    let locallySavedColumnsState;
+    if (isLocalStorageAvailable) {
+      locallySavedColumnsState = JSON.parse(localStorage.getItem("columnsState"));
+    }
+    if (locallySavedColumnsState) {
+      columnsStore.set(locallySavedColumnsState);
+      return Promise.resolve();
+    }
+    else {
+      return getColumns(fetch)
+        .then((columnsResponse) => {
+          columnsStore.setFromColumnsResponse(columnsResponse);
+          if (isLocalStorageAvailable) {
+            localStorage.setItem("columnsState", JSON.stringify($columnsStore));
+          }
+        });
+    }
+  }
+
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
     updateDownloadEstimateTimeoutId = debounce(_updateDownloadEstimate, updateDownloadEstimateTimeoutId);
@@ -62,11 +91,12 @@
 
   function _updateDownloadEstimate() {
     const bulkDownloadFormIncomplete = !selectedBatches?.length ||
-      (!bulkDownloadFormValues.annotations && !bulkDownloadFormValues.assemblies);
+      (!bulkDownloadFormValues.annotations && !bulkDownloadFormValues.assemblies && !bulkDownloadFormValues.reads);
     if (bulkDownloadFormIncomplete) {
       return;
     }
 
+    unsetDownloadEstimate();
     getBulkDownloadInfo({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
       filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
@@ -206,6 +236,8 @@
       >
         Remove all filters <RemoveFilterIcon width="24" height="17" />
       </button>
+
+      <Configuration />
     </div>
   {/if}
 

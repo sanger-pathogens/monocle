@@ -12,7 +12,7 @@
 </script>
 
 
-<h2>In silico data upload</h2>
+<h2><i>In silico</i> data upload</h2>
 
 <p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with tab-separated <em>in silico</em> data:</p>
 
@@ -26,7 +26,7 @@
 <Dialog bind:isOpen={uploadSuccessDialogOpen} ariaLabelledby="dialog-title">
   <h3 id="dialog-title">Upload success</h3>
 
-  <p>All <em>in silico</em> data were successfully uploaded.</p>
+  <p>All <i>in silico</i> data were successfully uploaded.</p>
   <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
 </Dialog>
 
