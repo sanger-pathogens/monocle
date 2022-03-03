@@ -43,7 +43,7 @@ it("fetches and displays column values if there are no stored values", async () 
   expect(getDistinctColumnValues).toHaveBeenCalledWith({
     instKeyBatchDatePairs: BATCHES,
     columns: [COLUMN],
-    filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+    filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
   }, fetch);
   DISTINCT_VALUES.forEach((value) =>
     expect(getByText(value)).toBeDefined());

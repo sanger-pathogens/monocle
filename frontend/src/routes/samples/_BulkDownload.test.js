@@ -196,7 +196,7 @@ describe("on form submit", () => {
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
         instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
         assemblies: true,
         annotations: true
       }, fetch);
@@ -232,7 +232,7 @@ describe("on form submit", () => {
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
         instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
         assemblies: true,
         annotations: true
       }, fetch);

@@ -243,7 +243,7 @@ function addColumnsToPayload(columns = {}, payload) {
   });
 }
 
-function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }) {
+function addFiltersToPayload({ filterState = {}, payload, distinctColumnValuesState }) {
   DATA_TYPES.forEach((dataType) => {
     const filterStateForDataType = filterState[dataType] || {};
     const columnNames = Object.keys(filterStateForDataType);
@@ -252,7 +252,7 @@ function addFiltersToPayload({ filterState = {}, payload, distinctColumnValues }
       columnNames.forEach((columnName) => {
         if (filterStateForDataType[columnName].exclude) {
           const valuesToExclude = new Set(filterStateForDataType[columnName].values);
-          payloadFilter[columnName] = distinctColumnValues[dataType][columnName].filter((columnValue) =>
+          payloadFilter[columnName] = distinctColumnValuesState[dataType][columnName].filter((columnValue) =>
             !valuesToExclude.has(columnValue));
         }
         else {

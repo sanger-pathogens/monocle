@@ -34,7 +34,7 @@
     // FIXME: prevent duplicate request when a batch is selected for the first time.
     sortedMetadataPromise = getSampleMetadata({
       instKeyBatchDatePairs: batches,
-      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       columns: $columnsToDisplayStore,
       numRows: NUM_METADATA_ROWS_PER_PAGE,
       startRow: NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1

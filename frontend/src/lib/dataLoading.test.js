@@ -20,7 +20,7 @@ const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(([instKey, bat
 const DASHBOARD_API_URL = "/dashboard-api";
 const DATA_TYPE_METADATA = "metadata";
 
-const DISTINCT_COLUMN_VALUES = {
+const DISTINCT_COLUMN_VALUES_STATE = {
   metadata: {
     serotype: ["1a", "1b", "NT"],
     country: ["doesn't", " mattter"]
@@ -56,7 +56,7 @@ describe.each([
     getResource: getBulkDownloadInfo,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
       assemblies: true,
       annotations: false,
       reads: true
@@ -84,7 +84,7 @@ describe.each([
     getResource: getBulkDownloadUrls,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
       assemblies: true,
       annotations: false,
       reads: true
@@ -133,7 +133,7 @@ describe.each([
         name: "serotype",
         dataType: DATA_TYPE_METADATA
       }],
-      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -208,7 +208,7 @@ describe.each([
     getResource: getSampleMetadata,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
       columns: { metadata: ["some column"], "in silico": ["a column", "another column"] },
       numRows: 14,
       startRow: 2
@@ -237,7 +237,7 @@ describe.each([
     getResource: getSampleMetadata,
     args: [{
       instKeyBatchDatePairs: INST_KEY_BATCH_DATE_PAIRS,
-      filter: { filterState: FILTER_STATE, distinctColumnValues: DISTINCT_COLUMN_VALUES },
+      filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
       numRows: 14,
       startRow: 2,
       asCsv: true

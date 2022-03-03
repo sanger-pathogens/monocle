@@ -14,6 +14,8 @@
   let downloadLinksRequested;
   let downloadTokens = [];
   let estimate = _downloadEstimate;
+  let downloadFilterState;
+  let downloadDistinctColumnValuesState;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -32,10 +34,12 @@
       return;
     }
 
+    downloadFilterState = $filterStore;
+    downloadDistinctColumnValuesState = $distinctColumnValuesStore;
     downloadLinksRequested = true;
     getBulkDownloadUrls({
       instKeyBatchDatePairs: batches,
-      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
       ...formValues
     }, fetch)
       .then((downloadLinks = []) => {

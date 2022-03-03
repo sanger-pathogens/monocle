@@ -330,7 +330,7 @@ describe("once batches are fetched", () => {
             ["FioRon", BATCHES[0].date],
             ["FioRon", BATCHES[1].date],
             ["UlmUni", BATCHES[2].date] ],
-          filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) }
+          filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) }
         },
         fetch);
     });

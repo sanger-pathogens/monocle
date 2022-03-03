@@ -99,7 +99,7 @@
     unsetDownloadEstimate();
     getBulkDownloadInfo({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       ...bulkDownloadFormValues,
     }, fetch)
       .then(({num_samples, size_zipped}) => {

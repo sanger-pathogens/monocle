@@ -27,7 +27,7 @@
       getDistinctColumnValues({
         instKeyBatchDatePairs: batches,
         columns: [column],
-        filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+        filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       }, fetch)
         .then((distinctValuesResponse) =>
           distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)

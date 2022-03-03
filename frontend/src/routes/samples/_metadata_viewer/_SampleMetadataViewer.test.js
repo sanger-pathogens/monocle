@@ -75,7 +75,7 @@ it("requests metadata w/ the correct arguments", async () => {
   await waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
-      filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
       numRows: 16,
       startRow: 1
     }, fetch);
@@ -97,7 +97,7 @@ it("requests metadata if selected columns change", async () => {
     expect(getSampleMetadata).toHaveBeenCalledTimes(1);
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
-      filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
       columns: get(columnsToDisplayStore),
       numRows: 16,
       startRow: 1
