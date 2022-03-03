@@ -10,19 +10,17 @@
     getBatches,
     getBulkDownloadInfo,
     getColumns,
-    getInstitutions,
-    getSampleMetadata
+    getInstitutions
   } from "$lib/dataLoading.js";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
   import Configuration from "./_metadata_viewer/_Configuration.svelte";
+  import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
   import { columnsStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
-
-  export let injectedCreateAnchorElement = undefined;
 
   const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch), loadColumnsIntoStore() ])
     .then(([batchesSettledPromise, institutionsSettledPromise, loadColumnsIntoStorePromise]) => {
@@ -48,7 +46,6 @@
     reads: false
   };
   let shouldDisplayBulkDownload = false;
-  let isPreparingMetadataDownload = false;
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
@@ -140,42 +137,6 @@
     };
   }
 
-  function downloadMetadata() {
-    if (!selectedBatches?.length) {
-      return;
-    }
-
-    isPreparingMetadataDownload = true;
-
-    let csvBlobUrl;
-    let hiddenDownloadLink;
-    getSampleMetadata({
-      instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
-      asCsv: true
-    }, fetch)
-      .then((csvBlob) => {
-        csvBlobUrl = URL.createObjectURL(csvBlob);
-        hiddenDownloadLink = document.body.appendChild(
-          createHiddenDownloadLink(csvBlobUrl, "monocle-sample-metadata.csv"));
-        hiddenDownloadLink.click();
-      })
-      .catch((err) => console.error(`Error on creating metadata download: ${err}`))
-      .finally(() => {
-        isPreparingMetadataDownload = false;
-        hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
-        URL.revokeObjectURL(csvBlobUrl);
-      });
-  }
-
-  function createHiddenDownloadLink(url, fileName) {
-    const a = injectedCreateAnchorElement?.() || document.createElement("a");
-    a.style = "display: none";
-    a.href = url;
-    a.download = fileName;
-    return a;
-  }
-
   function removeAllFilters() {
     if (confirm("Remove all filters?")) {
       filterStore.removeAllFilters();
@@ -214,19 +175,7 @@
         <DownloadIcon />
       </button>
 
-      <button
-        aria-label={isPreparingMetadataDownload ? null : "Download metadata"}
-        on:click={downloadMetadata}
-        class="compact"
-        type="button"
-        disabled={isPreparingMetadataDownload}
-      >
-        {#if isPreparingMetadataDownload}
-          Preparing download <LoadingIcon />
-        {:else}
-          Metadata <DownloadIcon />
-        {/if}
-      </button>
+      <MetadataDownloadButton batches={selectedInstKeyBatchDatePairs} />
 
       <button
         on:click={removeAllFilters}
