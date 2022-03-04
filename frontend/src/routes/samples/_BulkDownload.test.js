@@ -184,6 +184,23 @@ describe("on form submit", () => {
     filterStore.removeAllFilters();
   });
 
+  it("displays the metadata download button", async () => {
+    const { getByRole, queryByRole } = render(BulkDownload, {
+      batches: BATCHES,
+      formValues: FORM_VALUES,
+      ariaLabelledby: FAKE_HEADER_ID
+    });
+    const labelMetadataDownload = "Download metadata";
+
+    expect(queryByRole(ROLE_BUTTON, { name: labelMetadataDownload }))
+      .toBeNull();
+
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
+
+    expect(getByRole(ROLE_BUTTON, { name: labelMetadataDownload }))
+      .toBeDefined();
+  });
+
   it("requests and displays download links", async () => {
     const { getByRole } = render(BulkDownload, {
       batches: BATCHES,
