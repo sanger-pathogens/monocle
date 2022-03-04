@@ -4,3 +4,5 @@ node_modules
 /.svelte-kit
 /build
 /package
+# should be no my.cnf file here, but to be safe...
+my*.cnf*

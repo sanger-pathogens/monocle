@@ -1,4 +1,4 @@
-my.cnf*
+**/my*.cnf*
 config.json
 .git
 **/__pycache__
