@@ -145,13 +145,6 @@
   </button>
 
   {#if downloadLinksRequested}
-    <MetadataDownloadButton
-      batches={downloadBatches}
-      fileNameWithoutExtension={"monocle-metadata-from-sample-download"}
-      filterState={downloadFilterState}
-      distinctColumnValuesState={downloadDistinctColumnValuesState}
-    />
-
     <button
       type="button"
       class="compact"
@@ -188,10 +181,19 @@
       >
         Download ZIP archive
       </a>
+    {/if}
 
-    {:else}
+    <MetadataDownloadButton
+      batches={downloadBatches}
+      fileNameWithoutExtension={"monocle-metadata-from-sample-download"}
+      filterState={downloadFilterState}
+      distinctColumnValuesState={downloadDistinctColumnValuesState}
+      style="display: block; margin-bottom: 1.2rem"
+    />
+
+    {#if !downloadTokens.length}
       <LoadingIndicator
-        message="Please wait: generating a download link can take a while if thousands of samples are involved."
+        message="Please wait: generating ZIP download links can take a while if thousands of samples are involved."
         simple={true}
       />
     {/if}
@@ -235,6 +237,7 @@ button[type=submit] {
 ol {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 0;
   padding-left: 1rem;
 }
 ol li {

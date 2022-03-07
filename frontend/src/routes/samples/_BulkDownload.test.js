@@ -82,7 +82,7 @@ describe("on form submit", () => {
   const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LABEL_DOWNLOAD_LINKS_HEADER = "Download links";
   const LOADING_MESSAGE =
-    "Please wait: generating a download link can take a while if thousands of samples are involved.";
+    "Please wait: generating ZIP download links can take a while if thousands of samples are involved.";
   const ROLE_HEADING = "heading";
   const SELECTOR_DOWNLOAD_ESTIMATE = "dd";
   const SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";

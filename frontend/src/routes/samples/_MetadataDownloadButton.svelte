@@ -8,6 +8,7 @@
   export let fileNameWithoutExtension = "monocle-metadata";
   export let filterState = undefined;
   export let distinctColumnValuesState = undefined;
+  export let style = undefined;
   export let injectedCreateAnchorElement = undefined;
 
   let isPreparingDownload = false;
@@ -59,6 +60,7 @@
   class="compact"
   type="button"
   disabled={isPreparingDownload}
+  {style}
 >
   {#if isPreparingDownload}
     Preparing download <LoadingIcon />
