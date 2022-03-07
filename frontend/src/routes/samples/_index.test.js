@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import debounce from "$lib/utils/debounce.js";
-import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+import { filterStore } from "./_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -75,6 +75,16 @@ describe("once batches are fetched", () => {
     await waitFor(() => {
       expect(queryByLabelText("please wait")).toBeNull();
     });
+  });
+
+  it("displays the metadata download button", async () => {
+    const { findByRole, getByRole } = render(DataViewerPage);
+    const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+
+    await fireEvent.click(selectAllBtn);
+
+    expect(getByRole(ROLE_BUTTON, { name: "Download metadata" }))
+      .toBeDefined();
   });
 
   it("removes all filters on clicking the filter removal button", async () => {
@@ -304,95 +314,6 @@ describe("once batches are fetched", () => {
       await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: "Annotations" }));
 
       expect(getBulkDownloadInfo).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("metadata download button", () => {
-    const DOWNLOAD_URL = "some/url";
-    const LABEL_METADATA_DOWNLOAD_BUTTON = "Download metadata";
-
-    global.URL.createObjectURL = () => DOWNLOAD_URL;
-    global.URL.revokeObjectURL = () => {};
-
-    it("requests metadata CSV on click", async () => {
-      const { findByRole } = render(DataViewerPage);
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
-      fireEvent.click(selectAllBtn);
-      getSampleMetadata.mockClear();
-
-      const metadataDownloadButton = await findByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
-      await fireEvent.click(metadataDownloadButton);
-
-      expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-      expect(getSampleMetadata).toHaveBeenCalledWith(
-        { asCsv: true,
-          instKeyBatchDatePairs: [
-            ["FioRon", BATCHES[0].date],
-            ["FioRon", BATCHES[1].date],
-            ["UlmUni", BATCHES[2].date] ],
-          filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) }
-        },
-        fetch);
-    });
-
-    it("is disabled and shows the loading text while waiting for the metadata CSV", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage);
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
-      fireEvent.click(selectAllBtn);
-
-      const metadataDownloadButton = await findByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
-      await fireEvent.click(metadataDownloadButton);
-
-      expect(metadataDownloadButton.disabled).toBeTruthy();
-      expect(getByRole(ROLE_BUTTON, { name: "Preparing download" }))
-        .toBeDefined();
-    });
-
-    it("hides the loading state, frees resources, and downloads metadata CSV once it's prepared", async () => {
-      const hiddenDownloadLink = document.createElement("a");
-      hiddenDownloadLink.click = jest.fn();
-      const createAnchorElement = () => hiddenDownloadLink;
-      const { findByRole } = render(DataViewerPage, {
-        injectedCreateAnchorElement: createAnchorElement
-      });
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
-      fireEvent.click(selectAllBtn);
-      global.URL.revokeObjectURL = jest.fn();
-
-      const metadataDownloadButton = await findByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
-      fireEvent.click(metadataDownloadButton);
-
-      await waitFor(() => {
-        expect(hiddenDownloadLink.click).toHaveBeenCalledTimes(1);
-        expect(hiddenDownloadLink.href).toBe(`${global.location.href}${DOWNLOAD_URL}`);
-        expect(hiddenDownloadLink.download).toBe("monocle-sample-metadata.csv");
-        expect(hiddenDownloadLink.style.display).toBe("none");
-        expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
-        expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);
-        expect(hiddenDownloadLink.parentElement).toBeNull();
-      });
-    });
-
-    it("frees resources on download fail", async () => {
-      const hiddenDownloadLink = document.createElement("a");
-      hiddenDownloadLink.click = () => {
-        throw "some error";
-      };
-      const createAnchorElement = () => hiddenDownloadLink;
-      const { findByRole } = render(DataViewerPage, {
-        injectedCreateAnchorElement: createAnchorElement
-      });
-      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
-      fireEvent.click(selectAllBtn);
-      global.URL.revokeObjectURL = jest.fn();
-
-      const metadataDownloadButton = await findByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
-      fireEvent.click(metadataDownloadButton);
-
-      await waitFor(() => {
-        expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);
-        expect(hiddenDownloadLink.parentElement).toBeNull();
-      });
     });
   });
 });

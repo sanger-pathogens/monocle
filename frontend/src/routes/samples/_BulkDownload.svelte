@@ -1,7 +1,9 @@
 <script>
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
+  import { deepCopy } from "$lib/utils/copy.js";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
+  import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
   import { distinctColumnValuesStore, filterStore } from "./_stores.js";
 
   let _downloadEstimate = undefined;
@@ -14,6 +16,9 @@
   let downloadLinksRequested;
   let downloadTokens = [];
   let estimate = _downloadEstimate;
+  let downloadBatches;
+  let downloadFilterState;
+  let downloadDistinctColumnValuesState;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -32,10 +37,16 @@
       return;
     }
 
+    // Save batches, filter, and distinct values for metadata download so that it uses them
+    // "frozen" at the time of submit, not the latest ones (which can be different if e.g. the user closes
+    // the bulk download dialog and changes the filter w/o resetting the bulk download).
+    downloadBatches = deepCopy(batches);
+    downloadFilterState = deepCopy($filterStore);
+    downloadDistinctColumnValuesState = deepCopy($distinctColumnValuesStore);
     downloadLinksRequested = true;
     getBulkDownloadUrls({
       instKeyBatchDatePairs: batches,
-      filter: { filterState: $filterStore, distinctColumnValues: $distinctColumnValuesStore },
+      filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
       ...formValues
     }, fetch)
       .then((downloadLinks = []) => {
@@ -170,10 +181,19 @@
       >
         Download ZIP archive
       </a>
+    {/if}
 
-    {:else}
+    <MetadataDownloadButton
+      batches={downloadBatches}
+      fileNameWithoutExtension={"monocle-metadata-from-sample-download"}
+      filterState={downloadFilterState}
+      distinctColumnValuesState={downloadDistinctColumnValuesState}
+      style="display: block; margin-bottom: 1.2rem"
+    />
+
+    {#if !downloadTokens.length}
       <LoadingIndicator
-        message="Please wait: generating a download link can take a while if thousands of samples are involved."
+        message="Please wait: generating ZIP download links can take a while if thousands of samples are involved."
         simple={true}
       />
     {/if}
@@ -217,6 +237,7 @@ button[type=submit] {
 ol {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 0;
   padding-left: 1rem;
 }
 ol li {

@@ -82,7 +82,7 @@ describe("on form submit", () => {
   const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LABEL_DOWNLOAD_LINKS_HEADER = "Download links";
   const LOADING_MESSAGE =
-    "Please wait: generating a download link can take a while if thousands of samples are involved.";
+    "Please wait: generating ZIP download links can take a while if thousands of samples are involved.";
   const ROLE_HEADING = "heading";
   const SELECTOR_DOWNLOAD_ESTIMATE = "dd";
   const SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";
@@ -184,6 +184,23 @@ describe("on form submit", () => {
     filterStore.removeAllFilters();
   });
 
+  it("displays the metadata download button", async () => {
+    const { getByRole, queryByRole } = render(BulkDownload, {
+      batches: BATCHES,
+      formValues: FORM_VALUES,
+      ariaLabelledby: FAKE_HEADER_ID
+    });
+    const labelMetadataDownload = "Download metadata";
+
+    expect(queryByRole(ROLE_BUTTON, { name: labelMetadataDownload }))
+      .toBeNull();
+
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }));
+
+    expect(getByRole(ROLE_BUTTON, { name: labelMetadataDownload }))
+      .toBeDefined();
+  });
+
   it("requests and displays download links", async () => {
     const { getByRole } = render(BulkDownload, {
       batches: BATCHES,
@@ -196,7 +213,7 @@ describe("on form submit", () => {
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
         instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
         assemblies: true,
         annotations: true
       }, fetch);
@@ -232,7 +249,7 @@ describe("on form submit", () => {
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
         instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValues: get(distinctColumnValuesStore) },
+        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
         assemblies: true,
         annotations: true
       }, fetch);
