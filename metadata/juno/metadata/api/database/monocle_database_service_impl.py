@@ -494,14 +494,20 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             try:
               rs = con.execute( text(sql_query[field_type].format(this_field)), institutions = tuple(institutions) )
               these_distinct_values = []
+              includes_none = False
               for row in rs:
                 if row[this_field] is None:
-                  these_distinct_values.append('NULL')
+                  includes_none = True
                 else:
                   these_distinct_values.append(str(row[this_field]))
+              # can't sort if the list contains None, so sort...
+              these_distinct_values = sorted(these_distinct_values)
+              # ...and then add a None if there should be one in the list
+              if includes_none:
+                 these_distinct_values.append(None)
               if len(these_distinct_values) > 0:
                 distinct_values.append({  "name": this_field,
-                                          "values": sorted(these_distinct_values)
+                                          "values": these_distinct_values
                                           }
                                        )
               
@@ -511,7 +517,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 return None
               else:
                 raise e
-          logging.info("distinct {} values: {}".format(field_type, 'distinct_values'))
+        logging.info("distinct {} values: {}".format(field_type, distinct_values))
         return distinct_values
 
     def get_samples(self) -> List[Metadata]:

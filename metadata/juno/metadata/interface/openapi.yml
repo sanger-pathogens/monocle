@@ -527,6 +527,7 @@ components:
                 type: array
                 items:
                   type: string
+                  nullable: true
                   description: "The value of the metadata field"
                   readOnly: true
 

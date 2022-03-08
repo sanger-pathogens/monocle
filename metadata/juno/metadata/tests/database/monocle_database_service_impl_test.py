@@ -532,7 +532,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}, {"serotype":None},
            ]
         expected = [
-           {"name": "serotype", "values": ["II","III","Ia","Ib","NULL"]}
+           {"name": "serotype", "values": ["II","III","Ia","Ib",None]}
            ]
         values = self.under_test.get_distinct_values('metadata', ["serotype"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
@@ -567,7 +567,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"ST":"1"}, {"ST":"17"}, {"ST":None},
            ]
         expected = [
-           {"name": "ST",  "values": ["1", "17", "NULL"]}
+           {"name": "ST",  "values": ["1", "17", None]}
            ]
         values = self.under_test.get_distinct_values('in silico', ["ST"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
@@ -588,7 +588,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"rel_abun_sa": 1.46}, {"rel_abun_sa": 92.93}, {"rel_abun_sa":None},
            ]
         expected = [
-           {"name": "rel_abun_sa",  "values": ["1.46","92.93","NULL"]},
+           {"name": "rel_abun_sa",  "values": ["1.46","92.93",None]},
            ]
         values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
