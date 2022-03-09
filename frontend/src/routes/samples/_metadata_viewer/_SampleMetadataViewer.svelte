@@ -104,7 +104,6 @@
   <section>
     {#if !initialLoading}
       <PaginationNav
-        {batches}
         compact={true}
         {numSamples}
         numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
@@ -116,7 +115,6 @@
     <SampleMetadataViewerWithoutPaginaton {batches} metadataPromise={sortedMetadataPromise} />
 
     <PaginationNav
-      {batches}
       {numSamples}
       numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
       pageNum={displayedPageNum}
