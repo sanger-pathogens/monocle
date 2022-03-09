@@ -14,17 +14,14 @@ npm install
 
 ### Running locally
 
-Start a development server:
+Connect the local FE to the API as per [monocle-developer/FE_development.md#running-the-fe-outside-docker-without-having-to-mock-the-api](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle-developer/-/blob/master/FE_development.md#running-the-fe-outside-docker-without-having-to-mock-the-api).
+
+Afterwards, start the development server:
 
 ```bash
 npm run dev
 ```
-
-or start the server and automatically open the app in a new browser tab:
-
-```bash
-npm run dev:open
-```
+and navigate to [http://localhost:8080/](http://localhost:8080/) (_note: port `8080`, not `3000`_).
 
 ### Running tests
 
