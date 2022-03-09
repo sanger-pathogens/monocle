@@ -106,7 +106,7 @@ class DownloadInSilicoHandler(DownloadHandler):
         """ Create the correct data structure for download responses """
 
         response: List[Dict[Any, Any]] = []
-
+        
         for entry in download:
             record_dict = {}
             self.__field_index = 1
@@ -199,5 +199,5 @@ class DownloadQCDataHandler(DownloadHandler):
             self._append_to_dict(record_dict, 'rel_abun_sa', entry.rel_abun_sa)
 
             response.append(record_dict)
-
+        
         return response
