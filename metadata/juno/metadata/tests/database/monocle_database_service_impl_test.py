@@ -8,7 +8,6 @@ from metadata.tests.test_data import *
 from metadata.api.database.monocle_database_service_impl import ProtocolError
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
-from sqlalchemy.sql.elements import TextClause
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
     """ Unit test class for MonocleDatabaseServiceImpl """
