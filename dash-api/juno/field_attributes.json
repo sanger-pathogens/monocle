@@ -469,7 +469,7 @@
                }
             ]
          },
-         {  "name"   : "MLST and Allele Frequencies",
+         {  "name"   : "MLST and Allele Number",
             "fields" : [
                {  "name"               : "ST",
                   "display"            : true,
