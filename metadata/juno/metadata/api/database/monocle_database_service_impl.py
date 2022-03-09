@@ -411,6 +411,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
+                  logging.info("filtering on {} for values {}".format(filter, values))
                   new_sanger_sample_ids = []
                   try:
                     if None in values:
@@ -444,6 +445,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
+                  logging.info("filtering on {} for values {}".format(filter, values))
                   new_lane_ids = []
                   try:
                     if None in values:
