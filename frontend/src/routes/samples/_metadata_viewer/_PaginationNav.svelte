@@ -1,5 +1,5 @@
 <script context="module">
-  const EVENT_NAME_PAGE_CHANGE = "pageChange";
+  export const EVENT_NAME_PAGE_CHANGE = "pageChange";
 </script>
 
 <script>
@@ -15,10 +15,6 @@
   $: isLastPage = numSamplesPerPage * pageNum >= numSamples;
   $: lastSampleNum = Math.min(numSamplesPerPage * pageNum, numSamples);
   $: firstSampleNum = lastSampleNum - numSamplesPerPage + 1;
-
-  function setToFirstPage() {
-    dispatch(EVENT_NAME_PAGE_CHANGE, 1);
-  }
 </script>
 
 
@@ -31,7 +27,7 @@
       aria-label="First page"
       class="compact"
       type="button"
-      on:click={setToFirstPage}
+      on:click={() => dispatch(EVENT_NAME_PAGE_CHANGE, 1)}
       disabled={pageNum <= 1}
     >
       &lt&lt First
