@@ -3,22 +3,25 @@
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import { columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "../_stores.js";
+  import PaginationNav from "./_PaginationNav.svelte";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
   export let batches = undefined;
 
   const MAX_METADATA_FETCH_FREQUENCY_MS = 800;
-  const NUM_METADATA_ROWS_PER_PAGE = 16;
+  const NUM_METADATA_ROWS_PER_PAGE = 17;
 
-  let isLastPage = false;
-  let pageNum = 1;
-  let sortedMetadataPromise;
+  let initialLoading = true;
   let metadataTimeoutId;
+  let numSamples;
+  let requestedPageNum = 1;
+  let displayedPageNum = requestedPageNum;
+  let sortedMetadataPromise;
 
-  // `batches` is passed just to indicate to Svelte that this reactive statement
-  // should re-run only when `batches` has changed.
-  $: setToFirstPage(batches);
-  $: updateMetadata(batches, pageNum, $columnsToDisplayStore, $filterStore);
+  // These arguments are passed just to indicate to Svelte that this reactive statement
+  // should re-run only when one of the arguments has changed.
+  $: resetPageNum(batches, $columnsToDisplayStore, $filterStore);
+  $: updateMetadata(batches, $columnsToDisplayStore, $filterStore, requestedPageNum);
 
   function updateMetadata() {
     showMetadataLoading();
@@ -37,11 +40,13 @@
       filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       columns: $columnsToDisplayStore,
       numRows: NUM_METADATA_ROWS_PER_PAGE,
-      startRow: NUM_METADATA_ROWS_PER_PAGE * (pageNum - 1) + 1
+      startRow: NUM_METADATA_ROWS_PER_PAGE * (requestedPageNum - 1) + 1
     }, fetch)
       .then((metadataResponse = {}) => {
         const sortedMetadata = sortMetadataByOrder(metadataResponse.samples);
-        isLastPage = metadataResponse["last row"] >= metadataResponse["total rows"];
+        numSamples = metadataResponse["total rows"];
+        displayedPageNum = requestedPageNum;
+        initialLoading = false;
         return sortedMetadata;
       });
   }
@@ -69,6 +74,18 @@
     return metadatumA.order - metadatumB.order;
   }
 
+  function onPageChange(event) {
+    const pageNumCandidate = Math.max(event.detail, 1);
+    if (pageNumCandidate !== displayedPageNum) {
+      requestedPageNum = pageNumCandidate;
+    }
+  }
+
+  function resetPageNum() {
+    requestedPageNum = 1;
+    numSamples = undefined;
+  }
+
   function preventDebouncingFirstMetadataRequest() {
     setTimeout(resetMetadataTimeoutId, MAX_METADATA_FETCH_FREQUENCY_MS);
   }
@@ -80,66 +97,29 @@
   function showMetadataLoading() {
     sortedMetadataPromise = new Promise(() => {});
   }
-
-  function incrementPage() {
-    pageNum += 1;
-  }
-
-  function decrementPage() {
-    if (pageNum > 1) {
-      pageNum -= 1;
-    }
-    // Never say "never"?
-    else if (pageNum < 1) {
-      setToFirstPage();
-    }
-  }
-
-  function setToFirstPage() {
-    pageNum = 1;
-  }
 </script>
 
 
 {#if batches?.length}
   <section>
+    {#if !initialLoading}
+      <PaginationNav
+        compact={true}
+        {numSamples}
+        numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
+        pageNum={displayedPageNum}
+        on:pageChange={onPageChange}
+      />
+    {/if}
 
     <SampleMetadataViewerWithoutPaginaton {batches} metadataPromise={sortedMetadataPromise} />
 
-    <nav>
-      <ul>
-        <!-- TODO: cache metadata so as to avoid waiting when one of the buttons is clicked. -->
-        <!-- `type="button"` is needed to prevent the buttons from submitting a form that they
-          may be a descendant of. -->
-        <li><button
-          aria-label="First page"
-          class="compact"
-          type="button"
-          on:click={setToFirstPage}
-          disabled={pageNum <= 1}
-        >
-          &lt&lt First
-        </button></li>
-        <li><button
-          aria-label="Previous page"
-          class="compact"
-          type="button"
-          on:click={decrementPage}
-          disabled={pageNum <= 1}
-        >
-          &lt Previous
-        </button></li>
-        <li><button
-          aria-label="Next page"
-          class="compact"
-          type="button"
-          on:click={incrementPage}
-          disabled={isLastPage}
-        >
-          Next &gt
-        </button></li>
-      </ul>
-    </nav>
+    <PaginationNav
+      {numSamples}
+      numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
+      pageNum={displayedPageNum}
+      on:pageChange={onPageChange}
+    />
   </section>
 {/if}
 
@@ -147,17 +127,5 @@
 <style>
 section {
   max-width: 100%;
-}
-
-ul {
-  display: flex;
-  justify-content: center;
-  list-style: none;
-  padding-left: 0;
-  padding-right: 3rem;
-}
-
-li {
-  margin-left: 1rem;
 }
 </style>

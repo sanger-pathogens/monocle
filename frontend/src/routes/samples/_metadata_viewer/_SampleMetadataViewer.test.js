@@ -76,7 +76,7 @@ it("requests metadata w/ the correct arguments", async () => {
     expect(getSampleMetadata).toHaveBeenCalledWith({
       instKeyBatchDatePairs: BATCHES,
       filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
-      numRows: 16,
+      numRows: 17,
       startRow: 1
     }, fetch);
   });
@@ -99,7 +99,7 @@ it("requests metadata if selected columns change", async () => {
       instKeyBatchDatePairs: BATCHES,
       filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
       columns: get(columnsToDisplayStore),
-      numRows: 16,
+      numRows: 17,
       startRow: 1
     }, fetch);
   });
@@ -119,40 +119,17 @@ describe("pagination", () => {
   const LABEL_NEXT_BUTTON = "Next page";
   const LABEL_PREV_BUTTON = "Previous page";
   const LABEL_LOADING_INDICATOR = "please wait";
-  const NUM_METADATA_ROWS_PER_PAGE = 16;
+  const NUM_SAMPLES_PER_PAGE = 17;
 
   beforeEach(() => {
     getSampleMetadata.mockClear();
   });
 
-  it("disables First and Previous buttons only if the first page is shown", async () => {
-    const { getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
-
-    expect(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }).disabled)
-      .toBeTruthy();
-    expect(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }).disabled)
-      .toBeTruthy();
-
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
-
-    expect(getByRole(ROLE_BUTTON, { name: LABEL_FIRST_BUTTON }).disabled)
-      .toBeFalsy();
-    expect(getByRole(ROLE_BUTTON, { name: LABEL_PREV_BUTTON }).disabled)
-      .toBeFalsy();
-  });
-
-  it("disables Next button only if the last page is shown", async () => {
-    const { getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
-
-    expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
-      .toBeFalsy();
-
-    getSampleMetadata.mockResolvedValueOnce({ "last row": 99, "total rows": 99 });
-    fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
+  it("displays two pagination navigations", async () => {
+    const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
     await waitFor(() => {
-      expect(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).disabled)
-        .toBeTruthy();
+      expect(getAllByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).length).toBe(2);
     });
   });
 
@@ -166,7 +143,7 @@ describe("pagination", () => {
     expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
     jest.runAllTimers();
     expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-    const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
+    const expectedStartRow = NUM_SAMPLES_PER_PAGE + 1;
     expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
     jest.useRealTimers();
   });
@@ -184,7 +161,7 @@ describe("pagination", () => {
     expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
     jest.runAllTimers();
     expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-    const expectedStartRow = NUM_METADATA_ROWS_PER_PAGE + 1;
+    const expectedStartRow = NUM_SAMPLES_PER_PAGE + 1;
     expect(getSampleMetadata.mock.calls[0][0].startRow).toBe(expectedStartRow);
     jest.useRealTimers();
   });

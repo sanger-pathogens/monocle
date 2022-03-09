@@ -4,7 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "svelte-kit dev",
-    "dev:open": "svelte-kit dev -o",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview",
     "test": "jest src",
@@ -23,7 +22,7 @@
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
     "eslint": "^7.32.0",
     "eslint-plugin-jest": "^24.7.0",
-    "eslint-plugin-svelte3": "^3.4.0",
+    "eslint-plugin-svelte3": "^3.4.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.5.1",
     "svelte": "^3.46.3",
