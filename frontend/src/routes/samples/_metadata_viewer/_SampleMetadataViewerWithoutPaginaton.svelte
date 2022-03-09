@@ -19,7 +19,7 @@
   let columns = [];
   let screenWidth = window?.innerWidth || NARROW_SCREEN_BREAKPOINT + 1;
 
-  $: { distinctColumnValuesStore.reset(batches) }
+  $: { distinctColumnValuesStore.reset(batches); }
 
   $: {
     if (metadataPromise) {

@@ -7,6 +7,7 @@ import {
   getBulkDownloadInfo,
   getColumns,
   getInstitutions,
+  // eslint-disable-next-line no-unused-vars
   getSampleMetadata
 } from "$lib/dataLoading.js";
 import DataViewerPage from "./index.svelte";

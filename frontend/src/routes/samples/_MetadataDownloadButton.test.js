@@ -99,7 +99,7 @@ it("frees resources on download fail", async () => {
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON }));
 
- await waitFor(() => {
+  await waitFor(() => {
     expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);
     expect(hiddenDownloadLink.parentElement).toBeNull();
   });

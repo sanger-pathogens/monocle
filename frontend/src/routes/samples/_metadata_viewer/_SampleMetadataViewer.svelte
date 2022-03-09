@@ -3,7 +3,7 @@
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import { columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "../_stores.js";
-  import PaginationNav from "./_PaginationNav.svelte"
+  import PaginationNav from "./_PaginationNav.svelte";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
   export let batches = undefined;
@@ -20,7 +20,7 @@
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when one of the arguments has changed.
-  $: resetPageNum(batches, $columnsToDisplayStore, $filterStore)
+  $: resetPageNum(batches, $columnsToDisplayStore, $filterStore);
   $: updateMetadata(batches, $columnsToDisplayStore, $filterStore, requestedPageNum);
 
   function updateMetadata() {

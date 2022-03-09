@@ -1,6 +1,5 @@
 import { render, waitFor, within } from "@testing-library/svelte";
 import { writable } from "svelte/store";
-// eslint-disable-next-line no-unused-vars
 import {
   getInstitutionStatus,
   // eslint-disable-next-line no-unused-vars

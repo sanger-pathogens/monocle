@@ -93,7 +93,7 @@ describe("on metadata resolved", () => {
     await component.$set({ batches: ["something"] });
 
     expect(get(distinctColumnValuesStore)).toEqual(
-      { metadata: {}, "in silico": {}, "qc data": {} })
+      { metadata: {}, "in silico": {}, "qc data": {} });
   });
 
   describe("filter column button", () => {

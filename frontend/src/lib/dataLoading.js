@@ -75,16 +75,16 @@ export function getDistinctColumnValues({ instKeyBatchDatePairs, columns, filter
     }
   };
   payload.fields = columns.reduce((accum, column) => {
-      const { fields, dataTypeToFieldsIndex } = accum;
-      let fieldsIndex = dataTypeToFieldsIndex[column.dataType];
-      if (fieldsIndex === undefined) {
-        fieldsIndex = fields.length;
-        dataTypeToFieldsIndex[column.dataType] = fieldsIndex;
-        fields.push({ "field type": column.dataType, "field names": [] });
-      }
-      fields[fieldsIndex]["field names"].push(column.name);
-      return accum;
-    }, { fields: [], dataTypeToFieldsIndex: {} }
+    const { fields, dataTypeToFieldsIndex } = accum;
+    let fieldsIndex = dataTypeToFieldsIndex[column.dataType];
+    if (fieldsIndex === undefined) {
+      fieldsIndex = fields.length;
+      dataTypeToFieldsIndex[column.dataType] = fieldsIndex;
+      fields.push({ "field type": column.dataType, "field names": [] });
+    }
+    fields[fieldsIndex]["field names"].push(column.name);
+    return accum;
+  }, { fields: [], dataTypeToFieldsIndex: {} }
   ).fields;
 
   addFiltersToPayload({ ...filter, payload });

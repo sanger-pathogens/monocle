@@ -4,7 +4,6 @@ import PaginationNav, { EVENT_NAME_PAGE_CHANGE } from "./_PaginationNav.svelte";
 const LABEL_FIRST_BUTTON = "First page";
 const LABEL_NEXT_BUTTON = "Next page";
 const LABEL_PREV_BUTTON = "Previous page";
-const LABEL_LOADING_INDICATOR = "please wait";
 const NUM_SAMPLES_PER_PAGE = 17;
 const ROLE_BUTTON = "button";
 

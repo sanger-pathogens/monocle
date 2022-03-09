@@ -212,11 +212,11 @@ describe("on form submit", () => {
 
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
-        instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
-        assemblies: true,
-        annotations: true
-      }, fetch);
+      instKeyBatchDatePairs: BATCHES,
+      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
+      assemblies: true,
+      annotations: true
+    }, fetch);
     await waitFor(() => {
       expect(getByRole(ROLE_HEADING, { name: LABEL_DOWNLOAD_LINKS_HEADER }))
         .toBeDefined();
@@ -248,11 +248,11 @@ describe("on form submit", () => {
 
     expect(getBulkDownloadUrls).toHaveBeenCalledTimes(1);
     expect(getBulkDownloadUrls).toHaveBeenCalledWith({
-        instKeyBatchDatePairs: BATCHES,
-        filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
-        assemblies: true,
-        annotations: true
-      }, fetch);
+      instKeyBatchDatePairs: BATCHES,
+      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
+      assemblies: true,
+      annotations: true
+    }, fetch);
     await waitFor(() => {
       const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
       const downloadLink = getByRole("link", { name: "Download ZIP archive" });
