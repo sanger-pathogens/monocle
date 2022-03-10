@@ -356,7 +356,7 @@ class MonocleSampleTracking:
                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                # i.e. only samples with lanes need to be looked at by the lines below
                for this_lane in this_sequencing_status_data[this_sanger_sample_id]['lanes']:
-                  this_lane_completed, this_lane_success, fail_messages = self.seqencing_is_success(this_sanger_sample_id, this_lane)
+                  this_lane_completed, this_lane_success, fail_messages = self.sequencing_is_success(this_sanger_sample_id, this_lane)
                   if this_lane_completed:
                      status[this_institution]['completed'] += 1
                   if this_lane_success:
@@ -366,7 +366,7 @@ class MonocleSampleTracking:
                      status[this_institution]['fail_messages'] += fail_messages
       return status
    
-   def seqencing_is_success(self, this_sample_id, this_lane):
+   def sequencing_is_success(self, this_sample_id, this_lane):
       """
       Pass a sample ID a dict representing a lane, as returned by sequencing_status_data()
       Returns tuple with
