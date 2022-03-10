@@ -356,27 +356,46 @@ class MonocleSampleTracking:
                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                # i.e. only samples with lanes need to be looked at by the lines below
                for this_lane in this_sequencing_status_data[this_sanger_sample_id]['lanes']:
-                  if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
-                     # lane has completed, whether success or failure
+                  this_lane_completed, this_lane_success, fail_messages = self.seqencing_is_success(this_sanger_sample_id, this_lane)
+                  if this_lane_completed:
                      status[this_institution]['completed'] += 1
-                     # look for any failures; note one lane could have more than one failure
-                     this_lane_failed = False
-                     for this_flag in self.sequencing_flags.keys():
-                        if not 1 == this_lane[this_flag]:
-                           this_lane_failed = True
-                           # record message for this failure
-                           status[this_institution]['fail_messages'].append(
-                              {  'lane': "{} (sample {})".format(this_lane['id'], this_sanger_sample_id),
-                                 'stage': self.sequencing_flags[this_flag],
-                                 'issue': 'sorry, failure mesages cannot currently be seen here',
-                                 },
-                              )
-                     # count lane either as a success or failure
-                     if this_lane_failed:
-                        status[this_institution]['failed'] += 1
-                     else:
-                        status[this_institution]['success'] += 1
+                  if this_lane_success:
+                     status[this_institution]['success'] += 1
+                  else:
+                     status[this_institution]['failed'] += 1
+                     status[this_institution]['fail_messages'] += fail_messages
       return status
+   
+   def seqencing_is_success(self, this_sample_id, this_lane):
+      """
+      Pass a sample ID a dict representing a lane, as returned by sequencing_status_data()
+      Returns tuple with
+      - True/False to indicate if a lane completed sequencing
+      - True/False to ondicate if sequencing succeeded
+      - List of dicts describing any failures
+        {   'lane':  lane_id_1,
+            'stage': 'name of QC stage where issues was detected',
+            'issue': 'string describing the issue'
+            }
+      """
+      this_lane_completed = False
+      this_lane_success   = True
+      fail_messages       = []
+      if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
+         # lane has completed, whether success or failure
+         this_lane_completed = True
+         # look for any failures; note one lane could have more than one failure
+         for this_flag in self.sequencing_flags.keys():
+            if not 1 == this_lane[this_flag]:
+               this_lane_success = False
+               # record details of this failure
+               fail_messages.append(
+                  {  'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
+                     'stage': self.sequencing_flags[this_flag],
+                     'issue': 'sorry, failure mesages cannot currently be seen here',
+                     }
+                  )
+      return (this_lane_completed, this_lane_success, fail_messages)
 
    def pipeline_status_summary(self):
       """
