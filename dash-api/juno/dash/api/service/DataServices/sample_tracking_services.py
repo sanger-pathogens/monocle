@@ -395,6 +395,7 @@ class MonocleSampleTracking:
                      'issue': 'sorry, failure mesages cannot currently be seen here',
                      }
                   )
+      logging.debug("\nsequencing_is_success({},{}) returns {}".format(this_sample_id, this_lane, (this_lane_completed, this_lane_success, fail_messages)))
       return (this_lane_completed, this_lane_success, fail_messages)
 
    def pipeline_status_summary(self):

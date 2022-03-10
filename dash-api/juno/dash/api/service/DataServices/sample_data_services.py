@@ -480,6 +480,9 @@ class MonocleSampleData:
          sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
       filtered_samples = []
       sequencing_status_data = deepcopy( self.sample_tracking.get_sequencing_status() )
+      # lane_data is a temporary store of lane data that are needed for filters
+      # (we don't want all of the lane data permanetly stroed in filtered_samples)
+      lane_data = {}
       for this_inst_key_batch_date_pair in inst_key_batch_date_pairs:
          inst_key         = this_inst_key_batch_date_pair['institution key']
          batch_date_stamp = this_inst_key_batch_date_pair['batch date']
@@ -490,6 +493,7 @@ class MonocleSampleData:
             continue
          for sanger_sample_id, sample in samples:
             if self.sample_tracking.convert_mlwh_datetime_stamp_to_date_stamp(sample['creation_datetime']) == batch_date_stamp:
+               lane_data[sanger_sample_id] = sample.get('lanes', [])
                # `sample` contains all sequencing status data (because it was copy from the dict returned by
                # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                for this_key in list(sample.keys()):
@@ -505,7 +509,9 @@ class MonocleSampleData:
                   sample['public_name'] = sanger_sample_id_to_public_name[sanger_sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
-
+      # if filters based on sequencing status were passed, filter the results
+      if 'sequencing' in sample_filters:
+         filtered_samples = self._apply_sequencing_filters(filtered_samples, sample_filters['sequencing'], lane_data)
       # if filters based on metadata, in silico or QC data were passed, filter the results
       if 'metadata' in sample_filters:
          filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['metadata'])
@@ -516,9 +522,36 @@ class MonocleSampleData:
       
       logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
       return filtered_samples
+   
+   def _apply_sequencing_filters(self, filtered_samples, sequencing_filters, lane_data):
+      logging.info("{}._apply_sequencing_filters filtering initial list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      sequencing_status_data = self.sample_tracking.get_sequencing_status()
+      failed_samples = []
+      for this_sample in filtered_samples:
+         this_sample_id = this_sample['sanger_sample_id']
+         at_least_one_lane_passes_sequencing_filters = False
+         for this_lane in lane_data[this_sample_id]:
+            this_lane_complete, this_lane_success, discard_this = self.sample_tracking.sequencing_is_success(this_sample_id, this_lane)
+            this_lane_passes_sequencing_filters = True
+            if 'complete' in sequencing_filters:
+               if not sequencing_filters['complete'] == this_lane_complete:
+                  this_lane_passes_sequencing_filters = False
+            if 'success' in sequencing_filters:
+               if not sequencing_filters['success'] == this_lane_success:
+                  this_lane_passes_sequencing_filters = False
+            if this_lane_passes_sequencing_filters:
+               at_least_one_lane_passes_sequencing_filters = True
+         if not at_least_one_lane_passes_sequencing_filters:
+            logging.debug("sample {} FAILS filter {}".format(this_sample_id,sequencing_filters))
+            failed_samples.append(this_sample_id)
+            
+         # remove failed samples from filtered_samples
+         filtered_samples = list(filter(lambda s: s['sanger_sample_id'] not in failed_samples, filtered_samples))
+            
+      return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-      logging.info("{}._apply_metadata_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}._apply_metadata_filters filtering initial list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_samples_ids_set = set(self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters))
       logging.info("{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(__class__.__name__, len(matching_samples_ids_set)))
       intersection = [this_sample
@@ -530,7 +563,7 @@ class MonocleSampleData:
       return filtered_samples
    
    def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
-      logging.info("{}._apply_in_silico_filters filtering inital list of {} samples".format(__class__.__name__, len(filtered_samples)))
+      logging.info("{}._apply_in_silico_filters filtering initial list of {} samples".format(__class__.__name__, len(filtered_samples)))
       matching_lanes_ids_set = set(self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters))
       logging.info("{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(__class__.__name__, len(matching_lanes_ids_set)))
       intersection = [this_sample
