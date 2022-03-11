@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
 
   export let checkedKey = DEFAULT_KEY_CHECKED;
+  export let disabledSuffix = undefined;
   export let groupName;
   export let items = [];
   export let itemsName = DEFAULT_ITEMS_NAME;
@@ -100,13 +101,14 @@
     {#if expanded}
       {#each items as item (item.displayName)}
         <dd>
-          <label>
+          <label class:disabled={item.disabled}>
             <input
               type="checkbox"
               bind:checked={item[checkedKey]}
               on:change={(event) => event.currentTarget.checked ? ++numSelectedItems : --numSelectedItems}
+              disabled={item.disabled}
             />
-            {item.displayName}
+            {item.displayName}{item.disabled && disabledSuffix ? disabledSuffix : ""}
           </label>
         </dd>
       {/each}

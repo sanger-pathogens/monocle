@@ -74,3 +74,18 @@ it("shows the right number of selected items", async () => {
 
   expect(getByLabelText(new RegExp(`0/${numItems}`))).toBeDefined();
 });
+
+it("shows disabled items as disabled", () => {
+  const disabledSuffix = " *";
+  const { getByLabelText } = render(CheckboxGroup, {
+    disabledSuffix,
+    groupName: NAME_GROUP,
+    items: [{ displayName: ITEM_NAMES[0], disabled: true }, { displayName: ITEM_NAMES[1], checked: true }] });
+
+  const disabledCheckbox = getByLabelText(`${ITEM_NAMES[0]}${disabledSuffix}`)
+  expect(disabledCheckbox.disabled).toBeTruthy();
+  expect(disabledCheckbox.parentNode.classList).toContain("disabled");
+  const enabledCheckbox = getByLabelText(ITEM_NAMES[1])
+  expect(enabledCheckbox.disabled).toBeFalsy();
+  expect(enabledCheckbox.parentNode.classList).not.toContain("disabled");
+});
