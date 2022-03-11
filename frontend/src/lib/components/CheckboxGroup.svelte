@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
 
   export let checkedKey = DEFAULT_KEY_CHECKED;
+  export let disabledTooltip = undefined;
   export let disabledSuffix = undefined;
   export let groupName;
   export let items = [];
@@ -100,7 +101,8 @@
 
     {#if expanded}
       {#each items as item (item.displayName)}
-        <dd>
+        {@const displayDisabledTooltip = item.disabled && disabledTooltip}
+        <dd title={displayDisabledTooltip ? disabledTooltip : null}>
           <label class:disabled={item.disabled}>
             <input
               type="checkbox"
@@ -109,6 +111,9 @@
               disabled={item.disabled}
             />
             {item.displayName}{item.disabled && disabledSuffix ? disabledSuffix : ""}
+            {#if displayDisabledTooltip}
+              <span class="sr-only">{disabledTooltip}</span>
+            {/if}
           </label>
         </dd>
       {/each}

@@ -102,6 +102,7 @@
                 items={columns}
                 itemsName="columns"
                 checkedKey="selected"
+                disabledTooltip="* To de-select this column, first remove its filter."
                 disabledSuffix="*"
               />
             {/each}
@@ -117,6 +118,7 @@
                 items={columns}
                 itemsName="columns"
                 checkedKey="selected"
+                disabledTooltip="* To de-select this column, first remove its filter."
                 disabledSuffix="*"
               />
             {/each}

@@ -146,16 +146,21 @@ describe("on filter", () => {
     expect(container.querySelectorAll("input[disabled]").length)
       .toBe(COLUMNS_WTH_ACTIVE_FILTERS.length);
     COLUMNS_WTH_ACTIVE_FILTERS.forEach((column) =>
-      expect(getByLabelText(`${column.displayName}*`).disabled).toBeTruthy());
+      expect(getByLabelText(new RegExp(`^${column.displayName}\\*`)).disabled).toBeTruthy());
   });
 
-  it("shows the explanation message", async () => {
-    const { getByRole, getByText } = render(Configuration);
+  it("shows the explanation message and has the correct tooltip for each disabled item", async () => {
+    const expectedTooltipText = "* To de-select this column, first remove its filter.";
+    const { getByLabelText, getByRole, getByText } = render(Configuration);
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
     expect(getByText("* To de-select a column with an active filter, first remove the filter."))
       .toBeDefined();
+    COLUMNS_WTH_ACTIVE_FILTERS.forEach((column) => {
+      const actualTooltipText = getByLabelText(new RegExp(`^${column.displayName}\\*`)).parentNode.parentNode.title;
+      expect(actualTooltipText).toBe(expectedTooltipText);
+    });
   });
 
   it("removes active filters and enables all column checkboxes on restore", async () => {
