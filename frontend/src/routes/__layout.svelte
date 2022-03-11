@@ -126,4 +126,13 @@ main {
   margin-top: .25rem;
   padding: .3rem .3rem .1rem;
 }
+
+:global(.sr-only) {
+  /* Credits: https://stackoverflow.com/a/26032207/4579279 */
+  position: absolute !important; /* Outside the DOM flow */
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
 </style>
