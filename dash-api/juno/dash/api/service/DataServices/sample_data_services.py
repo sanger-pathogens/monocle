@@ -509,9 +509,11 @@ class MonocleSampleData:
                   sample['public_name'] = sanger_sample_id_to_public_name[sanger_sample_id]
                filtered_samples.append(sample)
       logging.info("batch from {} on {}:  found {} samples".format(inst_key,batch_date_stamp,len(filtered_samples)))
+      
       # if filters based on sequencing status were passed, filter the results
       if 'sequencing' in sample_filters:
          filtered_samples = self._apply_sequencing_filters(filtered_samples, sample_filters['sequencing'], lane_data)
+      
       # if filters based on metadata, in silico or QC data were passed, filter the results
       if 'metadata' in sample_filters:
          filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters['metadata'])
@@ -525,13 +527,12 @@ class MonocleSampleData:
    
    def _apply_sequencing_filters(self, filtered_samples, sequencing_filters, lane_data):
       logging.info("{}._apply_sequencing_filters filtering initial list of {} samples".format(__class__.__name__, len(filtered_samples)))
-      sequencing_status_data = self.sample_tracking.get_sequencing_status()
       failed_samples = []
       for this_sample in filtered_samples:
          this_sample_id = this_sample['sanger_sample_id']
          at_least_one_lane_passes_sequencing_filters = False
          for this_lane in lane_data[this_sample_id]:
-            this_lane_complete, this_lane_success, discard_this = self.sample_tracking.sequencing_is_success(this_sample_id, this_lane)
+            this_lane_complete, this_lane_success, discard_this = self.sample_tracking.get_sequencing_outcome_for_lane(this_sample_id, this_lane)
             this_lane_passes_sequencing_filters = True
             if 'complete' in sequencing_filters:
                if not sequencing_filters['complete'] == this_lane_complete:
@@ -547,7 +548,6 @@ class MonocleSampleData:
             
          # remove failed samples from filtered_samples
          filtered_samples = list(filter(lambda s: s['sanger_sample_id'] not in failed_samples, filtered_samples))
-            
       return filtered_samples
 
    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
