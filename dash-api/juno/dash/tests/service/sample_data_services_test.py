@@ -762,11 +762,9 @@ class MonocleSampleDataTest(TestCase):
       self.assertEqual(expected_samples, actual_samples)
 
    @patch.object(SampleMetadata, 'get_samples')
-   @patch.object(SampleMetadata, 'get_samples_matching_metadata_filters')
-   def test_get_filtered_samples_with_sequencing_complete_filter(self, get_samples_matching_metadata_filters_mock, get_sample_metadata_mock):
+   def test_get_filtered_samples_with_sequencing_complete_filter(self, get_sample_metadata_mock):
       self.get_mock_data3()
       get_sample_metadata_mock.return_value = self.mock_samples3
-      get_samples_matching_metadata_filters_mock.return_value = self.mock_sample_id_list
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'sequencing': {'complete': True}})
 
       expected_samples = self.mock_filtered_samples3
@@ -775,17 +773,16 @@ class MonocleSampleDataTest(TestCase):
       self.get_mock_data()
 
    @patch.object(SampleMetadata, 'get_samples')
-   @patch.object(SampleMetadata, 'get_samples_matching_metadata_filters')
-   def test_get_filtered_samples_with_sequencing_success_filter(self, get_samples_matching_metadata_filters_mock, get_sample_metadata_mock):
+   def test_get_filtered_samples_with_sequencing_success_filter(self, get_sample_metadata_mock):
       self.get_mock_data2()
       get_sample_metadata_mock.return_value = self.mock_samples2
-      get_samples_matching_metadata_filters_mock.return_value = self.mock_sample_id_list
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'sequencing': {'success': True}})
 
       expected_samples = self.mock_filtered_samples2
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
+
    @patch.object(Path, 'exists', return_value=True)
    @patch.dict(environ, mock_environment, clear=True)
    def test_get_public_name_to_lane_files_dict(self, _path_exists_mock):
