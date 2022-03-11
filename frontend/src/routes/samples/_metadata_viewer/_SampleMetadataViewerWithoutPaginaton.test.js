@@ -33,10 +33,11 @@ it("shows the loading indicator if the metadata promise is pending", () => {
 });
 
 describe("on metadata resolved", () => {
+  const EMPTY_VALUE = "";
   const METADATA = [[
     { title: "Sample ID", name: "sample_id", value: "1a", dataType: DATA_TYPE_METADATA }, { title: "ST", name: "st", value: "v1", dataType: DATA_TYPE_IN_SILICO }
   ], [
-    { title: "Sample ID", name: "sample_id", value: "1b", dataType: DATA_TYPE_METADATA }, { title: "ST", name: "st", value: "v2", dataType: DATA_TYPE_IN_SILICO }
+    { title: "Sample ID", name: "sample_id", value: "1b", dataType: DATA_TYPE_METADATA }, { title: "ST", name: "st", value: null, dataType: DATA_TYPE_IN_SILICO }
   ]];
 
   it("hides the loading indicator", async () => {
@@ -171,7 +172,8 @@ describe("on metadata resolved", () => {
     });
     METADATA.forEach((sampleMetadata) => {
       sampleMetadata.forEach(({ value }) => {
-        expect(getByRole(ROLE_TABLE_CELL, { name: value })).toBeDefined();
+        expect(getByRole(ROLE_TABLE_CELL, { name: value === null ? EMPTY_VALUE : value }))
+          .toBeDefined();
       });
     });
   }
