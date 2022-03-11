@@ -266,7 +266,7 @@
         "title": "Ceftizoxime",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ceftizoxime_method": {
         "title": "Ceftizoxime_method",
@@ -281,7 +281,7 @@
         "title": "Cefoxitin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefoxitin_method": {
         "title": "Cefoxitin_method",
@@ -296,7 +296,7 @@
         "title": "Cefotaxime",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefotaxime_method": {
         "title": "Cefotaxime_method",
@@ -311,7 +311,7 @@
         "title": "Cefazolin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefazolin_method": {
         "title": "Cefazolin_method",
@@ -326,7 +326,7 @@
         "title": "Ampicillin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ampicillin_method": {
         "title": "Ampicillin_method",
@@ -341,7 +341,7 @@
         "title": "Penicillin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "penicillin_method": {
         "title": "Penicillin_method",
@@ -356,7 +356,7 @@
         "title": "Erythromycin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "erythromycin_method": {
         "title": "Erythromycin_method",
@@ -371,7 +371,7 @@
         "title": "Clindamycin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "clindamycin_method": {
         "title": "Clindamycin_method",
@@ -386,7 +386,7 @@
         "title": "Tetracycline",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "tetracycline_method": {
         "title": "Tetracycline_method",
@@ -401,7 +401,7 @@
         "title": "Levofloxacin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "levofloxacin_method": {
         "title": "Levofloxacin_method",
@@ -416,7 +416,7 @@
         "title": "Ciprofloxacin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ciprofloxacin_method": {
         "title": "Ciprofloxacin_method",
@@ -431,7 +431,7 @@
         "title": "Daptomycin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "daptomycin_method": {
         "title": "Daptomycin_method",
@@ -446,7 +446,7 @@
         "title": "Vancomycin",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "vancomycin_method": {
         "title": "Vancomycin_method",
@@ -461,7 +461,7 @@
         "title": "Linezolid",
         "max_length": 30,
         "regex": "^(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/l)?$|^[S|I|R]{1}$",
-        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm'\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
+        "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/l\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "linezolid_method": {
         "title": "Linezolid_method",
