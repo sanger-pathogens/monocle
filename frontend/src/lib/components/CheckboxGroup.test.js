@@ -82,10 +82,10 @@ it("shows disabled items as disabled", () => {
     groupName: NAME_GROUP,
     items: [{ displayName: ITEM_NAMES[0], disabled: true }, { displayName: ITEM_NAMES[1], checked: true }] });
 
-  const disabledCheckbox = getByLabelText(`${ITEM_NAMES[0]}${disabledSuffix}`)
+  const disabledCheckbox = getByLabelText(`${ITEM_NAMES[0]}${disabledSuffix}`);
   expect(disabledCheckbox.disabled).toBeTruthy();
   expect(disabledCheckbox.parentNode.classList).toContain("disabled");
-  const enabledCheckbox = getByLabelText(ITEM_NAMES[1])
+  const enabledCheckbox = getByLabelText(ITEM_NAMES[1]);
   expect(enabledCheckbox.disabled).toBeFalsy();
   expect(enabledCheckbox.parentNode.classList).not.toContain("disabled");
 });
