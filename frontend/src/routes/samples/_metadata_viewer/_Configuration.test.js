@@ -154,7 +154,7 @@ describe("on filter", () => {
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-    expect(getByText("* To de-select a column with a filter, first remove the filter."))
+    expect(getByText("* To de-select a column with an active filter, first remove the filter."))
       .toBeDefined();
   });
 

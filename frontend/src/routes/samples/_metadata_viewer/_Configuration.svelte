@@ -124,7 +124,7 @@
         {/if}
 
         {#if hasDisabledItems}
-          <p class="disabled-info">* To de-select a column with a filter, first remove the filter.</p>
+          <p class="disabled-info">* To de-select a column with an active filter, first remove the filter.</p>
         {/if}
       </fieldset>
 
