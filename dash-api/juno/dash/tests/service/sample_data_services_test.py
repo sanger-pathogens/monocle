@@ -479,12 +479,14 @@ class MonocleSampleDataTest(TestCase):
    @patch.object(SampleMetadata,    'get_institution_names')
    @patch.object(SampleMetadata,    'get_samples')
    @patch.object(SequencingStatus,  'get_multiple_samples')
+   @patch.dict(environ, mock_environment, clear=True)
    def get_mock_data2(self,
          mock_seq_samples_query,
          mock_db_sample_query,
          mock_institution_query
       ):
       self.monocle_sample_tracking.sequencing_status_data = None
+      self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
       mock_institution_query.return_value = self.mock_institutions
       mock_db_sample_query.return_value   = self.mock_samples2
       mock_seq_samples_query.return_value = self.mock_seq_status2
@@ -762,24 +764,72 @@ class MonocleSampleDataTest(TestCase):
       self.assertEqual(expected_samples, actual_samples)
 
    @patch.object(SampleMetadata, 'get_samples')
+   def test_get_filtered_samples_with_sequencing_success_filter(self, get_sample_metadata_mock):
+      self.get_mock_data2()
+      
+      # mock_samples2 contains a successful and a failed lane for fake_sample_id_1; fake_sample_id_2 has only a failed lane
+      get_sample_metadata_mock.return_value = self.mock_samples2
+      
+      # should return fake_sample_id_1 as it has one successful lane
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'sequencing': {'success': True}})
+
+      expected_samples = self.mock_filtered_samples2
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      self.assertEqual(expected_samples, actual_samples)
+      self.get_mock_data()
+
+   @patch.object(SampleMetadata, 'get_samples')
    def test_get_filtered_samples_with_sequencing_complete_filter(self, get_sample_metadata_mock):
       self.get_mock_data3()
+      
+      # mock_samples3 contains a complete and incomplete lane for fake_sample_id_1; fake_sample_id_2 has only an incomplete lane
       get_sample_metadata_mock.return_value = self.mock_samples3
+      
+      # should return fake_sample_id_1 as it has one complete lane
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'sequencing': {'complete': True}})
 
       expected_samples = self.mock_filtered_samples3
       #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
-
+      
    @patch.object(SampleMetadata, 'get_samples')
-   def test_get_filtered_samples_with_sequencing_success_filter(self, get_sample_metadata_mock):
+   @patch.object(PipelineStatus, 'lane_status')
+   def test_get_filtered_samples_with_pipeline_success_filter(self, lane_status_mock, get_sample_metadata_mock):
       self.get_mock_data2()
       get_sample_metadata_mock.return_value = self.mock_samples2
-      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'sequencing': {'success': True}})
+      # assigning list to side_effect returns next value each time mocked function is called
+      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_1:  failed
+                                       { 'SUCCESS':True,  'FAILED': False},  # second lane for fake_sample_id_1: success
+                                       { 'SUCCESS':False, 'FAILED': False},  # third lane for fake_sample_id_1:  incomplete
+                                       { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_2:  failed
+                                       ]
+      
+      # should return fake_sample_id_1 as it has one successful lane
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'pipeline': {'success': True}})
 
       expected_samples = self.mock_filtered_samples2
-      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      self.assertEqual(expected_samples, actual_samples)
+      self.get_mock_data()
+      
+   @patch.object(SampleMetadata, 'get_samples')
+   @patch.object(PipelineStatus, 'lane_status')
+   def test_get_filtered_samples_with_pipeline_complete_filter(self, lane_status_mock, get_sample_metadata_mock):
+      self.get_mock_data2()
+      get_sample_metadata_mock.return_value = self.mock_samples2
+      # assigning list to side_effect returns next value each time mocked function is called
+      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_1:  failed
+                                       { 'SUCCESS':True,  'FAILED': False},  # second lane for fake_sample_id_1: success
+                                       { 'SUCCESS':False, 'FAILED': False},  # third lane for fake_sample_id_1:  incomplete
+                                       { 'SUCCESS':False, 'FAILED': False},  # first lane for fake_sample_id_2:  incomplete
+                                       ]
+      
+      # should return fake_sample_id_1 as it has one complete lane
+      actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'pipeline': {'complete': True}})
+
+      expected_samples = self.mock_filtered_samples2
+      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
 

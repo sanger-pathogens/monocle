@@ -419,7 +419,7 @@ class TestRoutes(unittest.TestCase):
         username_mock.return_value = self.TEST_USER
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
-        # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
+        # => mocks non-existence of the ZIP archive, followed by existence of JSON file with params
         is_file_mock.side_effect = [False, True]
         lane_files   = {"pubname": ["/lane file",
                                     "/another lane file"]

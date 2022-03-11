@@ -550,6 +550,8 @@ components:
             $ref: "#/components/schemas/InstKeyBatchDatePair"
         sequencing:
           $ref: "#/components/schemas/SequencingFilters"
+        pipeline:
+          $ref: "#/components/schemas/PipelineFilters"
         metadata:
           $ref: "#/components/schemas/MetadataFilters"
         in silico:
@@ -564,6 +566,20 @@ components:
           default: false
         success:
           description: "samples with at least one lane that has been successfully sequenced"
+          type: boolean
+          default: false
+      example:
+        success: true
+
+    PipelineFilters:
+      type: object
+      properties:
+        complete:
+          description: "samples with at least one lane that has completed pipeline, whether or not all stages were successful"
+          type: boolean
+          default: false
+        success:
+          description: "samples with at least one lane that was successful through all peipline stages"
           type: boolean
           default: false
       example:
