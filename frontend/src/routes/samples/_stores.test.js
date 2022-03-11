@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import {
   columnsStore, columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
 
-const INITIAL_STATE = { metadata: {}, "in silico": {}, "qc data": {} };
+const INITIAL_STATE = { metadata: {}, "in silico": {} };
 const VALUES = ["some value", "another value"];
 
 it("has the expected default value for each store", () => {
@@ -83,14 +83,10 @@ describe("distinct column values store", () => {
     }, {
       "field type": "metadata",
       fields: [{ name: "serotype", matches: [] }]
-    }, {
-      "field type": "qc data",
-      fields: [{ name: "rel_abun_sa", matches: [{ number: 5, value: VALUES[0] }, { number: 3, value: VALUES[1] }] }]
     }]);
 
     expect(get(distinctColumnValuesStore)).toEqual({
       metadata: { country: [VALUES[1]], serotype: [] },
-      "qc data": { rel_abun_sa: VALUES },
       "in silico": {}
     });
   });

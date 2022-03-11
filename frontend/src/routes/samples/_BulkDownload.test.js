@@ -175,7 +175,7 @@ describe("on form submit", () => {
     expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
       .toBe(DOWNLOAD_ESTIMATE_TEXT);
 
-    await filterStore.set({ metadata: { someColumn: { values: [] } }, "in silico": {}, "qc data": {} });
+    await filterStore.set({ metadata: { someColumn: { values: [] } }, "in silico": {} });
     await component.$set({ downloadEstimate: { numSamples: 998, sizeZipped: "70.2TB" } });
 
     expect(container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent)
