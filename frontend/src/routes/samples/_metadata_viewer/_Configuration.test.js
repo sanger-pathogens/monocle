@@ -150,7 +150,7 @@ describe("on filter", () => {
   });
 
   it("shows the explanation message and has the correct tooltip for each disabled item", async () => {
-    const expectedTooltipText = "* To de-select this column, first remove its filter.";
+    const expectedTooltipText = "* To de-select this column, first remove the column's filter.";
     const { getByLabelText, getByRole, getByText } = render(Configuration);
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
