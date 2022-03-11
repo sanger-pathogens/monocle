@@ -113,7 +113,7 @@
              https://svelte.dev/docs#template-syntax-each). -->
             {#each sample as column (`${column.name}:${column.dataType}`)}
               <!-- The inner <div /> is needed to impose a maximum height on a table cell. -->
-              <td><div>{column.value}</div></td>
+              <td><div>{column.value === null ? "" : column.value}</div></td>
             {/each}
           </tr>
         {/each}

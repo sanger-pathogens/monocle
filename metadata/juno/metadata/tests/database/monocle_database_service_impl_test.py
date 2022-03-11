@@ -9,7 +9,6 @@ from metadata.api.database.monocle_database_service_impl import ProtocolError
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
 
-
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
     """ Unit test class for MonocleDatabaseServiceImpl """
 
@@ -246,68 +245,31 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_samples_filtered_by_metadata(self) -> None:
         self.connection.execute.return_value = [
-                dict(sanger_sample_id='9999STDY8113123',
-                lane_id='2000_2#10',
-                submitting_institution='UniversityA',
-                supplier_sample_name='SUPPLIER_1',
-                public_name='PUB_NAME_1',
-                host_status='CARRIAGE',
-                study_name='My_study1',
-                study_ref='5201',
-                selection_random='Y',
-                country='UK',
-                county_state='Cambridgeshire',
-                city='Cambridge',
-                collection_year='2019',
-                collection_month='12',
-                collection_day='05',
-                host_species='human',
-                gender='M',
-                age_group='adult',
-                age_years='35',
-                age_months='10',
-                age_weeks='2',
-                age_days='2',
-                disease_type='GBS',
-                disease_onset='EOD',
-                isolation_source='blood',
-                serotype='IV',
-                serotype_method='PCR',
-                infection_during_pregnancy='N',
-                maternal_infection_type='oral',
-                gestational_age_weeks='10',
-                birth_weight_gram='400',
-                apgar_score='10',
-                ceftizoxime='1',
-                ceftizoxime_method='method1',
-                cefoxitin='2',
-                cefoxitin_method='method2',
-                cefotaxime='3',
-                cefotaxime_method='method3',
-                cefazolin='4',
-                cefazolin_method='method4',
-                ampicillin='5',
-                ampicillin_method='method5',
-                penicillin='6',
-                penicillin_method='method6',
-                erythromycin='7',
-                erythromycin_method='method7',
-                clindamycin='8',
-                clindamycin_method='method8',
-                tetracycline='9',
-                tetracycline_method='method9',
-                levofloxacin='10',
-                levofloxacin_method='method10',
-                ciprofloxacin='11',
-                ciprofloxacin_method='method11',
-                daptomycin='12',
-                daptomycin_method='method12',
-                vancomycin='13',
-                vancomycin_method='method13',
-                linezolid='14',
-                linezolid_method='method14')
+                dict(sanger_sample_id='9999STDY8113123')
         ]
         samples_ids = self.under_test.get_samples_filtered_by_metadata({'serotype': ['IV']})
+        execute_args    = list(self.connection.execute.call_args)
+        execute_sql     = str(execute_args[0][0])
+        execute_values  = execute_args[1]    
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(1, len(execute_args[0]), "expected 1 SQL query to be passed as first positional argument to self.connection.execute")
+        self.assertEqual(execute_sql, MonocleDatabaseServiceImpl.FILTER_SAMPLES_IN_SQL.format('serotype'), "not the expected SQL query")
+        self.assertEqual(execute_values, {'values': ('IV',)}, "not what was expected for :values in {}".format(MonocleDatabaseServiceImpl.FILTER_SAMPLES_IN_SQL))
+        self.assertEqual(samples_ids, ['9999STDY8113123'])
+
+    def test_get_samples_filtered_by_metadata_incl_null(self) -> None:
+        self.connection.execute.return_value = [
+                dict(sanger_sample_id='9999STDY8113123')
+        ]
+        # passing `None` is values list should result in SQL query that includes records with NULL serotype
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({'serotype': ['IV', None]})
+        execute_args    = list(self.connection.execute.call_args)
+        execute_sql     = str(execute_args[0][0])
+        execute_values  = execute_args[1]    
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(1, len(execute_args[0]), "expected 1 SQL query to be passed as first positional argument to self.connection.execute")
+        self.assertEqual(execute_sql, MonocleDatabaseServiceImpl.FILTER_SAMPLES_IN_SQL_INCL_NULL.format('serotype','serotype'), "not the expected SQL query")
+        self.assertEqual(execute_values, {'values': ('IV', None)}, "not what was expected for :values in {}".format(MonocleDatabaseServiceImpl.FILTER_SAMPLES_IN_SQL_INCL_NULL))
         self.assertEqual(samples_ids, ['9999STDY8113123'])
 
     def test_get_samples_filtered_by_metadata_noresults(self) -> None:
@@ -324,69 +286,31 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_lanes_filtered_by_in_silico_data(self) -> None:
         self.connection.execute.return_value = [
-                {'lane_id':  '2000_2#10',
-                'cps_type':  'anything',
-                'ST':  '14',
-                'adhP':  'anything',
-                'pheS':  'anything',
-                'atr':  'anything',
-                'glnA':  'anything',
-                'sdhA':  'anything',
-                'glcK':  'anything',
-                'tkt':  'anything',
-                '23S1':  'anything',
-                '23S3':  'anything',
-                'AAC6APH2':  'anything',
-                'AADECC':  'anything',
-                'ANT6':  'anything',
-                'APH3III':  'anything',
-                'APH3OTHER':  'anything',
-                'CATPC194':  'anything',
-                'CATQ':  'anything',
-                'ERMA':  'anything',
-                'ERMB':  'anything',
-                'ERMT':  'anything',
-                'LNUB':  'anything',
-                'LNUC':  'anything',
-                'LSAC':  'anything',
-                'MEFA':  'anything',
-                'MPHC':  'anything',
-                'MSRA':  'anything',
-                'MSRD':  'anything',
-                'FOSA':  'anything',
-                'GYRA':  'anything',
-                'PARC':  'anything',
-                'RPOBGBS-1':  'anything',
-                'RPOBGBS-2':  'anything',
-                'RPOBGBS-3':  'anything',
-                'RPOBGBS-4':  'anything',
-                'SUL2':  'anything',
-                'TETB':  'anything',
-                'TETL':  'anything',
-                'TETM':  'anything',
-                'TETO':  'anything',
-                'TETS':  'anything',
-                'ALP1':  'anything',
-                'ALP23':  'anything',
-                'ALPHA':  'anything',
-                'HVGA':  'anything',
-                'PI1':  'anything',
-                'PI2A1':  'anything',
-                'PI2A2':  'anything',
-                'PI2B':  'anything',
-                'RIB':  'anything',
-                'SRR1':  'anything',
-                'SRR2':  'anything',
-                '23S1_variant':  'anything',
-                '23S3_variant':  'anything',
-                'GYRA_variant':  'anything',
-                'PARC_variant':  'anything',
-                'RPOBGBS-1_variant':  'anything',
-                'RPOBGBS-2_variant':  'anything',
-                'RPOBGBS-3_variant':  'anything',
-                'RPOBGBS-4_variant':  'anything'}
+                {'lane_id':  '2000_2#10'}
+        ]
+        # passing `None` is values list should result in SQL query that includes records with NULL ST
+        lanes_ids = self.under_test.get_lanes_filtered_by_in_silico_data({'ST': [None, '14']})
+        execute_args    = list(self.connection.execute.call_args)
+        execute_sql     = str(execute_args[0][0])
+        execute_values  = execute_args[1]    
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(1, len(execute_args[0]), "expected 1 SQL query to be passed as first positional argument to self.connection.execute")
+        self.assertEqual(execute_sql, MonocleDatabaseServiceImpl.IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL.format('ST','ST'), "not the expected SQL query")
+        self.assertEqual(execute_values, {'values': (None,'14')}, "not what was expected for :values in {}".format(MonocleDatabaseServiceImpl.IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL))
+        self.assertEqual(lanes_ids, ['2000_2#10'])
+
+    def test_get_lanes_filtered_by_in_silico_data_incl_null(self) -> None:
+        self.connection.execute.return_value = [
+                {'lane_id':  '2000_2#10'}
         ]
         lanes_ids = self.under_test.get_lanes_filtered_by_in_silico_data({'ST': ['14']})
+        execute_args    = list(self.connection.execute.call_args)
+        execute_sql     = str(execute_args[0][0])
+        execute_values  = execute_args[1]    
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(1, len(execute_args[0]), "expected 1 SQL query to be passed as first positional argument to self.connection.execute")
+        self.assertEqual(execute_sql, MonocleDatabaseServiceImpl.IN_SILICO_FILTER_LANES_IN_SQL.format('ST'), "not the expected SQL query")
+        self.assertEqual(execute_values, {'values': ('14',)}, "not what was expected for :values in {}".format(MonocleDatabaseServiceImpl.IN_SILICO_FILTER_LANES_IN_SQL))
         self.assertEqual(lanes_ids, ['2000_2#10'])
 
     def test_get_lanes_filtered_by_in_silico_data_noresults(self) -> None:
@@ -403,126 +327,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_samples_filtered_by_metadata_nofilters(self) -> None:
         self.connection.execute.return_value = [
-            dict(sanger_sample_id='9999STDY8113123',
-                lane_id='2000_2#10',
-                submitting_institution='UniversityA',
-                supplier_sample_name='SUPPLIER_1',
-                public_name='PUB_NAME_1',
-                host_status='CARRIAGE',
-                study_name='My_study1',
-                study_ref='5201',
-                selection_random='Y',
-                country='UK',
-                county_state='Cambridgeshire',
-                city='Cambridge',
-                collection_year='2019',
-                collection_month='12',
-                collection_day='05',
-                host_species='human',
-                gender='M',
-                age_group='adult',
-                age_years='35',
-                age_months='10',
-                age_weeks='2',
-                age_days='2',
-                disease_type='GBS',
-                disease_onset='EOD',
-                isolation_source='blood',
-                serotype='IV',
-                serotype_method='PCR',
-                infection_during_pregnancy='N',
-                maternal_infection_type='oral',
-                gestational_age_weeks='10',
-                birth_weight_gram='400',
-                apgar_score='10',
-                ceftizoxime='1',
-                ceftizoxime_method='method1',
-                cefoxitin='2',
-                cefoxitin_method='method2',
-                cefotaxime='3',
-                cefotaxime_method='method3',
-                cefazolin='4',
-                cefazolin_method='method4',
-                ampicillin='5',
-                ampicillin_method='method5',
-                penicillin='6',
-                penicillin_method='method6',
-                erythromycin='7',
-                erythromycin_method='method7',
-                clindamycin='8',
-                clindamycin_method='method8',
-                tetracycline='9',
-                tetracycline_method='method9',
-                levofloxacin='10',
-                levofloxacin_method='method10',
-                ciprofloxacin='11',
-                ciprofloxacin_method='method11',
-                daptomycin='12',
-                daptomycin_method='method12',
-                vancomycin='13',
-                vancomycin_method='method13',
-                linezolid='14',
-                linezolid_method='method14'),
-            dict(sanger_sample_id='9999STDY8113124',
-                 lane_id='2000_2#11',
-                 submitting_institution='UniversityB',
-                 supplier_sample_name='SUPPLIER_2',
-                 public_name='PUB_NAME_2',
-                 host_status='INVASIVE',
-                 study_name='My_stud2',
-                 study_ref='5202',
-                 selection_random='N',
-                 country='US',
-                 county_state='California',
-                 city='Los Angeles',
-                 collection_year='2020',
-                 collection_month='10',
-                 collection_day='07',
-                 host_species='chimp',
-                 gender='N',
-                 age_group='adult',
-                 age_years='45',
-                 age_months='4',
-                 age_weeks='1',
-                 age_days='1',
-                 disease_type='other',
-                 disease_onset='LOD',
-                 isolation_source='skin',
-                 serotype='IX',
-                 serotype_method='PCR2',
-                 infection_during_pregnancy='Y',
-                 maternal_infection_type='other',
-                 gestational_age_weeks='12',
-                 birth_weight_gram='500',
-                 apgar_score='3',
-                 ceftizoxime='11',
-                 ceftizoxime_method='method11',
-                 cefoxitin='12',
-                 cefoxitin_method='method12',
-                 cefotaxime='13',
-                 cefotaxime_method='method13',
-                 cefazolin='14',
-                 cefazolin_method='method14',
-                 ampicillin='15',
-                 ampicillin_method='method15',
-                 penicillin='16',
-                 penicillin_method='method16',
-                 erythromycin='17',
-                 erythromycin_method='method17',
-                 clindamycin='18',
-                 clindamycin_method='method18',
-                 tetracycline='19',
-                 tetracycline_method='method19',
-                 levofloxacin='20',
-                 levofloxacin_method='method20',
-                 ciprofloxacin='21',
-                 ciprofloxacin_method='method21',
-                 daptomycin='22',
-                 daptomycin_method='method22',
-                 vancomycin='23',
-                 vancomycin_method='method23',
-                 linezolid='24',
-                 linezolid_method='method24')
+            dict(sanger_sample_id='9999STDY8113123'),
+            dict(sanger_sample_id='9999STDY8113124')
         ]
         samples_ids = self.under_test.get_samples_filtered_by_metadata({})
         self.assertEqual(samples_ids, ['9999STDY8113123', '9999STDY8113124'])
@@ -532,7 +338,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"serotype":"Ia"}, {"serotype":"II"}, {"serotype":"III"}, {"serotype":"Ib"}, {"serotype":None},
            ]
         expected = [
-           {"name": "serotype", "values": ["II","III","Ia","Ib","NULL"]}
+           {"name": "serotype", "values": ["II","III","Ia","Ib",None]}
            ]
         values = self.under_test.get_distinct_values('metadata', ["serotype"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
@@ -567,7 +373,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"ST":"1"}, {"ST":"17"}, {"ST":None},
            ]
         expected = [
-           {"name": "ST",  "values": ["1", "17", "NULL"]}
+           {"name": "ST",  "values": ["1", "17", None]}
            ]
         values = self.under_test.get_distinct_values('in silico', ["ST"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
@@ -588,7 +394,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
            {"rel_abun_sa": 1.46}, {"rel_abun_sa": 92.93}, {"rel_abun_sa":None},
            ]
         expected = [
-           {"name": "rel_abun_sa",  "values": ["1.46","92.93","NULL"]},
+           {"name": "rel_abun_sa",  "values": ["1.46","92.93",None]},
            ]
         values = self.under_test.get_distinct_values('qc data', ["rel_abun_sa"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()

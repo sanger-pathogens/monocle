@@ -65,6 +65,18 @@ it("displays stored column values instead of fetching new ones", async () => {
     expect(getByText(value)).toBeDefined());
 });
 
+it("displays `null` values in a user-friendly way", async () => {
+  distinctColumnValuesStore.updateFromDistinctValuesResponse([{
+    "field type": DATA_TYPE_METADATA,
+    fields: [{ name: COLUMN.name, matches: [{ number: 9, value: null }] }]
+  }]);
+  const { container, getByText } = render(Filter, { batches: BATCHES, column: COLUMN });
+
+  await fireEvent.click(queryValueSelectorElement(container));
+
+  expect(getByText("[empty value]")).toBeDefined();
+});
+
 it("disables the exclusion checkbox if there are no values", () => {
   const { getByLabelText } = render(Filter, { batches: BATCHES, column: COLUMN });
 

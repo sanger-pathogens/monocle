@@ -417,6 +417,7 @@ components:
             items:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
+            minItems: 1
       example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
       
     FiltersInSilicoInput:
@@ -436,11 +437,13 @@ components:
             items:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
+            minItems: 1
       example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
+      nullable: true
       minLength: 1
       maxLength: 256
       # Allows one whitespace but not two or more together and allows single
@@ -450,6 +453,7 @@ components:
     InSilicoFieldValueFilter:
       description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
       type: string
+      nullable: true
       minLength: 1
       maxLength: 256
       # only alphanumerics, '*',  '?', '-' and '/'
@@ -527,6 +531,7 @@ components:
                 type: array
                 items:
                   type: string
+                  nullable: true
                   description: "The value of the metadata field"
                   readOnly: true
 
