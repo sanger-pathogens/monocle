@@ -579,7 +579,7 @@ components:
           type: boolean
           default: false
         success:
-          description: "samples with at least one lane that was successful through all peipline stages"
+          description: "samples with at least one lane that was successful through all pipeline stages"
           type: boolean
           default: false
       example:

@@ -368,10 +368,10 @@ class MonocleSampleTracking:
    
    def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):
       """
-      Pass a sample ID a dict representing a lane, as returned by sequencing_status_data()
+      Pass a sample ID and a dict representing a lane, as returned by sequencing_status_data()
       Returns tuple with
       - True/False to indicate if a lane completed sequencing
-      - True/False to ondicate if sequencing succeeded
+      - True/False to indicate if sequencing succeeded
       - List of dicts describing any failures
         {   'lane':  lane_id_1,
             'stage': 'name of QC stage where issues was detected',
@@ -392,7 +392,7 @@ class MonocleSampleTracking:
                fail_messages.append(
                   {  'lane': "{} (sample {})".format(this_lane['id'], this_sample_id),
                      'stage': self.sequencing_flags[this_flag],
-                     'issue': 'sorry, failure mesages cannot currently be seen here',
+                     'issue': 'sorry, failure messages cannot currently be seen here',
                      }
                   )
       logging.debug("\nsequencing_is_success({},{}) returns {}".format(this_sample_id, this_lane, (this_lane_completed, this_lane_success, fail_messages)))
@@ -457,7 +457,7 @@ class MonocleSampleTracking:
                            {  'lane'   : "{} (sample {})".format(this_lane_id, this_sanger_sample_id),
                               'stage'  : this_stage,
                               # currently have no way to retrieve a failure report
-                              'issue'  : 'sorry, failure mesages cannot currently be seen here',
+                              'issue'  : 'sorry, failure messages cannot currently be seen here',
                               },
                            )
                # if not failed, but succeded, increment success and completed counter

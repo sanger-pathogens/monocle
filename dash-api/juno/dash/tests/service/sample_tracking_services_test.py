@@ -149,13 +149,13 @@ class MonocleSampleTrackingTest(TestCase):
                                     }
    expected_seq_summary       =  {  'FakOne': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
                                                 'fail_messages': [  {   'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
-                                                                        'issue': 'sorry, failure mesages cannot currently be seen here'
+                                                                        'issue': 'sorry, failure messages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 },
                                     'FakTwo': { '_ERROR': None, 'received': 4, 'completed': 6, 'success': 5, 'failed': 1,
                                                 'fail_messages': [   {  'lane': 'fake_lane_id_3 (sample fake_sample_id_1)', 'stage': 'sequencing',
-                                                                        'issue': 'sorry, failure mesages cannot currently be seen here'
+                                                                        'issue': 'sorry, failure messages cannot currently be seen here'
                                                                         }
                                                                      ]
                                                 }
