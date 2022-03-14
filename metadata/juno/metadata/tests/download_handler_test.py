@@ -63,6 +63,25 @@ class TestDownloadMetadataHandler(unittest.TestCase):
             {
                 'order': 1,
                 'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )
@@ -208,6 +227,25 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             {
                 'order': 1,
                 'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )
@@ -342,6 +380,25 @@ class TestDownloadQCHandler(unittest.TestCase):
         results = {}
         self.under_test._append_to_dict(results, 'column_1', None)
 
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
         self.assertEqual(len(results), 1)
         self.assertEqual(
             results['column_1'],

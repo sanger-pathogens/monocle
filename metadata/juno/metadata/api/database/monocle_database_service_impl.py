@@ -180,28 +180,17 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ORDER BY lane_id""")
     
     FILTER_SAMPLES_IN_SQL = """ \
-            SELECT sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
-            age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-            ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
-            cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
-            ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
-            collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
-            disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
-            host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
-            linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
-            selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
-            vancomycin, vancomycin_method
-            FROM api_sample
-            WHERE {} IN :values"""
+            SELECT sanger_sample_id FROM api_sample WHERE {} IN :values"""
+            
+    FILTER_SAMPLES_IN_SQL_INCL_NULL = """ \
+            SELECT sanger_sample_id FROM api_sample WHERE {} IN :values OR {} IS NULL"""
 
     IN_SILICO_FILTER_LANES_IN_SQL = """ \
-            SELECT lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
-            CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
-            SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
-            twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
-            FROM in_silico
-            WHERE {} IN :values"""
-
+            SELECT lane_id FROM in_silico WHERE {} IN :values"""
+            
+    IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
+            SELECT lane_id FROM in_silico WHERE {} IN :values OR {} IS NULL"""
+            
     #DISTINCT_FIELD_VALUES_SQL = text(""" \
             #SELECT DISTINCT :field FROM api_sample WHERE submitting_institution IN :institutions""")
     DISTINCT_FIELD_VALUES_SQL = """ \
@@ -418,14 +407,18 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """ Get sample ids where their columns' values are in specified filters """
         # TODO: Also consider other filters such as greater than/less than...
-
         sanger_sample_ids = []
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
+                  logging.info("filtering on {} for values {}".format(filter, values))
                   new_sanger_sample_ids = []
                   try:
-                    rs = con.execute(text(self.FILTER_SAMPLES_IN_SQL.format(filter)), values = tuple(values))
+                    if None in values:
+                      this_sql_template = self.FILTER_SAMPLES_IN_SQL_INCL_NULL.format(filter,filter)
+                    else:
+                      this_sql_template = self.FILTER_SAMPLES_IN_SQL.format(filter)
+                    rs = con.execute(text(this_sql_template), values = tuple(values))
                     new_sanger_sample_ids.extend([row['sanger_sample_id'] for row in rs])
                     if len(sanger_sample_ids) > 0:
                       tmp_ids = [id for id in new_sanger_sample_ids if id in sanger_sample_ids]
@@ -452,9 +445,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             if len(filters) > 0:
                 for filter, values in filters.items():
+                  logging.info("filtering on {} for values {}".format(filter, values))
                   new_lane_ids = []
                   try:
-                    rs = con.execute(text(self.IN_SILICO_FILTER_LANES_IN_SQL.format(filter)), values = tuple(values))
+                    if None in values:
+                      this_sql_template = self.IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL.format(filter,filter)
+                    else:
+                      this_sql_template = self.IN_SILICO_FILTER_LANES_IN_SQL.format(filter)
+                    rs = con.execute(text(this_sql_template), values = tuple(values))
                     new_lane_ids.extend([row['lane_id'] for row in rs])
                     if len(lane_ids) > 0:
                       tmp_ids = [id for id in new_lane_ids if id in lane_ids]
@@ -494,14 +492,20 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             try:
               rs = con.execute( text(sql_query[field_type].format(this_field)), institutions = tuple(institutions) )
               these_distinct_values = []
+              includes_none = False
               for row in rs:
                 if row[this_field] is None:
-                  these_distinct_values.append('NULL')
+                  includes_none = True
                 else:
                   these_distinct_values.append(str(row[this_field]))
+              # can't sort if the list contains None, so sort...
+              these_distinct_values = sorted(these_distinct_values)
+              # ...and then add a None if there should be one in the list
+              if includes_none:
+                 these_distinct_values.append(None)
               if len(these_distinct_values) > 0:
                 distinct_values.append({  "name": this_field,
-                                          "values": sorted(these_distinct_values)
+                                          "values": these_distinct_values
                                           }
                                        )
               
@@ -511,7 +515,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 return None
               else:
                 raise e
-          logging.info("distinct {} values: {}".format(field_type, 'distinct_values'))
+        logging.info("distinct {} values: {}".format(field_type, distinct_values))
         return distinct_values
 
     def get_samples(self) -> List[Metadata]:

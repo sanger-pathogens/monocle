@@ -16,6 +16,7 @@ it("delegates to `structuredClone`", async () => {
 
 it("works even if `structuredClone` isn't supported", async () => {
   global.structuredClone = undefined;
+  global.console.warn = () => {};
   const { deepCopy } = await import("./copy.js");
 
   const copy = deepCopy(ORIGINAL);

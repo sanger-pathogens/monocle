@@ -1,3 +1,8 @@
+<script context="module">
+  const EMPTY_VALUE = "[empty value]";
+  const NARROW_SCREEN_BREAKPOINT = 810;
+</script>
+
 <script>
   import { onMount } from "svelte";
   // We need to import the source Svelte component because Jest doesn't recognise the compiled JS code provided by the library.
@@ -10,8 +15,6 @@
   export let column;
   let { name: columnName, dataType: columnDataType } = column || {};
 
-  const NARROW_SCREEN_BREAKPOINT = 810;
-
   let filterContainerElement;
   let exclude = $filterStore[columnDataType][columnName]?.exclude || false;
   let selectedValues = $filterStore[columnDataType][columnName]?.values.map(
@@ -20,7 +23,8 @@
   $: hasChanges = _hasChanges(savedState, selectedValues, exclude);
   // Save filter state for `hasChanges` each time a filter is applied or removed.
   $: savedState = $filterStore[columnDataType][columnName] || { values: [] };
-  $: values = $distinctColumnValuesStore[columnDataType]?.[columnName];
+  $: values = $distinctColumnValuesStore[columnDataType]?.[columnName]
+    ?.map(createValueObject);
 
   $: {
     if (!values && column) {
@@ -71,6 +75,10 @@
   function positionFilterLeftmost() {
     filterContainerElement.style.left =
       `-${filterContainerElement.parentNode.getBoundingClientRect().left - 21}px`;
+  }
+
+  function createValueObject(value) {
+    return { value, label: value === null ? EMPTY_VALUE : value };
   }
 
   function _hasChanges() {
