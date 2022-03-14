@@ -793,8 +793,7 @@ class MonocleSampleData:
       sample_filters = {   'batches':  batches_filter,
                            category:   status_filter
                            }
-      # TODO demote to INFO when done testing
-      logging.critical("metadata download {}/{}/{} will use sample filters: {}".format(institution, category, status, sample_filters))
+      logging.info("metadata download {}/{}/{} will use sample filters: {}".format(institution, category, status, sample_filters))
       
       filename       =  '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
                                                 category,
