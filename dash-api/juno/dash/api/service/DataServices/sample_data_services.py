@@ -871,16 +871,27 @@ class MonocleSampleData:
 
    def _metadata_as_csv(self, sample_filters, download_base_url=None, include_qc_data=False):
       """
+      Wrapper for _metadata_as_df() which paases its return values to _metadata_df_to_csv(),
+      and returns the CSV.
+      Returns None if there are no matching samples.
+      """
+      metadata_df, column_order = self._metadata_as_df(sample_filters, download_base_url=download_base_url, include_qc_data=include_qc_data)
+      if metadata_df is None:
+         return None
+      return self._metadata_df_to_csv(metadata_df, column_order)
+
+   def _metadata_as_df(self, sample_filters, download_base_url=None, include_qc_data=False):
+      """
       Pass sample filters (as understood by get_filtered_samples() to indicate the samples to
       be downloaded.
       
       Optionally pass a base URL for the download; if provided, a download URL for each sample
       (this base URL with the public name appended) will be added as an extra column.
-      Optionally set include_qc_data to true if QC data should be included in the CSV.
 
-      When available, in silico data for each sample are now also included.
+      When available, in silico data for each sample are included.
+      Optionally set include_qc_data to true if QC data should be included.
 
-      Returns metadata as CSV, or None if there are no matching samples
+      Returns pandas data frame and column order; or None if there are no matching samples
       """
       # for metadata downloads, we just need a dict with sample IDs as keys,
       # value are arrays of lane ID(s) for each sample
@@ -903,7 +914,7 @@ class MonocleSampleData:
             raise e
 
       if 1 > len(samples_for_download):
-         return None
+         return (None, None)
 
       # retrieve the sample metadata and load into DataFrame
       logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
@@ -968,7 +979,14 @@ class MonocleSampleData:
       # if download links are included, put them in last column
       if download_base_url is not None:
          metadata_col_order.append('Download_Link')
-
+         
+      return (metadata_df, metadata_col_order)
+   
+   def _metadata_df_to_csv(self, metadata_df, metadata_col_order):
+      """
+      Pass panda dataframe and column order.
+      Returns CSV.
+      """
       metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
       logging.debug("merged metadata, in silico and QC data as CSV:\n{}".format(metadata_csv))
       return metadata_csv
