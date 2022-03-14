@@ -1,5 +1,4 @@
 **/my*.cnf*
-config.json
 .git
 **/__pycache__
 **/.pytest_cache
