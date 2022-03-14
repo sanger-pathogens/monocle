@@ -544,6 +544,7 @@ class MonocleSampleData:
                   this_lane_passes_sequencing_filters = False
             if this_lane_passes_sequencing_filters:
                at_least_one_lane_passes_sequencing_filters = True
+               break
          if not at_least_one_lane_passes_sequencing_filters:
             logging.debug("sample {} FAILS filter {}".format(this_sample_id,sequencing_filters))
             failed_samples.append(this_sample_id)
