@@ -126,72 +126,72 @@ class TestUploadHandler(unittest.TestCase):
             '{row: 58, column: "Ceftizoxime_method"}: "ZZZ" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefoxitin"}: "A" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefoxitin"}: "A" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefoxitin_method"}: "AAA" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefotaxime"}: "B" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefotaxime"}: "B" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefotaxime_method"}: "BBB" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefazolin"}: "C" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefazolin"}: "C" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefazolin_method"}: "CCC" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Ampicillin"}: "D" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Ampicillin"}: "D" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Ampicillin_method"}: "DDD" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Penicillin"}: "R1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Penicillin"}: "R1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Penicillin_method"}: "EEE" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Erythromycin"}: "F" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Erythromycin"}: "F" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Erythromycin_method"}: "FFF" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Clindamycin"}: "G" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Clindamycin"}: "G" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Clindamycin_method"}: "GGG" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Tetracycline_method"}: "HHH" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Tetracycline_method"}: "HHH" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Levofloxacin"}: "I1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Levofloxacin"}: "I1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Levofloxacin_method"}: "III" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Ciprofloxacin"}: "J" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Ciprofloxacin"}: "J" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Ciprofloxacin_method"}: "JJJJ" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Daptomycin"}: "K" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Daptomycin"}: "K" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Daptomycin_method"}: "KKKK" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Vancomycin"}: "S1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Vancomycin"}: "S1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Vancomycin_method"}: "LLLL" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Linezolid"}: "M" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Linezolid"}: "M" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Linezolid_method"}: "MMMM" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
@@ -345,6 +345,19 @@ class TestUploadHandler(unittest.TestCase):
                  vancomycin='', vancomycin_method='', linezolid='', linezolid_method=''),
             Metadata(sanger_sample_id='1000STDY7000169', lane_id='50000_2#296', submitting_institution='Test Institution A',
                  supplier_sample_name='EY70603', public_name='CD_XX_EW00004', host_status='carriage', study_name='',
+                 study_ref='', selection_random='no', country='TestCountryA', county_state='', city='',
+                 collection_year='2014', collection_month='', collection_day='', host_species='human', gender='F',
+                 age_group='adolescent', age_years='15', age_months='10', age_weeks='2', age_days='4', disease_type='',
+                 disease_onset='', isolation_source='other sterile site', serotype='III', serotype_method='Lancefield',
+                 infection_during_pregnancy='', maternal_infection_type='', gestational_age_weeks='',
+                 birth_weight_gram='', apgar_score='', ceftizoxime='', ceftizoxime_method='', cefoxitin='',
+                 cefoxitin_method='', cefotaxime='', cefotaxime_method='', cefazolin='', cefazolin_method='',
+                 ampicillin='', ampicillin_method='', penicillin='', penicillin_method='', erythromycin='',
+                 erythromycin_method='', clindamycin='', clindamycin_method='', tetracycline='', tetracycline_method='',
+                 levofloxacin='', levofloxacin_method='', ciprofloxacin='', ciprofloxacin_method='', daptomycin='',
+                 daptomycin_method='', vancomycin='', vancomycin_method='', linezolid='', linezolid_method=''),
+            Metadata(sanger_sample_id='1000STDY7000171', lane_id='50000_2#298', submitting_institution='Test Institution A',
+                 supplier_sample_name='EY70603', public_name='CD_XX_EW00006', host_status='carriage', study_name='',
                  study_ref='', selection_random='no', country='TestCountryA', county_state='', city='',
                  collection_year='2014', collection_month='', collection_day='', host_species='human', gender='F',
                  age_group='adolescent', age_years='15', age_months='10', age_weeks='2', age_days='4', disease_type='',
