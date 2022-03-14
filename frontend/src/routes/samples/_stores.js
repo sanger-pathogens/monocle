@@ -1,19 +1,6 @@
 import { derived, writable } from "svelte/store";
 import { DATA_TYPES } from "$lib/constants.js";
 
-const DEFAULT_COLUMNS = {
-  metadata: new Set([
-    "submitting_institution",
-    "public_name",
-    "host_status",
-    "selection_random",
-    "country",
-    "collection_year",
-    "host_species",
-    "isolation_source",
-    "serotype"
-  ])
-};
 const FILTER_TYPE_NONE = "none";
 
 /*
@@ -25,6 +12,7 @@ const FILTER_TYPE_NONE = "none";
       columns: [{
         displayName: "Column Name",
         name: "column_name",
+        default?: true,
         selected?: true,
         type?: "numeric"
       }, {
@@ -49,7 +37,7 @@ function createColumnsStore() {
       DATA_TYPES.forEach((dataType) =>
         columnsState[dataType].forEach((category) =>
           category.columns.forEach((column) =>
-            column.selected = DEFAULT_COLUMNS[dataType]?.has(column.name))));
+            column.selected = column.default)));
       return columnsState;
     })
   };
@@ -156,16 +144,16 @@ function convertColumnsResponseToState(columnsResponse) {
   return Object.keys(columnsResponse)
     .reduce((accumColumnsState, dataType) => {
       accumColumnsState[dataType] = transformCategoriesFromResponse(
-        columnsResponse[dataType].categories, dataType);
+        columnsResponse[dataType].categories);
       return accumColumnsState;
     }, {});
 }
 
-function transformCategoriesFromResponse(categories = [], dataType) {
+function transformCategoriesFromResponse(categories = []) {
   return categories.reduce((accumCategories, category) => {
     const convertedCategory = {
       name: category.name,
-      columns: transformColumnsFromResponse(category.fields, dataType)
+      columns: transformColumnsFromResponse(category.fields)
     };
     if (convertedCategory.columns.length) {
       accumCategories.push(convertedCategory);
@@ -174,14 +162,15 @@ function transformCategoriesFromResponse(categories = [], dataType) {
   }, []);
 }
 
-function transformColumnsFromResponse(columns = [], dataType) {
+function transformColumnsFromResponse(columns = []) {
   return columns.reduce((accumColumns, column) => {
     if (column.display) {
       const convertedColumn = {
         displayName: column["display name"],
         name: column.name
       };
-      if (DEFAULT_COLUMNS[dataType]?.has(column.name)) {
+      if (column.default) {
+        convertedColumn.default = true;
         convertedColumn.selected = true;
       }
       if (column["filter type"] !== FILTER_TYPE_NONE) {
