@@ -271,7 +271,7 @@ describe("once batches are fetched", () => {
       await waitFor(() => {
         expect(getByRole(ROLE_BUTTON, { name: "Download samples of size 7 TB" }))
           .toBeDefined();
-      });
+      }, { timeout: 1500 });
 
       const clearBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
       await fireEvent.click(clearBtn);
