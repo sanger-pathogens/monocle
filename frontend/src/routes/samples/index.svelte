@@ -1,4 +1,5 @@
 <script>
+  import { LOCAL_STORAGE_KEY_COLUMNS_STATE, LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE } from "$lib/constants.js";
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
@@ -64,7 +65,9 @@
     const isLocalStorageAvailable = localStorageAvailable();
     let locallySavedColumnsState;
     if (isLocalStorageAvailable) {
-      locallySavedColumnsState = JSON.parse(localStorage.getItem("columnsState"));
+      LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
+        localStorage.removeItem(columnsStateOldKey));
+      locallySavedColumnsState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_COLUMNS_STATE));
     }
     if (locallySavedColumnsState) {
       columnsStore.set(locallySavedColumnsState);
@@ -75,7 +78,7 @@
         .then((columnsResponse) => {
           columnsStore.setFromColumnsResponse(columnsResponse);
           if (isLocalStorageAvailable) {
-            localStorage.setItem("columnsState", JSON.stringify($columnsStore));
+            localStorage.setItem(LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify($columnsStore));
           }
         });
     }
