@@ -1,6 +1,6 @@
 import { fireEvent, render } from "@testing-library/svelte";
 import { get } from "svelte/store";
-import { DATA_TYPES } from "$lib/constants.js";
+import { DATA_TYPES, LOCAL_STORAGE_KEY_COLUMNS_STATE } from "$lib/constants.js";
 import { columnsStore, filterStore } from "../_stores.js";
 import Configuration from "./_Configuration.svelte";
 
@@ -78,7 +78,7 @@ it("saves a columns state to the local storage on apply", async () => {
   // 2 times because it's first called by the feature detection.
   expect(localStorage.setItem).toHaveBeenCalledTimes(2);
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    "columnsState", JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
+    LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
 });
 
 it("saves a columns state to the local storage on restore", async () => {
@@ -91,7 +91,7 @@ it("saves a columns state to the local storage on restore", async () => {
   // 2 times because it's first called by the feature detection.
   expect(localStorage.setItem).toHaveBeenCalledTimes(2);
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    "columnsState", JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
+    LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
 });
 
 it("saves a columns state to the local storage on restore", async () => {

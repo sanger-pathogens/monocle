@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
+import { LOCAL_STORAGE_KEY_COLUMNS_STATE, LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE } from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
 import { filterStore } from "./_stores.js";
 import {
@@ -135,13 +136,30 @@ describe("once batches are fetched", () => {
       .toBeDefined();
   });
 
-  it("doesn't fetch columns if they are stored in the local storage", async () => {
-    localStorage.setItem("columnsState", "{}");
-    getColumns.mockClear();
-    const { findByRole } = render(DataViewerPage);
-    await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+  describe("on columns state in the local storage", () => {
+    beforeAll(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEY_COLUMNS_STATE, "{}");
+    });
 
-    expect(getColumns).not.toHaveBeenCalled();
+    it("doesn't fetch columns", async () => {
+      getColumns.mockClear();
+
+      await render(DataViewerPage);
+
+      expect(getColumns).not.toHaveBeenCalled();
+    });
+
+    it("clears the local storage from old columns state", async () => {
+      Storage.prototype.removeItem = jest.fn();
+
+      render(DataViewerPage);
+
+      // `+ 1` to account for calling `removeItem` by `localStorageAvailable()`
+      const expectedNumCalls = LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE.length + 1;
+      expect(localStorage.removeItem).toHaveBeenCalledTimes(expectedNumCalls);
+      LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
+        expect(localStorage.removeItem).toHaveBeenCalledWith(columnsStateOldKey));
+    });
   });
 
   describe("batch selector", () => {
@@ -253,7 +271,7 @@ describe("once batches are fetched", () => {
       await waitFor(() => {
         expect(getByRole(ROLE_BUTTON, { name: "Download samples of size 7 TB" }))
           .toBeDefined();
-      });
+      }, { timeout: 1500 });
 
       const clearBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
       await fireEvent.click(clearBtn);

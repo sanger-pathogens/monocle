@@ -1,5 +1,5 @@
 <script>
-  import { DATA_TYPES, EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import { DATA_TYPES, EMAIL_MONOCLE_HELP, LOCAL_STORAGE_KEY_COLUMNS_STATE } from "$lib/constants.js";
   import { deepCopy } from "$lib/utils/copy.js";
   import CheckboxGroup from "$lib/components/CheckboxGroup.svelte";
   import Dialog from "$lib/components/Dialog.svelte";
@@ -44,7 +44,8 @@
 
   function saveColumnsStateToLocalStorage() {
     if (localStorageAvailable()) {
-      localStorage.setItem("columnsState", JSON.stringify($columnsStore, cleanupColumnsStateReplacer));
+      localStorage.setItem(LOCAL_STORAGE_KEY_COLUMNS_STATE,
+        JSON.stringify($columnsStore, cleanupColumnsStateReplacer));
     }
   }
 
