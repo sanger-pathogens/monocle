@@ -570,6 +570,7 @@ class MonocleSampleData:
                   this_lane_passes_pipeline_filters = False
             if this_lane_passes_pipeline_filters:
                at_least_one_lane_passes_pipeline_filters = True
+               break
          if not at_least_one_lane_passes_pipeline_filters:
             logging.debug("sample {} FAILS filter {}".format(this_sample_id,pipeline_filters))
             failed_samples.append(this_sample_id)
