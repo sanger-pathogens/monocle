@@ -1,4 +1,5 @@
 stages:
+  - check_py_code_formatted
   - build
   - test
   - docker_tags_for_merges_and_releases
@@ -14,6 +15,17 @@ variables:
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  LINE_LENGTH:              120
+
+Check that Python code is formatted:
+  stage: check_py_code_formatted
+  tags:
+    - openstack-autoscale-theta
+  image: python:3.8.12-slim-buster
+  before_script:
+    - pip install black
+  script:
+    - black --check --line-length ${LINE_LENGTH} .
 
 # at every git push, build docker images in subdirectories in DOCKER_BUILD_LIST
 # push the images to the container registry  with the commit SHA-1 as the tag
