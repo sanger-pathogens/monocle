@@ -12,14 +12,14 @@ docker build --rm -t metadata-api:test .
 Use the following:
 ```
 cd monocle
-docker run -v `pwd`/metadata/juno/config.json:/app/config.json -it --rm metadata-api:test /app/unittests.sh
+docker run  -it --rm metadata-api:test /app/unittests.sh
 ```
 
 ## Running up
 The service can be run locally outside of compose using the following:
 ```
 cd monocle
-docker run -v `pwd`/metadata/juno/my.cnf:/app/my.cnf -v `pwd`/metadata/juno/config.json:/app/config.json -p3001:80 -it --rm metadata-api:test
+docker run -v `pwd`/metadata/juno/my.cnf:/app/my.cnf -p3001:80 -it --rm metadata-api:test
 ```
 
 # Testing

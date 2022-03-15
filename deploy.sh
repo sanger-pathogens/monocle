@@ -306,7 +306,6 @@ then
     # (may want to remove from git long term)
     scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf           $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
     scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.service_maintenance.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.service_maintenance.conf
-    scp -o ControlPath=%C $SCP_PORT_ARG metadata/juno/config.json             $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
 
     # scripts for syncing sample data view
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py

@@ -50,7 +50,6 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      - ./metadata-api.json:/app/config.json
       - ./my.cnf:/app/my.cnf
     environment:
       # if ENABLE_SWAGGER_UI is true the UI should be available at /metadata/ui/ (see nginx.prod.proxy.conf)
