@@ -685,18 +685,19 @@ class TestRoutes(unittest.TestCase):
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
+        defaults = get_metadata_input_default()
         # When
         result = get_metadata_route({'sample filters': sample_filters})
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
-                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
-                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
-                                                                              metadata_columns  = GetMetadataInputDefaults['metadata columns'],
-                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'],
-                                                                              qc_data_columns   = GetMetadataInputDefaults['qc data columns'])
+                                                                              num_rows          = defaults['num rows'],
+                                                                              include_in_silico = defaults['in silico'],
+                                                                              include_qc_data   = defaults['qc data'],
+                                                                              metadata_columns  = defaults['metadata columns'],
+                                                                              in_silico_columns = defaults['in silico columns'],
+                                                                              qc_data_columns   = defaults['qc data columns'])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -715,15 +716,16 @@ class TestRoutes(unittest.TestCase):
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
+        defaults = get_metadata_input_default()
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'metadata columns': metadata_columns, 'in silico columns':in_silico_columns, 'qc data columns':qc_data_columns})
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
-                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
-                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
+                                                                              num_rows          = defaults['num rows'],
+                                                                              include_in_silico = defaults['in silico'],
+                                                                              include_qc_data   = defaults['qc data'],
                                                                               metadata_columns  = None,
                                                                               in_silico_columns = None,
                                                                               qc_data_columns   = None)
@@ -743,7 +745,7 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']
@@ -788,7 +790,7 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']
@@ -822,7 +824,7 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']

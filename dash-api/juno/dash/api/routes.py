@@ -27,7 +27,7 @@ DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 
 # these are set in the openapi.yml file, but request body doesn't seem to set default values
 # to they have to be set by the route :-/
-GetMetadataInputDefaults = {  "as csv"             : False,
+METADATA_INPUT_DEFAULTS = {   "as csv"             : False,
                               "csv filename"       : "monocle.csv",
                               "in silico"          : True,
                               "qc data"            : True,
@@ -110,11 +110,12 @@ def get_metadata_route(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters      = body['sample filters']
-    return_as_csv       = body.get('as csv',             GetMetadataInputDefaults['as csv'])
-    csv_filename        = body.get('csv filename',       GetMetadataInputDefaults['csv filename'])
-    metadata_columns    = body.get('metadata columns',   GetMetadataInputDefaults['metadata columns'])
-    in_silico_columns   = body.get('in silico columns',  GetMetadataInputDefaults['in silico columns'])
-    qc_data_columns     = body.get('qc data columns',    GetMetadataInputDefaults['qc data columns'])
+    defaults = get_metadata_input_default()
+    return_as_csv       = body.get('as csv',             defaults['as csv'])
+    csv_filename        = body.get('csv filename',       defaults['csv filename'])
+    metadata_columns    = body.get('metadata columns',   defaults['metadata columns'])
+    in_silico_columns   = body.get('in silico columns',  defaults['in silico columns'])
+    qc_data_columns     = body.get('qc data columns',    defaults['qc data columns'])
     
     try:
       if return_as_csv:
@@ -136,9 +137,9 @@ def get_metadata_route(body):
                         get_authenticated_username(request)).get_metadata(
                            sample_filters,
                            start_row         = body.get('start row', None),
-                           num_rows          = body.get('num rows',  GetMetadataInputDefaults['num rows']),
-                           include_in_silico = body.get('in silico', GetMetadataInputDefaults['in silico']),
-                           include_qc_data   = body.get('qc data',   GetMetadataInputDefaults['qc data']),
+                           num_rows          = body.get('num rows',  defaults['num rows']),
+                           include_in_silico = body.get('in silico', defaults['in silico']),
+                           include_qc_data   = body.get('qc data',   defaults['qc data']),
                            metadata_columns  = metadata_columns,
                            in_silico_columns = in_silico_columns,
                            qc_data_columns   = qc_data_columns)
@@ -464,6 +465,15 @@ def get_authenticated_username(req_obj):
             raise NotAuthorisedException(msg)
 
     return username
+ 
+def get_metadata_input_default(property_name=None):
+   """Return defaults for API #/components/schemas/GetMetadataInput properties.
+   If a property name is passed, its default value is returned.
+   If nothing is passed, as dict of all defaults is returned.
+   (The OpenAPI spec. provides defaults, but these are not passed when a request provides no value)"""
+   if property_name is None:
+      return METADATA_INPUT_DEFAULTS
+   return METADATA_INPUT_DEFAULTS.get(property_name, None)
 
 def _parse_BulkDownloadInput(BulkDownloadInput):
    """ Parse the BulkDownloadInput request body passed to a POST request handler """
