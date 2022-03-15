@@ -16,6 +16,76 @@ class TestRoutes(unittest.TestCase):
 
     # this has mock values for the environment variables set by docker-compose
     MOCK_ENVIRONMENT = {'DATA_INSTITUTION_VIEW': 'dash/tests/mock_data/s3'}
+    
+    MOCK_FIELD_ATTRIBUTES = { "metadata" : {
+                                 "categories" : [
+                                       {  "name"   : "category_101",
+                                          "fields" : [
+                                             {  "name"               : "field1_name",
+                                                "display"            : True,
+                                                "default"            : False,
+                                                "order"              : 1,
+                                                "spreadsheet heading": "field1_heading",
+                                                "display name"       : "Field1 Display Name",
+                                                "filter type"        : "none"
+                                             },
+                                             {  "name"               : "field2_name",
+                                                "display"            : True,
+                                                "default"            : True,
+                                                "order"              : 3,
+                                                "spreadsheet heading": "field2_heading",
+                                                "display name"       : "Field2 Display Name",
+                                                "filter type"        : "none"
+                                             },
+                                          ]
+                                       },
+                                       {  "name"   : "category_102",
+                                          "fields" : [
+                                             {  "name"               : "field3_name",
+                                                "display"            : True,
+                                                "default"            : True,
+                                                "order"              : 2,
+                                                "spreadsheet heading": "field3_heading",
+                                                "display name"       : "Field3 Display Name",
+                                                "filter type"        : "none"
+                                             }
+                                          ]
+                                       }
+                                    ]
+                                 },
+                              "in silico" : {
+                                 "categories" : [
+                                       {  "name"   : "category_201",
+                                          "fields" : [
+                                             {  "name"               : "field10_name",
+                                                "display"            : True,
+                                                "default"            : True,
+                                                "order"              : 3,
+                                                "spreadsheet heading": "field10_heading",
+                                                "display name"       : "Field10 Display Name",
+                                                "filter type"        : "none"
+                                             },
+                                          ]
+                                       }
+                                    ]
+                                 },                              
+                              "qc data" : {
+                                 "categories" : [
+                                       {  "name"   : "category_301",
+                                          "fields" : [
+                                             {  "name"               : "field20_name",
+                                                "display"            : True,
+                                                "default"            : True,
+                                                "order"              : 3,
+                                                "spreadsheet heading": "field20_heading",
+                                                "display name"       : "Field20 Display Name",
+                                                "filter type"        : "none"
+                                             },
+                                          ]
+                                       }
+                                    ]
+                                 }                              
+                              }
 
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
@@ -164,7 +234,7 @@ class TestRoutes(unittest.TestCase):
     @patch.object(ServiceFactory, 'sample_data_service')
     def test_get_field_attributes_route(self, sample_data_service_mock, username_mock, resp_mock):
         # Given
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.SERVICE_CALL_RETURN_DATA
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
         # When
         result = get_field_attributes_route()
@@ -173,13 +243,67 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
         resp_mock.assert_called_once_with(
             {
-                'field_attributes': self.SERVICE_CALL_RETURN_DATA
+                'field_attributes': self.MOCK_FIELD_ATTRIBUTES
             }
         )
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
+        
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_get_all(self, sample_data_service_mock, username_mock):
+        # Given
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
+        username_mock.return_value = self.TEST_USER
+        expected_defaults = { 'as csv': False,
+                              'csv filename': 'monocle.csv',
+                              'in silico': True,
+                              'qc data': True,
+                              'num rows': 20,
+                              'metadata columns' : ['field2_name', 'field3_name'],
+                              'in silico columns': ['field10_name'],
+                              'qc data columns'  : ['field20_name']
+                              }
+        result = get_metadata_input_default()
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
+        self.assertIsNotNone(result)
+        self.assertEqual(result, expected_defaults)
+        
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_columns_property(self, sample_data_service_mock, username_mock):
+        # Given
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
+        username_mock.return_value = self.TEST_USER
+        expected_default = ['field2_name', 'field3_name']
+        result = get_metadata_input_default('metadata columns')
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
+        self.assertIsNotNone(result)
+        self.assertEqual(result, expected_default)
 
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_property_not_column(self, sample_data_service_mock):
+        # Given
+        expected_default = 'monocle.csv'
+        result = get_metadata_input_default('csv filename')
+        # Then
+        self.assertEqual(sample_data_service_mock.call_count, 0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result, expected_default)
+        
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_property_not_exist_should_return_none(self, sample_data_service_mock):
+        # Given
+        result = get_metadata_input_default('there is no such property')
+        # Then
+        self.assertEqual(sample_data_service_mock.call_count, 0)
+        self.assertEqual(result, None)
+        
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
@@ -684,19 +808,21 @@ class TestRoutes(unittest.TestCase):
         sample_filters     = {'batches':batches}
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
+        defaults = get_metadata_input_default()
         # When
         result = get_metadata_route({'sample filters': sample_filters})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
-                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
-                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
-                                                                              metadata_columns  = GetMetadataInputDefaults['metadata columns'],
-                                                                              in_silico_columns = GetMetadataInputDefaults['in silico columns'],
-                                                                              qc_data_columns   = GetMetadataInputDefaults['qc data columns'])
+                                                                              num_rows          = defaults['num rows'],
+                                                                              include_in_silico = defaults['in silico'],
+                                                                              include_qc_data   = defaults['qc data'],
+                                                                              metadata_columns  = defaults['metadata columns'],
+                                                                              in_silico_columns = defaults['in silico columns'],
+                                                                              qc_data_columns   = defaults['qc data columns'])
         resp_mock.assert_called_once_with(expected_payload)
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -714,16 +840,18 @@ class TestRoutes(unittest.TestCase):
         qc_data_columns    = ['_ALL']
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
+        defaults = get_metadata_input_default()
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'metadata columns': metadata_columns, 'in silico columns':in_silico_columns, 'qc data columns':qc_data_columns})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = None,
-                                                                              num_rows          = GetMetadataInputDefaults['num rows'],
-                                                                              include_in_silico = GetMetadataInputDefaults['in silico'],
-                                                                              include_qc_data   = GetMetadataInputDefaults['qc data'],
+                                                                              num_rows          = defaults['num rows'],
+                                                                              include_in_silico = defaults['in silico'],
+                                                                              include_qc_data   = defaults['qc data'],
                                                                               metadata_columns  = None,
                                                                               in_silico_columns = None,
                                                                               qc_data_columns   = None)
@@ -743,12 +871,13 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']
         expected_payload   = 'payload'
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({  'sample filters'     : sample_filters,
@@ -763,7 +892,7 @@ class TestRoutes(unittest.TestCase):
                                        }
                                     )
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
@@ -788,13 +917,14 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']
         expected_payload   = 'payload'
         username_mock.return_value = self.TEST_USER
-        sample_data_service_mock.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        sample_data_service_mock.return_value.get_metadata.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         
         result = get_metadata_route({  'sample filters'     : sample_filters,
                                        'start row'          : start_row,
@@ -822,11 +952,12 @@ class TestRoutes(unittest.TestCase):
         num_rows           = 20
         include_in_silico  = True
         include_qc_data    = True
-        return_as_csv      = GetMetadataInputDefaults['as csv']
+        return_as_csv      = get_metadata_input_default('as csv')
         metadata_columns   = ['submitting_institution', 'public_name']
         in_silico_columns  = ['ST']
         qc_data_columns    = ['rel_abun_sa']
         sample_data_service_mock.return_value.get_metadata.return_value = None
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
         # When
         result = get_metadata_route({  'sample filters'     : sample_filters,
@@ -841,7 +972,7 @@ class TestRoutes(unittest.TestCase):
                                        }
                                     )
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata.assert_called_once_with(  sample_filters,
                                                                               start_row         = start_row,
                                                                               num_rows          = num_rows,
@@ -961,12 +1092,13 @@ class TestRoutes(unittest.TestCase):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
-        sample_data_service_mock.return_value.get_metadata.return_value = None
         username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.return_value.get_metadata.return_value = None
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = get_metadata_route({'sample filters': sample_filters})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
@@ -976,8 +1108,9 @@ class TestRoutes(unittest.TestCase):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters     = {'batches':batches}
-        sample_data_service_mock.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
         username_mock.return_value = self.TEST_USER
+        sample_data_service_mock.return_value.get_metadata.side_effect = urllib.error.HTTPError('/nowhere', '400', 'blah blah Invalid field blah blah', 'yes', 'no')
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = get_metadata_route({'sample filters': sample_filters})
         # Then
@@ -993,10 +1126,11 @@ class TestRoutes(unittest.TestCase):
         sample_filters     = {'batches':batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME, sample_filters)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, type(Response('any content will do')))
@@ -1012,10 +1146,11 @@ class TestRoutes(unittest.TestCase):
         sample_filters     = {'batches':batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME, sample_filters)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
