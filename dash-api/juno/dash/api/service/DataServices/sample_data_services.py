@@ -761,11 +761,42 @@ class MonocleSampleData:
          message = "Invalid request to {}: status \"{}\" passed, but should be one of \"{}\"".format(__class__.__name__,status,'", "'.join(statuses))
          logging.error(message)
          raise RuntimeError(message)
-      # create get_csv_download params
-      sample_status  =  {  "institution"  : institution,
-                           "category"     : category,
-                           "status"       : status
+      
+      # Create a sample filter that includes all batches for this institution
+      batches_filter = []
+      # batches are referenced by institution key, so get that first
+      institution_key = None
+      for this_institution in institution_data:
+         if institution_data[this_institution].get('name') == institution:
+            institution_key = this_institution
+            break
+      # now get all batches for the institution
+      batches_data = self.sample_tracking.get_batches().get(institution_key)
+      for this_delivery in batches_data['deliveries']:
+         batches_filter.append(  {  'institution key':   institution_key,
+                                    'batch date':        this_delivery['date']
+                                    }
+                                 )
+      # request should never have been made for an institution with no samples
+      if 0 == len(batches_filter):
+         message = "no batches could be found for {}".format(institution)
+         logging.error(message)
+         raise RuntimeError(message)
+      
+      # Create a sample filter for the sequencing/pipeline status required
+      # This always restricts samples to those that have completed
+      status_filter = { 'complete': True }
+      if 'successful' == status:
+         status_filter['success'] = True
+      else:
+         status_filter['success'] = False
+      
+      
+      sample_filters = {   'batches':  batches_filter,
+                           category:   status_filter
                            }
+      logging.info("metadata download {}/{}/{} will use sample filters: {}".format(institution, category, status, sample_filters))
+      
       filename       =  '{}_{}_{}.csv'.format(  "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(),
                                                 category,
                                                 status)
@@ -773,18 +804,19 @@ class MonocleSampleData:
                            "institution"  : institution
                            }
       # wrap get_csv_download()
-      return self.get_csv_download(filename, sample_status=sample_status, download_links=download_links)
+      return self.get_csv_download(filename, sample_filters, download_links=download_links)
 
-   def get_csv_download(self, csv_response_filename, sample_status=None, sample_filters=None, download_links=None):
+   def get_csv_download(self, csv_response_filename, sample_filters, download_links=None):
       """
       Retrieves metadata and (when available) in silico data as CSV for a set of samples.
       
-      Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
-      params to indicate the samples to be downloaded.
-      Also pass the suggested filename (ultimately for HTTP headers).
+      Pass the suggested filename (ultimately for HTTP headers) and sample filters (as understood
+      by get_filtered_samples(), to indicate the samples to be downloaded).
+
       Optionally pass `download_links` if data download links are to be included in the CSV:
       this is a dict with 'hostname', the host name to be used in the URLs, and 'institution',
       the institution that "owns" the data.
+      
       *Important:*  Currently download links can only be provided where all the samples are
       from a single institution.  If `sample_filters` matches samples from more than one
       institution, some of the download links will be broken!
@@ -805,11 +837,6 @@ class MonocleSampleData:
          }
 
       """
-      if (None == sample_status and None == sample_filters) or (sample_status and sample_filters):
-         message = "Must pass EITHER sample_status OR sample_filters to {}".format(__class__.__name__)
-         logging.error(message)
-         raise RuntimeError(message)
-         
       download_base_url = None
       if download_links is not None:
          try:
@@ -831,10 +858,8 @@ class MonocleSampleData:
          download_base_url = '/'.join([host_url, institution_download_symlink_url_path])
          logging.info('Data download base URL = {}'.format(download_base_url))
 
-      if sample_status:
-         csv_response_string = self.metadata_as_csv(sample_status=sample_status, download_base_url=download_base_url)
-      else:
-         csv_response_string = self.metadata_as_csv(sample_filters=sample_filters, download_base_url=download_base_url)
+      csv_response_string = self._metadata_as_csv(sample_filters, download_base_url=download_base_url)
+      
       if csv_response_string is None:
          return { 'success'   : False,
                   'error'     : 'not found',
@@ -845,48 +870,52 @@ class MonocleSampleData:
                   'content'   : csv_response_string
                   }
 
-   def metadata_as_csv(self, sample_status=None, sample_filters=None, download_base_url=None, include_qc_data=False):
+   def _metadata_as_csv(self, sample_filters, download_base_url=None, include_qc_data=False):
       """
-      Pass EITHER sample filters (as understood by get_filtered_samples()) OR sample status
-      params to indicate the samples to be downloads.
+      Wrapper for _metadata_as_df() which paases its return values to _metadata_df_to_csv(),
+      and returns the CSV.
+      Returns None if there are no matching samples.
+      """
+      metadata_df, column_order = self._metadata_as_df(sample_filters, download_base_url=download_base_url, include_qc_data=include_qc_data)
+      if metadata_df is None:
+         return None
+      return self._metadata_df_to_csv(metadata_df, column_order)
+
+   def _metadata_as_df(self, sample_filters, download_base_url=None, include_qc_data=False):
+      """
+      Pass sample filters (as understood by get_filtered_samples() to indicate the samples to
+      be downloaded.
+      
       Optionally pass a base URL for the download; if provided, a download URL for each sample
       (this base URL with the public name appended) will be added as an extra column.
-      Optionally set include_qc_data to true if QC data should be included in the CSV.
 
-      When available, in silico data for each sample are now also included.
+      When available, in silico data for each sample are included.
+      Optionally set include_qc_data to true if QC data should be included.
 
-      Returns metadata as CSV, or None if there are no matching samples
+      Returns pandas data frame and column order; or None if there are no matching samples
       """
-      if (None == sample_status and None == sample_filters) or (sample_status and sample_filters):
-         message = "Must pass EITHER sample_status OR sample_filters to {}".format(__class__.__name__)
-         logging.error(message)
-         raise RuntimeError(message)
-      
       # for metadata downloads, we just need a dict with sample IDs as keys,
       # value are arrays of lane ID(s) for each sample
-      samples_for_download = None
-      if sample_status:
-         samples_for_download = self._get_samples_by_status(sample_status)
-      else:
-         samples_for_download = {}
-         # get_filtered_samples returns sequencing status data for the samples that match the sample filters used
-         try:
-            filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
-            # extract what we need from seq status data
-            for this_sample in filtered_samples:
-               this_sanger_sample_id = this_sample['sanger_sample_id']
-               for this_lane in this_sample['lanes']:
-                  if this_sanger_sample_id in samples_for_download:
-                     samples_for_download[this_sanger_sample_id].append(this_lane)
-                  else:
-                     samples_for_download[this_sanger_sample_id] = [this_lane]
-         # catch 404s -- this means the metadata API found no matching samples
-         except urllib.error.HTTPError as e:
-            if '404' not in str(e):
-               raise e
+      samples_for_download = {}
+      # get_filtered_samples returns sequencing status data for the samples that match the sample filters used
+      try:
+         filtered_samples = self.get_filtered_samples( sample_filters, disable_public_name_fetch=True )
+         # extract what we need from seq status data
+         for this_sample in filtered_samples:
+            this_sanger_sample_id = this_sample['sanger_sample_id']
+            for this_lane in this_sample['lanes']:
+               if this_sanger_sample_id in samples_for_download:
+                  samples_for_download[this_sanger_sample_id].append(this_lane)
+               else:
+                  samples_for_download[this_sanger_sample_id] = [this_lane]
+                  
+      # catch 404s -- this means the metadata API found no matching samples
+      except urllib.error.HTTPError as e:
+         if '404' not in str(e):
+            raise e
 
       if 1 > len(samples_for_download):
-         return None
+         return (None, None)
 
       # retrieve the sample metadata and load into DataFrame
       logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
@@ -951,80 +980,17 @@ class MonocleSampleData:
       # if download links are included, put them in last column
       if download_base_url is not None:
          metadata_col_order.append('Download_Link')
-
+         
+      return (metadata_df, metadata_col_order)
+   
+   def _metadata_df_to_csv(self, metadata_df, metadata_col_order):
+      """
+      Pass panda dataframe and column order.
+      Returns CSV.
+      """
       metadata_csv = metadata_df.to_csv(columns=metadata_col_order, index=False, quoting=QUOTE_NONNUMERIC)
       logging.debug("merged metadata, in silico and QC data as CSV:\n{}".format(metadata_csv))
       return metadata_csv
-
-   def _get_samples_by_status(self, sample_status):
-      """
-      Pass institution name, category ('sequencing' or 'pipeline') and status ('successful'
-      or 'failed).
-
-      Returns dict of samples from that institution matching the category & status.
-      Keys are sample IDs, values are a list of the lane IDs for that sample.
-      """
-      try:
-         institution = sample_status['institution']
-         category    = sample_status['category']
-         status      = sample_status['status']
-      except KeyError:
-         logging.error("{} must be passed sample_status dict including 'institution', 'category' and 'status'".format(__class__.__name__))
-         raise
-      sequencing_status_data  = self.sample_tracking.get_sequencing_status()
-      institution_data_key    = self.sample_tracking.institution_db_key_to_dict[institution]
-      logging.debug("getting metadata: institution db key {} maps to dict key {}".format(institution,institution_data_key))
-
-      # note that the status can only be found by *lane* ID, so we need to look up lanes that match the requirements
-      # then the sample ID associated with each matchuing lane gets pushed onto a list that we can use for the metadata download request
-      filtered_samples = {}
-      for this_sanger_sample_id in sequencing_status_data[institution_data_key].keys():
-         if this_sanger_sample_id == API_ERROR_KEY:
-            if sequencing_status_data[institution_data_key][
-               this_sanger_sample_id] == 'Server Error: Records cannot be collected at this time. Please try again later.':
-               logging.error('getting metadata: httpError records could not be collected for {}'.format(institution))
-               raise KeyError("{} has no sample data".format(institution))
-            else:
-               continue
-
-         for this_lane in sequencing_status_data[institution_data_key][this_sanger_sample_id]['lanes']:
-
-            if 'qc complete' == this_lane['run_status'] and this_lane['qc_complete_datetime'] and 1 == this_lane['qc_started']:
-               # lane completed sequencing, though possibly failed
-               this_lane_seq_fail = False
-               for this_flag in self.sequencing_flags.keys():
-                  if not 1 == this_lane[this_flag]:
-                     this_lane_seq_fail = True
-                     break
-
-               want_this_lane = False
-               # we're looking for lanes that completed sequencing...
-               if 'sequencing' == category:
-                  # ...and were successful; so only want this lane if it did *not* fail
-                  if 'successful' == status and not this_lane_seq_fail:
-                     want_this_lane = True
-                  # ...and failed; so only want this lane if it is a failure
-                  elif 'failed' == status and this_lane_seq_fail:
-                     want_this_lane = True
-               # we're looking for lanes that completed the pipelines...
-               elif 'pipeline' == category:
-                  ## ...(which means the lane must previously have been sequenced OK)...
-                  if not this_lane_seq_fail:
-                     this_pipeline_status = self.sample_tracking.pipeline_status.lane_status(this_lane['id'])
-                     # ...and were successful; so only want this lane if it completed and did *not* fail
-                     if 'successful' == status and this_pipeline_status['SUCCESS']:
-                        want_this_lane = True
-                     # ...and failed; so only want this lane if it is a failure
-                     elif 'failed' == status and this_pipeline_status['FAILED']:
-                        want_this_lane = True
-               if want_this_lane:
-                  if this_sanger_sample_id in filtered_samples:
-                     filtered_samples[this_sanger_sample_id].append(this_lane['id'])
-                  else:
-                     filtered_samples[this_sanger_sample_id] = [this_lane['id']]
-      logging.info("Found {} samples from {} with {} status {}".format(len(filtered_samples.keys()),institution,category,status))
-      
-      return filtered_samples
 
    def _metadata_download_to_pandas_data(self, api_data):
       """
