@@ -107,7 +107,7 @@ def get_metadata_route(body):
          # this is because the sample filters could match samples from multiple institutions, and download
          # links for multiple institutions are not currently supported with CSV metadata downloads
          return  _metadata_as_csv_response(
-                     ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters=sample_filters)
+                     ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters)
                      )
       else:
          # setting column filter params to '_ALL' means all columns should be returned
