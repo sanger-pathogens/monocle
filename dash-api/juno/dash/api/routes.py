@@ -13,6 +13,7 @@ from     time           import sleep, time
 from     typing         import List
 from     urllib.error   import HTTPError
 from     uuid           import uuid4
+import   yaml
 
 from dash.api.service.service_factory  import ServiceFactory
 from dash.api.exceptions               import NotAuthorisedException
@@ -26,14 +27,8 @@ ServiceFactory.TEST_MODE = False
 
 DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 
-# these are set in the openapi.yml file, but request body doesn't seem to set default values
-# to they have to be set by the route :-/
-METADATA_INPUT_DEFAULTS = {   "as csv"             : False,
-                              "csv filename"       : "monocle.csv",
-                              "in silico"          : True,
-                              "qc data"            : True,
-                              "num rows"           : 20
-                              }
+OPENAPI_SPEC_FILE = './dash/interface/openapi.yml'
+GET_METADATA_INPUT_SCHEMA = 'GetMetadataInput'
 
 def get_user_details_route():
     """ Given a username retrieve all details for that user """
@@ -460,11 +455,13 @@ def get_metadata_input_default(property_name=None):
    If a property name is passed, its default value is returned.
    If nothing is passed, as dict of all defaults is returned.
    (The OpenAPI spec. provides defaults, but these are not passed when a request provides no value)"""
-   default_values = deepcopy(METADATA_INPUT_DEFAULTS)
    
-   # field attributes must be got from sample_data_service.get_field_attributes()
-   # but this is only necessary if the whole METADATA_INPUT_DEFAULTS dict is being returned
-   # or the property asked for was a list of default columns
+   # get the defaults from the OpenAPI spec.
+   default_values = _get_defaults_from_spec(OPENAPI_SPEC_FILE, GET_METADATA_INPUT_SCHEMA)
+   
+   # default columns must be retrieved from sample_data_service.get_field_attributes()
+   # but this is only necessary if the property asked for was a list of default columns
+   # (incl. when nothing specific is asked for and the whole dict is returned)
    if property_name is None or property_name in ["metadata columns", "in silico columns", "qc data columns"]:
       default_columns = _get_default_columns()
       for default_column_type in default_columns:
@@ -474,11 +471,28 @@ def get_metadata_input_default(property_name=None):
       return default_values
    return default_values.get(property_name, None)
 
+def _get_defaults_from_spec(openapi_file_name, schema_name):
+   """Pass OpenAPI spec. file name and a schmema name.
+   Returns all defined default values for properties in the schema.
+   Does not currently follow refs."""
+   with open(openapi_file_name) as openapi_yaml_file:
+      openapi_spec = yaml.safe_load(openapi_yaml_file.read())
+   
+   default_values = {}
+   properties = openapi_spec['components']['schemas'][schema_name]['properties']
+   for this_prop in properties:
+      this_default = properties[this_prop].get('default')
+      if this_default is not None:
+         default_values[this_prop] = this_default
+   
+   return default_values
+
+
 def _get_default_columns():
    field_attributes = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
    default_columns = {}
    for this_field_type in field_attributes:
-      # FIXME this is a really ugly way to get the key in the METADATA_INPUT_DEFAULTS dict :-/
+      # FIXME this is a really ugly way to get the property name for default columns dict :-/
       default_key = "{} columns".format(this_field_type)
       default_columns[default_key] = []
       for this_category in field_attributes[this_field_type]['categories']:
