@@ -492,7 +492,7 @@ def _get_default_columns():
    field_attributes = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
    default_columns = {}
    for this_field_type in field_attributes:
-      # FIXME this is a really ugly way to get the property name for default columns dict :-/
+      # FIXME this is a really ugly way to get the name of a default columns property from a field type:-/
       default_key = "{} columns".format(this_field_type)
       default_columns[default_key] = []
       for this_category in field_attributes[this_field_type]['categories']:

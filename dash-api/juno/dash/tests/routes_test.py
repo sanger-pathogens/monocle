@@ -250,10 +250,9 @@ class TestRoutes(unittest.TestCase):
         self.assertTrue(len(result), 2)
         self.assertEqual(result[1], HTTPStatus.OK)
         
-    @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
     @patch.object(ServiceFactory, 'sample_data_service')
-    def test_get_metadata_input_default(self, sample_data_service_mock, username_mock, resp_mock):
+    def test_get_metadata_input_default_get_all(self, sample_data_service_mock, username_mock):
         # Given
         sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
@@ -272,6 +271,38 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
         self.assertIsNotNone(result)
         self.assertEqual(result, expected_defaults)
+        
+    @patch('dash.api.routes.get_authenticated_username')
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_columns_property(self, sample_data_service_mock, username_mock):
+        # Given
+        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
+        username_mock.return_value = self.TEST_USER
+        expected_default = ['field2_name', 'field3_name']
+        result = get_metadata_input_default('metadata columns')
+        # Then
+        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
+        self.assertIsNotNone(result)
+        self.assertEqual(result, expected_default)
+
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_property_not_column(self, sample_data_service_mock):
+        # Given
+        expected_default = 'monocle.csv'
+        result = get_metadata_input_default('csv filename')
+        # Then
+        self.assertEqual(sample_data_service_mock.call_count, 0)
+        self.assertIsNotNone(result)
+        self.assertEqual(result, expected_default)
+        
+    @patch.object(ServiceFactory, 'sample_data_service')
+    def test_get_metadata_input_default_single_property_not_exist_should_return_none(self, sample_data_service_mock):
+        # Given
+        result = get_metadata_input_default('there is no such property')
+        # Then
+        self.assertEqual(sample_data_service_mock.call_count, 0)
+        self.assertEqual(result, None)
         
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')
