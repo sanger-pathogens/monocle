@@ -1130,7 +1130,7 @@ class TestRoutes(unittest.TestCase):
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME, sample_filters)
         self.assertIsNotNone(result)
         self.assertIsInstance(result, type(Response('any content will do')))
@@ -1150,7 +1150,7 @@ class TestRoutes(unittest.TestCase):
         # When
         result = get_metadata_route({'sample filters': sample_filters, 'as csv': True, 'csv filename': self.SERVICE_CALL_RETURN_CSV_FILENAME})
         # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_data_service_mock.assert_called_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_csv_download.assert_called_once_with(self.SERVICE_CALL_RETURN_CSV_FILENAME, sample_filters)
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
