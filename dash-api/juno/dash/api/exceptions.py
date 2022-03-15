@@ -2,5 +2,6 @@
 
 
 class NotAuthorisedException(Exception):
-    """ Thrown in the event of an authorisation issue """
+    """Thrown in the event of an authorisation issue"""
+
     pass
