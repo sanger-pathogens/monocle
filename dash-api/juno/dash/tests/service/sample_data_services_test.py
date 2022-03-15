@@ -799,17 +799,20 @@ class MonocleSampleDataTest(TestCase):
       self.get_mock_data2()
       get_sample_metadata_mock.return_value = self.mock_samples2
       # assigning list to side_effect returns next value each time mocked function is called
-      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_1:  failed
-                                       { 'SUCCESS':True,  'FAILED': False},  # second lane for fake_sample_id_1: success
-                                       { 'SUCCESS':False, 'FAILED': False},  # third lane for fake_sample_id_1:  incomplete
-                                       { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_2:  failed
+      # N.B.  the code only checks each sample's lanes until it finds one that succeeded.
+      #       The mock data have 3 lanes for fake_sample_id_1, but after the second lane is
+      #       checked and found to be successful, no more lanes for fake_sample_id_1 should
+      #       be checked.  => even though we have mocked 4 lanes, only 3 calls are expected
+      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # fake_sample_id_1: first lane failed
+                                       { 'SUCCESS':True,  'FAILED': False},  # fake_sample_id_1: second lane succeeded
+                                       { 'SUCCESS':False, 'FAILED': True},   # fake_sample_id_2: lane failed
                                        ]
       
       # should return fake_sample_id_1 as it has one successful lane
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'pipeline': {'success': True}})
 
       expected_samples = self.mock_filtered_samples2
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      #logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
       
@@ -819,17 +822,19 @@ class MonocleSampleDataTest(TestCase):
       self.get_mock_data2()
       get_sample_metadata_mock.return_value = self.mock_samples2
       # assigning list to side_effect returns next value each time mocked function is called
-      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # first lane for fake_sample_id_1:  failed
-                                       { 'SUCCESS':True,  'FAILED': False},  # second lane for fake_sample_id_1: success
-                                       { 'SUCCESS':False, 'FAILED': False},  # third lane for fake_sample_id_1:  incomplete
-                                       { 'SUCCESS':False, 'FAILED': False},  # first lane for fake_sample_id_2:  incomplete
+      # N.B.  the code only checks each sample's lanes until it finds one that completed.
+      #       The mock data have 3 lanes for fake_sample_id_1, but after the first lane is
+      #       checked and found to be complete, no more lanes for fake_sample_id_1 should
+      #       be checked.  => even though we have mocked 4 lanes, only 2 calls are expected
+      lane_status_mock.side_effect = [ { 'SUCCESS':False, 'FAILED': True},   # fake_sample_id_1: first lane failed => complete
+                                       { 'SUCCESS':False, 'FAILED': False},  # fake_sample_id_2: no status available => incomplete
                                        ]
       
       # should return fake_sample_id_1 as it has one complete lane
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'pipeline': {'complete': True}})
 
       expected_samples = self.mock_filtered_samples2
-      logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      logging.critical("\n***** EXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
 
