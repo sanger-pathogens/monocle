@@ -94,7 +94,7 @@ def get_metadata_route(body):
     """ Get sample metadata based on standard sample filter  """
     logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
     sample_filters      = body['sample filters']
-    defaults = get_metadata_input_default()
+    defaults            = get_metadata_input_default()
     return_as_csv       = body.get('as csv',             defaults['as csv'])
     csv_filename        = body.get('csv filename',       defaults['csv filename'])
     metadata_columns    = body.get('metadata columns',   defaults['metadata columns'])

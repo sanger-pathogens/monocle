@@ -140,9 +140,11 @@ class MonocleSampleData:
       # if paginating, take a slice of the samples
       if start_row is None:
          last_sample_row_returned = total_num_matching_samples
+         logging.info("No \"start row\" passed: returning all {} matching samples".format(total_num_matching_samples))
       else:
          assert num_rows is not None, "{} must be passed start_row and num_rows, or neither.".format(__class__.__name__)
          filtered_samples = list(filtered_samples[ (start_row-1) : ((start_row -1) + num_rows) ])
+         logging.info("Passed \"start row\"={} and \"num rows\"={}: returning slice with {} samples".format(start_row,num_rows,len(filtered_samples)))
          # last_sample_row_returned must be the actual last row, which may be lower
          # than expected when the end of the result set is reached
          last_sample_row_returned = (start_row-1) + len(filtered_samples)
