@@ -1,5 +1,6 @@
 import   logging
 from     flask          import jsonify, request, Response
+from     copy           import deepcopy
 from     datetime       import datetime
 import   errno
 from     http           import HTTPStatus
@@ -31,20 +32,8 @@ METADATA_INPUT_DEFAULTS = {   "as csv"             : False,
                               "csv filename"       : "monocle.csv",
                               "in silico"          : True,
                               "qc data"            : True,
-                              "num rows"           : 20,
-                              "metadata columns"   : ["submitting_institution",
-                                                      "public_name",
-                                                      "host_status",
-                                                      "selection_random",
-                                                      "country",
-                                                      "collection_year",
-                                                      "host_species",
-                                                      "isolation_source",
-                                                      "serotype"],
-                              "in silico columns"  : ["ST"],
-                              "qc data columns"    : ["rel_abun_sa"],
+                              "num rows"           : 20
                               }
-
 
 def get_user_details_route():
     """ Given a username retrieve all details for that user """
@@ -471,9 +460,33 @@ def get_metadata_input_default(property_name=None):
    If a property name is passed, its default value is returned.
    If nothing is passed, as dict of all defaults is returned.
    (The OpenAPI spec. provides defaults, but these are not passed when a request provides no value)"""
+   default_values = deepcopy(METADATA_INPUT_DEFAULTS)
+   
+   # field attributes must be got from sample_data_service.get_field_attributes()
+   # but this is only necessary if the whole METADATA_INPUT_DEFAULTS dict is being returned
+   # or the property asked for was a list of default columns
+   if property_name is None or property_name in ["metadata columns", "in silico columns", "qc data columns"]:
+      default_columns = _get_default_columns()
+      for default_column_type in default_columns:
+         default_values[default_column_type] = default_columns[default_column_type]
+         
    if property_name is None:
-      return METADATA_INPUT_DEFAULTS
-   return METADATA_INPUT_DEFAULTS.get(property_name, None)
+      return default_values
+   return default_values.get(property_name, None)
+
+def _get_default_columns():
+   field_attributes = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
+   default_columns = {}
+   for this_field_type in field_attributes:
+      # FIXME this is a really ugly way to get the key in the METADATA_INPUT_DEFAULTS dict :-/
+      default_key = "{} columns".format(this_field_type)
+      default_columns[default_key] = []
+      for this_category in field_attributes[this_field_type]['categories']:
+         for this_field in this_category.get('fields',[]):
+            if this_field.get('default', False):
+               default_columns[default_key].append(this_field['name'])
+      logging.info("{} default columns: {}".format(default_key,default_columns[default_key]))
+   return default_columns
 
 def _parse_BulkDownloadInput(BulkDownloadInput):
    """ Parse the BulkDownloadInput request body passed to a POST request handler """
