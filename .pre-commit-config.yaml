@@ -1,3 +1,5 @@
+# Fail on the first failure.
+fail_fast: true
 default_language_version:
   python: python3.8.8
 repos:
@@ -5,10 +7,16 @@ repos:
     rev: 22.1.0
     hooks:
       - id: black
+        name: Black (Python)
         args:
           - --line-length=120
   - repo: https://github.com/pycqa/isort
     rev: 5.10.1
     hooks:
       - id: isort
-        name: isort (python)
+        name: isort (Python)
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        name: flake8 (Python)
