@@ -17,6 +17,16 @@ The components include:
 
 There is a further README in each directory with more detailed information.
 
+## Development
+
+### Prerequisites
+
+#### Pre-commit hooks
+
+Monocle's pre-commit hooks (speficied in `./.pre-commit-config.yaml`) are run before each commit automatically. We use them to auto-format code and to check for linting errors, for example. W/o running the hooks, the CI pipeline may fail.
+
+To install the pre-commit hooks, [install `pre-commit`](https://pre-commit.com/#installation) and afterwards run `pre-commit install` from the repository's folder to install the pre-commit hooks.
+
 ## Production
 Monocle is available internally to Sanger at the following addresses:
 - `prod`: [http://monocle.pam.sanger.ac.uk/](http://monocle.pam.sanger.ac.uk/)
