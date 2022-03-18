@@ -20,6 +20,3 @@ repos:
     hooks:
       - id: flake8
         name: flake8 (Python)
-        # Ignore the line-length rule, since Black doesn't always respect it.
-        args:
-          - --ignore=E501
