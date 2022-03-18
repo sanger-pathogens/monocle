@@ -1,19 +1,24 @@
-import errno
-import json
-import logging
-import os
-from http import HTTPStatus
-from http.client import HTTPS_PORT
-from itertools import islice
-from pathlib import Path
-from time import sleep, time
-from urllib.error import HTTPError
-from uuid import uuid4
+import   logging
+from     flask          import jsonify, request, Response
+from     copy           import deepcopy
+from     datetime       import datetime
+import   errno
+from     http           import HTTPStatus
+from     http.client    import HTTPS_PORT
+from     itertools      import islice
+import   json
+import   os
+from     pathlib        import Path
+from     time           import sleep, time
+from     typing         import List
+from     urllib.error   import HTTPError
+from     uuid           import uuid4
+import   yaml
 
-from dash.api.exceptions import NotAuthorisedException
-from dash.api.service.service_factory import ServiceFactory
-from dash.api.utils.file import ZIP_SUFFIX, complete_zipfile, zip_files
-from flask import Response, jsonify, request
+from dash.api.service.service_factory  import ServiceFactory
+from dash.api.exceptions               import NotAuthorisedException
+from dash.api.utils.file               import zip_files, ZIP_SUFFIX, complete_zipfile
+
 
 logger = logging.getLogger()
 
@@ -22,29 +27,8 @@ ServiceFactory.TEST_MODE = False
 
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 
-# these are set in the openapi.yml file, but request body doesn't seem to set default values
-# to they have to be set by the route :-/
-GetMetadataInputDefaults = {
-    "as csv": False,
-    "csv filename": "monocle.csv",
-    "in silico": True,
-    "qc data": True,
-    "num rows": 20,
-    "metadata columns": [
-        "submitting_institution",
-        "public_name",
-        "host_status",
-        "selection_random",
-        "country",
-        "collection_year",
-        "host_species",
-        "isolation_source",
-        "serotype",
-    ],
-    "in silico columns": ["ST"],
-    "qc data columns": ["rel_abun_sa"],
-}
-
+OPENAPI_SPEC_FILE = './dash/interface/openapi.yml'
+GET_METADATA_INPUT_SCHEMA = 'GetMetadataInput'
 
 def get_user_details_route():
     """Given a username retrieve all details for that user"""
@@ -95,50 +79,48 @@ def get_field_attributes_route():
 
 
 def get_metadata_route(body):
-    """Get sample metadata based on standard sample filter"""
-    logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
-    sample_filters = body["sample filters"]
-    return_as_csv = body.get("as csv", GetMetadataInputDefaults["as csv"])
-    csv_filename = body.get("csv filename", GetMetadataInputDefaults["csv filename"])
-    metadata_columns = body.get("metadata columns", GetMetadataInputDefaults["metadata columns"])
-    in_silico_columns = body.get("in silico columns", GetMetadataInputDefaults["in silico columns"])
-    qc_data_columns = body.get("qc data columns", GetMetadataInputDefaults["qc data columns"])
-
+    """ Get sample metadata based on standard sample filter  """
+    logging.info("endpoint handler {} was passed body = {}".format(__name__,body))
+    sample_filters      = body['sample filters']
+    defaults            = get_metadata_input_default()
+    return_as_csv       = body.get('as csv',             defaults['as csv'])
+    csv_filename        = body.get('csv filename',       defaults['csv filename'])
+    metadata_columns    = body.get('metadata columns',   defaults['metadata columns'])
+    in_silico_columns   = body.get('in silico columns',  defaults['in silico columns'])
+    qc_data_columns     = body.get('qc data columns',    defaults['qc data columns'])
+    
     try:
-        if return_as_csv:
-            # note the metadata CSV here does not include data download URLs
-            # this is because the sample filters could match samples from multiple institutions, and download
-            # links for multiple institutions are not currently supported with CSV metadata downloads
-            return _metadata_as_csv_response(
-                ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(
-                    csv_filename, sample_filters=sample_filters
-                )
-            )
-        else:
-            # setting column filter params to '_ALL' means all columns should be returned
-            if "_ALL" == metadata_columns[0]:
-                metadata_columns = None
-            if "_ALL" == in_silico_columns[0]:
-                in_silico_columns = None
-            if "_ALL" == qc_data_columns[0]:
-                qc_data_columns = None
-            metadata = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_metadata(
-                sample_filters,
-                start_row=body.get("start row", None),
-                num_rows=body.get("num rows", GetMetadataInputDefaults["num rows"]),
-                include_in_silico=body.get("in silico", GetMetadataInputDefaults["in silico"]),
-                include_qc_data=body.get("qc data", GetMetadataInputDefaults["qc data"]),
-                metadata_columns=metadata_columns,
-                in_silico_columns=in_silico_columns,
-                qc_data_columns=qc_data_columns,
-            )
-            if metadata is None:
-                return Response(
-                    "No matching samples were found",
-                    content_type="text/plain; charset=UTF-8",
-                    status=HTTPStatus.NOT_FOUND,
-                )
-            return call_jsonify(metadata), HTTPStatus.OK
+      if return_as_csv:
+         # note the metadata CSV here does not include data download URLs
+         # this is because the sample filters could match samples from multiple institutions, and download
+         # links for multiple institutions are not currently supported with CSV metadata downloads
+         return  _metadata_as_csv_response(
+                     ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(csv_filename, sample_filters)
+                     )
+      else:
+         # setting column filter params to '_ALL' means all columns should be returned
+         if '_ALL' == metadata_columns[0]:
+            metadata_columns = None
+         if '_ALL' == in_silico_columns[0]:
+            in_silico_columns = None
+         if '_ALL' == qc_data_columns[0]:
+            qc_data_columns = None
+         metadata = ServiceFactory.sample_data_service(
+                        get_authenticated_username(request)).get_metadata(
+                           sample_filters,
+                           start_row         = body.get('start row', None),
+                           num_rows          = body.get('num rows',  defaults['num rows']),
+                           include_in_silico = body.get('in silico', defaults['in silico']),
+                           include_qc_data   = body.get('qc data',   defaults['qc data']),
+                           metadata_columns  = metadata_columns,
+                           in_silico_columns = in_silico_columns,
+                           qc_data_columns   = qc_data_columns)
+         if metadata is None:
+            return Response(  'No matching samples were found',
+                              content_type   = 'text/plain; charset=UTF-8',
+                              status         = HTTPStatus.NOT_FOUND
+                              )
+         return call_jsonify( metadata ), HTTPStatus.OK
     except HTTPError as e:
         if "400" in str(e):
             return "Bad request", HTTPStatus.BAD_REQUEST
@@ -481,6 +463,58 @@ def get_authenticated_username(req_obj):
             raise NotAuthorisedException(msg)
 
     return username
+ 
+def get_metadata_input_default(property_name=None):
+   """Return defaults for API #/components/schemas/GetMetadataInput properties.
+   If a property name is passed, its default value is returned.
+   If nothing is passed, as dict of all defaults is returned.
+   (The OpenAPI spec. provides defaults, but these are not passed when a request provides no value)"""
+   
+   # get the defaults from the OpenAPI spec.
+   default_values = _get_defaults_from_spec(OPENAPI_SPEC_FILE, GET_METADATA_INPUT_SCHEMA)
+   
+   # default columns must be retrieved from sample_data_service.get_field_attributes()
+   # but this is only necessary if the property asked for was a list of default columns
+   # (incl. when nothing specific is asked for and the whole dict is returned)
+   if property_name is None or property_name in ["metadata columns", "in silico columns", "qc data columns"]:
+      default_columns = _get_default_columns()
+      for default_column_type in default_columns:
+         default_values[default_column_type] = default_columns[default_column_type]
+         
+   if property_name is None:
+      return default_values
+   return default_values.get(property_name, None)
+
+def _get_defaults_from_spec(openapi_file_name, schema_name):
+   """Pass OpenAPI spec. file name and a schmema name.
+   Returns all defined default values for properties in the schema.
+   Does not currently follow refs."""
+   with open(openapi_file_name) as openapi_yaml_file:
+      openapi_spec = yaml.safe_load(openapi_yaml_file.read())
+   
+   default_values = {}
+   properties = openapi_spec['components']['schemas'][schema_name]['properties']
+   for this_prop in properties:
+      this_default = properties[this_prop].get('default')
+      if this_default is not None:
+         default_values[this_prop] = this_default
+   
+   return default_values
+
+
+def _get_default_columns():
+   field_attributes = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
+   default_columns = {}
+   for this_field_type in field_attributes:
+      # FIXME this is a really ugly way to get the name of a default columns property from a field type:-/
+      default_key = "{} columns".format(this_field_type)
+      default_columns[default_key] = []
+      for this_category in field_attributes[this_field_type]['categories']:
+         for this_field in this_category.get('fields',[]):
+            if this_field.get('default', False):
+               default_columns[default_key].append(this_field['name'])
+      logging.info("{} default columns: {}".format(default_key,default_columns[default_key]))
+   return default_columns
 
 
 def _parse_BulkDownloadInput(BulkDownloadInput):
