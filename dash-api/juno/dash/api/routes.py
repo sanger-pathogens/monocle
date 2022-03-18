@@ -2,13 +2,11 @@ import errno
 import json
 import logging
 import os
-from datetime import datetime
 from http import HTTPStatus
 from http.client import HTTPS_PORT
 from itertools import islice
 from pathlib import Path
 from time import sleep, time
-from typing import List
 from urllib.error import HTTPError
 from uuid import uuid4
 
@@ -27,7 +25,7 @@ DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 # these are set in the openapi.yml file, but request body doesn't seem to set default values
 # to they have to be set by the route :-/
 GetMetadataInputDefaults = {
-    'as csv': False,
+    "as csv": False,
     "csv filename": "monocle.csv",
     "in silico": True,
     "qc data": True,
