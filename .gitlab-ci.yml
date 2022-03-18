@@ -23,12 +23,12 @@ Check that Python code is formatted:
     - openstack-autoscale-theta
   image: python:3.8.12-slim-buster
   before_script:
-    - pip install black
+    - pip install $(grep -E '^black|^isort' requirements-dev.txt | xargs)
   script:
-    - black --check --line-length ${LINE_LENGTH} . || exit_code=$?
+    - black --check --line-length ${LINE_LENGTH} . && isort --check-only . || exit_code=$?
     - >
       if [[ $exit_code -eq 1 ]]; then
-        echo "❌ Some Python code isn't formatted. Ensure you run \`pre-commit install\` from \`monocle\` repo to intall\
+        echo "❌ Some Python code isn't formatted. Ensure you run \`pre-commit install\` from \`monocle\` repo to install\
          the pre-commit hooks. Once istalled, they format code on each commit automatically."
       fi
     - exit $exit_code
