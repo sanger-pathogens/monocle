@@ -21,6 +21,12 @@ There is a further README in each directory with more detailed information.
 
 ### Prerequisites
 
+Run from `monocle` repo's root folder:
+```
+pip install -r requirements-dev.txt
+```
+to install tools like Black and isort for auto-formatting, which you may want to run manually sometimes.
+
 #### Pre-commit hooks
 
 Monocle's pre-commit hooks (speficied in `./.pre-commit-config.yaml`) are run before each commit automatically. We use them to auto-format code and to check for linting errors, for example. W/o running the hooks, the CI pipeline may fail.
