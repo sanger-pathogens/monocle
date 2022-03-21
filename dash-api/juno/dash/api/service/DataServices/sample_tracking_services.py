@@ -410,7 +410,7 @@ class MonocleSampleTracking:
                                         {
                                             "lane": "{} (sample {})".format(this_lane["id"], this_sanger_sample_id),
                                             "stage": self.sequencing_flags[this_flag],
-                                            "issue": "sorry, failure mesages cannot currently be seen here",
+                                            "issue": "sorry, failure messages cannot currently be seen here",
                                         },
                                     )
                             # count lane either as a success or failure
