@@ -128,10 +128,6 @@ dt {
   white-space: pre;
 }
 
-label {
-  cursor: pointer;
-}
-
 .expand-icon {
   color: var(--text-main);
   font-size: .7rem;

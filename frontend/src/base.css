@@ -184,9 +184,14 @@ input {
 }
 
 label {
+  cursor: pointer;
   vertical-align: middle;
-  margin-bottom: .4rem;
+  margin-bottom: .7rem;
   display: inline-block
+}
+/* FIXME check that this CSS block doesn't break existing styles */
+label > input {
+  margin-top: .6rem;
 }
 
 button,
