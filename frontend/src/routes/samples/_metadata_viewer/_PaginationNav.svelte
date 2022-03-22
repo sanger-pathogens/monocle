@@ -7,14 +7,14 @@
 
   export let compact = false;
   export let numSamples = undefined;
-  export let numSamplesPerPage;
+  export let maxNumSamplesPerPage;
   export let pageNum;
 
   const dispatch = createEventDispatcher();
 
-  $: isLastPage = numSamplesPerPage * pageNum >= numSamples;
-  $: lastSampleNum = Math.min(numSamplesPerPage * pageNum, numSamples);
-  $: firstSampleNum = lastSampleNum - numSamplesPerPage + 1;
+  $: isLastPage = maxNumSamplesPerPage * pageNum >= numSamples;
+  $: lastSampleNum = Math.min(maxNumSamplesPerPage * pageNum, numSamples);
+  $: firstSampleNum = maxNumSamplesPerPage * (pageNum - 1) + 1;
 </script>
 
 
