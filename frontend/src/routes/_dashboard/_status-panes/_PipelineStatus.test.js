@@ -14,7 +14,7 @@ it("displays data passed", () => {
     },
   });
 
-  expect(container.querySelector("h4").textContent)
+  expect(container.querySelector("h3").textContent)
     .toBe(`${completed} of ${SEQUENCED_SUCCESS} Sample Pipelines Completed`);
   expect(getByText("% completed", { exact: false }))
     .toBeDefined();
@@ -28,7 +28,7 @@ it("displays a special heading when all pipelines are finished", () => {
     },
   });
 
-  expect(container.querySelector("h4").textContent)
+  expect(container.querySelector("h3").textContent)
     .toBe(`All ${SEQUENCED_SUCCESS} Sample Pipelines Completed`);
 });
 
@@ -56,14 +56,14 @@ it("displays the download button", () => {
     },
   });
 
-  expect(getByRole("button", { name: `Download ${succeeded} samples successfully processed through the pipeline` }))
+  expect(getByRole("button", { name: `Download metadata for ${succeeded} samples successfully processed through the pipeline` }))
     .toBeDefined();
 });
 
 it("displays the download failed button inside the failure messages dialog", async () => {
-  const downloadButtonText = `Download ${FAILED} samples that failed sequencing`;
+  const downloadButtonText = `Download metadata for ${FAILED} samples that failed processing through the pipeline`;
 
-  const { queryByRole } = render(PipelineStatus, {
+  const { getByRole, queryByRole } = render(PipelineStatus, {
     pipelineStatus: {
       sequencedSuccess: SEQUENCED_SUCCESS,
       completed: SEQUENCED_SUCCESS,
@@ -76,7 +76,7 @@ it("displays the download failed button inside the failure messages dialog", asy
 
   await fireEvent.click(queryByRole("button", { name: "Show failed" }));
 
-  expect(queryByRole("button", { name: downloadButtonText }))
+  expect(getByRole("button", { name: downloadButtonText }))
     .toBeDefined();
 });
 

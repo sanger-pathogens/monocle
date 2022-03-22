@@ -12,7 +12,7 @@ it("calls the chart library w/ the correct arguments", () => {
   const labels = ["XXI", "XXII"];
   const type = "percentage";
 
-  const { getByText } = render(SlicedChart, {
+  render(SlicedChart, {
     title,
     values,
     height,

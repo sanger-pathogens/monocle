@@ -1,73 +1,87 @@
-<script context="module">
-	// This function loads the data expected by the component, before the component is created.
-	// It can run both during server-side rendering and in the client. See https://kit.svelte.dev/docs#loading.
-	export async function load({ fetch }) {
-		const { institution_status: institutionStatus, progress_graph: projectProgress } =
-			await fetch("http://monocle.dev.pam.sanger.ac.uk/legacy_dashboard/data/summary/")
-				.then((response) => response.json());
-
-		return {
-			props: {
-				institutions: collateInstitutionStatus(institutionStatus),
-				projectProgress: {
-					dates: projectProgress.data.date,
-					datasets: [{
-						name: "samples received",
-						values: projectProgress.data["samples received"]
-					}, {
-						name: "samples sequenced",
-						values: projectProgress.data["samples sequenced"]
-					}]
-				}
-			}
-		};
-	}
-
-	function collateInstitutionStatus({
-		institutions,
-		batches,
-		sequencing_status,
-		pipeline_status
-	}) {
-		return Object.keys(institutions)
-			.map((key) => ({
-				name: institutions[key].name,
-				batches: batches[key],
-				sequencingStatus: sequencing_status[key],
-				pipelineStatus: {
-					sequencedSuccess: sequencing_status[key].success,
-					...pipeline_status[key]
-				},
-				key
-			}))
-	}
-</script>
-
 <script>
-  import InstitutionStatus from './_dashboard/_InstitutionStatus.svelte';
-  import LineChart from '$lib/components/LineChart.svelte';
-  import MetadataUploadLink from './_dashboard/_MetadataUploadLink.svelte';
+  import { onMount } from "svelte";
+  import { session as appSession } from "$app/stores";
+  import { getInstitutionStatus, getProjectProgress } from "$lib/dataLoading.js";
+  import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
+  import LineChart from "$lib/components/LineChart.svelte";
+  import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
+  import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
+  import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
 
-  export let institutions;
-  export let projectProgress = {};
+  export let session = appSession;
+
+  let dashboardDataPromise = new Promise(() => {});
+
+  onMount(() => {
+    dashboardDataPromise = Promise.all([
+      getInstitutionStatus(fetch),
+      getProjectProgress(fetch)
+    ]);
+  });
 </script>
 
 
-<MetadataUploadLink />
+{#await dashboardDataPromise}
+  <LoadingIndicator midscreen={true} />
 
-<LineChart
-	title="Project Progress"
-  datasets={projectProgress.datasets}
-  labels={projectProgress.dates}
-/>
+{:then [institutions = [], projectProgress = {}]}
+  <nav>
+    <MetadataUploadLink {session} />
+    <InsilicoUploadLink {session} style="margin-top: .3rem" />
+    <SampleDataLink />
+  </nav>
 
-{#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
-	<InstitutionStatus
-		{batches}
-		{sequencingStatus}
-		{pipelineStatus}
-		institutionName={name}
-	/>
-{:else}
-	<p>No institutions found for this account. This may be an error, so please try to reload the page or to log out and log in again.</p>
-{/each}
+  <article>
+    <h2>Project Progress</h2>
+    <LineChart
+      datasets={projectProgress.datasets}
+      xLabels={projectProgress.dates}
+      yLabel="# of samples"
+    />
+  </article>
+
+  {#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
+    <InstitutionStatus
+      {batches}
+      {sequencingStatus}
+      {pipelineStatus}
+      institutionName={name}
+    />
+  {:else}
+    <p>No institutions found for this account. This may be an error, so please try to reload the page or to log out and log in again.</p>
+  {/each}
+
+{:catch}
+  <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
+
+{/await}
+
+
+<style>
+p {
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-end;
+  margin-right: -0.8rem;
+
+  position: sticky;
+  top: 1rem;
+  z-index: 9;
+}
+@media (min-width: 2000px) {
+  /* This pushes the menu w/ the upload buttoms further to the right for larger screens. */
+  nav {
+    margin-right: -8rem;
+  }
+}
+
+article {
+  max-width: 100%;
+}
+</style>
+

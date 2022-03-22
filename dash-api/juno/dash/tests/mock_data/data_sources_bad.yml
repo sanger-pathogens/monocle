@@ -1,26 +1,25 @@
-monocledb:
-   cnf_file                   :  'dash/tests/mock_data/mock.cnf'
-   institution_table          :  'api_institution'
-   institution_table_inst_key :  'name'
-   sample_table_inst_key      :  'submitting_institution_id'
-   sample_table_lane_id_field :  'lane_id'
-   sample_table_fields        :  
-                                 - 'sample_table_lane_id_field'
-                                 - 'sample_id'
-                                 - 'public_name'
-                                 - 'host_status'
-                                 - 'serotype'
-                                 - 'submitting_institution_id'
-monocle_download_api:
-   base_url       : 'http://fake-container'
-   swagger        : '/metadata/ui/'
-   download       : '/metadata/download'
+monocle_metadata_api:
+   base_url          : 'http://fake-container'
+   swagger           : '/metadata/ui/'
+   metadata_key      : 'download'
+   institutions      : '/metadata/institutions'
+   filter_by_in_silico     : '/metadata/lane_ids_matching_in_silico_data'
+   institutions_key  : 'institutions'
+   samples_key       : 'samples'
+   download_in_silico_data : '/metadata/download_in_silico_data'
+   in_silico_data_key      : 'download'
+   qc_data_upload          : '/metadata/qc-data-upload'
+   qc_data_delete_all      : '/metadata/delete_all_qc_data'
+   qc_data_key             : 'download'
+   distinct_qc_data_values : '/metadata/distinct_qc_data_values'
+   distinct_values_key     : 'distinct values'
 mlwh_rest_api:
    mlwh_api_config   : 'dash/tests/mock_data/mlwh-api-mock.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
 pipeline_status:
-   csv_file          : 'dash/tests/mock_data/s3/status/pipelines.csv'
+   data_path_environ : 'MONOCLE_DATA'
+   csv_file          : 'status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    users_obj         : 'inetOrgPerson'
@@ -33,5 +32,7 @@ monocle_ldap:
    inst_name_attr    : 'description'
    employee_type_attr: 'employeeType'
 data_download:
-   web_dir           : 'monocle_juno_web_root/downloads'
-   url_path          : 'files/downloads'
+   web_dir              : 'monocle_juno_web_root/downloads'
+   url_path             : 'files/downloads'
+   max_samples_per_zip  : -3
+   max_samples_per_zip_with_reads : 'foo'

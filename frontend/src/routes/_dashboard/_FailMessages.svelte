@@ -11,11 +11,11 @@
 
 
 {#if hasFailureMessages || hasNestedComponents}
-  <button on:click={() => dialogOpen = true} class="light">
+  <button on:click={() => dialogOpen = true}>
     Show failed
   </button>
 
-  <Dialog bind:isOpen={dialogOpen}>
+  <Dialog bind:isOpen={dialogOpen} ariaLabel={title}>
     <h4>{title}</h4>
 
     <table>

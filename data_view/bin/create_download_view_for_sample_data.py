@@ -4,21 +4,21 @@ from contextlib import contextmanager
 import os
 from os import path
 from pathlib import Path
+from urllib.error import HTTPError
 
 import argparse
 from sys import argv
 import logging
 
-from DataSources.monocledb import MonocleDB
-from DataSources.sequencing_status import SequencingStatus
-from MonocleDash import monocleclient
+from dash.api.service.DataSources.sample_metadata           import SampleMetadata
+from dash.api.service.DataSources.sequencing_status         import SequencingStatus
+from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 
 INITIAL_DIR = Path().absolute()
-# directory in which the data files are located
-DATA_DIR='/home/ubuntu/monocle_juno'
 OUTPUT_SUBDIR='monocle_juno_institution_view'
 
-def create_download_view_for_sample_data(db, institution_name_to_id):
+def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
+  logging.info('Getting list of institutions')
   institutions = list(db.get_institution_names())
   
   if 0 == len(institutions):
@@ -26,61 +26,81 @@ def create_download_view_for_sample_data(db, institution_name_to_id):
   
   else:
     for institution in institutions:
-      lane_ids = _get_lane_ids(institution, db)
+      logging.info(f'{institution}: getting samples and lane information')
+      public_names_to_lane_ids = _get_public_names_with_lane_ids(institution, db)
   
-      with _cd(Path().joinpath(INITIAL_DIR,OUTPUT_SUBDIR)):
+      logging.info(f'{institution}: creating subdirectories')
+      with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
   
-        if lane_ids:
+        if public_names_to_lane_ids:
           institution_readable_id = institution_name_to_id[institution]
           _mkdir(institution_readable_id)
   
           with _cd(institution_readable_id):
-            for lane_id in lane_ids:
-              _create_lane_dir_with_symlinks(lane_id, institution)
-      
+            for public_name, lane_ids in public_names_to_lane_ids.items():
+              for lane_id in lane_ids:
+                _create_public_name_dir_with_symlinks(
+                  public_name, lane_id, institution, data_dir)
+              if not lane_ids:
+                logging.debug(f'Creating empty directory "{public_name}" for {institution}.')
+                _mkdir(public_name)
 
 
-def _get_lane_ids(institution, db):
-  sample_ids = [ sample['sample_id'] for sample in db.get_samples(institutions=[institution]) ]
-  logging.info("{}: {} samples".format(institution,len(sample_ids)))
-  if not sample_ids:
-    logging.warning(f'No sample found for {institution}')
-    return []
-  seq_data = _get_sequencing_status_data(sample_ids)
-  # this list contains all the lanes for sampels from this institution
-  # (we don't need to know which lanes came from each sample originally)
-  all_lanes = []
-  for this_sample in seq_data.keys():
-    for this_lane in seq_data[this_sample]['lanes']:
-       all_lanes.append(this_lane['id'])
-  logging.info("{}: {} lanes".format(institution,len(all_lanes)))
-  if 0 == len(all_lanes):
-    logging.warning(f'No lanes found for {institution}')
-  return all_lanes
+def _get_public_names_with_lane_ids(institution, db):
+  public_names_to_sanger_sample_id = {
+    sample["public_name"]: sample["sanger_sample_id"] for sample in db.get_samples(institutions=[institution])}
+
+  logging.info(f'{institution}: {len(public_names_to_sanger_sample_id)} public names')
+
+  num_lanes = 0
+  public_names_to_lane_ids = {}
+  for public_name, sanger_sample_id in public_names_to_sanger_sample_id.items():
+    # MLWH API can be fragile: catch HTTP errors
+    try:
+      seq_data = _get_sequencing_status_data([sanger_sample_id])
+      lane_ids_of_one_sample = []
+      for sample in seq_data.keys():
+        for lane in seq_data[sample]['lanes']:
+          num_lanes += 1
+          lane_ids_of_one_sample.append(lane['id'])
+      if lane_ids_of_one_sample:
+        logging.debug(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+        public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
+      else:
+        logging.debug(f'{institution}: No lanes found for "{public_name}"')
+        # We add public names w/ no lanes, as we want to
+        # create empty public name directories as well.
+        public_names_to_lane_ids[public_name] = []
+    except HTTPError as e:
+      logging.error('Failed to get sequence data for {} sample {}: {}'.format(institution,public_name,repr(e)))
+
+  logging.info(f'{institution} has a total of {num_lanes} lanes')
+
+  return public_names_to_lane_ids
 
 
-def _get_sequencing_status_data(sample_ids):
-  return SequencingStatus().get_multiple_samples(sample_ids)
+def _get_sequencing_status_data(sanger_sample_ids):
+  return SequencingStatus().get_multiple_samples(sanger_sample_ids)
 
 
-def _create_lane_dir_with_symlinks(lane_id, institution):
-  data_files = _get_data_files(lane_id)
+def _create_public_name_dir_with_symlinks(public_name, lane_id, institution, data_dir):
+  data_files = _get_data_files(lane_id, data_dir)
 
-  logging.debug(f'Creating directory {lane_id} for lane {lane_id} for {institution}.')
-  _mkdir(lane_id)
+  logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution}.')
+  _mkdir(public_name)
 
-  with _cd(lane_id):
+  with _cd(public_name):
     directory_containing_symlinks = Path().absolute()
     logging.debug(f'Creating symlinks in {directory_containing_symlinks} for lane {lane_id} for {institution}.')
     for data_file in data_files:
       _create_symlink_to(data_file, data_file.name)
 
 
-def _get_data_files(lane_id):
-   
+def _get_data_files(lane_id, data_dir):
+
   data_files_for_this_lane = []
    
-  with _cd(DATA_DIR):
+  with _cd(data_dir):
     data_files_for_this_lane = list(Path().glob(f'**/{lane_id}[_.]*'))
     if len(data_files_for_this_lane) > 0:
       logging.debug("found {} data files for lane {}".format(len(data_files_for_this_lane),lane_id))
@@ -108,12 +128,12 @@ def _create_symlink_to(path_to_file, symlink_name):
       Path(symlink_name).symlink_to(path_to_file)
 
 
-def get_institutions(monocledb):
+def get_institutions(sample_metadata):
    name_to_id = {}
-   # set_up = False stops MonocleData instantiating lots of objects we don't need...
-   dashboard_data = monocleclient.MonocleData(set_up=False)
-   # ...but that means we need to gove it a MonocleDB
-   dashboard_data.monocledb = monocledb
+   # set_up = False stops MonocleSampleTracking instantiating lots of objects we don't need...
+   dashboard_data = MonocleSampleTracking(set_up=False)
+   # ...but that means we need to give it a SampleMetadata
+   dashboard_data.sample_metadata = sample_metadata
    institutions = dashboard_data.get_institutions()
    for this_institution_id in institutions.keys():
       name_to_id[ institutions[this_institution_id]['name'] ] = this_institution_id
@@ -143,16 +163,15 @@ def _mkdir(dir_name):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Create sample data view')
-  parser.add_argument("-D", "--data_dir", help="Data file directory [default: {}]".format(DATA_DIR), default=DATA_DIR )
+  parser.add_argument("-D", "--data_dir", help="Data file directory")
   parser.add_argument("-L", "--log_level", help="Logging level [default: WARNING]", choices=['DEBUG','INFO','WARNING','ERROR','CRITICAL'], default='WARNING')
   options = parser.parse_args(argv[1:])
 
-  DATA_DIR=options.data_dir
-
-  # adding `module` for log format allows us to filter out messages from monocledb or squencing_status,
+  # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
   # which can be handy
   logging.basicConfig(format='%(asctime)-15s %(levelname)s %(module)s:  %(message)s', level=options.log_level)
 
-  monocledb = MonocleDB()
+  logging.info('Getting sample metadata')
+  sample_metadata = SampleMetadata()
 
-  create_download_view_for_sample_data(monocledb, get_institutions(monocledb))
+  create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata), options.data_dir)

@@ -28,13 +28,15 @@ services:
        # the download directory must have mode 331, so users can access files via their own download path, but cannot see other download paths
        - data_downloads:/usr/share/nginx/html/downloads
     depends_on:
-       - dash
+       - dash-api
+       - frontend
        - metadata-api
        - monocle-ldap
        - ldap-admin
        - ldap-auth-daemon
   metadata-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
       - "80"
     restart: unless-stopped
@@ -48,15 +50,20 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      - ./metadata-api.json:/app/config.json
       - ./my.cnf:/app/my.cnf
     environment:
-      - ENABLE_SWAGGER_UI=false
+      # if ENABLE_SWAGGER_UI is true the UI should be available at /metadata/ui/ (see nginx.prod.proxy.conf)
+      - ENABLE_SWAGGER_UI=true
+      - LOG_LEVEL=WARNING
       - API_TEST_MODE=false
+      - GUNICORN_PORT=80
+      - GUNICORN_WORKERS=8
+      - GUNICORN_TIMEOUT=90
   dash-api:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
-      - "80"
+      - "5000"
     restart: unless-stopped
     security_opt:
       - no-new-privileges
@@ -68,42 +75,28 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      - data:/app/monocle_juno
+      # data must have the same path as MONOCLE_DATA, as lane symlinks in DATA_INSTITUTION_VIEW point to this location
+      - data:/home/<USER>/monocle_juno
+      # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
+      - data_institution_view:/home/<USER>/monocle_juno_institution_view
+      - data_downloads:/app/monocle_juno_web_root/downloads
       - ./my.cnf:/app/my.cnf
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
     environment:
-      - ENABLE_SWAGGER_UI=false
-      - LOG_LEVEL=INFO
-  dash:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash:<DOCKERTAG>"
-    user: <USER_UID>:<USER_GID>
-    expose:
-       - "80"
-    restart: unless-stopped
-    security_opt:
-       - no-new-privileges
-    cap_drop:
-       - ALL
-    cap_add:
-       - NET_BIND_SERVICE
-    tmpfs:
-       - "/run:rw,noexec,nosuid"
-       - "/tmp:rw,noexec,nosuid"
-    volumes:
-       - data:/dash/monocle_juno
-       # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
-       - data_institution_view:/home/<USER>/monocle_juno_institution_view
-       - data_downloads:/dash/monocle_juno_web_root/downloads
-       - ./my.cnf:/dash/my.cnf
-       - ./mlwh-api.yml:/dash/mlwh-api.yml
-       - ./openldap-env.yaml:/dash/openldap-env.yaml
-    environment:
-       # this MUST be the same path as the mount point for data_institution_view
-       - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
-       
+      # if ENABLE_SWAGGER_UI is true the UI should be available at /dashboard-api/ui/ (see nginx.prod.proxy.conf)
+      - ENABLE_SWAGGER_UI=true
+      - LOG_LEVEL=WARNING
+      # MONOCLE_DATA ***must*** be the same path as the mount point for data
+      - MONOCLE_DATA=/home/<USER>/monocle_juno
+      # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
+      - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+      - GUNICORN_PORT=5000
+      - GUNICORN_WORKERS=16
+      - GUNICORN_TIMEOUT=120
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
     expose:
        - "3000"
     restart: unless-stopped
@@ -175,6 +168,7 @@ services:
       - PHPLDAPADMIN_LDAP_HOSTS=monocle-ldap
   ldap-auth-daemon:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r329"
+    user: <USER_UID>:<USER_GID>
     expose:
       - "8888"
     restart: unless-stopped

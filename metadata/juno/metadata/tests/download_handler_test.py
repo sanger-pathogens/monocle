@@ -2,12 +2,12 @@ import unittest
 import json
 from unittest.mock import patch, Mock
 from metadata.tests.test_data import *
-from metadata.api.download_handler import DownloadHandler
+from metadata.api.download_handlers import DownloadMetadataHandler, DownloadInSilicoHandler, DownloadQCDataHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
 
-class TestDownloadHandler(unittest.TestCase):
-    """ Unit tests for the DownloadHandler class """
+class TestDownloadMetadataHandler(unittest.TestCase):
+    """ Unit tests for the DownloadMetadataHandler class """
 
     CONFIG_FILE = 'config.json'
 
@@ -27,7 +27,7 @@ class TestDownloadHandler(unittest.TestCase):
         with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
             self.dao_mock = dao_mock
             self.test_spreadsheet_def = SpreadsheetDefinition(5, fields)
-            self.under_test = DownloadHandler(self.dao_mock, self.test_spreadsheet_def)
+            self.under_test = DownloadMetadataHandler(self.dao_mock, self.test_spreadsheet_def)
 
     def test_append_to_dict(self) -> None:
         results = {}
@@ -37,7 +37,7 @@ class TestDownloadHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
                 'value': 'test_value1'
             }
         )
@@ -48,7 +48,7 @@ class TestDownloadHandler(unittest.TestCase):
             results['column_2'],
             {
                 'order': 2,
-                'name': 'COLUMN_2_NAME',
+                'title': 'COLUMN_2_NAME',
                 'value': 'test_value2'
             }
         )
@@ -62,7 +62,26 @@ class TestDownloadHandler(unittest.TestCase):
             results['column_1'],
             {
                 'order': 1,
-                'name': 'COLUMN_1_NAME',
+                'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
                 'value': ''
             }
         )
@@ -79,8 +98,8 @@ class TestDownloadHandler(unittest.TestCase):
         value_field_name = 'value'
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
-            sprd_def = SpreadsheetDefinition(2, data['spreadsheet_definition'])
-            handler = DownloadHandler(self.dao_mock, sprd_def)
+            sprd_def = SpreadsheetDefinition(2, data['metadata']['spreadsheet_definition'])
+            handler = DownloadMetadataHandler(self.dao_mock, sprd_def)
             results = handler.create_download_response([TEST_SAMPLE_1, TEST_SAMPLE_2])
             self.assertIsNotNone(results)
             self.assertEqual(len(results), 2)
@@ -150,3 +169,266 @@ class TestDownloadHandler(unittest.TestCase):
             self.assertEqual(results[1]['supplier_sample_name'][value_field_name], 'SUPPLIER_2')
             self.assertEqual(results[1]['public_name'][value_field_name], 'PUB_NAME_2')
             self.assertEqual(results[1]['lane_id'][value_field_name], '2000_2#11')
+
+class TestDownloadInSilicoHandler(unittest.TestCase):
+    """ Unit tests for the DownloadInSilicoHandler class """
+
+    CONFIG_FILE = 'config.json'
+
+    def setUp(self) -> None:
+        fields = {
+            "column_1": {
+                "title": "COLUMN_1_NAME"
+            },
+            "column_2": {
+                "title": "COLUMN_2_NAME"
+            },
+            "column_3": {
+                "title": "COLUMN_3_NAME"
+            }
+        }
+
+        with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
+            self.dao_mock = dao_mock
+            self.test_spreadsheet_def = SpreadsheetDefinition(5, fields)
+            self.under_test = DownloadInSilicoHandler(self.dao_mock, self.test_spreadsheet_def)
+
+    def test_append_to_dict(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', 'test_value1')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': 'test_value1'
+            }
+        )
+
+        self.under_test._append_to_dict(results, 'column_2', 'test_value2')
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            results['column_2'],
+            {
+                'order': 2,
+                'title': 'COLUMN_2_NAME',
+                'value': 'test_value2'
+            }
+        )
+
+    def test_append_to_dict_novalue(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', None)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': ''
+            }
+        )
+
+    def test_read_download_in_silico_data(self) -> None:
+        keys = ['key1', 'key2']
+        mock_retval = [Mock(), Mock()]
+        self.dao_mock.get_download_in_silico_data.return_value = mock_retval
+        in_silico_data_list = self.under_test.read_download_in_silico_data(keys)
+        self.dao_mock.get_download_in_silico_data.assert_called_once_with(keys)
+        self.assertEqual(in_silico_data_list, mock_retval)
+
+    def test_create_download_response(self) -> None:
+        value_field_name = 'value'
+        with open(self.CONFIG_FILE) as cfg:
+            data = json.load(cfg)
+            sprd_def = SpreadsheetDefinition(2, data['in_silico_data']['spreadsheet_definition'])
+            handler = DownloadInSilicoHandler(self.dao_mock, sprd_def)
+            results = handler.create_download_response([TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2])
+            self.assertIsNotNone(results)
+            self.assertEqual(len(results), 2)
+            # Sample 1
+            self.assertEqual(results[0]['lane_id'][value_field_name], '50000_2#282')
+            self.assertEqual(results[0]['cps_type'][value_field_name], 'III')
+            self.assertEqual(results[0]['ST'][value_field_name], 'ST-I')
+            self.assertEqual(results[0]['adhP'][value_field_name], '15')
+            self.assertEqual(results[0]['pheS'][value_field_name], '8')
+            self.assertEqual(results[0]['atr'][value_field_name], '4')
+            self.assertEqual(results[0]['glnA'][value_field_name], '4')
+            self.assertEqual(results[0]['sdhA'][value_field_name], '22')
+            self.assertEqual(results[0]['glcK'][value_field_name], '1')
+            self.assertEqual(results[0]['tkt'][value_field_name], '9')
+            self.assertEqual(results[0]['twenty_three_S1'][value_field_name], 'pos')
+            self.assertEqual(results[0]['twenty_three_S3'][value_field_name], 'pos')
+            self.assertEqual(results[0]['AAC6APH2'][value_field_name], 'neg')
+            self.assertEqual(results[0]['AADECC'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ANT6'][value_field_name], 'neg')
+            self.assertEqual(results[0]['APH3III'][value_field_name], 'neg')
+            self.assertEqual(results[0]['APH3OTHER'][value_field_name], 'neg')
+            self.assertEqual(results[0]['CATPC194'][value_field_name], 'neg')
+            self.assertEqual(results[0]['CATQ'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ERMA'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ERMB'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ERMT'][value_field_name], 'neg')
+            self.assertEqual(results[0]['LNUB'][value_field_name], 'neg')
+            self.assertEqual(results[0]['LNUC'][value_field_name], 'neg')
+            self.assertEqual(results[0]['LSAC'][value_field_name], 'neg')
+            self.assertEqual(results[0]['MEFA'][value_field_name], 'neg')
+            self.assertEqual(results[0]['MPHC'][value_field_name], 'neg')
+            self.assertEqual(results[0]['MSRA'][value_field_name], 'neg')
+            self.assertEqual(results[0]['MSRD'][value_field_name], 'neg')
+            self.assertEqual(results[0]['FOSA'][value_field_name], 'neg')
+            self.assertEqual(results[0]['GYRA'][value_field_name], 'pos')
+            self.assertEqual(results[0]['PARC'][value_field_name], 'pos')
+            self.assertEqual(results[0]['RPOBGBS_1'][value_field_name], 'neg')
+            self.assertEqual(results[0]['RPOBGBS_2'][value_field_name], 'neg')
+            self.assertEqual(results[0]['RPOBGBS_3'][value_field_name], 'neg')
+            self.assertEqual(results[0]['RPOBGBS_4'][value_field_name], 'neg')
+            self.assertEqual(results[0]['SUL2'][value_field_name], 'neg')
+            self.assertEqual(results[0]['TETB'][value_field_name], 'neg')
+            self.assertEqual(results[0]['TETL'][value_field_name], 'neg')
+            self.assertEqual(results[0]['TETM'][value_field_name], 'pos')
+            self.assertEqual(results[0]['TETO'][value_field_name], 'neg')
+            self.assertEqual(results[0]['TETS'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ALP1'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ALP23'][value_field_name], 'neg')
+            self.assertEqual(results[0]['ALPHA'][value_field_name], 'neg')
+            self.assertEqual(results[0]['HVGA'][value_field_name], 'pos')
+            self.assertEqual(results[0]['PI1'][value_field_name], 'pos')
+            self.assertEqual(results[0]['PI2A1'][value_field_name], 'neg')
+            self.assertEqual(results[0]['PI2A2'][value_field_name], 'neg')
+            self.assertEqual(results[0]['PI2B'][value_field_name], 'pos')
+            self.assertEqual(results[0]['RIB'][value_field_name], 'pos')
+            self.assertEqual(results[0]['SRR1'][value_field_name], 'neg')
+            self.assertEqual(results[0]['SRR2'][value_field_name], 'pos')
+            self.assertEqual(results[0]['GYRA_variant'][value_field_name], '*')
+            self.assertEqual(results[0]['PARC_variant'][value_field_name], '*')
+            # Sample 2 - test a few fields as sanity check
+            self.assertEqual(results[1]['lane_id'][value_field_name], '50000_2#287')
+            self.assertEqual(results[1]['cps_type'][value_field_name], 'III')
+            self.assertEqual(results[1]['ST'][value_field_name], 'ST-II')
+            self.assertEqual(results[1]['adhP'][value_field_name], '3')
+
+class TestDownloadQCHandler(unittest.TestCase):
+    """ Unit tests for the DownloadQCDataHandler class """
+
+    CONFIG_FILE = 'config.json'
+
+    def setUp(self) -> None:
+        fields = {
+            "column_1": {
+                "title": "COLUMN_1_NAME"
+            },
+            "column_2": {
+                "title": "COLUMN_2_NAME"
+            },
+            "column_3": {
+                "title": "COLUMN_3_NAME"
+            }
+        }
+
+        with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
+            self.dao_mock = dao_mock
+            self.test_spreadsheet_def = SpreadsheetDefinition(5, fields)
+            self.under_test = DownloadQCDataHandler(self.dao_mock, self.test_spreadsheet_def)
+
+    def test_append_to_dict(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', 'test_value1')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': 'test_value1'
+            }
+        )
+
+        self.under_test._append_to_dict(results, 'column_2', 'test_value2')
+        self.assertEqual(len(results), 2)
+        self.assertEqual(
+            results['column_2'],
+            {
+                'order': 2,
+                'title': 'COLUMN_2_NAME',
+                'value': 'test_value2'
+            }
+        )
+
+    def test_append_to_dict_novalue(self) -> None:
+        results = {}
+        self.under_test._append_to_dict(results, 'column_1', None)
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': None
+            }
+        )
+
+    def test_append_to_dict_novalue_null_to_empty_string(self) -> None:
+        results = {}
+        
+        # temporarily set replace_null_with_empty_string flag to True whilst calling _append_to_dict()
+        original_value = self.under_test.replace_null_with_empty_string
+        self.under_test.replace_null_with_empty_string = True
+        self.under_test._append_to_dict(results, 'column_1', None)
+        self.under_test.replace_null_with_empty_string = original_value
+        
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results['column_1'],
+            {
+                'order': 1,
+                'title': 'COLUMN_1_NAME',
+                'value': ''
+            }
+        )
+
+    def test_read_download_in_silico_data(self) -> None:
+        keys = ['key1', 'key2']
+        mock_retval = [Mock(), Mock()]
+        self.dao_mock.get_download_qc_data.return_value = mock_retval
+        qc_data_list = self.under_test.read_download_qc_data(keys)
+        self.dao_mock.get_download_qc_data.assert_called_once_with(keys)
+        self.assertEqual(qc_data_list, mock_retval)
+
+    def test_create_download_response(self) -> None:
+        value_field_name = 'value'
+        with open(self.CONFIG_FILE) as cfg:
+            data = json.load(cfg)
+            sprd_def = SpreadsheetDefinition(2, data['qc_data']['spreadsheet_definition'])
+            handler = DownloadQCDataHandler(self.dao_mock, sprd_def)
+            results = handler.create_download_response([TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2])
+            self.assertIsNotNone(results)
+            self.assertEqual(len(results), 2)
+            # Sample 1
+            self.assertEqual(results[0]['lane_id'][value_field_name], '50000_2#282')
+            self.assertEqual(results[0]['rel_abun_sa'][value_field_name], '93.21')
+            ## Sample 2
+            self.assertEqual(results[1]['lane_id'][value_field_name], '50000_2#287')
+            self.assertEqual(results[1]['rel_abun_sa'][value_field_name], '68.58')

@@ -5,7 +5,7 @@
 
 usage() {
   echo "Usage: $0 arguments [options]
-       
+
        Mandatory arguments:
        -e --env         deployed environment: \`prod\` or \`dev\`
        -u --user        user id on deployment host
@@ -24,7 +24,8 @@ usage() {
                         from version number (set by \`--version\`)
        -t --tag         docker images tag; overrides tag derived from version
                         number (set by \`--version\`)
-       -c --conn-file   a database connection file, required for a database release
+       -p --port        port number for deployment host
+       -c --conn-file   full path to database connection file, required for a database release
 
        (There is no option to set the public domain for the service, as
        that feature is reserved for the production environment.)
@@ -34,18 +35,18 @@ usage() {
 
        Example 1: deploy code to pathogens_dev instance and run the associated database release
                   using the db.cnf connection file:
-       $0 -e dev -v 0.1.45 -m all -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
-          
+       $0 -e dev -v 0.1.45 -m all -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
+
        Example 2: deploy unstable (pre-release) code version as \`dev_user@localhost\`
        $0 -e dev -u dev_user -h localhost --domain localhost --branch master --tag unstable
-          
+
        Example 3: deploy as \`dev_user@localhost\`, from feature branch
                   \`some_feature_branch\`, using docker images built from
                   commit \`ae48f554\`:
        $0 -e dev -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
 
        Example 4: deploy only the 0.1.45 database release using a db.cnf database connection file:
-       $0 -e dev -v 0.1.45 -m database -u ubuntu -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
+       $0 -e dev -v 0.1.45 -m database -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
 "
   exit 1
 }
@@ -83,6 +84,7 @@ ENVIRONMENT=
 VERSION=
 REMOTE_USER=
 REMOTE_HOST=
+SSH_PORT_ARG=
 db_release_file=
 FAILED_CODE=2
 
@@ -128,6 +130,19 @@ while [[ $# -gt 0 ]]; do
       ;;
       -h=*|--host=*)
       REMOTE_HOST="${key#*=}"
+      ;;
+
+      # Assignment to `SCP_PORT_ARG` and `SSH_PORT_ARG` uses the standart parameter expansion of the form
+      # `${var:+word}`, where the expression is expanded to `word` only if `var` isn't unset or null (see
+      # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
+      -p|--port)
+      shift
+      SSH_PORT_ARG=${1:+-p "$1"}
+      SCP_PORT_ARG=${1:+-P "$1"}
+      ;;
+      -p=*|--port=*)
+      SSH_PORT_ARG=${"${key#*=}":+-p "${key#*=}"}
+      SCP_PORT_ARG=${"${key#*=}":+-P "${key#*=}"}
       ;;
 
       -m|--mode)
@@ -262,7 +277,7 @@ fi
 
 # shut down applications first
 # keep connection to avoid multiple password entries
-ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+ssh -o ControlMaster=yes -o ControlPersist=yes -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
     echo "Stopping existing containers..."
     docker-compose down
@@ -285,43 +300,54 @@ fi
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_application}" ]]
 then
     # copy production compose file (template)
-    scp -o ControlPath=%C docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
+    scp -o ControlPath=%C $SCP_PORT_ARG docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
     # copy production nginx config and metadata api config
     # (may want to remove from git long term)
-    scp -o ControlPath=%C proxy/nginx.prod.proxy.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
-    scp -o ControlPath=%C metadata/juno/config.json    $REMOTE_USER@$REMOTE_HOST:~/metadata-api.json
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.prod.proxy.conf           $REMOTE_USER@$REMOTE_HOST:~/nginx.proxy.conf
+    scp -o ControlPath=%C $SCP_PORT_ARG proxy/nginx.service_maintenance.conf  $REMOTE_USER@$REMOTE_HOST:~/nginx.service_maintenance.conf
 
     # scripts for syncing sample data view
-    scp -o ControlPath=%C data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
-    scp -o ControlPath=%C data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
+    # QC data scripts
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/run_get_qc_data_in_docker.sh $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/run_get_qc_data_in_docker.sh
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/get_qc_data.py               $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/get_qc_data.py
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/update_qc_data_db_table.py   $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/update_qc_data_db_table.py
+    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/lib/qc_data.py                   $REMOTE_USER@$REMOTE_HOST:~/qc-data/lib/qc_data.py
+
+    # hopusekeeping script(s)
+    scp -o ControlPath=%C $SCP_PORT_ARG housekeeping/bin/housekeeping.sh $REMOTE_USER@$REMOTE_HOST:~/housekeeping.sh
+
+
     # replace the running version
     # using existing connection
     # note: local variables are substituted as normal,
     #       remote variables need escaping
     #       (eg. VERSION vs API_SECRET_KEY)
-    ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+    ssh -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
         set -e
         echo "Setting configuration in docker-compose.yml..."
-        sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
-        sed -i -e "s/<USER>/${REMOTE_USER}/g" docker-compose.yml
-        sed -i -e "s/<USER_UID>/\$(id -u)/g" docker-compose.yml
-        sed -i -e "s/<USER_GID>/\$(id -g)/g" docker-compose.yml
+        sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh qc-data/bin/run_get_qc_data_in_docker.sh
+        sed -i -e "s/<USER>/${REMOTE_USER}/g"     docker-compose.yml run_data_view_script_in_docker.sh qc-data/bin/run_get_qc_data_in_docker.sh
+        sed -i -e "s/<USER_UID>/\$(id -u)/g"      docker-compose.yml
+        sed -i -e "s/<USER_GID>/\$(id -g)/g"      docker-compose.yml
         echo "Setting configuration in nginx.proxy.conf..."
-        sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
-        sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
+        sed -i -e 's/<LDAP_BASE_DN>/'"\$(grep MONOCLE_LDAP_BASE_DN openldap-env.yaml | cut -d: -f2 | xargs)/g"             nginx.proxy.conf
+        sed -i -e 's/<LDAP_BIND_DN>/'"\$(grep MONOCLE_LDAP_BIND_DN openldap-env.yaml | cut -d: -f2 | xargs)/g"             nginx.proxy.conf
         sed -i -e 's/<LDAP_BIND_PASSWORD>/'"\$(grep MONOCLE_LDAP_BIND_PASSWORD openldap-env.yaml | cut -d: -f2 | xargs)/g" nginx.proxy.conf
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
-        chmod 644 nginx.proxy.conf metadata-api.json
+        chmod 644 nginx.proxy.conf nginx.service_maintenance.conf metadata-api.json
+        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh qc-data/bin/get_qc_data.py qc-data/bin/run_get_qc_data_in_docker.sh housekeeping.sh
         echo "Pulling ${docker_tag} docker images..."
         docker-compose pull
 EOF
 fi
 
 # restart the application docker containers
-ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
+ssh -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
     set -e
     echo "Starting containers..."
     docker-compose up -d
@@ -329,4 +355,4 @@ ssh -o ControlPath=%C $REMOTE_USER@$REMOTE_HOST << EOF
 EOF
 
 # close the connection
-ssh -o ControlPath=%C -O exit $REMOTE_USER@$REMOTE_HOST
+ssh -o ControlPath=%C -O exit $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST

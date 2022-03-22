@@ -3,21 +3,24 @@ from unittest.mock import patch
 import json
 import glob
 from typing import List
-from metadata.api.upload_handler import UploadHandler
+from metadata.api.upload_handlers import UploadMetadataHandler, UploadInSilicoHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.in_silico_data import InSilicoData
 
 
 class TestUploadHandler(unittest.TestCase):
     """ Unit tests for the UploadHandler class """
 
-    TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.tab'
-    TEST_TAB_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.tab'
+    TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.csv'
+    TEST_CSV_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.csv'
     TEST_TSV_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.tsv'
     TEST_TSV_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.tsv'
     TEST_TXT_SPREADSHEET_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet.txt'
     TEST_TXT_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet.txt'
+    TEST_NO_EXTENSION_WITH_VALIDATION_ERRORS = '**/validation_test_spreadsheet'
+    TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS = '**/valid_spreadsheet'
     CONFIG_FILE_PATH = 'config.json'
 
     def display_errors(self, test_method, errors: List[str]) -> None:
@@ -30,22 +33,22 @@ class TestUploadHandler(unittest.TestCase):
         with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
             self.dao_mock = dao_mock
             self.dao_mock.get_institutions.return_value = [
-                Institution('Test Institution A', 'TestCountryA', 0, 0),
-                Institution('Test Institution B', 'TestCountryB', 0, 0)
+                Institution('Test Institution A', 'TestCountryA'),
+                Institution('Test Institution B', 'TestCountryB')
             ]
+            self.dao_mock.get_authenticated_username.return_value = 'mock_user'
 
             # Read in the spreadsheet field definitions
             with open(self.CONFIG_FILE_PATH, 'r') as app_config_file:
                 data = app_config_file.read()
                 self.config = json.loads(data)
                 self.test_spreadsheet_def = SpreadsheetDefinition(
-                    self.config['spreadsheet_header_row_position'], self.config['spreadsheet_definition'])
-
-            self.under_test = UploadHandler(self.dao_mock, self.test_spreadsheet_def, True)
+                    self.config['metadata']['spreadsheet_header_row_position'], self.config['metadata']['spreadsheet_definition'])
+            self.under_test = UploadMetadataHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """ Assert validation errors are correct """
-        self.assertEqual(len(validation_errors), 66)
+        self.assertEqual(len(validation_errors), 64)
 
         self.assertTrue(
             '{row: 4, column: "Sanger_Sample_ID"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)
@@ -69,10 +72,10 @@ class TestUploadHandler(unittest.TestCase):
             '{row: 23, column: "Selection_Random"}: "INVALID" is not in the list of legal options (yes, no)' in validation_errors)
         self.assertTrue(
             '{row: 24, column: "Country"}: "UNKNOWNCOUNTRY" is not in the list of legal options (TestCountryA, TestCountryB)' in validation_errors)
-        self.assertTrue(
-            '{row: 25, column: "County/state"}: "%%%&*" contains illegal characters' in validation_errors)
-        self.assertTrue(
-            '{row: 27, column: "City"}: "%%%&*" contains illegal characters' in validation_errors)
+        #self.assertTrue(
+        #    '{row: 25, column: "County/state"}: "%%%&*" contains illegal characters' in validation_errors)
+        #self.assertTrue(
+        #    '{row: 27, column: "City"}: "%%%&*" contains illegal characters' in validation_errors)
         self.assertTrue(
             '{row: 29, column: "Submitting_Institution"}: "UNKNOWN" is not in the list of legal options (Test Institution A, Test Institution B)' in validation_errors)
         self.assertTrue(
@@ -123,72 +126,72 @@ class TestUploadHandler(unittest.TestCase):
             '{row: 58, column: "Ceftizoxime_method"}: "ZZZ" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefoxitin"}: "A" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefoxitin"}: "A" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefoxitin_method"}: "AAA" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefotaxime"}: "B" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefotaxime"}: "B" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefotaxime_method"}: "BBB" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Cefazolin"}: "C" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Cefazolin"}: "C" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Cefazolin_method"}: "CCC" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Ampicillin"}: "D" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Ampicillin"}: "D" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Ampicillin_method"}: "DDD" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Penicillin"}: "R1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Penicillin"}: "R1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Penicillin_method"}: "EEE" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Erythromycin"}: "F" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Erythromycin"}: "F" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Erythromycin_method"}: "FFF" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Clindamycin"}: "G" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Clindamycin"}: "G" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Clindamycin_method"}: "GGG" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Tetracycline_method"}: "HHH" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Tetracycline"}: "H" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Tetracycline_method"}: "HHH" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Levofloxacin"}: "I1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Levofloxacin"}: "I1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Levofloxacin_method"}: "III" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Ciprofloxacin"}: "J" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Ciprofloxacin"}: "J" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Ciprofloxacin_method"}: "JJJJ" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Daptomycin"}: "K" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Daptomycin"}: "K" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Daptomycin_method"}: "KKKK" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Vancomycin"}: "S1" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Vancomycin"}: "S1" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Vancomycin_method"}: "LLLL" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
         self.assertTrue(
-            '{row: 58, column: "Linezolid"}: "M" should be a valid floating point number or alternatively S, I, or R' in validation_errors)
+            '{row: 58, column: "Linezolid"}: "M" should be a valid floating point number, optionally with units "mm" or "µg/ml" (\'u\' permitted in place of \'µ\'); or alternatively S, I, or R' in validation_errors)
         self.assertTrue(
             '{row: 58, column: "Linezolid_method"}: "MMMM" is not in the list of legal options (disk diffusion, broth dilution, agar dilution, Etest)' in validation_errors)
 
@@ -201,15 +204,30 @@ class TestUploadHandler(unittest.TestCase):
         self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab', 'tsv', 'txt']))
 
     def test_is_valid_file_type(self):
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertTrue(UploadHandler.is_valid_file_type(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS))
-        self.assertFalse(UploadHandler.is_valid_file_type('foo'))
-        self.assertFalse(UploadHandler.is_valid_file_type(None))
-        self.assertFalse(UploadHandler.is_valid_file_type(''))
+        # check that file names are checked when file extension check is enabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        self.under_test.check_file_extension = False
+        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS))
+        self.assertTrue(self.under_test.is_valid_file_type('foo'))
+        self.assertTrue(self.under_test.is_valid_file_type(None))
+        self.assertTrue(self.under_test.is_valid_file_type(''))
+        self.under_test.check_file_extension = previous_check_file_extension_value
 
-    def test_tab_load_with_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+    def test_file_type_check_disabled_ok(self):
+        # check that files without extensions are accepted if the file extention check is disabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        self.under_test.check_file_extension = False
+        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS))
+        self.under_test.check_file_extension = previous_check_file_extension_value
+
+    def test_csv_load_with_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
         # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
 
@@ -223,10 +241,26 @@ class TestUploadHandler(unittest.TestCase):
         # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
         self.__check_validation_errors(validation_errors)
 
-    def test_tab_load_with_no_validation_errors(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TAB_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
-        # self.display_errors('test_load_with_no_validation_errors', validation_errors)
+    def test_no_extension_load_with_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_NO_EXTENSION_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
 
+    def test_csv_load_with_no_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_NO_EXTENSION_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_load_with_no_validation_errors', validation_errors)
         self.assertEqual(len(validation_errors), 0)
 
     def test_tsv_load_with_no_validation_errors(self) -> None:
@@ -241,8 +275,23 @@ class TestUploadHandler(unittest.TestCase):
 
         self.assertEqual(len(validation_errors), 0)
 
-    def test_parse(self) -> None:
-        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+    def test_no_extension_load_with_no_validation_errors(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+        # self.display_errors('test_csv_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)
+
+    def test_parse_metadata(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        validation_errors = self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         # self.display_errors('test_parse', validation_errors)
 
         self.assertEqual(len(validation_errors), 0)
@@ -306,20 +355,175 @@ class TestUploadHandler(unittest.TestCase):
                  ampicillin='', ampicillin_method='', penicillin='', penicillin_method='', erythromycin='',
                  erythromycin_method='', clindamycin='', clindamycin_method='', tetracycline='', tetracycline_method='',
                  levofloxacin='', levofloxacin_method='', ciprofloxacin='', ciprofloxacin_method='', daptomycin='',
+                 daptomycin_method='', vancomycin='', vancomycin_method='', linezolid='', linezolid_method=''),
+            Metadata(sanger_sample_id='1000STDY7000171', lane_id='50000_2#298', submitting_institution='Test Institution A',
+                 supplier_sample_name='EY70603', public_name='CD_XX_EW00006', host_status='carriage', study_name='',
+                 study_ref='', selection_random='no', country='TestCountryA', county_state='', city='',
+                 collection_year='2014', collection_month='', collection_day='', host_species='human', gender='F',
+                 age_group='adolescent', age_years='15', age_months='10', age_weeks='2', age_days='4', disease_type='',
+                 disease_onset='', isolation_source='other sterile site', serotype='III', serotype_method='Lancefield',
+                 infection_during_pregnancy='', maternal_infection_type='', gestational_age_weeks='',
+                 birth_weight_gram='', apgar_score='', ceftizoxime='', ceftizoxime_method='', cefoxitin='',
+                 cefoxitin_method='', cefotaxime='', cefotaxime_method='', cefazolin='', cefazolin_method='',
+                 ampicillin='', ampicillin_method='', penicillin='', penicillin_method='', erythromycin='',
+                 erythromycin_method='', clindamycin='', clindamycin_method='', tetracycline='', tetracycline_method='',
+                 levofloxacin='', levofloxacin_method='', ciprofloxacin='', ciprofloxacin_method='', daptomycin='',
                  daptomycin_method='', vancomycin='', vancomycin_method='', linezolid='', linezolid_method='')]
 
         samples = self.under_test.parse()
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
         self.assertEqual(len(samples), len(expected_results))
 
         for idx in range(0, len(expected_results)-1):
             # print(samples[idx])
             self.assertEqual(samples[idx], expected_results[idx])
 
-    def test_store_nothing_loaded(self) -> None:
+    def test_store_metadata_nothing_loaded(self) -> None:
         with self.assertRaises(RuntimeError):
             self.under_test.store()
 
-    def test_store(self) -> None:
-        self.under_test.load(glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
+    def test_store_metadata(self) -> None:
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        previous_file_delimiter = self.under_test.file_delimiter
+        self.under_test.check_file_extension = False
+        self.under_test.file_delimiter = ','
+        self.under_test.load(glob.glob(self.TEST_CSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0])
         self.under_test.store()
         self.dao_mock.update_sample_metadata.assert_called_once()
+        self.under_test.check_file_extension = previous_check_file_extension_value
+        self.under_test.file_delimiter = previous_file_delimiter
+
+
+class TestInSilicoUploadHandler(unittest.TestCase):
+    """ Unit tests for the UploadHandler class """
+
+    TEST_TXT_WITH_VALIDATION_ERRORS = '**/validation_test_in_silico_data.txt'
+    TEST_TXT_WITH_NO_ERRORS = '**/valid_in_silico_data.txt'
+    CONFIG_FILE_PATH = 'config.json'
+
+    def display_errors(self, test_method, errors: List[str]) -> None:
+        print('{} errors:'.format(test_method))
+        for error in errors:
+            print(str(error))
+
+    def setUp(self) -> None:
+        self.maxDiff = None
+        with patch('metadata.api.database.monocle_database_service.MonocleDatabaseService', autospec=True) as dao_mock:
+            self.dao_mock = dao_mock
+            self.dao_mock.get_institutions.return_value = [
+                Institution('Test Institution A', 'TestCountryA'),
+                Institution('Test Institution B', 'TestCountryB')
+            ]
+
+            # Read in the spreadsheet field definitions
+            with open(self.CONFIG_FILE_PATH, 'r') as app_config_file:
+                data = app_config_file.read()
+                self.config = json.loads(data)
+                self.test_spreadsheet_def = SpreadsheetDefinition(
+                    self.config['in_silico_data']['spreadsheet_header_row_position'], self.config['in_silico_data']['spreadsheet_definition'])
+
+            self.under_test = UploadInSilicoHandler(self.dao_mock, self.test_spreadsheet_def, True)
+
+    def __check_validation_errors(self, validation_errors: List[str]):
+        """ Assert validation errors are correct """
+        self.assertEqual(len(validation_errors), 37)
+
+        self.assertTrue(
+            '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "23S1"}: "[pos]" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "23S3"}: "*" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "ERMB"}: "_" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "ERMT"}: "0" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "FOSA"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "GYRA"}: "+" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "LNUB"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "LSAC"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "MEFA"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "MPHC"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "MSRA"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "MSRD"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "PARC"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "RPOBGBS-1"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "RPOBGBS-2"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "RPOBGBS-3"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "RPOBGBS-4"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "SUL2"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "TETB"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "TETL"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "TETM"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "TETO"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "TETS"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "ALP1"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "ALP23"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "ALPHA"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "HVGA"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "PI1"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "PI2A1"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "PI2A2"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "PI2B"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "RIB"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "SRR1"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 2, column: "SRR2"}: "\'\'" must be pos, neg or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "23S1_variant"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty' in validation_errors)
+        self.assertTrue(
+            '{row: 3, column: "23S3_variant"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty' in validation_errors)
+
+    def test_allowed_file_types(self):
+        self.assertIsNotNone(self.under_test.allowed_file_types())
+        self.assertEqual(sorted(self.under_test.allowed_file_types()), sorted(['tab','tsv','txt']))
+
+    def test_is_valid_file_type(self):
+        # check that file names are checked when file extension check is enabled
+        previous_check_file_extension_value = self.under_test.check_file_extension
+        self.under_test.check_file_extension = True
+        self.assertTrue(self.under_test.is_valid_file_type(self.TEST_TXT_WITH_NO_ERRORS))
+        self.assertFalse(self.under_test.is_valid_file_type('foo'))
+        self.assertFalse(self.under_test.is_valid_file_type(None))
+        self.assertFalse(self.under_test.is_valid_file_type(''))
+        self.under_test.check_file_extension = previous_check_file_extension_value
+
+    def test_txt_load_with_no_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0])
+        #self.display_errors('test_txt_load_with_no_validation_errors', validation_errors)
+        self.assertEqual(len(validation_errors), 0)
+
+    def test_txt_load_with_validation_errors(self) -> None:
+        validation_errors = self.under_test.load(glob.glob(self.TEST_TXT_WITH_VALIDATION_ERRORS, recursive=True)[0])
+        #self.display_errors('test_tab_load_with_validation_errors', validation_errors)
+        self.__check_validation_errors(validation_errors)

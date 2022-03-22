@@ -1,24 +1,23 @@
-<script context="module">
-  import { loadUserRole } from "./_dataLoading.js";
-
-  export async function load({ fetch }) {
-    const userRole = await loadUserRole(fetch);
-    return { props: { userRole } }
-  }
-</script>
-
 <script>
   import { onMount } from "svelte";
-  import { session } from "$app/stores";
-  import Header from '$lib/components/layout/Header.svelte';
-  import Footer from '$lib/components/layout/Footer.svelte';
+  import { getStores } from "$app/stores";
+  import { getUserDetails } from "$lib/dataLoading.js";
+  import Header from "$lib/components/layout/Header.svelte";
+  import Footer from "$lib/components/layout/Footer.svelte";
+  import "../base.css";
 
-  export let userRole;
+  const { session } = getStores();
 
-  // The session store can be set only in the browser. Hence we set it on component mount.
   onMount(() => {
-    //FIXME: will be fixed in `feature/replace-legacy-api-on-frontend` branch.
-    //session.set({ user: { role: userRole } });
+    getUserDetails(fetch)
+      .then(({ type: userRole } = {}) => {
+        if (userRole) {
+          session.set({ user: { role: userRole } });
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   });
 </script>
 
@@ -37,20 +36,31 @@
   --juno-indigo: #484885;
   --juno-purple: #6868be;
   --color-border: #dfe3e6;
+  --color-danger: #e66969;
+  --color-link-visited: #663399;
+  --color-table-alt-row: #f8f8f8;
+  --color-table-hover-row: #f0f0f0;
 
   --bp-xl: 1400px;
 
-  --width-main: 50rem;
+  --width-main: min(98vw, var(--bp-xl));
+  --width-reading: 50rem;
 }
 
 main {
   box-sizing:border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 2rem auto;
   padding-left: 0.8rem;
   padding-right: 0.8rem;
-  /* Pages can redefine the variable and thus the width. */
   width: var(--width-main);
   max-width: 100%;
+}
+
+:global(.frappe-chart .title) {
+  font-size: 1rem;
 }
 
 :global([role=dialog] .content > h1),
@@ -62,20 +72,67 @@ main {
   font-size: 1.1rem;
 }
 
+:global(table.dense th) {
+  font-size: .95rem;
+  padding: .5rem;
+}
+:global(table.dense td) {
+  font-size: .95rem;
+  line-height: 1.2;
+  padding: .3rem;
+}
+@media (min-width: 1278px) {
+  :global(table.dense td) {
+    padding: .5rem;
+  }
+}
+
 :global(a[role=button]):hover {
   text-decoration: none;
 }
 
+:global(button),
+:global([role=button]),
+:global(input[type="button"]),
+:global(input[type="submit"]) {
+  border-color: var(--color-border);
+}
+
 :global(button.compact),
-:global([role=button].compact) {
+:global([role=button].compact),
+:global(input[type="button"].compact),
+:global(input[type="submit"].compact) {
   font-size: 0.95rem;
   padding: 0.5rem;
 }
 
-:global(button.light),
-:global([role=button].light) {
+:global(button.primary),
+:global([role=button].primary) {
   background: var(--background-body);
-  border: 1px solid var(--background);
-  font-weight: 100;
+  color: var(--juno-indigo);
+  border: 1px solid var(--juno-indigo);
+  font-weight: 300;
+}
+
+:global(button.danger),
+:global([role=button].danger) {
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  font-weight: 300;
+}
+
+:global(.icon-btn) {
+  border: none;
+  margin-top: .25rem;
+  padding: .3rem .3rem .1rem;
+}
+
+:global(.sr-only) {
+  /* Credits: https://stackoverflow.com/a/26032207/4579279 */
+  position: absolute !important; /* Outside the DOM flow */
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
 }
 </style>

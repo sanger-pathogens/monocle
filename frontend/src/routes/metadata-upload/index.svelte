@@ -14,7 +14,7 @@
 
 <h2>Metadata upload</h2>
 
-<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with tab-separated sample metadata (<code>.tab</code>, <code>.tsv</code>, and <code>.txt</code> extensions are supported):</p>
+<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:</p>
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
@@ -22,8 +22,8 @@
   on:uploadSuccess={openDialog}
 />
 
-<Dialog bind:isOpen={uploadSuccessDialogOpen}>
-  <h3>Upload success</h3>
+<Dialog bind:isOpen={uploadSuccessDialogOpen} ariaLabelledby="dialog-title">
+  <h3 id="dialog-title">Upload success</h3>
 
   <p>All metadata were successfully uploaded.</p>
   <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>

@@ -3,25 +3,29 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import ValidationErrorList from "./ValidationErrorList.svelte";
 
-  const FILE_TYPE = "text/plain,.txt,text/tab-separated-values,.tsv,.tab";
-
   export let ariaLabelledby = undefined;
   export let files = [];
+  export let accept = undefined;
   export let uploadUrl;
 
   const dispatch = createEventDispatcher();
   let uploading = false;
   let validationErrors = [];
 
+  // `files` is referenced here only to indicate Svelte's reactive statemnt that `clearValidationErrors()`
+  // should be run each time `files` changes. (See https://svelte.dev/docs#3_$_marks_a_statement_as_reactive.)
+  $: clearValidationErrors(files);
+
   function onFileSubmit() {
     uploading = true;
+    clearValidationErrors();
 
     uploadFiles(emitUploadSuccess)
       .catch(onUploadError)
       .finally(() => {
         uploading = false;
       });
-    }
+  }
 
   function uploadFiles(successCallback) {
     const filesArray = Array.from(files);
@@ -89,30 +93,34 @@
       []
     );
   }
+
+  function clearValidationErrors() {
+    validationErrors = [];
+  }
 </script>
 
 
 <form on:submit|preventDefault={onFileSubmit} aria-labelledby={ariaLabelledby || null}>
-	<fieldset disabled={uploading}>
-		<input
-			bind:files
-			type="file"
-			accept={FILE_TYPE}
-			multiple
-		>
-		
-		<button type="submit" disabled={files.length === 0}>
-			Upload
-		</button>
-	</fieldset>
+  <fieldset disabled={uploading}>
+    <input
+      bind:files
+      type="file"
+      {accept}
+      multiple
+    >
+
+    <button type="submit" class="primary" disabled={files.length === 0}>
+      Upload
+    </button>
+  </fieldset>
 </form>
 
 {#if uploading}
-	<LoadingIndicator />
+  <LoadingIndicator />
 {/if}
 
 {#if validationErrors.length}
-	<ValidationErrorList errors={validationErrors} />
+  <ValidationErrorList errors={validationErrors} />
 {/if}
 
 

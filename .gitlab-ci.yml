@@ -5,13 +5,13 @@ stages:
 
 
 variables:
-  DASH_CONTEXT:             "dash"
   DASH_API_CONTEXT:         "dash-api"
   # note there is no docker build associated with DATA_VIEW_CONTEXT
   DATA_VIEW_CONTEXT:        "data_view"
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
-  DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${DASH_CONTEXT} ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
+  QC_DATA_CONTEXT:          "qc-data"
+  DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
 
@@ -20,7 +20,7 @@ variables:
 Docker builds:
   stage: build
   tags:
-    - autoscale-theta-legacy
+    - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -52,38 +52,18 @@ Docker builds:
          done
 
 
-Dashboard unit tests:
-  stage: test
-  only:
-    - branches
-  tags:
-    - autoscale-theta-legacy
-  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
-  before_script:
-    - cd "${DASH_CONTEXT}"
-  script:
-    - ./unittests.sh
-    - coverage report --fail-under 85
-    - coverage html
-  coverage: /^TOTAL.+?(\d+\%)$/
-  artifacts:
-    when: always
-    paths:
-      - ${DASH_CONTEXT}/htmlcov
-
-
 Dashboard API unit tests:
   stage: test
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${DASH_API_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 85
+    - coverage report --show-missing --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
@@ -97,8 +77,8 @@ Data view unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
-  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${DATA_VIEW_CONTEXT}"
   script:
@@ -109,7 +89,7 @@ Data view unit tests:
   artifacts:
     when: always
     paths:
-      - data_view/htmlcov
+      - ${DATA_VIEW_CONTEXT}/htmlcov
 
 
 Metadata unit tests:
@@ -117,13 +97,13 @@ Metadata unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "${METADATA_CONTEXT}/juno"
   script:
     - ./unittests.sh
-    - coverage report --fail-under 85
+    - coverage report --show-missing --fail-under 85
     - coverage html
   coverage: /^TOTAL.+?(\d+\%)$/
   artifacts:
@@ -137,7 +117,7 @@ Front end unit tests:
   only:
     - branches
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${CI_REGISTRY_IMAGE}/monocle-${FRONTEND_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd /app
@@ -161,7 +141,7 @@ Docker tags for merge:
   only:
     - master
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"
@@ -191,6 +171,26 @@ Docker tags for merge:
          done
 
 
+QC data unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${DASH_API_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    - cd "${QC_DATA_CONTEXT}"
+  script:
+    - ./unittests.sh
+    - coverage report --fail-under 60
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${QC_DATA_CONTEXT}/htmlcov
+
+
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
 Docker tags for release:
   variables:
@@ -200,7 +200,7 @@ Docker tags for release:
   only:
     - tags
   tags:
-    - autoscale-theta-legacy
+    - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
     - name:  "${DOCKER_DIND_IMAGE}"

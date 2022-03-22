@@ -21,13 +21,30 @@ class MetadataDownload:
       self.dl_client = Monocle_Download_Client()
             
    def get_metadata(self, lane_id_list):
-      logging.debug("{}.request_metadata() called with {}".format(__class__.__name__,lane_id_list))
+      logging.debug("{}.get_metadata() called with {}".format(__class__.__name__,lane_id_list))
       results_list = self.dl_client.metadata(lane_id_list)
       assert ( isinstance(results_list, list) ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
-      logging.debug("{}.request_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
-      logging.info("{}.request_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
+      logging.debug("{}.get_metadata() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__,len(results_list)))
       return results_list
 
+   def get_in_silico_data(self, lane_id_list):
+      logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__,lane_id_list))
+      results_list = self.dl_client.in_silico_data(lane_id_list)
+      assert ( isinstance(results_list, list) ), "Monocle_Download_Client.in_silico_data() was expected to return a list, not {}".format(type(results_list))
+      if len(results_list) > 0:
+         logging.debug("{}.get_in_silico_data() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__,len(results_list)))
+      return results_list
+
+   def get_qc_data(self, lane_id_list):
+      logging.debug("{}.get_qc_data() called with {}".format(__class__.__name__,lane_id_list))
+      results_list = self.dl_client.qc_data(lane_id_list)
+      assert ( isinstance(results_list, list) ), "Monocle_Download_Client.qc_data() was expected to return a list, not {}".format(type(results_list))
+      if len(results_list) > 0:
+         logging.debug("{}.get_qc_data() result 1: {}".format(__class__.__name__,results_list[0]))
+      logging.info("{}.get_iqc_data() got {} result(s)".format(__class__.__name__,len(results_list)))
+      return results_list
 
 class ProtocolError(Exception):
     pass
@@ -36,11 +53,15 @@ class ProtocolError(Exception):
 class Monocle_Download_Client:
    
    data_sources_config     = 'data_sources.yml'
-   data_source             = 'monocle_download_api'
+   data_source             = 'monocle_metadata_api'
    required_config_params  = [   'base_url',
                                  'swagger',
                                  'download',
-                                 'metadata_key'
+                                 'metadata_key',
+                                 'download_in_silico_data',
+                                 'in_silico_data_key',
+                                 'download_qc_data',
+                                 'qc_data_key'
                                  ]
    def __init__(self, set_up=True):
       if set_up:
@@ -52,7 +73,7 @@ class Monocle_Download_Client:
          self.config  = data_sources[self.data_source]
       for required_param in self.required_config_params:
          if not required_param in self.config:
-            logging.error("data source config file {} does not provide the required paramter {}.{}".format(self.data_sources_config,self.data_source,required_param))
+            logging.error("data source config file {} does not provide the required parameter {}.{}".format(self.data_sources_config,self.data_source,required_param))
             raise KeyError
       
    def metadata(self, lane_id_list):
@@ -62,6 +83,40 @@ class Monocle_Download_Client:
       logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
       results = self.parse_response(response, required_keys = [self.config['metadata_key']])
       return results[self.config['metadata_key']]
+   
+   def in_silico_data(self, lane_id_list):
+      endpoint = self.config['download_in_silico_data']
+      logging.debug("{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
+      # this request will return a 404 if there are no in silico results for these samples
+      # this is not an error, so a 404 must be caught, and an empty results set returned
+      try:
+         response = self.make_request( endpoint, post_data = lane_id_list )
+      except urllib.error.HTTPError as e:
+         if 404 == e.code:
+            logging.debug("status {}: no in silico results currently available for these samples".format(e.code))
+            return([])
+         else:
+            raise
+      logging.debug("{}.in_silico_data([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
+      results = self.parse_response(response, required_keys = [self.config['in_silico_data_key']])
+      return results[self.config['in_silico_data_key']]
+   
+   def qc_data(self, lane_id_list):
+      endpoint = self.config['download_qc_data']
+      logging.debug("{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(__class__.__name__,endpoint,len(lane_id_list)))
+      # this request will return a 404 if there are no QC data results for these samples
+      # this is not an error, so a 404 must be caught, and an empty results set returned
+      try:
+         response = self.make_request( endpoint, post_data = lane_id_list )
+      except urllib.error.HTTPError as e:
+         if 404 == e.code:
+            logging.debug("status {}: no QC data results currently available for these samples".format(e.code))
+            return([])
+         else:
+            raise
+      logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__,','.join(lane_id_list),response))
+      results = self.parse_response(response, required_keys = [self.config['qc_data_key']])
+      return results[self.config['qc_data_key']]
 
    def make_request(self, endpoint, post_data=None):
       request_url       = self.config['base_url']+endpoint
@@ -80,13 +135,16 @@ class Monocle_Download_Client:
          with urllib.request.urlopen( http_request ) as this_response:
             response_as_string = this_response.read().decode('utf-8')
             logging.debug("response from Monocle Download: {}".format(response_as_string))
-      except urllib.error.HTTPError:
-         logging.error("HTTP error during Monocle Download request {}".format(request_url))
+      except urllib.error.HTTPError as e:
+         if 404 == e.code:
+            logging.info("HTTP response status {} (no data found) during Monocle Download request {}".format(e.code,request_url))
+         else:
+            logging.error("HTTP status {} during Monocle Download request {}\n{}".format(e.code,request_url,e.read().decode('utf-8')))
          raise
       return response_as_string
 
    def parse_response(self, response_as_string, required_keys=[]):
-      swagger_url  = self.config['base_url']+self.config['swagger'] # only because it may be useful for error messages
+      swagger_url  = self.config['base_url'] + self.config['swagger'] # only because it may be useful for error messages
       results_data = json.loads(response_as_string)
       if not isinstance(results_data, dict):
          error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(endpoint, swagger_url)

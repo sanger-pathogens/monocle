@@ -1,5 +1,7 @@
 from typing import List
 from metadata.api.model.metadata import Metadata
+from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.qc_data import QCData
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.institution import Institution
@@ -29,18 +31,28 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
         """ Update sample metadata in the database """
         pass
 
+    def update_lane_in_silico_data(self, in_silico_data_list: List[InSilicoData]) -> None:
+        """ Update sample in silico data in the database """
+        pass
+     
+    def update_lane_qc_data(self, qc_data_list: List[QCData]) -> None:
+        """ Update sample QC data in the database """
+        pass
+
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """ Get download mock metadata for given list of 'sample:lane' keys """
 
         results = []
-        samples, lanes = self.split_keys(keys)
+        samples = tuple(keys)
+        lane_id  = 0
 
-        for sample_id, lane_id in zip(samples, lanes):
+        for sanger_sample_id in samples:
 
+            lane_id += 1
             results.append(
                 Metadata(
-                    sanger_sample_id=sample_id,
-                    lane_id=lane_id,
+                    sanger_sample_id=sanger_sample_id,
+                    lane_id=f'lane_{str(lane_id)}',
                     submitting_institution='My institution',
                     supplier_sample_name='CUHK_GBS2WT_00',
                     public_name='JN_HK_GBS2WT',
@@ -104,4 +116,3 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
             )
 
         return results
-

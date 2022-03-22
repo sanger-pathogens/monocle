@@ -1,4 +1,8 @@
 .DS_Store
 node_modules
+.env
 /.svelte-kit
+/build
 /package
+# should be no my.cnf file here, but to be safe...
+my*.cnf*

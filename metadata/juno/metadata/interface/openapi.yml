@@ -13,21 +13,17 @@ servers:
 paths:
   /metadata-upload:
     post:
-      operationId: metadata.api.routes.update_sample_metadata
+      operationId: metadata.api.routes.update_sample_metadata_route
       summary: "Upload a new tab-delimited file of metadata"
       requestBody:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                spreadsheet:
-                  type: string
-                  format: binary
+              $ref: "#/components/schemas/Spreadsheet"
       responses:
-        200:
+        "200":
           description: "The upload succeeded"
-        400:
+        "400":
           description: "The file has not passed validation"
           content:
             application/json:
@@ -38,82 +34,355 @@ paths:
                     $ref: "#/components/schemas/ValidationErrors"
   /in-silico-upload:
     post:
-      operationId: metadata.api.routes.update_in_silico_data
+      operationId: metadata.api.routes.update_in_silico_data_route
       summary: "Upload a new tab-delimited file of in silico data"
       requestBody:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                spreadsheet:
-                  type: string
-                  format: binary
+              $ref: "#/components/schemas/Spreadsheet"
       responses:
-        200:
+        "200":
           description: "The upload succeeded"
-        400:
+        "400":
           description: "The file has not passed validation"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  errors:
-                    $ref: "#/components/schemas/ValidationErrors"
-  /download:
+                $ref: "#/components/schemas/ValidationErrors"
+                
+  /qc-data-upload:
     post:
-      operationId: metadata.api.routes.get_download_metadata
-      summary: "Download the metadata for the given download keys"
+      operationId: metadata.api.routes.update_qc_data_route
+      summary: "Update QC data"
       requestBody:
-        description: "A list of 'sampleId:laneId' keys"
+        description: "A list of dictionaries of QC data"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DownloadKeys"
-              examples: "[\"5903STDY8059122:24936_2#76\", \"5903STDY8059054:24937_1#22\"]"
+              $ref: "#/components/schemas/QCDataUpdates"
       responses:
-        200:
+        "200":
+          description: "The update succeeded"
+        "400":
+          description: "The update request was not valid."
+          
+  /download:
+    post:
+      operationId: metadata.api.routes.get_download_metadata_route
+      summary: "Download the metadata for the given download keys"
+      requestBody:
+        description: "A list of Sanger sample IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadSampleKeys"
+      responses:
+        "200":
           description: "The download result set"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  download:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Metadata"
-        400:
+                $ref: "#/components/schemas/Metadata"
+        "400":
           description: "Invalid arguments provided"
-        404:
+        "404":
           description: "No data could be found for the given download key"
 
+  /download_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_download_in_silico_data_route
+      summary: "Download the in silico data for the given download keys"
+      requestBody:
+        description: "A list of lane IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadLaneKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InSilicoData"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /download_qc_data:
+    post:
+      operationId: metadata.api.routes.get_download_qc_data_route
+      summary: "Download the QC data for the given download keys"
+      requestBody:
+        description: "A list of lane IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadLaneKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QCData"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /delete_all_qc_data:
+    get:
+      operationId: metadata.api.routes.delete_all_qc_data_route
+      summary: "Delete all QC data"
+      responses:
+        "200":
+          description: "The deletion was successful."
+
+  /institutions:
+    get:
+      operationId: metadata.api.routes.get_institution_names_route
+      summary: "Gather the names for all institutions"
+      responses:
+        "200":
+          description: "The institution result set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Institutions"
+        "404":
+          description: "Institutions could not be gathered from database"
+
+  /samples:
+    get:
+      operationId: metadata.api.routes.get_samples_route
+      summary: "Gather all sample records"
+      responses:
+        "200":
+          description: "The sample result set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metadata"
+        "404":
+          description: "No data could be found for the given institutions or filters"
+
+  /sample_ids_matching_metadata:
+    post:
+      operationId: metadata.api.routes.get_samples_filtered_by_metadata_route
+      summary: "Filter samples according to metadata values, and return matching Sanger sample IDs"
+      requestBody:
+        description: "An array of metadata filters"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FiltersInput"
+      responses:
+        "200":
+          description: "List of Sanger sample ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Samples"
+        "404":
+          description: "No data could be found for the given filters"
+          
+  /lane_ids_matching_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_lanes_filtered_by_in_silico_data_route
+      summary: "Filter lanes according to in silico data values, and return matching lane IDs"
+      requestBody:
+        description: "An array of in silico filters"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FiltersInSilicoInput"
+      responses:
+        "200":
+          description: "List of lane ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lanes"
+        "404":
+          description: "No data could be found for the given filters"
+
+  /distinct_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_values_route
+      summary: "Gather distinct metadata values for certain fields"
+      requestBody:
+        description: "A list of fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/MetadataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["serotype", "age_group"], "institutions": ["National Reference Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct metadata values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_in_silico_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_in_silico_values_route
+      summary: "Gather distinct in silico data values for certain fields"
+      requestBody:
+        description: "A list of in silico fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/InSilicoFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["cps_type","ST"], "institutions": ["National Reference Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct in silico values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_qc_data_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_qc_data_values_route
+      summary: "Gather distinct QC data values for certain fields"
+      requestBody:
+        description: "A list of QC data fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  $ref: "#/components/schemas/QCDataFieldsList"
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            example: { "fields": ["rel_abun_sa"], "institutions": ["National Reference Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct QC data values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
 
 components:
   schemas:
 
-    ValidationErrors:
+    Spreadsheet:
+      description: "File path to spreadsheet"
+      type: object
+      properties:
+        spreadsheet:
+          type: string
+          format: binary
+
+    QCDataUpdates:
+      description: "A list of dictionaries of QC data"
       type: array
       items:
-        type: string
-      minItems: 0
-      readOnly: true
+        $ref: "#/components/schemas/QCDataInput"
+      
+    QCDataInput:
+      description: "QC data update for a single lane"
+      type: object
+      required:
+        - lane_id
+      example: {"lane_id": "39214_1#341", "rel_abun_sa": 80.74}
+      properties:
+        lane_id:
+          type: string
+          minLength: 3
+          maxLength: 16
+          pattern: ^[0-9_#]+$
+        rel_abun_sa:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+    
+    ValidationErrors:
+      description: "Error response"
+      type: object
+      properties:
+        validationerror:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          readOnly: true
 
-    DownloadKeys:
+    DownloadSampleKeys:
+      description: "A list of Sanger sample IDs"
       type: array
       items:
         type: string
         minLength: 3
-        maxLength: 270
-        pattern: '^\S+[:]\S+$'
+        maxLength: 256
+        pattern: ^[a-zA-Z0-9]*$
       minItems: 1
+      example: ["5903STDY8059122", "5903STDY8059054"]
+
+    DownloadLaneKeys:
+      description: "A list of lane IDs"
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]
 
     DownloadField:
       type: object
       required:
-        - "name"
+        - "title"
         - "value"
         - "order"
       properties:
@@ -121,7 +390,7 @@ components:
           type: integer
           description: "An ordering integer index for the field"
           readOnly: true
-        name:
+        title:
           type: string
           description: "The name of the metadata field"
           readOnly: true
@@ -129,188 +398,557 @@ components:
           type: string
           description: "The value of the metadata field"
           readOnly: true
+          
+          
+    FiltersInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/MetadataFilters"
+      minItems: 1
 
-    Metadata:
+    MetadataFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the metadata field"
+            $ref: "#/components/schemas/MetadataFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the metadata field"
+               $ref: "#/components/schemas/FieldValueFilter"
+            minItems: 1
+      example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
+      
+    FiltersInSilicoInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFilters"
+      minItems: 1
+
+    InSilicoFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the in silico field"
+            $ref: "#/components/schemas/InSilicoFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the in silico field"
+               $ref: "#/components/schemas/InSilicoFieldValueFilter"
+            minItems: 1
+      example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
+
+    FieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 256
+      # Allows one whitespace but not two or more together and allows single
+      # but not double hyphens to prevent -- injections
+      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:/\.\(\)\[\]]+)\-?\ ?)+$
+      
+    InSilicoFieldValueFilter:
+      description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 256
+      # only alphanumerics, '*',  '?', '-' and '/'
+      pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
+
+    MetadataFieldName:
+      description: "Valid metadata field name (alphanumeric and underscore only)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^sanger_sample_id|lane_id|submitting_institution|supplier_sample_name|public_name|host_status|study_name|study_ref|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|disease_type|disease_onset|isolation_source|serotype|serotype_method|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
+
+    InSilicoFieldName:
+      description: "Valid in silico field name (alphanumeric and underscore only)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|GYRA_variant|PARC_variant$
+
+    QCDataFieldName:
+      description: "Valid QC data field name (alphanumeric and underscore only)"
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: ^rel_abun_sa$
+
+    DistinctValuesInput:
       type: object
       required:
-        - "sanger_sample_id"
-        - "lane_id"
-        - "submitting_institution"
-        - "supplier_sample_name"
-        - "public_name"
-        - "host_status"
-        - "study_name"
-        - "study_ref"
-        - "selection_random"
-        - "country"
-        - "county_state"
-        - "city"
-        - "collection_year"
-        - "collection_month"
-        - "collection_day"
-        - "host_species"
-        - "gender"
-        - "age_group"
-        - "age_years"
-        - "age_months"
-        - "age_weeks"
-        - "age_days"
-        - "disease_type"
-        - "disease_onset"
-        - "isolation_source"
-        - "serotype"
-        - "serotype_method"
-        - "infection_during_pregnancy"
-        - "maternal_infection_type"
-        - "gestational_age_weeks"
-        - "birth_weight_gram"
-        - "apgar_score"
-        - "ceftizoxime"
-        - "ceftizoxime_method"
-        - "cefoxitin"
-        - "cefoxitin_method"
-        - "cefotaxime"
-        - "cefotaxime_method"
-        - "cefazolin"
-        - "cefazolin_method"
-        - "ampicillin"
-        - "ampicillin_method"
-        - "penicillin"
-        - "penicillin_method"
-        - "erythromycin"
-        - "erythromycin_method"
-        - "clindamycin"
-        - "clindamycin_method"
-        - "tetracycline"
-        - "tetracycline_method"
-        - "levofloxacin"
-        - "levofloxacin_method"
-        - "ciprofloxacin"
-        - "ciprofloxacin_method"
-        - "daptomycin"
-        - "daptomycin_method"
-        - "vancomycin"
-        - "vancomycin_method"
-        - "linezolid"
-        - "linezolid_method"
+        - fields
+        - institutions
       properties:
-        sanger_sample_id:
-          $ref: "#/components/schemas/DownloadField"
-        lane_id:
-          $ref: "#/components/schemas/DownloadField"
-        submitting_institution:
-          $ref: "#/components/schemas/DownloadField"
-        supplier_sample_name:
-          $ref: "#/components/schemas/DownloadField"
-        public_name:
-          $ref: "#/components/schemas/DownloadField"
-        host_status:
-          $ref: "#/components/schemas/DownloadField"
-        study_name:
-          $ref: "#/components/schemas/DownloadField"
-        study_ref:
-          $ref: "#/components/schemas/DownloadField"
-        selection_random:
-          $ref: "#/components/schemas/DownloadField"
-        country:
-          $ref: "#/components/schemas/DownloadField"
-        county_state:
-          $ref: "#/components/schemas/DownloadField"
-        city:
-          $ref: "#/components/schemas/DownloadField"
-        collection_year:
-          $ref: "#/components/schemas/DownloadField"
-        collection_month:
-          $ref: "#/components/schemas/DownloadField"
-        collection_day:
-          $ref: "#/components/schemas/DownloadField"
-        host_species:
-          $ref: "#/components/schemas/DownloadField"
-        gender:
-          $ref: "#/components/schemas/DownloadField"
-        age_group:
-          $ref: "#/components/schemas/DownloadField"
-        age_years:
-          $ref: "#/components/schemas/DownloadField"
-        age_months:
-          $ref: "#/components/schemas/DownloadField"
-        age_weeks:
-          $ref: "#/components/schemas/DownloadField"
-        age_days:
-          $ref: "#/components/schemas/DownloadField"
-        disease_type:
-          $ref: "#/components/schemas/DownloadField"
-        disease_onset:
-          $ref: "#/components/schemas/DownloadField"
-        isolation_source:
-          $ref: "#/components/schemas/DownloadField"
-        serotype:
-          $ref: "#/components/schemas/DownloadField"
-        serotype_method:
-          $ref: "#/components/schemas/DownloadField"
-        infection_during_pregnancy:
-          $ref: "#/components/schemas/DownloadField"
-        maternal_infection_type:
-          $ref: "#/components/schemas/DownloadField"
-        gestational_age_weeks:
-          $ref: "#/components/schemas/DownloadField"
-        birth_weight_gram:
-          $ref: "#/components/schemas/DownloadField"
-        apgar_score:
-          $ref: "#/components/schemas/DownloadField"
-        ceftizoxime:
-          $ref: "#/components/schemas/DownloadField"
-        ceftizoxime_method:
-          $ref: "#/components/schemas/DownloadField"
-        cefoxitin:
-          $ref: "#/components/schemas/DownloadField"
-        cefoxitin_method:
-          $ref: "#/components/schemas/DownloadField"
-        cefotaxime:
-          $ref: "#/components/schemas/DownloadField"
-        cefotaxime_method:
-          $ref: "#/components/schemas/DownloadField"
-        cefazolin:
-          $ref: "#/components/schemas/DownloadField"
-        cefazolin_method:
-          $ref: "#/components/schemas/DownloadField"
-        ampicillin:
-          $ref: "#/components/schemas/DownloadField"
-        ampicillin_method:
-          $ref: "#/components/schemas/DownloadField"
-        penicillin:
-          $ref: "#/components/schemas/DownloadField"
-        penicillin_method:
-          $ref: "#/components/schemas/DownloadField"
-        erythromycin:
-          $ref: "#/components/schemas/DownloadField"
-        erythromycin_method:
-          $ref: "#/components/schemas/DownloadField"
-        clindamycin:
-          $ref: "#/components/schemas/DownloadField"
-        clindamycin_method:
-          $ref: "#/components/schemas/DownloadField"
-        tetracycline:
-          $ref: "#/components/schemas/DownloadField"
-        tetracycline_method:
-          $ref: "#/components/schemas/DownloadField"
-        levofloxacin:
-          $ref: "#/components/schemas/DownloadField"
-        levofloxacin_method:
-          $ref: "#/components/schemas/DownloadField"
-        ciprofloxacin:
-          $ref: "#/components/schemas/DownloadField"
-        ciprofloxacin_method:
-          $ref: "#/components/schemas/DownloadField"
-        daptomycin:
-          $ref: "#/components/schemas/DownloadField"
-        daptomycin_method:
-          $ref: "#/components/schemas/DownloadField"
-        vancomycin:
-          $ref: "#/components/schemas/DownloadField"
-        vancomycin_method:
-          $ref: "#/components/schemas/DownloadField"
-        linezolid:
-          $ref: "#/components/schemas/DownloadField"
-        linezolid_method:
-          $ref: "#/components/schemas/DownloadField"
+        fields:
+          $ref: "#/components/schemas/MetadataFieldsList"
+        institutions:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldValueFilter"
+    
+    MetadataFieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/MetadataFieldName"
+      minItems: 1
+
+    InSilicoFieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFieldName"
+      minItems: 1
+
+    QCDataFieldsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/QCDataFieldName"
+      minItems: 1
+
+    DistinctValues:
+      description: "Object containing an array of fields, and the distinct values from the db for each"
+      type: object
+      properties:
+        distinct_values:
+          type: array
+          items:
+            type: object
+            required:
+              - "field"
+              - "distinct_values"
+            properties:
+              name:
+                type: string
+                description: "The name of the metadata field"
+                readOnly: true
+              values:
+                type: array
+                items:
+                  type: string
+                  nullable: true
+                  description: "The value of the metadata field"
+                  readOnly: true
+
+    Institutions:
+      description: "Object with list of institutions."
+      type: object
+      properties:
+        institutions:
+          type: array
+          readOnly: True
+          items:
+            type: string
+            minLength: 3
+            maxLength: 256
+          minItems: 1
+
+    Samples:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: ^[a-zA-Z0-9]*$
+      minItems: 1
+      example: ["5903STDY8059122", "5903STDY8059054"]
+
+    Lanes:
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]
+      
+    Metadata:
+      description: "Object containing an array of Sanger sample ids and their metadata"
+      type: object
+      properties:
+        metadata:
+          type: array
+          items:
+            type: object
+            required:
+              - "sanger_sample_id"
+              - "lane_id"
+              - "submitting_institution"
+              - "supplier_sample_name"
+              - "public_name"
+              - "host_status"
+              - "study_name"
+              - "study_ref"
+              - "selection_random"
+              - "country"
+              - "county_state"
+              - "city"
+              - "collection_year"
+              - "collection_month"
+              - "collection_day"
+              - "host_species"
+              - "gender"
+              - "age_group"
+              - "age_years"
+              - "age_months"
+              - "age_weeks"
+              - "age_days"
+              - "disease_type"
+              - "disease_onset"
+              - "isolation_source"
+              - "serotype"
+              - "serotype_method"
+              - "infection_during_pregnancy"
+              - "maternal_infection_type"
+              - "gestational_age_weeks"
+              - "birth_weight_gram"
+              - "apgar_score"
+              - "ceftizoxime"
+              - "ceftizoxime_method"
+              - "cefoxitin"
+              - "cefoxitin_method"
+              - "cefotaxime"
+              - "cefotaxime_method"
+              - "cefazolin"
+              - "cefazolin_method"
+              - "ampicillin"
+              - "ampicillin_method"
+              - "penicillin"
+              - "penicillin_method"
+              - "erythromycin"
+              - "erythromycin_method"
+              - "clindamycin"
+              - "clindamycin_method"
+              - "tetracycline"
+              - "tetracycline_method"
+              - "levofloxacin"
+              - "levofloxacin_method"
+              - "ciprofloxacin"
+              - "ciprofloxacin_method"
+              - "daptomycin"
+              - "daptomycin_method"
+              - "vancomycin"
+              - "vancomycin_method"
+              - "linezolid"
+              - "linezolid_method"
+            properties:
+              sanger_sample_id:
+                  $ref: "#/components/schemas/DownloadField"
+              lane_id:
+                $ref: "#/components/schemas/DownloadField"
+              submitting_institution:
+                $ref: "#/components/schemas/DownloadField"
+              supplier_sample_name:
+                $ref: "#/components/schemas/DownloadField"
+              public_name:
+                $ref: "#/components/schemas/DownloadField"
+              host_status:
+                $ref: "#/components/schemas/DownloadField"
+              study_name:
+                $ref: "#/components/schemas/DownloadField"
+              study_ref:
+                $ref: "#/components/schemas/DownloadField"
+              selection_random:
+                $ref: "#/components/schemas/DownloadField"
+              country:
+                $ref: "#/components/schemas/DownloadField"
+              county_state:
+                $ref: "#/components/schemas/DownloadField"
+              city:
+                $ref: "#/components/schemas/DownloadField"
+              collection_year:
+                $ref: "#/components/schemas/DownloadField"
+              collection_month:
+                $ref: "#/components/schemas/DownloadField"
+              collection_day:
+                $ref: "#/components/schemas/DownloadField"
+              host_species:
+                $ref: "#/components/schemas/DownloadField"
+              gender:
+                $ref: "#/components/schemas/DownloadField"
+              age_group:
+                $ref: "#/components/schemas/DownloadField"
+              age_years:
+                $ref: "#/components/schemas/DownloadField"
+              age_months:
+                $ref: "#/components/schemas/DownloadField"
+              age_weeks:
+                $ref: "#/components/schemas/DownloadField"
+              age_days:
+                $ref: "#/components/schemas/DownloadField"
+              disease_type:
+                $ref: "#/components/schemas/DownloadField"
+              disease_onset:
+                $ref: "#/components/schemas/DownloadField"
+              isolation_source:
+                $ref: "#/components/schemas/DownloadField"
+              serotype:
+                $ref: "#/components/schemas/DownloadField"
+              serotype_method:
+                $ref: "#/components/schemas/DownloadField"
+              infection_during_pregnancy:
+                $ref: "#/components/schemas/DownloadField"
+              maternal_infection_type:
+                $ref: "#/components/schemas/DownloadField"
+              gestational_age_weeks:
+                $ref: "#/components/schemas/DownloadField"
+              birth_weight_gram:
+                $ref: "#/components/schemas/DownloadField"
+              apgar_score:
+                $ref: "#/components/schemas/DownloadField"
+              ceftizoxime:
+                $ref: "#/components/schemas/DownloadField"
+              ceftizoxime_method:
+                $ref: "#/components/schemas/DownloadField"
+              cefoxitin:
+                $ref: "#/components/schemas/DownloadField"
+              cefoxitin_method:
+                $ref: "#/components/schemas/DownloadField"
+              cefotaxime:
+                $ref: "#/components/schemas/DownloadField"
+              cefotaxime_method:
+                $ref: "#/components/schemas/DownloadField"
+              cefazolin:
+                $ref: "#/components/schemas/DownloadField"
+              cefazolin_method:
+                $ref: "#/components/schemas/DownloadField"
+              ampicillin:
+                $ref: "#/components/schemas/DownloadField"
+              ampicillin_method:
+                $ref: "#/components/schemas/DownloadField"
+              penicillin:
+                $ref: "#/components/schemas/DownloadField"
+              penicillin_method:
+                $ref: "#/components/schemas/DownloadField"
+              erythromycin:
+                $ref: "#/components/schemas/DownloadField"
+              erythromycin_method:
+                $ref: "#/components/schemas/DownloadField"
+              clindamycin:
+                $ref: "#/components/schemas/DownloadField"
+              clindamycin_method:
+                $ref: "#/components/schemas/DownloadField"
+              tetracycline:
+                $ref: "#/components/schemas/DownloadField"
+              tetracycline_method:
+                $ref: "#/components/schemas/DownloadField"
+              levofloxacin:
+                $ref: "#/components/schemas/DownloadField"
+              levofloxacin_method:
+                $ref: "#/components/schemas/DownloadField"
+              ciprofloxacin:
+                $ref: "#/components/schemas/DownloadField"
+              ciprofloxacin_method:
+                $ref: "#/components/schemas/DownloadField"
+              daptomycin:
+                $ref: "#/components/schemas/DownloadField"
+              daptomycin_method:
+                $ref: "#/components/schemas/DownloadField"
+              vancomycin:
+                $ref: "#/components/schemas/DownloadField"
+              vancomycin_method:
+                $ref: "#/components/schemas/DownloadField"
+              linezolid:
+                $ref: "#/components/schemas/DownloadField"
+              linezolid_method:
+                $ref: "#/components/schemas/DownloadField"
+
+    InSilicoData:
+      description: "Object containing an array of lane ids and their in silico data"
+      type: object
+      properties:
+        insilicodata:
+          type: array
+          items:
+            type: object
+            required:
+              - "lane_id"
+              - "cps_type"
+              - "ST"
+              - "adhP"
+              - "pheS"
+              - "atr"
+              - "glnA"
+              - "sdhA"
+              - "glcK"
+              - "tkt"
+              - "twenty_three_S1"
+              - "twenty_three_S3"
+              - "AAC6APH2"
+              - "AADECC"
+              - "ANT6"
+              - "APH3III"
+              - "APH3OTHER"
+              - "CATPC194"
+              - "CATQ"
+              - "ERMA"
+              - "ERMB"
+              - "ERMT"
+              - "LNUB"
+              - "LNUC"
+              - "LSAC"
+              - "MEFA"
+              - "MPHC"
+              - "MSRA"
+              - "MSRD"
+              - "FOSA"
+              - "GYRA"
+              - "PARC"
+              - "RPOBGBS_1"
+              - "RPOBGBS_2"
+              - "RPOBGBS_3"
+              - "RPOBGBS_4"
+              - "SUL2"
+              - "TETB"
+              - "TETL"
+              - "TETM"
+              - "TETO"
+              - "TETS"
+              - "ALP1"
+              - "ALP23"
+              - "ALPHA"
+              - "HVGA"
+              - "PI1"
+              - "PI2A1"
+              - "PI2A2"
+              - "PI2B"
+              - "RIB"
+              - "SRR1"
+              - "SRR2"
+              - "GYRA_variant"
+              - "PARC_variant"
+            properties:
+              lane_id:
+                $ref: "#/components/schemas/DownloadField"
+              cps_type:
+                $ref: "#/components/schemas/DownloadField"
+              ST:
+                $ref: "#/components/schemas/DownloadField"
+              adhP:
+                $ref: "#/components/schemas/DownloadField"
+              pheS:
+                $ref: "#/components/schemas/DownloadField"
+              atr:
+                $ref: "#/components/schemas/DownloadField"
+              glnA:
+                $ref: "#/components/schemas/DownloadField"
+              sdhA:
+                $ref: "#/components/schemas/DownloadField"
+              glcK:
+                $ref: "#/components/schemas/DownloadField"
+              tkt:
+                $ref: "#/components/schemas/DownloadField"
+              twenty_three_S1:
+                $ref: "#/components/schemas/DownloadField"
+              twenty_three_S3:
+                $ref: "#/components/schemas/DownloadField"
+              AAC6APH2:
+                $ref: "#/components/schemas/DownloadField"
+              AADECC:
+                $ref: "#/components/schemas/DownloadField"
+              ANT6:
+                $ref: "#/components/schemas/DownloadField"
+              APH3III:
+                $ref: "#/components/schemas/DownloadField"
+              APH3OTHER:
+                $ref: "#/components/schemas/DownloadField"
+              CATPC194:
+                $ref: "#/components/schemas/DownloadField"
+              CATQ:
+                $ref: "#/components/schemas/DownloadField"
+              ERMA:
+                $ref: "#/components/schemas/DownloadField"
+              ERMB:
+                $ref: "#/components/schemas/DownloadField"
+              ERMT:
+                $ref: "#/components/schemas/DownloadField"
+              LNUB:
+                $ref: "#/components/schemas/DownloadField"
+              LNUC:
+                $ref: "#/components/schemas/DownloadField"
+              LSAC:
+                $ref: "#/components/schemas/DownloadField"
+              MEFA:
+                $ref: "#/components/schemas/DownloadField"
+              MPHC:
+                $ref: "#/components/schemas/DownloadField"
+              MSRA:
+                $ref: "#/components/schemas/DownloadField"
+              MSRD:
+                $ref: "#/components/schemas/DownloadField"
+              FOSA:
+                $ref: "#/components/schemas/DownloadField"
+              GYRA:
+                $ref: "#/components/schemas/DownloadField"
+              PARC:
+                $ref: "#/components/schemas/DownloadField"
+              RPOBGBS_1:
+                $ref: "#/components/schemas/DownloadField"
+              RPOBGBS_2:
+                $ref: "#/components/schemas/DownloadField"
+              RPOBGBS_3:
+                $ref: "#/components/schemas/DownloadField"
+              RPOBGBS_4:
+                $ref: "#/components/schemas/DownloadField"
+              SUL2:
+                $ref: "#/components/schemas/DownloadField"
+              TETB:
+                $ref: "#/components/schemas/DownloadField"
+              TETL:
+                $ref: "#/components/schemas/DownloadField"
+              TETM:
+                $ref: "#/components/schemas/DownloadField"
+              TETO:
+                $ref: "#/components/schemas/DownloadField"
+              TETS:
+                $ref: "#/components/schemas/DownloadField"
+              ALP1:
+                $ref: "#/components/schemas/DownloadField"
+              ALP23:
+                $ref: "#/components/schemas/DownloadField"
+              ALPHA:
+                $ref: "#/components/schemas/DownloadField"
+              HVGA:
+                $ref: "#/components/schemas/DownloadField"
+              PI1:
+                $ref: "#/components/schemas/DownloadField"
+              PI2A1:
+                $ref: "#/components/schemas/DownloadField"
+              PI2A2:
+                $ref: "#/components/schemas/DownloadField"
+              PI2B:
+                $ref: "#/components/schemas/DownloadField"
+              RIB:
+                $ref: "#/components/schemas/DownloadField"
+              SRR1:
+                $ref: "#/components/schemas/DownloadField"
+              SRR2:
+                $ref: "#/components/schemas/DownloadField"
+              GYRA_variant:
+                $ref: "#/components/schemas/DownloadField"
+              PARC_variant:
+                $ref: "#/components/schemas/DownloadField"
+                
+    QCData:
+      description: "Object containing an array of lane ids and their QC data"
+      type: object
+      properties:
+        qcdata:
+          type: array
+          items:
+            type: object
+            required:
+              - "lane_id"
+              - "rel_abun_sa"
+            properties:
+              lane_id:
+                $ref: "#/components/schemas/DownloadField"
+              rel_abun_sa:
+                $ref: "#/components/schemas/DownloadField"
+

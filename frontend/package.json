@@ -9,42 +9,47 @@
     "test": "jest src",
     "test:watch": "npm run test -- --watch",
     "test:coverage": "jest src --coverage --coverageDirectory='coverage' --coverageThreshold='{\"global\":{\"branches\":\"50\",\"functions\":\"80\",\"lines\":\"80\",\"statements\":\"80\"}}'",
-    "test:summary":  "jest src --coverageReporters='text-summary'",
-    "lint": "eslint --ignore-path .gitignore ."
+    "test:summary": "jest src --coverageReporters='text-summary'",
+    "lint": "eslint --ignore-path .gitignore .",
+    "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.14.7",
-    "@sveltejs/adapter-node": "^1.0.0-next.27",
+    "@babel/preset-env": "^7.16.4",
+    "@sveltejs/adapter-node": "next",
     "@sveltejs/kit": "next",
     "@testing-library/svelte": "^3.0.3",
-    "babel-jest": "^27.0.6",
-    "eslint": "^7.22.0",
-    "eslint-plugin-svelte3": "^3.2.0",
+    "babel-jest": "^27.5.1",
+    "babel-plugin-transform-vite-meta-env": "^1.0.3",
+    "eslint": "^7.32.0",
+    "eslint-plugin-jest": "^24.7.0",
+    "eslint-plugin-svelte3": "^3.4.1",
     "frappe-charts": "^1.6.2",
-    "jest": "^27.0.6",
-    "svelte": "^3.34.0",
-    "svelte-jester": "^1.7.0"
+    "jest": "^27.5.1",
+    "svelte": "^3.46.3",
+    "svelte-jester": "^2.3.2",
+    "svelte-select": "^4.4.6"
   },
   "_id": "Monocle frontend@0.0.1",
   "jest": {
     "testEnvironment": "jsdom",
     "setupFiles": [
-      "./scripts/jest/mockBrowser.js"
+      "./scripts/jest/mockBrowser.js",
+      "./scripts/jest/suppressLogs.js"
     ],
     "transform": {
       "^.+\\.js$": "babel-jest",
       "^.+\\.svelte$": "svelte-jester"
     },
     "transformIgnorePatterns": [
-      "node_modules/",
-      ".svelte-kit/"
+      "node_modules/(?!svelte-select)"
     ],
     "moduleNameMapper": {
       "^\\$lib(.*)$": "<rootDir>/src/lib$1",
       "^\\$app(.*)$": [
         "<rootDir>/.svelte-kit/dev/runtime/app$1",
         "<rootDir>/.svelte-kit/build/runtime/app$1"
-      ]
+      ],
+      "\\.css$": "<rootDir>/__mocks__/style.js"
     },
     "moduleFileExtensions": [
       "js",

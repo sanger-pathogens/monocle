@@ -4,7 +4,7 @@ This component provides an API for accessing data required by the frontend dashb
 ## Building a local Docker image
 A local docker image can be built using the following:
 ```
-cd metadata/juno
+cd dash-api/juno
 docker build --rm -t dash-api:test .
 ```
 

@@ -1,4 +1,5 @@
 import { render } from "@testing-library/svelte";
+// eslint-disable-next-line no-unused-vars
 import { getContext } from "svelte";
 import DownloadButtons from "./_DownloadButtons.svelte";
 
@@ -13,13 +14,13 @@ jest.mock("svelte", () => ({
 
 describe.each([
   [
-    "succeeded",
-    `Download ${NUM_DONE} successfully sequenced samples`,
+    "successful",
+    `Download metadata for ${NUM_DONE} successfully sequenced samples`,
     encodeURI(`/download/${INSTITUTION}/sequencing/successful`)
   ],
   [
     "failed",
-    `Download ${NUM_DONE} samples that failed sequencing`,
+    `Download metadata for ${NUM_DONE} samples that failed sequencing`,
     encodeURI(`/download/${INSTITUTION}/sequencing/failed`)
   ]
 ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {
@@ -68,13 +69,13 @@ it("has shorter button text if only the failed download button is displayed", ()
 describe("pipeline", () => {
   describe.each([
     [
-      "succeeded",
-      `Download ${NUM_DONE} samples successfully processed through the pipeline`,
+      "successful",
+      `Download metadata for ${NUM_DONE} samples successfully processed through the pipeline`,
       encodeURI(`/download/${INSTITUTION}/pipeline/successful`)
     ],
     [
       "failed",
-      `Download ${NUM_DONE} samples that failed processing through the pipeline`,
+      `Download metadata for ${NUM_DONE} samples that failed processing through the pipeline`,
       encodeURI(`/download/${INSTITUTION}/pipeline/failed`)
     ]
   ])("download %s button", (resultType, expectedButtonTitle, expectedDownloadURL) => {

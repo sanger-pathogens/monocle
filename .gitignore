@@ -5,7 +5,7 @@ TODOs.md
 real-data
 .idea
 users.md
-my.cnf*
+my*.cnf*
 my-dev.cnf
 my-prod.cnf
 openldap-env.yaml
@@ -16,6 +16,5 @@ mlwh-api-dev.yml
 mlwh-api-prod.yml
 node_modules/
 npm-debug.log
-.svelte-kit/
-frontend/**/build
 .coverage
+.hypothesis

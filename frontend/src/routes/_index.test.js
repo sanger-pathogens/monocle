@@ -1,56 +1,126 @@
-import { render } from "@testing-library/svelte";
-import { session } from '$app/stores';
+import { render, waitFor, within } from "@testing-library/svelte";
+import { writable } from "svelte/store";
+import {
+  getInstitutionStatus,
+  // eslint-disable-next-line no-unused-vars
+  getProjectProgress
+} from "$lib/dataLoading.js";
+import { USER_ROLE_ADMIN } from "$lib/constants.js";
 import DashboardPage from "./index.svelte";
 
-// Mocking this module for the whole file is a workaround
-// for Jest's not parsing SvelteKit's $app modules.
-jest.mock("$app/stores", async () => {
-  const { writable } = await import("svelte/store");
-  return { session: writable() };
+const INSTITUTIONS = [{
+  name: "Center for Reducing Suffering",
+  key: "CRS",
+  batches: { received: 1, deliveries: [] },
+  sequencingStatus: {},
+  pipelineStatus: {}
+}, {
+  name: "Qualia Research Institute",
+  key: "QRI",
+  batches: { received: 42, deliveries: [] },
+  sequencingStatus: {},
+  pipelineStatus: {}
+}];
+
+jest.mock("$lib/dataLoading.js", () => ({
+  getInstitutionStatus: jest.fn(() => Promise.resolve(INSTITUTIONS)),
+  getProjectProgress: () => Promise.resolve()
+}));
+
+it("shows the loading indicator", () => {
+  const { getByLabelText } = render(DashboardPage, { session: writable(
+    { user: { role: USER_ROLE_ADMIN } })
+  });
+
+  expect(getByLabelText("please wait")).toBeDefined();
 });
 
-it("displays the project progress chart", () => {
-  const { getByText } = render(DashboardPage, { institutions: [] });
+it("shows an error message if data fetching rejects", async () => {
+  getInstitutionStatus.mockRejectedValueOnce();
 
-  expect(getByText("Project Progress")).toBeDefined();
-});
+  const { getByText } = render(DashboardPage, { session: writable(
+    { user: { role: USER_ROLE_ADMIN } })
+  });
 
-it("displays the upload link", () => {
-  const { findByRole } = render(DashboardPage, { institutions: [] });
-
-  expect(findByRole("link", { name: "Upload metadata" }))
-    .toBeDefined();
-});
-
-it("displays status for each institution passed", () => {
-  const institutions = [{
-    name: "Center for Reducing Suffering",
-    key: "CRS",
-    batches: { received: 1, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  }, {
-    name: "Qualia Research Institute",
-    key: "QRI",
-    batches: { received: 42, deliveries: [] },
-    sequencingStatus: {},
-    pipelineStatus: {}
-  }];
-
-  const { component, getByText } = render(DashboardPage, { institutions });
-
-  institutions.forEach(({ name }) => {
-    const institutionHeadingElement = getByText(name);
-    const institutionStatusPanes = institutionHeadingElement.parentElement
-      .querySelectorAll(":scope > article");
-    expect(institutionStatusPanes).toHaveLength(3);
+  await waitFor(() => {
+    expect(getByText("An unexpected error occured during page loading. Please try again by reloading the page."))
+      .toBeDefined();
   });
 });
 
-it("displays a message when no institutions passed", () => {
-  const { getByText } = render(DashboardPage, { institutions: [] });
+describe("after data fetching", () => {
+  it("hides the loading indicator", async () => {
+    const { queryByLabelText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
 
-  expect(getByText("No institutions found for this account", { exact: false }))
-    .toBeDefined();
+    await waitFor(() => {
+      expect(queryByLabelText("please wait")).toBeNull();
+    });
+  });
+
+  it("displays the project progress chart w/ a Y-axis label", async () => {
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
+
+    await waitFor(() => {
+      expect(getByText("Project Progress")).toBeDefined();
+      expect(getByText("# of samples")).toBeDefined();
+    });
+  });
+
+  it("displays the menu w/ the upload and data viewer links", async () => {
+    const ROLE_LINK = "link";
+    const domainName = window.location.host;
+    const { findByRole } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
+
+    const linksContainer = await findByRole("navigation");
+
+    const metadataUploadLink = await within(linksContainer)
+      .findByRole(ROLE_LINK, { name: "Upload metadata" });
+    expect(metadataUploadLink).toBeDefined();
+    expect(metadataUploadLink.href).toMatch(
+      new RegExp(`${domainName}/metadata-upload`));
+    const insilicoUploadLink = await within(linksContainer)
+      .findByRole(ROLE_LINK, { name: "Upload in-silico data" });
+    expect(insilicoUploadLink).toBeDefined();
+    expect(insilicoUploadLink.href).toMatch(
+      new RegExp(`${domainName}/in-silico-upload`));
+    const dataViewerLink = await within(linksContainer)
+      .findByRole(ROLE_LINK, { name: "View and download sample data" });
+    expect(dataViewerLink).toBeDefined();
+    expect(dataViewerLink.href).toMatch(
+      new RegExp(`${domainName}/samples`));
+  });
+
+  it("displays status for each institution", async () => {
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
+
+    await waitFor(() => {
+      INSTITUTIONS.forEach(({ name }) => {
+        const institutionHeadingElement = getByText(name);
+        const institutionStatusPanes = institutionHeadingElement.parentElement
+          .querySelectorAll(":scope > article");
+        expect(institutionStatusPanes).toHaveLength(3);
+      });
+    });
+  });
+
+  it("displays a message when the list of institutions is empty", async () => {
+    getInstitutionStatus.mockResolvedValueOnce([]);
+
+    const { getByText } = render(DashboardPage, { session: writable(
+      { user: { role: USER_ROLE_ADMIN } })
+    });
+
+    await waitFor(() => {
+      expect(getByText("No institutions found for this account", { exact: false }))
+        .toBeDefined();
+    });
+  });
 });
-

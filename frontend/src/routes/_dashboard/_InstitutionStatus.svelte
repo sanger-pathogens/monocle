@@ -9,15 +9,19 @@
   export let sequencingStatus;
   export let pipelineStatus;
 
+  const apiError = batches._ERROR || sequencingStatus._ERROR || pipelineStatus._ERROR;
+
   // Svelte's context is like a store but available only to a component and its descendants.
   setContext("institutionName", institutionName);
 </script>
 
 
 <article>
-  <h3>{institutionName}</h3>
+  <h2>{institutionName}</h2>
 
-  {#if batches.received}
+  {#if apiError}
+    <p>⚠️ {apiError}</p>
+  {:else if batches.received}
     <BatchStatus {batches} />
     <SequencingStatus {sequencingStatus} />
     <PipelineStatus {pipelineStatus} />
@@ -29,15 +33,10 @@
 
 
 <style>
-:root {
-  /* w/o `!important` redefining `--width-main` variable doesn't work in production build */
-  --width-main: min(98vw, var(--bp-xl)) !important;
-}
-
 article {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 article:not(:first-of-type) {
@@ -47,7 +46,7 @@ article:first-of-type {
   margin-top: 1.5rem;
 }
 
-h3 {
+h2 {
   margin-top: 1rem;
   width: 100%;
 }
