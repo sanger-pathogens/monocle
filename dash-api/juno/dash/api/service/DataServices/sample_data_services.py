@@ -843,7 +843,7 @@ class MonocleSampleData:
             )
         return max_samples_per_zip
 
-    def get_metadata_for_download(self, download_hostname, institution, category, status):
+    def get_metadata_for_download(self, download_hostname, institution_key, category, status):
         """
         This acts as a wrapper for get_csv_download().
 
@@ -854,7 +854,7 @@ class MonocleSampleData:
         It is useful to retain this wrapper as it supports the existing routes that (because params are simple)
         conveniently accept GET requests.
 
-        Pass host name (used for download links), institution name, category ('sequencing' or 'pipeline')
+        Pass host name (used for download links), institution key, category ('sequencing' or 'pipeline')
         and status ('successful' or 'failed').  These are translated into the parameters required by
         get_csv_download().
 
@@ -862,12 +862,11 @@ class MonocleSampleData:
         """
         # validate params
         institution_data = self.sample_tracking.get_institutions()
-        institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
-        if not institution in institution_names:
+        if not institution_key in institution_data:
             message = 'institution "{}" passed, but should be one of "{}"'.format(
-                institution, '", "'.join(institution_names)
+                institution_key, '", "'.join(institution_data)
             )
             logging.error("Invalid request to {}: {}".format(__class__.__name__, message))
             return {"success": False, "error": "request", "message": message}
@@ -886,19 +885,13 @@ class MonocleSampleData:
 
         # Create a sample filter that includes all batches for this institution
         batches_filter = []
-        # batches are referenced by institution key, so get that first
-        institution_key = None
-        for this_institution in institution_data:
-            if institution_data[this_institution].get("name") == institution:
-                institution_key = this_institution
-                break
-        # now get all batches for the institution
+        # get all batches for the institution
         batches_data = self.sample_tracking.get_batches().get(institution_key)
         for this_delivery in batches_data["deliveries"]:
             batches_filter.append({"institution key": institution_key, "batch date": this_delivery["date"]})
         # request should never have been made for an institution with no samples
         if 0 == len(batches_filter):
-            message = "no batches could be found for {}".format(institution)
+            message = "no batches could be found for {}".format(institution_key)
             logging.error(message)
             raise RuntimeError(message)
 
@@ -913,14 +906,12 @@ class MonocleSampleData:
         sample_filters = {"batches": batches_filter, category: status_filter}
         logging.info(
             "metadata download {}/{}/{} will use sample filters: {}".format(
-                institution, category, status, sample_filters
+                institution_key, category, status, sample_filters
             )
         )
 
-        filename = "{}_{}_{}.csv".format(
-            "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(), category, status
-        )
-        download_links = {"hostname": download_hostname, "institution": institution}
+        filename = "{}_{}_{}.csv".format(institution_key, category, status)
+        download_links = {"hostname": download_hostname, "institution": institution_data[institution_key]["name"]}
         # wrap get_csv_download()
         return self.get_csv_download(filename, sample_filters, download_links=download_links)
 

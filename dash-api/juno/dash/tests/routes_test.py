@@ -1220,7 +1220,7 @@ class TestRoutes(unittest.TestCase):
         username_mock.return_value = self.TEST_USER
         host_name_mock.return_value = self.TEST_HOST_NAME
         # When
-        result = get_metadata_for_download_route("Fake Institution", "pipeline", "successful")
+        result = get_metadata_for_download_route("fake institution key", "pipeline", "successful")
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata_for_download.assert_called_once()
