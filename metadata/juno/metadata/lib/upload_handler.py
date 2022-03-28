@@ -1,32 +1,40 @@
-import pandas
 import logging
 import re
-from flask import request
 from typing import List
-from pandas_schema import Column, Schema
-from pandas_schema.validation import LeadingWhitespaceValidation, TrailingWhitespaceValidation, \
-    MatchesPatternValidation, InRangeValidation, InListValidation, CustomElementValidation
-from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
+
+import pandas
+from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
+from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
+from pandas_schema import Column, Schema
+from pandas_schema.validation import (
+    CustomElementValidation,
+    InListValidation,
+    InRangeValidation,
+    LeadingWhitespaceValidation,
+    MatchesPatternValidation,
+    TrailingWhitespaceValidation,
+)
 
 logger = logging.getLogger()
 
 
 class _StringLengthValidation(CustomElementValidation):
-    """ A custom validator class for checking the data frame string lengths """
+    """A custom validator class for checking the data frame string lengths"""
+
     def __init__(self, message: str, max_length: int):
         self.max_length = max_length
         super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
 
 
 class UploadHandler:
-    """ Handle processing of upload spreadsheets """
+    """Handle processing of upload spreadsheets"""
 
     # Allowed file formats
     file_types = {
-        'tab' : getattr(pandas, 'read_csv'),
-        'tsv' : getattr(pandas, 'read_csv'),
-        'txt' : getattr(pandas, 'read_csv')
+        "tab": getattr(pandas, "read_csv"),
+        "tsv": getattr(pandas, "read_csv"),
+        "txt": getattr(pandas, "read_csv"),
     }
 
     def __init__(self, dao: MonocleDatabaseService, in_def: SpreadsheetDefinition, do_validation: bool) -> None:
@@ -37,7 +45,7 @@ class UploadHandler:
         self.__institutions = None
         # validation will fail if file extension isn't as expected, when this flag is true
         self.check_file_extension = True
-        self.file_delimiter = '\t'
+        self.file_delimiter = "\t"
 
     def data_frame(self):
         return self.__df
@@ -47,11 +55,11 @@ class UploadHandler:
 
     @staticmethod
     def allowed_file_types() -> List[str]:
-        """ Return a list of allowed file type extensions """
+        """Return a list of allowed file type extensions"""
         return [str(key) for key in UploadHandler.file_types.keys()]
 
     def is_valid_file_type(self, file: str) -> bool:
-        """ Check if we can process this file type """
+        """Check if we can process this file type"""
 
         # immediately return true if this check is disabled
         if not self.check_file_extension:
@@ -59,8 +67,8 @@ class UploadHandler:
 
         valid = False
         try:
-            if file and '.' in file:
-                suffix = file.split('.')[-1]
+            if file and "." in file:
+                suffix = file.split(".")[-1]
                 if suffix in UploadHandler.allowed_file_types():
                     valid = True
         except Exception as e:
@@ -70,17 +78,17 @@ class UploadHandler:
 
     def get_cell_value(self, column_key: str, row):
         """
-            Return a cell value given a column name and row object.
-            Do any necessary data conversion.
+        Return a cell value given a column name and row object.
+        Do any necessary data conversion.
         """
         val = row[self.__spreadsheet_def.get_column_name(column_key)]
         case_setting = self.__spreadsheet_def.get_case(column_key)
 
         # Do we need to convert case...
         if case_setting:
-            if case_setting == 'lower':
+            if case_setting == "lower":
                 val = val.lower()
-            elif case_setting == 'upper':
+            elif case_setting == "upper":
                 val = val.upper()
 
             preserved_values = self.__spreadsheet_def.get_case_preserve(column_key)
@@ -92,7 +100,7 @@ class UploadHandler:
         return val
 
     def create_schema(self) -> Schema:
-        """ Create Pandas schema with all the necessary validation rules read in from config """
+        """Create Pandas schema with all the necessary validation rules read in from config"""
         col_list = []
         for column in self.__spreadsheet_def.keys():
             validators = [LeadingWhitespaceValidation(), TrailingWhitespaceValidation()]
@@ -100,9 +108,9 @@ class UploadHandler:
             mandatory_field_flag = self.__spreadsheet_def.is_mandatory(column)
 
             # Special cases for checking institutions/countries...
-            if column == 'submitting_institution':
+            if column == "submitting_institution":
                 validators.append(InListValidation([i.name for i in self.__institutions]))
-            if column == 'country':
+            if column == "country":
                 validators.append(InListValidation([i.country for i in self.__institutions]))
             else:
                 # Regex validation
@@ -110,7 +118,7 @@ class UploadHandler:
                     validators.append(
                         MatchesPatternValidation(
                             self.__spreadsheet_def.get_regex(column),
-                            message=self.__spreadsheet_def.get_regex_validation_message(column)
+                            message=self.__spreadsheet_def.get_regex_validation_message(column),
                         )
                     )
 
@@ -125,8 +133,7 @@ class UploadHandler:
                 if max_len and max_len > 0:
                     validators.append(
                         _StringLengthValidation(
-                            'field length is greater than {} characters'.format(str(max_len)),
-                            max_len
+                            "field length is greater than {} characters".format(str(max_len)), max_len
                         )
                     )
 
@@ -139,9 +146,9 @@ class UploadHandler:
 
     def format_validation_errors(self, errors: list) -> List[str]:
         """
-            Format any validation errors.
-            Pandas schema does not seem to take notice of where the header row is for its validation error
-            row numbering so we need to modify the error messages to correct it.
+        Format any validation errors.
+        Pandas schema does not seem to take notice of where the header row is for its validation error
+        row numbering so we need to modify the error messages to correct it.
         """
         results = []
         for error in errors:
@@ -155,34 +162,28 @@ class UploadHandler:
 
     def load(self, file_path: str) -> List[str]:
         """
-            Read the spreadsheet to a pandas data frame.
-            Returns a list of validation error strings [if any].
+        Read the spreadsheet to a pandas data frame.
+        Returns a list of validation error strings [if any].
         """
         errors = []
 
-        logger.info('Loading spreadsheet {}...'.format(file_path))
+        logger.info("Loading spreadsheet {}...".format(file_path))
 
         # Belt and braces file type check
         if not self.is_valid_file_type(file_path):
-            raise RuntimeError('Not an allowed file extension')
+            raise RuntimeError("Not an allowed file extension")
 
         # Load the data to a data frame
         if self.check_file_extension:
             suffix = file_path.split(".")[-1]
             data = self.file_types[suffix](
-                file_path,
-                dtype=str,
-                sep=self.file_delimiter,
-                header=self.__spreadsheet_def.header_row_position
+                file_path, dtype=str, sep=self.file_delimiter, header=self.__spreadsheet_def.header_row_position
             )
         else:
             data = pandas.read_csv(
-                file_path,
-                dtype=str,
-                sep=self.file_delimiter,
-                header=self.__spreadsheet_def.header_row_position
+                file_path, dtype=str, sep=self.file_delimiter, header=self.__spreadsheet_def.header_row_position
             )
-        data.fillna('', inplace=True)
+        data.fillna("", inplace=True)
 
         # Display spreadsheet contents for debugging if required
         # for key, value in data.iterrows():

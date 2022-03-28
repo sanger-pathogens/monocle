@@ -4,6 +4,8 @@ Monocle is an exploration tool for data from the [Juno project](https://www.gbsg
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/monocle/blob/master/LICENSE)
 [![coverage report](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle/badges/master/coverage.svg)](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle/-/commits/master)
 
+[[_TOC_]]
+
 ## Components
 The components include:
 
@@ -14,6 +16,22 @@ The components include:
 - MySQL database (on a host managed by the Service Desk DBA team)
 
 There is a further README in each directory with more detailed information.
+
+## Development
+
+### Prerequisites
+
+Run from `monocle` repo's root folder:
+```
+pip install -r requirements-dev.txt
+```
+to install tools like Black and isort for auto-formatting, which you may want to run manually sometimes.
+
+#### Pre-commit hooks
+
+Monocle's pre-commit hooks (speficied in `./.pre-commit-config.yaml`) are run before each commit automatically. We use them to auto-format code and to check for linting errors, for example. W/o running the hooks, the CI pipeline may fail.
+
+To install the pre-commit hooks, [install `pre-commit`](https://pre-commit.com/#installation) and afterwards run `pre-commit install` from the repository's folder to install the pre-commit hooks.
 
 ## Production
 Monocle is available internally to Sanger at the following addresses:
