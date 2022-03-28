@@ -106,7 +106,7 @@
       <PaginationNav
         compact={true}
         {numSamples}
-        numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
+        maxNumSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
         pageNum={displayedPageNum}
         on:pageChange={onPageChange}
       />
@@ -116,7 +116,7 @@
 
     <PaginationNav
       {numSamples}
-      numSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
+      maxNumSamplesPerPage={NUM_METADATA_ROWS_PER_PAGE}
       pageNum={displayedPageNum}
       on:pageChange={onPageChange}
     />
