@@ -23,7 +23,7 @@ Check that Python code is formatted:
     - openstack-autoscale-theta
   image: python:3.8.12-slim-buster
   before_script:
-    - pip install $(grep -E '^black|^isort' requirements-dev.txt | xargs)
+    - pip install -r requirements-ci.txt
   script:
     - black --check --line-length ${LINE_LENGTH} . && isort --check-only . || exit_code=$?
     - >
