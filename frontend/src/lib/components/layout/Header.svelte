@@ -2,6 +2,10 @@
   const URL_PATH_NAME_LOGIN = "/login";
 </script>
 
+<script>
+  import { browser } from "$app/env";
+</script>
+
 
 <header>
   <h1><a href="/">Monocle</a></h1>
@@ -14,7 +18,7 @@
     <a href="https://www.gbsgen.net/#partners" target="_blank">Partners</a>
     <a href="https://www.gbsgen.net/#twitterFeed" target="_blank">News</a>
     <a href="https://www.gbsgen.net/#funders" target="_blank">Funders</a>
-    {#if !location.pathname.includes(URL_PATH_NAME_LOGIN)}
+    {#if browser && location && !location.pathname.includes(URL_PATH_NAME_LOGIN)}
       <a
         href={location.href.replace(`${location.protocol}//`, `${location.protocol}//log:out@`)}
         class="login-out-link"
