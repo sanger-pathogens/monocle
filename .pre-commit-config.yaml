@@ -6,7 +6,7 @@ default_language_version:
 # Important: if you update a version of a package, update the version of the corresponding package in `requirements-ci.py` as well.
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
       - id: black
         name: Black (Python)
