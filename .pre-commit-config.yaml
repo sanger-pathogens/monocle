@@ -2,6 +2,7 @@
 fail_fast: true
 default_language_version:
   python: python3.8.8
+# Important: if you update a version of a package, update the version of the corresponding package in `requirements-ci.py` as well.
 repos:
   - repo: https://github.com/psf/black
     rev: 22.1.0
