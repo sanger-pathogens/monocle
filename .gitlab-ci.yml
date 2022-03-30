@@ -21,9 +21,12 @@ Check that Python code is formatted:
   stage: check_py_code_formatted
   tags:
     - openstack-autoscale-theta
-  image: python:3.8.12-slim-buster
+  # Keep this version in sync w/ the one from `./.pre-commit-config.yaml`.
+  image: python:3.8.8-slim-buster
   before_script:
-    - pip install $(grep -E '^black|^isort' requirements-dev.txt | xargs)
+    # Install `git` needed for `isort` to ignore files from `.gitignore`
+    - apt-get update && apt-get install -y git
+    - pip install -r requirements-ci.txt
   script:
     - black --check --line-length ${LINE_LENGTH} . && isort --check-only . || exit_code=$?
     - >
