@@ -834,7 +834,7 @@ class MonocleSampleDataTest(TestCase):
       actual_samples = self.monocle_data.get_filtered_samples({'batches': self.inst_key_batch_date_pairs, 'pipeline': {'complete': True}})
 
       expected_samples = self.mock_filtered_samples2
-      logging.critical("\n***** EXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+      #logging.critical("\n***** EXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
       self.assertEqual(expected_samples, actual_samples)
       self.get_mock_data()
 
