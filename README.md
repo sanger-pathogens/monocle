@@ -30,7 +30,7 @@ First, install [`pre-commit`](https://pre-commit.com/#installation) command itse
 pip install pre-commit
 ```
 
-Then, run `pre-commit install` from the repository's folder to install the pre-commit hooks.
+Then, run `pre-commit install` from the repository's folder to install the pre-commit hooks (they are installed in their own environment and thus do not conflict w/ the local installations you may have).
 
 ##### Running pre-commit hooks manually
 
