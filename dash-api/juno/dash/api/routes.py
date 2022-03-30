@@ -30,6 +30,23 @@ DATA_INST_VIEW_ENVIRON  = 'DATA_INSTITUTION_VIEW'
 OPENAPI_SPEC_FILE = './dash/interface/openapi.yml'
 GET_METADATA_INPUT_SCHEMA = 'GetMetadataInput'
 
+
+def get_auth_token_route(body):
+    """ Given a username and password provided by the user, retrieve authentication token be used as the authentication cookie value"""
+    try:
+      username_provided = body['username']
+      password_provided = body['password']
+    except KeyError:
+      logging.error("endpoint handler {} must be passed the username and password provided".format(__name__))
+      raise
+      
+    ##import DataSources.user_data
+    auth_token = ServiceFactory.authentication_service().get_auth_token(username_provided,password_provided)
+    response_dict = {
+        'token': auth_token
+    }
+    return call_jsonify(response_dict), HTTPStatus.OK
+
 def get_user_details_route():
     """ Given a username retrieve all details for that user """
     data = ServiceFactory.user_service(get_authenticated_username(request)).user_details

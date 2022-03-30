@@ -107,6 +107,23 @@ class TestRoutes(unittest.TestCase):
 
     def setUp(self) -> None:
         ServiceFactory.TEST_MODE = True
+        
+    @patch('dash.api.routes.call_jsonify')
+    @patch.object(ServiceFactory, 'authentication_service')
+    def test_get_auth_token_route(self, auth_service_mock, resp_mock):
+        # Given
+        auth_service_mock.return_value.get_auth_token.return_value = self.SERVICE_CALL_RETURN_DATA
+        # When
+        result = get_auth_token_route({'username': 'any name', 'password': 'anything'})
+        # Then
+        resp_mock.assert_called_once_with(
+            {
+                'token': self.SERVICE_CALL_RETURN_DATA
+            }
+        )
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 1)
+        self.assertEqual(result[1], HTTPStatus.OK)
 
     @patch('dash.api.routes.call_jsonify')
     @patch('dash.api.routes.get_authenticated_username')

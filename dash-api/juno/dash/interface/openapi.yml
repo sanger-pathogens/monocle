@@ -11,6 +11,42 @@ servers:
     description: Context path
 
 paths:
+  /get_auth_token:
+    post:
+      operationId: dash.api.routes.get_auth_token_route
+      summary: "Return authentication token. Credentials are NOT VERFIFIED by this endpoint: this token needs to be checked by NGINX before authorisation is granted."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - username
+              - password
+              properties:
+                username:
+                  description: "The username provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
+                password:
+                  description: "The password provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
+      responses:
+        "200":
+          description: "The operation was successful. An UNVERIFIED authentication token is returned."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+          
   /get_user_details:
     get:
       operationId: dash.api.routes.get_user_details_route
