@@ -1,10 +1,8 @@
-import { DATA_TYPES } from "$lib/constants.js";
+import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST } from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
-const HTTP_POST = "POST";
-const JSON_HEADERS = { "Content-Type": "application/json" };
 
 export function getInstitutionStatus(fetch) {
   return Promise.all([
@@ -50,7 +48,7 @@ export function getBulkDownloadInfo(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_info", null, fetch, {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
 }
@@ -59,7 +57,7 @@ export function getBulkDownloadUrls(params, fetch) {
   return fetchDashboardApiResource(
     "bulk_download_urls", "download_urls", fetch, {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(prepareBulkDownloadPayload(params))
     });
 }
@@ -91,7 +89,7 @@ export function getDistinctColumnValues({ instKeyBatchDatePairs, columns, filter
 
   return fetchDashboardApiResource("get_distinct_values", "distinct values", fetch, {
     method: HTTP_POST,
-    headers: JSON_HEADERS,
+    headers: HTTP_HEADERS_JSON,
     body: JSON.stringify(payload)
   });
 }
@@ -130,7 +128,7 @@ fetch
     payload["as csv"] = true;
     return fetch(`${DASHBOARD_API_ENDPOINT}/get_metadata`, {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(payload)
     })
       .then((response) =>
@@ -145,7 +143,7 @@ fetch
   return fetchDashboardApiResource(
     "get_metadata", null, fetch, {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(payload)
     });
 }
