@@ -1,18 +1,19 @@
-import logging
 import configparser
+import logging
+from urllib.parse import quote as urlencode
+
 from flask import Config
-from urllib.parse  import quote as urlencode
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
 logger = logging.getLogger()
 
-MONOCLE_CONNECTION_FILE_PROPERTY = 'monocle_database_config_file'
-DB_CONFIG_TAG = 'client'
+MONOCLE_CONNECTION_FILE_PROPERTY = "monocle_database_config_file"
+DB_CONFIG_TAG = "client"
 
 
 def read_database_connection_config(config: Config) -> DbConnectionConfig:
-    """ Load database connection settings from file """
+    """Load database connection settings from file"""
 
     logger.info("Loading database connection details")
 
@@ -20,7 +21,7 @@ def read_database_connection_config(config: Config) -> DbConnectionConfig:
     connection_details_file = config[MONOCLE_CONNECTION_FILE_PROPERTY]
 
     if connection_details_file.strip() == "":
-        raise RuntimeError('ERROR: {} configuration property is invalid'.format(MONOCLE_CONNECTION_FILE_PROPERTY))
+        raise RuntimeError("ERROR: {} configuration property is invalid".format(MONOCLE_CONNECTION_FILE_PROPERTY))
 
     try:
         # Make sure we can open the file
@@ -30,26 +31,28 @@ def read_database_connection_config(config: Config) -> DbConnectionConfig:
         db_config.read(connection_details_file)
 
         try:
-            password = db_config[DB_CONFIG_TAG]['password'].strip('"')
+            password = db_config[DB_CONFIG_TAG]["password"].strip('"')
         except KeyError:
             pass
 
         if password:
-            url = "mysql://{}:{}@{}:{}/{}".format(db_config[DB_CONFIG_TAG]['user'],
-                                                  urlencode(password),
-                                                  db_config[DB_CONFIG_TAG]['host'],
-                                                  db_config[DB_CONFIG_TAG]['port'],
-                                                  db_config[DB_CONFIG_TAG]['database'],
-                                                  )
+            url = "mysql://{}:{}@{}:{}/{}".format(
+                db_config[DB_CONFIG_TAG]["user"],
+                urlencode(password),
+                db_config[DB_CONFIG_TAG]["host"],
+                db_config[DB_CONFIG_TAG]["port"],
+                db_config[DB_CONFIG_TAG]["database"],
+            )
         else:
             # No password provided
-            url = "mysql://{}@{}:{}/{}".format(db_config[DB_CONFIG_TAG]['user'],
-                                               db_config[DB_CONFIG_TAG]['host'],
-                                               db_config[DB_CONFIG_TAG]['port'],
-                                               db_config[DB_CONFIG_TAG]['database'],
-                                               )
+            url = "mysql://{}@{}:{}/{}".format(
+                db_config[DB_CONFIG_TAG]["user"],
+                db_config[DB_CONFIG_TAG]["host"],
+                db_config[DB_CONFIG_TAG]["port"],
+                db_config[DB_CONFIG_TAG]["database"],
+            )
 
-        config = DbConnectionConfig('monocle', url)
+        config = DbConnectionConfig("monocle", url)
         logger.info("Database connection details loaded")
 
         return config
@@ -63,16 +66,16 @@ def read_database_connection_config(config: Config) -> DbConnectionConfig:
 
 
 def read_mock_database_connection_config(config: Config) -> DbConnectionConfig:
-    """ Create dummy database connection settings """
-    return DbConnectionConfig('monocle', None)
+    """Create dummy database connection settings"""
+    return DbConnectionConfig("monocle", None)
 
 
 def read_spreadsheet_definition_config(config: Config) -> SpreadsheetDefinition:
     try:
-        header_pos = int(config['spreadsheet_header_row_position'])
+        header_pos = int(config["spreadsheet_header_row_position"])
         if header_pos < 0:
             raise (ValueError())
     except ValueError:
-        raise(ValueError('spreadsheet_header_row_position value must be 0 or a positive integer'))
+        raise (ValueError("spreadsheet_header_row_position value must be 0 or a positive integer"))
 
-    return SpreadsheetDefinition(header_pos, config['spreadsheet_definition'])
+    return SpreadsheetDefinition(header_pos, config["spreadsheet_definition"])

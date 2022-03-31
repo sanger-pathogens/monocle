@@ -1,25 +1,25 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
-from metadata.lib.download_handler import DownloadHandler
-from metadata.api.model.metadata import Metadata
+from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.in_silico_data import InSilicoData
+from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
-from metadata.api.database.monocle_database_service import MonocleDatabaseService
+from metadata.lib.download_handler import DownloadHandler
 
 
 class DownloadMetadataHandler(DownloadHandler):
-    """ Construct API metadata download response message data structures """
+    """Construct API metadata download response message data structures"""
 
     def read_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """
-            Return a list of metadata objects that correspond to the given sample id/lane id key values.
+        Return a list of metadata objects that correspond to the given sample id/lane id key values.
         """
         dao = self.get_dao()
         return dao.get_download_metadata(keys)
 
     def create_download_response(self, download: [Metadata]) -> List[Dict[Any, Any]]:
-        """ Create the correct data structure for download responses """
+        """Create the correct data structure for download responses"""
 
         response: List[Dict[Any, Any]] = []
 
@@ -93,84 +93,84 @@ class DownloadMetadataHandler(DownloadHandler):
 
 
 class DownloadInSilicoHandler(DownloadHandler):
-    """ Construct API in silico data download response message data structures """
+    """Construct API in silico data download response message data structures"""
 
     def read_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
         """
-            Return a list of in silico data objects that correspond to the given sample id/lane id key values.
+        Return a list of in silico data objects that correspond to the given sample id/lane id key values.
         """
         dao = self.get_dao()
         return dao.get_download_in_silico_data(keys)
 
     def create_download_response(self, download: [InSilicoData]) -> List[Dict[Any, Any]]:
-        """ Create the correct data structure for download responses """
+        """Create the correct data structure for download responses"""
 
         response: List[Dict[Any, Any]] = []
-        
+
         for entry in download:
             record_dict = {}
             self.__field_index = 1
-            self._append_to_dict(record_dict, 'lane_id', entry.lane_id),
-            self._append_to_dict(record_dict, 'cps_type', entry.cps_type),
-            self._append_to_dict(record_dict, 'ST', entry.ST),
-            self._append_to_dict(record_dict, 'adhP', entry.adhP),
-            self._append_to_dict(record_dict, 'pheS', entry.pheS),
-            self._append_to_dict(record_dict, 'atr', entry.atr),
-            self._append_to_dict(record_dict, 'glnA', entry.glnA),
-            self._append_to_dict(record_dict, 'sdhA', entry.sdhA),
-            self._append_to_dict(record_dict, 'glcK', entry.glcK),
-            self._append_to_dict(record_dict, 'tkt', entry.tkt),
-            self._append_to_dict(record_dict, 'twenty_three_S1', entry.twenty_three_S1),
-            self._append_to_dict(record_dict, 'twenty_three_S3', entry.twenty_three_S3),
-            self._append_to_dict(record_dict, 'AAC6APH2', entry.AAC6APH2),
-            self._append_to_dict(record_dict, 'AADECC', entry.AADECC),
-            self._append_to_dict(record_dict, 'ANT6', entry.ANT6),
-            self._append_to_dict(record_dict, 'APH3III', entry.APH3III),
-            self._append_to_dict(record_dict, 'APH3OTHER', entry.APH3OTHER),
-            self._append_to_dict(record_dict, 'CATPC194', entry.CATPC194),
-            self._append_to_dict(record_dict, 'CATQ', entry.CATQ),
-            self._append_to_dict(record_dict, 'ERMA', entry.ERMB),
-            self._append_to_dict(record_dict, 'ERMB', entry.ERMB),
-            self._append_to_dict(record_dict, 'ERMT', entry.ERMT),
-            self._append_to_dict(record_dict, 'LNUB', entry.LNUB),
-            self._append_to_dict(record_dict, 'LNUC', entry.LNUC),
-            self._append_to_dict(record_dict, 'LSAC', entry.LSAC),
-            self._append_to_dict(record_dict, 'MEFA', entry.MEFA),
-            self._append_to_dict(record_dict, 'MPHC', entry.MPHC),
-            self._append_to_dict(record_dict, 'MSRA', entry.MSRA),
-            self._append_to_dict(record_dict, 'MSRD', entry.MSRD),
-            self._append_to_dict(record_dict, 'FOSA', entry.FOSA),
-            self._append_to_dict(record_dict, 'GYRA', entry.GYRA),
-            self._append_to_dict(record_dict, 'PARC', entry.PARC),
-            self._append_to_dict(record_dict, 'RPOBGBS_1', entry.RPOBGBS_1),
-            self._append_to_dict(record_dict, 'RPOBGBS_2', entry.RPOBGBS_2),
-            self._append_to_dict(record_dict, 'RPOBGBS_3', entry.RPOBGBS_3),
-            self._append_to_dict(record_dict, 'RPOBGBS_4', entry.RPOBGBS_4),
-            self._append_to_dict(record_dict, 'SUL2', entry.SUL2),
-            self._append_to_dict(record_dict, 'TETB', entry.TETB),
-            self._append_to_dict(record_dict, 'TETL', entry.TETL),
-            self._append_to_dict(record_dict, 'TETM', entry.TETM),
-            self._append_to_dict(record_dict, 'TETO', entry.TETO),
-            self._append_to_dict(record_dict, 'TETS', entry.TETS),
-            self._append_to_dict(record_dict, 'ALP1', entry.ALP1),
-            self._append_to_dict(record_dict, 'ALP23', entry.ALP23),
-            self._append_to_dict(record_dict, 'ALPHA', entry.ALPHA),
-            self._append_to_dict(record_dict, 'HVGA', entry.HVGA),
-            self._append_to_dict(record_dict, 'PI1', entry.PI1),
-            self._append_to_dict(record_dict, 'PI2A1', entry.PI2A1),
-            self._append_to_dict(record_dict, 'PI2A2', entry.PI2A2),
-            self._append_to_dict(record_dict, 'PI2B', entry.PI2B),
-            self._append_to_dict(record_dict, 'RIB', entry.RIB),
-            self._append_to_dict(record_dict, 'SRR1', entry.SRR1),
-            self._append_to_dict(record_dict, 'SRR2', entry.SRR2),
-            self._append_to_dict(record_dict, 'twenty_three_S1_variant', entry.twenty_three_S1_variant),
-            self._append_to_dict(record_dict, 'twenty_three_S3_variant', entry.twenty_three_S3_variant),
-            self._append_to_dict(record_dict, 'GYRA_variant', entry.GYRA_variant),
-            self._append_to_dict(record_dict, 'PARC_variant', entry.PARC_variant),
-            self._append_to_dict(record_dict, 'RPOBGBS_1_variant', entry.RPOBGBS_1_variant),
-            self._append_to_dict(record_dict, 'RPOBGBS_2_variant', entry.RPOBGBS_2_variant),
-            self._append_to_dict(record_dict, 'RPOBGBS_3_variant', entry.RPOBGBS_3_variant),
-            self._append_to_dict(record_dict, 'RPOBGBS_4_variant', entry.RPOBGBS_4_variant)
+            self._append_to_dict(record_dict, "lane_id", entry.lane_id),
+            self._append_to_dict(record_dict, "cps_type", entry.cps_type),
+            self._append_to_dict(record_dict, "ST", entry.ST),
+            self._append_to_dict(record_dict, "adhP", entry.adhP),
+            self._append_to_dict(record_dict, "pheS", entry.pheS),
+            self._append_to_dict(record_dict, "atr", entry.atr),
+            self._append_to_dict(record_dict, "glnA", entry.glnA),
+            self._append_to_dict(record_dict, "sdhA", entry.sdhA),
+            self._append_to_dict(record_dict, "glcK", entry.glcK),
+            self._append_to_dict(record_dict, "tkt", entry.tkt),
+            self._append_to_dict(record_dict, "twenty_three_S1", entry.twenty_three_S1),
+            self._append_to_dict(record_dict, "twenty_three_S3", entry.twenty_three_S3),
+            self._append_to_dict(record_dict, "AAC6APH2", entry.AAC6APH2),
+            self._append_to_dict(record_dict, "AADECC", entry.AADECC),
+            self._append_to_dict(record_dict, "ANT6", entry.ANT6),
+            self._append_to_dict(record_dict, "APH3III", entry.APH3III),
+            self._append_to_dict(record_dict, "APH3OTHER", entry.APH3OTHER),
+            self._append_to_dict(record_dict, "CATPC194", entry.CATPC194),
+            self._append_to_dict(record_dict, "CATQ", entry.CATQ),
+            self._append_to_dict(record_dict, "ERMA", entry.ERMB),
+            self._append_to_dict(record_dict, "ERMB", entry.ERMB),
+            self._append_to_dict(record_dict, "ERMT", entry.ERMT),
+            self._append_to_dict(record_dict, "LNUB", entry.LNUB),
+            self._append_to_dict(record_dict, "LNUC", entry.LNUC),
+            self._append_to_dict(record_dict, "LSAC", entry.LSAC),
+            self._append_to_dict(record_dict, "MEFA", entry.MEFA),
+            self._append_to_dict(record_dict, "MPHC", entry.MPHC),
+            self._append_to_dict(record_dict, "MSRA", entry.MSRA),
+            self._append_to_dict(record_dict, "MSRD", entry.MSRD),
+            self._append_to_dict(record_dict, "FOSA", entry.FOSA),
+            self._append_to_dict(record_dict, "GYRA", entry.GYRA),
+            self._append_to_dict(record_dict, "PARC", entry.PARC),
+            self._append_to_dict(record_dict, "RPOBGBS_1", entry.RPOBGBS_1),
+            self._append_to_dict(record_dict, "RPOBGBS_2", entry.RPOBGBS_2),
+            self._append_to_dict(record_dict, "RPOBGBS_3", entry.RPOBGBS_3),
+            self._append_to_dict(record_dict, "RPOBGBS_4", entry.RPOBGBS_4),
+            self._append_to_dict(record_dict, "SUL2", entry.SUL2),
+            self._append_to_dict(record_dict, "TETB", entry.TETB),
+            self._append_to_dict(record_dict, "TETL", entry.TETL),
+            self._append_to_dict(record_dict, "TETM", entry.TETM),
+            self._append_to_dict(record_dict, "TETO", entry.TETO),
+            self._append_to_dict(record_dict, "TETS", entry.TETS),
+            self._append_to_dict(record_dict, "ALP1", entry.ALP1),
+            self._append_to_dict(record_dict, "ALP23", entry.ALP23),
+            self._append_to_dict(record_dict, "ALPHA", entry.ALPHA),
+            self._append_to_dict(record_dict, "HVGA", entry.HVGA),
+            self._append_to_dict(record_dict, "PI1", entry.PI1),
+            self._append_to_dict(record_dict, "PI2A1", entry.PI2A1),
+            self._append_to_dict(record_dict, "PI2A2", entry.PI2A2),
+            self._append_to_dict(record_dict, "PI2B", entry.PI2B),
+            self._append_to_dict(record_dict, "RIB", entry.RIB),
+            self._append_to_dict(record_dict, "SRR1", entry.SRR1),
+            self._append_to_dict(record_dict, "SRR2", entry.SRR2),
+            self._append_to_dict(record_dict, "twenty_three_S1_variant", entry.twenty_three_S1_variant),
+            self._append_to_dict(record_dict, "twenty_three_S3_variant", entry.twenty_three_S3_variant),
+            self._append_to_dict(record_dict, "GYRA_variant", entry.GYRA_variant),
+            self._append_to_dict(record_dict, "PARC_variant", entry.PARC_variant),
+            self._append_to_dict(record_dict, "RPOBGBS_1_variant", entry.RPOBGBS_1_variant),
+            self._append_to_dict(record_dict, "RPOBGBS_2_variant", entry.RPOBGBS_2_variant),
+            self._append_to_dict(record_dict, "RPOBGBS_3_variant", entry.RPOBGBS_3_variant),
+            self._append_to_dict(record_dict, "RPOBGBS_4_variant", entry.RPOBGBS_4_variant)
 
             response.append(record_dict)
 
@@ -178,26 +178,26 @@ class DownloadInSilicoHandler(DownloadHandler):
 
 
 class DownloadQCDataHandler(DownloadHandler):
-    """ Construct API QC data download response message data structures """
+    """Construct API QC data download response message data structures"""
 
     def read_download_qc_data(self, keys: List[str]) -> List[QCData]:
         """
-            Return a list of QC data objects that correspond to the given sample id/lane id key values.
+        Return a list of QC data objects that correspond to the given sample id/lane id key values.
         """
         dao = self.get_dao()
         return dao.get_download_qc_data(keys)
 
     def create_download_response(self, download: [QCData]) -> List[Dict[Any, Any]]:
-        """ Create the correct data structure for download responses """
+        """Create the correct data structure for download responses"""
 
         response: List[Dict[Any, Any]] = []
 
         for entry in download:
             record_dict = {}
             self.__field_index = 1
-            self._append_to_dict(record_dict, 'lane_id', entry.lane_id),
-            self._append_to_dict(record_dict, 'rel_abun_sa', entry.rel_abun_sa)
+            self._append_to_dict(record_dict, "lane_id", entry.lane_id),
+            self._append_to_dict(record_dict, "rel_abun_sa", entry.rel_abun_sa)
 
             response.append(record_dict)
-        
+
         return response

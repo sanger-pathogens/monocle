@@ -1,3 +1,9 @@
+<script>
+  let username;
+  let password;
+</script>
+
+
 <h2>Log in</h2>
 
 <form>
@@ -15,15 +21,15 @@
 
   <label>
     Username
-    <input required />
+    <input bind:value={username} required />
   </label>
 
   <label>
     Password
-    <input type="password" required />
+    <input type="password" bind:value={password} required />
   </label>
 
-  <button type="submit" class="primary btn-wide">
+  <button type="submit" class="primary btn-wide" disabled={!username?.trim() || !password?.trim()}>
     Log in
   </button>
 </form>

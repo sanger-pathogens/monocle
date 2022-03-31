@@ -1,4 +1,4 @@
-from dash.api.service.DataServices.sample_data_services     import MonocleSampleData
+from dash.api.service.DataServices.sample_data_services import MonocleSampleData
 from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 from dash.api.service.DataServices.user_services            import MonocleAuthentication, MonocleUser
 
@@ -11,7 +11,7 @@ class AuthenticationService(MonocleAuthentication):
 
 
 class UserService(MonocleUser):
-    """ Wrapper class for MonocleUser """
+    """Wrapper class for MonocleUser"""
 
     def __init__(self, authenticated_username=None, set_up=True):
         MonocleUser.__init__(self, authenticated_username, set_up=set_up)
@@ -22,7 +22,7 @@ class UserService(MonocleUser):
 
 
 class DataService(MonocleSampleData):
-    """ Wrapper class for MonocleSampleData, that sets a user details record """
+    """Wrapper class for MonocleSampleData, that sets a user details record"""
 
     def __init__(self, username: str, set_up: bool = True):
         MonocleSampleData.__init__(self, set_up=set_up)
@@ -30,14 +30,16 @@ class DataService(MonocleSampleData):
         # Setting this record will enforce data filtering by user
         self.sample_tracking.user_record = user.record
 
+
 class TestDataService(MonocleSampleData):
-    """ Wrapper class for MonocleSampleData testing, which does not do user checking """
+    """Wrapper class for MonocleSampleData testing, which does not do user checking"""
 
     def __init__(self, set_up: bool = True):
         MonocleSampleData.__init__(self, set_up=set_up)
 
+
 class SampleTrackingService(MonocleSampleTracking):
-    """ Wrapper class for MonocleSampleTracking, that sets a user details record """
+    """Wrapper class for MonocleSampleTracking, that sets a user details record"""
 
     def __init__(self, username: str, set_up: bool = True):
         MonocleSampleTracking.__init__(self, set_up=set_up)
@@ -47,13 +49,14 @@ class SampleTrackingService(MonocleSampleTracking):
 
 
 class TestSampleTrackingService(MonocleSampleTracking):
-    """ Wrapper class for MonocleSampleTracking testing, which does not do user checking """
+    """Wrapper class for MonocleSampleTracking testing, which does not do user checking"""
 
     def __init__(self, set_up: bool = True):
         MonocleSampleTracking.__init__(self, set_up=set_up)
 
+
 class ServiceFactory:
-    """ Instantiate a service """
+    """Instantiate a service"""
 
     TEST_MODE = False
 
@@ -71,7 +74,7 @@ class ServiceFactory:
             return DataService(username)
         else:
             return TestDataService()
-         
+
     @staticmethod
     def sample_tracking_service(username: str) -> SampleTrackingService:
         if not ServiceFactory.TEST_MODE:

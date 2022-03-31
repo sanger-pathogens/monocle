@@ -4,12 +4,12 @@ import PaginationNav, { EVENT_NAME_PAGE_CHANGE } from "./_PaginationNav.svelte";
 const LABEL_FIRST_BUTTON = "First page";
 const LABEL_NEXT_BUTTON = "Next page";
 const LABEL_PREV_BUTTON = "Previous page";
-const NUM_SAMPLES_PER_PAGE = 17;
+const MAX_NUM_SAMPLES_PER_PAGE = 17;
 const ROLE_BUTTON = "button";
 
 it("disables First and Previous buttons only if the first page is shown", async () => {
   const { component, getByRole } = render(PaginationNav, {
-    numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+    maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
     pageNum: 1
   });
 
@@ -28,8 +28,8 @@ it("disables First and Previous buttons only if the first page is shown", async 
 
 it("disables Next button only if the last page is shown", async () => {
   const { component, getByRole } = render(PaginationNav, {
-    numSamples: NUM_SAMPLES_PER_PAGE * 5,
-    numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+    numSamples: MAX_NUM_SAMPLES_PER_PAGE * 5,
+    maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
     pageNum: 1
   });
 
@@ -45,7 +45,7 @@ it("disables Next button only if the last page is shown", async () => {
 it("supports a compact mode", () => {
   const { getByRole } = render(PaginationNav, {
     compact: true,
-    numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+    maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
     pageNum: 1
   });
 
@@ -58,7 +58,7 @@ it.each([
   [LABEL_FIRST_BUTTON, 9, 1],
 ])("dispatches the page change event w/ the correct page number if %s button is clicked", async (labelButton, initialPageNum, expectedPageNum) => {
   const { component, getByRole } = render(PaginationNav, {
-    numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+    maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
     pageNum: initialPageNum
   });
   const onPageChange = jest.fn();
@@ -77,7 +77,7 @@ describe("sample number", () => {
   it("is only displayed if the number of samples is > 0", async () => {
     const pageNum = 2;
     const { component, container, getByLabelText } = render(PaginationNav, {
-      numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+      maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
       pageNum
     });
 
@@ -100,18 +100,43 @@ describe("sample number", () => {
     const nextPageNum = 3;
     const { component, getByLabelText } = render(PaginationNav, {
       numSamples: NUM_SAMPLES,
-      numSamplesPerPage: NUM_SAMPLES_PER_PAGE,
+      maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
       pageNum: nextPageNum - 1
     });
 
-    let lastSampleNum = NUM_SAMPLES_PER_PAGE * (nextPageNum - 1);
-    expect(getByLabelText(`displaying samples from ${lastSampleNum - NUM_SAMPLES_PER_PAGE + 1} to ${lastSampleNum} out of ${NUM_SAMPLES}`))
+    let lastSampleNum = MAX_NUM_SAMPLES_PER_PAGE * (nextPageNum - 1);
+    expect(getByLabelText(`displaying samples from ${lastSampleNum - MAX_NUM_SAMPLES_PER_PAGE + 1} to ${lastSampleNum} out of ${NUM_SAMPLES}`))
       .toBeDefined();
 
     await component.$set({ pageNum: nextPageNum });
 
-    lastSampleNum = NUM_SAMPLES_PER_PAGE * nextPageNum;
-    expect(getByLabelText(`displaying samples from ${lastSampleNum - NUM_SAMPLES_PER_PAGE + 1} to ${lastSampleNum} out of ${NUM_SAMPLES}`))
+    lastSampleNum = MAX_NUM_SAMPLES_PER_PAGE * nextPageNum;
+    expect(getByLabelText(`displaying samples from ${lastSampleNum - MAX_NUM_SAMPLES_PER_PAGE + 1} to ${lastSampleNum} out of ${NUM_SAMPLES}`))
+      .toBeDefined();
+  });
+
+  it("shows the correct numer of samples for the first page if the total number of samples is less than the maximum number of samples per page", () => {
+    const numSamples = MAX_NUM_SAMPLES_PER_PAGE - 3;
+    const { getByLabelText } = render(PaginationNav, {
+      numSamples,
+      maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
+      pageNum: 1
+    });
+
+    expect(getByLabelText(`displaying samples from 1 to ${numSamples} out of ${numSamples}`))
+      .toBeDefined();
+  });
+
+  it("shows the correct numer of samples for the last page if the last page has fewer samples than the maximum number of samples per page", () => {
+    const pageNum = 4;
+    const numSamples = MAX_NUM_SAMPLES_PER_PAGE * pageNum - 3;
+    const { getByLabelText } = render(PaginationNav, {
+      numSamples,
+      maxNumSamplesPerPage: MAX_NUM_SAMPLES_PER_PAGE,
+      pageNum
+    });
+
+    expect(getByLabelText(`displaying samples from ${MAX_NUM_SAMPLES_PER_PAGE * (pageNum - 1) + 1} to ${numSamples} out of ${numSamples}`))
       .toBeDefined();
   });
 });

@@ -1,27 +1,32 @@
-from   unittest      import TestCase
-from   unittest.mock import call, patch, Mock
-from   copy          import deepcopy
-from   datetime      import datetime
 import json
 import logging
 import urllib.request
-from   urllib.error  import HTTPError
-from   os            import environ
-from   pandas.errors import MergeError
-from   pathlib       import Path, PurePath
+from copy import deepcopy
+from datetime import datetime
+from os import environ
+from pathlib import Path, PurePath
+from unittest import TestCase
+from unittest.mock import Mock, call, patch
+from urllib.error import HTTPError
+
 import yaml
+from DataServices.sample_data_services import (
+    ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS,
+    DataSourceConfigError,
+    MonocleSampleData,
+)
+from DataServices.sample_tracking_services import MonocleSampleTracking
+from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client
+from DataSources.pipeline_status import PipelineStatus
+from DataSources.sample_metadata import Monocle_Client, SampleMetadata
+from DataSources.sequencing_status import MLWH_Client, SequencingStatus
+from DataSources.user_data import UserData
+from pandas.errors import MergeError
+from utils.file import format_file_size
 
-from   DataSources.sample_metadata           import SampleMetadata, Monocle_Client
-from   DataSources.sequencing_status         import SequencingStatus, MLWH_Client
-from   DataSources.pipeline_status           import PipelineStatus
-from   DataSources.metadata_download         import MetadataDownload, Monocle_Download_Client
-from   DataSources.user_data                 import UserData
-from   DataServices.sample_tracking_services import MonocleSampleTracking
-from   DataServices.sample_data_services     import MonocleSampleData, DataSourceConfigError, ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
-from   utils.file                            import format_file_size
+INSTITUTION_KEY = "GenWel"
+PUBLIC_NAME = "SCN9A"
 
-INSTITUTION_KEY = 'GenWel'
-PUBLIC_NAME = 'SCN9A'
 
 class MonocleSampleDataTest(TestCase):
 
