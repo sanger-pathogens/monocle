@@ -14,7 +14,7 @@ paths:
   /set_auth_cookie:
     post:
       operationId: dash.api.routes.set_auth_cookie_route
-      summary: "Return authentication token. Credentials are NOT VERFIFIED by this endpoint: this token needs to be checked by NGINX before authorisation is granted."
+      summary: "Return authentication token. Credentials are NOT VERIFIED by this endpoint: this token needs to be checked by NGINX before authorisation is granted."
       parameters:
         - name: X-Target
           in: header
@@ -31,8 +31,8 @@ paths:
             schema:
               type: object
               required:
-              - username
-              - password
+                - username
+                - password
               properties:
                 username:
                   description: "The username provided by the user"
