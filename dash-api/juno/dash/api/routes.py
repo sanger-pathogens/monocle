@@ -33,7 +33,9 @@ AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
 
 
 def set_auth_cookie_route(body):
-    """ Given a username and password provided by the user, retrieve authentication token be used as the authentication cookie value"""
+    """ Given a username and password provided by the user, set cookie to be used by NGINX auth module
+    Response is a redirect to URL in the X-Target request header ('/' by default)
+    """
     try:
       username_provided = body['username']
       password_provided = body['password']
@@ -59,7 +61,30 @@ def set_auth_cookie_route(body):
       )
 
     return auth_response
+
+
+def delete_auth_cookie_route():
+    """ Delete the cookie to be used by NGINX auth module
+    Response is a redirect to URL in the X-Target request header ('/' by default)
+    """
+    target_url = call_request_headers().get("X-Target", "/")
  
+    delete_cookie_response = Response(
+      "Redirect to {}".format(target_url),
+      content_type   = "application/json; charset=UTF-8",
+      status         = HTTPStatus.TEMPORARY_REDIRECT,
+      headers        = {"Location": target_url}
+      )
+
+    cookie_name = os.environ[AUTH_COOKIE_NAME_ENVIRON]
+    delete_cookie_response.set_cookie(
+      cookie_name,
+      value    = '',
+      expires  = 0 # expires immediately
+      )
+
+    return delete_cookie_response
+
 
 def get_user_details_route():
     """Given a username retrieve all details for that user"""

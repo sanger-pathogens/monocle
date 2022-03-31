@@ -126,7 +126,8 @@ class TestRoutes(unittest.TestCase):
     def test_set_auth_cookie_route(self, auth_service_mock, request_headers_mock, set_cookie_mock):
         # Given
         mock_auth_token='abcde1234'
-        request_headers_mock.return_value = {'X-Target': '/mock/redirect/url'}
+        mock_redirect_url = '/mock/redirect/url'
+        request_headers_mock.return_value = {'X-Target': mock_redirect_url}
         auth_service_mock.return_value.get_auth_token.return_value = mock_auth_token
         # When
         result = set_auth_cookie_route({'username': 'any name', 'password': 'anything'})
@@ -138,10 +139,32 @@ class TestRoutes(unittest.TestCase):
         self.assertIsInstance(result, Response)
         self.assertEqual(result.content_type, 'application/json; charset=UTF-8')
         self.assertEqual(result.status_code, HTTPStatus.TEMPORARY_REDIRECT)
+        self.assertIsNotNone(result.headers.get('Location'))
+        self.assertEqual(result.headers.get('Location'), mock_redirect_url)
         
     def test_set_auth_cookie_route_reject_missing_param(self):
         with self.assertRaises(KeyError):
           set_auth_cookie_route({'this is a bad key': 'any name', 'password': 'anything'})
+
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch("flask.Response.set_cookie")
+    @patch("dash.api.routes.call_request_headers")
+    def test_delete_auth_cookie_route(self, request_headers_mock, set_cookie_mock):
+        # Given
+        mock_redirect_url = '/mock/redirect/url'
+        request_headers_mock.return_value = {'X-Target': mock_redirect_url}
+        # When
+        result = delete_auth_cookie_route()
+        # Then
+        set_cookie_mock.assert_called_once_with(self.MOCK_ENVIRONMENT['AUTH_COOKIE_NAME'],
+                                                value    = '',
+                                                expires  = 0
+                                                )
+        self.assertIsInstance(result, Response)
+        self.assertEqual(result.content_type, 'application/json; charset=UTF-8')
+        self.assertEqual(result.status_code, HTTPStatus.TEMPORARY_REDIRECT)
+        self.assertIsNotNone(result.headers.get('Location'))
+        self.assertEqual(result.headers.get('Location'), mock_redirect_url)
         
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")

@@ -23,6 +23,7 @@ paths:
           schema:
             type: string
             format: uri
+            default: "/"
       requestBody:
         required: true
         content:
@@ -44,8 +45,8 @@ paths:
                   minLength: 3
                   maxLength: 256
       responses:
-        "200":
-          description: "The operation was successful. An UNVERIFIED authentication token is returned."
+        "307":
+          description: "The operation was successful. An UNVERIFIED authentication cookie is set and the user is redirected."
           content:
             application/json:
               schema:
@@ -54,7 +55,32 @@ paths:
                   token:
                     readOnly: true
                     type: string
-          
+                    
+  /delete_auth_cookie:
+    post:
+      operationId: dash.api.routes.delete_auth_cookie_route
+      summary: "Immediately expires the authentication token used by NGINX."
+      parameters:
+        - name: X-Target
+          in: header
+          description: "URL the user should be redirected to after the cookies is deleted."
+          required: false
+          schema:
+            type: string
+            format: uri
+            default: "/"
+      responses:
+        "307":
+          description: "The operation was successful. The authentication cookie has is expired and the user is redirected."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+
   /get_user_details:
     get:
       operationId: dash.api.routes.get_user_details_route
