@@ -3,8 +3,28 @@ from datetime import datetime
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from DataServices.user_services import MonocleUser
-from DataSources.user_data import UserData
+from DataServices.user_services import MonocleAuthentication, MonocleUser
+from DataSources.user_data import UserAuthentication, UserData
+
+
+class MonocleAuthenticationTest(TestCase):
+
+    mock_auth_token = 'abcde1234'
+    mock_username   = 'a name'
+    mock_password   = 'big secret'
+
+    def setUp(self):
+        self.auth = MonocleAuthentication()
+
+    def test_init(self):
+        self.assertIsInstance(self.auth, MonocleAuthentication)
+
+    @patch.object(UserAuthentication, 'get_auth_token')
+    def test_get_auth_token(self, mock_get_auth_token):
+        mock_get_auth_token.return_value = self.mock_auth_token
+        auth_token = self.auth.get_auth_token(self.mock_username, self.mock_password)
+        self.assertIsInstance(auth_token, type("a string"))
+        self.assertEqual(auth_token, self.mock_auth_token)
 
 
 class MonocleUserTest(TestCase):
