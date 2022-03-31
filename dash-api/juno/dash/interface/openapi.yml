@@ -57,7 +57,7 @@ paths:
                     type: string
                     
   /delete_auth_cookie:
-    post:
+    get:
       operationId: dash.api.routes.delete_auth_cookie_route
       summary: "Immediately expires the authentication token used by NGINX."
       parameters:
