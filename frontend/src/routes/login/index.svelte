@@ -6,9 +6,9 @@
 
 <h2>Log in</h2>
 
-<form>
-  <fieldset>
-    <legend>Project</legend>
+<form on:submit|preventDefault={obSubmit}>
+  <fieldset disabled>
+    <legend>Project (coming soon)</legend>
     <label class="label-radio">
       JUNO
       <input type="radio" name="project" value="juno" checked />
@@ -44,6 +44,7 @@ form {
 
 fieldset {
   margin-bottom: .7rem;
+  text-align: center;
 }
 legend {
   margin: 0 auto .4rem;

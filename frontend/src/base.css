@@ -274,12 +274,13 @@ input[type=submit]:active {
 
 button:disabled,
 [role=button]:disabled,
+fieldset:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled,
 .disabled {
   cursor: not-allowed;
-  opacity: .2;
+  opacity: .25;
   pointer-events: none;
 }
 
