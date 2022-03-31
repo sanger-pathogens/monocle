@@ -11,10 +11,18 @@ servers:
     description: Context path
 
 paths:
-  /get_auth_token:
+  /set_auth_cookie:
     post:
-      operationId: dash.api.routes.get_auth_token_route
+      operationId: dash.api.routes.set_auth_cookie_route
       summary: "Return authentication token. Credentials are NOT VERFIFIED by this endpoint: this token needs to be checked by NGINX before authorisation is granted."
+      parameters:
+        - name: X-Target
+          in: header
+          description: "URL the user was requesting when intercepted for authorisation."
+          required: false
+          schema:
+            type: string
+            format: uri
       requestBody:
         required: true
         content:

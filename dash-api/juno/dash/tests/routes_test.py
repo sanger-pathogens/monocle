@@ -16,7 +16,7 @@ class TestRoutes(unittest.TestCase):
     """Test class for the routes module"""
 
     # this has mock values for the environment variables set by docker-compose
-    MOCK_ENVIRONMENT = {"DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3"}
+    MOCK_ENVIRONMENT = {"DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3", "AUTH_COOKIE_NAME": "mock_auth_cookie_name"}
 
     MOCK_FIELD_ATTRIBUTES = {
         "metadata": {
@@ -119,23 +119,30 @@ class TestRoutes(unittest.TestCase):
     def setUp(self) -> None:
         ServiceFactory.TEST_MODE = True
         
-    @patch('dash.api.routes.call_jsonify')
+    @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
+    @patch("flask.Response.set_cookie")
+    @patch("dash.api.routes.call_request_headers")
     @patch.object(ServiceFactory, 'authentication_service')
-    def test_get_auth_token_route(self, auth_service_mock, resp_mock):
+    def test_set_auth_cookie_route(self, auth_service_mock, request_headers_mock, set_cookie_mock):
         # Given
-        auth_service_mock.return_value.get_auth_token.return_value = self.SERVICE_CALL_RETURN_DATA
+        mock_auth_token='abcde1234'
+        request_headers_mock.return_value = {'X-Target': '/mock/redirect/url'}
+        auth_service_mock.return_value.get_auth_token.return_value = mock_auth_token
         # When
-        result = get_auth_token_route({'username': 'any name', 'password': 'anything'})
+        result = set_auth_cookie_route({'username': 'any name', 'password': 'anything'})
         # Then
-        resp_mock.assert_called_once_with(
-            {
-                'token': self.SERVICE_CALL_RETURN_DATA
-            }
-        )
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 1)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
+        set_cookie_mock.assert_called_once_with(self.MOCK_ENVIRONMENT['AUTH_COOKIE_NAME'],
+                                                value    = mock_auth_token.encode('utf8'),
+                                                max_age  = None
+                                                )
+        self.assertIsInstance(result, Response)
+        self.assertEqual(result.content_type, 'application/json; charset=UTF-8')
+        self.assertEqual(result.status_code, HTTPStatus.TEMPORARY_REDIRECT)
+        
+    def test_set_auth_cookie_route_reject_missing_param(self):
+        with self.assertRaises(KeyError):
+          set_auth_cookie_route({'this is a bad key': 'any name', 'password': 'anything'})
+        
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
     @patch.object(ServiceFactory, "user_service")
