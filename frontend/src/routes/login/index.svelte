@@ -80,7 +80,7 @@ legend {
   margin: 0 auto .4rem;
 }
 
-input {
+input:not([type=radio]) {
   width: 14rem;
   max-width: 78vw;
 }
