@@ -14,12 +14,11 @@ from os import environ, path
 from pathlib import Path, PurePath
 from uuid import uuid4
 
-import pandas
-import yaml
-
 import DataServices.sample_tracking_services
 import DataSources.metadata_download
 import DataSources.sample_metadata
+import pandas
+import yaml
 from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"

@@ -5,16 +5,15 @@ import urllib.request
 from typing import Dict, List
 
 from flask import request
-from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.sql import text
-
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql import text
 
 logger = logging.getLogger()
 

@@ -4,9 +4,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 import connexion
 import flask
-from flask import Config
-
 import metadata.api.routes as mar
+from flask import Config
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.routes import *
 from metadata.tests.test_data import *

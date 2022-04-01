@@ -6,7 +6,6 @@ import unittest
 
 import connexion
 from flask import Config
-
 from metadata.api.configuration import *
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition

@@ -2,9 +2,8 @@ import logging
 from unittest import TestCase
 from unittest.mock import patch
 
-from ldap import SERVER_DOWN
-
 from DataSources.user_data import UserAuthentication, UserData, UserDataError
+from ldap import SERVER_DOWN
 
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")
 

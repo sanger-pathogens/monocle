@@ -4,12 +4,11 @@ import urllib.request
 from collections import defaultdict
 from datetime import datetime
 
-from dateutil.relativedelta import relativedelta
-
 import DataSources.metadata_download
 import DataSources.pipeline_status
 import DataSources.sample_metadata
 import DataSources.sequencing_status
+from dateutil.relativedelta import relativedelta
 
 # This key indicates the error status for MLWH requests for sample status information for each institution
 # (i.e. the queries made in DataSources.sequencing_status)

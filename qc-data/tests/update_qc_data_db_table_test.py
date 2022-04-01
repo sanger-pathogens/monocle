@@ -6,9 +6,19 @@ from operator import itemgetter
 from unittest import TestCase
 from unittest.mock import patch
 
-from bin.update_qc_data_db_table import (_find_files, _get_qc_data, _get_update_request_body, _make_request,
-                                         data_sources_config, delete_qc_data_from_database, get_api_config,
-                                         get_arguments, main, qc_data_file_name, update_database)
+from bin.update_qc_data_db_table import (
+    _find_files,
+    _get_qc_data,
+    _get_update_request_body,
+    _make_request,
+    data_sources_config,
+    delete_qc_data_from_database,
+    get_api_config,
+    get_arguments,
+    main,
+    qc_data_file_name,
+    update_database,
+)
 
 TEST_CONFIG = "tests/test_data_sources.yml"
 TEST_CONFIG_BAD = "tests/test_data_sources_bad.yml"
