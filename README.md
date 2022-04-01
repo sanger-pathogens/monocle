@@ -21,6 +21,12 @@ There is a further README in each directory with more detailed information.
 
 ### Prerequisites
 
+#### Python3.8 and virtualenv module
+
+Python 3.8._n_ is required for pre-commit (see below).   This should provide a `python3.8` executable that runs whatever 3.8._n_ you have installed.
+
+The virtualenv module is used internally by pre-commit; if not installed, run `pip install virtualenv`.
+
 #### Pre-commit hooks
 
 Monocle's pre-commit hooks (speficied in `./.pre-commit-config.yaml`) are run before each commit automatically. We use them to auto-format code and to check for linting errors, for example. W/o running the hooks, the CI pipeline may fail.
