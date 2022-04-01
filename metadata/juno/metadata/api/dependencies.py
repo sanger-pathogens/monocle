@@ -3,6 +3,7 @@ import os
 
 from flask import Config
 from injector import Module, provider, singleton
+
 from metadata.api.configuration import *
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.database.monocle_database_service_impl import Connector, MonocleDatabaseServiceImpl

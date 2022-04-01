@@ -1,8 +1,24 @@
 import copy
 import logging
+from base64 import b64encode
 
 import ldap
 import yaml
+
+
+class UserAuthentication:
+    """
+    Methods related to user authentication
+    """
+
+    def get_auth_token(self, username_provided, password_provided, encoding="utf8"):
+        """
+        Pass username and password supplited by the user.  Optionally pass encodung (defaults to UTF-8).
+        Returns token that should be used as the authentication cookie value, as used by the NGINX authentication module.
+        """
+        username_password_bytes = ":".join([username_provided, password_provided]).encode(encoding)
+        token_bytes = b64encode(username_password_bytes)
+        return token_bytes.decode(encoding)
 
 
 class UserDataError(Exception):

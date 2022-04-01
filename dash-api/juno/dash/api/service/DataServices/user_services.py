@@ -3,9 +3,21 @@ from datetime import datetime
 import DataSources.user_data
 
 
+class MonocleAuthentication:
+    """
+    Provides a wrapper for classes that provide authntication functions
+    """
+
+    def __init__(self):
+        self.user_authentication = DataSources.user_data.UserAuthentication()
+
+    def get_auth_token(self, username_provided, password_provided):
+        return self.user_authentication.get_auth_token(username_provided, password_provided)
+
+
 class MonocleUser:
     """
-    Provides a wrapper for claasses the retrieve user details
+    Provides a wrapper for classes that retrieve user details
     Only use this after authentication: trying to get details of users that are not in LDAP will raise an exception
     """
 

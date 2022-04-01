@@ -3,8 +3,9 @@ from os import environ
 from unittest import TestCase
 from unittest.mock import patch
 
-from DataSources.pipeline_status import PipelineStatus, PipelineStatusDataError
 from pandas import DataFrame, errors
+
+from DataSources.pipeline_status import PipelineStatus, PipelineStatusDataError
 
 # this helps to supress messages that may crop up with using TestCase.assertRaises()
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")

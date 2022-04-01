@@ -29,6 +29,56 @@ DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 OPENAPI_SPEC_FILE = "./dash/interface/openapi.yml"
 GET_METADATA_INPUT_SCHEMA = "GetMetadataInput"
 
+AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
+
+
+def set_auth_cookie_route(body):
+    """Given a username and password provided by the user, set cookie to be used by NGINX auth module
+    Response is a redirect to URL in the X-Target request header ('/' by default)
+    """
+    try:
+        username_provided = body["username"]
+        password_provided = body["password"]
+    except KeyError:
+        logging.error("endpoint handler {} must be passed the username and password provided".format(__name__))
+        raise
+
+    auth_token = ServiceFactory.authentication_service().get_auth_token(username_provided, password_provided)
+    target_url = call_request_headers().get("X-Target", "/")
+
+    auth_response = Response(
+        "Redirect to {}".format(target_url),
+        content_type="application/json; charset=UTF-8",
+        status=HTTPStatus.TEMPORARY_REDIRECT,
+        headers={"Location": target_url},
+    )
+
+    cookie_name = os.environ[AUTH_COOKIE_NAME_ENVIRON]
+    auth_response.set_cookie(
+        cookie_name, value=auth_token.encode("utf8"), max_age=None  # age in seconds; `None` for session cookie
+    )
+
+    return auth_response
+
+
+def delete_auth_cookie_route():
+    """Delete the cookie to be used by NGINX auth module
+    Response is a redirect to URL in the X-Target request header ('/' by default)
+    """
+    target_url = call_request_headers().get("X-Target", "/")
+
+    delete_cookie_response = Response(
+        "Redirect to {}".format(target_url),
+        content_type="application/json; charset=UTF-8",
+        status=HTTPStatus.TEMPORARY_REDIRECT,
+        headers={"Location": target_url},
+    )
+
+    cookie_name = os.environ[AUTH_COOKIE_NAME_ENVIRON]
+    delete_cookie_response.set_cookie(cookie_name, value="", expires=0)  # expires immediately
+
+    return delete_cookie_response
+
 
 def get_user_details_route():
     """Given a username retrieve all details for that user"""
