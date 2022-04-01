@@ -9,9 +9,9 @@ from DataSources.user_data import UserAuthentication, UserData
 
 class MonocleAuthenticationTest(TestCase):
 
-    mock_auth_token = 'abcde1234'
-    mock_username   = 'a name'
-    mock_password   = 'big secret'
+    mock_auth_token = "abcde1234"
+    mock_username = "a name"
+    mock_password = "big secret"
 
     def setUp(self):
         self.auth = MonocleAuthentication()
@@ -19,7 +19,7 @@ class MonocleAuthenticationTest(TestCase):
     def test_init(self):
         self.assertIsInstance(self.auth, MonocleAuthentication)
 
-    @patch.object(UserAuthentication, 'get_auth_token')
+    @patch.object(UserAuthentication, "get_auth_token")
     def test_get_auth_token(self, mock_get_auth_token):
         mock_get_auth_token.return_value = self.mock_auth_token
         auth_token = self.auth.get_auth_token(self.mock_username, self.mock_password)

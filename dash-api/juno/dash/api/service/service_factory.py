@@ -1,10 +1,10 @@
 from dash.api.service.DataServices.sample_data_services import MonocleSampleData
 from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
-from dash.api.service.DataServices.user_services            import MonocleAuthentication, MonocleUser
+from dash.api.service.DataServices.user_services import MonocleAuthentication, MonocleUser
 
 
 class AuthenticationService(MonocleAuthentication):
-    """ Wrapper class for MonocleAuthentication """
+    """Wrapper class for MonocleAuthentication"""
 
     # this is a placeholder
     # currently this wrapper needs no specific initlialization

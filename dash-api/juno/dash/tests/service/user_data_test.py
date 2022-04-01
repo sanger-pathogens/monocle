@@ -1,7 +1,7 @@
-from   unittest               import TestCase
-from   unittest.mock          import patch
-from   ldap                   import SERVER_DOWN
-from   DataSources.user_data  import UserAuthentication, UserData, UserDataError
+from unittest import TestCase
+from unittest.mock import patch
+from ldap import SERVER_DOWN
+from DataSources.user_data import UserAuthentication, UserData, UserDataError
 
 import logging
 from unittest import TestCase
@@ -13,25 +13,23 @@ from ldap import SERVER_DOWN
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")
 
 
-
 class MonocleUserAuthenticationTest(TestCase):
-   
-   def setUp(self):
-      self.userauth = UserAuthentication()
-      
-   def test_get_auth_token_ascii(self):
-      mock_username = 'test_user'
-      mock_password = 'test_password'
-      expected_token = 'dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ='
-      actual_token = self.userauth.get_auth_token(mock_username, mock_password, encoding='ascii')
-      self.assertEqual(expected_token, actual_token)
-      
-   def test_get_auth_token_utf8(self):
-      mock_username = 'test_user'
-      mock_password = 'test_p\xc3ssword'
-      expected_token = 'dGVzdF91c2VyOnRlc3RfcMODc3N3b3Jk'
-      actual_token = self.userauth.get_auth_token(mock_username, mock_password)
-      self.assertEqual(expected_token, actual_token)
+    def setUp(self):
+        self.userauth = UserAuthentication()
+
+    def test_get_auth_token_ascii(self):
+        mock_username = "test_user"
+        mock_password = "test_password"
+        expected_token = "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
+        actual_token = self.userauth.get_auth_token(mock_username, mock_password, encoding="ascii")
+        self.assertEqual(expected_token, actual_token)
+
+    def test_get_auth_token_utf8(self):
+        mock_username = "test_user"
+        mock_password = "test_p\xc3ssword"
+        expected_token = "dGVzdF91c2VyOnRlc3RfcMODc3N3b3Jk"
+        actual_token = self.userauth.get_auth_token(mock_username, mock_password)
+        self.assertEqual(expected_token, actual_token)
 
 
 class MonocleUserDataTest(TestCase):
