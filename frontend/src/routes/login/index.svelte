@@ -3,6 +3,7 @@
 
   let username;
   let password;
+  let submitting;
 
   $: formComplete = username?.trim() && password?.trim();
 
@@ -11,12 +12,14 @@
       return;
     }
 
+    submitting = true;
     logIn(username, password, fetch)
       .catch((err) => {
         console.error(`Error while logging in: ${err}`);
         alert(
           "An error occured while submitting the credentials. Please try again and contact us if the problem persists.");
-      });
+      })
+      .finally(() => submitting = false);
   }
 
   function logIn(usernameParam, passwordParam, fetch) {
@@ -58,7 +61,7 @@
     type="submit"
     class="primary btn-wide"
     on:click|preventDefault={onSubmit}
-    disabled={!formComplete}
+    disabled={!formComplete || submitting}
   >
     Log in
   </button>
