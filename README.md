@@ -21,17 +21,37 @@ There is a further README in each directory with more detailed information.
 
 ### Prerequisites
 
-Run from `monocle` repo's root folder:
-```
-pip install -r requirements-dev.txt
-```
-to install tools like Black and isort for auto-formatting, which you may want to run manually sometimes.
+#### Python3.8 and virtualenv module
+
+Python 3.8._n_ is required for pre-commit (see below).   This should provide a `python3.8` executable that runs whatever 3.8._n_ you have installed.
+
+The virtualenv module is used internally by pre-commit; if not installed, run `pip install virtualenv`.
 
 #### Pre-commit hooks
 
 Monocle's pre-commit hooks (speficied in `./.pre-commit-config.yaml`) are run before each commit automatically. We use them to auto-format code and to check for linting errors, for example. W/o running the hooks, the CI pipeline may fail.
 
-To install the pre-commit hooks, [install `pre-commit`](https://pre-commit.com/#installation) and afterwards run `pre-commit install` from the repository's folder to install the pre-commit hooks.
+First, install [`pre-commit`](https://pre-commit.com/#installation) command itself if you don't have it already:
+```
+pip install pre-commit
+```
+
+Then, run `pre-commit install` from the repository's folder to install the pre-commit hooks (they are installed in their own environment and thus do not conflict w/ the local installations you may have).
+
+##### Running pre-commit hooks manually
+
+Pre-commit hooks are run on each commit automatically. Still, you can run them manually if you need to.
+
+Run all hooks:
+```
+pre-commit run --all-files
+```
+
+Run a certain hook:
+```
+pre-commit run <hook_id>
+```
+where `<hook_id>` is a hook ID from `./.pre-commit-config.yaml`.
 
 ## Production
 Monocle is available internally to Sanger at the following addresses:
