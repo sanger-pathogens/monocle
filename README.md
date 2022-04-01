@@ -29,8 +29,22 @@ First, install [`pre-commit`](https://pre-commit.com/#installation) command itse
 ```
 pip install pre-commit
 ```
+##### Python3.8 and virtualenv module
+
+Python 3.8._n_ is required for pre-commit (see below).   This should provide a `python3.8` executable that runs whatever 3.8._n_ you have installed.
+
+The virtualenv module is used internally by pre-commit; if not installed, run `pip install virtualenv`.
 
 Then, run `pre-commit install` from the repository's folder to install the pre-commit hooks.
+
+##### Running pre-commit hooks manually
+
+First, install [`pre-commit`](https://pre-commit.com/#installation) command itself if you don't have it already:
+```
+pip install pre-commit
+```
+
+Then, run `pre-commit install` from the repository's folder to install the pre-commit hooks (they are installed in their own environment and thus do not conflict w/ the local installations you may have).
 
 ##### Running pre-commit hooks manually
 
