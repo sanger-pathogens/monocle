@@ -3,11 +3,12 @@ import unittest
 from unittest.mock import Mock, call, patch
 
 import flask
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql import text
+
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, ProtocolError
 from metadata.api.model.institution import Institution
 from metadata.tests.test_data import *
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.sql import text
 
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):

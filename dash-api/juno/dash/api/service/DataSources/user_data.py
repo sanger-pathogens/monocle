@@ -1,6 +1,6 @@
-from base64 import b64encode
 import copy
 import logging
+from base64 import b64encode
 
 import ldap
 import yaml
