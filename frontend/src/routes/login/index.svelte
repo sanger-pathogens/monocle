@@ -32,9 +32,9 @@
 </script>
 
 
-<h2>Log in</h2>
+<h2 id="login-heading">Log in</h2>
 
-<form on:submit|preventDefault={onSubmit}>
+<form aria-labelledby="login-heading" on:submit|preventDefault={onSubmit}>
   <fieldset disabled>
     <legend>Project (coming soon)</legend>
     <label class="label-radio">
