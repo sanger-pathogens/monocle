@@ -8,7 +8,7 @@ it("shows a logout link", () => {
   const { getByRole } = render(Header);
 
   expect(getByRole(ROLE_LINK, { name: LABEL_LOG_OUT }).href)
-    .toBe(`${location.protocol}//log:out@${location.hostname}/`);
+    .toBe("http://localhost/logout");
 });
 
 it("doesn't show a logout link on the login page", () => {

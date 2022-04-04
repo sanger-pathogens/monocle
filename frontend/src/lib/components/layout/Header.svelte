@@ -19,10 +19,7 @@
     <a href="https://www.gbsgen.net/#twitterFeed" target="_blank">News</a>
     <a href="https://www.gbsgen.net/#funders" target="_blank">Funders</a>
     {#if browser && location && !location.pathname.includes(URL_PATH_NAME_LOGIN)}
-      <a
-        href={location.href.replace(`${location.protocol}//`, `${location.protocol}//log:out@`)}
-        class="login-out-link"
-      >
+      <a href="/logout" class="login-out-link">
         Log out
       </a>
     {/if}
