@@ -24,12 +24,16 @@ footer {
   color: white;
   margin-top: auto;
   padding: 1.4rem;
+  display: flex;
+  justify-content: space-around ;
 }
+
 .max-inner-width {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  max-wigth: var(--bp-xl);
+  max-width: var(--bp-xl);
+  width: 100%;
 }
 
 a {
