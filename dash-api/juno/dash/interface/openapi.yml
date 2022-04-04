@@ -23,7 +23,6 @@ paths:
           schema:
             type: string
             format: uri
-            default: "/"
       requestBody:
         required: true
         content:
@@ -68,7 +67,6 @@ paths:
           schema:
             type: string
             format: uri
-            default: "/"
       responses:
         "307":
           description: "The operation was successful. The authentication cookie has is expired and the user is redirected."
