@@ -14,6 +14,11 @@
 
     submitting = true;
     logIn(username, password, fetch)
+      .then((response) => {
+        if (response.redirected) {
+          window.location.href = response.url;
+        }
+      })
       .catch((err) => {
         console.error(`Error while logging in: ${err}`);
         alert(
