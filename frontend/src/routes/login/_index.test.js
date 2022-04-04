@@ -84,10 +84,29 @@ it("disables the submit button while the form is being submitted", async () => {
       .toBeTruthy();
   });
 
-  await submitting;
+  submitting;
 
-  expect(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }).disabled)
-    .toBeFalsy();
+  await waitFor(() => {
+    expect(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }).disabled)
+      .toBeFalsy();
+  });
+});
+
+it("redirects to the URL from a response on submit", async () => {
+  const { getByRole, getByLabelText } = render(LoginPage);
+  const baseUrl = "https://www.example.com";
+  const expectedRedirectUrl = `${baseUrl}/some-path`;
+  fetch.mockResolvedValueOnce({ redirected: true, url: expectedRedirectUrl });
+  delete global.location;
+  global.location = new URL(baseUrl)
+  fireEvent.input(getByLabelText(LABEL_USERNAME), { target: { value: USERNAME } });
+  await fireEvent.input(getByLabelText(LABEL_PASSWORD), { target: { value: PASSWORD } });
+
+  fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }));
+
+  await waitFor(() => {
+    expect(global.location.href).toBe(expectedRedirectUrl);
+  });
 });
 
 it("shows an error message on login error and re-enables the submit button", async () => {
