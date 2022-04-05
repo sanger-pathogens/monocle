@@ -832,60 +832,60 @@
         "regex_validation_message": "must be pos, neg or empty"
       },
       "twenty_three_S1_variant": {
-        "title": "23S1_SNP",
+        "title": "23S1_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "twenty_three_S3_variant": {
-        "title": "23S3_SNP",
+        "title": "23S3_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "GYRA_variant": {
-        "title": "GYRA_SNP",
+        "title": "GYRA_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "PARC_variant": {
-        "title": "PARC_SNP",
+        "title": "PARC_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "RPOBGBS_1_variant": {
-        "title": "RPOBGBS-1_SNP",
+        "title": "RPOBGBS-1_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "RPOBGBS_2_variant": {
-        "title": "RPOBGBS-2_SNP",
+        "title": "RPOBGBS-2_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "RPOBGBS_3_variant": {
-        "title": "RPOBGBS-3_SNP",
+        "title": "RPOBGBS-3_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       },
       "RPOBGBS_4_variant": {
-        "title": "RPOBGBS-4_SNP",
+        "title": "RPOBGBS-4_variant",
         "mandatory": true,
         "max_length": 100,
         "regex": "^(^$|[0-9a-zA-Z_\\-\\,*])+$",
-        "regex_validation_message": "must contain comma-separated SNPs (e.g. T78Q,L55A), * for the common SNP or empty"
+        "regex_validation_message": "must contain comma-separated Variants (e.g. T78Q,L55A), * for the common variant or empty"
       }
     }
   },
