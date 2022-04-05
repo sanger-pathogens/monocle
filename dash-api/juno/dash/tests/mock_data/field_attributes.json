@@ -814,56 +814,56 @@
          }
       },
       "AMR SNPs" : {
-         "twenty_three_S1_SNP" : {
+         "twenty_three_S1_variant" : {
             "display"            : true,
             "order"              : 53,
             "spreadsheet heading": "23S1_SNP",
             "display name"       : "23S1 SNP",
             "filter type"        : "discrete"
          },
-         "twenty_three_S3_SNP" : {
+         "twenty_three_S3_variant" : {
             "display"            : true,
             "order"              : 54,
             "spreadsheet heading": "23S3_SNP",
             "display name"       : "23S3 SNP",
             "filter type"        : "discrete"
          },
-         "GYRA_SNP" : {
+         "GYRA_variant" : {
             "display"            : true,
             "order"              : 55,
             "spreadsheet heading": "GYRA_SNP",
             "display name"       : "GYRA SNP",
             "filter type"        : "discrete"
          },
-         "PARC_SNP" : {
+         "PARC_variant" : {
             "display"            : true,
             "order"              : 56,
             "spreadsheet heading": "PARC_SNP",
             "display name"       : "PARC SNP",
             "filter type"        : "discrete"
          },
-         "RPOBGBS_1_SNP" : {
+         "RPOBGBS_1_variant" : {
             "display"            : true,
             "order"              : 57,
             "spreadsheet heading": "RPOBGBS-1_SNP",
             "display name"       : "RPOBGBS-1 SNP",
             "filter type"        : "discrete"
          },
-         "RPOBGBS_2_SNP" : {
+         "RPOBGBS_2_variant" : {
             "display"            : true,
             "order"              : 58,
             "spreadsheet heading": "RPOBGBS-2_SNP",
             "display name"       : "RPOBGBS-2 SNP",
             "filter type"        : "discrete"
          },
-         "RPOBGBS_3_SNP" : {
+         "RPOBGBS_3_variant" : {
             "display"            : true,
             "order"              : 59,
             "spreadsheet heading": "RPOBGBS-3_SNP",
             "display name"       : "RPOBGBS-3 SNP",
             "filter type"        : "discrete"
          },
-         "RPOBGBS_4_SNP" : {
+         "RPOBGBS_4_variant" : {
             "display"            : true,
             "order"              : 60,
             "spreadsheet heading": "RPOBGBS-4_SNP",
