@@ -952,7 +952,7 @@
          },
          {  "name"   : "AMR SNPs",
             "fields" : [
-               {  "name"               : "twenty_three_S1_SNP",
+               {  "name"               : "twenty_three_S1_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 53,
@@ -960,7 +960,7 @@
                   "display name"       : "23S1 SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "twenty_three_S3_SNP",
+               {  "name"               : "twenty_three_S3_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 54,
@@ -968,7 +968,7 @@
                   "display name"       : "23S3 SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "GYRA_SNP",
+               {  "name"               : "GYRA_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 55,
@@ -976,7 +976,7 @@
                   "display name"       : "GYRA SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "PARC_SNP",
+               {  "name"               : "PARC_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 56,
@@ -984,7 +984,7 @@
                   "display name"       : "PARC SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "RPOBGBS_1_SNP",
+               {  "name"               : "RPOBGBS_1_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 57,
@@ -992,7 +992,7 @@
                   "display name"       : "RPOBGBS-1 SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "RPOBGBS_2_SNP",
+               {  "name"               : "RPOBGBS_2_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 58,
@@ -1000,7 +1000,7 @@
                   "display name"       : "RPOBGBS-2 SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "RPOBGBS_3_SNP",
+               {  "name"               : "RPOBGBS_3_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 59,
@@ -1008,7 +1008,7 @@
                   "display name"       : "RPOBGBS-3 SNP",
                   "filter type"        : "discrete"
                },
-               {  "name"               : "RPOBGBS_4_SNP",
+               {  "name"               : "RPOBGBS_4_variant",
                   "display"            : true,
                   "default"            : false,
                   "order"              : 60,
