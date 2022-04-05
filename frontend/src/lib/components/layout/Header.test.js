@@ -6,9 +6,10 @@ const ROLE_LINK = "link";
 
 it("shows a logout link", () => {
   const { getByRole } = render(Header);
+  const linkElement = getByRole(ROLE_LINK, { name: LABEL_LOG_OUT });
 
-  expect(getByRole(ROLE_LINK, { name: LABEL_LOG_OUT }).href)
-    .toBe("http://localhost/logout");
+  expect(linkElement.href).toBe("http://localhost/logout");
+  expect(linkElement.rel).toBe("external");
 });
 
 it("doesn't show a logout link on the login page", () => {
