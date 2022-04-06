@@ -20,12 +20,12 @@
 
 <style>
 footer {
+  display: flex;
+  justify-content: space-around;
   background: var(--juno-purple);
   color: white;
   margin-top: auto;
   padding: 1.4rem;
-  display: flex;
-  justify-content: space-around ;
 }
 
 .max-inner-width {
