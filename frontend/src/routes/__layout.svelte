@@ -9,6 +9,11 @@
   const { session } = getStores();
 
   onMount(() => {
+    const simplecookieScript = document.createElement("script");
+    simplecookieScript.id = "simple-cookie-js";
+    simplecookieScript.src = "/files/simplecookie.min.js";
+    document.head.appendChild(simplecookieScript);
+
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
