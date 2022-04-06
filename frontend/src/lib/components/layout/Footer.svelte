@@ -20,16 +20,20 @@
 
 <style>
 footer {
+  display: flex;
+  justify-content: space-around;
   background: var(--juno-purple);
   color: white;
   margin-top: auto;
   padding: 1.4rem;
 }
+
 .max-inner-width {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  max-wigth: var(--bp-xl);
+  max-width: var(--bp-xl);
+  width: 100%;
 }
 
 a {
