@@ -2,7 +2,7 @@
 This component provides an API for accessing and updating metadata in the Monocle database.
 
 ## Prerequisites
-Login to Docker using your GitLab credentials, running the following:
+Log into Docker using your GitLab credentials, running the following:
 ```
 docker login "gitlab-registry.internal.sanger.ac.uk"
 ```
