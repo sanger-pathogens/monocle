@@ -1,13 +1,18 @@
-import logging
 import unittest
 from unittest.mock import Mock, call, patch
 
 import flask
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, ProtocolError
 from metadata.api.model.institution import Institution
-from metadata.tests.test_data import *
+from metadata.tests.test_data import (
+    TEST_LANE_IN_SILICO_1,
+    TEST_LANE_IN_SILICO_2,
+    TEST_LANE_QC_DATA_1,
+    TEST_LANE_QC_DATA_2,
+    TEST_SAMPLE_1,
+    TEST_SAMPLE_2,
+)
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.sql import text
 
 
 class TestMonocleDatabaseServiceImpl(unittest.TestCase):
@@ -609,8 +614,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 SRR2="pos",
                 twenty_three_S1_variant=None,
                 twenty_three_S3_variant=None,
-                GYRA_variant="*",
-                PARC_variant="*",
+                GYRA_variant="",
+                PARC_variant="",
                 RPOBGBS_1_variant=None,
                 RPOBGBS_2_variant=None,
                 RPOBGBS_3_variant=None,
@@ -952,8 +957,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 SRR2="pos",
                 twenty_three_S1_variant="",
                 twenty_three_S3_variant="",
-                GYRA_variant="*",
-                PARC_variant="*",
+                GYRA_variant="",
+                PARC_variant="",
                 RPOBGBS_1_variant="",
                 RPOBGBS_2_variant="",
                 RPOBGBS_3_variant="",

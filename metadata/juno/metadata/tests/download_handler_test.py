@@ -4,8 +4,7 @@ from unittest.mock import Mock, patch
 
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
-
-from metadata.juno.metadata.tests.test_data import (
+from metadata.tests.test_data import (
     TEST_LANE_IN_SILICO_1,
     TEST_LANE_IN_SILICO_2,
     TEST_LANE_QC_DATA_1,
