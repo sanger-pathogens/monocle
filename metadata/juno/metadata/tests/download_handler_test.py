@@ -4,7 +4,15 @@ from unittest.mock import Mock, patch
 
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
-from metadata.tests.test_data import *
+
+from metadata.juno.metadata.tests.test_data import (
+    TEST_LANE_IN_SILICO_1,
+    TEST_LANE_IN_SILICO_2,
+    TEST_LANE_QC_DATA_1,
+    TEST_LANE_QC_DATA_2,
+    TEST_SAMPLE_1,
+    TEST_SAMPLE_2,
+)
 
 
 class TestDownloadMetadataHandler(unittest.TestCase):
@@ -255,8 +263,8 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
             self.assertEqual(results[0]["RIB"][value_field_name], "pos")
             self.assertEqual(results[0]["SRR1"][value_field_name], "neg")
             self.assertEqual(results[0]["SRR2"][value_field_name], "pos")
-            self.assertEqual(results[0]["GYRA_variant"][value_field_name], "*")
-            self.assertEqual(results[0]["PARC_variant"][value_field_name], "*")
+            self.assertEqual(results[0]["GYRA_variant"][value_field_name], "")
+            self.assertEqual(results[0]["PARC_variant"][value_field_name], "")
             # Sample 2 - test a few fields as sanity check
             self.assertEqual(results[1]["lane_id"][value_field_name], "50000_2#287")
             self.assertEqual(results[1]["cps_type"][value_field_name], "III")
@@ -330,6 +338,6 @@ class TestDownloadQCHandler(unittest.TestCase):
             # Sample 1
             self.assertEqual(results[0]["lane_id"][value_field_name], "50000_2#282")
             self.assertEqual(results[0]["rel_abun_sa"][value_field_name], "93.21")
-            ## Sample 2
+            # Sample 2
             self.assertEqual(results[1]["lane_id"][value_field_name], "50000_2#287")
             self.assertEqual(results[1]["rel_abun_sa"][value_field_name], "68.58")
