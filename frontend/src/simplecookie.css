@@ -1,0 +1,169 @@
+/*
++----------------------------------------------------------------------
+| Copyright (c) 2019 Genome Research Ltd.
+| This file is part of the Pagesmith web framework.
+
+| The original CSS is modified for the Wellcome Sanger Institute's Monocle project.
++----------------------------------------------------------------------
+| The Pagesmith web framework is free software: you can redistribute
+| it and/or modify it under the terms of the GNU Lesser General Public
+| License as published by the Free Software Foundation; either version
+| 3 of the License, or (at your option) any later version.
+|
+| This program is distributed in the hope that it will be useful, but
+| WITHOUT ANY WARRANTY; without even the implied warranty of
+| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+| Lesser General Public License for more details.
+|
+| You should have received a copy of the GNU Lesser General Public
+| License along with this program. If not, see:
+|     <http://www.gnu.org/licenses/>.
++----------------------------------------------------------------------
+
+  Styles for cookie policy footer/link and options dialog...
+
+  First the cookie policy footer....
+
+  #cookie-policy.full is the style for the initial informative
+                      div with text and two buttons
+  #cookie-policy      is the style for the subsequent small "Cookies & privacy"
+                      button in the bottom right hand corner
+
+*/
+
+#cookie-policy {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  z-index: 1000000
+}
+
+#cookie-policy.full {
+  display: flex;
+  justify-content: center;
+  background-color: rgb(239, 239, 239, 0.8);
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  padding: 0.7rem 0.8rem 0.1rem 1.1rem;
+  width: 100%;
+}
+#cookie-policy.full button {
+  background: var(--background-body);
+  font-weight: 300;
+  padding: 0.4rem;
+}
+#cookie-policy.full #cookie-accept {
+  border: 1px solid var(--juno-indigo);
+  color: var(--juno-indigo);
+}
+#cookie-policy.full #cookie-settings {
+  border: 1px solid var(--text-muted);
+  color: var(--text-main);
+}
+#cookie-policy.full p {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+#cookie-policy.full button {
+  margin-left: 1rem;
+}
+
+/*
+  #cookie-options is for the "popup" div allowing user to change cookie preferences...
+  Default is 30% wide on the right hand side of the page....
+  ## Some responsive design work is required to allow this to "sensibly grow"
+     and then go full screen as the screen size decreases...
+*/
+
+#cookie-options {
+  position: fixed;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  z-index: 1000000;
+  width: 30%;
+  max-width: 40rem;
+  background-color: var(--background);
+  box-shadow: 1.1rem 0 1.3rem 0.5rem;
+  text-align: left;
+  overflow-y: auto;
+  padding: 0.6rem 0.8rem 0 1.1rem;
+}
+
+#cookie-options blockquote {
+  border: none;
+  text-align: center;
+}
+
+#cookie-options table {
+  border-bottom: 1px solid var(--color-border);
+}
+#cookie-options th {
+  text-align: center;
+}
+#cookie-options td:not(last-child) {
+  border-right: 1px solid var(--color-border);
+}
+
+/** finally shared button style **/
+
+#cookie-options button,
+#cookie-policy button {
+  background-color: var(--juno-purple);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 400;
+  padding: 0.5rem 0.6rem;
+}
+
+#cookie-policy > #cookie-settings {
+  background: var(--background-body);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 300;
+  margin-top: 0.1rem;
+  opacity: 0.6;
+  padding: 0.2rem 0.4rem;
+}
+#cookie-policy > #cookie-settings:hover {
+  opacity: 0.8;
+}
+
+button#cookie-close {
+  background: none;
+  border: 1px solid silver;
+  color: var(--text-main);
+  float: right;
+  padding: 0.4rem;
+}
+
+@media print {
+  #cookie-policy {
+    display: none
+  }
+}
+
+@media (max-width: 1280px) {
+  #cookie-options {
+    width: 40%
+  }
+}
+
+@media (max-width: 1024px) {
+  #cookie-options {
+    width: 50%
+  }
+}
+
+@media (max-width: 630px) {
+  #cookie-policy.full button {
+    margin-left: 0.3rem;
+    padding: 0.3rem;
+  }
+
+  #cookie-options {
+    left: 0;
+    width: 100%;
+  }
+}
