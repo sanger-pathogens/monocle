@@ -1,3 +1,3 @@
 Sample_id	cps_type	ST	adhP	pheS	atr	glnA	sdhA	glcK	tkt	23S1	23S3	AAC6APH2	AADECC	ANT6	APH3III	APH3OTHER	CATPC194	CATQ	ERMA	ERMB	ERMT	LNUB	LNUC	LSAC	MEFA	MPHC	MSRA	MSRD	FOSA	GYRA	PARC	RPOBGBS-1	RPOBGBS-2	RPOBGBS-3	RPOBGBS-4	SUL2	TETB	TETL	TETM	TETO	TETS	ALP1	ALP23	ALPHA	HVGA	PI1	PI2A1	PI2A2	PI2B	RIB	SRR1	SRR2	23S1_SNP	23S3_SNP	GYRA_SNP	PARC_SNP	RPOBGBS-1_SNP	RPOBGBS-2_SNP	RPOBGBS-3_SNP	RPOBGBS-4_SNP
-35675_1#240		932	1	1	4	1	2	3	4	pos	pos							neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	pos	pos	neg	neg	neg	neg	neg	neg	neg	pos	neg	neg	pos	neg	neg	neg	pos	neg	neg	pos	neg	pos	neg	*	*	*	*				
-35675_1#285	VI	14	1	1	2	1	5	2	2	pos	pos																			pos	pos	neg	neg	neg	neg							pos	neg	neg	neg	pos	neg	neg	pos	neg	pos	neg	*	*	*	*				
+35675_1#240		932	1	1	4	1	2	3	4	pos	pos							neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	neg	pos	pos	neg	neg	neg	neg	neg	neg	neg	pos	neg	neg	pos	neg	neg	neg	pos	neg	neg	pos	neg	pos	neg								
+35675_1#285	VI	14	1	1	2	1	5	2	2	pos	pos																			pos	pos	neg	neg	neg	neg							pos	neg	neg	neg	pos	neg	neg	pos	neg	pos	neg								

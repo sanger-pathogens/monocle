@@ -814,11 +814,11 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.assertTrue('{row: 3, column: "SRR1"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue('{row: 2, column: "SRR2"}: "\'\'" must be pos, neg or empty' in validation_errors)
         self.assertTrue(
-            '{row: 3, column: "23S1_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty'
+            '{row: 3, column: "23S1_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A) or empty value'
             in validation_errors
         )
         self.assertTrue(
-            '{row: 3, column: "23S3_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A), * for the common variant or empty'
+            '{row: 3, column: "23S3_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A) or empty value'
             in validation_errors
         )
 
