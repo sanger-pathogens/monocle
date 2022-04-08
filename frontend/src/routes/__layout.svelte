@@ -10,10 +10,7 @@
   const { session } = getStores();
 
   onMount(() => {
-    const simplecookieScript = document.createElement("script");
-    simplecookieScript.id = "simple-cookie-js";
-    simplecookieScript.src = "/files/simplecookie.min.js";
-    document.head.appendChild(simplecookieScript);
+    appendScriptToHead("/files/simplecookie.min.js", { async: true });
 
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
@@ -25,6 +22,14 @@
         console.error(err);
       });
   });
+
+  function appendScriptToHead(src, options) {
+    const script = document.createElement("script");
+    script.src = src;
+    Object.keys(options).forEach((optionKey) =>
+      script[optionKey] = options[optionKey]);
+    document.head.appendChild(script);
+  }
 </script>
 
 
