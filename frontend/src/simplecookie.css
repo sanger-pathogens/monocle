@@ -141,7 +141,7 @@ button#cookie-close {
 
 @media print {
   #cookie-policy {
-    display: none
+    display: none !important;
   }
 }
 
