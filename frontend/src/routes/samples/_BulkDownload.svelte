@@ -47,7 +47,8 @@
     getBulkDownloadUrls({
       instKeyBatchDatePairs: batches,
       filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
-      ...formValues
+      ...formValues,
+      maxSamplesPerZip
     }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
@@ -124,12 +125,33 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              {estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"} of {estimate.sizeZipped}
+              {estimate.sizeZipped} ({estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"})
             {:else}
               <LoadingIcon label="Estimating the download size. Please wait" />
             {/if}
           {:else}
             0
+          {/if}
+        </dd>
+
+        <dt>Maximum size per ZIP archive:</dt>
+        <dd>
+          {#if formComplete}
+            {#if estimate}
+              <select disabled={estimate.sizePerZipOptions.length <= 1}>
+                {#each estimate.sizePerZipOptions as sizePerZipOption (`${sizePerZipOption["size_per_zip"]}${sizePerZipOption["max_samples_per_zip"]}`)}
+                  <option value={sizePerZipOption["max_samples_per_zip"]}>
+                    {sizePerZipOption["size_per_zip"]} ({Math.ceil(estimate.numSamples / sizePerZipOption["max_samples_per_zip"])} ZIP archives)
+                  </option>
+                {/each}
+              </select>
+            {:else}
+              <LoadingIcon label="Estimating the download size. Please wait" />
+            {/if}
+          {:else}
+            <select disabled>
+              <option>0</option>
+            </select>
           {/if}
         </dd>
       </dl>
@@ -221,7 +243,9 @@ form > fieldset {
 }
 
 dl {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 1em;
 }
 dt {
   font-weight: 200;
