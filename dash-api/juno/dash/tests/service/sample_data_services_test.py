@@ -643,6 +643,9 @@ class MonocleSampleDataTest(TestCase):
                 "num_samples": expected_num_samples,
                 "size": format_file_size(expected_byte_size),
                 "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
             },
             bulk_download_info,
         )

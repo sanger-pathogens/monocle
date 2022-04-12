@@ -10,6 +10,7 @@ from copy import deepcopy
 from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONE, QUOTE_NONNUMERIC
 from datetime import datetime
 from functools import reduce
+from math import ceil
 from os import environ, path
 from pathlib import Path, PurePath
 from uuid import uuid4
@@ -23,6 +24,7 @@ from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
 
@@ -492,6 +494,7 @@ class MonocleSampleData:
                 raise e
             return None
 
+        include_reads = kwargs.get("reads", False)
         public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
             filtered_samples,
             assemblies=kwargs.get("assemblies", False),
@@ -503,10 +506,15 @@ class MonocleSampleData:
             lane_files_size = reduce(lambda accum, fl: accum + self._get_file_size(fl), lane_files, 0)
             total_lane_files_size = total_lane_files_size + lane_files_size
 
+        num_samples = len(filtered_samples)
+        total_lane_files_size_zipped = total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
         return {
-            "num_samples": len(filtered_samples),
+            "num_samples": num_samples,
             "size": format_file_size(total_lane_files_size),
-            "size_zipped": format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+            "size_zipped": format_file_size(total_lane_files_size_zipped),
+            "size_per_zip_options": self._calculate_zip_size_options(
+                num_samples, total_lane_files_size_zipped, include_reads
+            ),
         }
 
     def get_filtered_samples(self, sample_filters, disable_public_name_fetch=False):
@@ -756,6 +764,24 @@ class MonocleSampleData:
             else:
                 sanger_sample_id_to_public_name[sanger_sample_id] = public_name
         return sanger_sample_id_to_public_name
+
+    def _calculate_zip_size_options(self, num_samples, total_zip_size, include_reads):
+        max_samples_per_zip = min(
+            self.get_bulk_download_max_samples_per_zip(including_reads=include_reads), num_samples
+        )
+        sample_size = total_zip_size / num_samples
+        zip_size = sample_size * max_samples_per_zip
+        min_zip_size = sample_size * MIN_ZIP_NUM_SAMPLES_CAPACITY
+        factor = 4
+        zip_size_options = []
+        while zip_size >= min_zip_size and max_samples_per_zip >= MIN_ZIP_NUM_SAMPLES_CAPACITY:
+            zip_size_options.append(
+                {"max_samples_per_zip": max_samples_per_zip, "size_per_zip": format_file_size(zip_size)}
+            )
+            max_samples_per_zip = ceil(max_samples_per_zip / factor)
+            zip_size = zip_size / factor
+            factor = factor * 2
+        return zip_size_options
 
     def get_public_name_to_lane_files_dict(self, samples, **kwargs):
         """
