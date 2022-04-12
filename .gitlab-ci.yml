@@ -13,7 +13,7 @@ variables:
   FRONTEND_CONTEXT:         "frontend"
   QC_DATA_CONTEXT:          "qc-data"
   DOCKER_BUILD_LIST:        "${DASH_API_CONTEXT}/juno ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
-  DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:19"
+  DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:20"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   LINE_LENGTH:              120
 

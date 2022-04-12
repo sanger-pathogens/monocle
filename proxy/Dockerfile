@@ -1,4 +1,4 @@
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/nginx:1.19.10
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/nginx:1.21.6
 
 COPY public /usr/share/nginx/html
 

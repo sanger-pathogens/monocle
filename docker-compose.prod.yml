@@ -167,7 +167,7 @@ services:
       # make sure the host name matches the name of the openldap service (above)
       - PHPLDAPADMIN_LDAP_HOSTS=monocle-ldap
   ldap-auth-daemon:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r329"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r634"
     user: <USER_UID>:<USER_GID>
     expose:
       - "8888"
