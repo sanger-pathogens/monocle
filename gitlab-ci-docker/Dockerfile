@@ -5,5 +5,5 @@
 
 # This build just adds Sanger-specific network configuration to docker:dind
 
-FROM  docker:19.03.14-dind AS gitlab-ci-dind
+FROM  docker:20.10.14-dind AS gitlab-ci-dind
 COPY  etc-docker-daemon.json /etc/docker/daemon.json
