@@ -1332,6 +1332,7 @@ components:
         - num_samples
         - size
         - size_zipped
+        - size_per_zip_options
       properties:
         num_samples:
           type: integer
@@ -1341,6 +1342,15 @@ components:
           readOnly: true
         size_zipped:
           type: string
+          readOnly: true
+        size_per_zip_options:
+          type: array
+          items:
+            max_samples_per_zip:
+              type: integer
+              minimum: 0
+            size_per_zip:
+              type: string
           readOnly: true
 
     DownloadURLs:
