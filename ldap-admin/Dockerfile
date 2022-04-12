@@ -1,4 +1,7 @@
-FROM  gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:0.9.0
+# 0.9.0 is from 2019-11-05, the latest version-numbered tag available
+# stable is from 2021-02-19, but unfortunately there is version-numbered tag, so
+# the locally cached copy of the image was tagged uniquely as stable_20220412Z1015
+FROM  gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/phpldapadmin:stable_20220412Z1015
 
 # the phpLDAPadmin config file
 ARG   PHPLDAPADMIN_CONFIG_FILE='/container/service/phpldapadmin/assets/config/config.php'
