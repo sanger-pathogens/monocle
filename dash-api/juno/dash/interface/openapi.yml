@@ -1346,11 +1346,17 @@ components:
         size_per_zip_options:
           type: array
           items:
-            max_samples_per_zip:
-              type: integer
-              minimum: 0
-            size_per_zip:
-              type: string
+            type: object
+            required:
+              - max_samples_per_zip
+              - size_per_zip
+            properties:
+              max_samples_per_zip:
+                type: integer
+                minimum: 0
+              size_per_zip:
+                type: string
+                minLength: 1
           readOnly: true
 
     DownloadURLs:
