@@ -18,7 +18,6 @@
   let downloadBatches;
   let downloadFilterState;
   let downloadDistinctColumnValuesState;
-  let maxSamplesPerZipSelection;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -27,6 +26,8 @@
       estimate = _downloadEstimate;
     }
   }
+
+  $: maxSamplesPerZipSelection = estimate?.sizePerZipOptions?.[0]?.maxSamplesPerZip;
 
   $: formComplete = batches?.length &&
     (formValues.annotations || formValues.assemblies || formValues.reads);
@@ -74,7 +75,6 @@
     downloadTokens = [];
     downloadLinksRequested = false;
     shouldFreezeDownloadEstimate = false;
-    maxSamplesPerZipSelection = undefined;
   }
 
   function _shouldFreezeDownloadEstimate() {
@@ -138,10 +138,11 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              <select bind:value={maxSamplesPerZipSelection} disabled={estimate.sizePerZipOptions.length <= 1}>
+              <select bind:value={maxSamplesPerZipSelection} disabled={estimate.sizePerZipOptions?.length <= 1}>
                 {#each estimate.sizePerZipOptions as { sizePerZip, maxSamplesPerZip } (`${sizePerZip}${maxSamplesPerZip}`)}
+                  {@const numZips = Math.ceil(estimate.numSamples / maxSamplesPerZip)}
                   <option value={maxSamplesPerZip}>
-                    {sizePerZip} ({Math.ceil(estimate.numSamples / maxSamplesPerZip)} ZIP archives)
+                    {sizePerZip} ({numZips} ZIP archive{numZips === 1 ? "" : "s"})
                   </option>
                 {/each}
               </select>
@@ -249,6 +250,10 @@ dl {
 }
 dt {
   font-weight: 200;
+}
+
+.disabled select:disabled {
+  opacity: 1;
 }
 
 button[type=submit] {
