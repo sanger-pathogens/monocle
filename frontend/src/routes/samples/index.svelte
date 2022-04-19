@@ -102,8 +102,15 @@
       filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       ...bulkDownloadFormValues,
     }, fetch)
-      .then(({num_samples, size_zipped}) => {
-        bulkDownloadEstimate = { numSamples: num_samples, sizeZipped: size_zipped };
+      .then(({ num_samples, size_zipped, size_per_zip_options = [] }) => {
+        bulkDownloadEstimate = {
+          numSamples: num_samples,
+          sizeZipped: size_zipped,
+          sizePerZipOptions: size_per_zip_options.map(({ size_per_zip, max_samples_per_zip }) => ({
+            sizePerZip: size_per_zip,
+            maxSamplesPerZip: max_samples_per_zip
+          }))
+        };
       })
       .catch(unsetDownloadEstimate);
   }

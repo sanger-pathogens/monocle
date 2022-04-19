@@ -12,13 +12,13 @@
   export { _downloadEstimate as downloadEstimate };
   export let formValues;
 
-  let downloadEstimateCurrentDownload;
   let downloadLinksRequested;
   let downloadTokens = [];
   let estimate = _downloadEstimate;
   let downloadBatches;
   let downloadFilterState;
   let downloadDistinctColumnValuesState;
+  let maxSamplesPerZipSelection;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -48,7 +48,7 @@
       instKeyBatchDatePairs: batches,
       filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
       ...formValues,
-      maxSamplesPerZip
+      maxSamplesPerZip: maxSamplesPerZipSelection
     }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
@@ -71,10 +71,10 @@
   }
 
   function resetForm() {
-    downloadEstimateCurrentDownload = null;
     downloadTokens = [];
     downloadLinksRequested = false;
     shouldFreezeDownloadEstimate = false;
+    maxSamplesPerZipSelection = undefined;
   }
 
   function _shouldFreezeDownloadEstimate() {
@@ -138,10 +138,10 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              <select disabled={estimate.sizePerZipOptions.length <= 1}>
-                {#each estimate.sizePerZipOptions as sizePerZipOption (`${sizePerZipOption["size_per_zip"]}${sizePerZipOption["max_samples_per_zip"]}`)}
-                  <option value={sizePerZipOption["max_samples_per_zip"]}>
-                    {sizePerZipOption["size_per_zip"]} ({Math.ceil(estimate.numSamples / sizePerZipOption["max_samples_per_zip"])} ZIP archives)
+              <select bind:value={maxSamplesPerZipSelection} disabled={estimate.sizePerZipOptions.length <= 1}>
+                {#each estimate.sizePerZipOptions as { sizePerZip, maxSamplesPerZip } (`${sizePerZip}${maxSamplesPerZip}`)}
+                  <option value={maxSamplesPerZip}>
+                    {sizePerZip} ({Math.ceil(estimate.numSamples / maxSamplesPerZip)} ZIP archives)
                   </option>
                 {/each}
               </select>
