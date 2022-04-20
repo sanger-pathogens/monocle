@@ -18,6 +18,7 @@
   let downloadBatches;
   let downloadFilterState;
   let downloadDistinctColumnValuesState;
+  let sizeSelectorElement;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -26,8 +27,6 @@
       estimate = _downloadEstimate;
     }
   }
-
-  $: maxSamplesPerZipSelection = estimate?.sizePerZipOptions?.[0]?.maxSamplesPerZip;
 
   $: formComplete = batches?.length &&
     (formValues.annotations || formValues.assemblies || formValues.reads);
@@ -49,7 +48,7 @@
       instKeyBatchDatePairs: batches,
       filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
       ...formValues,
-      maxSamplesPerZip: maxSamplesPerZipSelection
+      maxSamplesPerZip: Number(sizeSelectorElement.value)
     }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
@@ -138,10 +137,10 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              <select bind:value={maxSamplesPerZipSelection} disabled={estimate.sizePerZipOptions?.length <= 1}>
-                {#each estimate.sizePerZipOptions as { sizePerZip, maxSamplesPerZip } (`${sizePerZip}${maxSamplesPerZip}`)}
+              <select bind:this={sizeSelectorElement} disabled={estimate.sizePerZipOptions?.length <= 1}>
+                {#each estimate.sizePerZipOptions as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
                   {@const numZips = Math.ceil(estimate.numSamples / maxSamplesPerZip)}
-                  <option value={maxSamplesPerZip}>
+                  <option value={maxSamplesPerZip} selected={i === 0}>
                     {sizePerZip} ({numZips} ZIP archive{numZips === 1 ? "" : "s"})
                   </option>
                 {/each}
