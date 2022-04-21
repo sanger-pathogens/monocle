@@ -5,7 +5,7 @@ WORKDIR  /app
 RUN      apt-get update -qq
 RUN      apt-get install -y libldap2-dev libsasl2-dev
 
-RUN      pip install flask==1.1.2                     \
+RUN      pip install flask==2.1.1                     \
                   flask-cors==3.0.10                  \
                   gunicorn==20.1.0                    \
                   python-ldap==3.3.1                  \
