@@ -1,8 +1,3 @@
-<script context="module">
-  export const prerender = true;
-  export const router = false;
-</script>
-
 <script>
   import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js"
 
