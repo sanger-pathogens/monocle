@@ -81,7 +81,7 @@ CREATE TABLE `gps_sample` (
   `intro_year` smallint(6) DEFAULT NULL,
   `PCV_type` varchar(100),
   `resolution` smallint(4),
-  PRIMARY KEY (`public_name`),
+  PRIMARY KEY (`public_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
