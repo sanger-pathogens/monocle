@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
-    "@sveltejs/adapter-node": "next",
-    "@sveltejs/kit": "next",
+    "@sveltejs/adapter-node": "^1.0.0-next.73",
+    "@sveltejs/kit": "^1.0.0-next.317",
     "@testing-library/svelte": "^3.0.3",
     "babel-jest": "^27.5.1",
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
@@ -25,7 +25,7 @@
     "eslint-plugin-svelte3": "^3.4.1",
     "frappe-charts": "^1.6.2",
     "jest": "^27.5.1",
-    "svelte": "^3.46.3",
+    "svelte": "^3.47.0",
     "svelte-jester": "^2.3.2",
     "svelte-select": "^4.4.6"
   },
