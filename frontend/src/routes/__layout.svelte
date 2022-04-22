@@ -1,12 +1,18 @@
 <script>
   import { onMount } from "svelte";
+  import { beforeNavigate, goto } from "$app/navigation";
   import { getStores } from "$app/stores";
   import { getUserDetails } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
 
+  const PATHNAME_LOGIN = "/login";
+  const RE_AUTH_COOKIE_NAME = /(^| )nginxauth=([^;]+)/;
+
   const { session } = getStores();
+
+  beforeNavigate(redirectUnauthenticatedToLogin);
 
   onMount(() => {
     getUserDetails(fetch)
@@ -19,6 +25,20 @@
         console.error(err);
       });
   });
+
+  // FIXME add unit tests
+  function redirectUnauthenticatedToLogin({ to, cancel }) {
+    const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
+    const navigatingToLogin = to && to.pathname.endsWith(PATHNAME_LOGIN);
+    if (!authenticated && !navigatingToLogin) {
+      cancel();
+      goto(PATHNAME_LOGIN);
+    }
+    else if (authenticated && navigatingToLogin) {
+      cancel();
+      goto("/");
+    }
+  }
 </script>
 
 
