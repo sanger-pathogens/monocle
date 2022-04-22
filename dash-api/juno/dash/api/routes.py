@@ -239,7 +239,6 @@ def bulk_download_urls_route(body):
     max_samples_per_zip = body.get("max samples per zip", None)
     if max_samples_per_zip is not None:
         if reads:
-            max_samples_per_zip = int((max_samples_per_zip / 10) + 0.5)
             if max_samples_per_zip < 1:
                 max_samples_per_zip = 1
     else:
