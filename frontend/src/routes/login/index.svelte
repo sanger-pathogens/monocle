@@ -1,4 +1,5 @@
 <script>
+  import { goto } from "$app/navigation";
   import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js"
 
   let username;
@@ -16,7 +17,7 @@
     logIn(username, password, fetch)
       .then((response) => {
         if (response.redirected) {
-          window.location.href = response.url;
+          goto(response.url);
         }
       })
       .catch((err) => {
