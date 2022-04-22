@@ -14,12 +14,11 @@
   const { session } = getStores();
 
   beforeNavigate(redirectUnauthenticatedToLogin);
+  if (browser) {
+    redirectUnauthenticatedToLogin({ to: location, cancel: () => {} });
+  }
 
   onMount(() => {
-    if (browser) {
-      redirectUnauthenticatedToLogin({ to: location, cancel: () => {} });
-    }
-
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
