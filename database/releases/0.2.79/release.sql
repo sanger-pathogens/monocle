@@ -81,12 +81,12 @@ CREATE TABLE `gps_sample` (
   `intro_year` smallint(6) DEFAULT NULL,
   `PCV_type` varchar(100),
   `resolution` smallint(4),
-  PRIMARY KEY (`public_name`),
+  PRIMARY KEY (`public_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Update the database version
-CALL update_database_version('0.2.78', 'Create gps metadata table (gps_sample)');
+CALL update_database_version('0.2.79', 'Create gps metadata table (gps_sample)');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
