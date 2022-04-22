@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { browser } from "$app/env";
   import { beforeNavigate, goto } from "$app/navigation";
   import { getStores } from "$app/stores";
   import { getUserDetails } from "$lib/dataLoading.js";
@@ -15,6 +16,10 @@
   beforeNavigate(redirectUnauthenticatedToLogin);
 
   onMount(() => {
+    if (browser) {
+      redirectUnauthenticatedToLogin({ to: location, cancel: () => {} });
+    }
+
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
