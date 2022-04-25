@@ -11,10 +11,18 @@
                    "display name"       : "Public Name",
                    "filter type"        : "none"
                 },
-                {  "name"               : "supplier_sample_name",
+                {  "name"               : "sanger_sample_id",
                    "display"            : true,
                    "default"            : false,
                    "order"              : 2,
+                   "spreadsheet heading": "Sanger_Sample_ID",
+                   "display name"       : "Sanger Sample ID",
+                   "filter type"        : "none"
+                },
+                {  "name"               : "supplier_sample_name",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 3,
                    "spreadsheet heading": "Sample_Name",
                    "display name"       : "Sample Name",
                    "filter type"        : "none"
@@ -26,7 +34,7 @@
                 {  "name"               : "study_name",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 3,
+                   "order"              : 4,
                    "spreadsheet heading": "Study_Name",
                    "display name"       : "Study Name",
                    "filter type"        : "none"
@@ -34,7 +42,7 @@
                 {  "name"               : "submitting_institution",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 4,
+                   "order"              : 5,
                    "spreadsheet heading": "Submitting_Institution",
                    "display name"       : "Submitting Institution",
                    "filter type"        : "discrete"
@@ -46,7 +54,7 @@
                 {  "name"               : "selection_random",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 5,
+                   "order"              : 6,
                    "spreadsheet heading": "Selection_Random",
                    "display name"       : "Selection Random",
                    "filter type"        : "discrete"
@@ -54,7 +62,7 @@
                 {  "name"               : "country",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 6,
+                   "order"              : 7,
                    "spreadsheet heading": "Country",
                    "display name"       : "Country",
                    "filter type"        : "discrete"
@@ -62,7 +70,7 @@
                 {  "name"               : "region",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 7,
+                   "order"              : 8,
                    "spreadsheet heading": "Region",
                    "display name"       : "Region",
                    "filter type"        : "discrete"
@@ -70,7 +78,7 @@
                 {  "name"               : "city",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 8,
+                   "order"              : 9,
                    "spreadsheet heading": "City",
                    "display name"       : "City",
                    "filter type"        : "discrete"
@@ -78,7 +86,7 @@
                 {  "name"               : "facility_where_collected",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 9,
+                   "order"              : 10,
                    "spreadsheet heading": "Facility_of_Collection",
                    "display name"       : "Facility of Collection",
                    "filter type"        : "discrete"
@@ -86,7 +94,7 @@
                 {  "name"               : "year_collection",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 10,
+                   "order"              : 11,
                    "spreadsheet heading": "Collection_Year",
                    "display name"       : "Collection Year",
                    "filter type"        : "numeric"
@@ -94,7 +102,7 @@
                 {  "name"               : "month_collection",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 11,
+                   "order"              : 12,
                    "spreadsheet heading": "Collection_Month",
                    "display name"       : "Collection Month",
                    "filter type"        : "discrete"
@@ -106,7 +114,7 @@
                 {  "name"               : "gender_m/f",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 12,
+                   "order"              : 13,
                    "spreadsheet heading": "Gender",
                    "display name"       : "Gender",
                    "filter type"        : "discrete"
@@ -114,7 +122,7 @@
                 {  "name"               : "gender",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 13,
+                   "order"              : 14,
                    "spreadsheet heading": "Gender",
                    "display name"       : "Gender",
                    "filter type"        : "discrete"
@@ -122,7 +130,7 @@
                 {  "name"               : "age_years",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 14,
+                   "order"              : 15,
                    "spreadsheet heading": "Age_years",
                    "display name"       : "Age years",
                    "filter type"        : "numeric"
@@ -130,7 +138,7 @@
                 {  "name"               : "age_months",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 15,
+                   "order"              : 16,
                    "spreadsheet heading": "Age_months",
                    "display name"       : "Age months",
                    "filter type"        : "numeric"
@@ -138,7 +146,7 @@
                 {  "name"               : "age_days",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 16,
+                   "order"              : 17,
                    "spreadsheet heading": "Age_days",
                    "display name"       : "Age days",
                    "filter type"        : "numeric"
@@ -146,7 +154,7 @@
                 {  "name"               : "source",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 17,
+                   "order"              : 18,
                    "spreadsheet heading": "Source",
                    "display name"       : "Source",
                    "filter type"        : "discrete"
@@ -154,7 +162,7 @@
                 {  "name"               : "HIV_status",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 18,
+                   "order"              : 19,
                    "spreadsheet heading": "HIV_status",
                    "display name"       : "HIV status",
                    "filter type"        : "discrete"
@@ -162,7 +170,7 @@
                 {  "name"               : "underlying_conditions",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 19,
+                   "order"              : 20,
                    "spreadsheet heading": "Underlying_Conditions",
                    "display name"       : "Underlying Conditions",
                    "filter type"        : "discrete"
@@ -174,7 +182,7 @@
                 {  "name"               : "phenotypic_serotype",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 20,
+                   "order"              : 21,
                    "spreadsheet heading": "Serotype",
                    "display name"       : "Serotype",
                    "filter type"        : "discrete"
@@ -182,7 +190,7 @@
                 {  "name"               : "phenotypic_serotype_method",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 21,
+                   "order"              : 22,
                    "spreadsheet heading": "Serotype_Method",
                    "display name"       : "Serotype Method",
                    "filter type"        : "discrete"
@@ -190,7 +198,7 @@
                 {  "name"               : "sequence_type",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 22,
+                   "order"              : 23,
                    "spreadsheet heading": "Sequence_Type",
                    "display name"       : "Sequence Type",
                    "filter type"        : "discrete"
@@ -202,7 +210,7 @@
                 {  "name"               : "penicillin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 23,
+                   "order"              : 24,
                    "spreadsheet heading": "Penicillin",
                    "display name"       : "Penicillin",
                    "filter type"        : "discrete"
@@ -210,7 +218,7 @@
                 {  "name"               : "AST_method_penicillin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 24,
+                   "order"              : 25,
                    "spreadsheet heading": "Penicillin_method",
                    "display name"       : "Penicillin method",
                    "filter type"        : "discrete"
@@ -218,7 +226,7 @@
                 {  "name"               : "amoxicillin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 25,
+                   "order"              : 26,
                    "spreadsheet heading": "Amoxicillin",
                    "display name"       : "Amoxicillin",
                    "filter type"        : "discrete"
@@ -226,7 +234,7 @@
                 {  "name"               : "AST_method_amoxicillin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 26,
+                   "order"              : 27,
                    "spreadsheet heading": "Amoxicillin method",
                    "display name"       : "Amoxicillin method",
                    "filter type"        : "discrete"
@@ -234,7 +242,7 @@
                 {  "name"               : "cefotaxime",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 27,
+                   "order"              : 28,
                    "spreadsheet heading": "Cefotaxime",
                    "display name"       : "Cefotaxime",
                    "filter type"        : "discrete"
@@ -242,7 +250,7 @@
                 {  "name"               : "AST_method_cefotaxime",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 28,
+                   "order"              : 29,
                    "spreadsheet heading": "Cefotaxime_method",
                    "display name"       : "Cefotaxime method",
                    "filter type"        : "discrete"
@@ -250,7 +258,7 @@
                 {  "name"               : "ceftriaxone",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 29,
+                   "order"              : 30,
                    "spreadsheet heading": "Ceftriaxone",
                    "display name"       : "Ceftriaxone",
                    "filter type"        : "discrete"
@@ -258,7 +266,7 @@
                 {  "name"               : "AST_method_ceftriaxone",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 30,
+                   "order"              : 31,
                    "spreadsheet heading": "Ceftriaxone_method",
                    "display name"       : "Ceftriaxone method",
                    "filter type"        : "discrete"
@@ -266,7 +274,7 @@
                 {  "name"               : "cefuroxime",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 31,
+                   "order"              : 32,
                    "spreadsheet heading": "Cefuroxime",
                    "display name"       : "Cefuroxime",
                    "filter type"        : "discrete"
@@ -274,7 +282,7 @@
                 {  "name"               : "AST_method_cefuroxime",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 32,
+                   "order"              : 33,
                    "spreadsheet heading": "Cefuroxime_method",
                    "display name"       : "Cefuroxime method",
                    "filter type"        : "discrete"
@@ -282,7 +290,7 @@
                 {  "name"               : "Meropenem",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 33,
+                   "order"              : 34,
                    "spreadsheet heading": "Meropenem",
                    "display name"       : "Meropenem",
                    "filter type"        : "discrete"
@@ -290,7 +298,7 @@
                 {  "name"               : "AST_method_meropenem",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 34,
+                   "order"              : 35,
                    "spreadsheet heading": "Meropenem_method",
                    "display name"       : "Meropenem method",
                    "filter type"        : "discrete"
@@ -298,7 +306,7 @@
                 {  "name"               : "erythromycin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 35,
+                   "order"              : 36,
                    "spreadsheet heading": "Erythromycin",
                    "display name"       : "Erythromycin",
                    "filter type"        : "discrete"
@@ -306,7 +314,7 @@
                 {  "name"               : "AST_method_erythromycin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 36,
+                   "order"              : 37,
                    "spreadsheet heading": "Erythromycin_method",
                    "display name"       : "Erythromycin method",
                    "filter type"        : "discrete"
@@ -314,7 +322,7 @@
                 {  "name"               : "clindamycin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 37,
+                   "order"              : 38,
                    "spreadsheet heading": "Clindamycin",
                    "display name"       : "Clindamycin",
                    "filter type"        : "discrete"
@@ -322,7 +330,7 @@
                 {  "name"               : "AST_method_clindamycin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 38,
+                   "order"              : 39,
                    "spreadsheet heading": "Clindamycin_method",
                    "display name"       : "Clindamycin method",
                    "filter type"        : "discrete"
@@ -330,7 +338,7 @@
                 {  "name"               : "trim/sulfa",
                    "default"            : false,
                    "display"            : true,
-                   "order"              : 39,
+                   "order"              : 40,
                    "spreadsheet heading": "Trim/Sulfa",
                    "display name"       : "Trim/Sulfa",
                    "filter type"        : "discrete"
@@ -338,7 +346,7 @@
                 {  "name"               : "AST_method_trim/sulfa",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 40,
+                   "order"              : 41,
                    "spreadsheet heading": "Trim/Sulfa_method",
                    "display name"       : "Trim/Sulfa method",
                    "filter type"        : "discrete"
@@ -346,7 +354,7 @@
                 {  "name"               : "vancomycinn",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 41,
+                   "order"              : 42,
                    "spreadsheet heading": "Vancomycin",
                    "display name"       : "Vancomycin",
                    "filter type"        : "discrete"
@@ -354,7 +362,7 @@
                 {  "name"               : "AST_method_vancomycin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 42,
+                   "order"              : 43,
                    "spreadsheet heading": "Vancomycin_method",
                    "display name"       : "Vancomycin method",
                    "filter type"        : "discrete"
@@ -362,7 +370,7 @@
                 {  "name"               : "linezolid",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 43,
+                   "order"              : 44,
                    "spreadsheet heading": "Linezolid",
                    "display name"       : "Linezolid",
                    "filter type"        : "discrete"
@@ -370,7 +378,7 @@
                 {  "name"               : "AST_method_linezolid",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 44,
+                   "order"              : 45,
                    "spreadsheet heading": "Linezolid_method",
                    "display name"       : "Linezolid method",
                    "filter type"        : "discrete"
@@ -378,7 +386,7 @@
                 {  "name"               : "ciprofloxacin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 45,
+                   "order"              : 46,
                    "spreadsheet heading": "Ciprofloxacin",
                    "display name"       : "Ciprofloxacin",
                    "filter type"        : "discrete"
@@ -386,7 +394,7 @@
                 {  "name"               : "AST_method_ciprofloxacin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 46,
+                   "order"              : 47,
                    "spreadsheet heading": "Ciprofloxacin_method",
                    "display name"       : "Ciprofloxacin method",
                    "filter type"        : "discrete"
@@ -394,7 +402,7 @@
                 {  "name"               : "chloramphenicol",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 47,
+                   "order"              : 48,
                    "spreadsheet heading": "Chloramphenicol",
                    "display name"       : "Chloramphenicol",
                    "filter type"        : "discrete"
@@ -402,7 +410,7 @@
                 {  "name"               : "AST_method_chloramphenicol",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 48,
+                   "order"              : 49,
                    "spreadsheet heading": "Chloramphenicol_method",
                    "display name"       : "Chloramphenicol method",
                    "filter type"        : "discrete"
@@ -410,7 +418,7 @@
                 {  "name"               : "tetracycline",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 49,
+                   "order"              : 50,
                    "spreadsheet heading": "Tetracycline",
                    "display name"       : "Tetracyclined",
                    "filter type"        : "discrete"
@@ -418,7 +426,7 @@
                 {  "name"               : "AST_method_tetracycline",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 50,
+                   "order"              : 51,
                    "spreadsheet heading": "Tetracycline_method",
                    "display name"       : "Tetracycline method",
                    "filter type"        : "discrete"
@@ -426,7 +434,7 @@
                 {  "name"               : "levofloxacin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 51,
+                   "order"              : 52,
                    "spreadsheet heading": "Levofloxacin",
                    "display name"       : "Levofloxacin",
                    "filter type"        : "discrete"
@@ -434,7 +442,7 @@
                 {  "name"               : "AST_method_levofloxacin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 52,
+                   "order"              : 53,
                    "spreadsheet heading": "Levofloxacin_method",
                    "display name"       : "Levofloxacin method",
                    "filter type"        : "discrete"
@@ -442,7 +450,7 @@
                 {  "name"               : "synercid",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 53,
+                   "order"              : 54,
                    "spreadsheet heading": "Synercid",
                    "display name"       : "Synercid",
                    "filter type"        : "discrete"
@@ -450,7 +458,7 @@
                 {  "name"               : "AST_method_synercid",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 54,
+                   "order"              : 55,
                    "spreadsheet heading": "Synercid_method",
                    "display name"       : "Synercid method",
                    "filter type"        : "discrete"
@@ -458,7 +466,7 @@
                 {  "name"               : "rifampin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 55,
+                   "order"              : 56,
                    "spreadsheet heading": "Rifampin",
                    "display name"       : "Rifampin",
                    "filter type"        : "discrete"
@@ -466,7 +474,7 @@
                 {  "name"               : "AST_method_rifampin",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 56,
+                   "order"              : 57,
                    "spreadsheet heading": "Rifampin_method",
                    "display name"       : "Rifampin method",
                    "filter type"        : "discrete"
@@ -478,7 +486,7 @@
                 {  "name"               : "aroe",
                    "display"            : true,
                    "default"            : true,
-                   "order"              : 57,
+                   "order"              : 58,
                    "spreadsheet heading": "aroe",
                    "display name"       : "aroe",
                    "filter type"        : "discrete"
@@ -486,7 +494,7 @@
                 {  "name"               : "gdh",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 58,
+                   "order"              : 59,
                    "spreadsheet heading": "gdh",
                    "display name"       : "gdh",
                    "filter type"        : "discrete"
@@ -494,7 +502,7 @@
                 {  "name"               : "gki",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 59,
+                   "order"              : 60,
                    "spreadsheet heading": "gki",
                    "display name"       : "gki",
                    "filter type"        : "discrete"
@@ -502,7 +510,7 @@
                 {  "name"               : "recp",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 60,
+                   "order"              : 61,
                    "spreadsheet heading": "recp",
                    "display name"       : "recp",
                    "filter type"        : "discrete"
@@ -510,7 +518,7 @@
                 {  "name"               : "spi",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 61,
+                   "order"              : 62,
                    "spreadsheet heading": "spi",
                    "display name"       : "spi",
                    "filter type"        : "discrete"
@@ -518,7 +526,7 @@
                 {  "name"               : "xpt",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 62,
+                   "order"              : 63,
                    "spreadsheet heading": "xpt",
                    "display name"       : "xpt",
                    "filter type"        : "discrete"
@@ -526,7 +534,7 @@
                 {  "name"               : "ddl",
                    "display"            : true,
                    "default"            : false,
-                   "order"              : 63,
+                   "order"              : 64,
                    "spreadsheet heading": "ddl",
                    "display name"       : "ddl",
                    "filter type"        : "discrete"
@@ -538,7 +546,7 @@
                 {  "name"               : "comments",
                     "display"            : true,
                     "default"            : true,
-                    "order"              : 64,
+                    "order"              : 65,
                     "spreadsheet heading": "Comments",
                     "display name"       : "Comments",
                     "filter type"        : "discrete"
@@ -546,7 +554,7 @@
                  {  "name"               : "vaccine_period",
                     "display"            : true,
                     "default"            : true,
-                    "order"              : 65,
+                    "order"              : 66,
                     "spreadsheet heading": "Vaccine_Period",
                     "display name"       : "Vaccine Period",
                     "filter type"        : "discrete"
@@ -554,7 +562,7 @@
                  {  "name"               : "intro_year",
                     "display"            : true,
                     "default"            : true,
-                    "order"              : 66,
+                    "order"              : 67,
                     "spreadsheet heading": "Intro_Year",
                     "display name"       : "Intro Year",
                     "filter type"        : "discrete"
@@ -562,7 +570,7 @@
                  {  "name"               : "PCV_type",
                     "display"            : true,
                     "default"            : true,
-                    "order"              : 67,
+                    "order"              : 68,
                     "spreadsheet heading": "PCV_Type",
                     "display name"       : "PCV_Type",
                     "filter type"        : "discrete"
@@ -570,7 +578,7 @@
                  {  "name"               : "resolution",
                     "display"            : true,
                     "default"            : true,
-                    "order"              : 68,
+                    "order"              : 69,
                     "spreadsheet heading": "Resolution",
                     "display name"       : "Resolution",
                     "filter type"        : "discrete"
