@@ -48,7 +48,7 @@
       instKeyBatchDatePairs: batches,
       filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
       ...formValues,
-      maxSamplesPerZip: Number(sizeSelectorElement.value)
+      maxSamplesPerZip: Number(sizeSelectorElement?.value)
     }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
