@@ -1,12 +1,10 @@
 import json
 import logging
-import urllib.request
 from copy import deepcopy
-from datetime import datetime
 from os import environ
 from pathlib import Path, PurePath
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import patch
 from urllib.error import HTTPError
 
 import yaml
@@ -20,8 +18,6 @@ from DataSources.metadata_download import MetadataDownload, Monocle_Download_Cli
 from DataSources.pipeline_status import PipelineStatus
 from DataSources.sample_metadata import Monocle_Client, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
-from DataSources.user_data import UserData
-from pandas.errors import MergeError
 from utils.file import format_file_size
 
 INSTITUTION_KEY = "GenWel"
@@ -30,7 +26,7 @@ PUBLIC_NAME = "SCN9A"
 
 class MonocleSampleDataTest(TestCase):
 
-    test_field_attributes = "dash/tests/mock_data/field_attributes.json"
+    test_field_attributes = "dash/tests/mock_data/juno_field_attributes.json"
     test_field_attributes_bad = "dash/tests/mock_data/field_attributes_bad.json"
 
     test_config = "dash/tests/mock_data/data_sources.yml"
@@ -620,7 +616,7 @@ class MonocleSampleDataTest(TestCase):
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
         with self.assertRaises(json.decoder.JSONDecodeError):
-            json_returned = doomed.get_field_attributes()
+            json_returned = doomed.get_field_attributes()  # noqa: ignore=F841
 
     @patch.object(Path, "exists", return_value=True)
     @patch.object(MonocleSampleData, "_get_file_size")
@@ -847,7 +843,7 @@ class MonocleSampleDataTest(TestCase):
         (note if start_row is not defined, num_rows is simply ignored)
         """
         with self.assertRaises(AssertionError):
-            filtered_samples_metadata = self.monocle_data.get_metadata(
+            filtered_samples_metadata = self.monocle_data.get_metadata(  # noqa: ignore=F841
                 {"batches": self.inst_key_batch_date_pairs}, metadata_columns=["public_name"], start_row=2
             )
 
@@ -1075,10 +1071,6 @@ class MonocleSampleDataTest(TestCase):
             monocle_data_with_bad_config.get_bulk_download_route()
 
     def test_get_bulk_download_max_samples_per_zip(self):
-        download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip()
-        self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
-
-    def test_get_bulk_download_max_samples_per_zip(self):
         download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip(including_reads=False)
         self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
 
@@ -1165,7 +1157,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_csv_download_reject_invalid_download_params(self):
         # missing download_links `hostname` key
         with self.assertRaises(KeyError):
-            metadata_download = self.monocle_data.get_csv_download(
+            metadata_download = self.monocle_data.get_csv_download(  # noqa: ignore=F841
                 "any_name.csv",
                 {"mock filter name": "mock filter value"},
                 download_links={"institution": "any institution"},
