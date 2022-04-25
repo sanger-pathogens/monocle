@@ -1,4 +1,5 @@
-import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST } from "$lib/constants.js";
+import { browser } from "$app/env";
+import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST, PATHNAME_LOGIN } from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
@@ -169,6 +170,10 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+  if (!authenticated && browser) {
+    window.location.href = PATHNAME_LOGIN;
+    return;
+  }
   return (fetchOptions ?
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)

@@ -3,12 +3,12 @@
   import { browser } from "$app/env";
   import { beforeNavigate, goto } from "$app/navigation";
   import { getStores } from "$app/stores";
+  import { PATHNAME_LOGIN } from "$lib/constants.js";
   import { getUserDetails } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
 
-  const PATHNAME_LOGIN = "/login";
   const RE_AUTH_COOKIE_NAME = /(^| )nginxauth=([^;]+)/;
 
   const { session } = getStores();

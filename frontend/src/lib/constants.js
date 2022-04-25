@@ -15,4 +15,6 @@ export const HTTP_HEADERS_JSON = { "Content-Type": "application/json" };
 export const LOCAL_STORAGE_KEY_COLUMNS_STATE = "columnsState_2";
 export const LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE = ["columnsState", "columnsState_1"];
 
+export const PATHNAME_LOGIN = "/login";
+
 export const USER_ROLE_ADMIN = "admin";
