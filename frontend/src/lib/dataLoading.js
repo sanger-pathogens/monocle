@@ -1,4 +1,11 @@
-import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST } from "$lib/constants.js";
+import { browser } from "$app/env";
+import {
+  DATA_TYPES,
+  HTTP_HEADERS_JSON,
+  HTTP_POST,
+  HTTP_STATUS_CODE_UNAUTHORIZED,
+  PATHNAME_LOGIN
+} from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
@@ -173,8 +180,13 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
   )
-    .then((response) =>
-      response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
+    .then((response) => {
+      if (response.status === HTTP_STATUS_CODE_UNAUTHORIZED && browser) {
+        window.location.href = PATHNAME_LOGIN;
+        return;
+      }
+      return response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`);
+    })
     .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
     .catch((err) => handleFetchError(err, endpoint, resourceKey));
 }
