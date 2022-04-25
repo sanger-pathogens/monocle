@@ -27,7 +27,7 @@ PUBLIC_NAME = "SCN9A"
 class MonocleSampleDataTest(TestCase):
 
     test_field_attributes = "dash/tests/mock_data/juno_field_attributes.json"
-    test_field_attributes_bad = "dash/tests/mock_data/field_attributes_bad.json"
+    test_field_attributes_bad = "dash/tests/mock_data/juno_field_attributes_bad.json"
 
     test_config = "dash/tests/mock_data/data_sources.yml"
     test_config_bad = "dash/tests/mock_data/data_sources_bad.yml"
