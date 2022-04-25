@@ -1,17 +1,14 @@
-import errno
 import json
 import logging
-import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import defaultdict
 from copy import deepcopy
-from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONE, QUOTE_NONNUMERIC
+from csv import QUOTE_NONNUMERIC
 from datetime import datetime
 from functools import reduce
-from os import environ, path
-from pathlib import Path, PurePath
+from os import environ
+from pathlib import Path
 from uuid import uuid4
 
 import DataServices.sample_tracking_services
@@ -63,6 +60,8 @@ class MonocleSampleData:
         MonocleSampleTracking_ref=None,
         set_up=True,
     ):
+        self.user_record = None
+        self.current_project = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
         self.metadata_field_config_name = metadata_field_config
@@ -175,7 +174,7 @@ class MonocleSampleData:
             last_sample_row_returned = (start_row - 1) + len(filtered_samples)
         logging.info(
             "pagination (start {}, num {}) working with {} samples".format(
-                __class__.__name__, start_row, num_rows, len(filtered_samples)
+                __class__.__name__, start_row, len(filtered_samples)
             )
         )
 
@@ -579,7 +578,7 @@ class MonocleSampleData:
                     # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                     for this_key in list(sample.keys()):
                         if "lanes" == this_key:
-                            sample[this_key] = [l["id"] for l in sample[this_key]]
+                            sample[this_key] = [lane["id"] for lane in sample[this_key]]
                         elif this_key not in ["creation_datetime", "inst_key", "public_name", "sanger_sample_id"]:
                             del sample[this_key]
                     # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
@@ -865,19 +864,19 @@ class MonocleSampleData:
         institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
-        if not institution in institution_names:
+        if institution not in institution_names:
             message = 'institution "{}" passed, but should be one of "{}"'.format(
                 institution, '", "'.join(institution_names)
             )
             logging.error("Invalid request to {}: {}".format(__class__.__name__, message))
             return {"success": False, "error": "request", "message": message}
-        if not category in categories:
+        if category not in categories:
             message = 'Invalid request to {}: category "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, category, '", "'.join(categories)
             )
             logging.error(message)
             raise RuntimeError(message)
-        if not status in statuses:
+        if status not in statuses:
             message = 'Invalid request to {}: status "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, status, '", "'.join(statuses)
             )
