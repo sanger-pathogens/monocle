@@ -41,7 +41,10 @@ class MonocleSampleData:
     """
 
     default_data_source_config = "data_sources.yml"
-    default_metadata_field_config = "field_attributes.json"
+    default_metadata_field_configs = {
+        "juno": "juno_field_attributes.json",
+        "gps": "gps_field_attributes.json",
+    }
     sample_table_inst_key = "submitting_institution"
     # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
     # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
@@ -56,7 +59,7 @@ class MonocleSampleData:
     def __init__(
         self,
         data_source_config=default_data_source_config,
-        metadata_field_config=default_metadata_field_config,
+        metadata_field_configs=default_metadata_field_configs,
         MonocleSampleTracking_ref=None,
         set_up=True,
     ):
@@ -64,11 +67,19 @@ class MonocleSampleData:
         self.current_project = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
-        self.metadata_field_config_name = metadata_field_config
-        # check config files exist
-        for this_file in [self.data_source_config_name, self.metadata_field_config_name]:
+        if not Path(self.data_source_config_name).is_file():
+            return self._download_config_error(
+                "data source config file {} is missing".format(self.data_source_config_name)
+            )
+        self.metadata_field_config_files = metadata_field_configs
+        missing_metadata_config = []
+        for this_file in self.metadata_field_config_files.values():
             if not Path(this_file).is_file():
-                return self._download_config_error("config file {} is missing".format(this_file))
+                missing_metadata_config.append(this_file)
+        if len(missing_metadata_config) > 0:
+            return self._download_config_error(
+                "metadata field config file(s) {} are missing".format(missing_metadata_config)
+            )
 
         # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
         # if one wasn't passed, create one now
@@ -88,7 +99,12 @@ class MonocleSampleData:
         """
         Return field attributes JSON object
         """
-        with open(self.metadata_field_config_name, "r") as json_file:
+        metadata_attribute_file = self.metadata_field_config_files.get(self.current_project)
+        if metadata_attribute_file is None:
+            raise ValueError(
+                'The current project "{}" does not have a metadata field attributes file'.format(self.current_project)
+            )
+        with open(metadata_attribute_file, "r") as json_file:
             field_attributes = json.load(json_file)
 
         return field_attributes
