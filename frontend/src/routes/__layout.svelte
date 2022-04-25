@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { browser } from "$app/env";
-  import { beforeNavigate, goto } from "$app/navigation";
+  import { beforeNavigate } from "$app/navigation";
   import { getStores } from "$app/stores";
   import { getUserDetails } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
@@ -37,11 +37,11 @@
     console.log(`authenticated: ${authenticated}; navigatingToLogin: ${navigatingToLogin}`);
     if (!authenticated && !navigatingToLogin) {
       cancel();
-      goto(PATHNAME_LOGIN);
+      window.location.href = PATHNAME_LOGIN;
     }
     else if (authenticated && navigatingToLogin) {
       cancel();
-      goto("/");
+      window.location.href = "/";
     }
   }
 </script>
