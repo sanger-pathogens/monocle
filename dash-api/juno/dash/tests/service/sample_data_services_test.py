@@ -526,7 +526,7 @@ class MonocleSampleDataTest(TestCase):
     monocle_sample_tracking = MonocleSampleTracking(set_up=False)
     monocle_data = MonocleSampleData(
         data_source_config=test_config,
-        metadata_field_config={mock_project_id: test_field_attributes},
+        metadata_field_configs={mock_project_id: test_field_attributes},
         MonocleSampleTracking_ref=monocle_sample_tracking,
     )
 
@@ -557,13 +557,13 @@ class MonocleSampleDataTest(TestCase):
         with self.assertRaises(DataSourceConfigError):
             MonocleSampleData(
                 data_source_config="no/such/file",
-                metadata_field_config={"any_key_only_values_should_be_checked": self.test_field_attributes},
+                metadata_field_configs={"any_key_only_values_should_be_checked": self.test_field_attributes},
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
         with self.assertRaises(DataSourceConfigError):
             MonocleSampleData(
                 data_source_config=self.test_config,
-                metadata_field_config={"any_key_only_values_should_be_checked": "no/such/file"},
+                metadata_field_configs={"any_key_only_values_should_be_checked": "no/such/file"},
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
 
@@ -615,7 +615,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_field_attributes_reject_no_project(self):
         doomed = MonocleSampleData(
             data_source_config=self.test_config,
-            metadata_field_config={"doomed_project": self.test_field_attributes_bad},
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
         # note that no doomed.current_project has been set
@@ -625,7 +625,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_field_attributes_reject_unknown_project(self):
         doomed = MonocleSampleData(
             data_source_config=self.test_config,
-            metadata_field_config={"doomed_project": self.test_field_attributes_bad},
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
         doomed.current_project = "unknown_project_id"
@@ -635,7 +635,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_field_attributes_reject_bad_json(self):
         doomed = MonocleSampleData(
             data_source_config=self.test_config,
-            metadata_field_config={"doomed_project": self.test_field_attributes_bad},
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
         doomed.current_project = "doomed_project"
