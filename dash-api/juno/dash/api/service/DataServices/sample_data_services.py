@@ -774,16 +774,25 @@ class MonocleSampleData:
             ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS if include_reads else ZIP_SIZE_OVERESTIMATE_FACTOR
         )
         zip_size_options = []
+        first_iteration = True
         while zip_size >= min_zip_size and max_samples_per_zip >= MIN_ZIP_NUM_SAMPLES_CAPACITY:
+            zip_size_with_weight = zip_size * zip_size_overestimate_factor
+            if first_iteration:
+                num_zips = ceil(num_samples / max_samples_per_zip)
+                # Avoid "overestimating" the size per ZIP when there is only one ZIP, as in that case
+                # the size is simply `total_zip_size`.
+                if num_zips == 1:
+                    zip_size_with_weight = total_zip_size
             zip_size_options.append(
                 {
                     "max_samples_per_zip": max_samples_per_zip,
-                    "size_per_zip": format_file_size(zip_size * zip_size_overestimate_factor),
+                    "size_per_zip": format_file_size(zip_size_with_weight),
                 }
             )
             max_samples_per_zip = ceil(max_samples_per_zip / factor)
             zip_size = zip_size / factor
             factor = factor * 2
+            first_iteration = False
         return zip_size_options
 
     def get_public_name_to_lane_files_dict(self, samples, **kwargs):
