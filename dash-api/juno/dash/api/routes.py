@@ -2,14 +2,12 @@ import errno
 import json
 import logging
 import os
-from copy import deepcopy
-from datetime import datetime
 from http import HTTPStatus
 from http.client import HTTPS_PORT
 from itertools import islice
+from math import ceil
 from pathlib import Path
 from time import sleep, time
-from typing import List
 from urllib.error import HTTPError
 from uuid import uuid4
 
@@ -237,19 +235,15 @@ def bulk_download_urls_route(body):
 
     # limit the number of samples to be included in each ZIP archive
     max_samples_per_zip = body.get("max samples per zip", None)
-    if max_samples_per_zip is not None:
-        if reads:
-            if max_samples_per_zip < 1:
-                max_samples_per_zip = 1
-    else:
+    if max_samples_per_zip is None:
         # if not passed, get value from config file
         max_samples_per_zip = monocle_data.get_bulk_download_max_samples_per_zip(including_reads=reads)
 
     download_url_list = []
     start = 0
     total = len(public_name_to_lane_files)
-    num_downloads = round((total / max_samples_per_zip + 0.5001))
-    samples_in_each = round((total / num_downloads + 0.5001))
+    num_downloads = ceil(total / max_samples_per_zip)
+    samples_in_each = ceil(total / num_downloads)
     while total > start:
         this_zip_archive_contents = dict(islice(public_name_to_lane_files.items(), start, (start + samples_in_each), 1))
         download_token = uuid4().hex
