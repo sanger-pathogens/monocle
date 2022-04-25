@@ -27,6 +27,8 @@ DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
+ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
+ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS = 1.15
 
 ASSEMBLY_FILE_SUFFIX = ".contigs_spades.fa"
 ANNOTATION_FILE_SUFFIX = ".spades.gff"
@@ -773,10 +775,16 @@ class MonocleSampleData:
         zip_size = sample_size * max_samples_per_zip
         min_zip_size = sample_size * MIN_ZIP_NUM_SAMPLES_CAPACITY
         factor = 4
+        zip_size_overestimate_factor = (
+            ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS if include_reads else ZIP_SIZE_OVERESTIMATE_FACTOR
+        )
         zip_size_options = []
         while zip_size >= min_zip_size and max_samples_per_zip >= MIN_ZIP_NUM_SAMPLES_CAPACITY:
             zip_size_options.append(
-                {"max_samples_per_zip": max_samples_per_zip, "size_per_zip": format_file_size(zip_size)}
+                {
+                    "max_samples_per_zip": max_samples_per_zip,
+                    "size_per_zip": format_file_size(zip_size * zip_size_overestimate_factor),
+                }
             )
             max_samples_per_zip = ceil(max_samples_per_zip / factor)
             zip_size = zip_size / factor
