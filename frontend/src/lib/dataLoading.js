@@ -170,9 +170,12 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
-  if (!authenticated && browser) {
-    window.location.href = PATHNAME_LOGIN;
-    return;
+  if (browser) {
+    const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
+    if (!authenticated) {
+      window.location.href = PATHNAME_LOGIN;
+      return;
+    }
   }
   return (fetchOptions ?
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
