@@ -22,6 +22,7 @@ from utils.file import format_file_size
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
+MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 2
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
 ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
@@ -768,14 +769,16 @@ class MonocleSampleData:
         )
         sample_size = total_zip_size / num_samples
         zip_size = sample_size * max_samples_per_zip
-        min_zip_size = sample_size * MIN_ZIP_NUM_SAMPLES_CAPACITY
-        factor = 4
-        zip_size_overestimate_factor = (
-            ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS if include_reads else ZIP_SIZE_OVERESTIMATE_FACTOR
+        min_zip_num_samples_capacity, zip_size_overestimate_factor = (
+            (MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS, ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS)
+            if include_reads
+            else (MIN_ZIP_NUM_SAMPLES_CAPACITY, ZIP_SIZE_OVERESTIMATE_FACTOR)
         )
+        min_zip_size = sample_size * min_zip_num_samples_capacity
+        factor = 4
         zip_size_options = []
         first_iteration = True
-        while zip_size >= min_zip_size and max_samples_per_zip >= MIN_ZIP_NUM_SAMPLES_CAPACITY:
+        while zip_size >= min_zip_size and max_samples_per_zip >= min_zip_num_samples_capacity:
             zip_size_with_weight = zip_size * zip_size_overestimate_factor
             if first_iteration:
                 num_zips = ceil(num_samples / max_samples_per_zip)
@@ -791,7 +794,7 @@ class MonocleSampleData:
             )
             max_samples_per_zip = ceil(max_samples_per_zip / factor)
             zip_size = zip_size / factor
-            factor = factor * 2
+            factor = factor * 1.4
             first_iteration = False
         return zip_size_options
 
