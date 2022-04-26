@@ -173,8 +173,11 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   if (browser) {
     const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
     if (!authenticated) {
-      window.location.href = PATHNAME_LOGIN;
-      return;
+      const onLoginPage = location.pathname.endsWith(PATHNAME_LOGIN);
+      if (!onLoginPage) {
+        window.location.href = PATHNAME_LOGIN;
+      }
+      return Promise.resolve({});
     }
   }
   return (fetchOptions ?
