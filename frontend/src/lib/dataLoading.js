@@ -1,5 +1,5 @@
 import { browser } from "$app/env";
-import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST, PATHNAME_LOGIN } from "$lib/constants.js";
+import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST, PATHNAME_LOGIN, RE_AUTH_COOKIE_NAME } from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
