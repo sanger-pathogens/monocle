@@ -594,7 +594,7 @@ class MonocleSampleData:
                     # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                     for this_key in list(sample.keys()):
                         if "lanes" == this_key:
-                            sample[this_key] = [lane["id"] for lane in sample[this_key]]
+                            sample[this_key] = [l_id["id"] for l_id in sample[this_key]]
                         elif this_key not in ["creation_datetime", "inst_key", "public_name", "sanger_sample_id"]:
                             del sample[this_key]
                     # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
