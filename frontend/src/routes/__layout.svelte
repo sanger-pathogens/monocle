@@ -32,7 +32,6 @@
   function redirectUnauthenticatedToLogin({ to, cancel }) {
     const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
     const navigatingToLogin = to && to.pathname.endsWith(PATHNAME_LOGIN);
-    console.log(`authenticated: ${authenticated}; navigatingToLogin: ${navigatingToLogin}`);
     if (!authenticated && !navigatingToLogin) {
       cancel();
       goto(PATHNAME_LOGIN);
