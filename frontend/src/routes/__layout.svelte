@@ -8,6 +8,7 @@
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
+  import "../simplecookie.css";
 
   const { session } = getStores();
 
@@ -17,6 +18,8 @@
   }
 
   onMount(() => {
+    appendScriptToHead("/files/simplecookie.min.js", { async: true });
+
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
@@ -39,6 +42,14 @@
       cancel();
       goto("/");
     }
+  }
+
+  function appendScriptToHead(src, options) {
+    const script = document.createElement("script");
+    script.src = src;
+    Object.keys(options).forEach((optionKey) =>
+      script[optionKey] = options[optionKey]);
+    document.head.appendChild(script);
   }
 </script>
 

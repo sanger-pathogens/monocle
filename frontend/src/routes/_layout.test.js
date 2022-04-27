@@ -7,6 +7,8 @@ import Layout from "./__layout.svelte";
 const AUTH_COOKIE = "nginxauth=fake-auth-token";
 const USER_ROLE = "support";
 
+getStores.mockReturnValue({ session: { set: jest.fn() } });
+
 global.fetch = jest.fn(() => Promise.resolve({
   ok: true,
   json: () => Promise.resolve({
@@ -31,7 +33,19 @@ beforeEach(() => {
   document.cookie = AUTH_COOKIE;
 });
 
+it("loads a script w/ simple-cookie library", () => {
+  document.head.appendChild = jest.fn();
+
+  render(Layout);
+
+  const actualScriptElement = document.head.appendChild.mock.calls[3][0];
+  expect(actualScriptElement.src).toBe(`${global.location.origin}/files/simplecookie.min.js`);
+  expect(actualScriptElement.async).toBeTruthy();
+});
+
 it("stores a fetched user role in the session", async () => {
+  fetch.mockClear();
+
   render(Layout);
 
   expect(fetch).toHaveBeenCalledTimes(1);

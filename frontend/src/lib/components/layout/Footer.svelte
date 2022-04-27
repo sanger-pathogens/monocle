@@ -25,7 +25,7 @@ footer {
   background: var(--juno-purple);
   color: white;
   margin-top: auto;
-  padding: 1.4rem;
+  padding: 1.4rem 1.4rem 1.8rem;
 }
 
 .max-inner-width {
