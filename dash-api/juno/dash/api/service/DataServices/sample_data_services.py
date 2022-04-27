@@ -22,7 +22,7 @@ from utils.file import format_file_size
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
-MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 2
+MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
 ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
@@ -794,7 +794,7 @@ class MonocleSampleData:
             )
             max_samples_per_zip = ceil(max_samples_per_zip / factor)
             zip_size = zip_size / factor
-            factor = factor * 1.4
+            factor = factor * 1.2
             first_iteration = False
         return zip_size_options
 
