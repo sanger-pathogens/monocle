@@ -54,9 +54,8 @@ Dashboard API docker build:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-${DASH_API_CONTEXT}"
-         this_context = "${DASH_API_CONTEXT}/juno"
-         cd "${CI_PROJECT_DIR}/${this_context}";
+         this_image="monocle-${DASH_API_CONTEXT}";
+         cd "${CI_PROJECT_DIR}/${DASH_API_CONTEXT}/juno";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -80,9 +79,8 @@ Metadata API docker build:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-${METADATA_CONTEXT}"
-         this_context = "${METADATA_CONTEXT}/juno"
-         cd "${CI_PROJECT_DIR}/${this_context}";
+         this_image="monocle-${METADATA_CONTEXT}";
+         cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}/juno";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -106,9 +104,8 @@ Front End docker build:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-${FRONTEND_CONTEXT}"
-         this_context = "${FRONTEND_CONTEXT}"
-         cd "${CI_PROJECT_DIR}/${this_context}";
+         this_image="monocle-${FRONTEND_CONTEXT}";
+         cd "${CI_PROJECT_DIR}/${FRONTEND_CONTEXT}";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -132,9 +129,8 @@ Proxy docker build:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-proxy"
-         this_context = "proxy"
-         cd "${CI_PROJECT_DIR}/${this_context}";
+         this_image="monocle-proxy";
+         cd "${CI_PROJECT_DIR}/proxy";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -158,9 +154,8 @@ LDAP Admin docker build:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-ldap-admin"
-         this_context = "ldap-admin"
-         cd "${CI_PROJECT_DIR}/${this_context}";
+         this_image="monocle-ldap-admin";
+         cd "${CI_PROJECT_DIR}/ldap-admin";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
