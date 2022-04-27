@@ -16,6 +16,7 @@
     logIn(username, password, fetch)
       .then((response) => {
         if (response.redirected) {
+          // We don't use SvelteKit's `goto` here to force `__layout` to re-fetch user deatils after the login.
           window.location.href = response.url;
         }
       })

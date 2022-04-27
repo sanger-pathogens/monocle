@@ -1,9 +1,6 @@
-<script context="module">
-  const URL_PATH_NAME_LOGIN = "/login";
-</script>
-
 <script>
   import { browser } from "$app/env";
+  import { PATHNAME_LOGIN } from "$lib/constants.js";
 </script>
 
 
@@ -18,7 +15,7 @@
     <a href="https://www.gbsgen.net/#partners" target="_blank">Partners</a>
     <a href="https://www.gbsgen.net/#twitterFeed" target="_blank">News</a>
     <a href="https://www.gbsgen.net/#funders" target="_blank">Funders</a>
-    {#if browser && location && !location.pathname.includes(URL_PATH_NAME_LOGIN)}
+    {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
       <a rel="external" href="/logout" class="login-out-link">
         Log out
       </a>
