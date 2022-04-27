@@ -1,5 +1,5 @@
 <script>
-  import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js"
+  import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js";
 
   let username;
   let password;

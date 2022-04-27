@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js"
+import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js";
 import LoginPage from "./index.svelte";
 
 const LABEL_LOG_IN = "Log in";
@@ -98,7 +98,7 @@ it("redirects to the URL from a response on submit", async () => {
   const expectedRedirectUrl = `${baseUrl}/some-path`;
   fetch.mockResolvedValueOnce({ redirected: true, url: expectedRedirectUrl });
   delete global.location;
-  global.location = new URL(baseUrl)
+  global.location = new URL(baseUrl);
   fireEvent.input(getByLabelText(LABEL_USERNAME), { target: { value: USERNAME } });
   await fireEvent.input(getByLabelText(LABEL_PASSWORD), { target: { value: PASSWORD } });
 
