@@ -14,20 +14,21 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-env": "^7.16.11",
     "@sveltejs/adapter-node": "^1.0.0-next.73",
     "@sveltejs/kit": "^1.0.0-next.317",
-    "@testing-library/svelte": "^3.0.3",
-    "babel-jest": "^27.5.1",
+    "@testing-library/svelte": "^3.1.1",
+    "babel-jest": "^28.0.2",
     "babel-plugin-transform-vite-meta-env": "^1.0.3",
-    "eslint": "^7.32.0",
-    "eslint-plugin-jest": "^24.7.0",
+    "eslint": "^8.14.0",
+    "eslint-plugin-jest": "^26.1.5",
     "eslint-plugin-svelte3": "^3.4.1",
     "frappe-charts": "^1.6.2",
-    "jest": "^27.5.1",
+    "jest": "^28.0.2",
+    "jest-environment-jsdom": "^28.0.2",
     "svelte": "^3.47.0",
     "svelte-jester": "^2.3.2",
-    "svelte-select": "^4.4.6"
+    "svelte-select": "^4.4.7"
   },
   "_id": "Monocle frontend@0.0.1",
   "jest": {
