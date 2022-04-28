@@ -170,16 +170,22 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+  console.log(`browser: ${browser}`);
   if (browser) {
     const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
+    console.log(`authenticated: ${!!authenticated}`);
     if (!authenticated) {
       const onLoginPage = window.location.pathname.endsWith(PATHNAME_LOGIN);
       if (!onLoginPage) {
+        console.log("redirecting to the login page...");
+        debugger;
         window.location.href = PATHNAME_LOGIN;
       }
       return Promise.resolve({});
     }
   }
+  console.log(`API call to ${endpoint}`);
+  debugger;
   return (fetchOptions ?
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
