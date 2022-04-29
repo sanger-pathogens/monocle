@@ -14,6 +14,9 @@ class MonocleAuthentication:
     def get_auth_token(self, username_provided, password_provided):
         return self.user_authentication.get_auth_token(username_provided, password_provided)
 
+    def get_username_from_token(self, auth_token):
+        return self.user_authentication.get_username_from_token(auth_token)
+
 
 class MonocleUser:
     """

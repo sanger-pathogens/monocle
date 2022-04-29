@@ -1,6 +1,6 @@
 import copy
 import logging
-from base64 import b64encode
+from base64 import b64decode, b64encode
 
 import ldap
 import yaml
@@ -11,14 +11,31 @@ class UserAuthentication:
     Methods related to user authentication
     """
 
-    def get_auth_token(self, username_provided, password_provided, encoding="utf8"):
+    default_token_encoding = "utf8"
+    token_delimiter = ":"
+
+    def get_auth_token(self, username_provided, password_provided, encoding=default_token_encoding):
         """
         Pass username and password supplited by the user.  Optionally pass encodung (defaults to UTF-8).
         Returns token that should be used as the authentication cookie value, as used by the NGINX authentication module.
         """
-        username_password_bytes = ":".join([username_provided, password_provided]).encode(encoding)
+        username_password_bytes = self.token_delimiter.join([username_provided, password_provided]).encode(encoding)
         token_bytes = b64encode(username_password_bytes)
         return token_bytes.decode(encoding)
+
+    def get_username_from_token(self, auth_token, encoding=default_token_encoding):
+        """
+        Pass a token.  Optionally pass encodung (defaults to UTF-8).
+        This method does NOT do any authentication.  It just gets the username provided by the user
+        when the token was created.
+        Returns the username.
+        """
+        if auth_token is None or 0 == len(auth_token):
+            logging.warning("Asked to extract username from empty auth token")
+            return auth_token
+        username_password_bytes = b64decode(auth_token)
+        username_provided = username_password_bytes.decode(encoding).split(self.token_delimiter)[0]
+        return username_provided
 
 
 class UserDataError(Exception):
@@ -84,7 +101,7 @@ class UserData:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             self.config = data_sources[self.data_source]
             for required_param in self.required_config_params:
-                if not required_param in self.config:
+                if required_param not in self.config:
                     logging.error(
                         "data source config file {} does not provide the required parameter {}.{}".format(
                             config_file_name, self.data_source, required_param
@@ -104,7 +121,7 @@ class UserData:
         with open(config_file_name, "r") as file:
             openldap_config = yaml.load(file, Loader=yaml.FullLoader)
             for required_param in self.required_openldap_params:
-                if not required_param in openldap_config:
+                if required_param not in openldap_config:
                     logging.error(
                         "OpenLDAP config file {} does not provide the required parameter {}".format(
                             config_file_name, required_param
@@ -301,7 +318,7 @@ class UserData:
                         gid, required_attr, result
                     )
                 )
-                raise UserDataError("group doesn't contain the required attribute {}".format(gid, required_attr))
+                raise UserDataError("group {} doesn't contain the required attribute {}".format(gid, required_attr))
         logging.debug("found group: {}".format(result))
         return result
 

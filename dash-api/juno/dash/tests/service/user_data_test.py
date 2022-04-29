@@ -26,6 +26,18 @@ class MonocleUserAuthenticationTest(TestCase):
         actual_token = self.userauth.get_auth_token(mock_username, mock_password)
         self.assertEqual(expected_token, actual_token)
 
+    def test_get_username_from_token_ascii(self):
+        mock_token = "dGVzdF91c2VyOnRlc3RfcGFzc3dvcmQ="
+        expected_username = "test_user"
+        actual_username = self.userauth.get_username_from_token(mock_token, encoding="ascii")
+        self.assertEqual(expected_username, actual_username)
+
+    def test_get_username_from_token_utf8(self):
+        mock_token = "dGVzdF91c2VyOnRlc3RfcMODc3N3b3Jk"
+        expected_username = "test_user"
+        actual_username = self.userauth.get_username_from_token(mock_token)
+        self.assertEqual(expected_username, actual_username)
+
 
 class MonocleUserDataTest(TestCase):
 

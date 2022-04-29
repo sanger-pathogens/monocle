@@ -2,14 +2,11 @@ import errno
 import json
 import logging
 import os
-from copy import deepcopy
-from datetime import datetime
 from http import HTTPStatus
 from http.client import HTTPS_PORT
 from itertools import islice
 from pathlib import Path
 from time import sleep, time
-from typing import List
 from urllib.error import HTTPError
 from uuid import uuid4
 
@@ -82,48 +79,48 @@ def delete_auth_cookie_route():
 
 def get_user_details_route():
     """Given a username retrieve all details for that user"""
-    data = ServiceFactory.user_service(get_authenticated_username(request)).user_details
+    data = ServiceFactory.user_service(get_authenticated_username()).user_details
     response_dict = {"user_details": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_batches_route():
     """Get dashboard batch information"""
-    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_batches()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username()).get_batches()
     response_dict = {"batches": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_institutions_route():
     """Get a list of institutions"""
-    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_institutions()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username()).get_institutions()
     response_dict = {"institutions": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_progress_route():
     """Get dashboard progress graph information"""
-    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).get_progress()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username()).get_progress()
     response_dict = {"progress_graph": {"data": data}}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def sequencing_status_summary_route():
     """Get dashboard sequencing status summary information"""
-    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).sequencing_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username()).sequencing_status_summary()
     response_dict = {"sequencing_status": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def pipeline_status_summary_route():
     """Get dashboard pipeline status summary information"""
-    data = ServiceFactory.sample_tracking_service(get_authenticated_username(request)).pipeline_status_summary()
+    data = ServiceFactory.sample_tracking_service(get_authenticated_username()).pipeline_status_summary()
     response_dict = {"pipeline_status": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def get_field_attributes_route():
-    data = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
+    data = ServiceFactory.sample_data_service(get_authenticated_username()).get_field_attributes()
     response_dict = {"field_attributes": data}
     return call_jsonify(response_dict), HTTPStatus.OK
 
@@ -145,7 +142,7 @@ def get_metadata_route(body):
             # this is because the sample filters could match samples from multiple institutions, and download
             # links for multiple institutions are not currently supported with CSV metadata downloads
             return _metadata_as_csv_response(
-                ServiceFactory.sample_data_service(get_authenticated_username(request)).get_csv_download(
+                ServiceFactory.sample_data_service(get_authenticated_username()).get_csv_download(
                     csv_filename, sample_filters
                 )
             )
@@ -157,7 +154,7 @@ def get_metadata_route(body):
                 in_silico_columns = None
             if "_ALL" == qc_data_columns[0]:
                 qc_data_columns = None
-            metadata = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_metadata(
+            metadata = ServiceFactory.sample_data_service(get_authenticated_username()).get_metadata(
                 sample_filters,
                 start_row=body.get("start row", None),
                 num_rows=body.get("num rows", defaults["num rows"]),
@@ -183,7 +180,7 @@ def get_metadata_route(body):
 def get_distinct_values_route(body):
     """Return distinct values found in metadata, in silico or QC data fields"""
     logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
-    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
+    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username())
     field_types = ["metadata", "in silico", "qc data"]
 
     fields_list = body["fields"]
@@ -233,7 +230,7 @@ def bulk_download_info_route(body):
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
 
     try:
-        download_info = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_bulk_download_info(
+        download_info = ServiceFactory.sample_data_service(get_authenticated_username()).get_bulk_download_info(
             sample_filters, assemblies=assemblies, annotations=annotations, reads=reads
         )
     except HTTPError as e:
@@ -252,7 +249,7 @@ def bulk_download_urls_route(body):
     logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
     sample_filters, assemblies, annotations, reads = _parse_BulkDownloadInput(body)
     try:
-        monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
+        monocle_data = ServiceFactory.sample_data_service(get_authenticated_username())
         samples = monocle_data.get_filtered_samples(sample_filters)
     # catch 404 and 400s from metadata API
     except HTTPError as e:
@@ -336,7 +333,7 @@ def data_download_route(token: str):
             __name__, token, type(redirect_wanted), redirect_wanted
         )
     )
-    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username(request))
+    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username())
 
     logging.info("Data download request headers:\n{}".format(call_request_headers()))
 
@@ -432,7 +429,7 @@ def get_metadata_for_download_route(institution: str, category: str, status: str
     should deal with the response (e.g. by opening a spreadsheet application and loading the data into it).
     """
     return _metadata_as_csv_response(
-        ServiceFactory.sample_data_service(get_authenticated_username(request)).get_metadata_for_download(
+        ServiceFactory.sample_data_service(get_authenticated_username()).get_metadata_for_download(
             get_host_name(request), institution, category, status
         )
     )
@@ -474,6 +471,11 @@ def call_request_args():
     return request.args
 
 
+def call_request_cookies():
+    """Wraps flask.request.cookies to make testing easier"""
+    return request.cookies
+
+
 def write_text_file(filename, content) -> str:
     with open(filename, "w") as textfile:
         textfile.write(content)
@@ -500,18 +502,23 @@ def get_host_name(req_obj):
     return req_obj.host
 
 
-def get_authenticated_username(req_obj):
+def get_authenticated_username():
     """Return the request authenticated user name or throw an UnauthorisedException if one is not present"""
     username = None
     if not ServiceFactory.TEST_MODE:
         try:
-            username = req_obj.headers["X-Remote-User"]
-            logging.info("X-Remote-User header = {}".format(username))
+            auth_token = call_request_cookies().get(os.environ[AUTH_COOKIE_NAME_ENVIRON])
+            username = ServiceFactory.authentication_service().get_username_from_token(auth_token)
+            logging.info(
+                "{} cookie = {}, username = {}".format(os.environ[AUTH_COOKIE_NAME_ENVIRON], auth_token, username)
+            )
         except KeyError:
-            pass
-
+            msg = "Auth cookie name not defined in environment:  variable {} missing".format(AUTH_COOKIE_NAME_ENVIRON)
+            logger.error(msg)
+            raise NotAuthorisedException(msg)
+        # this will catch missing/empty cookie as well as missing/empty username
         if not username:
-            msg = "Request was made without 'X-Remote-User' HTTP header: auth module shouldn't allow that!"
+            msg = "Username could not be retrieved; auth token = {}".format(auth_token)
             logger.error(msg)
             raise NotAuthorisedException(msg)
 
@@ -558,7 +565,7 @@ def _get_defaults_from_spec(openapi_file_name, schema_name):
 
 
 def _get_default_columns():
-    field_attributes = ServiceFactory.sample_data_service(get_authenticated_username(request)).get_field_attributes()
+    field_attributes = ServiceFactory.sample_data_service(get_authenticated_username()).get_field_attributes()
     default_columns = {}
     for this_field_type in field_attributes:
         # FIXME this is a really ugly way to get the name of a default columns property from a field type:-/
