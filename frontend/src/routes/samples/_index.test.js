@@ -344,7 +344,7 @@ describe("once batches are fetched", () => {
       await fireEvent.click(selectAllBtn);
       // Open the bulk download dialog.
       await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
-      jest.useFakeTimers()
+      jest.useFakeTimers();
       getBulkDownloadInfo
         .mockReturnValueOnce(new Promise((resolve) =>
           setTimeout((() => resolve(ESTIMATE_STALE)), requestWaitTimeMS)))
@@ -378,7 +378,7 @@ describe("once batches are fetched", () => {
       // Open the bulk download dialog.
       await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
       getBulkDownloadInfo.mockClear();
-      jest.useFakeTimers()
+      jest.useFakeTimers();
       getBulkDownloadInfo
         .mockReturnValueOnce(new Promise((resolve) =>
           setTimeout((() => resolve(ESTIMATE_STALE)), requestWaitTimeMS)))

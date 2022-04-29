@@ -133,12 +133,14 @@
           {/if}
         </dd>
 
-        <dt>Maximum size per ZIP archive:</dt>
+        <dt aria-label="Choose a maximum size per ZIP archive (defaults to the maximum size per archive)">
+          Maximum size per ZIP archive:
+        </dt>
         <dd>
           {#if formComplete}
             {#if estimate}
               <select bind:this={sizeSelectorElement} disabled={estimate.sizePerZipOptions?.length <= 1}>
-                {#each estimate.sizePerZipOptions as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
+                {#each (estimate.sizePerZipOptions || []) as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
                   {@const numZips = Math.ceil(estimate.numSamples / maxSamplesPerZip)}
                   <option value={maxSamplesPerZip} selected={i === 0}>
                     {sizePerZip} ({numZips} ZIP archive{numZips === 1 ? "" : "s"})
@@ -146,7 +148,7 @@
                 {/each}
               </select>
             {:else}
-              <LoadingIcon label="Estimating the download size. Please wait" />
+              <LoadingIcon label="Estimating the size options for the download. Please wait" />
             {/if}
           {:else}
             <select disabled>
