@@ -216,7 +216,8 @@ function prepareBulkDownloadPayload({
   filter,
   assemblies,
   annotations,
-  reads
+  reads,
+  maxSamplesPerZip
 }) {
   const payload = {
     "sample filters": {
@@ -226,6 +227,9 @@ function prepareBulkDownloadPayload({
     annotations,
     reads
   };
+  if (maxSamplesPerZip) {
+    payload["max samples per zip"] = maxSamplesPerZip;
+  }
 
   addFiltersToPayload({ ...filter, payload });
 

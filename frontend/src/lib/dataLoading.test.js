@@ -87,7 +87,8 @@ describe.each([
       filter: { filterState: FILTER_STATE, distinctColumnValuesState: DISTINCT_COLUMN_VALUES_STATE },
       assemblies: true,
       annotations: false,
-      reads: true
+      reads: true,
+      maxSamplesPerZip: 9
     }],
     expectedFetchOpts: {
       method: "POST",
@@ -100,7 +101,8 @@ describe.each([
         },
         assemblies: true,
         annotations: false,
-        reads: true
+        reads: true,
+        "max samples per zip": 9
       })
     },
     expectedEndpoints: ["bulk_download_urls"],

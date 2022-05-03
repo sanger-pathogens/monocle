@@ -1,12 +1,10 @@
 import json
 import logging
-import urllib.request
 from copy import deepcopy
-from datetime import datetime
 from os import environ
 from pathlib import Path, PurePath
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import patch
 from urllib.error import HTTPError
 
 import yaml
@@ -20,8 +18,6 @@ from DataSources.metadata_download import MetadataDownload, Monocle_Download_Cli
 from DataSources.pipeline_status import PipelineStatus
 from DataSources.sample_metadata import Monocle_Client, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
-from DataSources.user_data import UserData
-from pandas.errors import MergeError
 from utils.file import format_file_size
 
 INSTITUTION_KEY = "GenWel"
@@ -620,7 +616,7 @@ class MonocleSampleDataTest(TestCase):
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
         with self.assertRaises(json.decoder.JSONDecodeError):
-            json_returned = doomed.get_field_attributes()
+            doomed.get_field_attributes()
 
     @patch.object(Path, "exists", return_value=True)
     @patch.object(MonocleSampleData, "_get_file_size")
@@ -643,6 +639,37 @@ class MonocleSampleDataTest(TestCase):
                 "num_samples": expected_num_samples,
                 "size": format_file_size(expected_byte_size),
                 "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
+            },
+            bulk_download_info,
+        )
+
+    @patch.object(Path, "exists", return_value=True)
+    @patch.object(MonocleSampleData, "_get_file_size")
+    @patch.object(SampleMetadata, "get_samples")
+    @patch.dict(environ, mock_environment, clear=True)
+    def test_get_bulk_download_info_with_reads(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
+        get_sample_metadata_mock.return_value = self.mock_samples
+        file_size = 420024
+        get_file_size_mock.return_value = file_size
+
+        bulk_download_info = self.monocle_data.get_bulk_download_info(
+            {"batches": self.inst_key_batch_date_pairs}, assemblies=True, annotations=False, reads=True
+        )
+
+        expected_num_samples = len(self.inst_key_batch_date_pairs)
+        num_lanes = 5 * expected_num_samples
+        expected_byte_size = file_size * num_lanes
+        self.assertEqual(
+            {
+                "num_samples": expected_num_samples,
+                "size": format_file_size(expected_byte_size),
+                "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
             },
             bulk_download_info,
         )
@@ -847,7 +874,7 @@ class MonocleSampleDataTest(TestCase):
         (note if start_row is not defined, num_rows is simply ignored)
         """
         with self.assertRaises(AssertionError):
-            filtered_samples_metadata = self.monocle_data.get_metadata(
+            self.monocle_data.get_metadata(
                 {"batches": self.inst_key_batch_date_pairs}, metadata_columns=["public_name"], start_row=2
             )
 
@@ -1078,7 +1105,7 @@ class MonocleSampleDataTest(TestCase):
         download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip()
         self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
 
-    def test_get_bulk_download_max_samples_per_zip(self):
+    def test_get_bulk_download_max_samples_per_zip_without_reads(self):
         download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip(including_reads=False)
         self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
 
@@ -1165,7 +1192,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_csv_download_reject_invalid_download_params(self):
         # missing download_links `hostname` key
         with self.assertRaises(KeyError):
-            metadata_download = self.monocle_data.get_csv_download(
+            self.monocle_data.get_csv_download(
                 "any_name.csv",
                 {"mock filter name": "mock filter value"},
                 download_links={"institution": "any institution"},

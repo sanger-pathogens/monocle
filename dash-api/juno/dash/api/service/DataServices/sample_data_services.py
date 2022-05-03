@@ -1,17 +1,15 @@
-import errno
 import json
 import logging
-import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import defaultdict
 from copy import deepcopy
-from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONE, QUOTE_NONNUMERIC
+from csv import QUOTE_NONNUMERIC
 from datetime import datetime
 from functools import reduce
-from os import environ, path
-from pathlib import Path, PurePath
+from math import ceil
+from os import environ
+from pathlib import Path
 from uuid import uuid4
 
 import DataServices.sample_tracking_services
@@ -23,8 +21,12 @@ from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
+MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
+ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
+ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS = 1.15
 
 ASSEMBLY_FILE_SUFFIX = ".contigs_spades.fa"
 ANNOTATION_FILE_SUFFIX = ".spades.gff"
@@ -174,9 +176,7 @@ class MonocleSampleData:
             # than expected when the end of the result set is reached
             last_sample_row_returned = (start_row - 1) + len(filtered_samples)
         logging.info(
-            "pagination (start {}, num {}) working with {} samples".format(
-                __class__.__name__, start_row, num_rows, len(filtered_samples)
-            )
+            "pagination (start {}, num {}) working with {} samples".format(start_row, num_rows, len(filtered_samples))
         )
 
         # if filters or pagination results in an empty samples list, return an empty response
@@ -492,6 +492,7 @@ class MonocleSampleData:
                 raise e
             return None
 
+        include_reads = kwargs.get("reads", False)
         public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
             filtered_samples,
             assemblies=kwargs.get("assemblies", False),
@@ -503,10 +504,15 @@ class MonocleSampleData:
             lane_files_size = reduce(lambda accum, fl: accum + self._get_file_size(fl), lane_files, 0)
             total_lane_files_size = total_lane_files_size + lane_files_size
 
+        num_samples = len(filtered_samples)
+        total_lane_files_size_zipped = total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
         return {
-            "num_samples": len(filtered_samples),
+            "num_samples": num_samples,
             "size": format_file_size(total_lane_files_size),
-            "size_zipped": format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+            "size_zipped": format_file_size(total_lane_files_size_zipped),
+            "size_per_zip_options": self._calculate_zip_size_options(
+                num_samples, total_lane_files_size_zipped, include_reads
+            ),
         }
 
     def get_filtered_samples(self, sample_filters, disable_public_name_fetch=False):
@@ -545,12 +551,12 @@ class MonocleSampleData:
         institution_keys = [
             inst_key_batch_date_pair["institution key"] for inst_key_batch_date_pair in inst_key_batch_date_pairs
         ]
-        institution_names = [
-            institution["name"]
-            for institution_key, institution in self.sample_tracking.get_institutions().items()
-            if institution_key in institution_keys
-        ]
         if not disable_public_name_fetch:
+            institution_names = [
+                institution["name"]
+                for institution_key, institution in self.sample_tracking.get_institutions().items()
+                if institution_key in institution_keys
+            ]
             sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
         filtered_samples = []
         sequencing_status_data = deepcopy(self.sample_tracking.get_sequencing_status())
@@ -579,7 +585,7 @@ class MonocleSampleData:
                     # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                     for this_key in list(sample.keys()):
                         if "lanes" == this_key:
-                            sample[this_key] = [l["id"] for l in sample[this_key]]
+                            sample[this_key] = [lane["id"] for lane in sample[this_key]]
                         elif this_key not in ["creation_datetime", "inst_key", "public_name", "sanger_sample_id"]:
                             del sample[this_key]
                     # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
@@ -757,6 +763,41 @@ class MonocleSampleData:
                 sanger_sample_id_to_public_name[sanger_sample_id] = public_name
         return sanger_sample_id_to_public_name
 
+    def _calculate_zip_size_options(self, num_samples, total_zip_size, include_reads):
+        max_samples_per_zip = min(
+            self.get_bulk_download_max_samples_per_zip(including_reads=include_reads), num_samples
+        )
+        sample_size = total_zip_size / num_samples
+        zip_size = sample_size * max_samples_per_zip
+        min_zip_num_samples_capacity, zip_size_overestimate_factor = (
+            (MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS, ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS)
+            if include_reads
+            else (MIN_ZIP_NUM_SAMPLES_CAPACITY, ZIP_SIZE_OVERESTIMATE_FACTOR)
+        )
+        min_zip_size = sample_size * min_zip_num_samples_capacity
+        factor = 4
+        zip_size_options = []
+        first_iteration = True
+        while zip_size >= min_zip_size and max_samples_per_zip >= min_zip_num_samples_capacity:
+            zip_size_with_weight = zip_size * zip_size_overestimate_factor
+            if first_iteration:
+                num_zips = ceil(num_samples / max_samples_per_zip)
+                # Avoid "overestimating" the size per ZIP when there is only one ZIP, as in that case
+                # the size is simply `total_zip_size`.
+                if num_zips == 1:
+                    zip_size_with_weight = total_zip_size
+            zip_size_options.append(
+                {
+                    "max_samples_per_zip": max_samples_per_zip,
+                    "size_per_zip": format_file_size(zip_size_with_weight),
+                }
+            )
+            max_samples_per_zip = ceil(max_samples_per_zip / factor)
+            zip_size = zip_size / factor
+            factor = factor * 1.2
+            first_iteration = False
+        return zip_size_options
+
     def get_public_name_to_lane_files_dict(self, samples, **kwargs):
         """
         Pass a list of samples and an optional boolean flag per assembly, annotation, and reads types of lane files.
@@ -865,19 +906,19 @@ class MonocleSampleData:
         institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
-        if not institution in institution_names:
+        if institution not in institution_names:
             message = 'institution "{}" passed, but should be one of "{}"'.format(
                 institution, '", "'.join(institution_names)
             )
             logging.error("Invalid request to {}: {}".format(__class__.__name__, message))
             return {"success": False, "error": "request", "message": message}
-        if not category in categories:
+        if category not in categories:
             message = 'Invalid request to {}: category "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, category, '", "'.join(categories)
             )
             logging.error(message)
             raise RuntimeError(message)
-        if not status in statuses:
+        if status not in statuses:
             message = 'Invalid request to {}: status "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, status, '", "'.join(statuses)
             )
