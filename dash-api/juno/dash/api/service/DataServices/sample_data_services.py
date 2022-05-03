@@ -410,7 +410,9 @@ class MonocleSampleData:
             this_institution["db_key"] for this_institution in self.sample_tracking.get_institutions().values()
         ]
         try:
-            distinct_values = self.sample_metadata_source.get_distinct_values(fields, institutions)
+            distinct_values = self.sample_metadata_source.get_distinct_values(
+                self.current_project, fields, institutions
+            )
         except urllib.error.HTTPError as e:
             if "404" not in str(e):
                 raise e
@@ -710,7 +712,9 @@ class MonocleSampleData:
             )
         )
         matching_samples_ids_set = set(
-            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters)
+            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(
+                self.current_project, metadata_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(
@@ -733,7 +737,9 @@ class MonocleSampleData:
             )
         )
         matching_lanes_ids_set = set(
-            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters)
+            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(
+                self.current_project, in_silico_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(
@@ -761,7 +767,7 @@ class MonocleSampleData:
 
     def _get_sanger_sample_id_to_public_name_dict(self, institutions):
         sanger_sample_id_to_public_name = {}
-        for sample in self.sample_tracking.sample_metadata.get_samples(institutions=institutions):
+        for sample in self.sample_tracking.sample_metadata.get_samples(self.current_project, institutions=institutions):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
                 public_name = sample["public_name"]

@@ -691,10 +691,10 @@ class MonocleSampleDataTest(TestCase):
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
         distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
@@ -725,10 +725,10 @@ class MonocleSampleDataTest(TestCase):
             sample_filters={"batches": self.inst_key_batch_date_pairs, "metadata": {"field2": ["x"]}},
         )
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
         self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
