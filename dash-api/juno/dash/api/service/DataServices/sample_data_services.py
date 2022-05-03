@@ -212,7 +212,7 @@ class MonocleSampleData:
         logging.info(
             "sample filters {} resulted in {} samples being returned".format(sample_filters, len(sanger_sample_id_list))
         )
-        metadata = self.metadata_download_source.get_metadata(sanger_sample_id_list)
+        metadata = self.metadata_download_source.get_metadata(self.current_project, sanger_sample_id_list)
 
         # combined_metadata is the structure to be returned
         combined_metadata = [{"metadata": m} for m in metadata]
@@ -264,7 +264,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        in_silico_data = self.metadata_download_source.get_in_silico_data(lane_id_list)
+        in_silico_data = self.metadata_download_source.get_in_silico_data(self.current_project, lane_id_list)
         logging.debug(
             "{}.metadata_download_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data)
         )
@@ -329,7 +329,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        qc_data = self.metadata_download_source.get_qc_data(lane_id_list)
+        qc_data = self.metadata_download_source.get_qc_data(self.current_project, lane_id_list)
         logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
         lane_to_qc_data_lookup = {}
         for this_qc_data in qc_data:
@@ -1052,7 +1052,7 @@ class MonocleSampleData:
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_metadata(list(samples_for_download.keys()))
+            self.metadata_download_source.get_metadata(self.current_project, list(samples_for_download.keys()))
         )
         metadata_df = pandas.DataFrame(metadata)
 
@@ -1086,7 +1086,7 @@ class MonocleSampleData:
             lanes_for_download.extend(samples_for_download[this_sample])
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_in_silico_data(lanes_for_download)
+            self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
         )
         if len(in_silico_data) > 0:
             in_silico_data_df = pandas.DataFrame(in_silico_data)
@@ -1104,7 +1104,7 @@ class MonocleSampleData:
             # if there are any QC data, these are merged into the metadata DataFrame
             logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
             qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
-                self.metadata_download_source.get_qc_data(lanes_for_download)
+                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
             )
             if len(qc_data) > 0:
                 qc_data_df = pandas.DataFrame(qc_data)

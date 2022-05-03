@@ -1,4 +1,3 @@
-import http.client
 import json
 import logging
 import urllib.parse
@@ -22,9 +21,9 @@ class MetadataDownload:
     def set_up(self):
         self.dl_client = Monocle_Download_Client()
 
-    def get_metadata(self, lane_id_list):
+    def get_metadata(self, project, lane_id_list):
         logging.debug("{}.get_metadata() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.metadata(lane_id_list)
+        results_list = self.dl_client.metadata(project, lane_id_list)
         assert isinstance(
             results_list, list
         ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
@@ -32,9 +31,9 @@ class MetadataDownload:
         logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__, len(results_list)))
         return results_list
 
-    def get_in_silico_data(self, lane_id_list):
+    def get_in_silico_data(self, project, lane_id_list):
         logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.in_silico_data(lane_id_list)
+        results_list = self.dl_client.in_silico_data(project, lane_id_list)
         assert isinstance(
             results_list, list
         ), "Monocle_Download_Client.in_silico_data() was expected to return a list, not {}".format(type(results_list))
@@ -43,9 +42,9 @@ class MetadataDownload:
         logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__, len(results_list)))
         return results_list
 
-    def get_qc_data(self, lane_id_list):
+    def get_qc_data(self, project, lane_id_list):
         logging.debug("{}.get_qc_data() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.qc_data(lane_id_list)
+        results_list = self.dl_client.qc_data(project, lane_id_list)
         assert isinstance(
             results_list, list
         ), "Monocle_Download_Client.qc_data() was expected to return a list, not {}".format(type(results_list))
@@ -83,7 +82,7 @@ class Monocle_Download_Client:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             self.config = data_sources[self.data_source]
         for required_param in self.required_config_params:
-            if not required_param in self.config:
+            if required_param not in self.config:
                 logging.error(
                     "data source config file {} does not provide the required parameter {}.{}".format(
                         self.data_sources_config, self.data_source, required_param
@@ -91,19 +90,25 @@ class Monocle_Download_Client:
                 )
                 raise KeyError
 
-    def metadata(self, lane_id_list):
+    def metadata(self, project, lane_id_list):
         endpoint = self.config["download"]
         logging.debug(
             "{}.metadata() using endpoint {}, passing list of {} sample IDs".format(
                 __class__.__name__, endpoint, len(lane_id_list)
             )
         )
+        logging.warning(
+            '{}.metadata was passed project "{}" but the metadata API does not support this yet'.format(
+                __class__.__name__, project
+            )
+        )
+        # TODO pass `project` when it is implemented on the endpoint
         response = self.make_request(endpoint, post_data=lane_id_list)
         logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(response, required_keys=[self.config["metadata_key"]])
+        results = self.parse_response(endpoint, response, required_keys=[self.config["metadata_key"]])
         return results[self.config["metadata_key"]]
 
-    def in_silico_data(self, lane_id_list):
+    def in_silico_data(self, project, lane_id_list):
         endpoint = self.config["download_in_silico_data"]
         logging.debug(
             "{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(
@@ -113,6 +118,12 @@ class Monocle_Download_Client:
         # this request will return a 404 if there are no in silico results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
+            logging.warning(
+                '{}.in_silico_data was passed project "{}" but the metadata API does not support this yet'.format(
+                    __class__.__name__, project
+                )
+            )
+            # TODO pass `project` when it is implemented on the endpoint
             response = self.make_request(endpoint, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
@@ -123,10 +134,10 @@ class Monocle_Download_Client:
         logging.debug(
             "{}.in_silico_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response)
         )
-        results = self.parse_response(response, required_keys=[self.config["in_silico_data_key"]])
+        results = self.parse_response(endpoint, response, required_keys=[self.config["in_silico_data_key"]])
         return results[self.config["in_silico_data_key"]]
 
-    def qc_data(self, lane_id_list):
+    def qc_data(self, project, lane_id_list):
         endpoint = self.config["download_qc_data"]
         logging.debug(
             "{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(
@@ -136,6 +147,12 @@ class Monocle_Download_Client:
         # this request will return a 404 if there are no QC data results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
+            logging.warning(
+                '{}.qc_data was passed project "{}" but the metadata API does not support this yet'.format(
+                    __class__.__name__, project
+                )
+            )
+            # TODO pass `project` when it is implemented on the endpoint
             response = self.make_request(endpoint, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
@@ -144,7 +161,7 @@ class Monocle_Download_Client:
             else:
                 raise
         logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(response, required_keys=[self.config["qc_data_key"]])
+        results = self.parse_response(endpoint, response, required_keys=[self.config["qc_data_key"]])
         return results[self.config["qc_data_key"]]
 
     def make_request(self, endpoint, post_data=None):
@@ -182,7 +199,7 @@ class Monocle_Download_Client:
             raise
         return response_as_string
 
-    def parse_response(self, response_as_string, required_keys=[]):
+    def parse_response(self, endpoint, response_as_string, required_keys=[]):
         swagger_url = (
             self.config["base_url"] + self.config["swagger"]
         )  # only because it may be useful for error messages
