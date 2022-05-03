@@ -20,6 +20,7 @@ class MonocleUserDataTest(TestCase):
         "ldap_url",
         "users_obj",
         "groups_obj",
+        "country_names_attr",
         "username_attr",
         "uid_attr",
         "membership_attr",
@@ -241,5 +242,5 @@ class MonocleUserDataTest(TestCase):
         mock_group_query.return_value = self.mock_ldap_result_group
         user_details = self.userdata.get_user_details("mock_user")
         self.assertEqual("mock_user", user_details["username"])
-        with self.assertRaises(KeyError) as raises:
-            res = user_details["type"]
+        with self.assertRaises(KeyError):
+            user_details["type"]
