@@ -19,6 +19,11 @@ RUN      pip install flask==2.1.1                     \
 
 COPY     . /app
 
+# cache bust to update quickly the image build time
+# pass a new value as CACHE_BUST, e.g. with `--build-arg "CACHE_BUST=$(date)"`
+ARG      CACHE_BUST
+RUN      echo "$CACHE_BUST" > /dev/null
+
 # Temp hack until we have a final version of the dash DataSources component available
 ENV      PYTHONPATH "${PYTHONPATH}:./dash/api:./dash/api/service"
 
