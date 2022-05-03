@@ -15,4 +15,9 @@ ARG   PHPLDAPADMIN_CONFIG_FILE='/container/service/phpldapadmin/assets/config/co
 # https://www.surekhatech.com/blog/install-and-configure-phpldapadmin-web-client)
 ARG   ADDITIONAL_CONFIG='$servers->setValue('login','anon_bind',false);'
 
+# cache bust to update quickly the image build time
+# pass a new value as CACHE_BUST, e.g. with `--build-arg "CACHE_BUST=$(date)"`
+ARG      CACHE_BUST
+RUN      echo "$CACHE_BUST" > /dev/null
+
 RUN   echo "$ADDITIONAL_CONFIG" >> "$PHPLDAPADMIN_CONFIG_FILE"

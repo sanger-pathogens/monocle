@@ -86,7 +86,7 @@ CREATE TABLE `gps_sample` (
 
 
 -- Update the database version
-CALL update_database_version('0.2.79', 'Create gps metadata table (gps_sample)');
+CALL update_database_version('0.2.80', 'Create gps metadata table (gps_sample)');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
