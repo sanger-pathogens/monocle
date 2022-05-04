@@ -1,21 +1,15 @@
-import logging
 import urllib.error
 import urllib.request
-from copy import deepcopy
 from datetime import datetime
 from os import environ
-from pathlib import Path, PurePath
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import yaml
 from DataServices.sample_tracking_services import MonocleSampleTracking
-from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client
 from DataSources.pipeline_status import PipelineStatus
 from DataSources.sample_metadata import Monocle_Client, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
-from DataSources.user_data import UserData
-from pandas.errors import MergeError
 
 INSTITUTION_KEY = "GenWel"
 PUBLIC_NAME = "SCN9A"
@@ -329,7 +323,6 @@ class MonocleSampleTrackingTest(TestCase):
 
     def test_get_samples(self):
         sample_data = self.monocle_sample_tracking.get_samples()
-
         self.assertEqual(self.expected_sample_data, sample_data)
 
     def test_get_sequencing_status(self):

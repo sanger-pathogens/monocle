@@ -2,6 +2,7 @@ import logging
 import urllib.error
 import urllib.request
 from collections import defaultdict
+from copy import deepcopy
 from datetime import datetime
 
 import DataSources.metadata_download
@@ -215,7 +216,8 @@ class MonocleSampleTracking:
             return self.samples_data
         if self.institutions_data is None:
             self.institutions_data = self.get_institutions()
-        all_juno_samples = self.sample_metadata.get_samples()
+        # work on copy of samples dict, as it will be modified in loop below
+        all_juno_samples = deepcopy(self.sample_metadata.get_samples(self.current_project))
         samples = {i: [] for i in list(self.institutions_data.keys())}
         for this_sample in all_juno_samples:
             try:
