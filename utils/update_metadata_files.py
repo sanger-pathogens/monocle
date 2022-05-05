@@ -7,9 +7,9 @@ import re
 """
 database schema !!DONE FROM config.json
 metadata API SQL queries also have lists of db column names. !!DONE FROM config.json
-dashboard API openapi.yml file (OpenAPI spec. for endpoints)
-metadata API openapi.yml file (OpenAPI spec. for endpoints)
-metadata API config.json file (used with Pandas for spreadsheet validation and loading; also referred to by metadata download code)
+dashboard API openapi.yml file (OpenAPI spec. for endpoints) !! TODO
+metadata API openapi.yml file (OpenAPI spec. for endpoints) !! TODO
+metadata API config.json file (used with Pandas for spreadsheet validation and loading; also referred to by metadata download code) !!DONE used as canonical source
 metadata API metadata data model !!DONE FROM config.json
 metadata API in silico data model !!DONE FROM config.json
 metadata API QC data model !!DONE FROM config.json
