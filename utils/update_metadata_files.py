@@ -21,7 +21,7 @@ class UpdateMetadataFiles:
 
     def black(self, filename):
         """Runs the "black" Python formatter, if installed."""
-        command = f"black -q {filename}"
+        command = f"black -q --line-length 120 {filename}"
         os.system(command)
 
     def var_type_heuristic(self, data):
@@ -102,16 +102,12 @@ class UpdateMetadataFiles:
             + f"\nFROM api_sample\nWHERE\n{self.indent}sanger_sample_id IN :samples"
         )
         ret["SELECT_ALL_SAMPLES_SQL"] = (
-            "SELECT\n"
-            + self.chunk_text(", ", columns, 7)
-            + f"\nFROM api_sample\nORDER BY sanger_sample_id"
+            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM api_sample\nORDER BY sanger_sample_id"
         )
 
         columns = data["in_silico_data"]["spreadsheet_definition"].keys()
         ret["SELECT_ALL_IN_SILICO_SQL"] = (
-            "SELECT\n"
-            + self.chunk_text(", ", columns, 7)
-            + f"\nFROM in_silico\nORDER BY lane_id"
+            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM in_silico\nORDER BY lane_id"
         )
         ret["INSERT_OR_UPDATE_IN_SILICO_SQL"] = (
             "INSERT INTO in_silico (\n"
@@ -122,9 +118,7 @@ class UpdateMetadataFiles:
             + ",\n".join(list(map(lambda c: f"{self.indent}{c} = :{c}", columns)))
         )
         ret["SELECT_LANES_IN_SILICO_SQL"] = (
-            "SELECT\n"
-            + self.chunk_text(", ", columns, 7)
-            + f"\nFROM in_silico\nWHERE\n{self.indent}lane_id IN :lanes"
+            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM in_silico\nWHERE\n{self.indent}lane_id IN :lanes"
         )
 
         return ret
@@ -191,11 +185,7 @@ class UpdateMetadataFiles:
                 p = re.compile(r"^\s*" + replacement_key + r"\s*=\s*text\s*\($")
                 if p.match(line):
                     out += f"{self.indent*2}{autogeneration_note}"
-                    out += (
-                        f'{self.indent*2}""" \\\n'
-                        + self.pad(replacement_text, 3)
-                        + f'\n{self.indent*2}"""\n'
-                    )
+                    out += f'{self.indent*2}""" \\\n' + self.pad(replacement_text, 3) + f'\n{self.indent*2}"""\n'
                     self.skip_lines_until(r"^.*\"\"\".*$", lines)  # Quote open
                     self.skip_lines_until(r"^.*\"\"\".*$", lines)  # Quote close
                     break
@@ -281,9 +271,7 @@ class UpdateMetadataFiles:
                             ("in_silico_data", "in_silico.sql"),
                             ("qc_data", "qc_data.sql"),
                         ]:
-                            self.update_database_definition(
-                                data[k], f"{root_path}/database/tables/{filename}"
-                            )
+                            self.update_database_definition(data[k], f"{root_path}/database/tables/{filename}")
 
 
 if __name__ == "__main__":
