@@ -6,9 +6,11 @@ export const DATA_TYPES = [DATA_TYPE_METADATA, DATA_TYPE_IN_SILICO];
 
 export const EMAIL_MONOCLE_HELP = "monocle-help@sanger.ac.uk";
 
+export const HTTP_HEADERS_JSON = { "Content-Type": "application/json" };
+
 export const HTTP_POST = "POST";
 
-export const HTTP_HEADERS_JSON = { "Content-Type": "application/json" };
+export const HTTP_STATUS_CODE_UNAUTHORIZED = 401;
 
 // IMPORTANT: when incrementing this key, put the old one to `LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE`. This is
 // needed to clear `localStorage` from old data.
