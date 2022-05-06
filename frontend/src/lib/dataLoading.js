@@ -178,9 +178,9 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptionsPar
   }
   const fetchOptions = fetchOptionsParam ? { ...fetchOptionsParam, headers: {
     ...fetchOptionsParam.headers,
-    "Authorization": `Basic ${btoa("fakeun:fakepw")}`
+    "Authorization": "CustomMonocle"
   } } : {
-    headers: { "Authorization": `Basic ${btoa("fakeun:fakepw")}` }
+    headers: { "Authorization": "CustomMonocle" }
   };
   return fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions)
     .then((response) =>
