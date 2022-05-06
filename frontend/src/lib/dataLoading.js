@@ -176,10 +176,11 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptionsPar
       return Promise.resolve({});
     }
   }
-  const fetchOptions = fetchOptionsParam ? { ...fetchOptionsParam, headers: {
+  const fetchOptions = fetchOptionsParam ? { ...fetchOptionsParam, credentials: "include", headers: {
     ...fetchOptionsParam.headers,
     "Authorization": `Basic ${btoa("fakeun:fakepw")}`
   } } : {
+    credentials: "include",
     headers: { "Authorization": `Basic ${btoa("fakeun:fakepw")}` }
   };
   return fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions)
