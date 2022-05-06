@@ -169,17 +169,20 @@ function getPipelineStatus(fetch) {
     "pipeline_status_summary", "pipeline_status", fetch);
 }
 
-function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptionsParam) {
   if (browser) {
     // Prevent API requests from the login page:
     if (window.location.pathname.endsWith(PATHNAME_LOGIN)) {
       return Promise.resolve({});
     }
   }
-  return (fetchOptions ?
-    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
-    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
-  )
+  const fetchOptions = fetchOptionsParam ? { ...fetchOptionsParam, headers: {
+    ...fetchOptionsParam.headers,
+    "Authorization": `Basic ${btoa("fakeun:fakepw")}`
+  } } : {
+    headers: { "Authorization": `Basic ${btoa("fakeun:fakepw")}` }
+  };
+  return fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions)
     .then((response) =>
       response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
     .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
