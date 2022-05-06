@@ -38,10 +38,6 @@
       cancel();
       goto(PATHNAME_LOGIN);
     }
-    else if (authenticated && navigatingToLogin) {
-      cancel();
-      goto("/");
-    }
   }
 
   function appendScriptToHead(src, options) {
