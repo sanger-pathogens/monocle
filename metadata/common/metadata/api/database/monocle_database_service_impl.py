@@ -394,16 +394,22 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         if post_data is not None:
             assert isinstance(post_data, dict) or isinstance(
                 post_data, list
-            ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__, post_data)
+            ), "{}.make_request() requires post_data as a dict or a list, not {}".format(
+                __class__.__name__, post_data
+            )
             request_data = str(json.dumps(post_data))
             logging.debug("POST data for Monocle Download API: {}".format(request_data))
             request_data = request_data.encode("utf-8")
         try:
             logging.info("request to Monocle Download: {}".format(request_url))
-            http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
+            http_request = urllib.request.Request(
+                request_url, data=request_data, headers=request_headers
+            )
             with urllib.request.urlopen(http_request) as this_response:
                 response_as_string = this_response.read().decode("utf-8")
-                logging.debug("response from Monocle Download: {}".format(response_as_string))
+                logging.debug(
+                    "response from Monocle Download: {}".format(response_as_string)
+                )
         except urllib.error.HTTPError as e:
             if 404 == e.code:
                 logging.info(
@@ -412,7 +418,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     )
                 )
             else:
-                logging.error("HTTP status {} during Monocle Download request {}".format(e.code, request_url))
+                logging.error(
+                    "HTTP status {} during Monocle Download request {}".format(
+                        e.code, request_url
+                    )
+                )
             raise
         return response_as_string
 
@@ -427,10 +437,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             try:
                 results_data[required_key]
             except KeyError:
-                error_message = (
-                    "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER
-                    )
+                error_message = "response data did not contain the expected key '{}' (see API documentation at {})".format(
+                    self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER
                 )
                 raise ProtocolError(error_message)
         return results_data
@@ -438,13 +446,24 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_institutions(self, username) -> List[Institution]:
         """Return a list of allowed institutions"""
         endpoint = self.DASHBOARD_API_ENDPOINT
-        request_headers = {"Content-type": "application/json;charset=utf-8", "X-Remote-User": username}
+        request_headers = {
+            "Content-type": "application/json;charset=utf-8",
+            "X-Remote-User": username,
+        }
         logging.debug(
-            "{}.get_institutions() using endpoint {} for username {}".format(__class__.__name__, endpoint, username)
+            "{}.get_institutions() using endpoint {} for username {}".format(
+                __class__.__name__, endpoint, username
+            )
         )
         response_as_string = self.make_request(endpoint, request_headers)
-        logging.debug("{}.get_institutions() returned {}".format(__class__.__name__, response_as_string))
-        results_as_dict = self.parse_response(response_as_string, required_keys=["user_details"])
+        logging.debug(
+            "{}.get_institutions() returned {}".format(
+                __class__.__name__, response_as_string
+            )
+        )
+        results_as_dict = self.parse_response(
+            response_as_string, required_keys=["user_details"]
+        )
 
         results = []
         for item in results_as_dict["user_details"]["memberOf"]:
@@ -475,19 +494,35 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     new_sanger_sample_ids = []
                     try:
                         if None in values:
-                            this_sql_template = self.FILTER_SAMPLES_IN_SQL_INCL_NULL.format(filter, filter)
+                            this_sql_template = (
+                                self.FILTER_SAMPLES_IN_SQL_INCL_NULL.format(
+                                    filter, filter
+                                )
+                            )
                         else:
-                            this_sql_template = self.FILTER_SAMPLES_IN_SQL.format(filter)
+                            this_sql_template = self.FILTER_SAMPLES_IN_SQL.format(
+                                filter
+                            )
                         rs = con.execute(text(this_sql_template), values=tuple(values))
-                        new_sanger_sample_ids.extend([row["sanger_sample_id"] for row in rs])
+                        new_sanger_sample_ids.extend(
+                            [row["sanger_sample_id"] for row in rs]
+                        )
                         if len(sanger_sample_ids) > 0:
-                            tmp_ids = [id for id in new_sanger_sample_ids if id in sanger_sample_ids]
+                            tmp_ids = [
+                                id
+                                for id in new_sanger_sample_ids
+                                if id in sanger_sample_ids
+                            ]
                             sanger_sample_ids = tmp_ids
                         else:
                             sanger_sample_ids = new_sanger_sample_ids
                     except OperationalError as e:
                         if "Unknown column" in str(e):
-                            logging.error('attempted to apply filter to unknown field "{}"'.format(filter))
+                            logging.error(
+                                'attempted to apply filter to unknown field "{}"'.format(
+                                    filter
+                                )
+                            )
                             return None
                         else:
                             raise e
@@ -509,9 +544,15 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     new_lane_ids = []
                     try:
                         if None in values:
-                            this_sql_template = self.IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL.format(filter, filter)
+                            this_sql_template = (
+                                self.IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL.format(
+                                    filter, filter
+                                )
+                            )
                         else:
-                            this_sql_template = self.IN_SILICO_FILTER_LANES_IN_SQL.format(filter)
+                            this_sql_template = (
+                                self.IN_SILICO_FILTER_LANES_IN_SQL.format(filter)
+                            )
                         rs = con.execute(text(this_sql_template), values=tuple(values))
                         new_lane_ids.extend([row["lane_id"] for row in rs])
                         if len(lane_ids) > 0:
@@ -521,7 +562,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                             lane_ids = new_lane_ids
                     except OperationalError as e:
                         if "Unknown column" in str(e):
-                            logging.error('attempted to apply filter to unknown field "{}"'.format(filter))
+                            logging.error(
+                                'attempted to apply filter to unknown field "{}"'.format(
+                                    filter
+                                )
+                            )
                             return None
                         else:
                             raise e
@@ -531,7 +576,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return lane_ids
 
-    def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
+    def get_distinct_values(
+        self, field_type: str, fields: list, institutions: list
+    ) -> Dict:
         """
         Return distinct values found in db for each field name passed,
         from samples from certain instititons.
@@ -555,7 +602,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             for this_field in fields:
                 try:
-                    rs = con.execute(text(sql_query[field_type].format(this_field)), institutions=tuple(institutions))
+                    rs = con.execute(
+                        text(sql_query[field_type].format(this_field)),
+                        institutions=tuple(institutions),
+                    )
                     these_distinct_values = []
                     includes_none = False
                     for row in rs:
@@ -569,11 +619,17 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     if includes_none:
                         these_distinct_values.append(None)
                     if len(these_distinct_values) > 0:
-                        distinct_values.append({"name": this_field, "values": these_distinct_values})
+                        distinct_values.append(
+                            {"name": this_field, "values": these_distinct_values}
+                        )
 
                 except OperationalError as e:
                     if "Unknown column" in str(e):
-                        logging.error('attempted to get distinct values from unknown field "{}"'.format(this_field))
+                        logging.error(
+                            'attempted to get distinct values from unknown field "{}"'.format(
+                                this_field
+                            )
+                        )
                         return None
                     else:
                         raise e
@@ -649,7 +705,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     vancomycin=row["vancomycin"],
                     vancomycin_method=row["vancomycin_method"],
                     linezolid=row["linezolid"],
-                    linezolid_method=row["linezolid_method"]
+                    linezolid_method=row["linezolid_method"],
                 )
             )
 
@@ -662,7 +718,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             return
 
         logger.info(
-            "update_sample_metadata: About to write {} upload samples to the database...".format(len(metadata_list))
+            "update_sample_metadata: About to write {} upload samples to the database...".format(
+                len(metadata_list)
+            )
         )
 
         # Use a transaction...
@@ -735,7 +793,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         logger.info("update_sample_metadata completed")
 
-    def update_lane_in_silico_data(self, in_silico_data_list: List[InSilicoData]) -> None:
+    def update_lane_in_silico_data(
+        self, in_silico_data_list: List[InSilicoData]
+    ) -> None:
         """Update sample in silico data in the database"""
 
         if not in_silico_data_list:
@@ -825,7 +885,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             return
 
         logger.info(
-            "update_lane_qc_data: About to write {} upload samples to the database...".format(len(qc_data_list))
+            "update_lane_qc_data: About to write {} upload samples to the database...".format(
+                len(qc_data_list)
+            )
         )
 
         # Use a transaction...
@@ -849,9 +911,15 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         sanger_sample_ids = tuple(keys)
 
         logger.info(
-            "get_download_metadata: About to pull {} sample records from the database...".format(len(sanger_sample_ids))
+            "get_download_metadata: About to pull {} sample records from the database...".format(
+                len(sanger_sample_ids)
+            )
         )
-        logger.debug("get_download_metadata: Pulling sample ids {} from the database...".format(sanger_sample_ids))
+        logger.debug(
+            "get_download_metadata: Pulling sample ids {} from the database...".format(
+                sanger_sample_ids
+            )
+        )
 
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sanger_sample_ids)
@@ -919,10 +987,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     vancomycin=row["vancomycin"],
                     vancomycin_method=row["vancomycin_method"],
                     linezolid=row["linezolid"],
-                    linezolid_method=row["linezolid_method"]
+                    linezolid_method=row["linezolid_method"],
                 )
             )
-        logger.debug("get_download_metadata: Pulled records of samples {} from the database...".format(results))
+        logger.debug(
+            "get_download_metadata: Pulled records of samples {} from the database...".format(
+                results
+            )
+        )
 
         return results
 
@@ -1002,7 +1074,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     RPOBGBS_1_variant=row["RPOBGBS_1_variant"],
                     RPOBGBS_2_variant=row["RPOBGBS_2_variant"],
                     RPOBGBS_3_variant=row["RPOBGBS_3_variant"],
-                    RPOBGBS_4_variant=row["RPOBGBS_4_variant"]
+                    RPOBGBS_4_variant=row["RPOBGBS_4_variant"],
                 )
             )
 
@@ -1021,7 +1093,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
 
         for row in rs:
-            results.append(QCData(lane_id=row["lane_id"], rel_abun_sa=row["rel_abun_sa"]))
+            results.append(
+                QCData(lane_id=row["lane_id"], rel_abun_sa=row["rel_abun_sa"])
+            )
 
         return results
 
