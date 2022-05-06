@@ -17,6 +17,12 @@ metadata API QC data model !!DONE FROM config.json
 class UpdateMetadataFiles:
     indent = "    "
 
+    def black(self, filename):
+        """Runs the "black" Python formatter, if installed.
+        """
+        command = f"black {filename}"
+        os.system(command)
+
     def var_type_heuristic(self,data):
         """Guesses a Python variable type based of a definition in config.json.
         """
@@ -50,6 +56,7 @@ class UpdateMetadataFiles:
             output += f"{self.indent}{k}: {var_type}{var_comment}\n"
         with open(filename, "w") as output_file:
             _ = output_file.write(output)
+        self.black(filename)
     
     def pad(self,text,num):
         """Left-pads every line in a multi-line string with the given number of indents.
@@ -177,6 +184,7 @@ class UpdateMetadataFiles:
             new_code += out
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
+        self.black(filename)
 
     def update_database_definition(self,data,filename):
         """Updates an SQL table definition file.

@@ -866,14 +866,26 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     RIB=self.convert_string(in_silico_data.RIB),
                     SRR1=self.convert_string(in_silico_data.SRR1),
                     SRR2=self.convert_string(in_silico_data.SRR2),
-                    twenty_three_S1_variant=self.convert_string(in_silico_data.twenty_three_S1_variant),
-                    twenty_three_S3_variant=self.convert_string(in_silico_data.twenty_three_S3_variant),
+                    twenty_three_S1_variant=self.convert_string(
+                        in_silico_data.twenty_three_S1_variant
+                    ),
+                    twenty_three_S3_variant=self.convert_string(
+                        in_silico_data.twenty_three_S3_variant
+                    ),
                     GYRA_variant=self.convert_string(in_silico_data.GYRA_variant),
                     PARC_variant=self.convert_string(in_silico_data.PARC_variant),
-                    RPOBGBS_1_variant=self.convert_string(in_silico_data.RPOBGBS_1_variant),
-                    RPOBGBS_2_variant=self.convert_string(in_silico_data.RPOBGBS_2_variant),
-                    RPOBGBS_3_variant=self.convert_string(in_silico_data.RPOBGBS_3_variant),
-                    RPOBGBS_4_variant=self.convert_string(in_silico_data.RPOBGBS_4_variant),
+                    RPOBGBS_1_variant=self.convert_string(
+                        in_silico_data.RPOBGBS_1_variant
+                    ),
+                    RPOBGBS_2_variant=self.convert_string(
+                        in_silico_data.RPOBGBS_2_variant
+                    ),
+                    RPOBGBS_3_variant=self.convert_string(
+                        in_silico_data.RPOBGBS_3_variant
+                    ),
+                    RPOBGBS_4_variant=self.convert_string(
+                        in_silico_data.RPOBGBS_4_variant
+                    ),
                 )
 
         logger.info("update_lane_in_silico_data completed")
