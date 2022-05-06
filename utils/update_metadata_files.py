@@ -43,7 +43,7 @@ class UpdateMetadataFiles:
         """Generated a Python dataclass file.
         """
         autogeneration_note = self.get_autogeneration_note("FILE")
-        output = f"from dataclasses import dataclass\n\n\n{autogeneration_note}\n@dataclass\nclass {class_name}\n"
+        output = f"from dataclasses import dataclass\n\n\n{autogeneration_note}\n@dataclass\nclass {class_name}:\n"
         for (k,v) in data["spreadsheet_definition"].items():
             var_type = self.var_type_heuristic(v)
             var_comment = self.var_comment_heuristic(v)
