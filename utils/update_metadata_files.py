@@ -3,6 +3,7 @@
 import os
 import json
 import re
+import yaml
 
 """
 database schema !!DONE FROM config.json
@@ -21,7 +22,7 @@ class UpdateMetadataFiles:
 
     def black(self, filename):
         """Runs the "black" Python formatter, if installed."""
-        command = f"black -q --line-length 120 {filename}"
+        command = f"black -q --line-length {self.gitlab_yaml['variables']['LINE_LENGTH']} {filename}"
         os.system(command)
 
     def var_type_heuristic(self, data):
@@ -246,6 +247,9 @@ class UpdateMetadataFiles:
         """Runs updates on all metadata files."""
         root_path = f"{os.path.dirname(__file__)}/.."
         metadata_path = f"{root_path}/metadata"
+        with open(f"{root_path}/.gitlab-ci.yml", "r") as file:
+            self.gitlab_yaml = yaml.safe_load(file)
+        self.black(__file__)  # Self-format
         for entry in os.scandir(metadata_path):
             if entry.is_dir():
                 config_path = f"{metadata_path}/{entry.name}/config.json"
