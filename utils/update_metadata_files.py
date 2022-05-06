@@ -37,13 +37,13 @@ class UpdateMetadataFiles:
             comments.append(data["regex_validation_message"])
         if len(comments)==0:
             return ""
-        return " # "+"; ".join(comments)
+        return "  # "+"; ".join(comments)
 
     def generate_dataclass_file(self,data, class_name, filename):
         """Generated a Python dataclass file.
         """
         autogeneration_note = self.get_autogeneration_note("FILE")
-        output = f"from dataclasses import dataclass\n\n\n{autogeneration_note}\n@dataclass\nclass {class_name}:\n"
+        output = f"from dataclasses import dataclass\n\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
         for (k,v) in data["spreadsheet_definition"].items():
             var_type = self.var_type_heuristic(v)
             var_comment = self.var_comment_heuristic(v)
@@ -121,13 +121,13 @@ class UpdateMetadataFiles:
         ret = {}
 
         columns = data["metadata"]["spreadsheet_definition"].keys()
-        ret["get_samples"] = [r"^\s*Metadata\(.*$",",\n".join(list(map(lambda c:f"{c}=row[\"{c}\"]",columns)))]
+        ret["get_samples"] = [r"^\s*Metadata\(.*$","\n".join(list(map(lambda c:f"{c}=row[\"{c}\"],",columns)))]
         ret["update_sample_metadata"] = [r"^\s*self\.INSERT_OR_UPDATE_SAMPLE_SQL,\s*$","\n".join(list(map(lambda c:f"{c}=metadata.{c},",columns)))]
-        ret["get_download_metadata"] = [r"^\s*Metadata\(.*$",",\n".join(list(map(lambda c:f"{c}=row[\"{c}\"]",columns)))]
+        ret["get_download_metadata"] = [r"^\s*Metadata\(.*$","\n".join(list(map(lambda c:f"{c}=row[\"{c}\"],",columns)))]
 
         columns = data["in_silico_data"]["spreadsheet_definition"].keys()
         ret["update_lane_in_silico_data"] = [r"^\s*self\.INSERT_OR_UPDATE_IN_SILICO_SQL,\s*$","\n".join(list(map(lambda c:f"{c}=self.convert_string(in_silico_data.{c}),",columns)))]
-        ret["get_download_in_silico_data"] = [r"^\s*InSilicoData\(\s*$",",\n".join(list(map(lambda c:f"{c}=row[\"{c}\"]",columns)))]
+        ret["get_download_in_silico_data"] = [r"^\s*InSilicoData\(\s*$","\n".join(list(map(lambda c:f"{c}=row[\"{c}\"],",columns)))]
 
         return ret
     
