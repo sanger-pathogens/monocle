@@ -1,7 +1,7 @@
 <script context="module">
   // Extract `token` from the URL path and pass it to the page component as a prop.
-  export function load({ page }) {
-    return { props: { downloadToken: page.params.token } };
+  export function load({ params }) {
+    return { props: { downloadToken: params.token } };
   }
 </script>
 

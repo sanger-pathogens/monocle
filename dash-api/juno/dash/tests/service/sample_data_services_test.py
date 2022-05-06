@@ -663,6 +663,37 @@ class MonocleSampleDataTest(TestCase):
                 "num_samples": expected_num_samples,
                 "size": format_file_size(expected_byte_size),
                 "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
+            },
+            bulk_download_info,
+        )
+
+    @patch.object(Path, "exists", return_value=True)
+    @patch.object(MonocleSampleData, "_get_file_size")
+    @patch.object(SampleMetadata, "get_samples")
+    @patch.dict(environ, mock_environment, clear=True)
+    def test_get_bulk_download_info_with_reads(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
+        get_sample_metadata_mock.return_value = self.mock_samples
+        file_size = 420024
+        get_file_size_mock.return_value = file_size
+
+        bulk_download_info = self.monocle_data.get_bulk_download_info(
+            {"batches": self.inst_key_batch_date_pairs}, assemblies=True, annotations=False, reads=True
+        )
+
+        expected_num_samples = len(self.inst_key_batch_date_pairs)
+        num_lanes = 5 * expected_num_samples
+        expected_byte_size = file_size * num_lanes
+        self.assertEqual(
+            {
+                "num_samples": expected_num_samples,
+                "size": format_file_size(expected_byte_size),
+                "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
             },
             bulk_download_info,
         )

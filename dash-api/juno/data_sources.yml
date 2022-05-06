@@ -50,4 +50,4 @@ data_download:
    url_path                : 'files/downloads'
    download_route          : '/data'
    max_samples_per_zip     : 500
-   max_samples_per_zip_with_reads : 50
+   max_samples_per_zip_with_reads : 40

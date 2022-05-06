@@ -46,7 +46,6 @@
 :root {
   --juno-indigo: #484885;
   --juno-purple: #6868be;
-  --color-border: #dfe3e6;
   --color-danger: #e66969;
   --color-link-visited: #663399;
   --color-table-alt-row: #f8f8f8;
@@ -56,6 +55,10 @@
 
   --width-main: min(98vw, var(--bp-xl));
   --width-reading: 50rem;
+
+  /* This CSS variable sets the background color of an item for `svelte-select`.
+  See https://github.com/rob-balfre/svelte-select/blob/master/docs/theming_variables.md */
+  --multiItemBG: var(--background);
 }
 
 main {
@@ -100,13 +103,6 @@ main {
 
 :global(a[role=button]):hover {
   text-decoration: none;
-}
-
-:global(button),
-:global([role=button]),
-:global(input[type="button"]),
-:global(input[type="submit"]) {
-  border-color: var(--color-border);
 }
 
 :global(button.compact),
