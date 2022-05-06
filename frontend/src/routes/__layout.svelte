@@ -1,7 +1,9 @@
 <script>
   import { onMount } from "svelte";
+  import { browser } from "$app/env";
+  import { beforeNavigate, goto } from "$app/navigation";
   import { getStores } from "$app/stores";
-  import { PATHNAME_LOGIN } from "$lib/constants.js";
+  import { PATHNAME_LOGIN, RE_AUTH_COOKIE_NAME } from "$lib/constants.js";
   import { getUserDetails } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
@@ -9,6 +11,11 @@
   import "../simplecookie.css";
 
   const { session } = getStores();
+
+  beforeNavigate(redirectUnauthenticatedToLogin);
+  if (browser) {
+    redirectUnauthenticatedToLogin({ to: location, cancel: () => {} });
+  }
 
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
@@ -23,6 +30,19 @@
         console.error(err);
       });
   });
+
+  function redirectUnauthenticatedToLogin({ to, cancel }) {
+    const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
+    const navigatingToLogin = to && to.pathname.endsWith(PATHNAME_LOGIN);
+    if (!authenticated && !navigatingToLogin) {
+      cancel();
+      goto(PATHNAME_LOGIN);
+    }
+    else if (authenticated && navigatingToLogin) {
+      cancel();
+      goto("/");
+    }
+  }
 
   function appendScriptToHead(src, options) {
     const script = document.createElement("script");

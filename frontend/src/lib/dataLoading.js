@@ -1,5 +1,5 @@
 import { browser } from "$app/env";
-import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST, PATHNAME_LOGIN } from "$lib/constants.js";
+import { DATA_TYPES, HTTP_HEADERS_JSON, HTTP_POST, PATHNAME_LOGIN, RE_AUTH_COOKIE_NAME } from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
@@ -171,9 +171,12 @@ function getPipelineStatus(fetch) {
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   if (browser) {
-    const onLoginPage = window.location.pathname.endsWith(PATHNAME_LOGIN);
-    // Prevent API requests on the login page:
-    if (onLoginPage) {
+    const authenticated = document.cookie?.match(RE_AUTH_COOKIE_NAME)?.[2];
+    if (!authenticated) {
+      const onLoginPage = window.location.pathname.endsWith(PATHNAME_LOGIN);
+      if (!onLoginPage) {
+        window.location.href = PATHNAME_LOGIN;
+      }
       return Promise.resolve({});
     }
   }
