@@ -238,7 +238,7 @@ class UpdateMetadataFiles:
                     elif "max_length" in v:
                         row += f"VARCHAR({v['max_length']})"
                     else:
-                        row += f"SMALLINT(6)"
+                        row += f"int(11)"
                     if "mandatory" in v and v["mandatory"]:
                         row += " NOT NULL"
                     else:
