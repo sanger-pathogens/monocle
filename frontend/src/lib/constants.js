@@ -17,6 +17,4 @@ export const LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE = ["columnsState", "columnsSta
 
 export const PATHNAME_LOGIN = "/login";
 
-export const RE_AUTH_COOKIE_NAME = /(^| )nginxauth=([^;]+)/;
-
 export const USER_ROLE_ADMIN = "admin";
