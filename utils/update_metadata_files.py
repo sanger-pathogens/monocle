@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import os
 import json
+import os
 import re
+
 import yaml
 
 """
@@ -23,6 +24,8 @@ class UpdateMetadataFiles:
     def black(self, filename):
         """Runs the "black" Python formatter, if installed."""
         command = f"black -q --line-length {self.gitlab_yaml['variables']['LINE_LENGTH']} {filename}"
+        os.system(command)
+        command = f"isort {filename}"
         os.system(command)
 
     def var_type_heuristic(self, data):
