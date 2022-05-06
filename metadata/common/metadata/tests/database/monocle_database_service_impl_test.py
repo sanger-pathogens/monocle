@@ -551,7 +551,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             )
         ]
 
-        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
 
     def test_update_lane_in_silico_data(self) -> None:
         in_silico_data_list = [TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2]
@@ -687,7 +687,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             ),
         ]
 
-        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
 
     def test_update_lane_qc_data(self) -> None:
         qc_data_list = [TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2]
@@ -704,7 +704,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 rel_abun_sa="68.58",
             ),
         ]
-        self.transactional_connection.execute.assert_has_calls(calls, any_order=False)
+        self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
 
     def test_update_sample_metadata_noinput(self) -> None:
         metadata_list = []
