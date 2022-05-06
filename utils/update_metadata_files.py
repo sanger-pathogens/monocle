@@ -20,7 +20,7 @@ class UpdateMetadataFiles:
     def black(self, filename):
         """Runs the "black" Python formatter, if installed.
         """
-        command = f"black {filename}"
+        command = f"black -q {filename}"
         os.system(command)
 
     def var_type_heuristic(self,data):
