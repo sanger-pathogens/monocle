@@ -286,6 +286,7 @@ class UpdateMetadataFiles:
                             )
 
 
+
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
     umf.update_all()
