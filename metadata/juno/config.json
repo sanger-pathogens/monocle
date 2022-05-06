@@ -100,7 +100,8 @@
       },
       "submitting_institution": {
         "title": "Submitting_Institution",
-        "mandatory": true
+        "mandatory": true,
+        "max_length": 256
       },
       "collection_year": {
         "title": "Collection_year",
