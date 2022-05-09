@@ -4,7 +4,7 @@ from metadata.api.model.qc_data import QCData
 
 """ Some test data to use in unit tests... """
 
-TEST_SAMPLE_1 = Metadata(
+TEST_SAMPLE_1_DICT = dict(
     sanger_sample_id="9999STDY8113123",
     lane_id="2000_2#10",
     submitting_institution="UniversityA",
@@ -67,7 +67,9 @@ TEST_SAMPLE_1 = Metadata(
     linezolid_method="method14",
 )
 
-TEST_SAMPLE_2 = Metadata(
+TEST_SAMPLE_1 = Metadata(**TEST_SAMPLE_1_DICT)
+
+TEST_SAMPLE_2_DICT = dict(
     sanger_sample_id="9999STDY8113124",
     lane_id="2000_2#11",
     submitting_institution="UniversityB",
@@ -130,7 +132,9 @@ TEST_SAMPLE_2 = Metadata(
     linezolid_method="method24",
 )
 
-TEST_LANE_IN_SILICO_1 = InSilicoData(
+TEST_SAMPLE_2 = Metadata(**TEST_SAMPLE_2_DICT)
+
+TEST_LANE_IN_SILICO_1_DICT = dict(
     lane_id="50000_2#282",
     cps_type="III",
     ST="ST-I",
@@ -194,7 +198,9 @@ TEST_LANE_IN_SILICO_1 = InSilicoData(
     RPOBGBS_4_variant="",
 )
 
-TEST_LANE_IN_SILICO_2 = InSilicoData(
+TEST_LANE_IN_SILICO_1 = InSilicoData(**TEST_LANE_IN_SILICO_1_DICT)
+
+TEST_LANE_IN_SILICO_2_DICT = dict(
     lane_id="50000_2#287",
     cps_type="III",
     ST="ST-II",
@@ -258,6 +264,10 @@ TEST_LANE_IN_SILICO_2 = InSilicoData(
     RPOBGBS_4_variant="",
 )
 
-TEST_LANE_QC_DATA_1 = QCData(lane_id="50000_2#282", rel_abun_sa="93.21")
+TEST_LANE_IN_SILICO_2 = InSilicoData(**TEST_LANE_IN_SILICO_2_DICT)
 
-TEST_LANE_QC_DATA_2 = QCData(lane_id="50000_2#287", rel_abun_sa="68.58")
+TEST_LANE_QC_DATA_1_DICT = dict(lane_id="50000_2#282", rel_abun_sa="93.21")
+TEST_LANE_QC_DATA_1 = QCData(**TEST_LANE_QC_DATA_1_DICT)
+
+TEST_LANE_QC_DATA_2_DICT = dict(lane_id="50000_2#287", rel_abun_sa="68.58")
+TEST_LANE_QC_DATA_2 = QCData(**TEST_LANE_QC_DATA_2_DICT)
