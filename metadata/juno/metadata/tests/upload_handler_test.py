@@ -50,7 +50,7 @@ class TestUploadHandler(unittest.TestCase):
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """Assert validation errors are correct"""
-        self.assertEqual(len(validation_errors), 64)
+        self.assertEqual(len(validation_errors), 65)
 
         self.assertTrue(
             '{row: 4, column: "Sanger_Sample_ID"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors
@@ -290,6 +290,11 @@ class TestUploadHandler(unittest.TestCase):
         # Confirm the length checking works...
         self.assertTrue(
             '{row: 58, column: "Public_Name"}: "CD_XX_EW00056TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" field length is greater than 256 characters'
+            in validation_errors
+        )
+
+        self.assertTrue(
+            '{row: 61, column: "Apgar_score"}: "9 [extra text 5]" should be a valid number between 0 and 10'
             in validation_errors
         )
 
