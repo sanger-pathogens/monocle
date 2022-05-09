@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import json
 import os
 import re
@@ -19,7 +20,11 @@ metadata API QC data model !!DONE FROM config.json
 
 
 class UpdateMetadataFiles:
-    indent = "    "
+    def __init__(self):
+        self.indent = "    "
+        self.root_path = f"{os.path.dirname(__file__)}/.."
+        self.map_config_dict = dict(metadata="metadata", in_silico_data="in silico", qc_data="qc data")
+        self.config_additional_section_keys = ["spreadsheet_header_row_position", "upload_validation_enabled"]
 
     def black(self, filename):
         """Runs the "black" Python formatter, if installed."""
@@ -106,12 +111,12 @@ class UpdateMetadataFiles:
             + f"\nFROM api_sample\nWHERE\n{self.indent}sanger_sample_id IN :samples"
         )
         ret["SELECT_ALL_SAMPLES_SQL"] = (
-            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM api_sample\nORDER BY sanger_sample_id"
+            "SELECT\n" + self.chunk_text(", ", columns, 7) + "\nFROM api_sample\nORDER BY sanger_sample_id"
         )
 
         columns = data["in_silico_data"]["spreadsheet_definition"].keys()
         ret["SELECT_ALL_IN_SILICO_SQL"] = (
-            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM in_silico\nORDER BY lane_id"
+            "SELECT\n" + self.chunk_text(", ", columns, 7) + "\nFROM in_silico\nORDER BY lane_id"
         )
         ret["INSERT_OR_UPDATE_IN_SILICO_SQL"] = (
             "INSERT INTO in_silico (\n"
@@ -179,7 +184,7 @@ class UpdateMetadataFiles:
             lines = in_file.readlines()
         new_code = ""
         current_method = ""
-        p_current_method = re.compile("^\s*def ([^ \()]+).*$")
+        p_current_method = re.compile(r"^\s*def ([^ \()]+).*$")
         while len(lines) > 0:
             line = lines.pop(0)
             out = line
@@ -232,7 +237,7 @@ class UpdateMetadataFiles:
                     elif "max_length" in v:
                         row += f"VARCHAR({v['max_length']})"
                     else:
-                        row += f"int(11)"
+                        row += "int(11)"
                     if "mandatory" in v and v["mandatory"]:
                         row += " NOT NULL"
                     else:
@@ -248,9 +253,8 @@ class UpdateMetadataFiles:
 
     def update_all(self):
         """Runs updates on all metadata files."""
-        root_path = f"{os.path.dirname(__file__)}/.."
-        metadata_path = f"{root_path}/metadata"
-        with open(f"{root_path}/.gitlab-ci.yml", "r") as file:
+        metadata_path = f"{self.root_path}/metadata"
+        with open(f"{self.root_path}/.gitlab-ci.yml", "r") as file:
             self.gitlab_yaml = yaml.safe_load(file)
         self.black(__file__)  # Self-format
         for entry in os.scandir(metadata_path):
@@ -278,9 +282,77 @@ class UpdateMetadataFiles:
                             ("in_silico_data", "in_silico.sql"),
                             ("qc_data", "qc_data.sql"),
                         ]:
-                            self.update_database_definition(data[k], f"{root_path}/database/tables/{filename}")
+                            self.update_database_definition(data[k], f"{self.root_path}/database/tables/{filename}")
+
+    def write_field_attributes_file(self):
+        """Generated the file_attributes.json file for dash-api."""
+        field_attributes_file = f"{self.root_path}/dash-api/juno/field_attributes.json"
+        field_attributes = copy.deepcopy(self.config)
+        for _, kmc in self.map_config_dict.items():
+            for k in self.config_additional_section_keys:
+                if k in field_attributes[kmc]:
+                    field_attributes[kmc].pop(k)
+            for category in field_attributes[kmc]["categories"]:
+                for fields in category["fields"]:
+                    if "db" in fields:
+                        fields.pop("db")
+        json_object = json.dumps(field_attributes, indent=3)
+        with open(field_attributes_file, "w") as out_file:
+            out_file.write(json_object)
+
+    def update_config_section(self, c, mc):
+        """Updates a section of config data (c) from main config (mc)."""
+        for k in self.config_additional_section_keys:
+            if k in mc:
+                c[k] = mc[k]
+
+        sd = {}  # spreadsheet_definition
+        for category in mc["categories"]:
+            for field in category["fields"]:
+                if "db" in field:
+                    d = {}
+                    if "spreadsheet heading" in field:
+                        d["title"] = field["spreadsheet heading"]
+                    else:
+                        d["title"] = field["name"]
+                    for k, v in field["db"].items():
+                        d[k] = v
+                    if "id" in d:
+                        id = d.pop("id")
+                    else:
+                        id = field["name"]
+                    sd[id] = d
+        c["spreadsheet_definition"] = sd
+        return c
+
+    def update_config_json(self, config_path):
+        """Updates a config.json file based on main_config.json"""
+        with open(config_path) as config_file:
+            config = json.load(config_file)
+
+        for kc, kmc in self.map_config_dict.items():
+            config[kc] = self.update_config_section(config[kc], self.config[kmc])
+
+        json_object = json.dumps(config, indent=3)
+        with open(config_path, "w") as out_file:
+            out_file.write(json_object)
+
+    def update_from_main_config(self):
+        main_config_file = f"{self.root_path}/config/main_config.json"
+        with open(main_config_file) as config_file:
+            self.config = json.load(config_file)
+
+        self.write_field_attributes_file()
+
+        metadata_path = f"{self.root_path}/metadata"
+        for entry in os.scandir(metadata_path):
+            if entry.is_dir():
+                config_path = f"{metadata_path}/{entry.name}/config.json"
+                if os.path.exists(config_path):
+                    self.update_config_json(config_path)
 
 
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
-    umf.update_all()
+    umf.update_from_main_config()
+    # umf.update_all()
