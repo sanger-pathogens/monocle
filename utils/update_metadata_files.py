@@ -5,8 +5,6 @@ import json
 import os
 import re
 
-import yaml
-
 """
 Done:
 database schema
@@ -303,9 +301,6 @@ class UpdateMetadataFiles:
     def update_all(self):
         """Runs updates on all metadata files."""
         metadata_path = f"{self.root_path}/metadata"
-        with open(f"{self.root_path}/.gitlab-ci.yml", "r") as file:
-            self.gitlab_yaml = yaml.safe_load(file)
-
         for entry in os.scandir(metadata_path):
             if entry.is_dir():
                 config_path = f"{metadata_path}/{entry.name}/config.json"
