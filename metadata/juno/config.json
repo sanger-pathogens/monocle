@@ -43,39 +43,39 @@
         "title": "Sanger_Sample_ID",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^([0-9a-zA-Z\\-_]+)$",
+        "regex": "^(?:[0-9a-zA-Z\\-_]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "supplier_sample_name": {
         "title": "Supplier_Sample_Name",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^([0-9a-zA-Z\\-_\\.]+)$",
+        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "public_name": {
         "title": "Public_Name",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^([0-9a-zA-Z\\-_\\. ]+)$",
+        "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "lane_id": {
         "title": "Lane_ID",
         "max_length": 256,
-        "regex": "^(\\d+_\\d+#\\d+)$",
+        "regex": "^(?:\\d+_\\d+#\\d+)$",
         "regex_validation_message": "is not a recognised lane Id format"
       },
       "study_name": {
         "title": "Study_Name",
         "max_length": 600,
-        "regex": "^([\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
+        "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "study_ref": {
         "title": "Study_Reference",
         "max_length": 400,
-        "regex": "^(PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*)$",
+        "regex": "^(?:PMID: \\d{7,8}(?:,{1}[ ]{0,1}PMID: \\d{7,8})*)$",
         "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
       },
       "selection_random": {
@@ -104,17 +104,17 @@
       },
       "collection_year": {
         "title": "Collection_year",
-        "regex": "^(\\d{4})$",
+        "regex": "^(?:\\d{4})$",
         "regex_validation_message": "must be a YYYY format year"
       },
       "collection_month": {
         "title": "Collection_month",
-        "regex": "^(\\d{1,2})$",
+        "regex": "^(?:\\d{1,2})$",
         "regex_validation_message": "must be a MM format month"
       },
       "collection_day": {
         "title": "Collection_day",
-        "regex": "^(\\d{1,2})$",
+        "regex": "^(?:\\d{1,2})$",
         "regex_validation_message": "must be a DD format day"
       },
       "host_species": {
@@ -143,22 +143,22 @@
       },
       "age_years": {
         "title": "Age_years",
-        "regex": "^(\\d{1,3})$",
+        "regex": "^(?:\\d{1,3})$",
         "regex_validation_message": "should be a valid 1 to 3 digit number"
       },
       "age_months": {
         "title": "Age_months",
-        "regex": "^(\\d{1,4})$",
+        "regex": "^(?:\\d{1,4})$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_weeks": {
         "title": "Age_weeks",
-        "regex": "^(\\d{1,4})$",
+        "regex": "^(?:\\d{1,4})$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_days": {
         "title": "Age_days",
-        "regex": "^(\\d{1,5})$",
+        "regex": "^(?:\\d{1,5})$",
         "regex_validation_message": "should be a valid 1 to 5 digit number"
       },
       "host_status": {
@@ -214,7 +214,7 @@
       "serotype_method": {
         "title": "Serotype_method",
         "max_length": 100,
-        "regex": "(?i)^latex agglutination|Lancefield|PCR|other(, latex agglutination|Lancefield|PCR|other)*$",
+        "regex": "(?i)^latex agglutination|Lancefield|PCR|other(?:, latex agglutination|Lancefield|PCR|other)*$",
         "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other)",
         "convert_case": {
           "case": "lower",
@@ -240,7 +240,7 @@
       },
       "gestational_age_weeks": {
         "title": "Gestational_age_weeks",
-        "regex": "^(\\d{1,3})$",
+        "regex": "^(?:\\d{1,3})$",
         "regex_validation_message": "should be a valid 1 to 3 digit number",
         "convert_case": {
           "case": "lower"
@@ -248,7 +248,7 @@
       },
       "birth_weight_gram": {
         "title": "Birthweight_gram",
-        "regex": "^(\\d{1,7})$",
+        "regex": "^(?:\\d{1,7})$",
         "regex_validation_message": "should be a valid 1 to 7 digit number",
         "convert_case": {
           "case": "lower"
@@ -256,7 +256,7 @@
       },
       "apgar_score": {
         "title": "Apgar_score",
-        "regex": "^([0-9]|10)$",
+        "regex": "^(?:[0-9]|10)$",
         "regex_validation_message": "should be a valid number between 0 and 10",
         "convert_case": {
           "case": "lower"
@@ -265,7 +265,7 @@
       "ceftizoxime": {
         "title": "Ceftizoxime",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ceftizoxime_method": {
@@ -280,7 +280,7 @@
       "cefoxitin": {
         "title": "Cefoxitin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefoxitin_method": {
@@ -295,7 +295,7 @@
       "cefotaxime": {
         "title": "Cefotaxime",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefotaxime_method": {
@@ -310,7 +310,7 @@
       "cefazolin": {
         "title": "Cefazolin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "cefazolin_method": {
@@ -325,7 +325,7 @@
       "ampicillin": {
         "title": "Ampicillin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ampicillin_method": {
@@ -340,7 +340,7 @@
       "penicillin": {
         "title": "Penicillin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "penicillin_method": {
@@ -355,7 +355,7 @@
       "erythromycin": {
         "title": "Erythromycin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "erythromycin_method": {
@@ -370,7 +370,7 @@
       "clindamycin": {
         "title": "Clindamycin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "clindamycin_method": {
@@ -385,7 +385,7 @@
       "tetracycline": {
         "title": "Tetracycline",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "tetracycline_method": {
@@ -400,7 +400,7 @@
       "levofloxacin": {
         "title": "Levofloxacin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "levofloxacin_method": {
@@ -415,7 +415,7 @@
       "ciprofloxacin": {
         "title": "Ciprofloxacin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "ciprofloxacin_method": {
@@ -430,7 +430,7 @@
       "daptomycin": {
         "title": "Daptomycin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "daptomycin_method": {
@@ -445,7 +445,7 @@
       "vancomycin": {
         "title": "Vancomycin",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "vancomycin_method": {
@@ -460,7 +460,7 @@
       "linezolid": {
         "title": "Linezolid",
         "max_length": 30,
-        "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+        "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
         "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
       },
       "linezolid_method": {
@@ -482,7 +482,7 @@
         "title": "Sample_id",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^(\\d+_\\d+#\\d+)$",
+        "regex": "^(?:\\d+_\\d+#\\d+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "cps_type": {
@@ -534,357 +534,357 @@
         "title": "23S1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "twenty_three_S3": {
         "title": "23S3",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "AAC6APH2": {
         "title": "AAC6APH2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "AADECC": {
         "title": "AADECC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ANT6": {
         "title": "ANT6",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "APH3III": {
         "title": "APH3III",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "APH3OTHER": {
         "title": "APH3OTHER",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "CATPC194": {
         "title": "CATPC194",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "CATQ": {
         "title": "CATQ",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ERMA": {
         "title": "ERMA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ERMB": {
         "title": "ERMB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ERMT": {
         "title": "ERMT",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "LNUB": {
         "title": "LNUB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "LNUC": {
         "title": "LNUC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "LSAC": {
         "title": "LSAC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "MEFA": {
         "title": "MEFA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "MPHC": {
         "title": "MPHC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "MSRA": {
         "title": "MSRA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "MSRD": {
         "title": "MSRD",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "FOSA": {
         "title": "FOSA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "GYRA": {
         "title": "GYRA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "PARC": {
         "title": "PARC",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "RPOBGBS_1": {
         "title": "RPOBGBS-1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "RPOBGBS_2": {
         "title": "RPOBGBS-2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "RPOBGBS_3": {
         "title": "RPOBGBS-3",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "RPOBGBS_4": {
         "title": "RPOBGBS-4",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "SUL2": {
         "title": "SUL2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "TETB": {
         "title": "TETB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "TETL": {
         "title": "TETL",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "TETM": {
         "title": "TETM",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "TETO": {
         "title": "TETO",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "TETS": {
         "title": "TETS",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ALP1": {
         "title": "ALP1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ALP23": {
         "title": "ALP23",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "ALPHA": {
         "title": "ALPHA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "HVGA": {
         "title": "HVGA",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "PI1": {
         "title": "PI1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "PI2A1": {
         "title": "PI2A1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "PI2A2": {
         "title": "PI2A2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "PI2B": {
         "title": "PI2B",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "RIB": {
         "title": "RIB",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "SRR1": {
         "title": "SRR1",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "SRR2": {
         "title": "SRR2",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^(^$|pos|neg)+$",
+        "regex": "^(?:^$|pos|neg)+$",
         "regex_validation_message": "must be pos, neg or empty"
       },
       "twenty_three_S1_variant": {
         "title": "23S1_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "twenty_three_S3_variant": {
         "title": "23S3_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "GYRA_variant": {
         "title": "GYRA_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "PARC_variant": {
         "title": "PARC_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "RPOBGBS_1_variant": {
         "title": "RPOBGBS-1_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "RPOBGBS_2_variant": {
         "title": "RPOBGBS-2_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "RPOBGBS_3_variant": {
         "title": "RPOBGBS-3_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       },
       "RPOBGBS_4_variant": {
         "title": "RPOBGBS-4_SNP",
         "mandatory": true,
         "max_length": 100,
-        "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
         "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
       }
     }
@@ -897,14 +897,14 @@
         "title": "lane_id",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^(\\d+_\\d+#\\d+)$",
+        "regex": "^(?:\\d+_\\d+#\\d+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "rel_abun_sa": {
         "title": "rel_abun_sa",
         "mandatory": false,
         "max_length": 6,
-        "regex": "^([1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
+        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
       }
     }
   }
