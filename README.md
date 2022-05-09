@@ -177,6 +177,19 @@ files.   There will be no groups or user accounts in the LDAP service, so log in
 as `admin` at `/ldap-admin' (the password is in your `openldap-env.yaml` file)
 and import the LDIF file you saved earlier.
 
+## Configuration
+The central configuration file is `config/main_config.json`. If you change any
+configuration in there, run `utils/update_metadata_files.py`. This will alter the following files:
+- `database/tables/api_sample.sql`
+- `database/tables/in_silico.sql`
+- `database/tables/qc_data.sql`
+- `dash-api/juno/field_attributes.json` (as a subset of main_config)
+- For each directory in `metadata`:
+  - `config.json`
+  - `metadata/api/database/monocle_database_service_impl.py`
+  - `metadata/api/database/model/metadata.py` (complete replacement)
+  - `metadata/api/database/model/in_silico_data.py` (complete replacement)
+  - `metadata/api/database/model/qc_data.py` (complete replacement)
 
 ## Data
 

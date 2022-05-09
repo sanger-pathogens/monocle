@@ -5,17 +5,17 @@ from dataclasses import dataclass
 
 @dataclass
 class Metadata:
+    public_name: str  # mandatory; contains illegal characters
     sanger_sample_id: str  # mandatory; contains illegal characters
     supplier_sample_name: str  # mandatory; contains illegal characters
-    public_name: str  # mandatory; contains illegal characters
     lane_id: str  # optional; is not a recognised lane Id format
     study_name: str  # optional; contains illegal characters
     study_ref: str  # optional; must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789
+    submitting_institution: str  # mandatory
     selection_random: str  # optional
     country: str  # optional
     county_state: str  # optional
     city: str  # optional
-    submitting_institution: str  # mandatory
     collection_year: str  # optional; must be a YYYY format year
     collection_month: str  # optional; must be a MM format month
     collection_day: str  # optional; must be a DD format day
@@ -30,13 +30,13 @@ class Metadata:
     disease_type: str  # optional
     disease_onset: str  # optional
     isolation_source: str  # optional
-    serotype: str  # optional
-    serotype_method: str  # optional; is not in the list of legal options (latex agglutination, Lancefield, PCR, other)
     infection_during_pregnancy: str  # optional
     maternal_infection_type: str  # optional
     gestational_age_weeks: str  # optional; should be a valid 1 to 3 digit number
     birth_weight_gram: str  # optional; should be a valid 1 to 7 digit number
     apgar_score: str  # optional; should be a valid number between 0 and 10
+    serotype: str  # optional
+    serotype_method: str  # optional; is not in the list of legal options (latex agglutination, Lancefield, PCR, other)
     ceftizoxime: str  # optional; should be a valid floating point number, optionally with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, or R
     ceftizoxime_method: str  # optional
     cefoxitin: str  # optional; should be a valid floating point number, optionally with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, or R
