@@ -13,10 +13,10 @@ metadata API config.json file (used with Pandas for spreadsheet validation and l
 metadata API metadata data model
 metadata API in silico data model
 metadata API QC data model
+tests
 Todo:
 dashboard API openapi.yml file (OpenAPI spec. for endpoints)
 metadata API openapi.yml file (OpenAPI spec. for endpoints)
-tests
 """
 
 
