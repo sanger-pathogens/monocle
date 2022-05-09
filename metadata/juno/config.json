@@ -104,17 +104,17 @@
       },
       "collection_year": {
         "title": "Collection_year",
-        "regex": "(?i)^\\d{4}$",
+        "regex": "^\\d{4}$",
         "regex_validation_message": "must be a YYYY format year"
       },
       "collection_month": {
         "title": "Collection_month",
-        "regex": "(?i)^\\d{1,2}$",
+        "regex": "^\\d{1,2}$",
         "regex_validation_message": "must be a MM format month"
       },
       "collection_day": {
         "title": "Collection_day",
-        "regex": "(?i)^\\d{1,2}$",
+        "regex": "^\\d{1,2}$",
         "regex_validation_message": "must be a DD format day"
       },
       "host_species": {
@@ -143,22 +143,22 @@
       },
       "age_years": {
         "title": "Age_years",
-        "regex": "(?i)^\\d{1,3}$",
+        "regex": "^\\d{1,3}$",
         "regex_validation_message": "should be a valid 1 to 3 digit number"
       },
       "age_months": {
         "title": "Age_months",
-        "regex": "(?i)^\\d{1,4}$",
+        "regex": "^\\d{1,4}$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_weeks": {
         "title": "Age_weeks",
-        "regex": "(?i)^\\d{1,4}$",
+        "regex": "^\\d{1,4}$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_days": {
         "title": "Age_days",
-        "regex": "(?i)^\\d{1,5}$",
+        "regex": "^\\d{1,5}$",
         "regex_validation_message": "should be a valid 1 to 5 digit number"
       },
       "host_status": {
@@ -240,7 +240,7 @@
       },
       "gestational_age_weeks": {
         "title": "Gestational_age_weeks",
-        "regex": "(?i)^\\d{1,3}$",
+        "regex": "^\\d{1,3}$",
         "regex_validation_message": "should be a valid 1 to 3 digit number",
         "convert_case": {
           "case": "lower"
@@ -248,7 +248,7 @@
       },
       "birth_weight_gram": {
         "title": "Birthweight_gram",
-        "regex": "(?i)^\\d{1,7}$",
+        "regex": "^\\d{1,7}$",
         "regex_validation_message": "should be a valid 1 to 7 digit number",
         "convert_case": {
           "case": "lower"
@@ -256,7 +256,7 @@
       },
       "apgar_score": {
         "title": "Apgar_score",
-        "regex": "(?i)^([0-9]|10)$",
+        "regex": "^([0-9]|10)$",
         "regex_validation_message": "should be a valid number between 0 and 10",
         "convert_case": {
           "case": "lower"
