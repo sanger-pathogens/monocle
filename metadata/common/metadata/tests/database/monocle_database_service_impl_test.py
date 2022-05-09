@@ -442,8 +442,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.connection.execute.return_value = [
             TEST_SAMPLE_1_DICT,
             TEST_SAMPLE_2_DICT,
-            TEST_SAMPLE_1_DICT,
-            TEST_SAMPLE_2_DICT,
         ]
 
         metadata = self.under_test.get_download_metadata(input_list)
