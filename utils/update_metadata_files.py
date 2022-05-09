@@ -29,13 +29,6 @@ class UpdateMetadataFiles:
         self.map_config_dict = dict(metadata="metadata", in_silico_data="in silico", qc_data="qc data")
         self.config_additional_section_keys = ["spreadsheet_header_row_position", "upload_validation_enabled"]
 
-    def black(self, filename):
-        """Runs the "black" Python formatter, if installed."""
-        command = f"black -q --line-length {self.gitlab_yaml['variables']['LINE_LENGTH']} {filename}"
-        os.system(command)
-        command = f"isort {filename}"
-        os.system(command)
-
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
         if "regex" in data:
@@ -66,7 +59,6 @@ class UpdateMetadataFiles:
             output += f"{self.indent}{k}: {var_type}{var_comment}\n"
         with open(filename, "w") as output_file:
             _ = output_file.write(output)
-        self.black(filename)
 
     def pad(self, text, num):
         """Left-pads every line in a multi-line string with the given number of indents."""
@@ -217,7 +209,6 @@ class UpdateMetadataFiles:
             new_code += out
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
-        self.black(filename)
 
     def update_database_definition(self, data, filename):
         """Updates an SQL table definition file.
@@ -255,12 +246,66 @@ class UpdateMetadataFiles:
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
 
+    def update_test_data(self, data, test_data_file_path):
+        """Updates the test_data.py file if required.
+        Uses as much of the existing test values as possible.
+        """
+        if not os.path.exists(test_data_file_path):
+            print(f"Skipping non-existing file {test_data_file_path}")
+            return
+        with open(test_data_file_path) as test_data_file:
+            lines = test_data_file.readlines()
+        output = ""
+        p_dict = re.compile(r"^(TEST_\S+_DICT)\s*=\s*dict\s*\(\S*$")
+        p_key_value = re.compile(r"^\s*(\S+?)\s*=.*\s*\"(.*?)\"\s*,{0,1}\s*$")
+        p_end_of_definition = re.compile(r"^\s*\)\S*$")
+        while len(lines) > 0:
+            line = lines.pop(0)
+            m = p_dict.match(line)
+            if not m:
+                output += line
+                continue
+            var_name = m.group(1)
+            d = {}
+            while len(lines) > 0:
+                row = lines.pop(0)
+                n = p_key_value.match(row)
+                if n:
+                    d[n.group(1)] = n.group(2)
+                if p_end_of_definition.match(row):
+                    break
+            if var_name in ["TEST_SAMPLE_1_DICT", "TEST_SAMPLE_2_DICT"]:
+                c = data["metadata"]
+            elif var_name in ["TEST_LANE_IN_SILICO_1_DICT", "TEST_LANE_IN_SILICO_2_DICT"]:
+                c = data["in_silico_data"]
+            elif var_name in ["TEST_LANE_QC_DATA_1_DICT", "TEST_LANE_QC_DATA_2_DICT"]:
+                c = data["qc_data"]
+            # Remove obsolete fields
+            for k in list(d.keys()):
+                if k not in c["spreadsheet_definition"]:
+                    print(f"Removing {k} from test data")
+                    d.pop(k)
+            # Add new fields
+            for k in c["spreadsheet_definition"].keys():
+                if k not in d:
+                    print(f"Adding {k} to test data")
+                    d[k] = str(len(d) + 1)
+            output += line
+            for k, v in d.items():
+                output += f'{self.indent}{k} = "{v}",\n'
+            output += ")\n"
+        with open(test_data_file_path, "w") as output_file:
+            _ = output_file.write(output)
+
+    def update_metadata_tests(self, data, tests_path):
+        self.update_test_data(data, f"{tests_path}/test_data.py")
+
     def update_all(self):
         """Runs updates on all metadata files."""
         metadata_path = f"{self.root_path}/metadata"
         with open(f"{self.root_path}/.gitlab-ci.yml", "r") as file:
             self.gitlab_yaml = yaml.safe_load(file)
-        self.black(__file__)  # Self-format
+
         for entry in os.scandir(metadata_path):
             if entry.is_dir():
                 config_path = f"{metadata_path}/{entry.name}/config.json"
@@ -287,6 +332,7 @@ class UpdateMetadataFiles:
                             ("qc_data", "qc_data.sql"),
                         ]:
                             self.update_database_definition(data[k], f"{self.root_path}/database/tables/{filename}")
+                        self.update_metadata_tests(data, f"{metadata_path}/{entry.name}/metadata/tests")
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
