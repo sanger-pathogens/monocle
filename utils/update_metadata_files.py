@@ -8,14 +8,17 @@ import re
 import yaml
 
 """
-database schema !!DONE FROM config.json
-metadata API SQL queries also have lists of db column names. !!DONE FROM config.json
-dashboard API openapi.yml file (OpenAPI spec. for endpoints) !! TODO
-metadata API openapi.yml file (OpenAPI spec. for endpoints) !! TODO
-metadata API config.json file (used with Pandas for spreadsheet validation and loading; also referred to by metadata download code) !!DONE used as canonical source
-metadata API metadata data model !!DONE FROM config.json
-metadata API in silico data model !!DONE FROM config.json
-metadata API QC data model !!DONE FROM config.json
+Done:
+database schema
+metadata API SQL queries also have lists of db column names.
+metadata API config.json file (used with Pandas for spreadsheet validation and loading; also referred to by metadata download code)
+metadata API metadata data model
+metadata API in silico data model
+metadata API QC data model
+Todo:
+dashboard API openapi.yml file (OpenAPI spec. for endpoints)
+metadata API openapi.yml file (OpenAPI spec. for endpoints)
+tests
 """
 
 
@@ -76,6 +79,7 @@ class UpdateMetadataFiles:
             if num > 0:
                 ret += sep
                 if num % max == 0 and num + 1 < len(list):
+                    ret = ret.rstrip()
                     ret += "\n" + self.indent
             ret += t
         return ret
@@ -338,6 +342,9 @@ class UpdateMetadataFiles:
             out_file.write(json_object)
 
     def update_from_main_config(self):
+        """Updates metadata/*/config./json files, as well as dash-api/juno/field_attributes.json.
+        Required first step for further updates.
+        """
         main_config_file = f"{self.root_path}/config/main_config.json"
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
@@ -355,4 +362,4 @@ class UpdateMetadataFiles:
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
     umf.update_from_main_config()
-    # umf.update_all()
+    umf.update_all()
