@@ -43,39 +43,39 @@
         "title": "Sanger_Sample_ID",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^[0-9a-zA-Z\\-_]+$",
+        "regex": "^([0-9a-zA-Z\\-_]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "supplier_sample_name": {
         "title": "Supplier_Sample_Name",
         "mandatory": true,
         "max_length": 20,
-        "regex": "^[0-9a-zA-Z\\-_\\.]+$",
+        "regex": "^([0-9a-zA-Z\\-_\\.]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "public_name": {
         "title": "Public_Name",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^[0-9a-zA-Z\\-_\\. ]+$",
+        "regex": "^([0-9a-zA-Z\\-_\\. ]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "lane_id": {
         "title": "Lane_ID",
         "max_length": 256,
-        "regex": "^\\d+_\\d+#\\d+$",
+        "regex": "^(\\d+_\\d+#\\d+)$",
         "regex_validation_message": "is not a recognised lane Id format"
       },
       "study_name": {
         "title": "Study_Name",
         "max_length": 600,
-        "regex": "^[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+$",
+        "regex": "^([\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "study_ref": {
         "title": "Study_Reference",
         "max_length": 400,
-        "regex": "^PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*$",
+        "regex": "^(PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*)$",
         "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
       },
       "selection_random": {
@@ -104,17 +104,17 @@
       },
       "collection_year": {
         "title": "Collection_year",
-        "regex": "^\\d{4}$",
+        "regex": "^(\\d{4})$",
         "regex_validation_message": "must be a YYYY format year"
       },
       "collection_month": {
         "title": "Collection_month",
-        "regex": "^\\d{1,2}$",
+        "regex": "^(\\d{1,2})$",
         "regex_validation_message": "must be a MM format month"
       },
       "collection_day": {
         "title": "Collection_day",
-        "regex": "^\\d{1,2}$",
+        "regex": "^(\\d{1,2})$",
         "regex_validation_message": "must be a DD format day"
       },
       "host_species": {
@@ -143,22 +143,22 @@
       },
       "age_years": {
         "title": "Age_years",
-        "regex": "^\\d{1,3}$",
+        "regex": "^(\\d{1,3})$",
         "regex_validation_message": "should be a valid 1 to 3 digit number"
       },
       "age_months": {
         "title": "Age_months",
-        "regex": "^\\d{1,4}$",
+        "regex": "^(\\d{1,4})$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_weeks": {
         "title": "Age_weeks",
-        "regex": "^\\d{1,4}$",
+        "regex": "^(\\d{1,4})$",
         "regex_validation_message": "should be a valid 1 to 4 digit number"
       },
       "age_days": {
         "title": "Age_days",
-        "regex": "^\\d{1,5}$",
+        "regex": "^(\\d{1,5})$",
         "regex_validation_message": "should be a valid 1 to 5 digit number"
       },
       "host_status": {
@@ -240,7 +240,7 @@
       },
       "gestational_age_weeks": {
         "title": "Gestational_age_weeks",
-        "regex": "^\\d{1,3}$",
+        "regex": "^(\\d{1,3})$",
         "regex_validation_message": "should be a valid 1 to 3 digit number",
         "convert_case": {
           "case": "lower"
@@ -248,7 +248,7 @@
       },
       "birth_weight_gram": {
         "title": "Birthweight_gram",
-        "regex": "^\\d{1,7}$",
+        "regex": "^(\\d{1,7})$",
         "regex_validation_message": "should be a valid 1 to 7 digit number",
         "convert_case": {
           "case": "lower"
@@ -482,7 +482,7 @@
         "title": "Sample_id",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^\\d+_\\d+#\\d+$",
+        "regex": "^(\\d+_\\d+#\\d+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "cps_type": {
@@ -897,14 +897,14 @@
         "title": "lane_id",
         "mandatory": true,
         "max_length": 256,
-        "regex": "^\\d+_\\d+#\\d+$",
+        "regex": "^(\\d+_\\d+#\\d+)$",
         "regex_validation_message": "contains illegal characters"
       },
       "rel_abun_sa": {
         "title": "rel_abun_sa",
         "mandatory": false,
         "max_length": 6,
-        "regex": "^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$"
+        "regex": "^([1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
       }
     }
   }
