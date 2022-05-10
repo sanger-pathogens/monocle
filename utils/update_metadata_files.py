@@ -302,16 +302,12 @@ class UpdateMetadataFiles:
 
     def update_yml_field_patterns(self, y, data):
         # Field patterns
-        # seen = {}
         for (yk, jk) in [
             ["MetadataFieldName", "metadata"],
             ["InSilicoFieldName", "in_silico_data"],
             ["QCDataFieldName", "qc_data"],
         ]:
             json_keys = list(data[jk]["spreadsheet_definition"].keys())
-            # json_keys = list(filter(lambda k:k not in seen , json_keys)) # TODO do we filter out duplicates here?
-            # for k in json_keys:
-            #    seen[k] = 1
             y["components"]["schemas"][yk]["pattern"] = "^" + "|".join(json_keys) + "$"
 
     def update_yml_field_list(self, y, j):
