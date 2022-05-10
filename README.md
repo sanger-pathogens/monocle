@@ -176,6 +176,7 @@ configuration in there, run `utils/update_metadata_files.py`. This will alter th
 - `database/tables/in_silico.sql`
 - `database/tables/qc_data.sql`
 - `dash-api/juno/field_attributes.json` (as a subset of main_config)
+- `dash-api/juno/dash/interface/openapi.yml`
 - For each directory in `metadata`:
   - `config.json`
   - `metadata/api/database/monocle_database_service_impl.py`
@@ -183,6 +184,7 @@ configuration in there, run `utils/update_metadata_files.py`. This will alter th
   - `metadata/api/database/model/in_silico_data.py` (complete replacement)
   - `metadata/api/database/model/qc_data.py` (complete replacement)
   - `metadata/tests/test_data.py`
+  - `metadata/interface/openapi.yml`
 
 ## Data
 
