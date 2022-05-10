@@ -5,6 +5,8 @@ import json
 import os
 import re
 
+import yaml
+
 """
 Done:
 database schema
@@ -298,6 +300,40 @@ class UpdateMetadataFiles:
     def update_metadata_tests(self, data, tests_path):
         self.update_test_data(data, f"{tests_path}/test_data.py")
 
+    def update_dash_yml(self, data, file_path):
+        """Updates the dash openapi.yml file with various properties.
+        TODO: default/required fields need to be annotated in upstream config and set here
+        """
+        if not os.path.exists(file_path):
+            print(f"Skipping: {file_path} does not exist")
+            return
+        with open(file_path) as file:
+            y = yaml.safe_load(file)
+
+        # Field patterns
+        # seen = {}
+        for (yk, jk) in [
+            ["MetadataFieldName", "metadata"],
+            ["InSilicoFieldName", "in_silico_data"],
+            ["QCDataFieldName", "qc_data"],
+        ]:
+            json_keys = list(data[jk]["spreadsheet_definition"].keys())
+            # json_keys = list(filter(lambda k:k not in seen , json_keys)) # TODO do we filter out duplicates here?
+            # for k in json_keys:
+            #    seen[k] = 1
+            y["components"]["schemas"][yk]["pattern"] = "^" + "|".join(json_keys) + "$"
+
+        # Field lists
+        for (yk, jk) in [["Metadata", "metadata"], ["InSilicoData", "in_silico_data"], ["QCData", "qc_data"]]:
+            y["components"]["schemas"][yk]["properties"] = {}
+            json_keys = list(data[jk]["spreadsheet_definition"].keys())
+            for k in json_keys:
+                y["components"]["schemas"][yk]["properties"][k] = {"$ref": "#/components/schemas/DownloadField"}
+            y["components"]["schemas"][yk]["required"] = json_keys
+
+        with open(file_path, "w") as out_file:
+            yaml.dump(y, out_file)
+
     def update_all(self):
         """Runs updates on all metadata files."""
         metadata_path = f"{self.root_path}/metadata"
@@ -328,6 +364,8 @@ class UpdateMetadataFiles:
                         ]:
                             self.update_database_definition(data[k], f"{self.root_path}/database/tables/{filename}")
                         self.update_metadata_tests(data, f"{metadata_path}/{entry.name}/metadata/tests")
+                        self.update_dash_yml(data, f"{self.root_path}/dash-api/{entry.name}/dash/interface/openapi.yml")
+                        # TODO metadata openapi.yml
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
