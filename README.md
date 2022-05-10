@@ -185,6 +185,7 @@ configuration in there, run `utils/update_metadata_files.py`. This will alter th
   - `metadata/api/database/model/qc_data.py` (complete replacement)
   - `metadata/tests/test_data.py`
   - `metadata/interface/openapi.yml`
+  - `metadata/api/download_handlers.py`
 
 ## Data
 
