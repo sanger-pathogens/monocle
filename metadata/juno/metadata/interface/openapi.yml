@@ -326,6 +326,7 @@ components:
       description: "A list of dictionaries of QC data"
       type: array
       items:
+<<<<<<< HEAD
         $ref: "#/components/schemas/QCDataInput"
       
     QCDataInput:
@@ -507,6 +508,23 @@ components:
 
     QCDataFieldsList:
       type: array
+=======
+        maxLength: 256
+        minLength: 3
+        pattern: ^[a-zA-Z0-9]*$
+        type: string
+      minItems: 1
+      type: array
+    FieldValueFilter:
+      description: A valid metadata field value (multiple consecutive whitespaces
+        and hyphens not allowed)
+      maxLength: 256
+      minLength: 1
+      nullable: true
+      pattern: "^(([a-zA-Z0-9\xE0-\xFA\xC0-\xDA\\_',;:/\\.\\(\\)\\[\\]]+)\\-?\\ ?)+$"
+      type: string
+    FiltersInSilicoInput:
+>>>>>>> YAML rebase
       items:
         $ref: "#/components/schemas/QCDataFieldName"
       minItems: 1
