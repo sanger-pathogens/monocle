@@ -72,3 +72,9 @@ values ('Iaso Hospital', 'Greece', 37.98394, 23.72831);
 insert into api_institution (name, country, latitude, longitude)
 values ('University of North Carolina at Chapel Hill', 'Nicaragua', 12.60902, -85.29369);
 
+insert into api_institution (name, country, latitude, longitude)
+values ('Istituto Superiore di Sanità', 'Italy', 41.904144, 12.51806);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Toros University', 'Turkey', 36.790048, 34.593931);
+
