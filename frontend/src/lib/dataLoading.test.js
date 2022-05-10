@@ -47,32 +47,22 @@ jest.mock("$app/env", () => ({
   }
 }));
 
-describe("if unauthenticated", () => {
+describe("login page", () => {
   delete global.location;
-  global.location = { pathname: "" };
+  global.location = { pathname: PATHNAME_LOGIN };
 
-  afterAll(() => document.cookie = "nginxauth=fake-auth-token");
-
-  it("redirects to the login page w/o making a fetch request", async () => {
-    const result = await getBatches(fetch);
-
-    expect(fetch).not.toHaveBeenCalled();
-    expect(location.href.endsWith(PATHNAME_LOGIN))
-      .toBeTruthy();
-    expect(result).toStrictEqual({});
+  afterAll(() => {
+    delete global.location;
+    global.location = { pathname: "" };
   });
 
-  it("doesn't redirect to the login page if it's already the login page", async () => {
-    global.location = { pathname: PATHNAME_LOGIN };
-
-    const result = await getBatches(fetch);
+  it("doesn't make a fetch request if the environment is the browser", async () => {
+    await getBatches(fetch);
 
     expect(fetch).not.toHaveBeenCalled();
-    expect(location.href).toBeUndefined();
-    expect(result).toStrictEqual({});
   });
 
-  it("does make a fetch request if the environment isn't \"browser\" w/o redirecting to the login page", async () => {
+  it("makes a fetch request if the environment is not the browser", async () => {
     const browserSpy = jest.spyOn(env, "browser", "get");
     const expectedPayload = "batches";
     browserSpy.mockReturnValueOnce(false);
@@ -80,12 +70,12 @@ describe("if unauthenticated", () => {
       ok: true,
       json: () => Promise.resolve({ batches: expectedPayload })
     });
+    fetch.mockClear();
 
     const actualPayload = await getBatches(fetch);
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(actualPayload).toBe(expectedPayload);
-    expect(location.href).toBeUndefined();
   });
 });
 
