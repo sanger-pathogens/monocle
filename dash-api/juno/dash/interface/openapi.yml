@@ -645,7 +645,7 @@ components:
       type: string
       minLength: 1
       maxLength: 256
-      pattern: ^rel_abun_sa$
+      pattern: ^lane_id|rel_abun_sa$
 
     GetMetadataInput:
       type: object
