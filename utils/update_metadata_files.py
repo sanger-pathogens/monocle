@@ -28,6 +28,16 @@ class UpdateMetadataFiles:
         self.root_path = f"{os.path.dirname(__file__)}/.."
         self.map_config_dict = dict(metadata="metadata", in_silico_data="in silico", qc_data="qc data")
         self.config_additional_section_keys = ["spreadsheet_header_row_position", "upload_validation_enabled"]
+        self.yml2json = [
+            ["Metadata", "metadata", "metadata"],
+            ["InSilicoData", "in_silico_data", "insilicodata"],
+            ["QCData", "qc_data", "qcdata"],
+        ]
+        self.yml_field_patterns = [
+            ["MetadataFieldName", "metadata"],
+            ["InSilicoFieldName", "in_silico_data"],
+            ["QCDataFieldName", "qc_data"],
+        ]
 
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
@@ -52,7 +62,7 @@ class UpdateMetadataFiles:
     def generate_dataclass_file(self, data, class_name, filename):
         """Generated a Python dataclass file."""
         autogeneration_note = self.get_autogeneration_note("FILE")
-        output = f"from dataclasses import dataclass\n\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
+        output = f"from dataclasses import dataclass\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
         for (k, v) in data["spreadsheet_definition"].items():
             var_type = self.var_type_heuristic(v)
             var_comment = self.var_comment_heuristic(v)
@@ -292,21 +302,18 @@ class UpdateMetadataFiles:
                     d[k] = str(len(d) + 1)
             output += line
             for k, v in d.items():
-                output += f'{self.indent}{k} = "{v}",\n'
+                output += f'{self.indent}{k}="{v}",\n'
             output += ")\n"
         with open(test_data_file_path, "w") as output_file:
             _ = output_file.write(output)
 
     def update_metadata_tests(self, data, tests_path):
+        """Updates tests that use data from config files."""
         self.update_test_data(data, f"{tests_path}/test_data.py")
 
     def update_yml_field_patterns(self, y, data):
-        # Field patterns
-        for (yk, jk) in [
-            ["MetadataFieldName", "metadata"],
-            ["InSilicoFieldName", "in_silico_data"],
-            ["QCDataFieldName", "qc_data"],
-        ]:
+        """Updates YAML field patterns."""
+        for (yk, jk) in self.yml_field_patterns:
             json_keys = list(data[jk]["spreadsheet_definition"].keys())
             y["components"]["schemas"][yk]["pattern"] = "^" + "|".join(json_keys) + "$"
 
@@ -330,7 +337,7 @@ class UpdateMetadataFiles:
 
         self.update_yml_field_patterns(y, data)
 
-        for (yk, jk) in [["Metadata", "metadata"], ["InSilicoData", "in_silico_data"], ["QCData", "qc_data"]]:
+        for (yk, jk, _) in self.yml2json:
             self.update_yml_field_list(y["components"]["schemas"][yk], data[jk]["spreadsheet_definition"])
 
         with open(file_path, "w") as out_file:
@@ -348,11 +355,7 @@ class UpdateMetadataFiles:
 
         self.update_yml_field_patterns(y, data)
 
-        for (yk, jk, yk2) in [
-            ["Metadata", "metadata", "metadata"],
-            ["InSilicoData", "in_silico_data", "insilicodata"],
-            ["QCData", "qc_data", "qcdata"],
-        ]:
+        for (yk, jk, yk2) in self.yml2json:
             self.update_yml_field_list(
                 y["components"]["schemas"][yk]["properties"][yk2]["items"], data[jk]["spreadsheet_definition"]
             )
