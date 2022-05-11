@@ -333,8 +333,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     )
 
     DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
-
-    qc_keys = current_app.config["qc_data"]["spreadsheet_definition"].keys()
+    with current_app.app_context():
+        qc_keys = current_app.config["qc_data"]["spreadsheet_definition"].keys()
     parts = [[], [], []]
     for k in qc_keys:
         parts[0].append(k)
