@@ -363,6 +363,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         self.connector = connector
 
     def initialize_sql_statements(self):
+        pass
         if hasattr(self, "INTIALIZED") is not None:
             return
         self.INTIALIZED = 1
@@ -384,6 +385,9 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             + ", ".join(parts[2])
         )
         self.SELECT_LANES_QC_DATA_SQL = text("SELECT" + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
+        print("foobar1")
+        print(self.INSERT_OR_UPDATE_QC_DATA_SQL)
+        print(self.SELECT_LANES_QC_DATA_SQL)
 
     def get_authenticated_username(self, req_obj: request):
         # TODO: Make this a separate service
