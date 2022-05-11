@@ -46,7 +46,10 @@ class MonocleSampleData:
     """
 
     default_data_source_config = "data_sources.yml"
-    default_metadata_field_config = "field_attributes.json"
+    default_metadata_field_configs = {
+        "juno": "juno_field_attributes.json",
+        "gps": "gps_field_attributes.json",
+    }
     sample_table_inst_key = "submitting_institution"
     # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
     # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
@@ -61,17 +64,27 @@ class MonocleSampleData:
     def __init__(
         self,
         data_source_config=default_data_source_config,
-        metadata_field_config=default_metadata_field_config,
+        metadata_field_configs=default_metadata_field_configs,
         MonocleSampleTracking_ref=None,
         set_up=True,
     ):
+        self.user_record = None
+        self.current_project = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
-        self.metadata_field_config_name = metadata_field_config
-        # check config files exist
-        for this_file in [self.data_source_config_name, self.metadata_field_config_name]:
+        if not Path(self.data_source_config_name).is_file():
+            return self._download_config_error(
+                "data source config file {} is missing".format(self.data_source_config_name)
+            )
+        self.metadata_field_config_files = metadata_field_configs
+        missing_metadata_config = []
+        for this_file in self.metadata_field_config_files.values():
             if not Path(this_file).is_file():
-                return self._download_config_error("config file {} is missing".format(this_file))
+                missing_metadata_config.append(this_file)
+        if len(missing_metadata_config) > 0:
+            return self._download_config_error(
+                "metadata field config file(s) {} are missing".format(missing_metadata_config)
+            )
 
         # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
         # if one wasn't passed, create one now
@@ -91,7 +104,12 @@ class MonocleSampleData:
         """
         Return field attributes JSON object
         """
-        with open(self.metadata_field_config_name, "r") as json_file:
+        metadata_attribute_file = self.metadata_field_config_files.get(self.current_project)
+        if metadata_attribute_file is None:
+            raise ValueError(
+                'The current project "{}" does not have a metadata field attributes file'.format(self.current_project)
+            )
+        with open(metadata_attribute_file, "r") as json_file:
             field_attributes = json.load(json_file)
 
         return field_attributes
@@ -197,7 +215,7 @@ class MonocleSampleData:
         logging.info(
             "sample filters {} resulted in {} samples being returned".format(sample_filters, len(sanger_sample_id_list))
         )
-        metadata = self.metadata_download_source.get_metadata(sanger_sample_id_list)
+        metadata = self.metadata_download_source.get_metadata(self.current_project, sanger_sample_id_list)
 
         # combined_metadata is the structure to be returned
         combined_metadata = [{"metadata": m} for m in metadata]
@@ -249,7 +267,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        in_silico_data = self.metadata_download_source.get_in_silico_data(lane_id_list)
+        in_silico_data = self.metadata_download_source.get_in_silico_data(self.current_project, lane_id_list)
         logging.debug(
             "{}.metadata_download_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data)
         )
@@ -314,7 +332,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        qc_data = self.metadata_download_source.get_qc_data(lane_id_list)
+        qc_data = self.metadata_download_source.get_qc_data(self.current_project, lane_id_list)
         logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
         lane_to_qc_data_lookup = {}
         for this_qc_data in qc_data:
@@ -395,7 +413,9 @@ class MonocleSampleData:
             this_institution["db_key"] for this_institution in self.sample_tracking.get_institutions().values()
         ]
         try:
-            distinct_values = self.sample_metadata_source.get_distinct_values(fields, institutions)
+            distinct_values = self.sample_metadata_source.get_distinct_values(
+                self.current_project, fields, institutions
+            )
         except urllib.error.HTTPError as e:
             if "404" not in str(e):
                 raise e
@@ -701,7 +721,9 @@ class MonocleSampleData:
             )
         )
         matching_samples_ids_set = set(
-            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters)
+            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(
+                self.current_project, metadata_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(
@@ -724,7 +746,9 @@ class MonocleSampleData:
             )
         )
         matching_lanes_ids_set = set(
-            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters)
+            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(
+                self.current_project, in_silico_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(
@@ -752,7 +776,7 @@ class MonocleSampleData:
 
     def _get_sanger_sample_id_to_public_name_dict(self, institutions):
         sanger_sample_id_to_public_name = {}
-        for sample in self.sample_tracking.sample_metadata.get_samples(institutions=institutions):
+        for sample in self.sample_tracking.sample_metadata.get_samples(self.current_project, institutions=institutions):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
                 public_name = sample["public_name"]
@@ -1078,7 +1102,7 @@ class MonocleSampleData:
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_metadata(list(samples_for_download.keys()))
+            self.metadata_download_source.get_metadata(self.current_project, list(samples_for_download.keys()))
         )
         metadata_df = pandas.DataFrame(metadata)
 
@@ -1112,7 +1136,7 @@ class MonocleSampleData:
             lanes_for_download.extend(samples_for_download[this_sample])
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_in_silico_data(lanes_for_download)
+            self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
         )
         if len(in_silico_data) > 0:
             in_silico_data_df = pandas.DataFrame(in_silico_data)
@@ -1130,7 +1154,7 @@ class MonocleSampleData:
             # if there are any QC data, these are merged into the metadata DataFrame
             logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
             qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
-                self.metadata_download_source.get_qc_data(lanes_for_download)
+                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
             )
             if len(qc_data) > 0:
                 qc_data_df = pandas.DataFrame(qc_data)

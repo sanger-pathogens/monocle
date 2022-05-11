@@ -68,7 +68,7 @@ class UserData:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             self.config = data_sources[self.data_source]
             for required_param in self.required_config_params:
-                if not required_param in self.config:
+                if required_param not in self.config:
                     logging.error(
                         "data source config file {} does not provide the required parameter {}.{}".format(
                             config_file_name, self.data_source, required_param
@@ -88,7 +88,7 @@ class UserData:
         with open(config_file_name, "r") as file:
             openldap_config = yaml.load(file, Loader=yaml.FullLoader)
             for required_param in self.required_openldap_params:
-                if not required_param in openldap_config:
+                if required_param not in openldap_config:
                     logging.error(
                         "OpenLDAP config file {} does not provide the required parameter {}".format(
                             config_file_name, required_param
@@ -135,10 +135,7 @@ class UserData:
         least one institution, which is the minimum we should expect.
         """
         logging.info("retrieving user information for username {}".format(username))
-        user_details = {
-            "username": username,
-            "memberOf": [],
-        }
+        user_details = {"username": username, "memberOf": [], "projects": []}
         ldap_user_rec = self.ldap_search_user_by_username(username)
         if ldap_user_rec is None:
             logging.error(
@@ -167,6 +164,18 @@ class UserData:
                 )
             )
             raise UserDataError("username {} has no organisation attribute values ".format(username))
+
+        # get user's project(s)
+        if self.config["project_attr"] not in user_attr:
+            raise UserDataError("username {} has no project attribute values ".format(username))
+        user_details["projects"] = [
+            project_bytes.decode("UTF-8") for project_bytes in user_attr[self.config["project_attr"]]
+        ]
+        if len(user_details["projects"]) < 1:
+            logging.error(
+                "The username {} is not associated with any projects (full attributes: {})".format(username, user_attr)
+            )
+            raise UserDataError("username {} has no project attribute values ".format(username))
 
         try:
             # Try to get optional employee type attribute
@@ -235,7 +244,11 @@ class UserData:
             raise UserDataError("uid {} not unique".format(username))
         result = result_list[0]
         # check attributes returned include required attributes
-        for this_required_attr in [self.config["username_attr"], self.config["membership_attr"]]:
+        for this_required_attr in [
+            self.config["username_attr"],
+            self.config["membership_attr"],
+            self.config["project_attr"],
+        ]:
             if this_required_attr not in result[1]:
                 logging.error(
                     "username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(
@@ -285,7 +298,7 @@ class UserData:
                         gid, required_attr, result
                     )
                 )
-                raise UserDataError("group doesn't contain the required attribute {}".format(gid, required_attr))
+                raise UserDataError("group {} doesn't contain the required attribute {}".format(gid, required_attr))
         logging.debug("found group: {}".format(result))
         return result
 

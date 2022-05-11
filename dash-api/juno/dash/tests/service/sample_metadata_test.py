@@ -17,6 +17,7 @@ class SampleMetadataTest(TestCase):
     bad_api_endpoint = "/no/such/endpoint"
     genuine_api_host = "http://metadata_api.dev.pam.sanger.ac.uk/"
 
+    mock_project = "mock_project_id"
     mock_bad_get_sample = """{  "wrong key":
                                        {  "does": "not matter what appears here"
                                        }
@@ -111,7 +112,7 @@ class SampleMetadataTest(TestCase):
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_samples(self, mock_query):
         mock_query.return_value = self.mock_get_samples
-        samples = self.sample_metadata.get_samples()
+        samples = self.sample_metadata.get_samples(self.mock_project)
         self.assertIsInstance(samples, list)
         for this_sample in samples:
             for required in self.required_sample_dict_keys:
@@ -125,33 +126,35 @@ class SampleMetadataTest(TestCase):
     @patch("DataSources.sample_metadata.Monocle_Client.filters")
     def test_get_samples_matching_metadata_filters(self, mock_filters):
         mock_filters.return_value = []
-        samples = self.sample_metadata.get_samples_matching_metadata_filters(
-            {self.mock_metadata_field: self.mock_metadata_values}
+        self.sample_metadata.get_samples_matching_metadata_filters(
+            self.mock_project, {self.mock_metadata_field: self.mock_metadata_values}
         )
-        mock_filters.assert_called_once_with([{"name": self.mock_metadata_field, "values": self.mock_metadata_values}])
+        mock_filters.assert_called_once_with(
+            self.mock_project, [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
+        )
 
     @patch("DataSources.sample_metadata.Monocle_Client.filters_in_silico")
     def test_get_lanes_matching_in_silico_filters(self, mock_filters_in_silico):
         mock_filters_in_silico.return_value = []
-        samples = self.sample_metadata.get_lanes_matching_in_silico_filters(
-            {self.mock_in_silico_field: self.mock_in_silico_values}
+        self.sample_metadata.get_lanes_matching_in_silico_filters(
+            self.mock_project, {self.mock_in_silico_field: self.mock_in_silico_values}
         )
         mock_filters_in_silico.assert_called_once_with(
-            [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
+            self.mock_project, [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
         )
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_filters(self, mock_query):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
-        self.sample_metadata.monocle_client.filters(mock_payload)
+        self.sample_metadata.monocle_client.filters(self.mock_project, mock_payload)
         mock_query.assert_called_once_with("/metadata/sample_ids_matching_metadata", post_data=mock_payload)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_filters_in_silico(self, mock_query):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
-        self.sample_metadata.monocle_client.filters_in_silico(mock_payload)
+        self.sample_metadata.monocle_client.filters_in_silico(self.mock_project, mock_payload)
         mock_query.assert_called_once_with("/metadata/lane_ids_matching_in_silico_data", post_data=mock_payload)
 
     @patch("DataSources.sample_metadata.Monocle_Client.distinct_values")
@@ -164,7 +167,9 @@ class SampleMetadataTest(TestCase):
         mock_distinct_in_silico_values.return_value = self.mock_distinct_in_silico_values
         mock_distinct_qc_data_values.return_value = self.mock_distinct_qc_data_values
         distinct_values = self.sample_metadata.get_distinct_values(
-            {"metadata": ["field1", "field2"], "in silico": ["field3"], "qc data": ["field4"]}, ["institution A"]
+            self.mock_project,
+            {"metadata": ["field1", "field2"], "in silico": ["field3"], "qc data": ["field4"]},
+            ["institution A"],
         )
         self.assertIsInstance(distinct_values, list)
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
@@ -175,7 +180,7 @@ class SampleMetadataTest(TestCase):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field1", "field2"]
         mock_institutions = ["institution A"]
-        self.sample_metadata.monocle_client.distinct_values(mock_fields, mock_institutions)
+        self.sample_metadata.monocle_client.distinct_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
             "/metadata/distinct_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )
@@ -185,7 +190,7 @@ class SampleMetadataTest(TestCase):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field3"]
         mock_institutions = ["institution A"]
-        self.sample_metadata.monocle_client.distinct_in_silico_values(mock_fields, mock_institutions)
+        self.sample_metadata.monocle_client.distinct_in_silico_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
             "/metadata/distinct_in_silico_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )
@@ -195,7 +200,7 @@ class SampleMetadataTest(TestCase):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field4"]
         mock_institutions = ["institution A"]
-        self.sample_metadata.monocle_client.distinct_qc_data_values(mock_fields, mock_institutions)
+        self.sample_metadata.monocle_client.distinct_qc_data_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
             "/metadata/distinct_qc_data_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )

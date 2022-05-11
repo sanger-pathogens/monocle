@@ -1,6 +1,25 @@
+import logging
+
 from dash.api.service.DataServices.sample_data_services import MonocleSampleData
 from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 from dash.api.service.DataServices.user_services import MonocleUser
+
+
+def _add_user_record(username, obj_ref):
+    user = MonocleUser(username)
+    obj_ref.user_record = user.record
+    # Set the project
+    # (in future we will probably support membership of multiple projects)
+    project_list = user.record.get("projects")
+    if project_list is None or 0 == len(project_list):
+        raise RuntimeError("User accounts must have a projects attribute (user record: {})".format(user.record))
+    elif len(project_list) > 1:
+        raise RuntimeError(
+            "Multiple project membership for users is not currently supported (user record: {})".format(user.record)
+        )
+    else:
+        obj_ref.current_project = project_list[0]
+    logging.debug("Setting current_project = {} (user record = {})".format(obj_ref.current_project, user.record))
 
 
 class UserService(MonocleUser):
@@ -19,9 +38,8 @@ class DataService(MonocleSampleData):
 
     def __init__(self, username: str, set_up: bool = True):
         MonocleSampleData.__init__(self, set_up=set_up)
-        user = MonocleUser(username)
-        # Setting this record will enforce data filtering by user
-        self.sample_tracking.user_record = user.record
+        # Setting the user record will enforce data filtering by user
+        _add_user_record(username, self)
 
 
 class TestDataService(MonocleSampleData):
@@ -36,9 +54,8 @@ class SampleTrackingService(MonocleSampleTracking):
 
     def __init__(self, username: str, set_up: bool = True):
         MonocleSampleTracking.__init__(self, set_up=set_up)
-        user = MonocleUser(username)
-        # Setting this record will enforce data filtering by user
-        self.user_record = user.record
+        # Setting the user record will enforce data filtering by user
+        _add_user_record(username, self)
 
 
 class TestSampleTrackingService(MonocleSampleTracking):

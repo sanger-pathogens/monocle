@@ -17,9 +17,10 @@ class MetadataDownloadTest(TestCase):
     bad_api_host = "http://no.such.host/"
     bad_api_endpoint = "/no/such/endpoint"
     # this pattern should match a container on the docker network
-    base_url_regex = "^http://[\w\-]+$"
-    endpoint_regex = "(/[\w\-\.]+)+"
+    base_url_regex = "^http://[\\w\\-]+$"
+    endpoint_regex = "(/[\\w\\-\\.]+)+"
     # metadata, in silico and QC data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
+    mock_project = "mock_project_id"
     mock_download_param = ["5903STDY8059053:31663_7#43"]
     mock_bad_download = """{  "wrong key":
                                        {  "does": "not matter what appears here"
@@ -353,7 +354,7 @@ class MetadataDownloadTest(TestCase):
     @patch.object(Monocle_Download_Client, "make_request")
     def test_download_metadata(self, mock_request):
         mock_request.return_value = self.mock_metadata_download
-        lanes = self.download.get_metadata(self.mock_download_param)
+        lanes = self.download.get_metadata(self.mock_project, self.mock_download_param)
         # response should be list of dict
         self.assertIsInstance(lanes, type(["a", "list"]))
         this_lane = lanes[0]
@@ -370,12 +371,12 @@ class MetadataDownloadTest(TestCase):
     def test_reject_bad_download_metadata_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_download
-            self.download.get_metadata(self.mock_download_param[0])
+            self.download.get_metadata(self.mock_project, self.mock_download_param[0])
 
     @patch.object(Monocle_Download_Client, "make_request")
     def test_download_in_silico_data(self, mock_request):
         mock_request.return_value = self.mock_in_silico_data_download
-        lanes = self.download.get_in_silico_data(self.mock_download_param)
+        lanes = self.download.get_in_silico_data(self.mock_project, self.mock_download_param)
         # response should be list of dict
         self.assertIsInstance(lanes, type(["a", "list"]))
         this_lane = lanes[0]
@@ -394,7 +395,7 @@ class MetadataDownloadTest(TestCase):
     @patch.object(Monocle_Download_Client, "make_request")
     def test_download_qc_data(self, mock_request):
         mock_request.return_value = self.mock_qc_data_download
-        lanes = self.download.get_qc_data(self.mock_download_param)
+        lanes = self.download.get_qc_data(self.mock_project, self.mock_download_param)
         # response should be list of dict
         self.assertIsInstance(lanes, type(["a", "list"]))
         this_lane = lanes[0]
@@ -412,12 +413,12 @@ class MetadataDownloadTest(TestCase):
     def test_reject_bad_download_qc_data_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_download
-            self.download.get_qc_data(self.mock_download_param[0])
+            self.download.get_qc_data(self.mock_project, self.mock_download_param[0])
 
     @patch.object(urllib.request, "urlopen")
     def test_download_qc_data_when_no_qc_data_available(self, mock_urlopen):
         mock_urlopen.side_effect = urllib.error.HTTPError("not found", 404, "", "", "")
-        lanes = self.download.get_qc_data(self.mock_download_param)
+        lanes = self.download.get_qc_data(self.mock_project, self.mock_download_param)
         # response should be and empty list in case of a 404
         self.assertIsInstance(lanes, type(["a", "list"]))
         self.assertEqual(len(lanes), 0, msg="list was not empty as expected")
