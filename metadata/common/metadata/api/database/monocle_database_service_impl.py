@@ -356,16 +356,15 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     # )
 
     def __init__(self, connector: Connector) -> None:
-        try:
-            with application.app_context():
-                self.application = application
-                self.config = application.config
-        except Exception as ex:
-            logging.info(ex)
-        self.initialize()
         self.connector = connector
 
-    def initialize(self):
+    def initialize_sql_statements(self):
+        if hasattr(self, "INTIALIZED") is not None:
+            return
+        self.INTIALIZED = 1
+        with application.app_context():
+            self.application = application
+            self.config = self.application.config
         qc_keys = self.config["qc_data"]["spreadsheet_definition"].keys()
         parts = [[], [], []]
         for k in qc_keys:
@@ -483,6 +482,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_institution_names(self) -> List[Institution]:
         """Returns a list of all instiution names"""
         results = []
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
 
@@ -519,6 +519,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         else:
                             raise e
             else:
+                self.initialize_sql_statements()
                 rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
                 sanger_sample_ids = [row["sanger_sample_id"] for row in rs]
 
@@ -553,6 +554,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                         else:
                             raise e
             else:
+                self.initialize_sql_statements()
                 rs = con.execute(self.SELECT_ALL_IN_SILICO_SQL)
                 lane_ids = [row["lane_id"] for row in rs]
 
@@ -614,6 +616,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         """Retrieve all sample records"""
         results = []
 
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
         for row in rs:
@@ -696,6 +699,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         )
 
         # Use a transaction...
+        self.initialize_sql_statements()
         with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
                 con.execute(
@@ -778,6 +782,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         )
 
         # Use a transaction...
+        self.initialize_sql_statements()
         with self.connector.get_transactional_connection() as con:
             for in_silico_data in in_silico_data_list:
                 con.execute(
@@ -859,6 +864,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         )
 
         # Use a transaction...
+        self.initialize_sql_statements()
         with self.connector.get_transactional_connection() as con:
             for qc_data in qc_data_list:
                 con.execute(
@@ -883,6 +889,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         )
         logger.debug("get_download_metadata: Pulling sample ids {} from the database...".format(sanger_sample_ids))
 
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sanger_sample_ids)
 
@@ -965,6 +972,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         results = []
         lane_ids = tuple(keys)
 
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
 
@@ -1047,6 +1055,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         results = []
         lane_ids = tuple(keys)
 
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
 
@@ -1057,5 +1066,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     def delete_all_qc_data(self):
         """Delete all QC data"""
+        self.initialize_sql_statements()
         with self.connector.get_connection() as con:
             con.execute(self.DELETE_ALL_QC_DATA_SQL)
