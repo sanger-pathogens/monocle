@@ -137,12 +137,12 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(len(samples), 2)
         self.assertEqual(samples[0], TEST_SAMPLE_1)
         self.assertEqual(samples[1], TEST_SAMPLE_2)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_ALL_SAMPLES_SQL)
+        self.connection.execute.assert_called_with(self.under_test.SELECT_ALL_SAMPLES_SQL)
 
     def test_get_samples_noresults(self) -> None:
         self.connection.execute.return_value = []
         samples = self.under_test.get_samples()
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_ALL_SAMPLES_SQL)
+        self.connection.execute.assert_called_with(self.under_test.SELECT_ALL_SAMPLES_SQL)
         self.assertIsNotNone(samples)
         self.assertEqual(len(samples), 0)
 
@@ -378,7 +378,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
     def test_update_sample_metadata(self) -> None:
         metadata_list = [TEST_SAMPLE_1, TEST_SAMPLE_2]
         self.under_test.update_sample_metadata(metadata_list)
-        calls = [call(MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_SAMPLE_SQL, **TEST_SAMPLE_1_DICT)]
+        calls = [call(self.under_test.INSERT_OR_UPDATE_SAMPLE_SQL, **TEST_SAMPLE_1_DICT)]
 
         self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
 
@@ -397,8 +397,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         lis1 = self.dict_change_empty_value_to_none(TEST_LANE_IN_SILICO_1_DICT)
         lis2 = self.dict_change_empty_value_to_none(TEST_LANE_IN_SILICO_2_DICT)
         calls = [
-            call(MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_IN_SILICO_SQL, **lis1),
-            call(MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_IN_SILICO_SQL, **lis2),
+            call(self.under_test.INSERT_OR_UPDATE_IN_SILICO_SQL, **lis1),
+            call(self.under_test.INSERT_OR_UPDATE_IN_SILICO_SQL, **lis2),
         ]
 
         self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
@@ -408,12 +408,12 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.under_test.update_lane_qc_data(qc_data_list)
         calls = [
             call(
-                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_QC_DATA_SQL,
+                self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
                 lane_id="50000_2#282",
                 rel_abun_sa="93.21",
             ),
             call(
-                MonocleDatabaseServiceImpl.INSERT_OR_UPDATE_QC_DATA_SQL,
+                self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
                 lane_id="50000_2#287",
                 rel_abun_sa="68.58",
             ),
@@ -460,7 +460,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(metadata[0], TEST_SAMPLE_1)
         self.assertEqual(metadata[1], TEST_SAMPLE_2)
         self.connection.execute.assert_called_with(
-            MonocleDatabaseServiceImpl.SELECT_SAMPLES_SQL, samples=("9999STDY8113123", "9999STDY8113124")
+            self.under_test.SELECT_SAMPLES_SQL, samples=("9999STDY8113123", "9999STDY8113124")
         )
 
     def test_get_download_metadata_noresults(self) -> None:
@@ -471,7 +471,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertIsNotNone(metadata)
         self.assertIsInstance(metadata, list)
         self.connection.execute.assert_called_with(
-            MonocleDatabaseServiceImpl.SELECT_SAMPLES_SQL, samples=("9999STDY8113123", "9999STDY8113124")
+            self.under_test.SELECT_SAMPLES_SQL, samples=("9999STDY8113123", "9999STDY8113124")
         )
         self.assertEqual(len(metadata), 0)
 
@@ -503,7 +503,7 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(in_silico_data[0], TEST_LANE_IN_SILICO_1)
         self.assertEqual(in_silico_data[1], TEST_LANE_IN_SILICO_2)
         self.connection.execute.assert_called_with(
-            MonocleDatabaseServiceImpl.SELECT_LANES_IN_SILICO_SQL, lanes=("50000_2#282", "50000_2#287")
+            self.under_test.SELECT_LANES_IN_SILICO_SQL, lanes=("50000_2#282", "50000_2#287")
         )
 
     def test_get_download_qc_data(self) -> None:
@@ -521,5 +521,5 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(qc_data[0], TEST_LANE_QC_DATA_1)
         self.assertEqual(qc_data[1], TEST_LANE_QC_DATA_2)
         self.connection.execute.assert_called_with(
-            MonocleDatabaseServiceImpl.SELECT_LANES_QC_DATA_SQL, lanes=("50000_2#282", "50000_2#287")
+            self.under_test.SELECT_LANES_QC_DATA_SQL, lanes=("50000_2#282", "50000_2#287")
         )
