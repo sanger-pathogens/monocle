@@ -32,10 +32,8 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
             self.assertIsNotNone(application)
             with open("config.json") as config_file:
-                d = json.load(config_file)
-                application.app.config.update(d)
-                connector_mock.config = d
-            connector_mock.application = application.app
+                connector_mock.application = application
+                connector_mock.application.config = json.load(config_file)
 
             self.connector = connector_mock
             self.connection = Mock()

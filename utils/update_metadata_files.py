@@ -97,46 +97,6 @@ class UpdateMetadataFiles:
                 return line
         return ""
 
-    def generate_sql_replacements(self, data):
-        """Generates a dict to replace SQL statements in a Python file."""
-        ret = {}
-
-        columns = data["metadata"]["spreadsheet_definition"].keys()
-        ret["INSERT_OR_UPDATE_SAMPLE_SQL"] = (
-            "INSERT INTO api_sample (\n"
-            + self.chunk_text(", ", columns, 7)
-            + "\n) VALUES (\n"
-            + self.chunk_text(", ", list(map(lambda c: f":{c}", columns)), 7)
-            + "\n) ON DUPLICATE KEY UPDATE\n"
-            + ",\n".join(list(map(lambda c: f"{self.indent}{c} = :{c}", columns)))
-        )
-        ret["SELECT_SAMPLES_SQL"] = (
-            "SELECT\n"
-            + self.chunk_text(", ", columns, 7)
-            + f"\nFROM api_sample\nWHERE\n{self.indent}sanger_sample_id IN :samples"
-        )
-        ret["SELECT_ALL_SAMPLES_SQL"] = (
-            "SELECT\n" + self.chunk_text(", ", columns, 7) + "\nFROM api_sample\nORDER BY sanger_sample_id"
-        )
-
-        columns = data["in_silico_data"]["spreadsheet_definition"].keys()
-        ret["SELECT_ALL_IN_SILICO_SQL"] = (
-            "SELECT\n" + self.chunk_text(", ", columns, 7) + "\nFROM in_silico\nORDER BY lane_id"
-        )
-        ret["INSERT_OR_UPDATE_IN_SILICO_SQL"] = (
-            "INSERT INTO in_silico (\n"
-            + self.chunk_text(", ", columns, 7)
-            + "\n) VALUES (\n"
-            + self.chunk_text(", ", list(map(lambda c: f":{c}", columns)), 7)
-            + "\n) ON DUPLICATE KEY UPDATE\n"
-            + ",\n".join(list(map(lambda c: f"{self.indent}{c} = :{c}", columns)))
-        )
-        ret["SELECT_LANES_IN_SILICO_SQL"] = (
-            "SELECT\n" + self.chunk_text(", ", columns, 7) + f"\nFROM in_silico\nWHERE\n{self.indent}lane_id IN :lanes"
-        )
-
-        return ret
-
     def generate_code_replacements(self, data):
         """Generates a dict to replace variable assignments based on SQL in a Python file."""
         ret = {}
@@ -181,7 +141,6 @@ class UpdateMetadataFiles:
     def update_monocle_database_service_impl(self, data, filename):
         """Updates the monocle_database_service_impl.py file."""
         autogeneration_note = self.get_autogeneration_note("CODE SECTION")
-        sql_replacements = self.generate_sql_replacements(data)
         code_replacements = self.generate_code_replacements(data)
 
         # Replace existing code
@@ -194,27 +153,17 @@ class UpdateMetadataFiles:
             line = lines.pop(0)
             out = line
 
-            # SQL replacements
-            for (replacement_key, replacement_text) in sql_replacements.items():
-                p = re.compile(r"^\s*" + replacement_key + r"\s*=\s*text\s*\($")
+            # Code replacements
+            m = p_current_method.match(line)
+            if m:
+                current_method = m.group(1)
+            if current_method in code_replacements:
+                v = code_replacements[current_method]
+                p = re.compile(v[0])
                 if p.match(line):
-                    out += f"{self.indent*2}{autogeneration_note}"
-                    out += f'{self.indent*2}""" \\\n' + self.pad(replacement_text, 3) + f'\n{self.indent*2}"""\n'
-                    self.skip_lines_until(r"^.*\"\"\".*$", lines)  # Quote open
-                    self.skip_lines_until(r"^.*\"\"\".*$", lines)  # Quote close
-                    break
-            if line == out:
-                # Code replacements
-                m = p_current_method.match(line)
-                if m:
-                    current_method = m.group(1)
-                if current_method in code_replacements:
-                    v = code_replacements[current_method]
-                    p = re.compile(v[0])
-                    if p.match(line):
-                        out += f"{self.indent*5}{autogeneration_note}"
-                        out += self.pad(v[1], 5) + "\n"
-                        out += self.skip_lines_until(r"^\s*\)\s*$", lines)
+                    out += f"{self.indent*5}{autogeneration_note}"
+                    out += self.pad(v[1], 5) + "\n"
+                    out += self.skip_lines_until(r"^\s*\)\s*$", lines)
             new_code += out
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
