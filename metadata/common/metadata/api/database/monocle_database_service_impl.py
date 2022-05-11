@@ -359,14 +359,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         try:
             with application.app_context():
                 self.application = application
+                self.config = application.config
         except Exception as ex:
             logging.info(ex)
-            self.application = {}  # For testing
         self.initialize()
         self.connector = connector
 
     def initialize(self):
-        qc_keys = self.application.config["qc_data"]["spreadsheet_definition"].keys()
+        qc_keys = self.config["qc_data"]["spreadsheet_definition"].keys()
         parts = [[], [], []]
         for k in qc_keys:
             parts[0].append(k)
