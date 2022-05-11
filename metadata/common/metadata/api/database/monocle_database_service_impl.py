@@ -4,7 +4,8 @@ import urllib.parse
 import urllib.request
 from typing import Dict, List
 
-from flask import current_app, request
+from flask import current_app as application
+from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
@@ -355,12 +356,17 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     # )
 
     def __init__(self, connector: Connector) -> None:
+        try:
+            with application.app_context():
+                self.application = application
+        except Exception as ex:
+            logging.info(ex)
+            self.application = {}  # For testing
         self.initialize()
         self.connector = connector
 
     def initialize(self):
-        with current_app.app_context():
-            qc_keys = current_app.config["qc_data"]["spreadsheet_definition"].keys()
+        qc_keys = self.application.config["qc_data"]["spreadsheet_definition"].keys()
         parts = [[], [], []]
         for k in qc_keys:
             parts[0].append(k)
