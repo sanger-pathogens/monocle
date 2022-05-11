@@ -118,7 +118,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         self.SELECT_LANES_IN_SILICO_SQL = text(
             "SELECT " + ",".join(is_keys) + " FROM in_silico WHERE lane_id IN :lanes"
         )
-        self.INSERT_OR_UPDATE_QC_DATA_SQL = self.initialize_sql_insert_or_update("in_silico", is_keys)
+        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("in_silico", is_keys)
 
         # QC data
         qc_keys = list(self.config["qc_data"]["spreadsheet_definition"].keys())
