@@ -26,10 +26,16 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def setUp(self) -> None:
         with patch("metadata.api.database.monocle_database_service_impl.Connector", autospec=True) as connector_mock:
+            import json
+
             from metadata.wsgi import application
 
             self.assertIsNotNone(application)
-            connector_mock.application = application
+            with open("config.json") as config_file:
+                d = json.load(config_file)
+                application.app.config.update(d)
+                connector_mock.config = d
+            connector_mock.application = application.app
 
             self.connector = connector_mock
             self.connection = Mock()

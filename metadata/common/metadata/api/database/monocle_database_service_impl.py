@@ -335,6 +335,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
 
+    '''
     INSERT_OR_UPDATE_QC_DATA_SQL = text(
         """ \
             INSERT INTO qc_data (
@@ -347,8 +348,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             """
     )
 
-    SELECT_LANES_QC_DATA_SQL = text("")
-    '''
     SELECT_LANES_QC_DATA_SQL = text(
         """ \
             SELECT
@@ -363,14 +362,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         self.connector = connector
 
     def initialize_sql_statements(self):
-        pass
-        if hasattr(self, "INTIALIZED") is not None:
-            return
-        self.INTIALIZED = 1
-        with application.app_context():
-            self.application = application
-            self.config = self.application.config
-        qc_keys = self.config["qc_data"]["spreadsheet_definition"].keys()
+        if application is not None:  # Production
+            self.config = application.config
+        else:  # Testing
+            self.config = self.connector.config
+        qc_keys = list(self.config["qc_data"]["spreadsheet_definition"].keys())
         parts = [[], [], []]
         for k in qc_keys:
             parts[0].append(k)
@@ -384,10 +380,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             + ") ON DUPLICATE KEY UPDATE "
             + ", ".join(parts[2])
         )
-        self.SELECT_LANES_QC_DATA_SQL = text("SELECT" + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
-        print("foobar1")
-        print(self.INSERT_OR_UPDATE_QC_DATA_SQL)
-        print(self.SELECT_LANES_QC_DATA_SQL)
+        self.SELECT_LANES_QC_DATA_SQL = text("SELECT " + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
 
     def get_authenticated_username(self, req_obj: request):
         # TODO: Make this a separate service
