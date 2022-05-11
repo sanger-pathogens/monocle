@@ -335,30 +335,32 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
 
-    # INSERT_OR_UPDATE_QC_DATA_SQL = text(
-    #    """ \
-    #        INSERT INTO qc_data (
-    #            lane_id, rel_abun_sa
-    #        ) VALUES (
-    #            :lane_id, :rel_abun_sa
-    #        ) ON DUPLICATE KEY UPDATE
-    #            lane_id = :lane_id,
-    #            rel_abun_sa = :rel_abun_sa
-    #        """
-    # )
+    INSERT_OR_UPDATE_QC_DATA_SQL = text(
+        """ \
+            INSERT INTO qc_data (
+                lane_id, rel_abun_sa
+            ) VALUES (
+                :lane_id, :rel_abun_sa
+            ) ON DUPLICATE KEY UPDATE
+                lane_id = :lane_id,
+                rel_abun_sa = :rel_abun_sa
+            """
+    )
 
-    #    """ \
-    #        SELECT
-    #            lane_id, rel_abun_sa
-    #        FROM qc_data
-    #        WHERE
-    #            lane_id IN :lanes"""
-    # )
+    SELECT_LANES_QC_DATA_SQL = text(
+        """ \
+            SELECT
+                lane_id, rel_abun_sa
+            FROM qc_data
+            WHERE
+                lane_id IN :lanes"""
+    )
 
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
     def initialize_sql_statements(self):
+        pass
         if hasattr(self, "INTIALIZED") is not None:
             return
         self.INTIALIZED = 1
