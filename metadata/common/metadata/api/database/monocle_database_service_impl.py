@@ -347,6 +347,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             """
     )
 
+    SELECT_LANES_QC_DATA_SQL = text("")
+    '''
     SELECT_LANES_QC_DATA_SQL = text(
         """ \
             SELECT
@@ -355,12 +357,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             WHERE
                 lane_id IN :lanes"""
     )
+    '''
 
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
     def initialize_sql_statements(self):
-        pass
         if hasattr(self, "INTIALIZED") is not None:
             return
         self.INTIALIZED = 1
