@@ -4,7 +4,7 @@ import urllib.parse
 import urllib.request
 from typing import Dict, List
 
-from flask import request
+from flask import current_app, request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
@@ -359,8 +359,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         self.connector = connector
 
     def initialize(self):
-        # with current_app.app_context():
-        qc_keys = self.app.config["qc_data"]["spreadsheet_definition"].keys()
+        with current_app.app_context():
+            qc_keys = current_app.config["qc_data"]["spreadsheet_definition"].keys()
         parts = [[], [], []]
         for k in qc_keys:
             parts[0].append(k)
