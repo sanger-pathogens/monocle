@@ -17,7 +17,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^[0-9a-zA-Z\\-_\\. ]+$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -32,7 +32,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^[0-9a-zA-Z\\-_]+$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -47,7 +47,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^[0-9a-zA-Z\\-_\\.]+$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -61,7 +61,7 @@
                   "filter type": "none",
                   "db": {
                      "max_length": 256,
-                     "regex": "^\\d+_\\d+#\\d+$",
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
                      "regex_validation_message": "is not a recognised lane Id format"
                   }
                }
@@ -80,7 +80,7 @@
                   "filter type": "none",
                   "db": {
                      "max_length": 600,
-                     "regex": "^[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+$",
+                     "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -94,7 +94,7 @@
                   "filter type": "none",
                   "db": {
                      "max_length": 400,
-                     "regex": "^PMID: \\d{7,8}(,{1}[ ]{0,1}PMID: \\d{7,8})*$",
+                     "regex": "^(?:PMID: \\d{7,8}(?:,{1}[ ]{0,1}PMID: \\d{7,8})*)$",
                      "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
                   }
                },
@@ -180,7 +180,7 @@
                   "display name": "Collection year",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{4}$",
+                     "regex": "^(?:\\d{4})$",
                      "regex_validation_message": "must be a YYYY format year"
                   }
                },
@@ -193,7 +193,7 @@
                   "display name": "Collection month",
                   "filter type": "discrete",
                   "db": {
-                     "regex": "(?i)^\\d{1,2}$",
+                     "regex": "^(?:\\d{1,2})$",
                      "regex_validation_message": "must be a MM format month"
                   }
                },
@@ -206,7 +206,7 @@
                   "display name": "Collection day",
                   "filter type": "discrete",
                   "db": {
-                     "regex": "(?i)^\\d{1,2}$",
+                     "regex": "^(?:\\d{1,2})$",
                      "regex_validation_message": "must be a DD format day"
                   }
                }
@@ -289,7 +289,7 @@
                   "display name": "Age years",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,3}$",
+                     "regex": "^(?:\\d{1,3})$",
                      "regex_validation_message": "should be a valid 1 to 3 digit number"
                   }
                },
@@ -302,7 +302,7 @@
                   "display name": "Age months",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,4}$",
+                     "regex": "^(?:\\d{1,4})$",
                      "regex_validation_message": "should be a valid 1 to 4 digit number"
                   }
                },
@@ -315,7 +315,7 @@
                   "display name": "Age weeks",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,4}$",
+                     "regex": "^(?:\\d{1,4})$",
                      "regex_validation_message": "should be a valid 1 to 4 digit number"
                   }
                },
@@ -328,7 +328,7 @@
                   "display name": "Age days",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,5}$",
+                     "regex": "^(?:\\d{1,5})$",
                      "regex_validation_message": "should be a valid 1 to 5 digit number"
                   }
                },
@@ -544,7 +544,7 @@
                   "display name": "Gestational age weeks",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,3}$",
+                     "regex": "^(?:\\d{1,3})$",
                      "regex_validation_message": "should be a valid 1 to 3 digit number",
                      "convert_case": {
                         "case": "lower"
@@ -560,7 +560,7 @@
                   "display name": "Birth weight gram",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^\\d{1,7}$",
+                     "regex": "^(?:\\d{1,7})$",
                      "regex_validation_message": "should be a valid 1 to 7 digit number",
                      "convert_case": {
                         "case": "lower"
@@ -576,7 +576,7 @@
                   "display name": "Apgar score",
                   "filter type": "numeric",
                   "db": {
-                     "regex": "(?i)^[0-9]|10$",
+                     "regex": "^(?:[0-9]|10)$",
                      "regex_validation_message": "should be a valid number between 0 and 10",
                      "convert_case": {
                         "case": "lower"
@@ -623,7 +623,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 100,
-                     "regex": "(?i)^latex agglutination|Lancefield|PCR|other(, latex agglutination|Lancefield|PCR|other)*$",
+                     "regex": "(?i)^latex agglutination|Lancefield|PCR|other(?:, latex agglutination|Lancefield|PCR|other)*$",
                      "regex_validation_message": "is not in the list of legal options (latex agglutination, Lancefield, PCR, other)",
                      "convert_case": {
                         "case": "lower",
@@ -649,7 +649,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -687,7 +687,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -725,7 +725,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -763,7 +763,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -801,7 +801,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -839,7 +839,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -877,7 +877,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -915,7 +915,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -953,7 +953,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -991,7 +991,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -1029,7 +1029,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -1067,7 +1067,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -1105,7 +1105,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -1143,7 +1143,7 @@
                   "filter type": "discrete",
                   "db": {
                      "max_length": 30,
-                     "regex": "^(<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(mm|(u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
+                     "regex": "^(?:<|>)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$",
                      "regex_validation_message": "should be a valid floating point number, optionally with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                   }
                },
@@ -1190,7 +1190,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^\\d+_\\d+#\\d+$",
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                }
@@ -1333,7 +1333,7 @@
                      "id":"twenty_three_S1",
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1349,7 +1349,7 @@
                      "id":"twenty_three_S3",
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                }
@@ -1369,7 +1369,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1384,7 +1384,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1399,7 +1399,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1414,7 +1414,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1429,7 +1429,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1444,7 +1444,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1459,7 +1459,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1474,7 +1474,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1489,7 +1489,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1504,7 +1504,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1519,7 +1519,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1534,7 +1534,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1549,7 +1549,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1564,7 +1564,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1579,7 +1579,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1594,7 +1594,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1609,7 +1609,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1624,7 +1624,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1639,7 +1639,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1654,7 +1654,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1669,7 +1669,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1684,7 +1684,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1699,7 +1699,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1714,7 +1714,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1729,7 +1729,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1744,7 +1744,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1759,7 +1759,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1774,7 +1774,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1789,7 +1789,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1804,7 +1804,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                }
@@ -1824,7 +1824,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1839,7 +1839,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1854,7 +1854,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1869,7 +1869,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1884,7 +1884,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1899,7 +1899,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1914,7 +1914,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1929,7 +1929,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1944,7 +1944,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1959,7 +1959,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                },
@@ -1974,7 +1974,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 20,
-                     "regex": "^(^$|pos|neg)+$",
+                     "regex": "^(?:^$|pos|neg)+$",
                      "regex_validation_message": "must be pos, neg or empty"
                   }
                }
@@ -1994,7 +1994,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2009,7 +2009,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2024,7 +2024,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2039,7 +2039,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2054,7 +2054,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2069,7 +2069,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2084,7 +2084,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                },
@@ -2099,7 +2099,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 100,
-                     "regex": "^(^$|[0-9a-zA-Z_\\-\\,])+$",
+                     "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
                      "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
                   }
                }
@@ -2120,7 +2120,7 @@
                   "db": {
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^\\d+_\\d+#\\d+$",
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                }
@@ -2139,7 +2139,7 @@
                   "db": {
                      "mandatory": false,
                      "max_length": 6,
-                     "regex": "^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$"
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
                   }
                }
             ]
