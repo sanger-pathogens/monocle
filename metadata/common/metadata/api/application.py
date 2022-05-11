@@ -5,6 +5,7 @@ import logging.config
 import os
 
 import connexion
+from flask import current_app
 from flask_cors import CORS
 from flask_injector import FlaskInjector
 
@@ -40,6 +41,9 @@ def create_application(conf_file, injection_bindings):
     # Load configuration
     with open(conf_file) as config_file:
         app_handle.app.config.update(json.load(config_file))
+
+    with app_handle.app.app_context():
+        current_app.config = dict(app_handle.app.config)
 
     # Load logging configuration
     logging.config.dictConfig(logging_config)
