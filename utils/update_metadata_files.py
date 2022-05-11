@@ -102,17 +102,9 @@ class UpdateMetadataFiles:
         ret = {}
 
         columns = data["metadata"]["spreadsheet_definition"].keys()
-        ret["get_samples"] = [
-            r"^\s*Metadata\(.*$",
-            "\n".join(list(map(lambda c: f'{c}=row["{c}"],', columns))),
-        ]
         ret["update_sample_metadata"] = [
             r"^\s*self\.INSERT_OR_UPDATE_SAMPLE_SQL,\s*$",
             "\n".join(list(map(lambda c: f"{c}=metadata.{c},", columns))),
-        ]
-        ret["get_download_metadata"] = [
-            r"^\s*Metadata\(.*$",
-            "\n".join(list(map(lambda c: f'{c}=row["{c}"],', columns))),
         ]
 
         columns = data["in_silico_data"]["spreadsheet_definition"].keys()
@@ -126,10 +118,6 @@ class UpdateMetadataFiles:
                     )
                 )
             ),
-        ]
-        ret["get_download_in_silico_data"] = [
-            r"^\s*InSilicoData\(\s*$",
-            "\n".join(list(map(lambda c: f'{c}=row["{c}"],', columns))),
         ]
 
         return ret
