@@ -4,7 +4,7 @@ import urllib.parse
 import urllib.request
 from typing import Dict, List
 
-from flask import current_app, request
+from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
@@ -333,21 +333,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     )
 
     DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
-    with current_app.app_context():
-        qc_keys = current_app.config["qc_data"]["spreadsheet_definition"].keys()
-    parts = [[], [], []]
-    for k in qc_keys:
-        parts[0].append(k)
-        parts[1].append(f":{k}")
-        parts[2].append(f"{k} = :{k}")
-    INSERT_OR_UPDATE_QC_DATA_SQL = text(
-        "INSERT INTO qc_data ("
-        + ", ".join(parts[0])
-        + ") VALUES ("
-        + ", ".join(parts[1])
-        + ") ON DUPLICATE KEY UPDATE "
-        + ", ".join(parts[2])
-    )
 
     # INSERT_OR_UPDATE_QC_DATA_SQL = text(
     #    """ \
@@ -361,7 +346,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     #        """
     # )
 
-    SELECT_LANES_QC_DATA_SQL = text("SELECT" + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
     #    """ \
     #        SELECT
     #            lane_id, rel_abun_sa
@@ -371,7 +355,26 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     # )
 
     def __init__(self, connector: Connector) -> None:
+        self.initialize()
         self.connector = connector
+
+    def initialize(self):
+        # with current_app.app_context():
+        qc_keys = self.app.config["qc_data"]["spreadsheet_definition"].keys()
+        parts = [[], [], []]
+        for k in qc_keys:
+            parts[0].append(k)
+            parts[1].append(f":{k}")
+            parts[2].append(f"{k} = :{k}")
+        self.INSERT_OR_UPDATE_QC_DATA_SQL = text(
+            "INSERT INTO qc_data ("
+            + ", ".join(parts[0])
+            + ") VALUES ("
+            + ", ".join(parts[1])
+            + ") ON DUPLICATE KEY UPDATE "
+            + ", ".join(parts[2])
+        )
+        self.SELECT_LANES_QC_DATA_SQL = text("SELECT" + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
 
     def get_authenticated_username(self, req_obj: request):
         # TODO: Make this a separate service
