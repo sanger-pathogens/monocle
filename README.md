@@ -179,7 +179,6 @@ configuration in there, run `utils/update_metadata_files.py`. This will alter th
 - `dash-api/juno/dash/interface/openapi.yml`
 - For each directory in `metadata`:
   - `config.json`
-  - `metadata/api/database/monocle_database_service_impl.py`
   - `metadata/api/database/model/metadata.py` (complete replacement)
   - `metadata/api/database/model/in_silico_data.py` (complete replacement)
   - `metadata/api/database/model/qc_data.py` (complete replacement)
