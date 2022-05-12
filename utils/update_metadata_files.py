@@ -165,7 +165,15 @@ class UpdateMetadataFiles:
                     d[n.group(1)] = n.group(2)
                 if p_end_of_definition.match(row):
                     break
-            if var_name in ["TEST_SAMPLE_1_DICT", "TEST_SAMPLE_2_DICT"]:
+            if var_name in [
+                "TEST_SAMPLE_1_DICT",
+                "TEST_SAMPLE_2_DICT",
+                "TEST_UPLOAD_SAMPLE_1_DICT",
+                "TEST_UPLOAD_SAMPLE_2_DICT",
+                "TEST_UPLOAD_SAMPLE_3_DICT",
+                "TEST_UPLOAD_SAMPLE_4_DICT",
+                "TEST_UPLOAD_SAMPLE_5_DICT",
+            ]:
                 c = data["metadata"]
             elif var_name in ["TEST_LANE_IN_SILICO_1_DICT", "TEST_LANE_IN_SILICO_2_DICT"]:
                 c = data["in_silico_data"]
