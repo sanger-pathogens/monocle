@@ -35,6 +35,8 @@ class TestUploadHandler(unittest.TestCase):
             print(str(error))
 
     def setUp(self) -> None:
+        from metadata.wsgi import application
+
         self.maxDiff = None
         with patch("metadata.api.database.monocle_database_service.MonocleDatabaseService", autospec=True) as dao_mock:
             self.dao_mock = dao_mock
@@ -53,6 +55,8 @@ class TestUploadHandler(unittest.TestCase):
                     self.config["metadata"]["spreadsheet_definition"],
                 )
             self.under_test = UploadMetadataHandler(self.dao_mock, self.test_spreadsheet_def, True)
+            self.under_test.application = application
+            self.under_test.application.config = self.config
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """Assert validation errors are correct"""
