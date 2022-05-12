@@ -69,11 +69,15 @@ class TestDownloadMetadataHandler(unittest.TestCase):
         self.assertEqual(metadata_list, mock_retval)
 
     def test_create_download_response(self) -> None:
+        from metadata.wsgi import application
+
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
             sprd_def = SpreadsheetDefinition(2, data["metadata"]["spreadsheet_definition"])
             handler = DownloadMetadataHandler(self.dao_mock, sprd_def)
+            handler.application = application
+            handler.application.config = data
             results = handler.create_download_response([TEST_SAMPLE_1, TEST_SAMPLE_2])
             self.assertIsNotNone(results)
             self.assertEqual(len(results), 2)
@@ -200,11 +204,15 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
         self.assertEqual(in_silico_data_list, mock_retval)
 
     def test_create_download_response(self) -> None:
+        from metadata.wsgi import application
+
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
             sprd_def = SpreadsheetDefinition(2, data["in_silico_data"]["spreadsheet_definition"])
             handler = DownloadInSilicoHandler(self.dao_mock, sprd_def)
+            handler.application = application
+            handler.application.config = data
             results = handler.create_download_response([TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2])
             self.assertIsNotNone(results)
             self.assertEqual(len(results), 2)
@@ -326,11 +334,15 @@ class TestDownloadQCHandler(unittest.TestCase):
         self.assertEqual(qc_data_list, mock_retval)
 
     def test_create_download_response(self) -> None:
+        from metadata.wsgi import application
+
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
             sprd_def = SpreadsheetDefinition(2, data["qc_data"]["spreadsheet_definition"])
             handler = DownloadQCDataHandler(self.dao_mock, sprd_def)
+            handler.application = application
+            handler.application.config = data
             results = handler.create_download_response([TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2])
             self.assertIsNotNone(results)
             self.assertEqual(len(results), 2)
