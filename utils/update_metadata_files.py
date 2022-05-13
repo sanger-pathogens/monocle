@@ -58,6 +58,11 @@ class UpdateMetadataFiles:
             ("in_silico_data", "InSilicoData"),
             ("qc_data", "QCData"),
         ]
+        self.table2sql_file = [
+            ("metadata", "api_sample.sql"),
+            ("in_silico_data", "in_silico.sql"),
+            ("qc_data", "qc_data.sql"),
+        ]
 
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
@@ -296,11 +301,7 @@ class UpdateMetadataFiles:
                                 class_name,
                                 f"{metadata_path}/{entry.name}/metadata/api/model/{k}.py",
                             )
-                        for (k, filename) in [
-                            ("metadata", "api_sample.sql"),
-                            ("in_silico_data", "in_silico.sql"),
-                            ("qc_data", "qc_data.sql"),
-                        ]:
+                        for (k, filename) in self.table2sql_file:
                             self.update_database_definition(data[k], f"{self.root_path}/database/tables/{filename}")
                         self.update_metadata_tests(data, f"{metadata_path}/{entry.name}/metadata/tests")
                         self.update_dash_yml(data, f"{self.root_path}/dash-api/{entry.name}/dash/interface/openapi.yml")
