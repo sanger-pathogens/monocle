@@ -27,7 +27,6 @@ class UpdateMetadataFiles:
     def __init__(self):
         self.indent = "    "
         self.root_path = f"{os.path.dirname(__file__)}/.."
-        self.map_config_dict = dict(metadata="metadata", in_silico_data="in silico", qc_data="qc data")
         self.config_additional_section_keys = ["spreadsheet_header_row_position", "upload_validation_enabled"]
         self.yml2json = [
             ["Metadata", "metadata", "metadata"],
@@ -288,6 +287,7 @@ class UpdateMetadataFiles:
 
     def update_all(self):
         """Runs updates on all metadata files."""
+        self.update_from_main_config()
         metadata_path = f"{self.root_path}/metadata"
         for entry in os.scandir(metadata_path):
             if entry.is_dir():
@@ -368,6 +368,9 @@ class UpdateMetadataFiles:
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
 
+        for k, v in self.config["config"].items():
+            self.__dict__[k] = v
+
         self.write_field_attributes_file()
 
         metadata_path = f"{self.root_path}/metadata"
@@ -380,5 +383,4 @@ class UpdateMetadataFiles:
 
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
-    umf.update_from_main_config()
     umf.update_all()

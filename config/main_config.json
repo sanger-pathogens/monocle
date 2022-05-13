@@ -1,4 +1,11 @@
 {
+   "config":{
+      "map_config_dict":{
+         "metadata":"metadata",
+         "in_silico_data":"in silico",
+         "qc_data":"qc data"
+      }
+   },
    "metadata": {
       "spreadsheet_header_row_position": 2,
       "upload_validation_enabled": true,
