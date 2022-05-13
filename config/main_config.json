@@ -1,10 +1,95 @@
 {
-   "config":{
-      "map_config_dict":{
-         "metadata":"metadata",
-         "in_silico_data":"in silico",
-         "qc_data":"qc data"
-      }
+   "config": {
+      "map_config_dict": {
+         "metadata": "metadata",
+         "in_silico_data": "in silico",
+         "qc_data": "qc data"
+      },
+      "config_additional_section_keys": [
+         "spreadsheet_header_row_position",
+         "upload_validation_enabled"
+      ],
+      "yml2json": [
+         [
+            "Metadata",
+            "metadata",
+            "metadata"
+         ],
+         [
+            "InSilicoData",
+            "in_silico_data",
+            "insilicodata"
+         ],
+         [
+            "QCData",
+            "qc_data",
+            "qcdata"
+         ]
+      ],
+      "yml_field_patterns": [
+         [
+            "MetadataFieldName",
+            "metadata"
+         ],
+         [
+            "InSilicoFieldName",
+            "in_silico_data"
+         ],
+         [
+            "QCDataFieldName",
+            "qc_data"
+         ]
+      ],
+      "test_data_var_names": {
+         "metadata": [
+            "TEST_SAMPLE_1_DICT",
+            "TEST_SAMPLE_2_DICT",
+            "TEST_UPLOAD_SAMPLE_1_DICT",
+            "TEST_UPLOAD_SAMPLE_2_DICT",
+            "TEST_UPLOAD_SAMPLE_3_DICT",
+            "TEST_UPLOAD_SAMPLE_4_DICT",
+            "TEST_UPLOAD_SAMPLE_5_DICT"
+         ],
+         "in_silico_data": [
+            "TEST_LANE_IN_SILICO_1_DICT",
+            "TEST_LANE_IN_SILICO_2_DICT"
+         ],
+         "qc_data": [
+            "TEST_LANE_QC_DATA_1_DICT",
+            "TEST_LANE_QC_DATA_2_DICT"
+         ]
+      },
+      "var_heuristics_type_mapping": {
+         "^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$": "float"
+      },
+      "table2class": [
+         [
+            "metadata",
+            "Metadata"
+         ],
+         [
+            "in_silico_data",
+            "InSilicoData"
+         ],
+         [
+            "qc_data",
+            "QCData"
+         ]
+      ],
+      "table2sql_file": [
+         [
+            "metadata",
+            "api_sample.sql"
+         ],
+         [
+            "in_silico_data",
+            "in_silico.sql"
+         ],
+         [
+            "qc_data",
+            "qc_data.sql"
+         ]
+      ]
    },
    "metadata": {
       "spreadsheet_header_row_position": 2,
@@ -1337,7 +1422,7 @@
                   "display name": "23S1",
                   "filter type": "discrete",
                   "db": {
-                     "id":"twenty_three_S1",
+                     "id": "twenty_three_S1",
                      "mandatory": true,
                      "max_length": 20,
                      "regex": "^(?:^$|pos|neg)+$",
@@ -1353,7 +1438,7 @@
                   "display name": "23S3",
                   "filter type": "discrete",
                   "db": {
-                     "id":"twenty_three_S3",
+                     "id": "twenty_three_S3",
                      "mandatory": true,
                      "max_length": 20,
                      "regex": "^(?:^$|pos|neg)+$",
