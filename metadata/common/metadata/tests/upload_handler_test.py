@@ -9,6 +9,7 @@ from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler
 from metadata.tests.test_data import (
     EXPECTED_VALIDATION_ERRORS,
+    EXPECTED_VALIDATION_ERRORS2,
     TEST_UPLOAD_SAMPLE_1,
     TEST_UPLOAD_SAMPLE_2,
     TEST_UPLOAD_SAMPLE_3,
@@ -244,51 +245,8 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         """Assert validation errors are correct"""
         self.assertEqual(len(validation_errors), 37)
 
-        self.assertTrue(
-            '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters' in validation_errors
-        )
-        self.assertTrue('{row: 2, column: "23S1"}: "[pos]" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "23S3"}: "*" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "ERMB"}: "_" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "ERMT"}: "0" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "FOSA"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "GYRA"}: "+" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "LNUB"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "LSAC"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "MEFA"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "MPHC"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "MSRA"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "MSRD"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "PARC"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "RPOBGBS-1"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "RPOBGBS-2"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "RPOBGBS-3"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "RPOBGBS-4"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "SUL2"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "TETB"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "TETL"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "TETM"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "TETO"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "TETS"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "ALP1"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "ALP23"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "ALPHA"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "HVGA"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "PI1"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "PI2A1"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "PI2A2"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "PI2B"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "RIB"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 3, column: "SRR1"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue('{row: 2, column: "SRR2"}: "\'\'" must be pos, neg or empty' in validation_errors)
-        self.assertTrue(
-            '{row: 3, column: "23S1_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A) or empty value'
-            in validation_errors
-        )
-        self.assertTrue(
-            '{row: 3, column: "23S3_SNP"}: "\'\'" must contain comma-separated variants (e.g. T78Q,L55A) or empty value'
-            in validation_errors
-        )
+        for expected in EXPECTED_VALIDATION_ERRORS2:
+            self.assertTrue(expected in validation_errors)
 
     def test_allowed_file_types(self):
         self.assertIsNotNone(self.under_test.allowed_file_types())
