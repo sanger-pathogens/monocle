@@ -311,6 +311,7 @@ class UpdateMetadataFiles:
         """Generated the file_attributes.json file for dash-api."""
         field_attributes_file = f"{self.root_path}/dash-api/juno/field_attributes.json"
         field_attributes = copy.deepcopy(self.config)
+        field_attributes.pop("config")
         for _, kmc in self.map_config_dict.items():
             for k in self.config_additional_section_keys:
                 if k in field_attributes[kmc]:
