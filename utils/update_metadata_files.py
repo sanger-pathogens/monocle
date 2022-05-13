@@ -110,6 +110,7 @@ class UpdateMetadataFiles:
         """
         with open(filename, "r") as in_file:
             lines = in_file.readlines()
+        original_lines = list(map(lambda l: l.strip(), lines))
 
         new_code = ""
         p = re.compile(r"^\s*CREATE TABLE .*$")
@@ -135,6 +136,15 @@ class UpdateMetadataFiles:
                 out += "  # END OF AUTO_GENERATED SECTION\n"
                 out += self.skip_lines_until(r"^.*PRIMARY KEY.*$", lines)
             new_code += out
+
+        # Check for differences
+        new_lines = list(map(lambda l: l.strip(), new_code.split("\n")))
+        for line in original_lines:
+            if line not in new_lines:
+                print(f"Removed: {line}")
+        for line in new_lines:
+            if line not in original_lines:
+                print(f"Added: {line}")
 
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
