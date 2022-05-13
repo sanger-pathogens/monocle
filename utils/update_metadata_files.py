@@ -39,12 +39,32 @@ class UpdateMetadataFiles:
             ["InSilicoFieldName", "in_silico_data"],
             ["QCDataFieldName", "qc_data"],
         ]
+        self.test_data_var_names = {
+            "metadata": [
+                "TEST_SAMPLE_1_DICT",
+                "TEST_SAMPLE_2_DICT",
+                "TEST_UPLOAD_SAMPLE_1_DICT",
+                "TEST_UPLOAD_SAMPLE_2_DICT",
+                "TEST_UPLOAD_SAMPLE_3_DICT",
+                "TEST_UPLOAD_SAMPLE_4_DICT",
+                "TEST_UPLOAD_SAMPLE_5_DICT",
+            ],
+            "in_silico_data": ["TEST_LANE_IN_SILICO_1_DICT", "TEST_LANE_IN_SILICO_2_DICT"],
+            "qc_data": ["TEST_LANE_QC_DATA_1_DICT", "TEST_LANE_QC_DATA_2_DICT"],
+        }
+        self.var_heurustics_type_mapping = {"^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$": "float"}
+        self.table2class = [
+            ("metadata", "Metadata"),
+            ("in_silico_data", "InSilicoData"),
+            ("qc_data", "QCData"),
+        ]
 
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
         if "regex" in data:
-            if data["regex"] == "^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$":
-                return "float"
+            for pattern, var_type in self.var_heurustics_type_mapping.items():
+                if data["regex"] == pattern:
+                    return var_type
         return "str"
 
     def var_comment_heuristic(self, data):
@@ -123,16 +143,17 @@ class UpdateMetadataFiles:
                     row = f"  `{k}` "
                     if "mysql_type" in v:  # Defined type in main_config.json
                         row += v["mysql_type"]
-                    elif self.var_type_heuristic(v) == "float":
-                        row += "DECIMAL(5,2) UNSIGNED"
-                    elif "max_length" in v:
-                        row += f"VARCHAR({v['max_length']})"
                     else:
-                        row += "int(11)"
-                    if "mandatory" in v and v["mandatory"]:
-                        row += " NOT NULL"
-                    else:
-                        row += " DEFAULT NULL"
+                        if self.var_type_heuristic(v) == "float":
+                            row += "DECIMAL(5,2) UNSIGNED"
+                        elif "max_length" in v:
+                            row += f"VARCHAR({v['max_length']})"
+                        else:
+                            row += "int(11)"
+                        if "mandatory" in v and v["mandatory"]:
+                            row += " NOT NULL"
+                        else:
+                            row += " DEFAULT NULL"
                     row += ",\n"
                     out += row
                 out += "  # END OF AUTO_GENERATED SECTION\n"
@@ -184,29 +205,18 @@ class UpdateMetadataFiles:
                     d[n.group(1)] = n.group(2)
                 if p_end_of_definition.match(row):
                     break
-            if var_name in [
-                "TEST_SAMPLE_1_DICT",
-                "TEST_SAMPLE_2_DICT",
-                "TEST_UPLOAD_SAMPLE_1_DICT",
-                "TEST_UPLOAD_SAMPLE_2_DICT",
-                "TEST_UPLOAD_SAMPLE_3_DICT",
-                "TEST_UPLOAD_SAMPLE_4_DICT",
-                "TEST_UPLOAD_SAMPLE_5_DICT",
-            ]:
-                c = data["metadata"]
-            elif var_name in ["TEST_LANE_IN_SILICO_1_DICT", "TEST_LANE_IN_SILICO_2_DICT"]:
-                c = data["in_silico_data"]
-            elif var_name in ["TEST_LANE_QC_DATA_1_DICT", "TEST_LANE_QC_DATA_2_DICT"]:
-                c = data["qc_data"]
+            for data_group, var_names in self.test_data_var_names.items():
+                if var_name in var_names:
+                    c = data[data_group]
             # Remove obsolete fields
             for k in list(d.keys()):
                 if k not in c["spreadsheet_definition"]:
-                    print(f"Removing {k} from test data")
+                    print(f"Removing {k} from test data in {test_data_file_path}")
                     d.pop(k)
             # Add new fields
             for k in c["spreadsheet_definition"].keys():
                 if k not in d:
-                    print(f"Adding {k} to test data")
+                    print(f"Adding {k} to test data in {test_data_file_path}")
                     d[k] = str(len(d) + 1)
             output += line
             for k, v in d.items():
@@ -280,11 +290,7 @@ class UpdateMetadataFiles:
                 if os.path.exists(config_path):
                     with open(config_path) as config_file:
                         data = json.load(config_file)
-                        for (k, class_name) in [
-                            ("metadata", "Metadata"),
-                            ("in_silico_data", "InSilicoData"),
-                            ("qc_data", "QCData"),
-                        ]:
+                        for (k, class_name) in self.table2class.items():
                             self.generate_dataclass_file(
                                 data[k],
                                 class_name,
