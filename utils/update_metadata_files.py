@@ -290,7 +290,7 @@ class UpdateMetadataFiles:
                 if os.path.exists(config_path):
                     with open(config_path) as config_file:
                         data = json.load(config_file)
-                        for (k, class_name) in self.table2class.items():
+                        for (k, class_name) in self.table2class:
                             self.generate_dataclass_file(
                                 data[k],
                                 class_name,
