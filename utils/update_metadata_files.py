@@ -121,7 +121,9 @@ class UpdateMetadataFiles:
                 out += "  " + self.get_autogeneration_note("TABLE DEFINITION")
                 for (k, v) in data["spreadsheet_definition"].items():
                     row = f"  `{k}` "
-                    if self.var_type_heuristic(v) == "float":
+                    if "mysql_type" in v:  # Defined type in main_config.json
+                        row += v["mysql_type"]
+                    elif self.var_type_heuristic(v) == "float":
                         row += "DECIMAL(5,2) UNSIGNED"
                     elif "max_length" in v:
                         row += f"VARCHAR({v['max_length']})"
@@ -139,12 +141,17 @@ class UpdateMetadataFiles:
 
         # Check for differences
         new_lines = list(map(lambda l: l.strip(), new_code.split("\n")))
+        mysql_changes = []
         for line in original_lines:
             if line not in new_lines:
-                print(f"Removed: {line}")
+                mysql_changes.append(f"Removed: {line}")
         for line in new_lines:
             if line not in original_lines:
-                print(f"Added: {line}")
+                mysql_changes.append(f"Added or updated: {line}")
+        if len(mysql_changes) > 0:
+            print(f"THE FOLLOWING CHANGES NEED TO BE PERFORMED IN THE LIVE MySQL DB for {filename}:")
+            print("\n".join(mysql_changes))
+            print("")
 
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)

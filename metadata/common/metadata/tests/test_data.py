@@ -5,7 +5,6 @@ from metadata.api.model.qc_data import QCData
 """ Some test data to use in unit tests... """
 
 TEST_SAMPLE_1_DICT = dict(
-    sanger_sample_id="9999STDY8113123",
     lane_id="2000_2#10",
     submitting_institution="UniversityA",
     supplier_sample_name="SUPPLIER_1",
@@ -65,12 +64,12 @@ TEST_SAMPLE_1_DICT = dict(
     vancomycin_method="method13",
     linezolid="14",
     linezolid_method="method14",
+    sanger_sample_id="60",
 )
 
 TEST_SAMPLE_1 = Metadata(**TEST_SAMPLE_1_DICT)
 
 TEST_SAMPLE_2_DICT = dict(
-    sanger_sample_id="9999STDY8113124",
     lane_id="2000_2#11",
     submitting_institution="UniversityB",
     supplier_sample_name="SUPPLIER_2",
@@ -130,6 +129,7 @@ TEST_SAMPLE_2_DICT = dict(
     vancomycin_method="method23",
     linezolid="24",
     linezolid_method="method24",
+    sanger_sample_id="60",
 )
 
 TEST_SAMPLE_2 = Metadata(**TEST_SAMPLE_2_DICT)
@@ -280,7 +280,6 @@ TEST_LANE_QC_DATA_2 = QCData(**TEST_LANE_QC_DATA_2_DICT)
 
 
 TEST_UPLOAD_SAMPLE_1_DICT = dict(
-    sanger_sample_id="1000STDY7000166",
     lane_id="50000_2#282",
     submitting_institution="Test Institution A",
     supplier_sample_name="EY70425",
@@ -340,10 +339,10 @@ TEST_UPLOAD_SAMPLE_1_DICT = dict(
     vancomycin_method="agar dilution",
     linezolid="20",
     linezolid_method="agar dilution",
+    sanger_sample_id="60",
 )
 
 TEST_UPLOAD_SAMPLE_2_DICT = dict(
-    sanger_sample_id="1000STDY7000167",
     lane_id="50000_2#287",
     submitting_institution="Test Institution A",
     supplier_sample_name="EY_70601",
@@ -403,10 +402,10 @@ TEST_UPLOAD_SAMPLE_2_DICT = dict(
     vancomycin_method="",
     linezolid="S",
     linezolid_method="",
+    sanger_sample_id="60",
 )
 
 TEST_UPLOAD_SAMPLE_3_DICT = dict(
-    sanger_sample_id="1000STDY7000168",
     lane_id="50000_2#291",
     submitting_institution="Test Institution A",
     supplier_sample_name="EY_70602",
@@ -466,10 +465,10 @@ TEST_UPLOAD_SAMPLE_3_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    sanger_sample_id="60",
 )
 
 TEST_UPLOAD_SAMPLE_4_DICT = dict(
-    sanger_sample_id="1000STDY7000169",
     lane_id="50000_2#296",
     submitting_institution="Test Institution A",
     supplier_sample_name="EY70603",
@@ -529,10 +528,10 @@ TEST_UPLOAD_SAMPLE_4_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    sanger_sample_id="60",
 )
 
 TEST_UPLOAD_SAMPLE_5_DICT = dict(
-    sanger_sample_id="1000STDY7000171",
     lane_id="50000_2#298",
     submitting_institution="Test Institution A",
     supplier_sample_name="EY70603",
@@ -592,6 +591,7 @@ TEST_UPLOAD_SAMPLE_5_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    sanger_sample_id="60",
 )
 
 TEST_UPLOAD_SAMPLE_1 = Metadata(**TEST_UPLOAD_SAMPLE_1_DICT)
