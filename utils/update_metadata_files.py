@@ -27,46 +27,11 @@ class UpdateMetadataFiles:
     def __init__(self):
         self.indent = "    "
         self.root_path = f"{os.path.dirname(__file__)}/.."
-        self.config_additional_section_keys = ["spreadsheet_header_row_position", "upload_validation_enabled"]
-        self.yml2json = [
-            ["Metadata", "metadata", "metadata"],
-            ["InSilicoData", "in_silico_data", "insilicodata"],
-            ["QCData", "qc_data", "qcdata"],
-        ]
-        self.yml_field_patterns = [
-            ["MetadataFieldName", "metadata"],
-            ["InSilicoFieldName", "in_silico_data"],
-            ["QCDataFieldName", "qc_data"],
-        ]
-        self.test_data_var_names = {
-            "metadata": [
-                "TEST_SAMPLE_1_DICT",
-                "TEST_SAMPLE_2_DICT",
-                "TEST_UPLOAD_SAMPLE_1_DICT",
-                "TEST_UPLOAD_SAMPLE_2_DICT",
-                "TEST_UPLOAD_SAMPLE_3_DICT",
-                "TEST_UPLOAD_SAMPLE_4_DICT",
-                "TEST_UPLOAD_SAMPLE_5_DICT",
-            ],
-            "in_silico_data": ["TEST_LANE_IN_SILICO_1_DICT", "TEST_LANE_IN_SILICO_2_DICT"],
-            "qc_data": ["TEST_LANE_QC_DATA_1_DICT", "TEST_LANE_QC_DATA_2_DICT"],
-        }
-        self.var_heurustics_type_mapping = {"^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$": "float"}
-        self.table2class = [
-            ("metadata", "Metadata"),
-            ("in_silico_data", "InSilicoData"),
-            ("qc_data", "QCData"),
-        ]
-        self.table2sql_file = [
-            ("metadata", "api_sample.sql"),
-            ("in_silico_data", "in_silico.sql"),
-            ("qc_data", "qc_data.sql"),
-        ]
 
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
         if "regex" in data:
-            for pattern, var_type in self.var_heurustics_type_mapping.items():
+            for pattern, var_type in self.var_heuristics_type_mapping.items():
                 if data["regex"] == pattern:
                     return var_type
         return "str"
