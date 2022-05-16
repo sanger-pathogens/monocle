@@ -47,7 +47,8 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
 
 def _get_public_names_with_lane_ids(institution, db):
     public_names_to_sanger_sample_id = {
-        sample["public_name"]: sample["sanger_sample_id"] for sample in db.get_samples(institutions=[institution])
+        sample["public_name"]: sample["sanger_sample_id"]
+        for sample in db.get_samples("juno", institutions=[institution])
     }
 
     logging.info(f"{institution}: {len(public_names_to_sanger_sample_id)} public names")
