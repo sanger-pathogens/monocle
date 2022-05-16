@@ -1,10 +1,9 @@
 import argparse
 import json
-import os
 import shutil
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import ANY, Mock, call, patch
+from unittest.mock import Mock, patch
 
 from bin.get_qc_data import _get_relative_abundance, get_arguments, get_lane_ids, main, update_relative_abundance
 from lib.qc_data import QCData
@@ -80,7 +79,7 @@ class DB:
     def get_institution_names(self):
         return map(lambda institution: institution["name"], INSTITUTIONS)
 
-    def get_samples(self, institutions):
+    def get_samples(self, project, institutions):
         if institutions[0] == INSTITUTIONS[0]["name"]:
             return INSTITUTIONS[0]["samples"]
         elif institutions[0] == INSTITUTIONS[1]["name"]:
@@ -109,7 +108,7 @@ class GetQCData(TestCase):
         try:
             patch("bin.get_qc_data._get_sequencing_status_data", get_sequencing_status_data).start()
             patch("bin.get_qc_data.QC_DIR", TEST_DATA_DIR).start()
-        except Exception as e:
+        except Exception:
             cls.tearDownClass()
             raise
 
