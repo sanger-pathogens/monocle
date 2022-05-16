@@ -1,15 +1,18 @@
 import { browser } from "$app/env";
 import {
   DATA_TYPES,
+  HTTP_HEADER_CONTENT_TYPE,
   HTTP_HEADERS_JSON,
   HTTP_POST,
   HTTP_STATUS_CODE_UNAUTHORIZED,
+  MIME_TYPE_HTML,
   PATHNAME_LOGIN,
 } from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
+const RE_HTML = /^\s*<!DOCTYPE/ig;
 
 export function getInstitutionStatus(fetch) {
   return Promise.all([
@@ -178,7 +181,7 @@ function getPipelineStatus(fetch) {
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   if (browser) {
     // Prevent API requests from the login page:
-    if (window.location.pathname.endsWith(PATHNAME_LOGIN)) {
+    if (location.pathname.endsWith(PATHNAME_LOGIN)) {
       return Promise.resolve({});
     }
   }
@@ -186,8 +189,10 @@ function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
     fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
   )
-    .then((response) => {
-      if (response.status === HTTP_STATUS_CODE_UNAUTHORIZED && browser) {
+    .then(async (response) => {
+      // An HTML response indicates that the request was redirected to the login page.
+      const htmlResponse = await isHtmlResponse(response);
+      if (htmlResponse || response.status === HTTP_STATUS_CODE_UNAUTHORIZED && browser) {
         location.href = PATHNAME_LOGIN;
         return {};
       }
@@ -206,6 +211,12 @@ function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
     `Error while fetching resource from endpoint ${endpoint}: ${err}`
   );
   return Promise.reject(err);
+}
+
+function isHtmlResponse(response) {
+  const contentTypeHeader = response.headers.get(HTTP_HEADER_CONTENT_TYPE);
+  return contentTypeHeader?.length ? Promise.resolve(contentTypeHeader.includes(MIME_TYPE_HTML)) : response.text()
+    .then((responseBody) => RE_HTML.test(responseBody));
 }
 
 function collateInstitutionStatus({
