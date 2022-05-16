@@ -212,43 +212,46 @@ class UpdateMetadataFiles:
             y["properties"][k] = {"$ref": "#/components/schemas/DownloadField"}
         y["required"] = json_keys
 
-    def update_dash_yml(self, data, file_path):
-        """Updates the dash openapi.yml file with various properties.
-        TODO: default/required fields need to be annotated in upstream config and set here
-        """
+    def update_shared_yml(self, data, file_path):
         if not os.path.exists(file_path):
             print(f"Skipping: {file_path} does not exist")
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
-
         self.update_yml_field_patterns(y, data)
+        return y
+
+    def output_shared_yml(self, yml, file_path):
+        with open(file_path, "w") as out_file:
+            for key in self.yml_key_order:
+                if key not in yml:
+                    continue
+                tmp_yml = {}
+                tmp_yml[key] = yml.pop(key)
+                yaml.dump(tmp_yml, out_file)
+            if len(yml) > 0:
+                yaml.dump(yml, out_file)
+
+    def update_dash_yml(self, data, file_path):
+        """Updates the dash openapi.yml file with various properties.
+        TODO: default/required fields need to be annotated in upstream config and set here
+        """
+        y = self.update_shared_yml(data, file_path)
 
         for (yk, jk, _) in self.yml2json:
             self.update_yml_field_list(y["components"]["schemas"][yk], data[jk]["spreadsheet_definition"])
-
-        with open(file_path, "w") as out_file:
-            yaml.dump(y, out_file)
+        self.output_shared_yml(y, file_path)
 
     def update_main_yml(self, data, file_path):
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
-        if not os.path.exists(file_path):
-            print(f"Skipping: {file_path} does not exist")
-            return
-        with open(file_path) as file:
-            y = yaml.safe_load(file)
-
-        self.update_yml_field_patterns(y, data)
-
+        y = self.update_shared_yml(data, file_path)
         for (yk, jk, yk2) in self.yml2json:
             self.update_yml_field_list(
                 y["components"]["schemas"][yk]["properties"][yk2]["items"], data[jk]["spreadsheet_definition"]
             )
-
-        with open(file_path, "w") as out_file:
-            yaml.dump(y, out_file)
+        self.output_shared_yml(y, file_path)
 
     def update_all(self):
         """Runs updates on all metadata files."""

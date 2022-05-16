@@ -9,6 +9,9 @@
          "spreadsheet_header_row_position",
          "upload_validation_enabled"
       ],
+      "yml_key_order" : [
+         "openapi", "info", "paths", "servers", "components"
+      ] ,
       "yml2json": [
          [
             "Metadata",
