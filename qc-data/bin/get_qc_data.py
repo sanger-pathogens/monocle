@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
 import logging
 import os
 import os.path
@@ -9,7 +8,6 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from sys import argv
 from urllib.error import HTTPError
 
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
@@ -26,7 +24,9 @@ def get_lane_ids(db):
     institutions = list(db.get_institution_names())
 
     for institution in institutions:
-        sanger_sample_ids = [sample["sanger_sample_id"] for sample in db.get_samples(institutions=[institution])]
+        sanger_sample_ids = [
+            sample["sanger_sample_id"] for sample in db.get_samples("juno", institutions=[institution])
+        ]
 
         logging.info(f"{institution}: {len(sanger_sample_ids)} sample ids")
 
@@ -131,7 +131,7 @@ def main():
         qc_data = update_relative_abundance(
             lane_id, args.kraken_data_dir, args.species, QCData(f"{QC_DIR}/{lane_id}/qc_data.json")
         )
-        ## TODO: Get more QC data
+        # TODO: Get more QC data
         qc_data.write_file()
 
 
