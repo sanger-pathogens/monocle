@@ -360,7 +360,7 @@ then
         echo "Pulling ${docker_tag} docker images..."
         echo "${GITLAB_TOKEN}" | docker login -u "${GITLAB_USER}" --password-stdin "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle"
         docker-compose pull
-        docker logout
+        docker logout "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle"
 EOF
 fi
 
