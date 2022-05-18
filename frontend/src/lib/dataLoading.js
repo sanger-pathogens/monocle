@@ -215,8 +215,10 @@ function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
 
 function isHtmlResponse(response) {
   const contentTypeHeader = response.headers.get(HTTP_HEADER_CONTENT_TYPE);
+  console.log(`Conten-Type: ${contentTypeHeader}`)
+  console.log(`Conten-Type: ${response.headers.get("content-type")}`)
   return contentTypeHeader?.length ? Promise.resolve(contentTypeHeader.includes(MIME_TYPE_HTML)) : response.text()
-    .then((responseBody) => RE_HTML.test(responseBody));
+    .then((responseBody) => { console.log(`response body: ${responseBody}`); return RE_HTML.test(responseBody) });
 }
 
 function collateInstitutionStatus({
