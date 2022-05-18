@@ -22,17 +22,12 @@ usage() {
        -m --mode        deploy mode - \`application\` (default), \`database\` or \`all\`
                         - deploy a code version [only], database version [only]
                           or code AND database version
-       -d --domain      service domain name; overrides the default based on
-                        the deployed environment (set by \`--env\`)
        -b --branch      deploy from this branch instead of git tag derived
                         from version number (set by \`--version\`)
        -t --tag         docker images tag; overrides tag derived from version
                         number (set by \`--version\`)
        -p --port        port number for deployment host
        -c --conn-file   full path to database connection file, required for a database release
-
-       (There is no option to set the public domain for the service, as
-       that feature is reserved for the production environment.)
 
        For a database release, the script expects to find a release.sql file under
        the database/releases/<version|tag> folder.
@@ -42,12 +37,12 @@ usage() {
        $0 -e dev -v 0.1.45 -m all -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
 
        Example 2: deploy unstable (pre-release) code version as \`dev_user@localhost\`
-       $0 -e dev -u dev_user -h localhost --domain localhost --branch master --tag unstable
+       $0 -e dev -u dev_user -h localhost --branch master --tag unstable
 
        Example 3: deploy as \`dev_user@localhost\`, from feature branch
                   \`some_feature_branch\`, using docker images built from
                   commit \`ae48f554\`:
-       $0 -e dev -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
+       $0 -e dev -u dev_user -h localhost --branch some_feature_branch --tag commit-ae48f554
 
        Example 4: deploy only the 0.1.45 database release using a db.cnf database connection file:
        $0 -e dev -v 0.1.45 -m database -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
@@ -157,14 +152,6 @@ while [[ $# -gt 0 ]]; do
       DEPLOY_MODE="${key#*=}"
       ;;
 
-      -d|--domain)
-      shift
-      OPT_DOMAIN="$1"
-      ;;
-      -d=*|--domain=*)
-      OPT_DOMAIN="${key#*=}"
-      ;;
-
       -b|--branch)
       shift
       OPT_BRANCH="$1"
@@ -227,22 +214,6 @@ if [[ -z "${VERSION}" ]] && [[ -z "${OPT_BRANCH}" || -z "${OPT_TAG}" ]]
 then
    echo "${ECHO_EM}When not using --version, --branch and --tag must both be provided${ECHO_RESET}"
    usage
-fi
-
-
-if [[ "$ENVIRONMENT" == "prod" ]]; then
-    DOMAIN=monocle.pam.sanger.ac.uk
-    PUBLIC_DOMAIN=monocle.sanger.ac.uk
-elif [[ "$ENVIRONMENT" == "dev" ]]; then
-    DOMAIN=monocle.dev.pam.sanger.ac.uk
-    PUBLIC_DOMAIN=
-else
-    usage
-fi
-
-if [[ ! -z "$OPT_DOMAIN" ]]; then
-   echo "${ECHO_EM}Service will use domain ${OPT_DOMAIN} in place of ${DOMAIN}${ECHO_RESET}"
-   DOMAIN="$OPT_DOMAIN"
 fi
 
 # pull the required git tag, or branch
