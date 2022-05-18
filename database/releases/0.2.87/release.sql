@@ -11,7 +11,7 @@ WHERE submitting_institution = 'Faculty of Pharmacy, Suez Canal University';
 -- Remove Faculty of Pharmacy, Suez Canal University from api_institution table
 
 DELETE FROM api_institution
-WHERE name='Faculty of Pharmacy, Suez Canal University';
+WHERE name = 'Faculty of Pharmacy, Suez Canal University';
 
 --
 -- Update the database version
