@@ -241,9 +241,9 @@ class UpdateMetadataFiles:
         """
         y = self.update_shared_yml(data, file_path)
         for entry in self.yml2json:
-            self.update_yml_field_list(
-                y["components"]["schemas"][entry["Schema name"]], data[entry["Property name"]]["spreadsheet_definition"]
-            )
+            this_schema = y["components"]["schemas"][entry["Schema name"]]
+            field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
+            self.update_yml_field_list(this_schema, field_definitions)
         self.output_shared_yml(y, file_path)
 
     def update_main_yml(self, data, file_path):
@@ -252,10 +252,10 @@ class UpdateMetadataFiles:
         """
         y = self.update_shared_yml(data, file_path)
         for entry in self.yml2json:
-            self.update_yml_field_list(
-                y["components"]["schemas"][entry["Schema name"]]["properties"][entry["API config section"]]["items"],
-                data[entry["Property name"]]["spreadsheet_definition"],
-            )
+            this_schema = y["components"]["schemas"][entry["Schema name"]]
+            field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
+            items_list = this_schema["properties"][entry["API config section"]]["items"]
+            self.update_yml_field_list(items_list, field_definitions)
         self.output_shared_yml(y, file_path)
 
     def update_all(self):
