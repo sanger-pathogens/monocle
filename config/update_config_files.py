@@ -258,11 +258,14 @@ class UpdateMetadataFiles:
             self.update_yml_field_list(items_list, field_definitions)
         self.output_shared_yml(y, file_path)
 
+    def abs_path(self, relative_path):
+        return f"{self.root_path}/{relative_path}"
+
     def update_all(self):
         """Runs updates on all metadata files."""
         self.update_from_main_config()
         for _group, files in self.files.items():
-            config_path = f"{self.root_path}/{files['config_file']}"
+            config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
                     data = json.load(config_file)
@@ -271,12 +274,12 @@ class UpdateMetadataFiles:
                         self.generate_dataclass_file(
                             table_data,
                             entry["class name"],
-                            self.root_path + "/" + entry["model file name"],
+                            self.abs_path(entry["model file name"]),
                         )
-                        self.update_database_definition(table_data, self.root_path + "/" + entry["SQL file name"])
-                    self.update_metadata_tests(data, f"{self.root_path}/{files['test directory']}")
-                    self.update_dash_yml(data, f"{self.root_path}/{files['dash YAML file']}")
-                    self.update_main_yml(data, f"{self.root_path}/{files['API YAML file']}")
+                        self.update_database_definition(table_data, self.abs_path(entry["SQL file name"]))
+                    self.update_metadata_tests(data, self.abs_path(files["test directory"]))
+                    self.update_dash_yml(data, self.abs_path(files["dash YAML file"]))
+                    self.update_main_yml(data, self.abs_path(files["API YAML file"]))
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
