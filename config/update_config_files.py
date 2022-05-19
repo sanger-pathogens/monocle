@@ -261,9 +261,9 @@ class UpdateMetadataFiles:
     def abs_path(self, relative_path):
         return f"{self.root_path}/{relative_path}"
 
-    def update_all(self):
+    def update_all(self, main_config_file):
         """Runs updates on all metadata files."""
-        self.update_from_main_config()
+        self.update_from_main_config(self.abs_path(main_config_file))
         for _group, files in self.files.items():
             config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
@@ -284,7 +284,7 @@ class UpdateMetadataFiles:
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
         for _group, files in self.files.items():
-            field_attributes_file = f"{self.root_path}/{files['field attributes']}"
+            field_attributes_file = self.abs_path(files["field attributes"])
             field_attributes = copy.deepcopy(self.config)
             field_attributes.pop("config")
             for _, kmc in self.map_config_dict.items():
@@ -336,11 +336,10 @@ class UpdateMetadataFiles:
         with open(config_path, "w") as out_file:
             out_file.write(json_object)
 
-    def update_from_main_config(self):
+    def update_from_main_config(self, main_config_file):
         """Updates metadata/*/config./json files, as well as dash-api/juno/field_attributes.json.
         Required first step for further updates.
         """
-        main_config_file = f"{self.root_path}/config/main_config.json"
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
 
@@ -350,11 +349,11 @@ class UpdateMetadataFiles:
         self.write_field_attributes_file()
 
         for _group, files in self.files.items():
-            config_path = f"{self.root_path}/{files['config_file']}"
+            config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 self.update_config_json(config_path)
 
 
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
-    umf.update_all()
+    umf.update_all("config/main_config.json")
