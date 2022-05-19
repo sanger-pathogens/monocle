@@ -3,56 +3,98 @@
 # Deploy a code/database Monocle release.
 # The version number provided is expected to be without the leading v, e.g. 0.1.26
 
+set -e
+
+ECHO_EM=$(tput bold)
+ECHO_RESET=$(tput sgr0)
+
+usage_summary() {
+  echo "${ECHO_EM}Usage:${ECHO_RESET}
+  
+$0 \\
+   --env  (dev|prod) \\
+   --host <deploy host> \\
+   --user <deploy username> \\
+   (--version <version number>|--branch <branch>|--commit <sha-1>) \\
+   [options]"
+}
+
 usage() {
-  echo "Usage: $0 arguments [options]
+   usage_summary
+   echo "
+For more help:
 
-       Mandatory arguments:
-       -e --env         deployed environment: \`prod\` or \`dev\`
-       -u --user        user id on deployment host
-       -h --host        deployment host name or IP address
+$0 --help"
+   exit 1
+}
 
-       Environment variables GITLAB_USER and GITLAB_TOKEN must be set if new docker
-       images are being deployed to the host.  These must be a username and access
-       token with permission tov read the sanger-pathogens/monocle repo.
+help() {
+  usage_summary
+  echo "
+${ECHO_EM}Mandatory arguments:${ECHO_RESET}
+-e --env    deployed environment: \`prod\` or \`dev\`
+-u --user   username on deployment host
+-h --host   deployment host name or IP address
 
-       Options:
-       -v --version     version number without \`v\` prefix
-                        IMPORTANT: if this is not provided, then both
-                        \`--branch\` and \`--tag\` must be specified
-       -m --mode        deploy mode - \`application\` (default), \`database\` or \`all\`
-                        - deploy a code version [only], database version [only]
-                          or code AND database version
-       -d --domain      service domain name; overrides the default based on
-                        the deployed environment (set by \`--env\`)
-       -b --branch      deploy from this branch instead of git tag derived
-                        from version number (set by \`--version\`)
-       -t --tag         docker images tag; overrides tag derived from version
-                        number (set by \`--version\`)
-       -p --port        port number for deployment host
-       -c --conn-file   full path to database connection file, required for a database release
+${ECHO_EM}Additionally, exactly one of the following is mandatory:${ECHO_RESET}
+-v --version   version number (without \`v\` prefix): will deploy this git tag
+               from the repo, and docker images with matching tags
+-b --branch    branch name: deploy the HEAD of this branch in the repo, and the
+               docker images build from the HEAD of the branch (using the
+               \`commit-<short_hash>\` docker tag, where \`<short_hash>\` is the
+               first 8 characters of the SHA-1 hash of the HEAD commit)
+               ${ECHO_EM}May not be used when --mode is \`database\` or \`all\`${ECHO_RESET}
+-s --commit    SHA-1 hash:  deploy this commit from the repo, and the docker
+               images build from that commit  (using the \`commit-<short_hash>\`
+               docker tag, where \`<short_hash>\` is the first 8
+               characters of the SHA-1 hash)
+               ${ECHO_EM}May not be used when --mode is \`database\` or \`all\`${ECHO_RESET}
 
-       (There is no option to set the public domain for the service, as
-       that feature is reserved for the production environment.)
+${ECHO_EM}Required environment variables:${ECHO_RESET}
+Environment variables GITLAB_USER and GITLAB_TOKEN must be set if new docker
+images are being deployed to the host.  These must be a username and access
+token with permission to read the sanger-pathogens/monocle repo.
 
-       For a database release, the script expects to find a release.sql file under
-       the database/releases/<version|tag> folder.
+${ECHO_EM}Options:${ECHO_RESET}
 
-       Example 1: deploy code to pathogens_dev instance and run the associated database release
-                  using the db.cnf connection file:
-       $0 -e dev -v 0.1.45 -m all -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
+-m --mode      deploy mode: \`application\` (default: deploy app code and config
+               only), \`database\` (deploy database release only) or \`all\`
+               (deploy app and database release)
+-c --conn-file ${ECHO_EM}FULL${ECHO_RESET} path to database connection file, required for a database
+               release
+-p --port      port number for deployment host
 
-       Example 2: deploy unstable (pre-release) code version as \`dev_user@localhost\`
-       $0 -e dev -u dev_user -h localhost --domain localhost --branch master --tag unstable
+For a database release, the script expects to find a release.sql file under
+the database/releases/<version|tag> folder.
 
-       Example 3: deploy as \`dev_user@localhost\`, from feature branch
-                  \`some_feature_branch\`, using docker images built from
-                  commit \`ae48f554\`:
-       $0 -e dev -u dev_user -h localhost --domain localhost --branch some_feature_branch --tag commit-ae48f554
+Example 1: deploy v0.1.45 of the application to dev instance and run the
+associated database release using the \`db.cnf\` connection file in the
+working directory:
+${ECHO_EM}$0 --env dev --host monocle_vm.dev.pam.sanger.ac.uk --user monocle\\
+   --version 0.1.45 \\
+   --mode all --conn-file \$(pwd)/db.cnf${ECHO_RESET}
 
-       Example 4: deploy only the 0.1.45 database release using a db.cnf database connection file:
-       $0 -e dev -v 0.1.45 -m database -u monocle -h monocle_vm.dev.pam.sanger.ac.uk -c ~/db.cnf
-"
-  exit 1
+Example 2: deploy only the 0.1.45 database release, without changes to the app,
+using the \`db.cnf\` connection file in the working directory:
+${ECHO_EM}$0 --env dev --host monocle_vm.dev.pam.sanger.ac.uk --user monocle \\
+   --version 0.1.45 \\
+   --mode database --conn-file \$(pwd)/db.cnf${ECHO_RESET}
+
+Example 3: deploy HEAD of master branch (pre-release) application to an
+instance on your local dev machine:
+${ECHO_EM}$0 --env dev --host localhost --user dev_username \\
+   --branch master${ECHO_RESET}
+   
+Example 4: deploy app from feature branch \`feature/something_new\` to an
+instance on your local dev machine:
+${ECHO_EM}$0 --env dev --host localhost --user dev_username \\
+   --branch feature/something_new${ECHO_RESET}
+
+Example 5: deploy app from commit \`a1b2c3d4\` to an instance on your local
+dev machine:
+${ECHO_EM}$0 --env dev --host localhost --user dev_username \\
+   --branch feature/something_new${ECHO_RESET}"
+  exit
 }
 
 # run some basic checks for a database release
@@ -86,6 +128,8 @@ run_db_release_checks() {
 
 ENVIRONMENT=
 VERSION=
+BRANCH=
+COMMIT=
 REMOTE_USER=
 REMOTE_HOST=
 SSH_PORT_ARG=
@@ -97,13 +141,14 @@ deploy_mode_database="database"
 deploy_mode_all="all"
 DEPLOY_MODE="${deploy_mode_application}"
 
-ECHO_EM=$(tput bold)
-ECHO_RESET=$(tput sgr0)
-
 # read command line arguments
 while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+      --help)
+      help
+      ;;
+    
       -e|--env)
       shift
       ENVIRONMENT="$1"
@@ -157,28 +202,20 @@ while [[ $# -gt 0 ]]; do
       DEPLOY_MODE="${key#*=}"
       ;;
 
-      -d|--domain)
-      shift
-      OPT_DOMAIN="$1"
-      ;;
-      -d=*|--domain=*)
-      OPT_DOMAIN="${key#*=}"
-      ;;
-
       -b|--branch)
       shift
-      OPT_BRANCH="$1"
+      BRANCH="$1"
       ;;
       -b=*|--branch=*)
-      OPT_BRANCH="${key#*=}"
+      BRANCH="${key#*=}"
       ;;
 
-      -t|--tag)
+      -s|--commit)
       shift
-      OPT_TAG="$1"
+      COMMIT="$1"
       ;;
-      -t=*|--tag=*)
-      OPT_TAG="${key#*=}"
+      -s=*|--commit=*)
+      COMMIT="${key#*=}"
       ;;
 
       -c|--conn-file)
@@ -199,10 +236,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 # basic arg validation
-if  [[ -z "${ENVIRONMENT}" ]] ||
-    [[ -z "${REMOTE_USER}" ]] || [[ -z "${REMOTE_HOST}" ]]
+if  [[ -z "${ENVIRONMENT}" ]] || [[ -z "${REMOTE_USER}" ]] || [[ -z "${REMOTE_HOST}" ]]
 then
     usage
+fi
+
+# only specifify ONE of version, branch or commit
+num=0
+if [[ ! -z "${VERSION}" ]]; then ((++num)); fi
+if [[ ! -z "${BRANCH}" ]]; then ((++num)); fi
+if [[ ! -z "${COMMIT}" ]]; then ((++num)); fi
+if ((num != 1))
+then
+   echo "${ECHO_EM}Use only one of --version, --branch or --commit${ECHO_RESET}
+"
+   usage
 fi
 
 # check the deploy mode
@@ -215,54 +263,44 @@ then
 fi
 
 # database release specific checks
-if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_database}" ]] &&
-   [[ ! -f "${DB_CONNECTION_FILE}" ]]
+if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_database}" ]]
 then
-    echo "${ECHO_EM}Unable to find database connection file: '${DB_CONNECTION_FILE}'${ECHO_RESET}"
-    usage
+   if [[ -z "${VERSION}" ]]
+   then
+      echo "${ECHO_EM}\`--mode ${DEPLOY_MODE}\` can only be used with the \`--version\` option${ECHO_RESET}
+"
+      usage
+   fi
+   if [[ ! -f "${DB_CONNECTION_FILE}" ]]
+   then
+      echo "${ECHO_EM}Unable to find database connection file: '${DB_CONNECTION_FILE}'.  Note: the full path must be provided!${ECHO_RESET}
+"
+      usage
+   fi
 fi
 
-# if no version, then branch and tag must be specified
-if [[ -z "${VERSION}" ]] && [[ -z "${OPT_BRANCH}" || -z "${OPT_TAG}" ]]
-then
-   echo "${ECHO_EM}When not using --version, --branch and --tag must both be provided${ECHO_RESET}"
-   usage
-fi
-
-
-if [[ "$ENVIRONMENT" == "prod" ]]; then
-    DOMAIN=monocle.pam.sanger.ac.uk
-    PUBLIC_DOMAIN=monocle.sanger.ac.uk
-elif [[ "$ENVIRONMENT" == "dev" ]]; then
-    DOMAIN=monocle.dev.pam.sanger.ac.uk
-    PUBLIC_DOMAIN=
-else
-    usage
-fi
-
-if [[ ! -z "$OPT_DOMAIN" ]]; then
-   echo "${ECHO_EM}Service will use domain ${OPT_DOMAIN} in place of ${DOMAIN}${ECHO_RESET}"
-   DOMAIN="$OPT_DOMAIN"
-fi
-
-# pull the required git tag, or branch
+# pull the required git tag, branch or commit, and work out the docker tag required
+docker_tag=
 deploy_dir=$(mktemp -d -t monocle-XXXXXXXXXX)
 git clone git@gitlab.internal.sanger.ac.uk:sanger-pathogens/monocle.git ${deploy_dir}
 cd ${deploy_dir}
 trap "{ if [[ -d ${deploy_dir} ]]; then rm -rf ${deploy_dir}; fi }" EXIT
-if [[ ! -z "$OPT_BRANCH" ]]; then
-   echo "${ECHO_EM}Checking out ${OPT_BRANCH} in place of version number tag${ECHO_RESET}"
-   git switch "$OPT_BRANCH"
-else
+if [[ ! -z "$VERSION" ]]; then
    git checkout "tags/v${VERSION}"
-fi
-
-docker_tag="v${VERSION}"
-db_release_tag="${VERSION}"
-if [[ ! -z "$OPT_TAG" ]]; then
-   echo "${ECHO_EM}Using docker images with tag ${OPT_TAG} in place of version number tag${ECHO_RESET}"
-   docker_tag="$OPT_TAG"
-   db_release_tag="$OPT_TAG"
+   docker_tag="v${VERSION}"
+   echo "${ECHO_EM}Deploying tag v${VERSION} with docker images tagged ${docker_tag}${ECHO_RESET}"
+elif [[ ! -z "$BRANCH" ]]; then
+   git checkout "$BRANCH"
+   docker_tag="commit-$(git rev-parse --short=8 HEAD)"
+   echo "${ECHO_EM}Deploying branch ${BRANCH} with docker images tagged ${docker_tag}${ECHO_RESET}"
+elif [[ ! -z "$COMMIT" ]]; then
+   git checkout "$COMMIT"
+   docker_tag="commit-$(git rev-parse --short=8 HEAD)"
+   echo "${ECHO_EM}Deploying commit ${COMMIT} with docker images tagged ${docker_tag}${ECHO_RESET}"
+else # this should be unreachable if option validation was done correctly
+   echo "${ECHO_EM}Must provide --version, --branch or --commit${ECHO_RESET}
+"
+   usage
 fi
 
 # validate input args
@@ -275,7 +313,7 @@ fi
 # do we need to setup for a database release...
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_database}" ]]
 then
-    db_release_file="./database/releases/${db_release_tag}/release.sql"
+    db_release_file="./database/releases/${VERSION}/release.sql"
     run_db_release_checks "${db_release_file}"
 fi
 
@@ -298,7 +336,7 @@ then
         echo "${ECHO_EM}Mysql client returned error status ${db_release_status}${ECHO_RESET}"
         exit ${FAILED_CODE}
     fi
-    echo "${ECHO_EM}Database release ${db_release_tag} completed successfully${ECHO_RESET}"
+    echo "${ECHO_EM}Database release ${VERSION} completed successfully${ECHO_RESET}"
 fi
 
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_application}" ]]
