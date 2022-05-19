@@ -13,21 +13,21 @@
          "openapi", "info", "servers", "paths", "components"
       ] ,
       "yml2json": [
-         [
-            "Metadata",
-            "metadata",
-            "metadata"
-         ],
-         [
-            "InSilicoData",
-            "in_silico_data",
-            "insilicodata"
-         ],
-         [
-            "QCData",
-            "qc_data",
-            "qcdata"
-         ]
+         {
+            "Schema name": "Metadata",
+            "Property name": "metadata",
+            "API config section": "metadata"
+         },
+         {
+            "Schema name": "InSilicoData",
+            "Property name": "in_silico_data",
+            "API config section":"insilicodata"
+         },
+         {
+            "Schema name": "QCData",
+            "Property name": "qc_data",
+            "API config section":"qcdata"
+         }
       ],
       "yml_field_patterns": [
          [

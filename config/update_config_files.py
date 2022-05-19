@@ -240,9 +240,10 @@ class UpdateMetadataFiles:
         TODO: default/required fields need to be annotated in upstream config and set here
         """
         y = self.update_shared_yml(data, file_path)
-
-        for (yk, jk, _) in self.yml2json:
-            self.update_yml_field_list(y["components"]["schemas"][yk], data[jk]["spreadsheet_definition"])
+        for entry in self.yml2json:
+            self.update_yml_field_list(
+                y["components"]["schemas"][entry["Schema name"]], data[entry["Property name"]]["spreadsheet_definition"]
+            )
         self.output_shared_yml(y, file_path)
 
     def update_main_yml(self, data, file_path):
@@ -250,9 +251,10 @@ class UpdateMetadataFiles:
         TODO: default/required fields need to be annotated in upstream config and set here
         """
         y = self.update_shared_yml(data, file_path)
-        for (yk, jk, yk2) in self.yml2json:
+        for entry in self.yml2json:
             self.update_yml_field_list(
-                y["components"]["schemas"][yk]["properties"][yk2]["items"], data[jk]["spreadsheet_definition"]
+                y["components"]["schemas"][entry["Schema name"]]["properties"][entry["API config section"]]["items"],
+                data[entry["Property name"]]["spreadsheet_definition"],
             )
         self.output_shared_yml(y, file_path)
 
