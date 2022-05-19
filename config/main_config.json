@@ -10,7 +10,7 @@
          "upload_validation_enabled"
       ],
       "yml_key_order" : [
-         "openapi", "info", "paths", "servers", "components"
+         "openapi", "info", "servers", "paths", "components"
       ] ,
       "yml2json": [
          [
