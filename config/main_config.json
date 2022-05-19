@@ -1,5 +1,34 @@
 {
    "config": {
+      "files":{
+         "juno": {
+            "config_file": "metadata/juno/config.json",
+            "API model" : [
+               {
+                  "data key":"metadata",
+                  "class name": "Metadata",
+                  "model file name": "metadata/juno/metadata/api/model/metadata.py",
+                  "SQL file name": "database/tables/api_sample.sql"
+               },
+               {
+                  "data key":"in_silico_data",
+                  "class name": "InSilicoData",
+                  "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
+                  "SQL file name": "database/tables/in_silico.sql"
+               },
+               {
+                  "data key":"qc_data",
+                  "class name": "QCData",
+                  "model file name": "metadata/juno/metadata/api/model/qc_data.py",
+                  "SQL file name": "database/tables/qc_data.sql"
+               }
+            ],
+            "test directory": "metadata/juno/metadata/tests",
+            "dash YAML file": "dash-api/juno/dash/interface/openapi.yml",
+            "API YAML file": "metadata/juno/metadata/interface/openapi.yml",
+            "field attributes": "dash-api/juno/field_attributes.json"
+         }
+      },
       "map_config_dict": {
          "metadata": "metadata",
          "in_silico_data": "in silico",
@@ -64,35 +93,7 @@
       },
       "var_heuristics_type_mapping": {
          "^[1]?[0-9]?[0-9]\\.[0-9][0-9]?$": "float"
-      },
-      "table2class": [
-         [
-            "metadata",
-            "Metadata"
-         ],
-         [
-            "in_silico_data",
-            "InSilicoData"
-         ],
-         [
-            "qc_data",
-            "QCData"
-         ]
-      ],
-      "table2sql_file": [
-         [
-            "metadata",
-            "api_sample.sql"
-         ],
-         [
-            "in_silico_data",
-            "in_silico.sql"
-         ],
-         [
-            "qc_data",
-            "qc_data.sql"
-         ]
-      ]
+      }
    },
    "metadata": {
       "spreadsheet_header_row_position": 2,
