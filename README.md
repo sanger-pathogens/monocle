@@ -179,7 +179,7 @@ and import the LDIF file you saved earlier.
 
 ## Configuration
 The central configuration file is `config/main_config.json`. If you change any
-configuration in there, run `utils/update_metadata_files.py`. This will alter the following files:
+configuration in there, run `config/update_config_files.py`. This will alter the following files:
 - `database/tables/api_sample.sql`
 - `database/tables/in_silico.sql`
 - `database/tables/qc_data.sql`
