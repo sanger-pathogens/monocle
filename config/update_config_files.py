@@ -261,41 +261,40 @@ class UpdateMetadataFiles:
     def update_all(self):
         """Runs updates on all metadata files."""
         self.update_from_main_config()
-        metadata_path = f"{self.root_path}/metadata"
-        for entry in os.scandir(metadata_path):
-            if entry.is_dir():
-                config_path = f"{metadata_path}/{entry.name}/config.json"
-                if os.path.exists(config_path):
-                    with open(config_path) as config_file:
-                        data = json.load(config_file)
-                        for (k, class_name) in self.table2class:
-                            self.generate_dataclass_file(
-                                data[k],
-                                class_name,
-                                f"{metadata_path}/{entry.name}/metadata/api/model/{k}.py",
-                            )
-                        for (k, filename) in self.table2sql_file:
-                            self.update_database_definition(data[k], f"{self.root_path}/database/tables/{filename}")
-                        self.update_metadata_tests(data, f"{metadata_path}/{entry.name}/metadata/tests")
-                        self.update_dash_yml(data, f"{self.root_path}/dash-api/{entry.name}/dash/interface/openapi.yml")
-                        self.update_main_yml(data, f"{metadata_path}/{entry.name}/metadata/interface/openapi.yml")
+        for _group, files in self.files.items():
+            config_path = f"{self.root_path}/{files['config_file']}"
+            if os.path.exists(config_path):
+                with open(config_path) as config_file:
+                    data = json.load(config_file)
+                    for entry in files["API model"]:
+                        table_data = data[entry["data key"]]
+                        self.generate_dataclass_file(
+                            table_data,
+                            entry["class name"],
+                            entry["model file name"],
+                        )
+                        self.update_database_definition(table_data, entry["SQL file name"])
+                    self.update_metadata_tests(data, f"{self.root_path}/{files['test directory']}")
+                    self.update_dash_yml(data, f"{self.root_path}/{files['dash YAML file']}")
+                    self.update_main_yml(data, f"{self.root_path}/{files['API YAML file']}")
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
-        field_attributes_file = f"{self.root_path}/dash-api/juno/field_attributes.json"
-        field_attributes = copy.deepcopy(self.config)
-        field_attributes.pop("config")
-        for _, kmc in self.map_config_dict.items():
-            for k in self.config_additional_section_keys:
-                if k in field_attributes[kmc]:
-                    field_attributes[kmc].pop(k)
-            for category in field_attributes[kmc]["categories"]:
-                for fields in category["fields"]:
-                    if "db" in fields:
-                        fields.pop("db")
-        json_object = json.dumps(field_attributes, indent=3)
-        with open(field_attributes_file, "w") as out_file:
-            out_file.write(json_object)
+        for _group, files in self.files.items():
+            field_attributes_file = f"{self.root_path}/{files['field attributes']}"
+            field_attributes = copy.deepcopy(self.config)
+            field_attributes.pop("config")
+            for _, kmc in self.map_config_dict.items():
+                for k in self.config_additional_section_keys:
+                    if k in field_attributes[kmc]:
+                        field_attributes[kmc].pop(k)
+                for category in field_attributes[kmc]["categories"]:
+                    for fields in category["fields"]:
+                        if "db" in fields:
+                            fields.pop("db")
+            json_object = json.dumps(field_attributes, indent=3)
+            with open(field_attributes_file, "w") as out_file:
+                out_file.write(json_object)
 
     def update_config_section(self, c, mc):
         """Updates a section of config data (c) from main config (mc)."""
@@ -334,11 +333,11 @@ class UpdateMetadataFiles:
         with open(config_path, "w") as out_file:
             out_file.write(json_object)
 
-    def update_from_main_config(self):
+    def update_from_main_config(self, relative_main_config_file):
         """Updates metadata/*/config./json files, as well as dash-api/juno/field_attributes.json.
         Required first step for further updates.
         """
-        main_config_file = f"{self.root_path}/config/main_config.json"
+        main_config_file = f"{self.root_path}/{relative_main_config_file}"
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
 
@@ -347,14 +346,12 @@ class UpdateMetadataFiles:
 
         self.write_field_attributes_file()
 
-        metadata_path = f"{self.root_path}/metadata"
-        for entry in os.scandir(metadata_path):
-            if entry.is_dir():
-                config_path = f"{metadata_path}/{entry.name}/config.json"
-                if os.path.exists(config_path):
-                    self.update_config_json(config_path)
+        for _group, files in self.files.items():
+            config_path = f"{self.root_path}/{files['config_file']}"
+            if os.path.exists(config_path):
+                self.update_config_json(config_path)
 
 
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
-    umf.update_all()
+    umf.update_all("config/main_config.json")
