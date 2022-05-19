@@ -271,9 +271,9 @@ class UpdateMetadataFiles:
                         self.generate_dataclass_file(
                             table_data,
                             entry["class name"],
-                            entry["model file name"],
+                            self.root_path + "/" + entry["model file name"],
                         )
-                        self.update_database_definition(table_data, entry["SQL file name"])
+                        self.update_database_definition(table_data, self.root_path + "/" + entry["SQL file name"])
                     self.update_metadata_tests(data, f"{self.root_path}/{files['test directory']}")
                     self.update_dash_yml(data, f"{self.root_path}/{files['dash YAML file']}")
                     self.update_main_yml(data, f"{self.root_path}/{files['API YAML file']}")
@@ -333,11 +333,11 @@ class UpdateMetadataFiles:
         with open(config_path, "w") as out_file:
             out_file.write(json_object)
 
-    def update_from_main_config(self, relative_main_config_file):
+    def update_from_main_config(self):
         """Updates metadata/*/config./json files, as well as dash-api/juno/field_attributes.json.
         Required first step for further updates.
         """
-        main_config_file = f"{self.root_path}/{relative_main_config_file}"
+        main_config_file = f"{self.root_path}/config/main_config.json"
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
 
@@ -354,4 +354,4 @@ class UpdateMetadataFiles:
 
 if __name__ == "__main__":
     umf = UpdateMetadataFiles()
-    umf.update_all("config/main_config.json")
+    umf.update_all()
