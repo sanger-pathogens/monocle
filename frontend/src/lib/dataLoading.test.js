@@ -67,6 +67,7 @@ describe("authorization", () => {
       status: HTTP_STATUS_CODE_UNAUTHORIZED,
       headers: HEADERS_JSON,
       text: () => Promise.resolve(""),
+      clone: function() { return this },
     });
 
     await getBatches(fetch);
@@ -91,6 +92,7 @@ describe("authorization", () => {
   it("redirects to the login page if the response has the HTML MIME type", async () => {
     fetch.mockResolvedValueOnce({
       headers: { get: () => MIME_TYPE_HTML },
+      clone: function() { return this },
     });
 
     await getBatches(fetch);
@@ -102,6 +104,7 @@ describe("authorization", () => {
     fetch.mockResolvedValueOnce({
       headers: { get: () => {} },
       text: () => Promise.resolve("<!doctype html><title></title>"),
+      clone: function() { return this },
     });
 
     await getBatches(fetch);
@@ -109,17 +112,30 @@ describe("authorization", () => {
     expect(global.location.href).toBe(PATHNAME_LOGIN);
   });
 
-  it("doesn't redirect to the login page if the response isn't HTML", async () => {
+  it("doesn't redirect to the login page if the response isn't empty & isn't HTML", async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       headers: { get: () => {} },
       text: () => Promise.resolve("not HTML"),
       json: () => Promise.resolve(""),
+      clone: function() { return this },
     });
 
     await getBatches(fetch);
 
     expect(global.location.href).not.toBe(PATHNAME_LOGIN);
+  });
+
+  it("redirects to the login page if the content type header & the response body are falsy", async () => {
+    fetch.mockResolvedValueOnce({
+      headers: { get: () => {} },
+      text: () => Promise.resolve(null),
+      clone: function() { return this },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).toBe(PATHNAME_LOGIN);
   });
 });
 
