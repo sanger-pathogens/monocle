@@ -7,13 +7,13 @@
 INSERT INTO api_institution (name, country, latitude, longitude)
 VALUES ('Ministry of Health, Central Laboratories', 'Israel', 31.790605, 35.202278);
 
--- Rename National Reference Laboratories to Ministry of Health, Central Laboratories in api_sample table
+-- Rename "National Reference Laboratories" to "Ministry of Health, Central Laboratories" in api_sample table
 
 UPDATE api_sample
 SET submitting_institution = 'Ministry of Health, Central Laboratories'
 WHERE submitting_institution = 'National Reference Laboratories';
 
--- Remove National Reference Laboratories to Ministry of Health, Central Laboratories in api_sample table
+-- Remove National Reference Laboratories from api_institution table
 
 DELETE FROM api_institution
 WHERE name = 'National Reference Laboratories';
