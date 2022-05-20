@@ -28,15 +28,6 @@ class UpdateMetadataFiles:
         self.indent = "    "
         self.root_path = f"{os.path.dirname(__file__)}/.."
 
-    def var_type_heuristic(self, data):
-        """Guesses a Python variable type based of a definition in config.json."""
-        # print(f"Using heuristic: {data}")
-        if "regex" in data:
-            for pattern, var_type in self.var_heuristics_type_mapping.items():
-                if data["regex"] == pattern:
-                    return var_type
-        return "str"
-
     def var_comment_heuristic(self, data):
         """Tries to construct a comment for a variable definition based on config.json."""
         comments = []
@@ -55,7 +46,7 @@ class UpdateMetadataFiles:
         autogeneration_note = self.get_autogeneration_note("FILE")
         output = f"from dataclasses import dataclass\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
         for (k, v) in data["spreadsheet_definition"].items():
-            var_type = self.var_type_heuristic(v)
+            var_type = data["var_type"] if "var_type" in data else "str"
             var_comment = self.var_comment_heuristic(v)
             output += f"{self.indent}{k}: {var_type}{var_comment}\n"
         with open(filename, "w") as output_file:
