@@ -11,6 +11,10 @@ usage() {
        -u --user        user id on deployment host
        -h --host        deployment host name or IP address
 
+       Environment variables GITLAB_USER and GITLAB_TOKEN must be set if new docker
+       images are being deployed to the host.  These must be a username and access
+       token with permission tov read the sanger-pathogens/monocle repo.
+
        Options:
        -v --version     version number without \`v\` prefix
                         IMPORTANT: if this is not provided, then both
@@ -299,6 +303,18 @@ fi
 
 if [[ "${DEPLOY_MODE}" == "${deploy_mode_all}" || "${DEPLOY_MODE}" == "${deploy_mode_application}" ]]
 then
+
+    if [ -z ${GITLAB_USER+x} ]
+    then
+      echo Please set your gitlab login into variable GITLAB_USER
+      exit 1
+    fi
+    if [ -z ${GITLAB_TOKEN+x} ]
+    then
+      echo Please set your personal token into variable GITLAB_TOKEN
+      exit 1
+    fi
+
     # copy production compose file (template)
     scp -o ControlPath=%C $SCP_PORT_ARG docker-compose.prod.yml $REMOTE_USER@$REMOTE_HOST:~/docker-compose.yml
 
@@ -342,7 +358,9 @@ then
         chmod 644 nginx.proxy.conf nginx.service_maintenance.conf metadata-api.json
         chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh qc-data/bin/get_qc_data.py qc-data/bin/run_get_qc_data_in_docker.sh housekeeping.sh
         echo "Pulling ${docker_tag} docker images..."
+        echo "${GITLAB_TOKEN}" | docker login -u "${GITLAB_USER}" --password-stdin "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle"
         docker-compose pull
+        docker logout "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle"
 EOF
 fi
 
