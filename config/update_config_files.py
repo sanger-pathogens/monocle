@@ -49,9 +49,6 @@ class UpdateMetadataFiles:
             var_type = v["var_type"] if "var_type" in v else "str"
             var_comment = self.var_comment_heuristic(v)
             output += f"{self.indent}{k}: {var_type}{var_comment}\n"
-        if class_name == "QCData":
-            print(data)
-            print(output)
         with open(filename, "w") as output_file:
             _ = output_file.write(output)
 
