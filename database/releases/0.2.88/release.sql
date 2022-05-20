@@ -21,4 +21,4 @@ WHERE name = 'National Reference Laboratories';
 --
 -- Update the database version
 --
-CALL update_database_version('0.2.88', 'Rename submitting instituon');
+CALL update_database_version('0.2.88', 'Rename submitting institution');
