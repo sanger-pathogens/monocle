@@ -17,7 +17,6 @@ import DataSources.metadata_download
 import DataSources.sample_metadata
 import pandas
 import yaml
-
 from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
