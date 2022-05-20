@@ -998,4 +998,4 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def delete_all_qc_data(self):
         """Delete all QC data"""
         with self.connector.get_connection() as con:
-            rs = con.execute(self.DELETE_ALL_QC_DATA_SQL)
+            con.execute(self.DELETE_ALL_QC_DATA_SQL)

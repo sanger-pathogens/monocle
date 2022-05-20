@@ -168,10 +168,7 @@ class UserData:
         least one institution, which is the minimum we should expect.
         """
         logging.info("retrieving user information for username {}".format(username))
-        user_details = {
-            "username": username,
-            "memberOf": [],
-        }
+        user_details = {"username": username, "memberOf": [], "projects": []}
         ldap_user_rec = self.ldap_search_user_by_username(username)
         if ldap_user_rec is None:
             logging.error(
@@ -200,6 +197,18 @@ class UserData:
                 )
             )
             raise UserDataError("username {} has no organisation attribute values ".format(username))
+
+        # get user's project(s)
+        if self.config["project_attr"] not in user_attr:
+            raise UserDataError("username {} has no project attribute values ".format(username))
+        user_details["projects"] = [
+            project_bytes.decode("UTF-8") for project_bytes in user_attr[self.config["project_attr"]]
+        ]
+        if len(user_details["projects"]) < 1:
+            logging.error(
+                "The username {} is not associated with any projects (full attributes: {})".format(username, user_attr)
+            )
+            raise UserDataError("username {} has no project attribute values ".format(username))
 
         try:
             # Try to get optional employee type attribute
@@ -268,7 +277,11 @@ class UserData:
             raise UserDataError("uid {} not unique".format(username))
         result = result_list[0]
         # check attributes returned include required attributes
-        for this_required_attr in [self.config["username_attr"], self.config["membership_attr"]]:
+        for this_required_attr in [
+            self.config["username_attr"],
+            self.config["membership_attr"],
+            self.config["project_attr"],
+        ]:
             if this_required_attr not in result[1]:
                 logging.error(
                     "username {} search result doesn't seem to contain the required attribute {} (complete data = {})".format(

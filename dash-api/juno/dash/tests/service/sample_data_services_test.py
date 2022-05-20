@@ -1,12 +1,9 @@
 import json
-import logging
-import urllib.request
 from copy import deepcopy
-from datetime import datetime
 from os import environ
 from pathlib import Path, PurePath
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import patch
 from urllib.error import HTTPError
 
 import yaml
@@ -20,8 +17,6 @@ from DataSources.metadata_download import MetadataDownload, Monocle_Download_Cli
 from DataSources.pipeline_status import PipelineStatus
 from DataSources.sample_metadata import Monocle_Client, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
-from DataSources.user_data import UserData
-from pandas.errors import MergeError
 from utils.file import format_file_size
 
 INSTITUTION_KEY = "GenWel"
@@ -30,8 +25,8 @@ PUBLIC_NAME = "SCN9A"
 
 class MonocleSampleDataTest(TestCase):
 
-    test_field_attributes = "dash/tests/mock_data/field_attributes.json"
-    test_field_attributes_bad = "dash/tests/mock_data/field_attributes_bad.json"
+    test_field_attributes = "dash/tests/mock_data/juno_field_attributes.json"
+    test_field_attributes_bad = "dash/tests/mock_data/juno_field_attributes_bad.json"
 
     test_config = "dash/tests/mock_data/data_sources.yml"
     test_config_bad = "dash/tests/mock_data/data_sources_bad.yml"
@@ -45,6 +40,8 @@ class MonocleSampleDataTest(TestCase):
         {"institution key": "FakTwo", "batch date": "2021-05-02"},
         {"institution key": "FakOne", "batch date": "1892-01-30"},
     ]
+
+    mock_project_id = "mock_project_id"
 
     mock_monocle_data_dir = "dash/tests/mock_data/s3"
 
@@ -528,7 +525,7 @@ class MonocleSampleDataTest(TestCase):
     monocle_sample_tracking = MonocleSampleTracking(set_up=False)
     monocle_data = MonocleSampleData(
         data_source_config=test_config,
-        metadata_field_config=test_field_attributes,
+        metadata_field_configs={mock_project_id: test_field_attributes},
         MonocleSampleTracking_ref=monocle_sample_tracking,
     )
 
@@ -543,6 +540,7 @@ class MonocleSampleDataTest(TestCase):
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
         # mock metadata_download
+        self.monocle_data.current_project = self.mock_project_id
         self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
         self.monocle_data.metadata_download_source.dl_client = Monocle_Download_Client(set_up=False)
         self.monocle_data.metadata_download_source.dl_client.set_up(self.test_config)
@@ -558,13 +556,13 @@ class MonocleSampleDataTest(TestCase):
         with self.assertRaises(DataSourceConfigError):
             MonocleSampleData(
                 data_source_config="no/such/file",
-                metadata_field_config=self.test_field_attributes,
+                metadata_field_configs={"any_key_only_values_should_be_checked": self.test_field_attributes},
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
         with self.assertRaises(DataSourceConfigError):
             MonocleSampleData(
                 data_source_config=self.test_config,
-                metadata_field_config="no/such/file",
+                metadata_field_configs={"any_key_only_values_should_be_checked": "no/such/file"},
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
 
@@ -613,14 +611,35 @@ class MonocleSampleDataTest(TestCase):
         json_test_file = json.load(open(self.test_field_attributes, "r"))
         self.assertEqual(json_test_file, json_returned)
 
+    def test_get_field_attributes_reject_no_project(self):
+        doomed = MonocleSampleData(
+            data_source_config=self.test_config,
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
+            MonocleSampleTracking_ref=self.monocle_sample_tracking,
+        )
+        # note that no doomed.current_project has been set
+        with self.assertRaises(ValueError):
+            doomed.get_field_attributes()
+
+    def test_get_field_attributes_reject_unknown_project(self):
+        doomed = MonocleSampleData(
+            data_source_config=self.test_config,
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
+            MonocleSampleTracking_ref=self.monocle_sample_tracking,
+        )
+        doomed.current_project = "unknown_project_id"
+        with self.assertRaises(ValueError):
+            doomed.get_field_attributes()
+
     def test_get_field_attributes_reject_bad_json(self):
         doomed = MonocleSampleData(
             data_source_config=self.test_config,
-            metadata_field_config=self.test_field_attributes_bad,
+            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
             MonocleSampleTracking_ref=self.monocle_sample_tracking,
         )
+        doomed.current_project = "doomed_project"
         with self.assertRaises(json.decoder.JSONDecodeError):
-            json_returned = doomed.get_field_attributes()
+            doomed.get_field_attributes()
 
     @patch.object(Path, "exists", return_value=True)
     @patch.object(MonocleSampleData, "_get_file_size")
@@ -643,6 +662,37 @@ class MonocleSampleDataTest(TestCase):
                 "num_samples": expected_num_samples,
                 "size": format_file_size(expected_byte_size),
                 "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
+            },
+            bulk_download_info,
+        )
+
+    @patch.object(Path, "exists", return_value=True)
+    @patch.object(MonocleSampleData, "_get_file_size")
+    @patch.object(SampleMetadata, "get_samples")
+    @patch.dict(environ, mock_environment, clear=True)
+    def test_get_bulk_download_info_with_reads(self, get_sample_metadata_mock, get_file_size_mock, _path_exists_mock):
+        get_sample_metadata_mock.return_value = self.mock_samples
+        file_size = 420024
+        get_file_size_mock.return_value = file_size
+
+        bulk_download_info = self.monocle_data.get_bulk_download_info(
+            {"batches": self.inst_key_batch_date_pairs}, assemblies=True, annotations=False, reads=True
+        )
+
+        expected_num_samples = len(self.inst_key_batch_date_pairs)
+        num_lanes = 5 * expected_num_samples
+        expected_byte_size = file_size * num_lanes
+        self.assertEqual(
+            {
+                "num_samples": expected_num_samples,
+                "size": format_file_size(expected_byte_size),
+                "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
             },
             bulk_download_info,
         )
@@ -671,10 +721,10 @@ class MonocleSampleDataTest(TestCase):
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
         distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
@@ -705,10 +755,10 @@ class MonocleSampleDataTest(TestCase):
             sample_filters={"batches": self.inst_key_batch_date_pairs, "metadata": {"field2": ["x"]}},
         )
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
         self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
@@ -847,7 +897,7 @@ class MonocleSampleDataTest(TestCase):
         (note if start_row is not defined, num_rows is simply ignored)
         """
         with self.assertRaises(AssertionError):
-            filtered_samples_metadata = self.monocle_data.get_metadata(
+            self.monocle_data.get_metadata(
                 {"batches": self.inst_key_batch_date_pairs}, metadata_columns=["public_name"], start_row=2
             )
 
@@ -1078,7 +1128,7 @@ class MonocleSampleDataTest(TestCase):
         download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip()
         self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
 
-    def test_get_bulk_download_max_samples_per_zip(self):
+    def test_get_bulk_download_max_samples_per_zip_excluding_reads(self):
         download_max_samples_per_zip = self.monocle_data.get_bulk_download_max_samples_per_zip(including_reads=False)
         self.assertEqual(self.mock_download_max_samples_per_zip, download_max_samples_per_zip)
 
@@ -1165,7 +1215,7 @@ class MonocleSampleDataTest(TestCase):
     def test_get_csv_download_reject_invalid_download_params(self):
         # missing download_links `hostname` key
         with self.assertRaises(KeyError):
-            metadata_download = self.monocle_data.get_csv_download(
+            self.monocle_data.get_csv_download(
                 "any_name.csv",
                 {"mock filter name": "mock filter value"},
                 download_links={"institution": "any institution"},

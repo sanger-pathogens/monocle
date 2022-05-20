@@ -55,6 +55,7 @@ class MonocleUserDataTest(TestCase):
         "username_attr",
         "uid_attr",
         "membership_attr",
+        "project_attr",
         "gid_attr",
         "inst_id_attr",
         "inst_name_attr",
@@ -85,6 +86,38 @@ class MonocleUserDataTest(TestCase):
             "sn": [b"mock_user_sanger_ac_uk"],
             "uid": [b"mock_user"],
             "uidNumber": [b"1000"],
+            "businessCategory": [b"juno"],
+            "employeeType": [b"admin"],
+        },
+    )
+    mock_ldap_result_user_no_businessCategory = (
+        "cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk",
+        {
+            "cn": [b"mock_user_sanger_ac_uk"],
+            "gidNumber": [b"501"],
+            "homeDirectory": [b"/home/users/tmock_user_sanger_ac_uk"],
+            "mail": [b"mock_user@sanger.ac.uk"],
+            "o": [b"501", b"502"],
+            "objectClass": [b"inetOrgPerson", b"posixAccount", b"top"],
+            "sn": [b"mock_user_sanger_ac_uk"],
+            "uid": [b"mock_user_no_projects"],
+            "uidNumber": [b"1000"],
+            "employeeType": [b"admin"],
+        },
+    )
+    mock_ldap_result_user_empty_businessCategory = (
+        "cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk",
+        {
+            "cn": [b"mock_user_sanger_ac_uk"],
+            "gidNumber": [b"501"],
+            "homeDirectory": [b"/home/users/tmock_user_sanger_ac_uk"],
+            "mail": [b"mock_user@sanger.ac.uk"],
+            "o": [b"501", b"502"],
+            "objectClass": [b"inetOrgPerson", b"posixAccount", b"top"],
+            "sn": [b"mock_user_sanger_ac_uk"],
+            "uid": [b"mock_user_empty_projects"],
+            "uidNumber": [b"1000"],
+            "businessCategory": [],
             "employeeType": [b"admin"],
         },
     )
@@ -98,8 +131,9 @@ class MonocleUserDataTest(TestCase):
             "o": [b"501", b"502"],
             "objectClass": [b"inetOrgPerson", b"posixAccount", b"top"],
             "sn": [b"mock_user_sanger_ac_uk"],
-            "uid": [b"mock_user"],
+            "uid": [b"mock_user_no_type"],
             "uidNumber": [b"1000"],
+            "businessCategory": [b"juno"],
         },
     )
     mock_ldap_result_user_no_o = (
@@ -111,8 +145,9 @@ class MonocleUserDataTest(TestCase):
             "mail": [b"mock_user@sanger.ac.uk"],
             "objectClass": [b"inetOrgPerson", b"posixAccount", b"top"],
             "sn": [b"mock_user_sanger_ac_uk"],
-            "uid": [b"mock_user"],
+            "uid": [b"mock_user_no_o"],
             "uidNumber": [b"1000"],
+            "businessCategory": [b"juno"],
         },
     )
     mock_ldap_result_user_empty_o = (
@@ -125,8 +160,9 @@ class MonocleUserDataTest(TestCase):
             "o": [],
             "objectClass": [b"inetOrgPerson", b"posixAccount", b"top"],
             "sn": [b"mock_user_sanger_ac_uk"],
-            "uid": [b"mock_user"],
+            "uid": [b"mock_user_empty_o"],
             "uidNumber": [b"1000"],
+            "businessCategory": [b"juno"],
         },
     )
     mock_ldap_result_group = (
@@ -137,6 +173,16 @@ class MonocleUserDataTest(TestCase):
             "gidNumber": [b"501"],
             "objectClass": [b"posixGroup", b"top"],
             "memberUid": [b"UK"],
+        },
+    )
+    mock_ldap_result_group_no_country = (
+        "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
+        {
+            "cn": [b"WelSanIns"],
+            "description": [b"Wellcome Sanger Institute"],
+            "gidNumber": [b"501"],
+            "objectClass": [b"posixGroup", b"top"],
+            "memberUid": [],
         },
     )
     mock_ldap_result_group_no_desc = (
@@ -202,6 +248,9 @@ class MonocleUserDataTest(TestCase):
             user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
         # reject user record without required attributes
         with self.assertRaises(UserDataError):
+            mock_query.return_value = [self.mock_ldap_result_user_no_businessCategory]
+            user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
+        with self.assertRaises(UserDataError):
             mock_query.return_value = [self.mock_ldap_result_user_no_o]
             user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
         # TODO this method needs more validation
@@ -215,7 +264,11 @@ class MonocleUserDataTest(TestCase):
         with self.assertRaises(UserDataError):
             mock_query.return_value = [self.mock_ldap_result_group, self.mock_ldap_result_group]
             user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
-        # reject group record without required attributes
+        # reject group record without required country name attribute
+        with self.assertRaises(UserDataError):
+            mock_query.return_value = [self.mock_ldap_result_group_no_country]
+            user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
+        # reject group record without required description attributes
         with self.assertRaises(UserDataError):
             mock_query.return_value = [self.mock_ldap_result_group_no_desc]
             user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
@@ -236,11 +289,16 @@ class MonocleUserDataTest(TestCase):
             mock_user_query.return_value = self.mock_ldap_result_user
             mock_group_query.return_value = self.mock_ldap_result_group
             user_details = self.userdata.get_user_details("some_other_user")
+        # reject user record with empty project attribute
+        with self.assertRaises(UserDataError):
+            mock_user_query.return_value = self.mock_ldap_result_user_empty_businessCategory
+            mock_group_query.return_value = self.mock_ldap_result_group
+            user_details = self.userdata.get_user_details("mock_user_empty_projects")
         # reject user record with empty membership attribute
         with self.assertRaises(UserDataError):
             mock_user_query.return_value = self.mock_ldap_result_user_empty_o
             mock_group_query.return_value = self.mock_ldap_result_group
-            user_details = self.userdata.get_user_details("mock_user")
+            user_details = self.userdata.get_user_details("mock_user_empty_o")
         # reject user record with membership of non-existent group
         with self.assertRaises(UserDataError):
             mock_user_query.return_value = self.mock_ldap_result_user
@@ -271,7 +329,7 @@ class MonocleUserDataTest(TestCase):
     def test_get_user_details_no_employee_type(self, mock_user_query, mock_group_query):
         mock_user_query.return_value = self.mock_ldap_result_user_no_type
         mock_group_query.return_value = self.mock_ldap_result_group
-        user_details = self.userdata.get_user_details("mock_user")
-        self.assertEqual("mock_user", user_details["username"])
+        user_details = self.userdata.get_user_details("mock_user_no_type")
+        self.assertEqual("mock_user_no_type", user_details["username"])
         with self.assertRaises(KeyError):
             user_details["type"]

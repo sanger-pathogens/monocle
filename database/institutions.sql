@@ -7,9 +7,6 @@ insert into api_institution (name, country, latitude, longitude)
 values ('Laboratório Central do Estado do Paraná', 'Brazil', -25.42537, -49.25920);
 
 insert into api_institution (name, country, latitude, longitude)
-values ('Faculty of Pharmacy, Suez Canal University', 'Egypt', 30.6205, 32.2697);
-
-insert into api_institution (name, country, latitude, longitude)
 values ('National Reference Laboratories', 'Israel', 31.9007, 35.2069);
 
 insert into api_institution (name, country, latitude, longitude)
@@ -71,4 +68,10 @@ values ('Iaso Hospital', 'Greece', 37.98394, 23.72831);
 
 insert into api_institution (name, country, latitude, longitude)
 values ('University of North Carolina at Chapel Hill', 'Nicaragua', 12.60902, -85.29369);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Istituto Superiore di Sanità', 'Italy', 41.904144, 12.51806);
+
+insert into api_institution (name, country, latitude, longitude)
+values ('Toros University', 'Turkey', 36.790048, 34.593931);
 

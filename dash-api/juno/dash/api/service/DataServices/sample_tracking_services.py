@@ -2,6 +2,7 @@ import logging
 import urllib.error
 import urllib.request
 from collections import defaultdict
+from copy import deepcopy
 from datetime import datetime
 
 import DataSources.metadata_download
@@ -41,6 +42,7 @@ class MonocleSampleTracking:
 
     def __init__(self, set_up=True):
         self.user_record = None
+        self.current_project = None
         self.institutions_data = None
         self.institution_names = None
         self.samples_data = None
@@ -214,7 +216,8 @@ class MonocleSampleTracking:
             return self.samples_data
         if self.institutions_data is None:
             self.institutions_data = self.get_institutions()
-        all_juno_samples = self.sample_metadata.get_samples()
+        # work on copy of samples dict, as it will be modified in loop below
+        all_juno_samples = deepcopy(self.sample_metadata.get_samples(self.current_project))
         samples = {i: [] for i in list(self.institutions_data.keys())}
         for this_sample in all_juno_samples:
             try:
@@ -362,7 +365,6 @@ class MonocleSampleTracking:
 
         TODO:  improve 'failed' dict 'issue' strings
         """
-        institutions_data = self.get_institutions()
         sequencing_status_data = self.get_sequencing_status()
         status = {}
         for this_institution in sequencing_status_data.keys():
@@ -393,92 +395,17 @@ class MonocleSampleTracking:
                     # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
                     # i.e. only samples with lanes need to be looked at by the lines below
                     for this_lane in this_sequencing_status_data[this_sanger_sample_id]["lanes"]:
-                        if (
-                            "qc complete" == this_lane["run_status"]
-                            and this_lane["qc_complete_datetime"]
-                            and 1 == this_lane["qc_started"]
-                        ):
-                            # lane has completed, whether success or failure
+
+                        this_lane_completed, this_lane_success, fail_messages = self.get_sequencing_outcome_for_lane(
+                            this_sanger_sample_id, this_lane
+                        )
+                        if this_lane_completed:
                             status[this_institution]["completed"] += 1
-                            # look for any failures; note one lane could have more than one failure
-                            this_lane_failed = False
-                            for this_flag in self.sequencing_flags.keys():
-                                if not 1 == this_lane[this_flag]:
-                                    this_lane_failed = True
-                                    # record message for this failure
-                                    status[this_institution]["fail_messages"].append(
-                                        {
-                                            "lane": "{} (sample {})".format(this_lane["id"], this_sanger_sample_id),
-                                            "stage": self.sequencing_flags[this_flag],
-                                            "issue": "sorry, failure messages cannot currently be seen here",
-                                        },
-                                    )
-                            # count lane either as a success or failure
-                            if this_lane_failed:
-                                status[this_institution]["failed"] += 1
-                            else:
-                                status[this_institution]["success"] += 1
-        return status
-
-    def pipeline_status_summary(self):
-        """
-        Returns dict with summary of the pipeline outcomes for each institution.
-
-        {  institution_1: {  'running':     <int>,
-                             'success':     <int>
-                             'failed':      <int>,
-                             'completed':   <int>,
-                             'fail_messages':  [  {  'lane':  lane_id_1,
-                                                     'stage': 'name of QC stage where issues was detected',
-                                                     'issue': 'string describing the issue'
-                                                     },
-                                                  ...
-                                                  ],
-                             },
-           institution_2...
-           }
-
-        Note that when self.pipeline_status is instantiated it creates a dataframe with
-        the data, rather than querying an API, there is no separate method to "get" pipeline
-        data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
-        are handled in this class.
-
-        TODO:  decide what to do about about 'failed' dict 'issue' strings
-        """
-        institutions_data = self.get_institutions()
-        sequencing_status_data = self.get_sequencing_status()
-        status = {}
-        for this_institution in institutions_data.keys():
-            if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
-                status[this_institution] = {
-                    API_ERROR_KEY: "Server Error: Records cannot be collected at this time. Please try again later."
-                }
-                continue
-            status[this_institution] = {
-                API_ERROR_KEY: None,
-                "running": 0,
-                "completed": 0,
-                "success": 0,
-                "failed": 0,
-                "fail_messages": [],
-            }
-            sanger_sample_id_list = sequencing_status_data[this_institution].keys()
-            for this_sanger_sample_id in sanger_sample_id_list:
-                if this_sanger_sample_id == API_ERROR_KEY:
-                    continue
-                # if a sample is in MLWH but there are no lane data, it means sequencing hasn't been done yet
-                # i.e. only samples with lanes need to be looked at by the lines below
-                for this_lane in this_sequencing_status_data[this_sanger_sample_id]["lanes"]:
-                    this_lane_completed, this_lane_success, fail_messages = self.get_sequencing_outcome_for_lane(
-                        this_sanger_sample_id, this_lane
-                    )
-                    if this_lane_completed:
-                        status[this_institution]["completed"] += 1
-                    if this_lane_success:
-                        status[this_institution]["success"] += 1
-                    else:
-                        status[this_institution]["failed"] += 1
-                        status[this_institution]["fail_messages"] += fail_messages
+                        if this_lane_success:
+                            status[this_institution]["success"] += 1
+                        else:
+                            status[this_institution]["failed"] += 1
+                            status[this_institution]["fail_messages"] += fail_messages
         return status
 
     def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):

@@ -136,7 +136,7 @@ describe("once batches are fetched", () => {
       .toBeDefined();
   });
 
-  describe("on columns state in the local storage", () => {
+  describe("on columns state change in the local storage", () => {
     beforeAll(() => {
       localStorage.setItem(LOCAL_STORAGE_KEY_COLUMNS_STATE, "{}");
     });
@@ -251,6 +251,8 @@ describe("once batches are fetched", () => {
     const LABEL_ASSEMBLIES = "Assemblies";
     const LABEL_LOADING_DOWNLOAD_BUTTON = "Download samples";
     const ROLE_CHECKBOX = "checkbox";
+    const ESTIMATE_LATEST = {size: "64 GB", size_zipped: "17 GB"};
+    const ESTIMATE_STALE = {size: "12 GB", size_zipped: "2 GB"};
 
     it("displays a loading indicator as part of its label while download estimate is being fetched", async () => {
       const { findByRole, getByRole } = render(DataViewerPage);
@@ -333,6 +335,66 @@ describe("once batches are fetched", () => {
       await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: "Annotations" }));
 
       expect(getBulkDownloadInfo).not.toHaveBeenCalled();
+    });
+
+    it("doesn't display a stale estimate and waits for the latest one", async () => {
+      const requestWaitTimeMS = 2000;
+      const { findByRole, getByRole } = render(DataViewerPage);
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      await fireEvent.click(selectAllBtn);
+      // Open the bulk download dialog.
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
+      jest.useFakeTimers();
+      getBulkDownloadInfo
+        .mockReturnValueOnce(new Promise((resolve) =>
+          setTimeout((() => resolve(ESTIMATE_STALE)), requestWaitTimeMS)))
+        .mockReturnValueOnce(new Promise((resolve) =>
+          setTimeout((() => resolve(ESTIMATE_LATEST)), requestWaitTimeMS * 3)));
+
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      jest.advanceTimersByTime(requestWaitTimeMS / 2);
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      jest.advanceTimersByTime(requestWaitTimeMS);
+
+      expect(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }))
+        .toBeDefined();
+
+      jest.runAllTimers();
+
+      expect(getBulkDownloadInfo).toHaveBeenCalledTimes(2);
+      await waitFor(() => {
+        expect(getByRole(ROLE_BUTTON, { name: `Download samples of size ${ESTIMATE_LATEST.size_zipped}` }))
+          .toBeDefined();
+      });
+    });
+
+    it("waits for and displayes the latest estimate even if a stale one arrives after the latest requested", async () => {
+      const ESTIMATE_STALE = {size: "12 GB", size_zipped: "2 GB"};
+      const ESTIMATE_LATEST = {size: "64 GB", size_zipped: "17 GB"};
+      const requestWaitTimeMS = 6000;
+      const { findByRole, getByRole } = render(DataViewerPage);
+      const selectAllBtn = await findByRole(ROLE_BUTTON, { name: LABEL_SELECT_ALL });
+      await fireEvent.click(selectAllBtn);
+      // Open the bulk download dialog.
+      await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOADING_DOWNLOAD_BUTTON }));
+      getBulkDownloadInfo.mockClear();
+      jest.useFakeTimers();
+      getBulkDownloadInfo
+        .mockReturnValueOnce(new Promise((resolve) =>
+          setTimeout((() => resolve(ESTIMATE_STALE)), requestWaitTimeMS)))
+        .mockReturnValueOnce(new Promise((resolve) =>
+          setTimeout((() => resolve(ESTIMATE_LATEST)), requestWaitTimeMS / 4)));
+
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      jest.advanceTimersByTime(requestWaitTimeMS / 2);
+      await fireEvent.click(getByRole(ROLE_CHECKBOX, { name: LABEL_ASSEMBLIES }));
+      jest.runAllTimers();
+
+      expect(getBulkDownloadInfo).toHaveBeenCalledTimes(2);
+      await waitFor(() => {
+        expect(getByRole(ROLE_BUTTON, { name: `Download samples of size ${ESTIMATE_LATEST.size_zipped}` }))
+          .toBeDefined();
+      });
     });
   });
 });

@@ -21,6 +21,11 @@ WORKDIR /app
 COPY --from=builder /app .
 COPY . .
 
+# cache bust to update quickly the image build time
+# pass a new value as CACHE_BUST, e.g. with `--build-arg "CACHE_BUST=$(date)"`
+ARG      CACHE_BUST
+RUN      echo "$CACHE_BUST" > /dev/null
+
 EXPOSE 3000
 CMD ["node", "./build"]
 

@@ -1,7 +1,5 @@
-import logging
-from datetime import datetime
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from DataServices.user_services import MonocleAuthentication, MonocleUser
 from DataSources.user_data import UserAuthentication, UserData
@@ -42,6 +40,7 @@ class MonocleUserTest(TestCase):
             "sn": [b"mock_user_sanger_ac_uk"],
             "uid": [b"mock_user"],
             "uidNumber": [b"1000"],
+            "businessCategory": [b"juno"],
         },
     )
     mock_ldap_result_group = (
@@ -76,8 +75,10 @@ class MonocleUserTest(TestCase):
         self.assertIsInstance(user_record["memberOf"][0]["inst_id"], type("a string"))
         self.assertIsInstance(user_record["memberOf"][0]["inst_name"], type("a string"))
         self.assertIsInstance(user_record["memberOf"][0]["country_names"], type(["a", "list"]))
+        self.assertIsInstance(user_record["projects"], type(["a", "list"]))
         # data values
         self.assertEqual("mock_user", user_record["username"])
         self.assertEqual("WelSanIns", user_record["memberOf"][0]["inst_id"])
         self.assertEqual("Wellcome Sanger Institute", user_record["memberOf"][0]["inst_name"])
         self.assertEqual(["UK"], user_record["memberOf"][0]["country_names"])
+        self.assertEqual(["juno"], user_record["projects"])

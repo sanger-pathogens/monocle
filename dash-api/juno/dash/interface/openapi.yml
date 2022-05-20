@@ -713,7 +713,7 @@ components:
       type: string
       minLength: 1
       maxLength: 256
-      pattern: ^rel_abun_sa$
+      pattern: ^lane_id|rel_abun_sa$
 
     GetMetadataInput:
       type: object
@@ -1400,6 +1400,7 @@ components:
         - num_samples
         - size
         - size_zipped
+        - size_per_zip_options
       properties:
         num_samples:
           type: integer
@@ -1409,6 +1410,21 @@ components:
           readOnly: true
         size_zipped:
           type: string
+          readOnly: true
+        size_per_zip_options:
+          type: array
+          items:
+            type: object
+            required:
+              - max_samples_per_zip
+              - size_per_zip
+            properties:
+              max_samples_per_zip:
+                type: integer
+                minimum: 0
+              size_per_zip:
+                type: string
+                minLength: 1
           readOnly: true
 
     DownloadURLs:

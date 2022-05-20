@@ -12,13 +12,13 @@
   export { _downloadEstimate as downloadEstimate };
   export let formValues;
 
-  let downloadEstimateCurrentDownload;
   let downloadLinksRequested;
   let downloadTokens = [];
   let estimate = _downloadEstimate;
   let downloadBatches;
   let downloadFilterState;
   let downloadDistinctColumnValuesState;
+  let sizeSelectorElement;
 
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
 
@@ -47,7 +47,8 @@
     getBulkDownloadUrls({
       instKeyBatchDatePairs: batches,
       filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
-      ...formValues
+      ...formValues,
+      maxSamplesPerZip: Number(sizeSelectorElement?.value)
     }, fetch)
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
@@ -70,7 +71,6 @@
   }
 
   function resetForm() {
-    downloadEstimateCurrentDownload = null;
     downloadTokens = [];
     downloadLinksRequested = false;
     shouldFreezeDownloadEstimate = false;
@@ -124,12 +124,36 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              {estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"} of {estimate.sizeZipped}
+              {estimate.sizeZipped} ({estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"})
             {:else}
               <LoadingIcon label="Estimating the download size. Please wait" />
             {/if}
           {:else}
             0
+          {/if}
+        </dd>
+
+        <dt aria-label="Choose a maximum size per ZIP archive (defaults to the maximum size per archive)">
+          Maximum size per ZIP archive:
+        </dt>
+        <dd>
+          {#if formComplete}
+            {#if estimate}
+              <select bind:this={sizeSelectorElement} disabled={estimate.sizePerZipOptions?.length <= 1}>
+                {#each (estimate.sizePerZipOptions || []) as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
+                  {@const numZips = Math.ceil(estimate.numSamples / maxSamplesPerZip)}
+                  <option value={maxSamplesPerZip} selected={i === 0}>
+                    {sizePerZip} ({numZips} ZIP archive{numZips === 1 ? "" : "s"})
+                  </option>
+                {/each}
+              </select>
+            {:else}
+              <LoadingIcon label="Estimating the size options for the download. Please wait" />
+            {/if}
+          {:else}
+            <select disabled>
+              <option>0</option>
+            </select>
           {/if}
         </dd>
       </dl>
@@ -221,10 +245,16 @@ form > fieldset {
 }
 
 dl {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 1em;
 }
 dt {
   font-weight: 200;
+}
+
+.disabled select:disabled {
+  opacity: 1;
 }
 
 button[type=submit] {

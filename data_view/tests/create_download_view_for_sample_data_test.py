@@ -96,7 +96,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
 
         self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
         for data_file in data_files:
-            path_to_data_file = data_file.resolve()
+            data_file.resolve()
             self.create_symlink_to.assert_any_call(data_file, data_file.name)
 
     def assert_mkdir_not_called_with(self, institution_id):
@@ -115,7 +115,7 @@ class DB:
     def get_institution_names(self):
         return map(lambda institution: institution["name"], INSTITUTIONS)
 
-    def get_samples(self, institutions):
+    def get_samples(self, project, institutions):
         if institutions[0] == INSTITUTIONS[0]["name"]:
             return INSTITUTIONS[0]["samples"]
         elif institutions[0] == INSTITUTIONS[1]["name"]:

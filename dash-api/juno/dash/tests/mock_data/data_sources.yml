@@ -39,6 +39,7 @@ monocle_ldap:
    username_attr         : 'uid'
    uid_attr              : 'uidNumber'
    membership_attr       : 'o'
+   project_attr          : 'businessCategory'
    gid_attr              : 'gidNumber'
    inst_id_attr          : 'cn'
    inst_name_attr        : 'description'

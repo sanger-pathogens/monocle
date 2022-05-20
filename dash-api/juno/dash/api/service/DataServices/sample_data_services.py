@@ -1,17 +1,15 @@
-import errno
 import json
 import logging
-import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import defaultdict
 from copy import deepcopy
-from csv import QUOTE_ALL, QUOTE_MINIMAL, QUOTE_NONE, QUOTE_NONNUMERIC
+from csv import QUOTE_NONNUMERIC
 from datetime import datetime
 from functools import reduce
-from os import environ, path
-from pathlib import Path, PurePath
+from math import ceil
+from os import environ
+from pathlib import Path
 from uuid import uuid4
 
 import DataServices.sample_tracking_services
@@ -23,8 +21,12 @@ from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
+MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
 ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
+ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
+ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS = 1.15
 
 ASSEMBLY_FILE_SUFFIX = ".contigs_spades.fa"
 ANNOTATION_FILE_SUFFIX = ".spades.gff"
@@ -44,7 +46,10 @@ class MonocleSampleData:
     """
 
     default_data_source_config = "data_sources.yml"
-    default_metadata_field_config = "field_attributes.json"
+    default_metadata_field_configs = {
+        "juno": "juno_field_attributes.json",
+        "gps": "gps_field_attributes.json",
+    }
     sample_table_inst_key = "submitting_institution"
     # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
     # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
@@ -59,17 +64,27 @@ class MonocleSampleData:
     def __init__(
         self,
         data_source_config=default_data_source_config,
-        metadata_field_config=default_metadata_field_config,
+        metadata_field_configs=default_metadata_field_configs,
         MonocleSampleTracking_ref=None,
         set_up=True,
     ):
+        self.user_record = None
+        self.current_project = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
-        self.metadata_field_config_name = metadata_field_config
-        # check config files exist
-        for this_file in [self.data_source_config_name, self.metadata_field_config_name]:
+        if not Path(self.data_source_config_name).is_file():
+            return self._download_config_error(
+                "data source config file {} is missing".format(self.data_source_config_name)
+            )
+        self.metadata_field_config_files = metadata_field_configs
+        missing_metadata_config = []
+        for this_file in self.metadata_field_config_files.values():
             if not Path(this_file).is_file():
-                return self._download_config_error("config file {} is missing".format(this_file))
+                missing_metadata_config.append(this_file)
+        if len(missing_metadata_config) > 0:
+            return self._download_config_error(
+                "metadata field config file(s) {} are missing".format(missing_metadata_config)
+            )
 
         # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
         # if one wasn't passed, create one now
@@ -89,7 +104,12 @@ class MonocleSampleData:
         """
         Return field attributes JSON object
         """
-        with open(self.metadata_field_config_name, "r") as json_file:
+        metadata_attribute_file = self.metadata_field_config_files.get(self.current_project)
+        if metadata_attribute_file is None:
+            raise ValueError(
+                'The current project "{}" does not have a metadata field attributes file'.format(self.current_project)
+            )
+        with open(metadata_attribute_file, "r") as json_file:
             field_attributes = json.load(json_file)
 
         return field_attributes
@@ -174,9 +194,7 @@ class MonocleSampleData:
             # than expected when the end of the result set is reached
             last_sample_row_returned = (start_row - 1) + len(filtered_samples)
         logging.info(
-            "pagination (start {}, num {}) working with {} samples".format(
-                __class__.__name__, start_row, num_rows, len(filtered_samples)
-            )
+            "pagination (start {}, num {}) working with {} samples".format(start_row, num_rows, len(filtered_samples))
         )
 
         # if filters or pagination results in an empty samples list, return an empty response
@@ -197,7 +215,7 @@ class MonocleSampleData:
         logging.info(
             "sample filters {} resulted in {} samples being returned".format(sample_filters, len(sanger_sample_id_list))
         )
-        metadata = self.metadata_download_source.get_metadata(sanger_sample_id_list)
+        metadata = self.metadata_download_source.get_metadata(self.current_project, sanger_sample_id_list)
 
         # combined_metadata is the structure to be returned
         combined_metadata = [{"metadata": m} for m in metadata]
@@ -249,7 +267,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        in_silico_data = self.metadata_download_source.get_in_silico_data(lane_id_list)
+        in_silico_data = self.metadata_download_source.get_in_silico_data(self.current_project, lane_id_list)
         logging.debug(
             "{}.metadata_download_source.get_in_silico_data returned {}".format(__class__.__name__, in_silico_data)
         )
@@ -314,7 +332,7 @@ class MonocleSampleData:
                     )
                 )
                 raise
-        qc_data = self.metadata_download_source.get_qc_data(lane_id_list)
+        qc_data = self.metadata_download_source.get_qc_data(self.current_project, lane_id_list)
         logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
         lane_to_qc_data_lookup = {}
         for this_qc_data in qc_data:
@@ -395,7 +413,9 @@ class MonocleSampleData:
             this_institution["db_key"] for this_institution in self.sample_tracking.get_institutions().values()
         ]
         try:
-            distinct_values = self.sample_metadata_source.get_distinct_values(fields, institutions)
+            distinct_values = self.sample_metadata_source.get_distinct_values(
+                self.current_project, fields, institutions
+            )
         except urllib.error.HTTPError as e:
             if "404" not in str(e):
                 raise e
@@ -492,6 +512,7 @@ class MonocleSampleData:
                 raise e
             return None
 
+        include_reads = kwargs.get("reads", False)
         public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
             filtered_samples,
             assemblies=kwargs.get("assemblies", False),
@@ -503,10 +524,15 @@ class MonocleSampleData:
             lane_files_size = reduce(lambda accum, fl: accum + self._get_file_size(fl), lane_files, 0)
             total_lane_files_size = total_lane_files_size + lane_files_size
 
+        num_samples = len(filtered_samples)
+        total_lane_files_size_zipped = total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS
         return {
-            "num_samples": len(filtered_samples),
+            "num_samples": num_samples,
             "size": format_file_size(total_lane_files_size),
-            "size_zipped": format_file_size(total_lane_files_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+            "size_zipped": format_file_size(total_lane_files_size_zipped),
+            "size_per_zip_options": self._calculate_zip_size_options(
+                num_samples, total_lane_files_size_zipped, include_reads
+            ),
         }
 
     def get_filtered_samples(self, sample_filters, disable_public_name_fetch=False):
@@ -545,12 +571,12 @@ class MonocleSampleData:
         institution_keys = [
             inst_key_batch_date_pair["institution key"] for inst_key_batch_date_pair in inst_key_batch_date_pairs
         ]
-        institution_names = [
-            institution["name"]
-            for institution_key, institution in self.sample_tracking.get_institutions().items()
-            if institution_key in institution_keys
-        ]
         if not disable_public_name_fetch:
+            institution_names = [
+                institution["name"]
+                for institution_key, institution in self.sample_tracking.get_institutions().items()
+                if institution_key in institution_keys
+            ]
             sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
         filtered_samples = []
         sequencing_status_data = deepcopy(self.sample_tracking.get_sequencing_status())
@@ -579,7 +605,7 @@ class MonocleSampleData:
                     # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
                     for this_key in list(sample.keys()):
                         if "lanes" == this_key:
-                            sample[this_key] = [l["id"] for l in sample[this_key]]
+                            sample[this_key] = [lane["id"] for lane in sample[this_key]]
                         elif this_key not in ["creation_datetime", "inst_key", "public_name", "sanger_sample_id"]:
                             del sample[this_key]
                     # sample ID is the key in sequencing_status_data, so was not included in the dict, but it is useful to
@@ -695,7 +721,9 @@ class MonocleSampleData:
             )
         )
         matching_samples_ids_set = set(
-            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(metadata_filters)
+            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(
+                self.current_project, metadata_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(
@@ -718,7 +746,9 @@ class MonocleSampleData:
             )
         )
         matching_lanes_ids_set = set(
-            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(in_silico_filters)
+            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(
+                self.current_project, in_silico_filters
+            )
         )
         logging.info(
             "{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(
@@ -746,7 +776,7 @@ class MonocleSampleData:
 
     def _get_sanger_sample_id_to_public_name_dict(self, institutions):
         sanger_sample_id_to_public_name = {}
-        for sample in self.sample_tracking.sample_metadata.get_samples(institutions=institutions):
+        for sample in self.sample_tracking.sample_metadata.get_samples(self.current_project, institutions=institutions):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
                 public_name = sample["public_name"]
@@ -756,6 +786,41 @@ class MonocleSampleData:
             else:
                 sanger_sample_id_to_public_name[sanger_sample_id] = public_name
         return sanger_sample_id_to_public_name
+
+    def _calculate_zip_size_options(self, num_samples, total_zip_size, include_reads):
+        max_samples_per_zip = min(
+            self.get_bulk_download_max_samples_per_zip(including_reads=include_reads), num_samples
+        )
+        sample_size = total_zip_size / num_samples
+        zip_size = sample_size * max_samples_per_zip
+        min_zip_num_samples_capacity, zip_size_overestimate_factor = (
+            (MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS, ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS)
+            if include_reads
+            else (MIN_ZIP_NUM_SAMPLES_CAPACITY, ZIP_SIZE_OVERESTIMATE_FACTOR)
+        )
+        min_zip_size = sample_size * min_zip_num_samples_capacity
+        factor = 4
+        zip_size_options = []
+        first_iteration = True
+        while zip_size >= min_zip_size and max_samples_per_zip >= min_zip_num_samples_capacity:
+            zip_size_with_weight = zip_size * zip_size_overestimate_factor
+            if first_iteration:
+                num_zips = ceil(num_samples / max_samples_per_zip)
+                # Avoid "overestimating" the size per ZIP when there is only one ZIP, as in that case
+                # the size is simply `total_zip_size`.
+                if num_zips == 1:
+                    zip_size_with_weight = total_zip_size
+            zip_size_options.append(
+                {
+                    "max_samples_per_zip": max_samples_per_zip,
+                    "size_per_zip": format_file_size(zip_size_with_weight),
+                }
+            )
+            max_samples_per_zip = ceil(max_samples_per_zip / factor)
+            zip_size = zip_size / factor
+            factor = factor * 1.2
+            first_iteration = False
+        return zip_size_options
 
     def get_public_name_to_lane_files_dict(self, samples, **kwargs):
         """
@@ -865,19 +930,19 @@ class MonocleSampleData:
         institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
-        if not institution in institution_names:
+        if institution not in institution_names:
             message = 'institution "{}" passed, but should be one of "{}"'.format(
                 institution, '", "'.join(institution_names)
             )
             logging.error("Invalid request to {}: {}".format(__class__.__name__, message))
             return {"success": False, "error": "request", "message": message}
-        if not category in categories:
+        if category not in categories:
             message = 'Invalid request to {}: category "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, category, '", "'.join(categories)
             )
             logging.error(message)
             raise RuntimeError(message)
-        if not status in statuses:
+        if status not in statuses:
             message = 'Invalid request to {}: status "{}" passed, but should be one of "{}"'.format(
                 __class__.__name__, status, '", "'.join(statuses)
             )
@@ -1037,7 +1102,7 @@ class MonocleSampleData:
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_metadata(list(samples_for_download.keys()))
+            self.metadata_download_source.get_metadata(self.current_project, list(samples_for_download.keys()))
         )
         metadata_df = pandas.DataFrame(metadata)
 
@@ -1071,7 +1136,7 @@ class MonocleSampleData:
             lanes_for_download.extend(samples_for_download[this_sample])
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_in_silico_data(lanes_for_download)
+            self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
         )
         if len(in_silico_data) > 0:
             in_silico_data_df = pandas.DataFrame(in_silico_data)
@@ -1089,7 +1154,7 @@ class MonocleSampleData:
             # if there are any QC data, these are merged into the metadata DataFrame
             logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
             qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
-                self.metadata_download_source.get_qc_data(lanes_for_download)
+                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
             )
             if len(qc_data) > 0:
                 qc_data_df = pandas.DataFrame(qc_data)

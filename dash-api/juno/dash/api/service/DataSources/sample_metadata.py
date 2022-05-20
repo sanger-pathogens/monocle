@@ -1,4 +1,3 @@
-import http.client
 import json
 import logging
 import urllib.parse
@@ -6,7 +5,7 @@ import urllib.request
 
 import yaml
 
-##logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
+# logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
 # class DataSourceParamError(Exception):
 #    """ exception when data source methods are called with invalid parameter(s) """
@@ -29,7 +28,7 @@ class SampleMetadata:
 
         return result
 
-    def get_samples(self, exclude_lane_id=True, institutions=None):
+    def get_samples(self, project, exclude_lane_id=True, institutions=None):
         """
         Optionally pass a list of institutions that filters samples according to submitting institution
         Optiomally pass exclude_lane_id=False to stop the lane ID being removed (the laner ID retrieved here
@@ -37,7 +36,7 @@ class SampleMetadata:
         generally useful or necessarily accurate.  Lane IDs for a sample should be retrieved from MLWH)
         Returns a dict, keys are sample IDs, values are the selected metadata as a dict
         """
-        results_list = self.monocle_client.samples()
+        results_list = self.monocle_client.samples(project)
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
         samples = []
         for this_result in results_list:
@@ -61,7 +60,7 @@ class SampleMetadata:
                 samples.append(this_sample)
         return samples
 
-    def get_samples_matching_metadata_filters(self, metadata_filters):
+    def get_samples_matching_metadata_filters(self, project, metadata_filters):
         """
         Pass a list of filters, as defined by the metadata API /sample_ids_matching_metadata endpoint.
         Returns a list of sample IDs matching the filter conditions
@@ -81,13 +80,13 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters(filters_payload)
+        results_list = self.monocle_client.filters(project, filters_payload)
         logging.info(
             "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results_list))
         )
         return results_list
 
-    def get_lanes_matching_in_silico_filters(self, in_silico_filters):
+    def get_lanes_matching_in_silico_filters(self, project, in_silico_filters):
         """
         Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
         Returns a list of lane IDs matching the filter conditions.
@@ -108,13 +107,13 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters_in_silico(filters_payload)
+        results_list = self.monocle_client.filters_in_silico(project, filters_payload)
         logging.info(
             "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results_list))
         )
         return results_list
 
-    def get_distinct_values(self, fields, institutions):
+    def get_distinct_values(self, project, fields, institutions):
         """
         Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
         as keys; values are arrays of field names.
@@ -124,11 +123,11 @@ class SampleMetadata:
         for this_field_type in fields:
             field_list = fields[this_field_type]
             if "metadata" == this_field_type:
-                this_field_list = self.monocle_client.distinct_values(field_list, institutions)
+                this_field_list = self.monocle_client.distinct_values(project, field_list, institutions)
             elif "in silico" == this_field_type:
-                this_field_list = self.monocle_client.distinct_in_silico_values(field_list, institutions)
+                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institutions)
             elif "qc data" == this_field_type:
-                this_field_list = self.monocle_client.distinct_qc_data_values(field_list, institutions)
+                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institutions)
             else:
                 logging.error(
                     "{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(
@@ -173,7 +172,7 @@ class Monocle_Client:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             self.config = data_sources[self.data_source]
         for required_param in self.required_config_params:
-            if not required_param in self.config:
+            if required_param not in self.config:
                 logging.error(
                     "data source config file {} does not provide the required paramter {}.{}".format(
                         self.data_sources_config, self.data_source, required_param
@@ -186,48 +185,72 @@ class Monocle_Client:
         logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response, required_keys=[self.config["institutions_key"]])
+        results = self.parse_response(endpoint, response, required_keys=[self.config["institutions_key"]])
         return results[self.config["institutions_key"]]
 
-    def samples(self):
+    def samples(self, project):
         endpoint = self.config["samples"]
         logging.debug("{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
+        logging.warning(
+            '{}.samples was passed project "{}" but the metadata API does not support this yet'.format(
+                __class__.__name__, project
+            )
+        )
+        # TODO pass `project` when it is implemented on the endpoint
         response = self.make_request(endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(response, required_keys=[self.config["samples_key"]])
+        results = self.parse_response(endpoint, response, required_keys=[self.config["samples_key"]])
         return results[self.config["samples_key"]]
 
-    def filters(self, filters):
+    def filters(self, project, filters):
         endpoint = self.config["filter_by_metadata"]
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
+        logging.warning(
+            '{}.filters was passed project "{}" but the metadata API does not support this yet'.format(
+                __class__.__name__, project
+            )
+        )
+        # TODO pass `project` when it is implemented on the endpoint
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
-    def filters_in_silico(self, filters):
+    def filters_in_silico(self, project, filters):
         endpoint = self.config["filter_by_in_silico"]
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
+        logging.warning(
+            '{}.filters_in_silico was passed project "{}" but the metadata API does not support this yet'.format(
+                __class__.__name__, project
+            )
+        )
+        # TODO pass `project` when it is implemented on the endpoint
         response = self.make_request(endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
-    def distinct_values(self, fields, institutions):
+    def distinct_values(self, project, fields, institutions):
         endpoint = self.config["distinct_values"]
-        return self._distinct_values_common(endpoint, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institutions)
 
-    def distinct_in_silico_values(self, fields, institutions):
+    def distinct_in_silico_values(self, project, fields, institutions):
         endpoint = self.config["distinct_in_silico_values"]
-        return self._distinct_values_common(endpoint, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institutions)
 
-    def distinct_qc_data_values(self, fields, institutions):
+    def distinct_qc_data_values(self, project, fields, institutions):
         endpoint = self.config["distinct_qc_data_values"]
-        return self._distinct_values_common(endpoint, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institutions)
 
-    def _distinct_values_common(self, endpoint, fields, institutions):
+    def _distinct_values_common(self, endpoint, project, fields, institutions):
         query = {"fields": fields, "institutions": institutions}
         logging.debug("{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint, query))
+        logging.warning(
+            '{}._distinct_values_common was passed project "{}" but the metadata API does not support this yet'.format(
+                __class__.__name__, project
+            )
+        )
+        # TODO pass `project` when it is implemented on the endpoint
         response = self.make_request(endpoint, post_data=query)
         logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
@@ -268,7 +291,7 @@ class Monocle_Client:
             raise e
         return response_as_string
 
-    def parse_response(self, response_as_string, required_keys=[]):
+    def parse_response(self, endpoint, response_as_string, required_keys=[]):
         swagger_url = (
             self.config["base_url"] + self.config["swagger"]
         )  # only because it may be useful for error messages
