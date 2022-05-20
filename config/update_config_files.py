@@ -46,9 +46,12 @@ class UpdateMetadataFiles:
         autogeneration_note = self.get_autogeneration_note("FILE")
         output = f"from dataclasses import dataclass\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
         for (k, v) in data["spreadsheet_definition"].items():
-            var_type = data["var_type"] if "var_type" in data else "str"
+            var_type = v["var_type"] if "var_type" in v else "str"
             var_comment = self.var_comment_heuristic(v)
             output += f"{self.indent}{k}: {var_type}{var_comment}\n"
+        if class_name == "QCData":
+            print(data)
+            print(output)
         with open(filename, "w") as output_file:
             _ = output_file.write(output)
 
