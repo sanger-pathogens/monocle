@@ -30,6 +30,10 @@ class UpdateMetadataFiles:
 
     def var_comment_heuristic(self, data):
         """Tries to construct a comment for a variable definition based on config.json."""
+        if "var_comment" in data:  # Manual override
+            if data["var_comment"] == "":
+                return ""
+            return "  # " + data["var_comment"]
         comments = []
         if "mandatory" in data and data["mandatory"]:
             comments.append("mandatory")
