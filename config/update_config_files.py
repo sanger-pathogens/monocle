@@ -30,6 +30,7 @@ class UpdateMetadataFiles:
 
     def var_type_heuristic(self, data):
         """Guesses a Python variable type based of a definition in config.json."""
+        # print(f"Using heuristic: {data}")
         if "regex" in data:
             for pattern, var_type in self.var_heuristics_type_mapping.items():
                 if data["regex"] == pattern:
@@ -112,22 +113,7 @@ class UpdateMetadataFiles:
             if p.match(line):
                 out += "  " + self.get_autogeneration_note("TABLE DEFINITION")
                 for (k, v) in data["spreadsheet_definition"].items():
-                    row = f"  `{k}` "
-                    if "mysql_type" in v:  # Defined type in main_config.json
-                        row += v["mysql_type"]
-                    else:
-                        if self.var_type_heuristic(v) == "float":
-                            row += "DECIMAL(5,2) UNSIGNED"
-                        elif "max_length" in v:
-                            row += f"VARCHAR({v['max_length']})"
-                        else:
-                            row += "int(11)"
-                        if "mandatory" in v and v["mandatory"]:
-                            row += " NOT NULL"
-                        else:
-                            row += " DEFAULT NULL"
-                    row += ",\n"
-                    out += row
+                    out += f"  `{k}` {v['mysql_type']},\n"
                 out += "  # END OF AUTO_GENERATED SECTION\n"
                 out += self.skip_lines_until(r"^.*PRIMARY KEY.*$", lines)
             new_code += out
