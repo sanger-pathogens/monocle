@@ -7,7 +7,7 @@ insert into api_institution (name, country, latitude, longitude)
 values ('Laboratório Central do Estado do Paraná', 'Brazil', -25.42537, -49.25920);
 
 insert into api_institution (name, country, latitude, longitude)
-values ('National Reference Laboratories', 'Israel', 31.9007, 35.2069);
+values ('Ministry of Health, Central Laboratories', 'Israel', 31.790605, 35.202278);
 
 insert into api_institution (name, country, latitude, longitude)
 values ('The Chinese University of Hong Kong', 'China [Hong Kong]', 22.419722, 114.206792);
