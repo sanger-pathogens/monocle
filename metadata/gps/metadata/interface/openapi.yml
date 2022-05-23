@@ -1,13 +1,13 @@
 openapi: '3.0.0'
 info:
-  title: "Monocle Sample Metadata API"
+  title: "GPS Sample Metadata API"
   version: "0.0.1"
-  description: "A REST API for accessing/updating sample metadata"
+  description: "A REST API for accessing/updating GPS sample metadata"
   contact:
     email: "path-help@sanger.ac.uk"
 
 servers:
-  - url: /metadata
+  - url: /metadata/gps
     description: Context path
 
 paths:
