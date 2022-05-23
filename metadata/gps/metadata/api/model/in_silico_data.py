@@ -1,0 +1,67 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class InSilicoData:
+    # This is likely to change as the GBS typer pipeline's main output report gets modified
+    lane_id: str
+    cps_type: str
+    ST: str
+    adhP: str
+    pheS: str
+    atr: str
+    glnA: str
+    sdhA: str
+    glcK: str
+    tkt: str
+    twenty_three_S1: str
+    twenty_three_S3: str
+    AAC6APH2: str
+    AADECC: str
+    ANT6: str
+    APH3III: str
+    APH3OTHER: str
+    CATPC194: str
+    CATQ: str
+    ERMA: str
+    ERMB: str
+    ERMT: str
+    LNUB: str
+    LNUC: str
+    LSAC: str
+    MEFA: str
+    MPHC: str
+    MSRA: str
+    MSRD: str
+    FOSA: str
+    GYRA: str
+    PARC: str
+    RPOBGBS_1: str
+    RPOBGBS_2: str
+    RPOBGBS_3: str
+    RPOBGBS_4: str
+    SUL2: str
+    TETB: str
+    TETL: str
+    TETM: str
+    TETO: str
+    TETS: str
+    ALP1: str
+    ALP23: str
+    ALPHA: str
+    HVGA: str
+    PI1: str
+    PI2A1: str
+    PI2A2: str
+    PI2B: str
+    RIB: str
+    SRR1: str
+    SRR2: str
+    twenty_three_S1_variant: str
+    twenty_three_S3_variant: str
+    GYRA_variant: str
+    PARC_variant: str
+    RPOBGBS_1_variant: str
+    RPOBGBS_2_variant: str
+    RPOBGBS_3_variant: str
+    RPOBGBS_4_variant: str

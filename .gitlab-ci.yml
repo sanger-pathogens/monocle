@@ -12,7 +12,7 @@ variables:
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   QC_DATA_CONTEXT:          "qc-data"
-  DOCKER_IMAGE_LIST:        "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
+  DOCKER_IMAGE_LIST:        "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${METADATA_CONTEXT}-gps monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
   DOCKER_COMMON_BUILD_ARGS: "--build-arg \"CACHE_BUST=$(date)\""
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:20"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -81,6 +81,32 @@ Metadata API for JUNO docker build:
   script:
     - >
          this_project=juno
+         this_image="monocle-${METADATA_CONTEXT}-${this_project}";
+         cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
+         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+         docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+
+Metadata API for GPS docker build:
+  stage: build
+  tags:
+    - autoscale-large
+  image: "${DOCKER_IMAGE}"
+  services:
+    - name:  "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT:      1
+    DOCKER_TLS_CERTDIR:   ""
+    DOCKER_HOST:          "tcp://docker:2375"
+  before_script:
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  script:
+    - >
+         this_project=gps
          this_image="monocle-${METADATA_CONTEXT}-${this_project}";
          cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
@@ -224,6 +250,24 @@ Metadata API for JUNO unit tests:
     paths:
       - ${METADATA_CONTEXT}/htmlcov
 
+Metadata API for GPS unit tests:
+  stage: test
+  only:
+    - branches
+  tags:
+    - openstack-autoscale-theta
+  image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}-gps:commit-${CI_COMMIT_SHORT_SHA}"
+  before_script:
+    - cd "/app"
+  script:
+    - ./unittests.sh
+    - coverage report --show-missing --fail-under 85
+    - coverage html
+  coverage: /^TOTAL.+?(\d+\%)$/
+  artifacts:
+    when: always
+    paths:
+      - ${METADATA_CONTEXT}/htmlcov
 
 Front end unit tests:
   stage: test
