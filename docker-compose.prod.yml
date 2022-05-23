@@ -34,8 +34,8 @@ services:
        - monocle-ldap
        - ldap-admin
        - ldap-auth-daemon
-  metadata-api:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
+  metadata-api-juno:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata-juno:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>
     expose:
       - "80"

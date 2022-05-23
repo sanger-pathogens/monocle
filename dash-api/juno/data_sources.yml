@@ -1,5 +1,5 @@
 monocle_metadata_api:
-   base_url                : 'http://metadata-api'
+   base_url                : 'http://metadata-api-juno'
    swagger                 : '/metadata/ui/'
    download                : '/metadata/download'
    metadata_key            : 'download'
