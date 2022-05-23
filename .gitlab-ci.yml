@@ -12,7 +12,7 @@ variables:
   METADATA_CONTEXT:         "metadata"
   FRONTEND_CONTEXT:         "frontend"
   QC_DATA_CONTEXT:          "qc-data"
-  DOCKER_CONTEXT_LIST:      "${DASH_API_CONTEXT}/juno ${METADATA_CONTEXT}/juno ${FRONTEND_CONTEXT} proxy ldap-admin"
+  DOCKER_IMAGE_LIST:        "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
   DOCKER_COMMON_BUILD_ARGS: "--build-arg \"CACHE_BUST=$(date)\""
   DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:20"
   DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
@@ -56,7 +56,7 @@ Dashboard API docker build:
   script:
     - >
          this_image="monocle-${DASH_API_CONTEXT}";
-         cd "${CI_PROJECT_DIR}/${DASH_API_CONTEXT}/juno";
+         cd "${CI_PROJECT_DIR}/${DASH_API_CONTEXT}";
          this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
          echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
          docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
@@ -205,13 +205,13 @@ Data view unit tests:
       - ${DATA_VIEW_CONTEXT}/htmlcov
 
 
-Metadata unit tests:
+Metadata API for JUNO unit tests:
   stage: test
   only:
     - branches
   tags:
     - openstack-autoscale-theta
-  image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}:commit-${CI_COMMIT_SHORT_SHA}"
+  image: "${CI_REGISTRY_IMAGE}/monocle-${METADATA_CONTEXT}-juno:commit-${CI_COMMIT_SHORT_SHA}"
   before_script:
     - cd "/app"
   script:
@@ -222,7 +222,7 @@ Metadata unit tests:
   artifacts:
     when: always
     paths:
-      - ${METADATA_CONTEXT}/juno/htmlcov
+      - ${METADATA_CONTEXT}/htmlcov
 
 
 Front end unit tests:
@@ -287,15 +287,8 @@ Docker tags for merge:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in $DOCKER_CONTEXT_LIST;
+         for this_image in $DOCKER_IMAGE_LIST;
          do
-            if [[ "metadata/juno" == ${this_context} ]]; then
-               this_image="monocle-${METADATA_CONTEXT}"
-            elif [[ "dash-api/juno" == ${this_context} ]]; then
-               this_image="monocle-${DASH_API_CONTEXT}"
-            else
-               this_image="monocle-${this_context}"
-            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
@@ -326,15 +319,8 @@ Docker tags for release:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_context in $DOCKER_CONTEXT_LIST;
+         for this_image in $DOCKER_IMAGE_LIST;
          do
-            if [[ "metadata/juno" == ${this_context} ]]; then
-               this_image="monocle-${METADATA_CONTEXT}"
-            elif [[ "dash-api/juno" == ${this_context} ]]; then
-               this_image="monocle-${DASH_API_CONTEXT}"
-            else
-               this_image="monocle-${this_context}"
-            fi;
             this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
             docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
             for this_tag in $CI_COMMIT_REF_NAME 'latest';
