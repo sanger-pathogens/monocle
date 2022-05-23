@@ -30,7 +30,8 @@ services:
     depends_on:
        - dash-api
        - frontend
-       - metadata-api
+       - metadata-api-juno
+       - metadata-api-gps
        - monocle-ldap
        - ldap-admin
        - ldap-auth-daemon
