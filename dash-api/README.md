@@ -22,9 +22,9 @@ cd monocle
 docker run -p80:80 -it --rm -e "ENABLE_SWAGGER_UI=true" dash-api:test
 ```
 
-## Testing
-If you need to run up a swagger UI for testing then set the ENABLE_SWAGGER_UI
-environment variable to *true* when running up the container [as above].
+This example sets the ENABLE_SWAGGER_UI environment variable to *true*
+which enables the Swagger UI (it is disabled by default).
+
 The swagger UI can then be accessed on:
 ```
 http://0.0.0.0/ui/
