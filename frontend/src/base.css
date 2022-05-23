@@ -190,7 +190,7 @@ label {
   margin-bottom: .7rem;
   display: inline-block
 }
-label > input {
+label > input:not([type="checkbox"]) {
   margin-top: .6rem;
 }
 
