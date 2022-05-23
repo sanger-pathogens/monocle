@@ -190,7 +190,6 @@ label {
   margin-bottom: .7rem;
   display: inline-block
 }
-/* FIXME check that this CSS block doesn't break existing styles */
 label > input {
   margin-top: .6rem;
 }
