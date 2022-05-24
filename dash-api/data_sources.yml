@@ -1,4 +1,4 @@
-monocle_metadata_api:
+juno_metadata_api:
    base_url                : 'http://metadata-api-juno'
    swagger                 : '/metadata/juno/ui/'
    download                : '/metadata/juno/download'
@@ -18,6 +18,27 @@ monocle_metadata_api:
    distinct_values               : '/metadata/juno/distinct_values'
    distinct_in_silico_values     : '/metadata/juno/distinct_in_silico_values'
    distinct_qc_data_values       : '/metadata/juno/distinct_qc_data_values'
+   distinct_values_key           : 'distinct values'
+gps_metadata_api:
+   base_url                : 'http://metadata-api-gps'
+   swagger                 : '/metadata/gps/ui/'
+   download                : '/metadata/gps/download'
+   metadata_key            : 'download'
+   institutions            : '/metadata/gps/institutions'
+   samples                 : '/metadata/gps/samples'
+   filter_by_metadata      : '/metadata/gps/sample_ids_matching_metadata'
+   filter_by_in_silico     : '/metadata/gps/lane_ids_matching_in_silico_data'
+   institutions_key        : 'institutions'
+   samples_key             : 'samples'
+   download_in_silico_data : '/metadata/gps/download_in_silico_data'
+   in_silico_data_key      : 'download'
+   download_qc_data        : '/metadata/gps/download_qc_data'
+   qc_data_upload          : '/metadata/gps/qc-data-upload'
+   qc_data_delete_all      : '/metadata/gps/delete_all_qc_data'
+   qc_data_key             : 'download'
+   distinct_values               : '/metadata/gps/distinct_values'
+   distinct_in_silico_values     : '/metadata/gps/distinct_in_silico_values'
+   distinct_qc_data_values       : '/metadata/gps/distinct_qc_data_values'
    distinct_values_key           : 'distinct values'
 mlwh_rest_api:
    mlwh_api_config         : 'mlwh-api.yml'

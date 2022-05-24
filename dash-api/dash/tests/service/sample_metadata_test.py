@@ -17,7 +17,7 @@ class SampleMetadataTest(TestCase):
     bad_api_endpoint = "/no/such/endpoint"
     genuine_api_host = "http://metadata_api.dev.pam.sanger.ac.uk/"
 
-    mock_project = "mock_project_id"
+    mock_project = "juno"
     mock_bad_get_sample = """{  "wrong key":
                                        {  "does": "not matter what appears here"
                                        }
@@ -90,17 +90,17 @@ class SampleMetadataTest(TestCase):
         with self.assertRaises(URLError):
             doomed = Monocle_Client(set_up=False)
             doomed.set_up(self.test_config)
-            doomed.config["base_url"] = self.bad_api_host
-            endpoint = doomed.config["samples"] + self.expected_sanger_sample_ids[0]
-            doomed.make_request(endpoint)
+            doomed.config[self.mock_project]["base_url"] = self.bad_api_host
+            endpoint = doomed.config[self.mock_project]["samples"] + self.expected_sanger_sample_ids[0]
+            doomed.make_request("http://fake-container", endpoint)
 
     def test_reject_bad_endpoint(self):
         with self.assertRaises(URLError):
             doomed = Monocle_Client(set_up=False)
             doomed.set_up(self.test_config)
-            doomed.config["base_url"] = self.genuine_api_host
+            doomed.config[self.mock_project]["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
-            doomed.make_request(endpoint)
+            doomed.make_request("http://fake-container", endpoint)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_institution_names(self, mock_query):
@@ -112,7 +112,7 @@ class SampleMetadataTest(TestCase):
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_samples(self, mock_query):
         mock_query.return_value = self.mock_get_samples
-        samples = self.sample_metadata.get_samples(self.mock_project)
+        samples = self.sample_metadata.get_samples(self.mock_project, self.mock_project)
         self.assertIsInstance(samples, list)
         for this_sample in samples:
             for required in self.required_sample_dict_keys:
@@ -148,14 +148,18 @@ class SampleMetadataTest(TestCase):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
         self.sample_metadata.monocle_client.filters(self.mock_project, mock_payload)
-        mock_query.assert_called_once_with("/metadata/sample_ids_matching_metadata", post_data=mock_payload)
+        mock_query.assert_called_once_with(
+            "http://fake-container", "/metadata/juno/sample_ids_matching_metadata", post_data=mock_payload
+        )
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_filters_in_silico(self, mock_query):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
         self.sample_metadata.monocle_client.filters_in_silico(self.mock_project, mock_payload)
-        mock_query.assert_called_once_with("/metadata/lane_ids_matching_in_silico_data", post_data=mock_payload)
+        mock_query.assert_called_once_with(
+            "http://fake-container", "/metadata/juno/lane_ids_matching_in_silico_data", post_data=mock_payload
+        )
 
     @patch("DataSources.sample_metadata.Monocle_Client.distinct_values")
     @patch("DataSources.sample_metadata.Monocle_Client.distinct_in_silico_values")
@@ -182,7 +186,9 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "/metadata/distinct_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
+            "http://fake-container",
+            "/metadata/juno/distinct_values",
+            post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
@@ -192,7 +198,9 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_in_silico_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "/metadata/distinct_in_silico_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
+            "http://fake-container",
+            "/metadata/juno/distinct_in_silico_values",
+            post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
@@ -202,11 +210,13 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_qc_data_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "/metadata/distinct_qc_data_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
+            "http://fake-container",
+            "/metadata/juno/distinct_qc_data_values",
+            post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 
     @patch.object(Monocle_Client, "make_request")
     def test_reject_bad_get_sample_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_get_sample
-            self.sample_metadata.get_samples(self.expected_sanger_sample_ids[0])
+            self.sample_metadata.get_samples(self.mock_project, self.expected_sanger_sample_ids[0])

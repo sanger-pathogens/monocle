@@ -61,10 +61,9 @@ class ProtocolError(Exception):
 class Monocle_Download_Client:
 
     data_sources_config = "data_sources.yml"
-    data_source = "monocle_metadata_api"
+    data_source = {"juno": "juno_metadata_api", "gps": "gps_metadata_api"}
     required_config_params = [
         "base_url",
-        "swagger",
         "download",
         "metadata_key",
         "download_in_silico_data",
@@ -80,36 +79,37 @@ class Monocle_Download_Client:
     def set_up(self, config_file_name):
         with open(config_file_name, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            self.config = data_sources[self.data_source]
-        for required_param in self.required_config_params:
-            if required_param not in self.config:
-                logging.error(
-                    "data source config file {} does not provide the required parameter {}.{}".format(
-                        self.data_sources_config, self.data_source, required_param
+            self.config = {}
+            for this_project in self.data_source:
+                self.config[this_project] = data_sources[self.data_source[this_project]]
+        for this_project in self.data_source:
+            for required_param in self.required_config_params:
+                if required_param not in self.config[this_project]:
+                    logging.error(
+                        "data source config file {} does not provide the required paramter {}.{}".format(
+                            self.data_sources_config, self.data_source, required_param
+                        )
                     )
-                )
-                raise KeyError
+                    raise KeyError
 
     def metadata(self, project, lane_id_list):
-        endpoint = self.config["download"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["download"]
         logging.debug(
             "{}.metadata() using endpoint {}, passing list of {} sample IDs".format(
                 __class__.__name__, endpoint, len(lane_id_list)
             )
         )
-        logging.warning(
-            '{}.metadata was passed project "{}" but the metadata API does not support this yet'.format(
-                __class__.__name__, project
-            )
-        )
-        # TODO pass `project` when it is implemented on the endpoint
-        response = self.make_request(endpoint, post_data=lane_id_list)
+        response = self.make_request(base_url, endpoint, post_data=lane_id_list)
         logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(endpoint, response, required_keys=[self.config["metadata_key"]])
-        return results[self.config["metadata_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["metadata_key"]])
+        return results[this_config["metadata_key"]]
 
     def in_silico_data(self, project, lane_id_list):
-        endpoint = self.config["download_in_silico_data"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["download_in_silico_data"]
         logging.debug(
             "{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(
                 __class__.__name__, endpoint, len(lane_id_list)
@@ -118,13 +118,7 @@ class Monocle_Download_Client:
         # this request will return a 404 if there are no in silico results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
-            logging.warning(
-                '{}.in_silico_data was passed project "{}" but the metadata API does not support this yet'.format(
-                    __class__.__name__, project
-                )
-            )
-            # TODO pass `project` when it is implemented on the endpoint
-            response = self.make_request(endpoint, post_data=lane_id_list)
+            response = self.make_request(base_url, endpoint, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
                 logging.debug("status {}: no in silico results currently available for these samples".format(e.code))
@@ -134,11 +128,13 @@ class Monocle_Download_Client:
         logging.debug(
             "{}.in_silico_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response)
         )
-        results = self.parse_response(endpoint, response, required_keys=[self.config["in_silico_data_key"]])
-        return results[self.config["in_silico_data_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["in_silico_data_key"]])
+        return results[this_config["in_silico_data_key"]]
 
     def qc_data(self, project, lane_id_list):
-        endpoint = self.config["download_qc_data"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["download_qc_data"]
         logging.debug(
             "{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(
                 __class__.__name__, endpoint, len(lane_id_list)
@@ -147,13 +143,7 @@ class Monocle_Download_Client:
         # this request will return a 404 if there are no QC data results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
-            logging.warning(
-                '{}.qc_data was passed project "{}" but the metadata API does not support this yet'.format(
-                    __class__.__name__, project
-                )
-            )
-            # TODO pass `project` when it is implemented on the endpoint
-            response = self.make_request(endpoint, post_data=lane_id_list)
+            response = self.make_request(base_url, endpoint, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
                 logging.debug("status {}: no QC data results currently available for these samples".format(e.code))
@@ -161,11 +151,11 @@ class Monocle_Download_Client:
             else:
                 raise
         logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(endpoint, response, required_keys=[self.config["qc_data_key"]])
-        return results[self.config["qc_data_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["qc_data_key"]])
+        return results[this_config["qc_data_key"]]
 
-    def make_request(self, endpoint, post_data=None):
-        request_url = self.config["base_url"] + endpoint
+    def make_request(self, base_url, endpoint, post_data=None):
+        request_url = base_url + endpoint
         request_data = None
         request_headers = {}
         # if POST data were passed, convert to a UTF-8 JSON string
@@ -200,23 +190,14 @@ class Monocle_Download_Client:
         return response_as_string
 
     def parse_response(self, endpoint, response_as_string, required_keys=[]):
-        swagger_url = (
-            self.config["base_url"] + self.config["swagger"]
-        )  # only because it may be useful for error messages
         results_data = json.loads(response_as_string)
         if not isinstance(results_data, dict):
-            error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(
-                endpoint, swagger_url
-            )
+            error_message = "request to '{}' did not return a dict as expected".format(endpoint)
             raise ProtocolError(error_message)
         for required_key in required_keys:
             try:
                 results_data[required_key]
             except KeyError:
-                error_message = (
-                    "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        required_key, swagger_url
-                    )
-                )
+                error_message = "response data did not contain the expected key '{}'".format(required_key)
                 raise ProtocolError(error_message)
         return results_data

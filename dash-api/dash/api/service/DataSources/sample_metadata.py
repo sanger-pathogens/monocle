@@ -147,10 +147,9 @@ class ProtocolError(Exception):
 
 class Monocle_Client:
     data_sources_config = "data_sources.yml"
-    data_source = "monocle_metadata_api"
+    data_source = {"juno": "juno_metadata_api", "gps": "gps_metadata_api"}
     required_config_params = [
         "base_url",
-        "swagger",
         "institutions",
         "samples",
         "filter_by_metadata",
@@ -170,94 +169,85 @@ class Monocle_Client:
     def set_up(self, config_file_name):
         with open(config_file_name, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            self.config = data_sources[self.data_source]
-        for required_param in self.required_config_params:
-            if required_param not in self.config:
-                logging.error(
-                    "data source config file {} does not provide the required paramter {}.{}".format(
-                        self.data_sources_config, self.data_source, required_param
+            self.config = {}
+            for this_project in self.data_source:
+                self.config[this_project] = data_sources[self.data_source[this_project]]
+        for this_project in self.data_source:
+            for required_param in self.required_config_params:
+                if required_param not in self.config[this_project]:
+                    logging.error(
+                        "data source config file {} does not provide the required paramter {}.{}".format(
+                            self.data_sources_config, self.data_source, required_param
+                        )
                     )
-                )
-                raise KeyError
+                    raise KeyError
 
     def institutions(self):
-        endpoint = self.config["institutions"]
+        # TODO the project patam needs to be passed to this function like the others, and the config selected accordinging
+        logging.warning('{}.institutions() IS CURRENTLY HARDWIRED TO PROJECT "juno"'.format(__class__.__name__))
+        this_config = self.config["juno"]
+        base_url = this_config["base_url"]
+        endpoint = this_config["institutions"]
         logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
-        response = self.make_request(endpoint)
+        response = self.make_request(base_url, endpoint)
         logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[self.config["institutions_key"]])
-        return results[self.config["institutions_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["institutions_key"]])
+        return results[this_config["institutions_key"]]
 
     def samples(self, project):
-        endpoint = self.config["samples"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["samples"]
         logging.debug("{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
-        logging.warning(
-            '{}.samples was passed project "{}" but the metadata API does not support this yet'.format(
-                __class__.__name__, project
-            )
-        )
-        # TODO pass `project` when it is implemented on the endpoint
-        response = self.make_request(endpoint)
+        response = self.make_request(base_url, endpoint)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[self.config["samples_key"]])
-        return results[self.config["samples_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["samples_key"]])
+        return results[this_config["samples_key"]]
 
     def filters(self, project, filters):
-        endpoint = self.config["filter_by_metadata"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["filter_by_metadata"]
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
-        logging.warning(
-            '{}.filters was passed project "{}" but the metadata API does not support this yet'.format(
-                __class__.__name__, project
-            )
-        )
-        # TODO pass `project` when it is implemented on the endpoint
-        response = self.make_request(endpoint, post_data=filters)
+        response = self.make_request(base_url, endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
     def filters_in_silico(self, project, filters):
-        endpoint = self.config["filter_by_in_silico"]
+        this_config = self.config[project]
+        base_url = this_config["base_url"]
+        endpoint = this_config["filter_by_in_silico"]
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
-        logging.warning(
-            '{}.filters_in_silico was passed project "{}" but the metadata API does not support this yet'.format(
-                __class__.__name__, project
-            )
-        )
-        # TODO pass `project` when it is implemented on the endpoint
-        response = self.make_request(endpoint, post_data=filters)
+        response = self.make_request(base_url, endpoint, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
     def distinct_values(self, project, fields, institutions):
-        endpoint = self.config["distinct_values"]
+        endpoint = self.config[project]["distinct_values"]
         return self._distinct_values_common(endpoint, project, fields, institutions)
 
     def distinct_in_silico_values(self, project, fields, institutions):
-        endpoint = self.config["distinct_in_silico_values"]
+        endpoint = self.config[project]["distinct_in_silico_values"]
         return self._distinct_values_common(endpoint, project, fields, institutions)
 
     def distinct_qc_data_values(self, project, fields, institutions):
-        endpoint = self.config["distinct_qc_data_values"]
+        endpoint = self.config[project]["distinct_qc_data_values"]
         return self._distinct_values_common(endpoint, project, fields, institutions)
 
     def _distinct_values_common(self, endpoint, project, fields, institutions):
+        this_config = self.config[project]
         query = {"fields": fields, "institutions": institutions}
         logging.debug("{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint, query))
-        logging.warning(
-            '{}._distinct_values_common was passed project "{}" but the metadata API does not support this yet'.format(
-                __class__.__name__, project
-            )
-        )
-        # TODO pass `project` when it is implemented on the endpoint
-        response = self.make_request(endpoint, post_data=query)
+        base_url = this_config["base_url"]
+        response = self.make_request(base_url, endpoint, post_data=query)
         logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
-        results = json.loads(response)
-        return results[self.config["distinct_values_key"]]
+        results = self.parse_response(endpoint, response, required_keys=[this_config["distinct_values_key"]])
+        return results[this_config["distinct_values_key"]]
 
-    def make_request(self, endpoint, post_data=None):
-        request_url = self.config["base_url"] + endpoint
+    def make_request(self, base_url, endpoint, post_data=None):
+        request_url = base_url + endpoint
         request_data = None
         request_headers = {}
         # if POST data were passed, convert to a UTF-8 JSON string
@@ -292,23 +282,14 @@ class Monocle_Client:
         return response_as_string
 
     def parse_response(self, endpoint, response_as_string, required_keys=[]):
-        swagger_url = (
-            self.config["base_url"] + self.config["swagger"]
-        )  # only because it may be useful for error messages
         results_data = json.loads(response_as_string)
         if not isinstance(results_data, dict):
-            error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(
-                endpoint, swagger_url
-            )
+            error_message = "request to '{}' did not return a dict as expected".format(endpoint)
             raise ProtocolError(error_message)
         for required_key in required_keys:
             try:
                 results_data[required_key]
             except KeyError:
-                error_message = (
-                    "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        required_key, swagger_url
-                    )
-                )
+                error_message = "response data did not contain the expected key '{}'".format(required_key)
                 raise ProtocolError(error_message)
         return results_data
