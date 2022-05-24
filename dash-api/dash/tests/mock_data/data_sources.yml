@@ -20,7 +20,7 @@ monocle_metadata_api:
    distinct_qc_data_values       : '/metadata/distinct_qc_data_values'
    distinct_values_key           : 'distinct values'
 mlwh_rest_api:
-   mlwh_api_config       : 'dash/tests/mock_data/mlwh-api-mock.yml'
+   mlwh_api_config       : 'dash/tests/mock_data/mock-mlwh-api.yml'
    swagger               : '/sequencing/data/ui/'
    findById              : '/sequencing/data/samples/findById'
    findById_key          : 'sample'
