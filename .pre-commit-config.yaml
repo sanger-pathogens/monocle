@@ -22,7 +22,20 @@ repos:
     hooks:
       - id: flake8
         name: flake8 (Python)
-  # We use Prettier to format FE code:
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.16.0
+    hooks:
+      - id: eslint
+        name: ESLint (FE)
+        args:
+          - --fix
+        files: \.svelte|js$
+        types: [file]
+        additional_dependencies:
+           - eslint@8.16.0
+           - eslint-plugin-jest@26.2.2
+           - eslint-plugin-svelte3@4.0.0
+           - eslint-config-prettier@8.5.0
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.6.2
     hooks:
