@@ -5,7 +5,10 @@ module.exports = {
     "node": true,
     "jest/globals": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
@@ -20,22 +23,5 @@ module.exports = {
       processor: 'svelte3/svelte3'
     }
   ],
-  "rules": {
-    "indent": [
-      "error",
-      2
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "quotes": [
-      "error",
-      "double"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ]
-  }
+  "rules": {}
 };
