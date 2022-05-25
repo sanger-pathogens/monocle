@@ -6,7 +6,7 @@ import {
   columnsStore,
   columnsToDisplayStore,
   distinctColumnValuesStore,
-  filterStore
+  filterStore,
 } from "../_stores.js";
 import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
 
@@ -18,31 +18,45 @@ jest.mock("$lib/utils/debounce.js", () => {
   const originalDebounce = jest.requireActual("$lib/utils/debounce.js");
   return {
     __esModule: true,
-    default: jest.fn(originalDebounce.default)
+    default: jest.fn(originalDebounce.default),
   };
 });
 
 jest.mock("$lib/dataLoading.js", () => ({
-  getSampleMetadata: jest.fn(() => Promise.resolve({
-    "total rows": 4,
-    "last row": 4,
-    samples: [{
-      metadata: {
-        qc: { title: "QC", value: "90", order: 7 },
-        host_species: { title: "Host species", value: "Sciurus carolinensis", order: 2 }
-      },
-      "in silico": {
-        ST: { title: "ST", value: "some value", order: 1 }
-      }
-    }, {
-      metadata: {
-        host_species: { title: "Host species", value: "Ailuropoda melanoleuca", order: 2 },
-        qc: { title: "QC", value: "40", order: 7 }
-      },
-      "in silico": {
-        ST: { title: "ST", value: "another value", order: 1 }
-      }
-    }] }))
+  getSampleMetadata: jest.fn(() =>
+    Promise.resolve({
+      "total rows": 4,
+      "last row": 4,
+      samples: [
+        {
+          metadata: {
+            qc: { title: "QC", value: "90", order: 7 },
+            host_species: {
+              title: "Host species",
+              value: "Sciurus carolinensis",
+              order: 2,
+            },
+          },
+          "in silico": {
+            ST: { title: "ST", value: "some value", order: 1 },
+          },
+        },
+        {
+          metadata: {
+            host_species: {
+              title: "Host species",
+              value: "Ailuropoda melanoleuca",
+              order: 2,
+            },
+            qc: { title: "QC", value: "40", order: 7 },
+          },
+          "in silico": {
+            ST: { title: "ST", value: "another value", order: 1 },
+          },
+        },
+      ],
+    })
+  ),
 }));
 
 it("isn't displayed if no batches are passed", () => {
@@ -59,12 +73,18 @@ it("displays resolved metadata w/ each row sorted by order", async () => {
     // Data rows + the header row
     expect(getAllByRole("row")).toHaveLength(3);
     getAllByRole("columnheader").forEach(({ textContent }, i) =>
-      expect(textContent.startsWith(expectedColumnHeaders[i])).toBeTruthy());
-    const actualTableCellContents = getAllByRole("cell")
-      .map(({ textContent }) => textContent);
+      expect(textContent.startsWith(expectedColumnHeaders[i])).toBeTruthy()
+    );
+    const actualTableCellContents = getAllByRole("cell").map(
+      ({ textContent }) => textContent
+    );
     expect(actualTableCellContents).toEqual([
-      "Sciurus carolinensis", "90", "some value",
-      "Ailuropoda melanoleuca", "40", "another value"
+      "Sciurus carolinensis",
+      "90",
+      "some value",
+      "Ailuropoda melanoleuca",
+      "40",
+      "another value",
     ]);
   });
 });
@@ -73,12 +93,18 @@ it("requests metadata w/ the correct arguments", async () => {
   render(SampleMetadataViewer, { batches: BATCHES });
 
   await waitFor(() => {
-    expect(getSampleMetadata).toHaveBeenCalledWith({
-      instKeyBatchDatePairs: BATCHES,
-      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
-      numRows: 17,
-      startRow: 1
-    }, fetch);
+    expect(getSampleMetadata).toHaveBeenCalledWith(
+      {
+        instKeyBatchDatePairs: BATCHES,
+        filter: {
+          filterState: get(filterStore),
+          distinctColumnValuesState: get(distinctColumnValuesStore),
+        },
+        numRows: 17,
+        startRow: 1,
+      },
+      fetch
+    );
   });
 });
 
@@ -95,13 +121,19 @@ it("requests metadata if selected columns change", async () => {
 
   await waitFor(() => {
     expect(getSampleMetadata).toHaveBeenCalledTimes(1);
-    expect(getSampleMetadata).toHaveBeenCalledWith({
-      instKeyBatchDatePairs: BATCHES,
-      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) },
-      columns: get(columnsToDisplayStore),
-      numRows: 17,
-      startRow: 1
-    }, fetch);
+    expect(getSampleMetadata).toHaveBeenCalledWith(
+      {
+        instKeyBatchDatePairs: BATCHES,
+        filter: {
+          filterState: get(filterStore),
+          distinctColumnValuesState: get(distinctColumnValuesStore),
+        },
+        columns: get(columnsToDisplayStore),
+        numRows: 17,
+        startRow: 1,
+      },
+      fetch
+    );
   });
 });
 
@@ -129,13 +161,17 @@ describe("pagination", () => {
     const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
     await waitFor(() => {
-      expect(getAllByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).length).toBe(2);
+      expect(
+        getAllByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }).length
+      ).toBe(2);
     });
   });
 
   it("requests and loads the next page when Next button is clicked", async () => {
     jest.useFakeTimers();
-    const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+    const { getByLabelText, getByRole } = render(SampleMetadataViewer, {
+      batches: BATCHES,
+    });
     getSampleMetadata.mockClear();
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON }));
@@ -150,7 +186,9 @@ describe("pagination", () => {
 
   it("requests and loads the previous page when Previous button is clicked", async () => {
     jest.useFakeTimers();
-    const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+    const { getByLabelText, getByRole } = render(SampleMetadataViewer, {
+      batches: BATCHES,
+    });
     const nextBtn = getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON });
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
@@ -167,7 +205,9 @@ describe("pagination", () => {
   });
 
   it("requests and loads the first page when First button is clicked", async () => {
-    const { getByLabelText, getByRole } = render(SampleMetadataViewer, { batches: BATCHES });
+    const { getByLabelText, getByRole } = render(SampleMetadataViewer, {
+      batches: BATCHES,
+    });
     const nextBtn = getByRole(ROLE_BUTTON, { name: LABEL_NEXT_BUTTON });
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);

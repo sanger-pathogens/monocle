@@ -12,7 +12,5 @@ it("can be rendered w/ a custom color", () => {
   const color = "blue";
   const { container } = render(SettingsIcon, { color });
 
-  expect(container.querySelector("svg").getAttribute("fill"))
-    .toBe(color);
+  expect(container.querySelector("svg").getAttribute("fill")).toBe(color);
 });
-

@@ -4,7 +4,6 @@
   export let width = 18;
 </script>
 
-
 <svg aria-hidden="true" {width} {height} viewBox="0 0 24 24">
   <path
     fill={color || "var(--text-muted)"}

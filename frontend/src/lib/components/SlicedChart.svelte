@@ -20,8 +20,8 @@
     animate: false,
     data: {
       labels,
-      datasets: [{ values }]
-    }
+      datasets: [{ values }],
+    },
   };
   let chartElement;
 
@@ -30,18 +30,15 @@
   });
 </script>
 
-
 <div
   bind:this={chartElement}
   style="--initial-height: {height}px"
   class="container"
-></div>
-
+/>
 
 <style>
-.container {
-  margin-bottom: .9rem;
-  min-height: var(--initial-height);
-}
+  .container {
+    margin-bottom: 0.9rem;
+    min-height: var(--initial-height);
+  }
 </style>
-

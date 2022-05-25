@@ -9,18 +9,25 @@
 
   const INSTITUTION_NAME = getContext("institutionName");
   const PANE_TYPE = isPipeline ? "pipeline" : "sequencing";
-  const URL_FAIL = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/failed`);
-  const URL_SUCCESS = encodeURI(`/download/${INSTITUTION_NAME}/${PANE_TYPE}/successful`);
+  const URL_FAIL = encodeURI(
+    `/download/${INSTITUTION_NAME}/${PANE_TYPE}/failed`
+  );
+  const URL_SUCCESS = encodeURI(
+    `/download/${INSTITUTION_NAME}/${PANE_TYPE}/successful`
+  );
 
   const onlyFailedButton = !succeeded;
-  let titleDownloadSucceeded = isPipeline ?
-    (succeeded && `Download metadata for ${succeeded} samples successfully processed through the pipeline`)
-    : (succeeded && `Download metadata for ${succeeded} successfully sequenced samples`);
-  let titleDownloadFailed = isPipeline ?
-    (failed && `Download metadata for ${failed} samples that failed processing through the pipeline`)
-    : (failed && `Download metadata for ${failed} samples that failed sequencing`);
+  let titleDownloadSucceeded = isPipeline
+    ? succeeded &&
+      `Download metadata for ${succeeded} samples successfully processed through the pipeline`
+    : succeeded &&
+      `Download metadata for ${succeeded} successfully sequenced samples`;
+  let titleDownloadFailed = isPipeline
+    ? failed &&
+      `Download metadata for ${failed} samples that failed processing through the pipeline`
+    : failed &&
+      `Download metadata for ${failed} samples that failed sequencing`;
 </script>
-
 
 {#if !onlyFailedButton}
   <a
@@ -35,9 +42,7 @@
     {style}
   >
     Metadata for successful samples
-    <DownloadIcon
-      color="#98d85b"
-    />
+    <DownloadIcon color="#98d85b" />
   </a>
 {/if}
 
@@ -54,15 +59,12 @@
     {style}
   >
     {onlyFailedButton ? "Download" : "Metadata for failed samples"}
-    <DownloadIcon
-      color="#ff5858"
-    />
+    <DownloadIcon color="#ff5858" />
   </a>
 {/if}
 
-
 <style>
-a {
-  display: inline-block;
-}
+  a {
+    display: inline-block;
+  }
 </style>

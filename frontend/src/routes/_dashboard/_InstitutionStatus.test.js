@@ -10,7 +10,7 @@ const ROLE_HEADING = "heading";
 
 jest.mock("svelte", () => ({
   ...jest.requireActual("svelte"),
-  setContext: jest.fn()
+  setContext: jest.fn(),
 }));
 
 it("displays an institution name", () => {
@@ -18,11 +18,10 @@ it("displays an institution name", () => {
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
-    pipelineStatus: {}
+    pipelineStatus: {},
   });
 
-  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
-    .toBeDefined();
+  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME })).toBeDefined();
 });
 
 it("puts an institution's name into context", () => {
@@ -30,7 +29,7 @@ it("puts an institution's name into context", () => {
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
-    pipelineStatus: {}
+    pipelineStatus: {},
   });
 
   expect(setContext).toHaveBeenCalledWith("institutionName", INSTITUTION_NAME);
@@ -41,46 +40,67 @@ it("displays only an institution name and a short message when no samples receiv
     institutionName: INSTITUTION_NAME,
     batches: { received: 0, deliveries: [] },
     sequencingStatus: {},
-    pipelineStatus: {}
+    pipelineStatus: {},
   });
 
   const innerElements = container.querySelector("article").children;
   expect(innerElements).toHaveLength(2);
-  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
-    .toBeDefined();
+  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME })).toBeDefined();
   expect(getByText("No samples received")).toBeDefined();
 });
 
 it.each([
-  ["batch", / Samples Received$/ ],
-  ["sequencing status", / Samples Sequenced$/ ],
-  ["pipeline status", / Sample Pipelines Completed$/ ]
+  ["batch", / Samples Received$/],
+  ["sequencing status", / Samples Sequenced$/],
+  ["pipeline status", / Sample Pipelines Completed$/],
 ])("displays %s pane", (paneName, expectedHeadingText) => {
   const { getByRole } = render(InstitutionStatus, {
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
-    pipelineStatus: {}
+    pipelineStatus: {},
   });
 
-  expect(getByRole(ROLE_HEADING, { name: expectedHeadingText }))
-    .toBeDefined();
+  expect(getByRole(ROLE_HEADING, { name: expectedHeadingText })).toBeDefined();
 });
 
 it.each([
-  ["batch", { batches: { _ERROR: API_ERROR }, sequencingStatus: {}, pipelineStatus: {} }],
-  ["sequencing status", { batches: {}, sequencingStatus: { _ERROR: API_ERROR }, pipelineStatus: {} }],
-  ["pipeline status", { batches: {}, sequencingStatus: {}, pipelineStatus: { _ERROR: API_ERROR } }]
-])("displays an institution name and an API error if %s response has the error field", (endpointName, props) => {
-  const { getByRole, getByText, queryByRole } = render(InstitutionStatus, {
-    institutionName: INSTITUTION_NAME,
-    ...props
-  });
+  [
+    "batch",
+    {
+      batches: { _ERROR: API_ERROR },
+      sequencingStatus: {},
+      pipelineStatus: {},
+    },
+  ],
+  [
+    "sequencing status",
+    {
+      batches: {},
+      sequencingStatus: { _ERROR: API_ERROR },
+      pipelineStatus: {},
+    },
+  ],
+  [
+    "pipeline status",
+    {
+      batches: {},
+      sequencingStatus: {},
+      pipelineStatus: { _ERROR: API_ERROR },
+    },
+  ],
+])(
+  "displays an institution name and an API error if %s response has the error field",
+  (endpointName, props) => {
+    const { getByRole, getByText, queryByRole } = render(InstitutionStatus, {
+      institutionName: INSTITUTION_NAME,
+      ...props,
+    });
 
-  expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME }))
-    .toBeDefined();
-  expect(getByText(`⚠️ ${API_ERROR}`))
-    .toBeDefined();
-  expect(queryByRole(ROLE_HEADING, { name: { RE_STATUS_PANE_HEADING_TEXT } }))
-    .toBeNull();
-});
+    expect(getByRole(ROLE_HEADING, { name: INSTITUTION_NAME })).toBeDefined();
+    expect(getByText(`⚠️ ${API_ERROR}`)).toBeDefined();
+    expect(
+      queryByRole(ROLE_HEADING, { name: { RE_STATUS_PANE_HEADING_TEXT } })
+    ).toBeNull();
+  }
+);

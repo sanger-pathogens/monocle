@@ -11,34 +11,38 @@ export function getInstitutionStatus(fetch) {
     getInstitutions(fetch),
     getBatches(fetch),
     getSequencingStatus(fetch),
-    getPipelineStatus(fetch)
-  ])
-    .then(([institutions, batches, sequencingStatus, pipelineStatus]) =>
-      institutions && collateInstitutionStatus({
+    getPipelineStatus(fetch),
+  ]).then(
+    ([institutions, batches, sequencingStatus, pipelineStatus]) =>
+      institutions &&
+      collateInstitutionStatus({
         institutions,
         batches,
         sequencingStatus,
-        pipelineStatus
-      }));
+        pipelineStatus,
+      })
+  );
 }
 
 export function getProjectProgress(fetch) {
-  return getProjectProgressData(fetch)
-    .then((progress) => {
-      const progressData = progress?.data;
-      if (progressData) {
-        return {
-          dates: progressData.date,
-          datasets: [{
+  return getProjectProgressData(fetch).then((progress) => {
+    const progressData = progress?.data;
+    if (progressData) {
+      return {
+        dates: progressData.date,
+        datasets: [
+          {
             name: "received",
-            values: progressData["samples received"]
-          }, {
+            values: progressData["samples received"],
+          },
+          {
             name: "sequenced",
-            values: progressData["samples sequenced"]
-          }]
-        };
-      }
-    });
+            values: progressData["samples sequenced"],
+          },
+        ],
+      };
+    }
+  });
 }
 
 //TODO use service workers to cache response
@@ -47,74 +51,84 @@ export function getBatches(fetch) {
 }
 
 export function getBulkDownloadInfo(params, fetch) {
-  return fetchDashboardApiResource(
-    "bulk_download_info", null, fetch, {
-      method: HTTP_POST,
-      headers: JSON_HEADERS,
-      body: JSON.stringify(prepareBulkDownloadPayload(params))
-    });
+  return fetchDashboardApiResource("bulk_download_info", null, fetch, {
+    method: HTTP_POST,
+    headers: JSON_HEADERS,
+    body: JSON.stringify(prepareBulkDownloadPayload(params)),
+  });
 }
 
 export function getBulkDownloadUrls(params, fetch) {
   return fetchDashboardApiResource(
-    "bulk_download_urls", "download_urls", fetch, {
+    "bulk_download_urls",
+    "download_urls",
+    fetch,
+    {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify(prepareBulkDownloadPayload(params))
-    });
+      body: JSON.stringify(prepareBulkDownloadPayload(params)),
+    }
+  );
 }
 
 export function getColumns(fetch) {
-  return fetchDashboardApiResource("get_field_attributes", "field_attributes", fetch);
+  return fetchDashboardApiResource(
+    "get_field_attributes",
+    "field_attributes",
+    fetch
+  );
 }
 
-export function getDistinctColumnValues({ instKeyBatchDatePairs, columns, filter }, fetch) {
+export function getDistinctColumnValues(
+  { instKeyBatchDatePairs, columns, filter },
+  fetch
+) {
   const payload = {
     "sample filters": {
-      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-    }
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
+    },
   };
-  payload.fields = columns.reduce((accum, column) => {
-    const { fields, dataTypeToFieldsIndex } = accum;
-    let fieldsIndex = dataTypeToFieldsIndex[column.dataType];
-    if (fieldsIndex === undefined) {
-      fieldsIndex = fields.length;
-      dataTypeToFieldsIndex[column.dataType] = fieldsIndex;
-      fields.push({ "field type": column.dataType, "field names": [] });
-    }
-    fields[fieldsIndex]["field names"].push(column.name);
-    return accum;
-  }, { fields: [], dataTypeToFieldsIndex: {} }
+  payload.fields = columns.reduce(
+    (accum, column) => {
+      const { fields, dataTypeToFieldsIndex } = accum;
+      let fieldsIndex = dataTypeToFieldsIndex[column.dataType];
+      if (fieldsIndex === undefined) {
+        fieldsIndex = fields.length;
+        dataTypeToFieldsIndex[column.dataType] = fieldsIndex;
+        fields.push({ "field type": column.dataType, "field names": [] });
+      }
+      fields[fieldsIndex]["field names"].push(column.name);
+      return accum;
+    },
+    { fields: [], dataTypeToFieldsIndex: {} }
   ).fields;
 
   addFiltersToPayload({ ...filter, payload });
 
-  return fetchDashboardApiResource("get_distinct_values", "distinct values", fetch, {
-    method: HTTP_POST,
-    headers: JSON_HEADERS,
-    body: JSON.stringify(payload)
-  });
+  return fetchDashboardApiResource(
+    "get_distinct_values",
+    "distinct values",
+    fetch,
+    {
+      method: HTTP_POST,
+      headers: JSON_HEADERS,
+      body: JSON.stringify(payload),
+    }
+  );
 }
 
 export function getInstitutions(fetch) {
-  return fetchDashboardApiResource(
-    "get_institutions", "institutions", fetch);
+  return fetchDashboardApiResource("get_institutions", "institutions", fetch);
 }
 
-export function getSampleMetadata({
-  instKeyBatchDatePairs,
-  filter,
-  columns,
-  numRows,
-  startRow,
-  asCsv
-},
-fetch
+export function getSampleMetadata(
+  { instKeyBatchDatePairs, filter, columns, numRows, startRow, asCsv },
+  fetch
 ) {
   const payload = {
     "sample filters": {
-      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
-    }
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
+    },
   };
 
   addFiltersToPayload({ ...filter, payload });
@@ -131,53 +145,61 @@ fetch
     return fetch(`${DASHBOARD_API_ENDPOINT}/get_metadata`, {
       method: HTTP_POST,
       headers: JSON_HEADERS,
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
       .then((response) =>
-        response.ok ? response.blob() : Promise.reject(`${response.status} ${response.statusText}`))
-      .catch((err) =>
-        handleFetchError(err, "get_metadata"));
-  }
-  else {
+        response.ok
+          ? response.blob()
+          : Promise.reject(`${response.status} ${response.statusText}`)
+      )
+      .catch((err) => handleFetchError(err, "get_metadata"));
+  } else {
     addColumnsToPayload(columns, payload);
   }
 
-  return fetchDashboardApiResource(
-    "get_metadata", null, fetch, {
-      method: HTTP_POST,
-      headers: JSON_HEADERS,
-      body: JSON.stringify(payload)
-    });
+  return fetchDashboardApiResource("get_metadata", null, fetch, {
+    method: HTTP_POST,
+    headers: JSON_HEADERS,
+    body: JSON.stringify(payload),
+  });
 }
 
 export function getUserDetails(fetch) {
-  return fetchDashboardApiResource(
-    "get_user_details", "user_details", fetch);
+  return fetchDashboardApiResource("get_user_details", "user_details", fetch);
 }
 
 function getProjectProgressData(fetch) {
-  return fetchDashboardApiResource(
-    "get_progress", "progress_graph", fetch);
+  return fetchDashboardApiResource("get_progress", "progress_graph", fetch);
 }
 
 function getSequencingStatus(fetch) {
   return fetchDashboardApiResource(
-    "sequencing_status_summary", "sequencing_status", fetch);
+    "sequencing_status_summary",
+    "sequencing_status",
+    fetch
+  );
 }
 
 function getPipelineStatus(fetch) {
   return fetchDashboardApiResource(
-    "pipeline_status_summary", "pipeline_status", fetch);
+    "pipeline_status_summary",
+    "pipeline_status",
+    fetch
+  );
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
-  return (fetchOptions ?
-    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions) :
-    fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
+  return (
+    fetchOptions
+      ? fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions)
+      : fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
   )
     .then((response) =>
-      response.ok ? response.json() : Promise.reject(`${response.status} ${response.statusText}`))
-    .then((payload) => resourceKey ? payload?.[resourceKey] : payload)
+      response.ok
+        ? response.json()
+        : Promise.reject(`${response.status} ${response.statusText}`)
+    )
+    .then((payload) => (resourceKey ? payload?.[resourceKey] : payload))
     .catch((err) => handleFetchError(err, endpoint, resourceKey));
 }
 
@@ -185,9 +207,10 @@ function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
   if (err.startsWith?.(FETCH_ERROR_PATTER_NOT_FOUND)) {
     return Promise.resolve();
   }
-  console.error(resourceKey ?
-    `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}` :
-    `Error while fetching resource from endpoint ${endpoint}: ${err}`
+  console.error(
+    resourceKey
+      ? `Error while fetching resource w/ key "${resourceKey}" from endpoint ${endpoint}: ${err}`
+      : `Error while fetching resource from endpoint ${endpoint}: ${err}`
   );
   return Promise.reject(err);
 }
@@ -196,19 +219,18 @@ function collateInstitutionStatus({
   institutions,
   batches,
   sequencingStatus,
-  pipelineStatus
+  pipelineStatus,
 }) {
-  return Object.keys(institutions)
-    .map((institutionKey) => ({
-      name: institutions[institutionKey].name,
-      batches: batches[institutionKey],
-      sequencingStatus: sequencingStatus[institutionKey],
-      pipelineStatus: {
-        sequencedSuccess: sequencingStatus[institutionKey].success,
-        ...pipelineStatus[institutionKey]
-      },
-      key: institutionKey
-    }));
+  return Object.keys(institutions).map((institutionKey) => ({
+    name: institutions[institutionKey].name,
+    batches: batches[institutionKey],
+    sequencingStatus: sequencingStatus[institutionKey],
+    pipelineStatus: {
+      sequencedSuccess: sequencingStatus[institutionKey].success,
+      ...pipelineStatus[institutionKey],
+    },
+    key: institutionKey,
+  }));
 }
 
 function prepareBulkDownloadPayload({
@@ -217,15 +239,15 @@ function prepareBulkDownloadPayload({
   assemblies,
   annotations,
   reads,
-  maxSamplesPerZip
+  maxSamplesPerZip,
 }) {
   const payload = {
     "sample filters": {
-      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs)
+      batches: transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs),
     },
     assemblies,
     annotations,
-    reads
+    reads,
   };
   if (maxSamplesPerZip) {
     payload["max samples per zip"] = maxSamplesPerZip;
@@ -240,14 +262,17 @@ function addColumnsToPayload(columns = {}, payload) {
   DATA_TYPES.forEach((dataType) => {
     if (columns[dataType]?.length) {
       payload[`${dataType} columns`] = columns[dataType];
-    }
-    else {
+    } else {
       payload[dataType] = false;
     }
   });
 }
 
-function addFiltersToPayload({ filterState = {}, payload, distinctColumnValuesState }) {
+function addFiltersToPayload({
+  filterState = {},
+  payload,
+  distinctColumnValuesState,
+}) {
   DATA_TYPES.forEach((dataType) => {
     const filterStateForDataType = filterState[dataType] || {};
     const columnNames = Object.keys(filterStateForDataType);
@@ -255,11 +280,13 @@ function addFiltersToPayload({ filterState = {}, payload, distinctColumnValuesSt
       const payloadFilter = {};
       columnNames.forEach((columnName) => {
         if (filterStateForDataType[columnName].exclude) {
-          const valuesToExclude = new Set(filterStateForDataType[columnName].values);
-          payloadFilter[columnName] = distinctColumnValuesState[dataType][columnName].filter((columnValue) =>
-            !valuesToExclude.has(columnValue));
-        }
-        else {
+          const valuesToExclude = new Set(
+            filterStateForDataType[columnName].values
+          );
+          payloadFilter[columnName] = distinctColumnValuesState[dataType][
+            columnName
+          ].filter((columnValue) => !valuesToExclude.has(columnValue));
+        } else {
           payloadFilter[columnName] = filterStateForDataType[columnName].values;
         }
       });
@@ -268,8 +295,11 @@ function addFiltersToPayload({ filterState = {}, payload, distinctColumnValuesSt
   });
 }
 
-export function transformInstKeyBatchDatePairsIntoPayload(instKeyBatchDatePairs = []) {
-  return instKeyBatchDatePairs.map(([instKey, batchDate]) => (
-    { "institution key": instKey, "batch date": batchDate }
-  ));
+export function transformInstKeyBatchDatePairsIntoPayload(
+  instKeyBatchDatePairs = []
+) {
+  return instKeyBatchDatePairs.map(([instKey, batchDate]) => ({
+    "institution key": instKey,
+    "batch date": batchDate,
+  }));
 }

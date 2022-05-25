@@ -14,7 +14,8 @@ it("isn't rendered if no items are passed", () => {
 it("is closed by default if no items are checked", () => {
   const { queryByLabelText, getByLabelText } = render(CheckboxGroup, {
     groupName: NAME_GROUP,
-    items: [{ displayName: ITEM_NAMES[0] }] });
+    items: [{ displayName: ITEM_NAMES[0] }],
+  });
 
   expect(queryByLabelText(ITEM_NAMES[0])).toBeNull();
   expect(getByLabelText(RE_NAME_GROUP).indeterminate).toBeFalsy();
@@ -23,7 +24,8 @@ it("is closed by default if no items are checked", () => {
 it("is closed by default if all items are checked", () => {
   const { queryByLabelText, getByLabelText } = render(CheckboxGroup, {
     groupName: NAME_GROUP,
-    items: [{ displayName: ITEM_NAMES[0], checked: true }] });
+    items: [{ displayName: ITEM_NAMES[0], checked: true }],
+  });
 
   expect(queryByLabelText(ITEM_NAMES[0])).toBeNull();
   expect(getByLabelText(RE_NAME_GROUP).indeterminate).toBeFalsy();
@@ -32,16 +34,24 @@ it("is closed by default if all items are checked", () => {
 it("is open by default if only some items are checked", () => {
   const { getByLabelText } = render(CheckboxGroup, {
     groupName: NAME_GROUP,
-    items: [{ displayName: ITEM_NAMES[0] }, { displayName: ITEM_NAMES[1], checked: true }] });
+    items: [
+      { displayName: ITEM_NAMES[0] },
+      { displayName: ITEM_NAMES[1], checked: true },
+    ],
+  });
 
   expect(getByLabelText(ITEM_NAMES[0])).toBeDefined();
   expect(getByLabelText(RE_NAME_GROUP).indeterminate).toBeTruthy();
 });
 
 it("can be expanded and collapsed", async () => {
-  const { container, getByLabelText, queryByLabelText } = render(CheckboxGroup, {
-    groupName: NAME_GROUP,
-    items: [{ displayName: ITEM_NAMES[0] }, { displayName: ITEM_NAMES[1] }] });
+  const { container, getByLabelText, queryByLabelText } = render(
+    CheckboxGroup,
+    {
+      groupName: NAME_GROUP,
+      items: [{ displayName: ITEM_NAMES[0] }, { displayName: ITEM_NAMES[1] }],
+    }
+  );
   const groupLabel = container.getElementsByClassName("expand-icon")[0];
 
   expect(queryByLabelText(ITEM_NAMES[0])).toBeNull();
@@ -56,9 +66,15 @@ it("can be expanded and collapsed", async () => {
 });
 
 it("shows the right number of selected items", async () => {
-  const items = [{ displayName: ITEM_NAMES[0], checked: true }, { displayName: ITEM_NAMES[1] }];
+  const items = [
+    { displayName: ITEM_NAMES[0], checked: true },
+    { displayName: ITEM_NAMES[1] },
+  ];
   const numItems = items.length;
-  const { getByLabelText } = render(CheckboxGroup, { groupName: NAME_GROUP, items });
+  const { getByLabelText } = render(CheckboxGroup, {
+    groupName: NAME_GROUP,
+    items,
+  });
 
   expect(getByLabelText(new RegExp(`1/${numItems}`))).toBeDefined();
 
@@ -82,9 +98,15 @@ it("shows disabled items as disabled", () => {
     disabledTooltip,
     disabledSuffix,
     groupName: NAME_GROUP,
-    items: [{ displayName: ITEM_NAMES[0], disabled: true }, { displayName: ITEM_NAMES[1], checked: true }] });
+    items: [
+      { displayName: ITEM_NAMES[0], disabled: true },
+      { displayName: ITEM_NAMES[1], checked: true },
+    ],
+  });
 
-  const disabledCheckbox = getByLabelText(new RegExp(`${ITEM_NAMES[0]}${disabledSuffix}`));
+  const disabledCheckbox = getByLabelText(
+    new RegExp(`${ITEM_NAMES[0]}${disabledSuffix}`)
+  );
   expect(disabledCheckbox.disabled).toBeTruthy();
   const checkboxLabel = disabledCheckbox.parentNode;
   expect(checkboxLabel.classList).toContain("disabled");

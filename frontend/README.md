@@ -10,6 +10,7 @@ Install other dependencies:
 cd frontend
 npm install
 ```
+
 ## Development
 
 ### Running locally
@@ -21,6 +22,7 @@ Afterwards, start the development server:
 ```bash
 npm run dev
 ```
+
 and navigate to [http://localhost:8080/](http://localhost:8080/) (_note: port `8080`, not `3000`_).
 
 ### Running tests
@@ -28,6 +30,7 @@ and navigate to [http://localhost:8080/](http://localhost:8080/) (_note: port `8
 ```bash
 npm test
 ```
+
 or in the watch mode:
 
 ```bash
@@ -41,6 +44,7 @@ To display linting issues, run:
 ```bash
 npm run lint
 ```
+
 To fix linting issues that can be fixed automatically, run:
 
 ```bash

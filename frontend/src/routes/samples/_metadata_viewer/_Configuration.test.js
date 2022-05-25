@@ -15,20 +15,38 @@ const ROLE_BUTTON = "button";
 
 beforeEach(() => {
   columnsStore.set({
-    metadata: [{
-      name: "Category A", columns: [{
-        name: "columnA", displayName: "Column A", selected: true
-      }, {
-        name: "country", displayName: "Country"
-      }]
-    }],
-    "in silico": [{
-      name: "Category B", columns: [{
-        name: "columnC", displayName: "Column C", selected: true
-      }, {
-        name: "columnD", displayName: "Column D"
-      }]
-    }]
+    metadata: [
+      {
+        name: "Category A",
+        columns: [
+          {
+            name: "columnA",
+            displayName: "Column A",
+            selected: true,
+          },
+          {
+            name: "country",
+            displayName: "Country",
+          },
+        ],
+      },
+    ],
+    "in silico": [
+      {
+        name: "Category B",
+        columns: [
+          {
+            name: "columnC",
+            displayName: "Column C",
+            selected: true,
+          },
+          {
+            name: "columnD",
+            displayName: "Column D",
+          },
+        ],
+      },
+    ],
   });
 });
 
@@ -64,8 +82,10 @@ it("correctly displays a column state", async () => {
     columnsState[dataType].forEach((category) => {
       expect(getByLabelText(new RegExp(`${category.name} `))).toBeDefined();
       category.columns.forEach((column) =>
-        expect(getByLabelText(column.displayName)).toBeDefined());
-    }));
+        expect(getByLabelText(column.displayName)).toBeDefined()
+      );
+    })
+  );
 });
 
 it("saves a columns state to the local storage on apply", async () => {
@@ -73,12 +93,16 @@ it("saves a columns state to the local storage on apply", async () => {
   Storage.prototype.setItem = jest.fn();
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE })
+  );
 
   // 2 times because it's first called by the feature detection.
   expect(localStorage.setItem).toHaveBeenCalledTimes(2);
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
+    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+    JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer)
+  );
 });
 
 it("saves a columns state to the local storage on restore", async () => {
@@ -91,7 +115,9 @@ it("saves a columns state to the local storage on restore", async () => {
   // 2 times because it's first called by the feature detection.
   expect(localStorage.setItem).toHaveBeenCalledTimes(2);
   expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer));
+    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+    JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer)
+  );
 });
 
 it("saves a columns state to the local storage on restore", async () => {
@@ -108,7 +134,9 @@ it("closes on apply", async () => {
   const { getByRole, queryByLabelText } = render(Configuration);
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_APPLY_AND_CLOSE })
+  );
 
   expect(queryByLabelText(LABEL_DIALOG)).toBeNull();
 });
@@ -123,17 +151,26 @@ it("closes on Close click", async () => {
 });
 
 describe("on filter", () => {
-  const COLUMNS_WTH_ACTIVE_FILTERS = [{
-    name: "columnA", displayName: "Column A"
-  }, {
-    name: "columnC", displayName: "Column C"
-  }];
+  const COLUMNS_WTH_ACTIVE_FILTERS = [
+    {
+      name: "columnA",
+      displayName: "Column A",
+    },
+    {
+      name: "columnC",
+      displayName: "Column C",
+    },
+  ];
   const SOME_VALUE = "val";
 
   beforeEach(() => {
     filterStore.update((filterState) => {
-      filterState.metadata[COLUMNS_WTH_ACTIVE_FILTERS[0].name] = { values: [SOME_VALUE] };
-      filterState["in silico"][COLUMNS_WTH_ACTIVE_FILTERS[1].name] = { values: [SOME_VALUE] };
+      filterState.metadata[COLUMNS_WTH_ACTIVE_FILTERS[0].name] = {
+        values: [SOME_VALUE],
+      };
+      filterState["in silico"][COLUMNS_WTH_ACTIVE_FILTERS[1].name] = {
+        values: [SOME_VALUE],
+      };
       return filterState;
     });
   });
@@ -143,22 +180,32 @@ describe("on filter", () => {
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-    expect(container.querySelectorAll("input[disabled]").length)
-      .toBe(COLUMNS_WTH_ACTIVE_FILTERS.length);
+    expect(container.querySelectorAll("input[disabled]").length).toBe(
+      COLUMNS_WTH_ACTIVE_FILTERS.length
+    );
     COLUMNS_WTH_ACTIVE_FILTERS.forEach((column) =>
-      expect(getByLabelText(new RegExp(`^${column.displayName}\\*`)).disabled).toBeTruthy());
+      expect(
+        getByLabelText(new RegExp(`^${column.displayName}\\*`)).disabled
+      ).toBeTruthy()
+    );
   });
 
   it("shows the explanation message and has the correct tooltip for each disabled item", async () => {
-    const expectedTooltipText = "* To de-select this column, first remove the column's filter.";
+    const expectedTooltipText =
+      "* To de-select this column, first remove the column's filter.";
     const { getByLabelText, getByRole, getByText } = render(Configuration);
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-    expect(getByText("* To de-select a column with an active filter, first remove the filter."))
-      .toBeDefined();
+    expect(
+      getByText(
+        "* To de-select a column with an active filter, first remove the filter."
+      )
+    ).toBeDefined();
     COLUMNS_WTH_ACTIVE_FILTERS.forEach((column) => {
-      const actualTooltipText = getByLabelText(new RegExp(`^${column.displayName}\\*`)).parentNode.parentNode.title;
+      const actualTooltipText = getByLabelText(
+        new RegExp(`^${column.displayName}\\*`)
+      ).parentNode.parentNode.title;
       expect(actualTooltipText).toBe(expectedTooltipText);
     });
   });
@@ -171,31 +218,42 @@ describe("on filter", () => {
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESTORE }));
 
     expect(confirm).toHaveBeenCalledTimes(1);
-    expect(confirm).toHaveBeenCalledWith("Restoring default columns will remove all filters. Proceed?");
-    expect(container.querySelectorAll("input[disabled]").length)
-      .toBe(0);
+    expect(confirm).toHaveBeenCalledWith(
+      "Restoring default columns will remove all filters. Proceed?"
+    );
+    expect(container.querySelectorAll("input[disabled]").length).toBe(0);
   });
 
   it("ignores `disabled` in a state if there are no filters", async () => {
     filterStore.removeAllFilters();
     const columns = COLUMNS_WTH_ACTIVE_FILTERS.slice(0, 3);
     columnsStore.set({
-      metadata: [{
-        name: "Category A", columns: [{
-          name: columns[0].name, displayName: columns[0].displayName, selected: true, disabled: true
-        }, {
-          name: columns[1].name, displayName: columns[1].displayName
-        }]
-      }]
+      metadata: [
+        {
+          name: "Category A",
+          columns: [
+            {
+              name: columns[0].name,
+              displayName: columns[0].displayName,
+              selected: true,
+              disabled: true,
+            },
+            {
+              name: columns[1].name,
+              displayName: columns[1].displayName,
+            },
+          ],
+        },
+      ],
     });
     const { container, getByLabelText, getByRole } = render(Configuration);
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-    expect(container.querySelectorAll("input[disabled]").length)
-      .toBe(0);
+    expect(container.querySelectorAll("input[disabled]").length).toBe(0);
     columns.forEach((column) =>
-      expect(getByLabelText(column.displayName)).toBeDefined());
+      expect(getByLabelText(column.displayName)).toBeDefined()
+    );
   });
 });
 
@@ -207,7 +265,9 @@ describe("on empty columns state", () => {
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-    expect(getByText(/^Something went wrong. Please try to reload the page/)).toBeDefined();
+    expect(
+      getByText(/^Something went wrong. Please try to reload the page/)
+    ).toBeDefined();
   });
 
   it("closes on Close click", async () => {
@@ -221,5 +281,7 @@ describe("on empty columns state", () => {
 });
 
 function cleanupColumnsStateReplacer(key, value) {
-  return key === KEY_DISABLED || (key === KEY_SELECTED && !value) ? undefined : value;
+  return key === KEY_DISABLED || (key === KEY_SELECTED && !value)
+    ? undefined
+    : value;
 }

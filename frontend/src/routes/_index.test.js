@@ -3,33 +3,36 @@ import { writable } from "svelte/store";
 import {
   getInstitutionStatus,
   // eslint-disable-next-line no-unused-vars
-  getProjectProgress
+  getProjectProgress,
 } from "$lib/dataLoading.js";
 import { USER_ROLE_ADMIN } from "$lib/constants.js";
 import DashboardPage from "./index.svelte";
 
-const INSTITUTIONS = [{
-  name: "Center for Reducing Suffering",
-  key: "CRS",
-  batches: { received: 1, deliveries: [] },
-  sequencingStatus: {},
-  pipelineStatus: {}
-}, {
-  name: "Qualia Research Institute",
-  key: "QRI",
-  batches: { received: 42, deliveries: [] },
-  sequencingStatus: {},
-  pipelineStatus: {}
-}];
+const INSTITUTIONS = [
+  {
+    name: "Center for Reducing Suffering",
+    key: "CRS",
+    batches: { received: 1, deliveries: [] },
+    sequencingStatus: {},
+    pipelineStatus: {},
+  },
+  {
+    name: "Qualia Research Institute",
+    key: "QRI",
+    batches: { received: 42, deliveries: [] },
+    sequencingStatus: {},
+    pipelineStatus: {},
+  },
+];
 
 jest.mock("$lib/dataLoading.js", () => ({
   getInstitutionStatus: jest.fn(() => Promise.resolve(INSTITUTIONS)),
-  getProjectProgress: () => Promise.resolve()
+  getProjectProgress: () => Promise.resolve(),
 }));
 
 it("shows the loading indicator", () => {
-  const { getByLabelText } = render(DashboardPage, { session: writable(
-    { user: { role: USER_ROLE_ADMIN } })
+  const { getByLabelText } = render(DashboardPage, {
+    session: writable({ user: { role: USER_ROLE_ADMIN } }),
   });
 
   expect(getByLabelText("please wait")).toBeDefined();
@@ -38,20 +41,23 @@ it("shows the loading indicator", () => {
 it("shows an error message if data fetching rejects", async () => {
   getInstitutionStatus.mockRejectedValueOnce();
 
-  const { getByText } = render(DashboardPage, { session: writable(
-    { user: { role: USER_ROLE_ADMIN } })
+  const { getByText } = render(DashboardPage, {
+    session: writable({ user: { role: USER_ROLE_ADMIN } }),
   });
 
   await waitFor(() => {
-    expect(getByText("An unexpected error occured during page loading. Please try again by reloading the page."))
-      .toBeDefined();
+    expect(
+      getByText(
+        "An unexpected error occured during page loading. Please try again by reloading the page."
+      )
+    ).toBeDefined();
   });
 });
 
 describe("after data fetching", () => {
   it("hides the loading indicator", async () => {
-    const { queryByLabelText } = render(DashboardPage, { session: writable(
-      { user: { role: USER_ROLE_ADMIN } })
+    const { queryByLabelText } = render(DashboardPage, {
+      session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
     await waitFor(() => {
@@ -60,8 +66,8 @@ describe("after data fetching", () => {
   });
 
   it("displays the project progress chart w/ a Y-axis label", async () => {
-    const { getByText } = render(DashboardPage, { session: writable(
-      { user: { role: USER_ROLE_ADMIN } })
+    const { getByText } = render(DashboardPage, {
+      session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
     await waitFor(() => {
@@ -73,39 +79,47 @@ describe("after data fetching", () => {
   it("displays the menu w/ the upload and data viewer links", async () => {
     const ROLE_LINK = "link";
     const domainName = window.location.host;
-    const { findByRole } = render(DashboardPage, { session: writable(
-      { user: { role: USER_ROLE_ADMIN } })
+    const { findByRole } = render(DashboardPage, {
+      session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
     const linksContainer = await findByRole("navigation");
 
-    const metadataUploadLink = await within(linksContainer)
-      .findByRole(ROLE_LINK, { name: "Upload metadata" });
+    const metadataUploadLink = await within(linksContainer).findByRole(
+      ROLE_LINK,
+      { name: "Upload metadata" }
+    );
     expect(metadataUploadLink).toBeDefined();
     expect(metadataUploadLink.href).toMatch(
-      new RegExp(`${domainName}/metadata-upload`));
-    const insilicoUploadLink = await within(linksContainer)
-      .findByRole(ROLE_LINK, { name: "Upload in-silico data" });
+      new RegExp(`${domainName}/metadata-upload`)
+    );
+    const insilicoUploadLink = await within(linksContainer).findByRole(
+      ROLE_LINK,
+      { name: "Upload in-silico data" }
+    );
     expect(insilicoUploadLink).toBeDefined();
     expect(insilicoUploadLink.href).toMatch(
-      new RegExp(`${domainName}/in-silico-upload`));
-    const dataViewerLink = await within(linksContainer)
-      .findByRole(ROLE_LINK, { name: "View and download sample data" });
+      new RegExp(`${domainName}/in-silico-upload`)
+    );
+    const dataViewerLink = await within(linksContainer).findByRole(ROLE_LINK, {
+      name: "View and download sample data",
+    });
     expect(dataViewerLink).toBeDefined();
-    expect(dataViewerLink.href).toMatch(
-      new RegExp(`${domainName}/samples`));
+    expect(dataViewerLink.href).toMatch(new RegExp(`${domainName}/samples`));
   });
 
   it("displays status for each institution", async () => {
-    const { getByText } = render(DashboardPage, { session: writable(
-      { user: { role: USER_ROLE_ADMIN } })
+    const { getByText } = render(DashboardPage, {
+      session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
     await waitFor(() => {
       INSTITUTIONS.forEach(({ name }) => {
         const institutionHeadingElement = getByText(name);
-        const institutionStatusPanes = institutionHeadingElement.parentElement
-          .querySelectorAll(":scope > article");
+        const institutionStatusPanes =
+          institutionHeadingElement.parentElement.querySelectorAll(
+            ":scope > article"
+          );
         expect(institutionStatusPanes).toHaveLength(3);
       });
     });
@@ -114,13 +128,14 @@ describe("after data fetching", () => {
   it("displays a message when the list of institutions is empty", async () => {
     getInstitutionStatus.mockResolvedValueOnce([]);
 
-    const { getByText } = render(DashboardPage, { session: writable(
-      { user: { role: USER_ROLE_ADMIN } })
+    const { getByText } = render(DashboardPage, {
+      session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
     await waitFor(() => {
-      expect(getByText("No institutions found for this account", { exact: false }))
-        .toBeDefined();
+      expect(
+        getByText("No institutions found for this account", { exact: false })
+      ).toBeDefined();
     });
   });
 });

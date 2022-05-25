@@ -11,10 +11,11 @@
   }
 </script>
 
-
 <h2><i>In silico</i> data upload</h2>
 
-<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your files with tab-separated <em>in silico</em> data:</p>
+<p id={DESCRIPTION_ELEMENT_ID}>
+  Select or drag and drop your files with tab-separated <em>in silico</em> data:
+</p>
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
@@ -30,10 +31,8 @@
   <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
 </Dialog>
 
-
 <style>
-p {
-  text-align: center;
-}
+  p {
+    text-align: center;
+  }
 </style>
-

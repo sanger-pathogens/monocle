@@ -4,8 +4,7 @@ export function localStorageAvailable() {
     localStorage.setItem(x, x);
     localStorage.removeItem(x);
     return true;
-  }
-  catch(e) {
+  } catch (e) {
     return false;
   }
 }

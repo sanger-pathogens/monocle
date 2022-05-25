@@ -15,7 +15,7 @@ it("calls the chart library w/ the correct arguments", () => {
     datasets,
     height,
     xLabels,
-    title: CHART_TITLE
+    title: CHART_TITLE,
   });
 
   expect(Chart).toHaveBeenCalledTimes(1);
@@ -29,7 +29,7 @@ it("calls the chart library w/ the correct arguments", () => {
     data: {
       datasets,
       labels: xLabels,
-    }
+    },
   });
 });
 
@@ -38,13 +38,12 @@ it("displays a label for the Y axis", () => {
 
   const { getByText } = render(LineChart, {
     title: CHART_TITLE,
-    yLabel
+    yLabel,
   });
 
   const yLabelElement = getByText(yLabel);
   expect(yLabelElement).toBeDefined();
-  expect(yLabelElement.getAttribute("aria-hidden"))
-    .toBe("true");
+  expect(yLabelElement.getAttribute("aria-hidden")).toBe("true");
 });
 
 it("doesn't display a Y-axis container if the label isn't passed", () => {
@@ -52,6 +51,5 @@ it("doesn't display a Y-axis container if the label isn't passed", () => {
     title: CHART_TITLE,
   });
 
-  expect(container.getElementsByClassName("y-label")[0])
-    .toBeUndefined();
+  expect(container.getElementsByClassName("y-label")[0]).toBeUndefined();
 });

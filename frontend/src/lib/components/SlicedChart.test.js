@@ -18,7 +18,7 @@ it("calls the chart library w/ the correct arguments", () => {
     height,
     labels,
     type,
-    colors
+    colors,
   });
 
   expect(Chart).toHaveBeenCalledTimes(1);
@@ -32,6 +32,6 @@ it("calls the chart library w/ the correct arguments", () => {
     data: {
       datasets: [{ values }],
       labels,
-    }
+    },
   });
 });

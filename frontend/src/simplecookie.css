@@ -36,7 +36,7 @@
   bottom: 0;
   right: 0;
   width: auto;
-  z-index: 1000000
+  z-index: 1000000;
 }
 
 #cookie-policy.full {
@@ -147,13 +147,13 @@ button#cookie-close {
 
 @media (max-width: 1280px) {
   #cookie-options {
-    width: 40%
+    width: 40%;
   }
 }
 
 @media (max-width: 1024px) {
   #cookie-options {
-    width: 50%
+    width: 50%;
   }
 }
 

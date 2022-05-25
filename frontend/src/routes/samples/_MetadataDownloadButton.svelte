@@ -22,21 +22,31 @@
 
     let csvBlobUrl;
     let hiddenDownloadLink;
-    getSampleMetadata({
-      instKeyBatchDatePairs: batches,
-      filter: {
-        filterState: filterState || $filterStore,
-        distinctColumnValuesState: distinctColumnValuesState || $distinctColumnValuesStore
+    getSampleMetadata(
+      {
+        instKeyBatchDatePairs: batches,
+        filter: {
+          filterState: filterState || $filterStore,
+          distinctColumnValuesState:
+            distinctColumnValuesState || $distinctColumnValuesStore,
+        },
+        asCsv: true,
       },
-      asCsv: true
-    }, fetch)
+      fetch
+    )
       .then((csvBlob) => {
         csvBlobUrl = URL.createObjectURL(csvBlob);
         hiddenDownloadLink = document.body.appendChild(
-          createHiddenDownloadLink(csvBlobUrl, `${fileNameWithoutExtension}.csv`));
+          createHiddenDownloadLink(
+            csvBlobUrl,
+            `${fileNameWithoutExtension}.csv`
+          )
+        );
         hiddenDownloadLink.click();
       })
-      .catch((err) => console.error(`Error on creating metadata download: ${err}`))
+      .catch((err) =>
+        console.error(`Error on creating metadata download: ${err}`)
+      )
       .finally(() => {
         isPreparingDownload = false;
         hiddenDownloadLink && document.body.removeChild(hiddenDownloadLink);
@@ -52,7 +62,6 @@
     return a;
   }
 </script>
-
 
 <button
   aria-label={isPreparingDownload ? null : "Download metadata"}

@@ -10,24 +10,31 @@ const LABEL_METADATA_DOWNLOAD_BUTTON = "Download metadata";
 const ROLE_BUTTON = "button";
 
 jest.mock("$lib/dataLoading.js", () => ({
-  getSampleMetadata: jest.fn(() => Promise.resolve())
+  getSampleMetadata: jest.fn(() => Promise.resolve()),
 }));
 
 global.URL.createObjectURL = () => DOWNLOAD_URL;
 global.URL.revokeObjectURL = () => {};
 
 it("requests metadata CSV on click", async () => {
-  const { getByRole } = render(MetadataDownloadButton, { batches: BATCHES});
+  const { getByRole } = render(MetadataDownloadButton, { batches: BATCHES });
 
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON })
+  );
 
   expect(getSampleMetadata).toHaveBeenCalledTimes(1);
   expect(getSampleMetadata).toHaveBeenCalledWith(
-    { asCsv: true,
+    {
+      asCsv: true,
       instKeyBatchDatePairs: BATCHES,
-      filter: { filterState: get(filterStore), distinctColumnValuesState: get(distinctColumnValuesStore) }
+      filter: {
+        filterState: get(filterStore),
+        distinctColumnValuesState: get(distinctColumnValuesStore),
+      },
     },
-    fetch);
+    fetch
+  );
 });
 
 it("requests metadata CSV on click passing filter and distinct value state from props", async () => {
@@ -36,28 +43,33 @@ it("requests metadata CSV on click passing filter and distinct value state from 
   const { getByRole } = render(MetadataDownloadButton, {
     batches: BATCHES,
     filterState,
-    distinctColumnValuesState
+    distinctColumnValuesState,
   });
 
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON })
+  );
 
   expect(getSampleMetadata).toHaveBeenCalledWith(
-    { asCsv: true,
+    {
+      asCsv: true,
       instKeyBatchDatePairs: BATCHES,
-      filter: { filterState, distinctColumnValuesState }
+      filter: { filterState, distinctColumnValuesState },
     },
-    fetch);
+    fetch
+  );
 });
 
 it("is disabled and shows the loading text while waiting for the metadata CSV", async () => {
   const { getByRole } = render(MetadataDownloadButton, { batches: BATCHES });
 
-  const metadataDownloadButton = getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON });
+  const metadataDownloadButton = getByRole(ROLE_BUTTON, {
+    name: LABEL_METADATA_DOWNLOAD_BUTTON,
+  });
   await fireEvent.click(metadataDownloadButton);
 
   expect(metadataDownloadButton.disabled).toBeTruthy();
-  expect(getByRole(ROLE_BUTTON, { name: "Preparing download" }))
-    .toBeDefined();
+  expect(getByRole(ROLE_BUTTON, { name: "Preparing download" })).toBeDefined();
 });
 
 it("hides the loading state, frees resources, and downloads metadata CSV once it's prepared", async () => {
@@ -68,15 +80,19 @@ it("hides the loading state, frees resources, and downloads metadata CSV once it
   const { getByRole } = render(MetadataDownloadButton, {
     batches: BATCHES,
     fileNameWithoutExtension,
-    injectedCreateAnchorElement: createAnchorElement
+    injectedCreateAnchorElement: createAnchorElement,
   });
   global.URL.revokeObjectURL = jest.fn();
 
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON })
+  );
 
   await waitFor(() => {
     expect(hiddenDownloadLink.click).toHaveBeenCalledTimes(1);
-    expect(hiddenDownloadLink.href).toBe(`${global.location.href}${DOWNLOAD_URL}`);
+    expect(hiddenDownloadLink.href).toBe(
+      `${global.location.href}${DOWNLOAD_URL}`
+    );
     expect(hiddenDownloadLink.download).toBe(`${fileNameWithoutExtension}.csv`);
     expect(hiddenDownloadLink.style.display).toBe("none");
     expect(URL.revokeObjectURL).toHaveBeenCalledTimes(1);
@@ -93,11 +109,13 @@ it("frees resources on download fail", async () => {
   const createAnchorElement = () => hiddenDownloadLink;
   const { getByRole } = render(MetadataDownloadButton, {
     batches: BATCHES,
-    injectedCreateAnchorElement: createAnchorElement
+    injectedCreateAnchorElement: createAnchorElement,
   });
   global.URL.revokeObjectURL = jest.fn();
 
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON }));
+  await fireEvent.click(
+    getByRole(ROLE_BUTTON, { name: LABEL_METADATA_DOWNLOAD_BUTTON })
+  );
 
   await waitFor(() => {
     expect(URL.revokeObjectURL).toHaveBeenCalledWith(DOWNLOAD_URL);

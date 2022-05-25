@@ -32,19 +32,23 @@ function createColumnsStore() {
   return {
     set,
     subscribe,
-    setFromColumnsResponse: (columnsResponse) => set(convertColumnsResponseToState(columnsResponse)),
-    setToDefault: () => update((columnsState) => {
-      DATA_TYPES.forEach((dataType) =>
-        columnsState[dataType].forEach((category) =>
-          category.columns.forEach((column) =>
-            column.selected = column.default)));
-      return columnsState;
-    })
+    setFromColumnsResponse: (columnsResponse) =>
+      set(convertColumnsResponseToState(columnsResponse)),
+    setToDefault: () =>
+      update((columnsState) => {
+        DATA_TYPES.forEach((dataType) =>
+          columnsState[dataType].forEach((category) =>
+            category.columns.forEach(
+              (column) => (column.selected = column.default)
+            )
+          )
+        );
+        return columnsState;
+      }),
   };
 }
 
 export const columnsStore = createColumnsStore();
-
 
 /*
   `columnsToDisplayStore` has the following shape:
@@ -56,12 +60,19 @@ export const columnsStore = createColumnsStore();
   ```
 */
 export const columnsToDisplayStore = derived(columnsStore, (columnsState) =>
-  columnsState ?
-    Object.keys(columnsState).reduce((accumDataTypeToColumnNames, dataType) => {
-      accumDataTypeToColumnNames[dataType] = columnsState[dataType].reduce(columnCategoryToColumnNamesReducer, []);
-      return accumDataTypeToColumnNames;
-    }, {}) :
-    undefined);
+  columnsState
+    ? Object.keys(columnsState).reduce(
+        (accumDataTypeToColumnNames, dataType) => {
+          accumDataTypeToColumnNames[dataType] = columnsState[dataType].reduce(
+            columnCategoryToColumnNamesReducer,
+            []
+          );
+          return accumDataTypeToColumnNames;
+        },
+        {}
+      )
+    : undefined
+);
 
 function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
   category.columns.forEach((column) => {
@@ -71,7 +82,6 @@ function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
   });
   return accumColumnNames;
 }
-
 
 /*
   `distinctColumnValuesStore` has the following shape:
@@ -86,28 +96,36 @@ function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
   ```
 */
 function createDistinctColumnValuesStore() {
-  const { update, set, subscribe } = writable({ metadata: {}, "in silico": {} });
+  const { update, set, subscribe } = writable({
+    metadata: {},
+    "in silico": {},
+  });
 
   return {
     subscribe,
-    updateFromDistinctValuesResponse: (distinctValuesResponse) => update((storedDistinctValues) => {
-      distinctValuesResponse.forEach(({ "field type": dataType, fields: columns }) =>
-        columns.forEach((column) =>
-          storedDistinctValues[dataType][column.name] = column.matches.reduce((accumValues, match) => {
-            if (match.number) {
-              accumValues.push(match.value);
-            }
-            return accumValues;
-          }, [])));
+    updateFromDistinctValuesResponse: (distinctValuesResponse) =>
+      update((storedDistinctValues) => {
+        distinctValuesResponse.forEach(
+          ({ "field type": dataType, fields: columns }) =>
+            columns.forEach(
+              (column) =>
+                (storedDistinctValues[dataType][column.name] =
+                  column.matches.reduce((accumValues, match) => {
+                    if (match.number) {
+                      accumValues.push(match.value);
+                    }
+                    return accumValues;
+                  }, []))
+            )
+        );
 
-      return storedDistinctValues;
-    }),
-    reset: () => set({ metadata: {}, "in silico": {} })
+        return storedDistinctValues;
+      }),
+    reset: () => set({ metadata: {}, "in silico": {} }),
   };
 }
 
 export const distinctColumnValuesStore = createDistinctColumnValuesStore();
-
 
 /*
   `filterStore` has the following shape:
@@ -124,34 +142,34 @@ export const distinctColumnValuesStore = createDistinctColumnValuesStore();
 function createFilterStore() {
   const filterCustomStore = writable({ metadata: {}, "in silico": {} });
 
-  filterCustomStore.removeAllFilters = () => filterCustomStore.set(
-    { metadata: {}, "in silico": {} });
+  filterCustomStore.removeAllFilters = () =>
+    filterCustomStore.set({ metadata: {}, "in silico": {} });
 
-  filterCustomStore.removeFilter = (column) => filterCustomStore.update((stotedFilters) => {
-    delete stotedFilters[column.dataType][column.name];
-    return stotedFilters;
-  });
+  filterCustomStore.removeFilter = (column) =>
+    filterCustomStore.update((stotedFilters) => {
+      delete stotedFilters[column.dataType][column.name];
+      return stotedFilters;
+    });
 
   return filterCustomStore;
 }
 
 export const filterStore = createFilterStore();
 
-
 function convertColumnsResponseToState(columnsResponse) {
-  return Object.keys(columnsResponse)
-    .reduce((accumColumnsState, dataType) => {
-      accumColumnsState[dataType] = transformCategoriesFromResponse(
-        columnsResponse[dataType].categories);
-      return accumColumnsState;
-    }, {});
+  return Object.keys(columnsResponse).reduce((accumColumnsState, dataType) => {
+    accumColumnsState[dataType] = transformCategoriesFromResponse(
+      columnsResponse[dataType].categories
+    );
+    return accumColumnsState;
+  }, {});
 }
 
 function transformCategoriesFromResponse(categories = []) {
   return categories.reduce((accumCategories, category) => {
     const convertedCategory = {
       name: category.name,
-      columns: transformColumnsFromResponse(category.fields)
+      columns: transformColumnsFromResponse(category.fields),
     };
     if (convertedCategory.columns.length) {
       accumCategories.push(convertedCategory);
@@ -165,7 +183,7 @@ function transformColumnsFromResponse(columns = []) {
     if (column.display) {
       const convertedColumn = {
         displayName: column["display name"],
-        name: column.name
+        name: column.name,
       };
       if (column.default) {
         convertedColumn.default = true;

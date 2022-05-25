@@ -20,7 +20,10 @@
   let downloadDistinctColumnValuesState;
   let sizeSelectorElement;
 
-  $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(batches, $filterStore);
+  $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(
+    batches,
+    $filterStore
+  );
 
   $: {
     if (!shouldFreezeDownloadEstimate) {
@@ -28,7 +31,8 @@
     }
   }
 
-  $: formComplete = batches?.length &&
+  $: formComplete =
+    batches?.length &&
     (formValues.annotations || formValues.assemblies || formValues.reads);
 
   function onSubmit() {
@@ -44,12 +48,18 @@
     downloadFilterState = deepCopy($filterStore);
     downloadDistinctColumnValuesState = deepCopy($distinctColumnValuesStore);
     downloadLinksRequested = true;
-    getBulkDownloadUrls({
-      instKeyBatchDatePairs: batches,
-      filter: { filterState: downloadFilterState, distinctColumnValuesState: downloadDistinctColumnValuesState },
-      ...formValues,
-      maxSamplesPerZip: Number(sizeSelectorElement?.value)
-    }, fetch)
+    getBulkDownloadUrls(
+      {
+        instKeyBatchDatePairs: batches,
+        filter: {
+          filterState: downloadFilterState,
+          distinctColumnValuesState: downloadDistinctColumnValuesState,
+        },
+        ...formValues,
+        maxSamplesPerZip: Number(sizeSelectorElement?.value),
+      },
+      fetch
+    )
       .then((downloadLinks = []) => {
         // If the form has been reset meanwhile, do nothing.
         if (!downloadLinksRequested) {
@@ -57,12 +67,15 @@
         }
 
         if (downloadLinks.length === 0) {
-          console.error("The list of download URLs returned from the server is empty.");
+          console.error(
+            "The list of download URLs returned from the server is empty."
+          );
           return Promise.reject();
         }
         const urlSeparator = "/";
         downloadTokens = downloadLinks.map((downloadLink) =>
-          downloadLink.split(urlSeparator).pop());
+          downloadLink.split(urlSeparator).pop()
+        );
       })
       .catch(() => {
         resetForm();
@@ -81,11 +94,7 @@
   }
 </script>
 
-
-<form
-  aria-labelledby={ariaLabelledby}
-  on:submit|preventDefault={onSubmit}
->
+<form aria-labelledby={ariaLabelledby} on:submit|preventDefault={onSubmit}>
   <fieldset
     disabled={downloadLinksRequested}
     class:disabled={downloadLinksRequested}
@@ -94,26 +103,17 @@
       <legend>Data type</legend>
 
       <label>
-        <input
-          type="checkbox"
-          bind:checked={formValues.assemblies}
-        />
+        <input type="checkbox" bind:checked={formValues.assemblies} />
         Assemblies
       </label>
 
       <label>
-        <input
-          type="checkbox"
-          bind:checked={formValues.annotations}
-        />
+        <input type="checkbox" bind:checked={formValues.annotations} />
         Annotations
       </label>
 
       <label>
-        <input
-          type="checkbox"
-          bind:checked={formValues.reads}
-        />
+        <input type="checkbox" bind:checked={formValues.reads} />
         Reads ( ⚠️ may increase the total size drastically)
       </label>
     </fieldset>
@@ -124,7 +124,10 @@
         <dd>
           {#if formComplete}
             {#if estimate}
-              {estimate.sizeZipped} ({estimate.numSamples} sample{estimate.numSamples === 1 ? "" : "s"})
+              {estimate.sizeZipped} ({estimate.numSamples} sample{estimate.numSamples ===
+              1
+                ? ""
+                : "s"})
             {:else}
               <LoadingIcon label="Estimating the download size. Please wait" />
             {/if}
@@ -133,22 +136,33 @@
           {/if}
         </dd>
 
-        <dt aria-label="Choose a maximum size per ZIP archive (defaults to the maximum size per archive)">
+        <dt
+          aria-label="Choose a maximum size per ZIP archive (defaults to the maximum size per archive)"
+        >
           Maximum size per ZIP archive:
         </dt>
         <dd>
           {#if formComplete}
             {#if estimate}
-              <select bind:this={sizeSelectorElement} disabled={estimate.sizePerZipOptions?.length <= 1}>
-                {#each (estimate.sizePerZipOptions || []) as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
-                  {@const numZips = Math.ceil(estimate.numSamples / maxSamplesPerZip)}
+              <select
+                bind:this={sizeSelectorElement}
+                disabled={estimate.sizePerZipOptions?.length <= 1}
+              >
+                {#each estimate.sizePerZipOptions || [] as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
+                  {@const numZips = Math.ceil(
+                    estimate.numSamples / maxSamplesPerZip
+                  )}
                   <option value={maxSamplesPerZip} selected={i === 0}>
-                    {sizePerZip} ({numZips} ZIP archive{numZips === 1 ? "" : "s"})
+                    {sizePerZip} ({numZips} ZIP archive{numZips === 1
+                      ? ""
+                      : "s"})
                   </option>
                 {/each}
               </select>
             {:else}
-              <LoadingIcon label="Estimating the size options for the download. Please wait" />
+              <LoadingIcon
+                label="Estimating the size options for the download. Please wait"
+              />
             {/if}
           {:else}
             <select disabled>
@@ -169,13 +183,7 @@
   </button>
 
   {#if downloadLinksRequested}
-    <button
-      type="button"
-      class="compact"
-      on:click={resetForm}
-    >
-      Reset
-    </button>
+    <button type="button" class="compact" on:click={resetForm}> Reset </button>
   {/if}
 </form>
 
@@ -196,7 +204,6 @@
           </li>
         {/each}
       </ol>
-
     {:else if downloadTokens.length}
       <a
         href="/samples/download/{downloadTokens[0]}"
@@ -224,66 +231,65 @@
   </div>
 {/if}
 
-
 <style>
-form {
-  margin-bottom: 1.5rem;
-  width: var(--width-reading);
-  max-width: 100%;
-}
+  form {
+    margin-bottom: 1.5rem;
+    width: var(--width-reading);
+    max-width: 100%;
+  }
 
-form > fieldset {
-  margin-bottom: 0;
-  padding: 0;
-}
+  form > fieldset {
+    margin-bottom: 0;
+    padding: 0;
+  }
 
-.data-type-section {
-  display: flex;
-  flex-direction: column;
-  /* This prevents the checkbox labels from being clickable across all of the container's width. */
-  align-items: flex-start;
-}
+  .data-type-section {
+    display: flex;
+    flex-direction: column;
+    /* This prevents the checkbox labels from being clickable across all of the container's width. */
+    align-items: flex-start;
+  }
 
-dl {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  row-gap: 1em;
-}
-dt {
-  font-weight: 200;
-}
+  dl {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    row-gap: 1em;
+  }
+  dt {
+    font-weight: 200;
+  }
 
-.disabled select:disabled {
-  opacity: 1;
-}
+  .disabled select:disabled {
+    opacity: 1;
+  }
 
-button[type=submit] {
-  display: inline-block;
-  margin-top: 2.5rem;
-  margin-left: .9rem;
-  margin-right: 1rem;
-}
+  button[type="submit"] {
+    display: inline-block;
+    margin-top: 2.5rem;
+    margin-left: 0.9rem;
+    margin-right: 1rem;
+  }
 
-ol {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 0;
-  padding-left: 1rem;
-}
-ol li {
-  margin-right: 2rem;
-  list-style: none;
-}
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    padding-left: 1rem;
+  }
+  ol li {
+    margin-right: 2rem;
+    list-style: none;
+  }
 
-.links-section {
-  margin-left: 1rem;
-}
+  .links-section {
+    margin-left: 1rem;
+  }
 
-.download-link {
-  display: inline-block;
-  margin: 2rem 0;
-}
-.download-link:visited {
-  color: var(--color-link-visited);
-}
+  .download-link {
+    display: inline-block;
+    margin: 2rem 0;
+  }
+  .download-link:visited {
+    color: var(--color-link-visited);
+  }
 </style>

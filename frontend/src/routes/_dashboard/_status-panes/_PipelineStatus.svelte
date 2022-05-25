@@ -14,52 +14,34 @@
     success: succeeded,
     failed,
     completed,
-    fail_messages: failures
+    fail_messages: failures,
   } = pipelineStatus;
   const pending = sequencedSuccess - completed;
 </script>
 
-
 <StatusPane grow>
   {#if sequencedSuccess === 0}
-    <h3>
-      No Pipelines Started
-    </h3>
+    <h3>No Pipelines Started</h3>
   {:else}
     <h3>
       {#if pending > 0}
-        <code>{completed}</code> of <code>{sequencedSuccess}</code> Sample Pipelines Completed
+        <code>{completed}</code> of <code>{sequencedSuccess}</code> Sample Pipelines
+        Completed
       {:else}
         All <code>{completed}</code> Sample Pipelines Completed
       {/if}
     </h3>
 
-    <StatusChart
-      labels={CHART_LABELS}
-      values={[pending, succeeded, failed]}
-    />
+    <StatusChart labels={CHART_LABELS} values={[pending, succeeded, failed]} />
 
-    <DownloadButtons
-      {succeeded}
-      isPipeline={true}
-    />
+    <DownloadButtons {succeeded} isPipeline={true} />
 
     {#if failed > 0}
-      <FailMessages
-        {failures}
-        title={FAIL_MESSAGES_TITLE}
-      >
-        <DownloadButtons
-          {failed}
-          isPipeline={true}
-          style="float: right"
-        />
+      <FailMessages {failures} title={FAIL_MESSAGES_TITLE}>
+        <DownloadButtons {failed} isPipeline={true} style="float: right" />
       </FailMessages>
     {:else}
-      <FailMessages
-        {failures}
-        title={FAIL_MESSAGES_TITLE}
-      />
+      <FailMessages {failures} title={FAIL_MESSAGES_TITLE} />
     {/if}
   {/if}
 </StatusPane>

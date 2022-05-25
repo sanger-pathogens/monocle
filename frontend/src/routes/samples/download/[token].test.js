@@ -10,13 +10,15 @@ const xmlHttpRequestMock = {
   addEventListener: jest.fn(),
   open: jest.fn(),
   send: jest.fn(),
-  setRequestHeader: jest.fn()
+  setRequestHeader: jest.fn(),
 };
 
 global.XMLHttpRequest = jest.fn(() => xmlHttpRequestMock);
 
 it("shows the loading indicator", () => {
-  const { getByLabelText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+  const { getByLabelText } = render(InterstitialPage, {
+    downloadToken: DOWNLOAD_TOKEN,
+  });
 
   expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
 });
@@ -28,8 +30,13 @@ it("sends the request to prepare download", () => {
 
   expect(xmlHttpRequestMock.open).toHaveBeenCalledTimes(1);
   expect(xmlHttpRequestMock.open).toHaveBeenCalledWith(
-    "GET", `/data_download/${DOWNLOAD_TOKEN}?redirect=false`);
-  expect(xmlHttpRequestMock.setRequestHeader).toHaveBeenCalledWith("Content-Type", "application/json");
+    "GET",
+    `/data_download/${DOWNLOAD_TOKEN}?redirect=false`
+  );
+  expect(xmlHttpRequestMock.setRequestHeader).toHaveBeenCalledWith(
+    "Content-Type",
+    "application/json"
+  );
   expect(xmlHttpRequestMock.send).toHaveBeenCalledTimes(1);
 });
 
@@ -42,7 +49,9 @@ describe("on", () => {
 
   describe("download prepared", () => {
     it("hides the loading indicator", async () => {
-      const { queryByLabelText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { queryByLabelText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
@@ -55,7 +64,9 @@ describe("on", () => {
     });
 
     it("shows the download instructions and the download link resolved", async () => {
-      const { container, getByRole } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { container, getByRole } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
@@ -67,10 +78,11 @@ describe("on", () => {
       await waitFor(() => {
         const instructions = container.getElementsByTagName("p")[0].textContent;
         expect(instructions).toBe(
-          "Your download is ready. You can close this tab once the download starts.\n    (If you don't see a prompt to save the file, follow this download link.)"
+          "Your download is ready. You can close this tab once the download starts. (If\n    you don't see a prompt to save the file, follow this download link.)"
         );
-        expect(getByRole("link", { name: "download link" }).href)
-          .toBe(expectedUrl);
+        expect(getByRole("link", { name: "download link" }).href).toBe(
+          expectedUrl
+        );
       });
     });
   });
@@ -79,7 +91,9 @@ describe("on", () => {
     const EVENT_NAME_ERROR = "error";
 
     it("hides the loading indicator", async () => {
-      const { queryByLabelText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { queryByLabelText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
       )[1];
@@ -92,7 +106,9 @@ describe("on", () => {
     });
 
     it("shows the timeout error on server timeout", async () => {
-      const { getByText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { getByText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
       )[1];
@@ -101,13 +117,18 @@ describe("on", () => {
       errorCallback();
 
       await waitFor(() => {
-        expect(getByText("Timeout error. Please reduce the download size and try again."))
-          .toBeDefined();
+        expect(
+          getByText(
+            "Timeout error. Please reduce the download size and try again."
+          )
+        ).toBeDefined();
       });
     });
 
     it("shows a distinct error on any HTTP client error", async () => {
-      const { getByText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { getByText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
       )[1];
@@ -116,13 +137,18 @@ describe("on", () => {
       errorCallback();
 
       await waitFor(() => {
-        expect(getByText("Download might have expired. Please close the tab and start new download."))
-          .toBeDefined();
+        expect(
+          getByText(
+            "Download might have expired. Please close the tab and start new download."
+          )
+        ).toBeDefined();
       });
     });
 
-    it("detects an error as part of the \"success\" event and shows the generic error", async () => {
-      const { getByText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+    it('detects an error as part of the "success" event and shows the generic error', async () => {
+      const { getByText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
@@ -131,13 +157,18 @@ describe("on", () => {
       loadCallback();
 
       await waitFor(() => {
-        expect(getByText("Download might have expired. Please close the tab and start new download."))
-          .toBeDefined();
+        expect(
+          getByText(
+            "Download might have expired. Please close the tab and start new download."
+          )
+        ).toBeDefined();
       });
     });
 
     it("shows an error on failing to parse the success response", async () => {
-      const { container } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { container } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
       )[1];
@@ -148,12 +179,15 @@ describe("on", () => {
 
       await waitFor(() => {
         expect(container.querySelector("p").innerHTML).toBe(
-          `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`);
+          `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`
+        );
       });
     });
 
     it("shows the generic error on any other error", async () => {
-      const { getByText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+      const { getByText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
       )[1];
@@ -162,8 +196,11 @@ describe("on", () => {
       errorCallback();
 
       await waitFor(() => {
-        expect(getByText("Download error. Please try again by reloading the page or try to reduce the download size."))
-          .toBeDefined();
+        expect(
+          getByText(
+            "Download error. Please try again by reloading the page or try to reduce the download size."
+          )
+        ).toBeDefined();
       });
     });
   });
@@ -172,10 +209,13 @@ describe("on", () => {
     const EVENT_NAME_CANCEL = "abort";
 
     it("hides the loading indicator", async () => {
-      const { queryByLabelText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
-      const cancelCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
-        (args) => args[0] === EVENT_NAME_CANCEL
-      )[1];
+      const { queryByLabelText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
+      const cancelCallback =
+        xmlHttpRequestMock.addEventListener.mock.calls.find(
+          (args) => args[0] === EVENT_NAME_CANCEL
+        )[1];
 
       cancelCallback();
 
@@ -185,16 +225,22 @@ describe("on", () => {
     });
 
     it("shows the cancellation text", async () => {
-      const { getByText } = render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
-      const cancelCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
-        (args) => args[0] === EVENT_NAME_CANCEL
-      )[1];
+      const { getByText } = render(InterstitialPage, {
+        downloadToken: DOWNLOAD_TOKEN,
+      });
+      const cancelCallback =
+        xmlHttpRequestMock.addEventListener.mock.calls.find(
+          (args) => args[0] === EVENT_NAME_CANCEL
+        )[1];
 
       cancelCallback();
 
       await waitFor(() => {
-        expect(getByText("Download was cancelled. Refresh the page to start again or try to reduce the download size."))
-          .toBeDefined();
+        expect(
+          getByText(
+            "Download was cancelled. Refresh the page to start again or try to reduce the download size."
+          )
+        ).toBeDefined();
       });
     });
   });

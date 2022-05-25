@@ -18,24 +18,34 @@
   let filterContainerElement;
   let exclude = $filterStore[columnDataType][columnName]?.exclude || false;
   let selectedValues = $filterStore[columnDataType][columnName]?.values.map(
-    (value) => ({ label: value, value }));
+    (value) => ({ label: value, value })
+  );
 
   $: hasChanges = _hasChanges(savedState, selectedValues, exclude);
   // Save filter state for `hasChanges` each time a filter is applied or removed.
   $: savedState = $filterStore[columnDataType][columnName] || { values: [] };
-  $: values = $distinctColumnValuesStore[columnDataType]?.[columnName]
-    ?.map(createValueObject);
+  $: values =
+    $distinctColumnValuesStore[columnDataType]?.[columnName]?.map(
+      createValueObject
+    );
 
   $: {
     if (!values && column) {
-      getDistinctColumnValues({
-        instKeyBatchDatePairs: batches,
-        columns: [column],
-        filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
-      }, fetch)
-        .then((distinctValuesResponse) =>
-          distinctColumnValuesStore.updateFromDistinctValuesResponse(distinctValuesResponse)
-        );
+      getDistinctColumnValues(
+        {
+          instKeyBatchDatePairs: batches,
+          columns: [column],
+          filter: {
+            filterState: $filterStore,
+            distinctColumnValuesState: $distinctColumnValuesStore,
+          },
+        },
+        fetch
+      ).then((distinctValuesResponse) =>
+        distinctColumnValuesStore.updateFromDistinctValuesResponse(
+          distinctValuesResponse
+        )
+      );
     }
   }
 
@@ -44,8 +54,7 @@
     const screenWidth = document.documentElement.clientWidth;
     if (screenWidth <= NARROW_SCREEN_BREAKPOINT) {
       positionFilterLeftmost();
-    }
-    else if (isFilterPastMiddleOfScreen(screenWidth)) {
+    } else if (isFilterPastMiddleOfScreen(screenWidth)) {
       positionFilterToLeftOfNextColumn();
     }
   });
@@ -54,7 +63,7 @@
     filterStore.update((filters) => {
       filters[columnDataType][columnName] = {
         values: selectedValues?.map(({ value }) => value) || [],
-        exclude
+        exclude,
       };
       return filters;
     });
@@ -65,7 +74,9 @@
   }
 
   function isFilterPastMiddleOfScreen(screenWidth) {
-    return filterContainerElement.getBoundingClientRect().left > screenWidth / 2;
+    return (
+      filterContainerElement.getBoundingClientRect().left > screenWidth / 2
+    );
   }
 
   function positionFilterToLeftOfNextColumn() {
@@ -73,8 +84,9 @@
   }
 
   function positionFilterLeftmost() {
-    filterContainerElement.style.left =
-      `-${filterContainerElement.parentNode.getBoundingClientRect().left - 21}px`;
+    filterContainerElement.style.left = `-${
+      filterContainerElement.parentNode.getBoundingClientRect().left - 21
+    }px`;
   }
 
   function createValueObject(value) {
@@ -86,11 +98,13 @@
       return true;
     }
     const savedStateValuesSet = new Set(savedState.values);
-    return savedStateValuesSet.size !== (selectedValues?.length || 0) ||
-      selectedValues && !selectedValues.every(({ value }) => savedStateValuesSet.has(value));
+    return (
+      savedStateValuesSet.size !== (selectedValues?.length || 0) ||
+      (selectedValues &&
+        !selectedValues.every(({ value }) => savedStateValuesSet.has(value)))
+    );
   }
 </script>
-
 
 {#if column}
   <article
@@ -101,7 +115,11 @@
     <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
 
     <label>
-      <input type="checkbox" bind:checked={exclude} disabled={!values || values.length === 1} />
+      <input
+        type="checkbox"
+        bind:checked={exclude}
+        disabled={!values || values.length === 1}
+      />
       <em>Exclude</em> samples with the selected values
     </label>
 
@@ -117,7 +135,10 @@
 
     <button
       class="primary compact"
-      on:click={() => {applyFilter(); closeFilter();}}
+      on:click={() => {
+        applyFilter();
+        closeFilter();
+      }}
       disabled={!values || !hasChanges}
     >
       Apply and close
@@ -129,44 +150,38 @@
     >
       Apply
     </button>
-    <button
-      class="compact"
-      on:click={closeFilter}
-    >
-      Close
-    </button>
+    <button class="compact" on:click={closeFilter}> Close </button>
     <button
       title="Remove this filter"
       aria-label={`Remove the filter for column ${column.title}`}
       on:click={() => filterStore.removeFilter(column)}
       class="remove-filter-btn icon-btn"
-      disabled={! $filterStore[columnDataType][columnName]}
+      disabled={!$filterStore[columnDataType][columnName]}
     >
       <RemoveFilterIcon />
     </button>
   </article>
 {/if}
 
-
 <style>
-article {
-  position: absolute;
-  top: 2.2rem;
-  background: var(--background-body);
-  border: 1px solid var(--color-border);
-  box-shadow: -2px 2px 8px 0 rgba(0, 0, 0, .2);
-  padding: 0 1.2rem .6rem;
-  width: 25rem;
-  max-width: 83vw;
-  /* This value should be less than `z-index` in the dialog component, lest the filter is shown on top of the bulk download dialog. */
-  z-index: 5;
-}
+  article {
+    position: absolute;
+    top: 2.2rem;
+    background: var(--background-body);
+    border: 1px solid var(--color-border);
+    box-shadow: -2px 2px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 0 1.2rem 0.6rem;
+    width: 25rem;
+    max-width: 83vw;
+    /* This value should be less than `z-index` in the dialog component, lest the filter is shown on top of the bulk download dialog. */
+    z-index: 5;
+  }
 
-h4 {
-  margin-top: revert;
-}
+  h4 {
+    margin-top: revert;
+  }
 
-.remove-filter-btn {
-  float: right;
-}
+  .remove-filter-btn {
+    float: right;
+  }
 </style>
