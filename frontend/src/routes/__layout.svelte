@@ -86,6 +86,12 @@ main {
   font-size: 1.1rem;
 }
 
+:global(.label-radio) {
+  display: inline-flex;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+
 :global(table.dense th) {
   font-size: .95rem;
   padding: .5rem;
@@ -111,6 +117,12 @@ main {
 :global(input[type="submit"].compact) {
   font-size: 0.95rem;
   padding: 0.5rem;
+}
+
+:global(.btn-wide) {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 :global(button.primary),

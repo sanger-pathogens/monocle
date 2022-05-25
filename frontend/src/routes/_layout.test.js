@@ -1,5 +1,6 @@
 import { render, waitFor } from "@testing-library/svelte";
 import { getStores } from "$app/stores";
+import { HTTP_HEADER_CONTENT_TYPE, HTTP_HEADERS_JSON } from "$lib/constants.js";
 import Layout from "./__layout.svelte";
 
 const USER_ROLE = "support";
@@ -8,6 +9,7 @@ getStores.mockReturnValue({ session: { set: jest.fn() } });
 
 global.fetch = jest.fn(() => Promise.resolve({
   ok: true,
+  headers: { get: () => HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE] },
   json: () => Promise.resolve({
     user_details: { type: USER_ROLE }
   })
@@ -16,6 +18,8 @@ global.fetch = jest.fn(() => Promise.resolve({
 jest.mock("$app/stores", () => ({
   getStores: jest.fn()
 }));
+
+getStores.mockReturnValue({ session: { set: jest.fn() } });
 
 it("loads a script w/ simple-cookie library", () => {
   document.head.appendChild = jest.fn();
