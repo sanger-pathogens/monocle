@@ -105,7 +105,7 @@ class SampleMetadataTest(TestCase):
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_institution_names(self, mock_query):
         mock_query.return_value = self.mock_institution_names
-        names = self.sample_metadata.get_institution_names()
+        names = self.sample_metadata.get_institution_names(self.mock_project)
         self.assertIsInstance(names, list)
         self.assertEqual(self.expected_institution_names, names)
 

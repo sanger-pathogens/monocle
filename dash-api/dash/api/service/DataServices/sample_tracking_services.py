@@ -157,7 +157,7 @@ class MonocleSampleTracking:
         if self.user_record is not None:
             institution_names = [inst["inst_name"] for inst in self.user_record.get("memberOf", [])]
         else:
-            institution_names = self.sample_metadata.get_institution_names()
+            institution_names = self.sample_metadata.get_institution_names(self.current_project)
 
         self.institution_names = institution_names
         return institution_names

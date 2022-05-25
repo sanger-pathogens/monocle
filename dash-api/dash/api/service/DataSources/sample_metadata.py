@@ -22,8 +22,8 @@ class SampleMetadata:
     def set_up(self):
         self.monocle_client = Monocle_Client()
 
-    def get_institution_names(self):
-        result = self.monocle_client.institutions()
+    def get_institution_names(self, project):
+        result = self.monocle_client.institutions(project)
         logging.debug("{}.get_institution_names() result(s) = {}".format(__class__.__name__, result))
 
         return result
@@ -182,10 +182,8 @@ class Monocle_Client:
                     )
                     raise KeyError
 
-    def institutions(self):
-        # TODO the project patam needs to be passed to this function like the others, and the config selected accordinging
-        logging.warning('{}.institutions() IS CURRENTLY HARDWIRED TO PROJECT "juno"'.format(__class__.__name__))
-        this_config = self.config["juno"]
+    def institutions(self, project):
+        this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["institutions"]
         logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint_url))
         response = self.make_request(endpoint_url)
