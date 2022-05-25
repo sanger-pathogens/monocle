@@ -37,19 +37,9 @@ or in the watch mode:
 npm run test:watch
 ```
 
-### Linting JS & Svelte code
+### Linting and auto-formatting code
 
-To display linting issues, run:
-
-```bash
-npm run lint
-```
-
-To fix linting issues that can be fixed automatically, run:
-
-```bash
-npm run lint:fix
-```
+We use [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to lint and auto-format the FE code respectively. Both of the tools are run as pre-commit hooks: see the corresponding [section](https://gitlab.internal.sanger.ac.uk/sanger-pathogens/monocle#pre-commit-hooks) in the main README on the usage.
 
 ### Icons
 

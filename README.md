@@ -49,9 +49,11 @@ pre-commit run --all-files
 
 Run a certain hook:
 ```
-pre-commit run <hook_id>
+pre-commit run <hook_id> --all-files
 ```
 where `<hook_id>` is a hook ID from `./.pre-commit-config.yaml`.
+
+You can also `run` hook(s) on specific file(s) w/ `--files <list of files>` argument. See [all possible arguments](https://pre-commit.com/#pre-commit-run) in `pre-commit`'s documentation.
 
 ## Production
 Monocle is available internally to Sanger at the following addresses:
