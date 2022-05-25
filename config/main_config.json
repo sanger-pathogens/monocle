@@ -27,6 +27,33 @@
             "dash YAML file": "dash-api/dash/interface/openapi.yml",
             "API YAML file": "metadata/juno/metadata/interface/openapi.yml",
             "field attributes": "dash-api/juno_field_attributes.json"
+         } ,
+         "gps": {
+            "config_file": "metadata/gps/config.json",
+            "API model" : [
+               {
+                  "data key":"metadata",
+                  "class name": "Metadata",
+                  "model file name": "metadata/gps/metadata/api/model/metadata.py",
+                  "SQL file name": "database/tables/api_sample.sql"
+               },
+               {
+                  "data key":"in_silico_data",
+                  "class name": "InSilicoData",
+                  "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
+                  "SQL file name": "database/tables/in_silico.sql"
+               },
+               {
+                  "data key":"qc_data",
+                  "class name": "QCData",
+                  "model file name": "metadata/gps/metadata/api/model/qc_data.py",
+                  "SQL file name": "database/tables/qc_data.sql"
+               }
+            ],
+            "test directory": "metadata/common/metadata/tests",
+            "dash YAML file": "dash-api/dash/interface/openapi.yml",
+            "API YAML file": "metadata/gps/metadata/interface/openapi.yml",
+            "field attributes": "dash-api/gps_field_attributes.json"
          }
       },
       "map_config_dict": {
