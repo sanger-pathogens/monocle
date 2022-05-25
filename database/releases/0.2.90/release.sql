@@ -148,7 +148,7 @@ PRIMARY KEY (`lane_id`)
 
 
 -- Update the database version
-CALL update_database_version('0.2.89', 'Create gps_in_silico and gps_qc_data tables');
+CALL update_database_version('0.2.90', 'Create gps_in_silico and gps_qc_data tables');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
