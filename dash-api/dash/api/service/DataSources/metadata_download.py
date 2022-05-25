@@ -94,31 +94,29 @@ class Monocle_Download_Client:
 
     def metadata(self, project, lane_id_list):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["download"]
+        endpoint_url = this_config["base_url"] + this_config["download"]
         logging.debug(
             "{}.metadata() using endpoint {}, passing list of {} sample IDs".format(
-                __class__.__name__, endpoint, len(lane_id_list)
+                __class__.__name__, endpoint_url, len(lane_id_list)
             )
         )
-        response = self.make_request(base_url, endpoint, post_data=lane_id_list)
+        response = self.make_request(endpoint_url, post_data=lane_id_list)
         logging.debug("{}.metadata([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(endpoint, response, required_keys=[this_config["metadata_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["metadata_key"]])
         return results[this_config["metadata_key"]]
 
     def in_silico_data(self, project, lane_id_list):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["download_in_silico_data"]
+        endpoint_url = this_config["base_url"] + this_config["download_in_silico_data"]
         logging.debug(
             "{}.in_silico_data() using endpoint {}, passing list of {} sample IDs".format(
-                __class__.__name__, endpoint, len(lane_id_list)
+                __class__.__name__, endpoint_url, len(lane_id_list)
             )
         )
         # this request will return a 404 if there are no in silico results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
-            response = self.make_request(base_url, endpoint, post_data=lane_id_list)
+            response = self.make_request(endpoint_url, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
                 logging.debug("status {}: no in silico results currently available for these samples".format(e.code))
@@ -128,22 +126,21 @@ class Monocle_Download_Client:
         logging.debug(
             "{}.in_silico_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response)
         )
-        results = self.parse_response(endpoint, response, required_keys=[this_config["in_silico_data_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["in_silico_data_key"]])
         return results[this_config["in_silico_data_key"]]
 
     def qc_data(self, project, lane_id_list):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["download_qc_data"]
+        endpoint_url = this_config["base_url"] + this_config["download_qc_data"]
         logging.debug(
             "{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(
-                __class__.__name__, endpoint, len(lane_id_list)
+                __class__.__name__, endpoint_url, len(lane_id_list)
             )
         )
         # this request will return a 404 if there are no QC data results for these samples
         # this is not an error, so a 404 must be caught, and an empty results set returned
         try:
-            response = self.make_request(base_url, endpoint, post_data=lane_id_list)
+            response = self.make_request(endpoint_url, post_data=lane_id_list)
         except urllib.error.HTTPError as e:
             if 404 == e.code:
                 logging.debug("status {}: no QC data results currently available for these samples".format(e.code))
@@ -151,11 +148,10 @@ class Monocle_Download_Client:
             else:
                 raise
         logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(endpoint, response, required_keys=[this_config["qc_data_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["qc_data_key"]])
         return results[this_config["qc_data_key"]]
 
-    def make_request(self, base_url, endpoint, post_data=None):
-        request_url = base_url + endpoint
+    def make_request(self, request_url, post_data=None):
         request_data = None
         request_headers = {}
         # if POST data were passed, convert to a UTF-8 JSON string
@@ -189,10 +185,10 @@ class Monocle_Download_Client:
             raise
         return response_as_string
 
-    def parse_response(self, endpoint, response_as_string, required_keys=[]):
+    def parse_response(self, endpoint_url, response_as_string, required_keys=[]):
         results_data = json.loads(response_as_string)
         if not isinstance(results_data, dict):
-            error_message = "request to '{}' did not return a dict as expected".format(endpoint)
+            error_message = "request to '{}' did not return a dict as expected".format(endpoint_url)
             raise ProtocolError(error_message)
         for required_key in required_keys:
             try:

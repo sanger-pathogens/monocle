@@ -186,68 +186,66 @@ class Monocle_Client:
         # TODO the project patam needs to be passed to this function like the others, and the config selected accordinging
         logging.warning('{}.institutions() IS CURRENTLY HARDWIRED TO PROJECT "juno"'.format(__class__.__name__))
         this_config = self.config["juno"]
-        base_url = this_config["base_url"]
-        endpoint = this_config["institutions"]
-        logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
-        response = self.make_request(base_url, endpoint)
+        endpoint_url = this_config["base_url"] + this_config["institutions"]
+        logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint_url))
+        response = self.make_request(endpoint_url)
         logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[this_config["institutions_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["institutions_key"]])
         return results[this_config["institutions_key"]]
 
     def samples(self, project):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["samples"]
-        logging.debug("{}.samples() using endpoint {}".format(__class__.__name__, endpoint))
-        response = self.make_request(base_url, endpoint)
+        endpoint_url = this_config["base_url"] + this_config["samples"]
+        logging.debug("{}.samples() using endpoint {}".format(__class__.__name__, endpoint_url))
+        response = self.make_request(endpoint_url)
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[this_config["samples_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["samples_key"]])
         return results[this_config["samples_key"]]
 
     def filters(self, project, filters):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["filter_by_metadata"]
-        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
-        response = self.make_request(base_url, endpoint, post_data=filters)
+        endpoint_url = this_config["base_url"] + this_config["filter_by_metadata"]
+        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
+        response = self.make_request(endpoint_url, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
     def filters_in_silico(self, project, filters):
         this_config = self.config[project]
-        base_url = this_config["base_url"]
-        endpoint = this_config["filter_by_in_silico"]
-        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint, filters))
-        response = self.make_request(base_url, endpoint, post_data=filters)
+        endpoint_url = this_config["base_url"] + this_config["filter_by_in_silico"]
+        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
+        response = self.make_request(endpoint_url, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
     def distinct_values(self, project, fields, institutions):
-        endpoint = self.config[project]["distinct_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
+        this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["distinct_values"]
+        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
 
     def distinct_in_silico_values(self, project, fields, institutions):
-        endpoint = self.config[project]["distinct_in_silico_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
+        this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["distinct_in_silico_values"]
+        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
 
     def distinct_qc_data_values(self, project, fields, institutions):
-        endpoint = self.config[project]["distinct_qc_data_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
-
-    def _distinct_values_common(self, endpoint, project, fields, institutions):
         this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["distinct_qc_data_values"]
+        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
+
+    def _distinct_values_common(self, this_config, endpoint_url, fields, institutions):
         query = {"fields": fields, "institutions": institutions}
-        logging.debug("{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint, query))
-        base_url = this_config["base_url"]
-        response = self.make_request(base_url, endpoint, post_data=query)
+        logging.debug(
+            "{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint_url, query)
+        )
+        response = self.make_request(endpoint_url, post_data=query)
         logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[this_config["distinct_values_key"]])
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["distinct_values_key"]])
         return results[this_config["distinct_values_key"]]
 
-    def make_request(self, base_url, endpoint, post_data=None):
-        request_url = base_url + endpoint
+    def make_request(self, request_url, post_data=None):
         request_data = None
         request_headers = {}
         # if POST data were passed, convert to a UTF-8 JSON string

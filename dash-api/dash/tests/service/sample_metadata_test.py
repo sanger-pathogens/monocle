@@ -92,7 +92,7 @@ class SampleMetadataTest(TestCase):
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.bad_api_host
             endpoint = doomed.config[self.mock_project]["samples"] + self.expected_sanger_sample_ids[0]
-            doomed.make_request("http://fake-container", endpoint)
+            doomed.make_request("http://fake-container" + endpoint)
 
     def test_reject_bad_endpoint(self):
         with self.assertRaises(URLError):
@@ -100,7 +100,7 @@ class SampleMetadataTest(TestCase):
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
-            doomed.make_request("http://fake-container", endpoint)
+            doomed.make_request("http://fake-container" + endpoint)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_institution_names(self, mock_query):
@@ -149,7 +149,7 @@ class SampleMetadataTest(TestCase):
         mock_payload = [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
         self.sample_metadata.monocle_client.filters(self.mock_project, mock_payload)
         mock_query.assert_called_once_with(
-            "http://fake-container", "/metadata/juno/sample_ids_matching_metadata", post_data=mock_payload
+            "http://fake-container/metadata/juno/sample_ids_matching_metadata", post_data=mock_payload
         )
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
@@ -158,7 +158,7 @@ class SampleMetadataTest(TestCase):
         mock_payload = [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
         self.sample_metadata.monocle_client.filters_in_silico(self.mock_project, mock_payload)
         mock_query.assert_called_once_with(
-            "http://fake-container", "/metadata/juno/lane_ids_matching_in_silico_data", post_data=mock_payload
+            "http://fake-container/metadata/juno/lane_ids_matching_in_silico_data", post_data=mock_payload
         )
 
     @patch("DataSources.sample_metadata.Monocle_Client.distinct_values")
@@ -186,8 +186,7 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "http://fake-container",
-            "/metadata/juno/distinct_values",
+            "http://fake-container/metadata/juno/distinct_values",
             post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 
@@ -198,8 +197,7 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_in_silico_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "http://fake-container",
-            "/metadata/juno/distinct_in_silico_values",
+            "http://fake-container/metadata/juno/distinct_in_silico_values",
             post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 
@@ -210,8 +208,7 @@ class SampleMetadataTest(TestCase):
         mock_institutions = ["institution A"]
         self.sample_metadata.monocle_client.distinct_qc_data_values(self.mock_project, mock_fields, mock_institutions)
         mock_query.assert_called_once_with(
-            "http://fake-container",
-            "/metadata/juno/distinct_qc_data_values",
+            "http://fake-container/metadata/juno/distinct_qc_data_values",
             post_data={"fields": mock_fields, "institutions": mock_institutions},
         )
 

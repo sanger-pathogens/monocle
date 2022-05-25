@@ -17,7 +17,7 @@ class MetadataDownloadTest(TestCase):
     bad_api_host = "http://no.such.host/"
     bad_api_endpoint = "/no/such/endpoint"
     # this pattern should match a container on the docker network
-    base_url_regex = "^http://[\\w\\-]+$"
+    base_url_regex = "^http://[\\w\\-]+(/[\\w\\-]+)*$"
     endpoint_regex = "(/[\\w\\-\\.]+)+"
     # metadata, in silico and QC data downloads require a list of strings, each is a sample ID & lane ID pair, colon-separated
     mock_project = "juno"
@@ -341,7 +341,7 @@ class MetadataDownloadTest(TestCase):
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.bad_api_host
             endpoint = doomed.config[self.mock_project]["download"] + self.mock_download_param[0]
-            doomed.make_request("http://fake-container", endpoint)
+            doomed.make_request("http://fake-container" + endpoint)
 
     def test_reject_bad_endpoint(self):
         with self.assertRaises(urllib.error.URLError):
@@ -349,7 +349,7 @@ class MetadataDownloadTest(TestCase):
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.mock_download_param[0]
-            doomed.make_request("http://fake-container", endpoint)
+            doomed.make_request("http://fake-container" + endpoint)
 
     @patch.object(Monocle_Download_Client, "make_request")
     def test_download_metadata(self, mock_request):
