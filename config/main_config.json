@@ -26,7 +26,7 @@
             "test directory": "metadata/common/metadata/tests",
             "dash YAML file": "dash-api/dash/interface/openapi.yml",
             "API YAML file": "metadata/juno/metadata/interface/openapi.yml",
-            "field attributes": "dash-api/field_attributes.json"
+            "field attributes": "dash-api/juno_field_attributes.json"
          }
       },
       "map_config_dict": {
