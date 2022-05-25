@@ -32,7 +32,7 @@
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    max-wigth: var(--bp-xl);
+    max-width: var(--bp-xl);
   }
 
   a {
