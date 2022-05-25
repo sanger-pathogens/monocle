@@ -10,6 +10,10 @@ Install other dependencies:
 cd frontend
 npm install
 ```
+and build the application for testing:
+```bash
+npm run build
+```
 ## Development
 
 ### Running locally

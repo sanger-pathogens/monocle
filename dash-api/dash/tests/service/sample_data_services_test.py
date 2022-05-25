@@ -1,5 +1,4 @@
 import json
-import logging
 from copy import deepcopy
 from os import environ
 from pathlib import Path, PurePath
@@ -1042,7 +1041,7 @@ class MonocleSampleDataTest(TestCase):
         )
 
         expected_samples = self.mock_filtered_samples2
-        logging.critical("\n***** EXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
+        # logging.critical("\n***** EXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
         self.assertEqual(expected_samples, actual_samples)
         self.get_mock_data()
 
