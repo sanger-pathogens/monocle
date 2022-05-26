@@ -73,9 +73,6 @@ INSERT INTO api_institution (name, country, latitude, longitude)
 VALUES ('Istituto Superiore di Sanità', 'Italy', 41.904144, 12.51806);
 
 INSERT INTO api_institution (name, country, latitude, longitude)
-VALUES ('Toros University', 'Turkey', 36.790048, 34.593931);
-
-INSERT INTO api_institution (name, country, latitude, longitude)
 VALUES ('Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)', 'Cameroon', 3.833870822724538, 11.486905970132005);
 
 INSERT INTO api_institution (name, country, latitude, longitude)
