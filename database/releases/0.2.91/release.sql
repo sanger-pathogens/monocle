@@ -11,7 +11,7 @@ VALUES ('Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)', '
 -- 2.1. Add new institution (Çukurova University, Faculty of Medicine, Department of Medical Microbiology) in api_institution table
 
 INSERT INTO api_institution (name, country, latitude, longitude)
-VALUES ('Çukurova University, Faculty of Medicine, Department of Medical Microbiology', 'Israel', 31.790605, 35.202278);
+VALUES ('Çukurova University, Faculty of Medicine, Department of Medical Microbiology', 'Turkey', 36.790048, 34.593931);
 
 -- 2.2. Rename "Toros University" to "Çukurova University, Faculty of Medicine, Department of Medical Microbiology" in api_sample table
 

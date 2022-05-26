@@ -76,5 +76,4 @@ INSERT INTO api_institution (name, country, latitude, longitude)
 VALUES ('Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)', 'Cameroon', 3.833870822724538, 11.486905970132005);
 
 INSERT INTO api_institution (name, country, latitude, longitude)
-VALUES ('Çukurova University, Faculty of Medicine, Department of Medical Microbiology', 'Israel', 31.790605, 35.202278);
-
+VALUES ('Çukurova University, Faculty of Medicine, Department of Medical Microbiology', 'Turkey', 36.790048, 34.593931);
