@@ -359,7 +359,7 @@ paths:
                 "sample filters":
                   {  "batches": [
                         {
-                        "institution key": "NatRefLab",
+                        "institution key": "MinHeaCenLab",
                         "batch date": "2019-11-15"
                         }
                      ],
@@ -511,7 +511,7 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú]*$
-       example: "NatRefLab"
+       example: "MinHeaCenLab"
 
     InstitutionName:
        description: "The name of the institution."
@@ -519,7 +519,7 @@ components:
        minLength: 3
        maxLength: 256
        pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)]*$
-       example: "National Reference Laboratories"
+       example: "Ministry of Health, Central Laboratories"
 
     CountryName:
       type: string

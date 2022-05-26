@@ -558,7 +558,7 @@ class MonocleSampleData:
         disable_public_name_fetch was passed) public names added.
 
         Supports `batches` filter:
-           "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+           "batches": [{"institution key": "MinHeaCenLab", "batch date": "2019-11-15"}, ... ]
 
         Also metadata, in silico and QC data filters, e.g.
            "metadata": {"serotype": ["I", "IV"], ...}
@@ -568,7 +568,7 @@ class MonocleSampleData:
         [  {  'lanes':             ['32820_2#287'],
               'creation_datetime': '2019-11-15T13:56:07Z',
               'sanger_sample_id':  '5903STDY8113167',
-              'inst_key':          'NatRefLab',
+              'inst_key':          'MinHeaCenLab',
               'public_name':       'JN_IL_ST00002'
               }
            ]
