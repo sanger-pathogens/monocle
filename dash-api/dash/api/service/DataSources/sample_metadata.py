@@ -147,7 +147,8 @@ class ProtocolError(Exception):
 
 class Monocle_Client:
     data_sources_config = "data_sources.yml"
-    data_source = {"juno": "juno_metadata_api", "gps": "gps_metadata_api"}
+    metadata_common_source = "metadata_api_common"
+    metadata_project_source = {"juno": "metadata_api_juno", "gps": "metadata_api_gps"}
     required_config_params = [
         "base_url",
         "institutions",
@@ -167,17 +168,24 @@ class Monocle_Client:
             self.set_up(self.data_sources_config)
 
     def set_up(self, config_file_name):
+        self.config = {}
         with open(config_file_name, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            self.config = {}
-            for this_project in self.data_source:
-                self.config[this_project] = data_sources[self.data_source[this_project]]
-        for this_project in self.data_source:
+            common_config = data_sources[self.metadata_common_source]
+            for this_project in self.metadata_project_source:
+                self.config[this_project] = {
+                    **common_config,
+                    **data_sources[self.metadata_project_source[this_project]],
+                }
+        for this_project in self.config:
             for required_param in self.required_config_params:
                 if required_param not in self.config[this_project]:
                     logging.error(
-                        "data source config file {} does not provide the required paramter {}.{}".format(
-                            self.data_sources_config, self.data_source, required_param
+                        "data source config file {} does not provide the required parameter {} (should be in section {} or {})".format(
+                            self.data_sources_config,
+                            required_param,
+                            self.metadata_common_source,
+                            self.metadata_project_source[this_project],
                         )
                     )
                     raise KeyError
