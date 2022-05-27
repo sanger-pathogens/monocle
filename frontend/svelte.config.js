@@ -6,6 +6,8 @@ const production =
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   kit: {
+    // `appDir` should be the same as the route in `proxy/nginx.prod.proxy.conf`:
+    appDir: "_app",
     adapter: nodeAdapter({
       precompress: production,
     }),

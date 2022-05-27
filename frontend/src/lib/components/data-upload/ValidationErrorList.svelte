@@ -38,8 +38,4 @@
   input:checked + label {
     text-decoration: line-through;
   }
-
-  label {
-    cursor: pointer;
-  }
 </style>

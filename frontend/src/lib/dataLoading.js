@@ -1,10 +1,19 @@
-import { DATA_TYPES } from "$lib/constants.js";
+import { browser } from "$app/env";
+import {
+  DATA_TYPES,
+  HTTP_HEADER_CONTENT_TYPE,
+  HTTP_HEADERS_JSON,
+  HTTP_POST,
+  HTTP_STATUS_CODE_UNAUTHORIZED,
+  MIME_TYPE_HTML,
+  PATHNAME_LOGIN,
+} from "$lib/constants.js";
 
 const DASHBOARD_API_ENDPOINT = "/dashboard-api";
+const EMPTY_STRING = "";
 const FETCH_ERROR_PATTER_NOT_FOUND = "404 ";
 const FETCH_ERROR_UNKNOWN = "unknown error";
-const HTTP_POST = "POST";
-const JSON_HEADERS = { "Content-Type": "application/json" };
+const RE_HTML = /^\s*<!DOCTYPE/gi;
 
 export function getInstitutionStatus(fetch) {
   return Promise.all([
@@ -53,7 +62,7 @@ export function getBatches(fetch) {
 export function getBulkDownloadInfo(params, fetch) {
   return fetchDashboardApiResource("bulk_download_info", null, fetch, {
     method: HTTP_POST,
-    headers: JSON_HEADERS,
+    headers: HTTP_HEADERS_JSON,
     body: JSON.stringify(prepareBulkDownloadPayload(params)),
   });
 }
@@ -65,7 +74,7 @@ export function getBulkDownloadUrls(params, fetch) {
     fetch,
     {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(prepareBulkDownloadPayload(params)),
     }
   );
@@ -111,7 +120,7 @@ export function getDistinctColumnValues(
     fetch,
     {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(payload),
     }
   );
@@ -144,7 +153,7 @@ export function getSampleMetadata(
     payload["as csv"] = true;
     return fetch(`${DASHBOARD_API_ENDPOINT}/get_metadata`, {
       method: HTTP_POST,
-      headers: JSON_HEADERS,
+      headers: HTTP_HEADERS_JSON,
       body: JSON.stringify(payload),
     })
       .then((response) =>
@@ -159,7 +168,7 @@ export function getSampleMetadata(
 
   return fetchDashboardApiResource("get_metadata", null, fetch, {
     method: HTTP_POST,
-    headers: JSON_HEADERS,
+    headers: HTTP_HEADERS_JSON,
     body: JSON.stringify(payload),
   });
 }
@@ -189,16 +198,27 @@ function getPipelineStatus(fetch) {
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
+  if (browser) {
+    // Prevent API requests from the login page:
+    if (location.pathname.endsWith(PATHNAME_LOGIN)) {
+      return Promise.resolve({});
+    }
+  }
   return (
     fetchOptions
       ? fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`, fetchOptions)
       : fetch(`${DASHBOARD_API_ENDPOINT}/${endpoint}`)
   )
-    .then((response) =>
-      response.ok
+    .then(async (response) => {
+      const authenticated = await isProbablyAuthenticated(response);
+      if (!authenticated && browser) {
+        location.href = PATHNAME_LOGIN;
+        return {};
+      }
+      return response.ok
         ? response.json()
-        : Promise.reject(`${response.status} ${response.statusText}`)
-    )
+        : Promise.reject(`${response.status} ${response.statusText}`);
+    })
     .then((payload) => (resourceKey ? payload?.[resourceKey] : payload))
     .catch((err) => handleFetchError(err, endpoint, resourceKey));
 }
@@ -213,6 +233,29 @@ function handleFetchError(err = FETCH_ERROR_UNKNOWN, endpoint, resourceKey) {
       : `Error while fetching resource from endpoint ${endpoint}: ${err}`
   );
   return Promise.reject(err);
+}
+
+function isProbablyAuthenticated(responseParam) {
+  const contentTypeHeader =
+    responseParam.headers.get(HTTP_HEADER_CONTENT_TYPE) || EMPTY_STRING;
+  // An HTML response indicates that the request was redirected to the login page, ie it's not authenticated.
+  if (
+    contentTypeHeader.includes(MIME_TYPE_HTML) ||
+    responseParam.status === HTTP_STATUS_CODE_UNAUTHORIZED
+  ) {
+    return Promise.resolve(false);
+  }
+  // Any other non-empty content type indicates that the user is authenticated:
+  if (contentTypeHeader.length) {
+    return Promise.resolve(true);
+  }
+  // Cloning a response is necessary because the reponse body can be read only once. (So if we subsequently re-read it, there will be an exception.)
+  const response = responseParam.clone();
+  // An empty response body (w/ an empty content type HTTP header from above) mean that the response is a cached
+  // response w/ the login page HTML, ie the user is not authenticated:
+  return response
+    .text()
+    .then((responseBody) => responseBody && !RE_HTML.test(responseBody));
 }
 
 function collateInstitutionStatus({

@@ -1,3 +1,11 @@
+import env from "$app/env";
+import {
+  HTTP_HEADER_CONTENT_TYPE,
+  HTTP_HEADERS_JSON,
+  HTTP_STATUS_CODE_UNAUTHORIZED,
+  MIME_TYPE_HTML,
+  PATHNAME_LOGIN,
+} from "$lib/constants.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -10,6 +18,8 @@ import {
   getUserDetails,
 } from "./dataLoading.js";
 
+const DASHBOARD_API_URL = "/dashboard-api";
+const DATA_TYPE_METADATA = "metadata";
 const INST_KEY_BATCH_DATE_PAIRS = [
   ["SomIns", "2021-05-20"],
   ["AnoIns", "2020-09-01"],
@@ -20,8 +30,6 @@ const INST_KEY_BATCH_DATE_OBJECTS = INST_KEY_BATCH_DATE_PAIRS.map(
     "batch date": batchDate,
   })
 );
-const DASHBOARD_API_URL = "/dashboard-api";
-const DATA_TYPE_METADATA = "metadata";
 
 const DISTINCT_COLUMN_VALUES_STATE = {
   metadata: {
@@ -39,8 +47,144 @@ const FILTER_STATE = {
   },
   "in silico": { ST: { values: ["x", "y"] } },
 };
+const MIME_TYPE_JSON = HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE];
+const HEADERS_JSON = { get: () => MIME_TYPE_JSON };
+const PATHNAME_NOT_LOGIN = "/samples";
 
 const fetch = jest.fn();
+
+jest.mock("$app/env", () => ({
+  get browser() {
+    return true;
+  },
+}));
+
+describe("authorization", () => {
+  beforeEach(() => {
+    delete global.location;
+    global.location = { pathname: PATHNAME_NOT_LOGIN };
+  });
+
+  it("redirects to the login page if the response status is `401`", async () => {
+    fetch.mockResolvedValueOnce({
+      status: HTTP_STATUS_CODE_UNAUTHORIZED,
+      headers: HEADERS_JSON,
+      text: () => Promise.resolve(""),
+      clone: function () {
+        return this;
+      },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).toBe(PATHNAME_LOGIN);
+  });
+
+  it("doesn't redirect to the login page if the response status is other than `401` and the MIME type isn't HTML", async () => {
+    fetch.mockResolvedValueOnce({
+      status: 200,
+      ok: true,
+      headers: HEADERS_JSON,
+      text: () => Promise.resolve(""),
+      json: () => Promise.resolve(""),
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).not.toBe(PATHNAME_LOGIN);
+  });
+
+  it("redirects to the login page if the response has the HTML MIME type", async () => {
+    fetch.mockResolvedValueOnce({
+      headers: { get: () => MIME_TYPE_HTML },
+      clone: function () {
+        return this;
+      },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).toBe(PATHNAME_LOGIN);
+  });
+
+  it("redirects to the login page if the response is HTML", async () => {
+    fetch.mockResolvedValueOnce({
+      headers: { get: () => {} },
+      text: () => Promise.resolve("<!doctype html><title></title>"),
+      clone: function () {
+        return this;
+      },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).toBe(PATHNAME_LOGIN);
+  });
+
+  it("doesn't redirect to the login page if the response isn't empty & isn't HTML", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      headers: { get: () => {} },
+      text: () => Promise.resolve("not HTML"),
+      json: () => Promise.resolve(""),
+      clone: function () {
+        return this;
+      },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).not.toBe(PATHNAME_LOGIN);
+  });
+
+  it("redirects to the login page if the content type header & the response body are falsy", async () => {
+    fetch.mockResolvedValueOnce({
+      headers: { get: () => {} },
+      text: () => Promise.resolve(null),
+      clone: function () {
+        return this;
+      },
+    });
+
+    await getBatches(fetch);
+
+    expect(global.location.href).toBe(PATHNAME_LOGIN);
+  });
+});
+
+describe("login page", () => {
+  afterAll(() => {
+    delete global.location;
+    global.location = { pathname: PATHNAME_NOT_LOGIN };
+  });
+
+  it("doesn't make a fetch request if the environment is the browser", async () => {
+    delete global.location;
+    global.location = { pathname: PATHNAME_LOGIN };
+    fetch.mockClear();
+
+    await getBatches(fetch);
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("makes a fetch request if the environment is not the browser", async () => {
+    const browserSpy = jest.spyOn(env, "browser", "get");
+    const expectedPayload = "batches";
+    browserSpy.mockReturnValueOnce(false);
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      headers: HEADERS_JSON,
+      json: () => Promise.resolve({ batches: expectedPayload }),
+    });
+    fetch.mockClear();
+
+    const actualPayload = await getBatches(fetch);
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(actualPayload).toBe(expectedPayload);
+  });
+});
 
 describe.each([
   {
@@ -338,6 +482,7 @@ describe.each([
     beforeEach(() => {
       fetch.mockResolvedValue({
         ok: true,
+        headers: HEADERS_JSON,
         blob: () => Promise.resolve(responsePayload),
         json: () => Promise.resolve(responsePayload),
       });
@@ -367,6 +512,7 @@ describe.each([
       fetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
+        headers: HEADERS_JSON,
       });
 
       await expect(getResource(...args, fetch)).resolves.toBeUndefined();

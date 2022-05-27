@@ -136,10 +136,6 @@
     white-space: pre;
   }
 
-  label {
-    cursor: pointer;
-  }
-
   .expand-icon {
     color: var(--text-main);
     font-size: 0.7rem;

@@ -192,9 +192,13 @@ input {
 }
 
 label {
+  cursor: pointer;
   vertical-align: middle;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.7rem;
   display: inline-block;
+}
+label > input:not([type="checkbox"]) {
+  margin-top: 0.6rem;
 }
 
 button,
@@ -280,12 +284,13 @@ input[type="submit"]:active {
 
 button:disabled,
 [role="button"]:disabled,
+fieldset:disabled,
 input:disabled,
 select:disabled,
 textarea:disabled,
 .disabled {
   cursor: not-allowed;
-  opacity: 0.2;
+  opacity: 0.25;
   pointer-events: none;
 }
 

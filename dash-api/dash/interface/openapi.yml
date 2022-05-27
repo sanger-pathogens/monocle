@@ -11,6 +11,74 @@ servers:
     description: Context path
 
 paths:
+  /set_auth_cookie:
+    post:
+      operationId: dash.api.routes.set_auth_cookie_route
+      summary: "Sets an authentication cookie and redirects user to page they were attempting to access. Credentials are NOT VERIFIED by this endpoint: this cookie needs to be checked by NGINX before authorisation is granted."
+      parameters:
+        - name: X-Target
+          in: header
+          description: "URL the user was requesting when intercepted for authorisation."
+          required: false
+          schema:
+            type: string
+            format: uri
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  description: "The username provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
+                password:
+                  description: "The password provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
+      responses:
+        "307":
+          description: "The operation was successful. An UNVERIFIED authentication cookie is set and the user is redirected."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+                    
+  /delete_auth_cookie:
+    get:
+      operationId: dash.api.routes.delete_auth_cookie_route
+      summary: "Immediately expires the authentication token used by NGINX."
+      parameters:
+        - name: X-Target
+          in: header
+          description: "URL the user should be redirected to after the cookies is deleted."
+          required: false
+          schema:
+            type: string
+            format: uri
+      responses:
+        "307":
+          description: "The operation was successful. The authentication cookie has is expired and the user is redirected."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+
   /get_user_details:
     get:
       operationId: dash.api.routes.get_user_details_route
