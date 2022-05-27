@@ -3,7 +3,6 @@ from os import environ
 
 import pandas
 import yaml
-from pandas import DataFrame, read_csv
 
 
 class PipelineStatusDataError(Exception):

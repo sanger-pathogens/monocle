@@ -6,7 +6,7 @@ import unittest
 
 import connexion
 from flask import Config
-from metadata.api.configuration import *
+from metadata.api.configuration import read_database_connection_config, read_spreadsheet_definition_config
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
@@ -31,7 +31,7 @@ class TestConfiguration(unittest.TestCase):
             self.flask_config = app_handle.app.config
 
     def test_flask_config(self):
-        config = read_spreadsheet_definition_config(self.flask_config["metadata"])
+        read_spreadsheet_definition_config(self.flask_config["metadata"])
 
     def test_read_database_connection_config(self):
         with tempfile.NamedTemporaryFile("w+t") as tmp:

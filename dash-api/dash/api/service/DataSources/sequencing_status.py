@@ -1,4 +1,3 @@
-import http.client
 import json
 import logging
 import urllib.error
@@ -76,7 +75,7 @@ class MLWH_Client:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             self.config = data_sources[self.data_source]
         for required_param in self.required_config_params:
-            if not required_param in self.config:
+            if required_param not in self.config:
                 logging.error(
                     "data source config file {} does not provide the required parameter {}.{}".format(
                         self.data_sources_config, self.data_source, required_param
@@ -90,7 +89,7 @@ class MLWH_Client:
         with open(mlwh_api_config_file, "r") as file:
             self.config["mlwh_api_connection"] = yaml.load(file, Loader=yaml.FullLoader)
         for required_param in self.required_mlwh_api_params:
-            if not required_param in self.config["mlwh_api_connection"]:
+            if required_param not in self.config["mlwh_api_connection"]:
                 logging.error(
                     "MLWH API config file {} does not provide the required parameter {}".format(
                         mlwh_api_config_file, required_param
@@ -106,7 +105,7 @@ class MLWH_Client:
         logging.debug("{}.find_by_id({}) using endpoint {}".format(__class__.__name__, sample_id, endpoint))
         response = self.make_request(endpoint)
         logging.debug("{}.find_by_id({}) returned {}".format(__class__.__name__, sample_id, response))
-        results = self.parse_response(response, required_keys=[self.config["findById_key"]])
+        results = self.parse_response(response, endpoint, required_keys=[self.config["findById_key"]])
         return results[self.config["findById_key"]]
 
     def find_by_ids(self, sample_ids):
@@ -119,7 +118,7 @@ class MLWH_Client:
         try:
             response = self.make_request(endpoint, post_data=sample_ids)
             logging.debug("{}.find_by_ids([{}]) returned {}".format(__class__.__name__, ",".join(sample_ids), response))
-            results = self.parse_response(response, required_keys=[self.config["findByIds_key"]])
+            results = self.parse_response(response, endpoint, required_keys=[self.config["findByIds_key"]])
         except urllib.error.HTTPError:
             raise
         return results[self.config["findByIds_key"]]
@@ -148,7 +147,7 @@ class MLWH_Client:
             raise
         return response_as_string
 
-    def parse_response(self, response_as_string, required_keys=[]):
+    def parse_response(self, response_as_string, endpoint, required_keys=[]):
         swagger_url = (
             self.config["mlwh_api_connection"]["base_url"] + self.config["swagger"]
         )  # only because it may be useful for error messages

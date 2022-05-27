@@ -1,28 +1,30 @@
+# **************************************************************
+# Update submitting institutions
+# **************************************************************
+
+-- 1. Add "Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)" institution in api_institution table
+
 INSERT INTO api_institution (name, country, latitude, longitude)
-VALUES ('CDC (Public GPS samples)','USA', 42.047428, -93.580467),
-('Emory University (Public GPS samples)', 'USA', 33.792519, -84.323997),
-('Malawi Liverpool Wellcome Trust (Public GPS samples)', 'Malawi' , 27.055010 , -81.961100),
-('MRC Unit The Gambia (Public GPS samples)', 'Gambia' , 13.451290, -16.573000),
-('NICD (Public GPS samples)', 'South Africa', -22.829994682193732, 27.25766324673691),
-('ANLIS (Public GPS samples)', 'Argentina', -34.64110907894502, -58.390067743704286),
-('CHRF (Public GPS samples)', 'Bangladesh', 23.773394027792204, 90.36676319775704),
-('Institute Adolfo Lutz (IAL) (Public GPS samples)', 'Brazil', -23.554984438633692, -46.6683855715648),
-('The Republican Research And Practical Center For Epidemiology And Microbiology (Public GPS samples)', '' , , ),
-('Hospital Sant Joan De Deu (Public GPS samples)', '' , , ),
-('CNRP/ACTIV (Public GPS samples)', '' , , ),
-('The University Of Hong Kong (Public GPS samples)', '' , , ),
-('Temple Street Childrens Hospital (Public GPS samples)', '' , , ),
-('Soroka University Medical Center (Public GPS samples)', '' , , ),
-('Kempegowda Institute Of Medical Sciences (Public GPS samples)', '' , , ),
-('Cambodia Oxford Medical Research Unit (Public GPS samples)', '' , , ),
-('Faculty Of Medicine And Pharmacy Of Casablanca (Public GPS samples)', '' , , ),
-('University Of Southampton (Public GPS samples)', '' , , ),
-('University Of Nebraska Medical Center (Public GPS samples)', '' , , ),
-('Oxford Vaccine Group (Public GPS samples)', '' , , ),
-('PNGIMR (Public GPS samples)', '' , , ),
-('National Medicines Institute (Public GPS samples)', '' , , ),
-('MGRIEM (Public GPS samples)', '' , , ),
-('National Laboratory Of Health Environment And Food (Public GPS samples)', '' , , ),
-('AMP (Public GPS samples)', '' , , ),
-('Shoklo-Malaria-Research-Unit (Public GPS samples)', '' , , )
-;
+VALUES ('Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)', 'Cameroon', 3.833870822724538, 11.486905970132005);
+
+-- 2. Rename Institution
+-- 2.1. Add new institution (Çukurova University, Faculty of Medicine, Department of Medical Microbiology) in api_institution table
+
+INSERT INTO api_institution (name, country, latitude, longitude)
+VALUES ('Çukurova University, Faculty of Medicine, Department of Medical Microbiology', 'Turkey', 36.790048, 34.593931);
+
+-- 2.2. Rename "Toros University" to "Çukurova University, Faculty of Medicine, Department of Medical Microbiology" in api_sample table
+
+UPDATE api_sample
+SET submitting_institution = 'Çukurova University, Faculty of Medicine, Department of Medical Microbiology'
+WHERE submitting_institution = 'Toros University';
+
+-- 2.3. Remove "Toros University" from api_institution table
+
+DELETE FROM api_institution
+WHERE name = 'Toros University';
+
+--
+-- Update the database version
+--
+CALL update_database_version('0.2.91', 'Update submitting institutions');
