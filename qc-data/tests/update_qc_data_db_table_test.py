@@ -11,7 +11,6 @@ from bin.update_qc_data_db_table import (
     _get_qc_data,
     _get_update_request_body,
     _make_request,
-    data_sources_config,
     delete_qc_data_from_database,
     get_api_config,
     get_arguments,
@@ -106,7 +105,7 @@ class UpdateQCDataDBTable(TestCase):
     def test_make_request_GET(self, mock_urlopen, mock_request):
         mock_request_url = TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_delete_all"]
         mock_urlopen.return_value = urllib.request.Request(mock_request_url)
-        response = _make_request(mock_request_url)
+        _make_request(mock_request_url)
         mock_request.assert_called_with(mock_request_url, data=None, headers={})
 
     @patch("urllib.request.Request")
@@ -114,7 +113,7 @@ class UpdateQCDataDBTable(TestCase):
     def test_make_request_POST(self, mock_urlopen, mock_request):
         mock_request_url = TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_delete_all"]
         mock_urlopen.return_value = urllib.request.Request(mock_request_url)
-        response = _make_request(mock_request_url, post_data=TEST_UPLOAD)
+        _make_request(mock_request_url, post_data=TEST_UPLOAD)
         mock_request.assert_called_with(
             mock_request_url,
             data=str(json.dumps(TEST_UPLOAD)).encode("utf-8"),
