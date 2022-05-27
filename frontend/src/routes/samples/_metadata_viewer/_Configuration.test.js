@@ -120,7 +120,7 @@ it("saves a columns state to the local storage on restore", async () => {
   );
 });
 
-it("saves a columns state to the local storage on restore", async () => {
+it("sets the column state to default on restore", async () => {
   columnsStore.setToDefault = jest.fn();
   const { getByRole } = render(Configuration);
 
