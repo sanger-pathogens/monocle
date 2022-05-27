@@ -2,7 +2,7 @@ import logging.config
 import os
 
 import connexion
-from dash.api.error_handlers import *
+from dash.api.error_handlers import handle_unauthorised, handle_user_data_error
 from dash.api.exceptions import NotAuthorisedException
 from dash.api.service.DataSources.user_data import UserDataError
 
