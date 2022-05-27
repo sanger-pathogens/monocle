@@ -1,3 +1,8 @@
+# **************************************************************
+# Add submitting institutions (for public GPS samples)
+# **************************************************************
+
+
 INSERT INTO api_institution (name, country, latitude, longitude)
 VALUES ('CDC (Public GPS samples)','USA', 42.047428, -93.580467),
 ('Emory University (Public GPS samples)', 'USA', 33.792519, -84.323997),
@@ -26,3 +31,8 @@ VALUES ('CDC (Public GPS samples)','USA', 42.047428, -93.580467),
 ('AMP (Public GPS samples)', 'Togo' ,10.86769356632183, 0.19747497014965634),
 ('Shoklo-Malaria-Research-Unit (Public GPS samples)', 'Thailand' ,16.70791185825175, 98.55892819718358)
 ;
+
+--
+-- Update the database version
+--
+CALL update_database_version('0.2.92', 'Update submitting institutions');
