@@ -15,8 +15,8 @@ class SequencingStatusTest(TestCase):
     genuine_api_host = "http://mlwh_api.dev.pam.sanger.ac.uk/"
     bad_api_host = "http://no.such.host/"
     bad_api_endpoint = "/no/such/endpoint"
-    base_url_regex = "^https?://[\w\-]+(\.dev)?\.pam\.sanger\.ac\.uk$"
-    endpoint_regex = "(/[\w\-\.]+)+"
+    base_url_regex = r"^https?://[\w\-]+(\.dev)?\.pam\.sanger\.ac\.uk$"
+    endpoint_regex = r"(/[\w\-\.]+)+"
     required_sample_keys = {
         "lanes": type(["a list"]),
         "dna_measured_volume": type(1.1),
@@ -153,8 +153,8 @@ class SequencingStatusTest(TestCase):
     # @patch('DataSources.sequencing_status.datetime')
     @patch.object(MLWH_Client, "make_request")
     def test_get_sample(self, mock_request):
-        ##from datetime import date
-        ##mock_datetime.datetime.now.return_value = date(2010, 3, 19)
+        # from datetime import date
+        # mock_datetime.datetime.now.return_value = date(2010, 3, 19)
         mock_request.return_value = self.mock_get_sample
         sample = self.seq_status.get_sample(self.expected_sample_ids[0])
         self.assertIsInstance(sample, type({"a": "dict"}))

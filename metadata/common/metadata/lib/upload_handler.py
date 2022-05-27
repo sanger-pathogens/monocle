@@ -10,7 +10,6 @@ from pandas_schema import Column, Schema
 from pandas_schema.validation import (
     CustomElementValidation,
     InListValidation,
-    InRangeValidation,
     LeadingWhitespaceValidation,
     MatchesPatternValidation,
     TrailingWhitespaceValidation,

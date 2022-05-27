@@ -1,11 +1,11 @@
 import argparse
-import http.client
 import json
 import logging
 import os.path
 import sys
 import urllib.request
 from operator import itemgetter
+from pathlib import PurePath
 
 import yaml
 
@@ -30,7 +30,7 @@ def get_api_config(config_file_name):
         data_sources = yaml.load(config_file, Loader=yaml.FullLoader)
         config = data_sources[data_source]
     for required_param in required_config_params:
-        if not required_param in config:
+        if required_param not in config:
             logging.error(
                 "data source config file {} does not provide the required paramter {}.{}".format(
                     config_file_name, data_source, required_param
@@ -47,7 +47,9 @@ def _make_request(request_url, post_data=None):
     if post_data is not None:
         assert isinstance(post_data, dict) or isinstance(
             post_data, list
-        ), "{}.make_request() requires post_data as a dict or a list, not {}".format(class__.__name__, post_data)
+        ), "{}.make_request() requires post_data as a dict or a list, not {}".format(
+            PurePath(sys.argv[0]).stem, post_data
+        )
         request_data = str(json.dumps(post_data))
         logging.debug("POST data for Metadata API: {}".format(request_data))
         request_data = request_data.encode("utf-8")
