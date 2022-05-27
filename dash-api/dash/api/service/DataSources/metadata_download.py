@@ -98,7 +98,7 @@ class Monocle_Download_Client:
                             self.metadata_project_source[this_project],
                         )
                     )
-                    raise KeyError
+                    raise KeyError("{} could not be found in data source config dict".format(required_param))
 
     def metadata(self, project, lane_id_list):
         this_config = self.config[project]

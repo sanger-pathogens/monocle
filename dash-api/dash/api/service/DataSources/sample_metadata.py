@@ -188,7 +188,7 @@ class Monocle_Client:
                             self.metadata_project_source[this_project],
                         )
                     )
-                    raise KeyError
+                    raise KeyError("{} could not be found in data source config dict".format(required_param))
 
     def institutions(self, project):
         this_config = self.config[project]
