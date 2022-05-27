@@ -1,6 +1,7 @@
 /*
+!/.eslintrc.cjs
 !*.md
-!/frontend
+!/frontend/
 /frontend/package-lock.json
 /frontend/.svelte-kit/
 /frontend/build/
