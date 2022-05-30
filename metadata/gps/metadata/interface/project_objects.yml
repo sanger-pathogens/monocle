@@ -17,6 +17,15 @@ components:
       
     InSilicoFiltersExample:
       { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
+      
+    DistinctValuesExample:
+      { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      
+    DistinctInSilicoValuesExample:
+      { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      
+    DistinctQCDataValuesExample:
+      { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
 
     MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"

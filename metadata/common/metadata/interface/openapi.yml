@@ -232,7 +232,8 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example: { "fields": ["serotype", "age_group"], "institutions": ["National Reference Laboratories"] }
+            example:
+              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctValuesExample"
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -264,7 +265,8 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example: { "fields": ["cps_type","ST"], "institutions": ["National Reference Laboratories"] }
+            example:
+              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctInSilicoValuesExample"
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct in silico values found."
@@ -296,7 +298,8 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example: { "fields": ["rel_abun_sa"], "institutions": ["National Reference Laboratories"] }
+            example:
+              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctQCDataValuesExample"
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
