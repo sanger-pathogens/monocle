@@ -40,7 +40,7 @@ Check that FE code & non-Python files are formatted & linted:
   tags:
     - openstack-autoscale-theta
   # Keep this version in sync w/ the one from `./.pre-commit-config.yaml`.
-  image: 16.15-alpine3.14
+  image: node:16.15-alpine3.14
   before_script:
     # These version should match the ones from `./.pre-commit-config.yaml`:
     - npm i -g prettier@2.6.2 prettier-plugin-svelte@2.7.0 eslint@8.16.0 eslint-config-prettier@8.5.0 eslint-plugin-jest@26.4.5 eslint-plugin-svelte3@4.0.0
