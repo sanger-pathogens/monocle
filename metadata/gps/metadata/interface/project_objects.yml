@@ -6,26 +6,11 @@ components:
       version: "0.0.1"
       description: "A REST API for accessing/updating GPS sample metadata"
       contact:
-        email: "path-help@sanger.ac.uk"
+        email: "monocle-help@sanger.ac.uk"
 
     APIServers:
       - url: /metadata/gps
         description: Context path
-              
-    MetadataFiltersExample:
-      { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
-      
-    InSilicoFiltersExample:
-      { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
-      
-    DistinctValuesExample:
-      { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
-      
-    DistinctInSilicoValuesExample:
-      { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
-      
-    DistinctQCDataValuesExample:
-      { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
 
     MetadataFieldName:
       description: "Valid metadata field name (alphanumeric and underscore only)"

@@ -232,8 +232,11 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example:
-              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctValuesExample"
+            examples:
+              JUNO:
+                value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -265,8 +268,11 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example:
-              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctInSilicoValuesExample"
+            examples:
+              JUNO:
+                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct in silico values found."
@@ -298,8 +304,11 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/FieldValueFilter"
-            example:
-              $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/DistinctQCDataValuesExample"
+            examples:
+              JUNO:
+                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
@@ -402,7 +411,7 @@ components:
     FiltersInput:
       type: array
       items:
-        $ref: "#/components/schemas/MetadataFilters"
+         $ref: "#/components/schemas/MetadataFilters"
       minItems: 1
 
     MetadataFilters:
@@ -417,9 +426,10 @@ components:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
             minItems: 1
-      example:
-         $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFiltersExample"
-      
+      # TODO cannot get multiple examples (i.e. one for JUNO and one for GPS) to work here
+      #      needs fixing because this metadata filter is specific to JUNO
+      example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
+
     FiltersInSilicoInput:
       type: array
       items:
@@ -438,8 +448,9 @@ components:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
             minItems: 1
-      example:
-         $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFiltersExample"
+      # TODO cannot get multiple examples (i.e. one for JUNO and one for GPS) to work here
+      #      needs fixing because this metadata filter is specific to JUNO
+      example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
@@ -476,18 +487,22 @@ components:
     MetadataFieldsList:
       type: array
       items:
+        # FIXME this external reference doesn't work here, though the same ref works fine when used in 
+        #       MetadataFilters (used with the /sample_ids_matching_metadata endpoint)
         $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
       minItems: 1
-
+      
     InSilicoFieldsList:
       type: array
       items:
+        # FIXME  see note in MetadataFieldsList
         $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
       minItems: 1
 
     QCDataFieldsList:
       type: array
       items:
+        # FIXME  see note in MetadataFieldsList
         $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldName"
       minItems: 1
 
