@@ -26,7 +26,7 @@ module.exports = {
   },
   settings: {
     jest: {
-      version: require("./frontend/node_modules/jest/package.json").version,
+      version: require("./frontend/package.json").devDependencies.jest,
     },
   },
 };
