@@ -4,19 +4,18 @@ stages:
   - test
   - docker_tags_for_merges_and_releases
 
-
 variables:
-  DASH_API_CONTEXT:         "dash-api"
+  DASH_API_CONTEXT: "dash-api"
   # note there is no docker build associated with DATA_VIEW_CONTEXT
-  DATA_VIEW_CONTEXT:        "data_view"
-  METADATA_CONTEXT:         "metadata"
-  FRONTEND_CONTEXT:         "frontend"
-  QC_DATA_CONTEXT:          "qc-data"
-  DOCKER_IMAGE_LIST:        "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${METADATA_CONTEXT}-gps monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
-  DOCKER_COMMON_BUILD_ARGS: "--build-arg \"CACHE_BUST=$(date)\""
-  DOCKER_IMAGE:             "${CI_REGISTRY_IMAGE}/docker:20"
-  DOCKER_DIND_IMAGE:        "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
-  LINE_LENGTH:              120
+  DATA_VIEW_CONTEXT: "data_view"
+  METADATA_CONTEXT: "metadata"
+  FRONTEND_CONTEXT: "frontend"
+  QC_DATA_CONTEXT: "qc-data"
+  DOCKER_IMAGE_LIST: "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${METADATA_CONTEXT}-gps monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
+  DOCKER_COMMON_BUILD_ARGS: '--build-arg "CACHE_BUST=$(date)"'
+  DOCKER_IMAGE: "${CI_REGISTRY_IMAGE}/docker:20"
+  DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
+  LINE_LENGTH: 120
 
 Check that Python code is formatted & linted:
   stage: formatting_and_linting_check
@@ -62,24 +61,24 @@ Dashboard API docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-${DASH_API_CONTEXT}";
-         cd "${CI_PROJECT_DIR}/${DASH_API_CONTEXT}";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_image="monocle-${DASH_API_CONTEXT}";
+      cd "${CI_PROJECT_DIR}/${DASH_API_CONTEXT}";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 Metadata API for JUNO docker build:
   stage: build
@@ -87,25 +86,25 @@ Metadata API for JUNO docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_project=juno
-         this_image="monocle-${METADATA_CONTEXT}-${this_project}";
-         cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_project=juno
+      this_image="monocle-${METADATA_CONTEXT}-${this_project}";
+      cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 Metadata API for GPS docker build:
   stage: build
@@ -113,25 +112,25 @@ Metadata API for GPS docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_project=gps
-         this_image="monocle-${METADATA_CONTEXT}-${this_project}";
-         cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_project=gps
+      this_image="monocle-${METADATA_CONTEXT}-${this_project}";
+      cd "${CI_PROJECT_DIR}/${METADATA_CONTEXT}";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 Front End docker build:
   stage: build
@@ -139,24 +138,24 @@ Front End docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-${FRONTEND_CONTEXT}";
-         cd "${CI_PROJECT_DIR}/${FRONTEND_CONTEXT}";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_image="monocle-${FRONTEND_CONTEXT}";
+      cd "${CI_PROJECT_DIR}/${FRONTEND_CONTEXT}";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 Proxy docker build:
   stage: build
@@ -164,24 +163,24 @@ Proxy docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-proxy";
-         cd "${CI_PROJECT_DIR}/proxy";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_image="monocle-proxy";
+      cd "${CI_PROJECT_DIR}/proxy";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 LDAP Admin docker build:
   stage: build
@@ -189,24 +188,24 @@ LDAP Admin docker build:
     - autoscale-large
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         this_image="monocle-ldap-admin";
-         cd "${CI_PROJECT_DIR}/ldap-admin";
-         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-         echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
-         docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-         docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag}  ${DOCKER_COMMON_BUILD_ARGS} . ;
-         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
-         docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+      this_image="monocle-ldap-admin";
+      cd "${CI_PROJECT_DIR}/ldap-admin";
+      this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+      echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
+      docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag}  ${DOCKER_COMMON_BUILD_ARGS} . ;
+      echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
+      docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
 Dashboard API unit tests:
   stage: test
@@ -227,7 +226,6 @@ Dashboard API unit tests:
     paths:
       - ${DASH_API_CONTEXT}/htmlcov
 
-
 Data view unit tests:
   stage: test
   only:
@@ -246,7 +244,6 @@ Data view unit tests:
     when: always
     paths:
       - ${DATA_VIEW_CONTEXT}/htmlcov
-
 
 Metadata API for JUNO unit tests:
   stage: test
@@ -304,7 +301,6 @@ Front end unit tests:
     paths:
       - /app/coverage/lcov-report
 
-
 QC data unit tests:
   stage: test
   only:
@@ -324,7 +320,6 @@ QC data unit tests:
     paths:
       - ${QC_DATA_CONTEXT}/htmlcov
 
-
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be merges)
 Docker tags for merge:
@@ -335,38 +330,7 @@ Docker tags for merge:
     - openstack-autoscale-theta
   image: "${DOCKER_IMAGE}"
   services:
-    - name:  "${DOCKER_DIND_IMAGE}"
-      alias: docker
-  variables:
-    # only docker, don't need to clone repo
-    GIT_STRATEGY: none
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
-  before_script:
-    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
-  script:
-    - >
-         for this_image in $DOCKER_IMAGE_LIST;
-         do
-            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
-            docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
-            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
-            docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
-         done
-
-
-# at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
-Docker tags for release:
-  stage: docker_tags_for_merges_and_releases
-  only:
-    - tags
-  tags:
-    - openstack-autoscale-theta
-  image: "${DOCKER_IMAGE}"
-  services:
-    - name:  "${DOCKER_DIND_IMAGE}"
+    - name: "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
     # only docker, don't need to clone repo
@@ -378,14 +342,44 @@ Docker tags for release:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
     - >
-         for this_image in $DOCKER_IMAGE_LIST;
+      for this_image in $DOCKER_IMAGE_LIST;
+      do
+         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+         docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+         docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:unstable;
+         echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:unstable 🐳";
+         docker push $CI_REGISTRY_IMAGE/${this_image}:unstable;
+      done
+
+# at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
+Docker tags for release:
+  stage: docker_tags_for_merges_and_releases
+  only:
+    - tags
+  tags:
+    - openstack-autoscale-theta
+  image: "${DOCKER_IMAGE}"
+  services:
+    - name: "${DOCKER_DIND_IMAGE}"
+      alias: docker
+  variables:
+    # only docker, don't need to clone repo
+    GIT_STRATEGY: none
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
+  before_script:
+    - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
+  script:
+    - >
+      for this_image in $DOCKER_IMAGE_LIST;
+      do
+         this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
+         docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
+         for this_tag in $CI_COMMIT_REF_NAME 'latest';
          do
-            this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
-            docker pull $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
-            for this_tag in $CI_COMMIT_REF_NAME 'latest';
-            do
-               docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
-               echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
-               docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
-            done;
-         done
+            docker tag  $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+            echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_tag} 🐳";
+            docker push $CI_REGISTRY_IMAGE/${this_image}:${this_tag};
+         done;
+      done
