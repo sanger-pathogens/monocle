@@ -328,9 +328,6 @@ QC data unit tests:
 # at every merge to master, tag the latest image builds as 'unstable'
 # (runs for any commit to master, but these should all be merges)
 Docker tags for merge:
-  variables:
-    # only docker, don't need to clone repo
-    GIT_STRATEGY: none
   stage: docker_tags_for_merges_and_releases
   only:
     - master
@@ -341,6 +338,8 @@ Docker tags for merge:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
+    # only docker, don't need to clone repo
+    GIT_STRATEGY: none
     DOCKER_BUILDKIT:      1
     DOCKER_TLS_CERTDIR:   ""
     DOCKER_HOST:          "tcp://docker:2375"
@@ -360,9 +359,6 @@ Docker tags for merge:
 
 # at every release/tag, tag the images built from the latest image builds with the release tag and also as 'latest'
 Docker tags for release:
-  variables:
-    # only docker, don't need to clone repo
-    GIT_STRATEGY: none
   stage: docker_tags_for_merges_and_releases
   only:
     - tags
@@ -373,9 +369,11 @@ Docker tags for release:
     - name:  "${DOCKER_DIND_IMAGE}"
       alias: docker
   variables:
-    DOCKER_BUILDKIT:      1
-    DOCKER_TLS_CERTDIR:   ""
-    DOCKER_HOST:          "tcp://docker:2375"
+    # only docker, don't need to clone repo
+    GIT_STRATEGY: none
+    DOCKER_BUILDKIT: 1
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
   before_script:
     - echo -n ${CI_JOB_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script:
