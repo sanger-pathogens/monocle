@@ -1,14 +1,10 @@
-import logging
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
-import connexion
-import flask
 import metadata.api.routes as mar
-from flask import Config
-from metadata.api.database.monocle_database_service import MonocleDatabaseService
-from metadata.api.routes import *
-from metadata.tests.test_data import *
+from metadata.api.model.qc_data import QCData
+from metadata.api.routes import update_in_silico_data_route, update_sample_metadata_route
+from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_SAMPLE_1
 
 
 class TestRoutes(unittest.TestCase):
@@ -40,7 +36,6 @@ class TestRoutes(unittest.TestCase):
 
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
     def test_update_qc_data_route_no_updates_ok(self, db_update_mock):
-        mock_qc_data = TEST_LANE_QC_DATA_1
         under_test = mar.update_qc_data_route([], db_update_mock)
         self.assertEqual(db_update_mock.update_lane_qc_data.call_count, 0)
         self.assertEqual(under_test, 200)
@@ -49,7 +44,9 @@ class TestRoutes(unittest.TestCase):
     def test_update_qc_data_route_no_rel_abun_sa(self, db_update_mock):
         mock_qc_data = QCData(lane_id=TEST_LANE_QC_DATA_1.lane_id, rel_abun_sa=None)
         mock_update = {"lane_id": mock_qc_data.lane_id}
-        under_test = mar.update_qc_data_route([mock_update], db_update_mock)
+
+        mar.update_qc_data_route([mock_update], db_update_mock)
+
         db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
 
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
@@ -189,7 +186,6 @@ class TestRoutes(unittest.TestCase):
     def test_get_samples_filtered_by_metadata_route_bad_field_name(self, mocked_jsoncall, dao_mock):
         mock_field_name = "bad_field_name"
         mock_values = ["anything"]
-        mock_response = {}
         mock_json = ""
         mocked_jsoncall.return_value = mock_json
         dao_mock.get_samples_filtered_by_metadata.return_value = None
@@ -245,7 +241,6 @@ class TestRoutes(unittest.TestCase):
     def test_get_lanes_filtered_by_in_silico_data_route_bad_field_name(self, mocked_jsoncall, dao_mock):
         mock_field_name = "bad_field_name"
         mock_values = ["anything"]
-        mock_response = {}
         mock_json = ""
         mocked_jsoncall.return_value = mock_json
         dao_mock.get_lanes_filtered_by_in_silico_data.return_value = None
@@ -308,7 +303,6 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.convert_to_json")
     def test_get_distinct_values_route_bad_field(self, mocked_jsoncall, dao_mock):
         mock_query = {"fields": ["anything"], "institutions": ["anything"]}
-        mock_response = {}
         mock_json = ""
         mocked_jsoncall.return_value = mock_json
         dao_mock.get_distinct_values.return_value = None
@@ -368,7 +362,6 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.convert_to_json")
     def test_get_distinct_in_silico_values_route_bad_field(self, mocked_jsoncall, dao_mock):
         mock_query = {"fields": ["anything"], "institutions": ["anything"]}
-        mock_response = {}
         mock_json = ""
         mocked_jsoncall.return_value = mock_json
         dao_mock.get_distinct_values.return_value = None
@@ -428,7 +421,6 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.convert_to_json")
     def test_get_distinct_qc_data_values_route_bad_field(self, mocked_jsoncall, dao_mock):
         mock_query = {"fields": ["anything"], "institutions": ["anything"]}
-        mock_response = {}
         mock_json = ""
         mocked_jsoncall.return_value = mock_json
         dao_mock.get_distinct_values.return_value = None

@@ -1,6 +1,6 @@
 import unittest
 
-from dash.api.error_handlers import *
+from dash.api.error_handlers import handle_unauthorised
 from dash.api.exceptions import NotAuthorisedException
 
 
