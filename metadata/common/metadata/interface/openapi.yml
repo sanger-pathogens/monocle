@@ -1,7 +1,7 @@
 openapi: '3.0.0'
 
 info:
-  $ref: "file:///app/metadata/interface/project_objects.yml#/components /schemas/APIInfo"
+  $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/APIInfo"
 
 servers:
   $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/APIServers"
