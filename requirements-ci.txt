@@ -1,3 +1,4 @@
 # Important: if you update a version of a package, update the version of the corresponding package in `.pre-commit-config.yaml` as well.
 black==22.3.0
+flake8==4.0.1
 isort==5.10.1
