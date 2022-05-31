@@ -227,11 +227,14 @@ paths:
                 - institutions
               properties:
                 fields:
-                  $ref: "#/components/schemas/MetadataFieldsList"
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
+                  minItems: 1
                 institutions:
                   type: array
                   items:
-                    $ref: "#/components/schemas/FieldValueFilter"
+                     $ref: "#/components/schemas/FieldValueFilter"
             examples:
               JUNO:
                 value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
@@ -263,7 +266,10 @@ paths:
                 - institutions
               properties:
                 fields:
-                  $ref: "#/components/schemas/InSilicoFieldsList"
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
+                  minItems: 1
                 institutions:
                   type: array
                   items:
@@ -299,7 +305,10 @@ paths:
                 - institutions
               properties:
                 fields:
-                  $ref: "#/components/schemas/QCDataFieldsList"
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldName"
+                  minItems: 1
                 institutions:
                   type: array
                   items:
@@ -420,6 +429,7 @@ components:
          name:
             description: "The name of the metadata field"
             $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
+            #######$ref: "#/components/schemas/MetadataFieldNameLOCAL"
          values:
             type: array
             items:
@@ -470,41 +480,6 @@ components:
       maxLength: 256
       # only alphanumerics, '*',  '?', '-' and '/'
       pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
-
-    DistinctValuesInput:
-      type: object
-      required:
-        - fields
-        - institutions
-      properties:
-        fields:
-          $ref: "#/components/schemas/MetadataFieldsList"
-        institutions:
-          type: array
-          items:
-            $ref: "#/components/schemas/FieldValueFilter"
-    
-    MetadataFieldsList:
-      type: array
-      items:
-        # FIXME this external reference doesn't work here, though the same ref works fine when used in 
-        #       MetadataFilters (used with the /sample_ids_matching_metadata endpoint)
-        $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
-      minItems: 1
-      
-    InSilicoFieldsList:
-      type: array
-      items:
-        # FIXME  see note in MetadataFieldsList
-        $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
-      minItems: 1
-
-    QCDataFieldsList:
-      type: array
-      items:
-        # FIXME  see note in MetadataFieldsList
-        $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldName"
-      minItems: 1
 
     DistinctValues:
       description: "Object containing an array of fields, and the distinct values from the db for each"
