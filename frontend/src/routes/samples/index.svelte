@@ -46,6 +46,7 @@
     assemblies: true,
     reads: false
   };
+  let latestDownloadEstimateRequestId = 0;
   let shouldDisplayBulkDownload = false;
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
@@ -97,13 +98,24 @@
     }
 
     unsetDownloadEstimate();
+    const thisRequestId = ++latestDownloadEstimateRequestId;
     getBulkDownloadInfo({
       instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
       filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
       ...bulkDownloadFormValues,
     }, fetch)
-      .then(({num_samples, size_zipped}) => {
-        bulkDownloadEstimate = { numSamples: num_samples, sizeZipped: size_zipped };
+      .then(({ num_samples, size_zipped, size_per_zip_options = [] }) => {
+        // Ignore stale estimates (ie estimates from requests made before the latest request for an estimate):
+        if (thisRequestId === latestDownloadEstimateRequestId) {
+          bulkDownloadEstimate = {
+            numSamples: num_samples,
+            sizeZipped: size_zipped,
+            sizePerZipOptions: size_per_zip_options.map(({ size_per_zip, max_samples_per_zip }) => ({
+              sizePerZip: size_per_zip,
+              maxSamplesPerZip: max_samples_per_zip
+            }))
+          };
+        }
       })
       .catch(unsetDownloadEstimate);
   }

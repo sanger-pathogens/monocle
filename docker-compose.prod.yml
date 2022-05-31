@@ -30,12 +30,38 @@ services:
     depends_on:
        - dash-api
        - frontend
-       - metadata-api
+       - metadata-api-juno
+       - metadata-api-gps
        - monocle-ldap
        - ldap-admin
        - ldap-auth-daemon
-  metadata-api:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:<DOCKERTAG>"
+  metadata-api-juno:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata-juno:<DOCKERTAG>"
+    user: <USER_UID>:<USER_GID>
+    expose:
+      - "80"
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    tmpfs:
+      - "/run:rw,noexec,nosuid"
+      - "/tmp:rw,noexec,nosuid"
+    volumes:
+      - ./my.cnf:/app/my.cnf
+    environment:
+      # if ENABLE_SWAGGER_UI is true the UI should be available at /metadata/ui/ (see nginx.prod.proxy.conf)
+      - ENABLE_SWAGGER_UI=true
+      - LOG_LEVEL=WARNING
+      - API_TEST_MODE=false
+      - GUNICORN_PORT=80
+      - GUNICORN_WORKERS=8
+      - GUNICORN_TIMEOUT=90
+  metadata-api-gps:
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata-gps:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>
     expose:
       - "80"
@@ -87,6 +113,8 @@ services:
       # if ENABLE_SWAGGER_UI is true the UI should be available at /dashboard-api/ui/ (see nginx.prod.proxy.conf)
       - ENABLE_SWAGGER_UI=true
       - LOG_LEVEL=WARNING
+      # AUTH_COOKIE_NAME ***must*** match the cookie name expected by  the NGINX auth module
+      - AUTH_COOKIE_NAME=nginxauth
       # MONOCLE_DATA ***must*** be the same path as the mount point for data
       - MONOCLE_DATA=/home/<USER>/monocle_juno
       # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
@@ -167,7 +195,7 @@ services:
       # make sure the host name matches the name of the openldap service (above)
       - PHPLDAPADMIN_LDAP_HOSTS=monocle-ldap
   ldap-auth-daemon:
-    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r329"
+    image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/bitnami/nginx-ldap-auth-daemon:0.20200116.0-debian-10-r634"
     user: <USER_UID>:<USER_GID>
     expose:
       - "8888"

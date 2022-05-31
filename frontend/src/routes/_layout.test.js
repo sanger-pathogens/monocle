@@ -1,11 +1,15 @@
 import { render, waitFor } from "@testing-library/svelte";
 import { getStores } from "$app/stores";
+import { HTTP_HEADER_CONTENT_TYPE, HTTP_HEADERS_JSON } from "$lib/constants.js";
 import Layout from "./__layout.svelte";
 
 const USER_ROLE = "support";
 
+getStores.mockReturnValue({ session: { set: jest.fn() } });
+
 global.fetch = jest.fn(() => Promise.resolve({
   ok: true,
+  headers: { get: () => HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE] },
   json: () => Promise.resolve({
     user_details: { type: USER_ROLE }
   })
@@ -15,8 +19,20 @@ jest.mock("$app/stores", () => ({
   getStores: jest.fn()
 }));
 
+getStores.mockReturnValue({ session: { set: jest.fn() } });
+
+it("loads a script w/ simple-cookie library", () => {
+  document.head.appendChild = jest.fn();
+
+  render(Layout);
+
+  const actualScriptElement = document.head.appendChild.mock.calls[3][0];
+  expect(actualScriptElement.src).toBe(`${global.location.origin}/files/simplecookie.min.js`);
+  expect(actualScriptElement.async).toBeTruthy();
+});
+
 it("stores a fetched user role in the session", async () => {
-  getStores.mockReturnValue({ session: { set: jest.fn() } });
+  fetch.mockClear();
 
   render(Layout);
 
@@ -42,4 +58,3 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
     expect(console.error).toHaveBeenCalledWith(errorMessage);
   });
 });
-

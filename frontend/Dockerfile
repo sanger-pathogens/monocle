@@ -1,5 +1,5 @@
 # ---------- build step ----------
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.4.2-alpine3.14 as builder
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.15-alpine3.15 as builder
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -14,12 +14,17 @@ COPY . .
 RUN npm run build
 
 # ---------- production runtime ----------
-FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.4.2-alpine3.14
+FROM gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/node:16.15-alpine3.15
 
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=builder /app .
 COPY . .
+
+# cache bust to update quickly the image build time
+# pass a new value as CACHE_BUST, e.g. with `--build-arg "CACHE_BUST=$(date)"`
+ARG      CACHE_BUST
+RUN      echo "$CACHE_BUST" > /dev/null
 
 EXPOSE 3000
 CMD ["node", "./build"]

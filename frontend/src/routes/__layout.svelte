@@ -5,10 +5,13 @@
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
+  import "../simplecookie.css";
 
   const { session } = getStores();
 
   onMount(() => {
+    appendScriptToHead("/files/simplecookie.min.js", { async: true });
+
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
@@ -19,6 +22,14 @@
         console.error(err);
       });
   });
+
+  function appendScriptToHead(src, options) {
+    const script = document.createElement("script");
+    script.src = src;
+    Object.keys(options).forEach((optionKey) =>
+      script[optionKey] = options[optionKey]);
+    document.head.appendChild(script);
+  }
 </script>
 
 
@@ -35,7 +46,6 @@
 :root {
   --juno-indigo: #484885;
   --juno-purple: #6868be;
-  --color-border: #dfe3e6;
   --color-danger: #e66969;
   --color-link-visited: #663399;
   --color-table-alt-row: #f8f8f8;
@@ -45,6 +55,10 @@
 
   --width-main: min(98vw, var(--bp-xl));
   --width-reading: 50rem;
+
+  /* This CSS variable sets the background color of an item for `svelte-select`.
+  See https://github.com/rob-balfre/svelte-select/blob/master/docs/theming_variables.md */
+  --multiItemBG: var(--background);
 }
 
 main {
@@ -72,6 +86,12 @@ main {
   font-size: 1.1rem;
 }
 
+:global(.label-radio) {
+  display: inline-flex;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+
 :global(table.dense th) {
   font-size: .95rem;
   padding: .5rem;
@@ -91,19 +111,18 @@ main {
   text-decoration: none;
 }
 
-:global(button),
-:global([role=button]),
-:global(input[type="button"]),
-:global(input[type="submit"]) {
-  border-color: var(--color-border);
-}
-
 :global(button.compact),
 :global([role=button].compact),
 :global(input[type="button"].compact),
 :global(input[type="submit"].compact) {
   font-size: 0.95rem;
   padding: 0.5rem;
+}
+
+:global(.btn-wide) {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 :global(button.primary),

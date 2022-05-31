@@ -1,13 +1,13 @@
 openapi: '3.0.0'
 info:
-  title: "Monocle Sample Metadata API"
+  title: "JUNO Sample Metadata API"
   version: "0.0.1"
-  description: "A REST API for accessing/updating sample metadata"
+  description: "A REST API for accessing/updating JUNO sample metadata"
   contact:
     email: "path-help@sanger.ac.uk"
 
 servers:
-  - url: /metadata
+  - url: /metadata/juno
     description: Context path
 
 paths:
@@ -478,7 +478,7 @@ components:
       type: string
       minLength: 1
       maxLength: 256
-      pattern: ^rel_abun_sa$
+      pattern: ^lane_id|rel_abun_sa$
 
     DistinctValuesInput:
       type: object
