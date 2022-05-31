@@ -3,7 +3,7 @@ components:
   
     APIInfo:
       title: "GPS Sample Metadata API"
-      version: "0.0.1"
+      version: "0.2"
       description: "A REST API for accessing/updating GPS sample metadata"
       contact:
         email: "monocle-help@sanger.ac.uk"

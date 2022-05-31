@@ -28,6 +28,7 @@ paths:
                 properties:
                   errors:
                     $ref: "#/components/schemas/ValidationErrors"
+
   /in-silico-upload:
     post:
       operationId: metadata.api.routes.update_in_silico_data_route
@@ -179,7 +180,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FiltersInput"
+               $ref: "#/components/schemas/FiltersInput"
+            examples:
+               JUNO:
+                  value: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
+               GPS:
+                  value: { "name": "serotype",  "values": ["III"] }
       responses:
         "200":
           description: "List of Sanger sample ids"
@@ -200,7 +206,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FiltersInSilicoInput"
+               $ref: "#/components/schemas/FiltersInSilicoInput"
+            examples:
+               JUNO:
+                  value: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
+               GPS:
+                  value: { "name": "ST",  "values": ["14"] }
       responses:
         "200":
           description: "List of lane ids"
@@ -239,7 +250,7 @@ paths:
               JUNO:
                 value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
               GPS:
-                value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -278,7 +289,7 @@ paths:
               JUNO:
                 value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
               GPS:
-                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct in silico values found."
@@ -330,7 +341,7 @@ paths:
 
 components:
   schemas:
-
+  
     Spreadsheet:
       description: "File path to spreadsheet"
       type: object
@@ -429,16 +440,12 @@ components:
          name:
             description: "The name of the metadata field"
             $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
-            #######$ref: "#/components/schemas/MetadataFieldNameLOCAL"
          values:
             type: array
             items:
                description: "List of desired values of the metadata field"
                $ref: "#/components/schemas/FieldValueFilter"
             minItems: 1
-      # TODO cannot get multiple examples (i.e. one for JUNO and one for GPS) to work here
-      #      needs fixing because this metadata filter is specific to JUNO
-      example: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
 
     FiltersInSilicoInput:
       type: array
@@ -458,9 +465,6 @@ components:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
             minItems: 1
-      # TODO cannot get multiple examples (i.e. one for JUNO and one for GPS) to work here
-      #      needs fixing because this metadata filter is specific to JUNO
-      example: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"

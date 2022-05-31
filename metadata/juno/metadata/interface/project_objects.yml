@@ -3,7 +3,7 @@ components:
   
     APIInfo:
       title: "JUNO Sample Metadata API"
-      version: "0.0.1"
+      version: "0.2"
       description: "A REST API for accessing/updating JUNO sample metadata"
       contact:
         email: "monocle-help@sanger.ac.uk"
@@ -11,7 +11,7 @@ components:
     APIServers:
       - url: /metadata/juno
         description: Context path
-      
+            
     MetadataFieldName:
       description: "Valid metadata field name"
       type: string
