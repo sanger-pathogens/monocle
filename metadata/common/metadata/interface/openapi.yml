@@ -1,7 +1,11 @@
 openapi: '3.0.0'
 
 info:
-  $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/APIInfo"
+   title: "Monocle Sample Metadata API"
+   version: "0.2"
+   description: "A REST API for accessing/updating Monocle sample metadata"
+   contact:
+      email: "monocle-help@sanger.ac.uk"
 
 servers:
   $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/APIServers"

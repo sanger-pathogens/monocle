@@ -1,13 +1,6 @@
 components:
   schemas:
   
-    APIInfo:
-      title: "JUNO Sample Metadata API"
-      version: "0.2"
-      description: "A REST API for accessing/updating JUNO sample metadata"
-      contact:
-        email: "monocle-help@sanger.ac.uk"
-
     APIServers:
       - url: /metadata/juno
         description: Context path
