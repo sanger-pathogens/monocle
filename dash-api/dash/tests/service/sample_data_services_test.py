@@ -15,7 +15,7 @@ from DataServices.sample_data_services import (
 from DataServices.sample_tracking_services import MonocleSampleTracking
 from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client
 from DataSources.pipeline_status import PipelineStatus
-from DataSources.sample_metadata import Monocle_Client, SampleMetadata
+from DataSources.sample_metadata import MonocleClient, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
 from utils.file import format_file_size
 
@@ -534,7 +534,7 @@ class MonocleSampleDataTest(TestCase):
     def setUp(self):
         # mock sample_metadata
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
-        self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+        self.monocle_sample_tracking.sample_metadata.monocle_client = MonocleClient(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client.set_up(self.test_config)
         # mock sequencing_status
         self.monocle_sample_tracking.sequencing_status_source = SequencingStatus(set_up=False)
@@ -715,8 +715,8 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     def test_get_distinct_values(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
         mock_distinct_values_fetch.return_value = self.mock_distinct_values
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
@@ -730,8 +730,8 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     @patch.object(MonocleSampleData, "get_filtered_samples")
     @patch.object(Monocle_Download_Client, "qc_data")
     @patch.object(Monocle_Download_Client, "in_silico_data")
@@ -764,8 +764,8 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
         self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     @patch.object(Monocle_Download_Client, "metadata")
     def test_get_distinct_values_with_sample_filters_catch_error(
         self, mock_metadata_fetch, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch
@@ -778,22 +778,22 @@ class MonocleSampleDataTest(TestCase):
                 self.mock_distinct_values_query, sample_filters={"batches": self.inst_key_batch_date_pairs}
             )
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     def test_get_distinct_values_bad_field_type(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
         mock_distinct_values_fetch.return_value = self.mock_distinct_values
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
         with self.assertRaises(ValueError):
             self.monocle_data.get_distinct_values(self.bad_distinct_values_query)
 
-    @patch.object(Monocle_Client, "make_request")
+    @patch.object(MonocleClient, "make_request")
     def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
         mock_request.side_effect = HTTPError(
             "/nowhere", "404", "message including the words Invalid field", "yes", "no"
         )
         self.assertIsNone(self.monocle_data.get_distinct_values(self.mock_distinct_values_query))
 
-    @patch.object(Monocle_Client, "make_request")
+    @patch.object(MonocleClient, "make_request")
     def test_get_distinct_values_reraise_HTTPError_if_not_404(self, mock_request):
         mock_request.side_effect = HTTPError("/nowhere", "400", "any other 4xx response", "yes", "no")
         with self.assertRaises(HTTPError):

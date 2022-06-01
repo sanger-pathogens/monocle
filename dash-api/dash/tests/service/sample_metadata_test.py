@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from urllib.error import URLError
 
-from DataSources.sample_metadata import Monocle_Client, ProtocolError, SampleMetadata
+from DataSources.sample_metadata import MonocleClient, ProtocolError, SampleMetadata
 
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")
 
@@ -70,7 +70,7 @@ class SampleMetadataTest(TestCase):
 
     def setUp(self):
         self.sample_metadata = SampleMetadata(set_up=False)
-        self.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+        self.sample_metadata.monocle_client = MonocleClient(set_up=False)
         self.sample_metadata.monocle_client.set_up(self.test_config)
 
     def test_init(self):
@@ -78,17 +78,17 @@ class SampleMetadataTest(TestCase):
 
     def test_reject_bad_config(self):
         with self.assertRaises(KeyError):
-            doomed = Monocle_Client(set_up=False)
+            doomed = MonocleClient(set_up=False)
             doomed.set_up(self.bad_config)
 
     def test_missing_config(self):
         with self.assertRaises(FileNotFoundError):
-            doomed = Monocle_Client(set_up=False)
+            doomed = MonocleClient(set_up=False)
             doomed.set_up("no_such_config.yml")
 
     def test_reject_bad_url(self):
         with self.assertRaises(URLError):
-            doomed = Monocle_Client(set_up=False)
+            doomed = MonocleClient(set_up=False)
             doomed.set_up(self.test_config)
             doomed.config["base_url"] = self.bad_api_host
             endpoint = doomed.config["samples"] + self.expected_sanger_sample_ids[0]
@@ -96,20 +96,20 @@ class SampleMetadataTest(TestCase):
 
     def test_reject_bad_endpoint(self):
         with self.assertRaises(URLError):
-            doomed = Monocle_Client(set_up=False)
+            doomed = MonocleClient(set_up=False)
             doomed.set_up(self.test_config)
             doomed.config["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
             doomed.make_request(endpoint)
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_get_institution_names(self, mock_query):
         mock_query.return_value = self.mock_institution_names
         names = self.sample_metadata.get_institution_names()
         self.assertIsInstance(names, list)
         self.assertEqual(self.expected_institution_names, names)
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_get_samples(self, mock_query):
         mock_query.return_value = self.mock_get_samples
         samples = self.sample_metadata.get_samples(self.mock_project)
@@ -123,7 +123,7 @@ class SampleMetadataTest(TestCase):
                     this_sample[required], str, msg="sample item {} should be a string".format(required)
                 )
 
-    @patch("DataSources.sample_metadata.Monocle_Client.filters")
+    @patch("DataSources.sample_metadata.MonocleClient.filters")
     def test_get_samples_matching_metadata_filters(self, mock_filters):
         mock_filters.return_value = []
         self.sample_metadata.get_samples_matching_metadata_filters(
@@ -133,7 +133,7 @@ class SampleMetadataTest(TestCase):
             self.mock_project, [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
         )
 
-    @patch("DataSources.sample_metadata.Monocle_Client.filters_in_silico")
+    @patch("DataSources.sample_metadata.MonocleClient.filters_in_silico")
     def test_get_lanes_matching_in_silico_filters(self, mock_filters_in_silico):
         mock_filters_in_silico.return_value = []
         self.sample_metadata.get_lanes_matching_in_silico_filters(
@@ -143,23 +143,23 @@ class SampleMetadataTest(TestCase):
             self.mock_project, [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
         )
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_filters(self, mock_query):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
         self.sample_metadata.monocle_client.filters(self.mock_project, mock_payload)
         mock_query.assert_called_once_with("/metadata/sample_ids_matching_metadata", post_data=mock_payload)
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_filters_in_silico(self, mock_query):
         mock_query.return_value = "[]"
         mock_payload = [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
         self.sample_metadata.monocle_client.filters_in_silico(self.mock_project, mock_payload)
         mock_query.assert_called_once_with("/metadata/lane_ids_matching_in_silico_data", post_data=mock_payload)
 
-    @patch("DataSources.sample_metadata.Monocle_Client.distinct_values")
-    @patch("DataSources.sample_metadata.Monocle_Client.distinct_in_silico_values")
-    @patch("DataSources.sample_metadata.Monocle_Client.distinct_qc_data_values")
+    @patch("DataSources.sample_metadata.MonocleClient.distinct_values")
+    @patch("DataSources.sample_metadata.MonocleClient.distinct_in_silico_values")
+    @patch("DataSources.sample_metadata.MonocleClient.distinct_qc_data_values")
     def test_get_distinct_values(
         self, mock_distinct_qc_data_values, mock_distinct_in_silico_values, mock_distinct_values
     ):
@@ -175,7 +175,7 @@ class SampleMetadataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_distinct_values(self, mock_query):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field1", "field2"]
@@ -185,7 +185,7 @@ class SampleMetadataTest(TestCase):
             "/metadata/distinct_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_distinct_in_silico_values(self, mock_query):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field3"]
@@ -195,7 +195,7 @@ class SampleMetadataTest(TestCase):
             "/metadata/distinct_in_silico_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )
 
-    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_distinct_qc_data_values(self, mock_query):
         mock_query.return_value = '{"distinct values": []}'
         mock_fields = ["field4"]
@@ -205,7 +205,7 @@ class SampleMetadataTest(TestCase):
             "/metadata/distinct_qc_data_values", post_data={"fields": mock_fields, "institutions": mock_institutions}
         )
 
-    @patch.object(Monocle_Client, "make_request")
+    @patch.object(MonocleClient, "make_request")
     def test_reject_bad_get_sample_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_get_sample

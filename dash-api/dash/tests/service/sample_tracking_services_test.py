@@ -8,7 +8,7 @@ from unittest.mock import patch
 import yaml
 from DataServices.sample_tracking_services import MonocleSampleTracking
 from DataSources.pipeline_status import PipelineStatus
-from DataSources.sample_metadata import Monocle_Client, SampleMetadata
+from DataSources.sample_metadata import MonocleClient, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
 
 INSTITUTION_KEY = "GenWel"
@@ -258,7 +258,7 @@ class MonocleSampleTrackingTest(TestCase):
     def setUp(self):
         # mock sample_metadata
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
-        self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+        self.monocle_sample_tracking.sample_metadata.monocle_client = MonocleClient(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client.set_up(self.test_config)
         self.monocle_sample_tracking.updated = self.mock_data_updated
         # mock sequencing_status

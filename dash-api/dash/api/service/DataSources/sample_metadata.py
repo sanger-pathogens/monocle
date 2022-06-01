@@ -20,7 +20,7 @@ class SampleMetadata:
             self.set_up()
 
     def set_up(self):
-        self.monocle_client = Monocle_Client()
+        self.monocle_client = MonocleClient()
 
     def get_institution_names(self):
         result = self.monocle_client.institutions()
@@ -36,16 +36,16 @@ class SampleMetadata:
         generally useful or necessarily accurate.  Lane IDs for a sample should be retrieved from MLWH)
         Returns a dict, keys are sample IDs, values are the selected metadata as a dict
         """
-        results_list = self.monocle_client.samples(project)
-        logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
+        results = self.monocle_client.samples(project)
+        logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results)))
         samples = []
-        for this_result in results_list:
+        for this_result in results:
             if institutions is None or this_result["submitting_institution"] in institutions:
                 # For historical reasons the following code was needed to replace the old keys
                 # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
                 # 'submitting_institution', respectively.
-                # TODO  see if we can now replace this, and simply return `results_list`, except with
-                #       `lane_id` removed from each item in `results_list` (unless `exclude_lane_id`
+                # TODO  see if we can now replace this, and simply return `results`, except with
+                #       `lane_id` removed from each item in `results` (unless `exclude_lane_id`
                 #       is False)
                 this_sample = {
                     "sanger_sample_id": this_result["sanger_sample_id"],
@@ -80,11 +80,11 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters(project, filters_payload)
+        results = self.monocle_client.filters(project, filters_payload)
         logging.info(
-            "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results_list))
+            "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
-        return results_list
+        return results
 
     def get_lanes_matching_in_silico_filters(self, project, in_silico_filters):
         """
@@ -107,11 +107,11 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters_in_silico(project, filters_payload)
+        results = self.monocle_client.filters_in_silico(project, filters_payload)
         logging.info(
-            "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results_list))
+            "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
-        return results_list
+        return results
 
     def get_distinct_values(self, project, fields, institutions):
         """
@@ -145,7 +145,7 @@ class ProtocolError(Exception):
     pass
 
 
-class Monocle_Client:
+class MonocleClient:
     data_sources_config = "data_sources.yml"
     data_source = "monocle_metadata_api"
     required_config_params = [
