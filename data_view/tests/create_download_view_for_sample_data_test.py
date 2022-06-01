@@ -8,7 +8,7 @@ DATA_DIR = "/abs/path/data"
 INSTITUTION_NAME_TO_ID = {
     "Faculty of Pharmacy, Suez Canal University": "FacPhaSueCanUni",
     "Laboratório Central do Estado do Paraná": "LabCenEstPar",
-    "National Reference Laboratories": "NatRefLab",
+    "Ministry of Health, Central Laboratories": "MinHeaCenLab",
     "The Chinese University of Hong Kong": "TheChiUniHonKon",
     "Universidade Federal do Rio de Janeiro": "UniFedRioJan",
     "Wellcome Sanger Institute": "WelSanIns",
@@ -22,8 +22,8 @@ INSTITUTION_WITHOUT_LANES = {
 }
 INSTITUTIONS_WITH_PUBLIC_NAMES = [
     {
-        "name": "National Reference Laboratories",
-        "id": INSTITUTION_NAME_TO_ID["National Reference Laboratories"],
+        "name": "Ministry of Health, Central Laboratories",
+        "id": INSTITUTION_NAME_TO_ID["Ministry of Health, Central Laboratories"],
         "samples": [
             {"public_name": PUBLIC_NAMES[0], "sanger_sample_id": SAMPLE_IDS[0]},
             {"public_name": PUBLIC_NAMES[1], "sanger_sample_id": SAMPLE_IDS[1]},

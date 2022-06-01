@@ -86,12 +86,11 @@ class MonocleSampleData:
                 "metadata field config file(s) {} are missing".format(missing_metadata_config)
             )
 
-        # require a DataServices.sample_tracking_servies.MonocleSampleTracking object
-        # if one wasn't passed, create one now
+        # DataServices.sample_tracking_servies.MonocleSampleTracking object can be passed
+        # (otherwise assign None, indicating it is to be created later)
+        self.sample_tracking = None
         if MonocleSampleTracking_ref is not None:
             self.sample_tracking = MonocleSampleTracking_ref
-        else:
-            self.sample_tracking = DataServices.sample_tracking_services.MonocleSampleTracking()
 
         # set_up flag causes data objects to be loaded on instantiation
         # only set to False if you know what you're doing
@@ -99,6 +98,19 @@ class MonocleSampleData:
             self.updated = datetime.now()
             self.metadata_download_source = DataSources.metadata_download.MetadataDownload()
             self.sample_metadata_source = DataSources.sample_metadata.SampleMetadata()
+
+    def get_sample_tracking_service(self):
+        """
+        Returns instance of DataServices.sample_tracking_services.MonocleSampleTracking
+        This must have the user_record and current_project attributes assigned,
+        but that cannopt be done in __init__ as ServiceFactory only assigned this after
+        MonocleSampleData objects are instantiated
+        """
+        if self.sample_tracking is None:
+            self.sample_tracking = DataServices.sample_tracking_services.MonocleSampleTracking()
+        self.sample_tracking.user_record = self.user_record
+        self.sample_tracking.current_project = self.current_project
+        return self.sample_tracking
 
     def get_field_attributes(self):
         """
@@ -410,7 +422,8 @@ class MonocleSampleData:
         except that 404 are caught and result in returning `None`
         """
         institutions = [
-            this_institution["db_key"] for this_institution in self.sample_tracking.get_institutions().values()
+            this_institution["db_key"]
+            for this_institution in self.get_sample_tracking_service().get_institutions().values()
         ]
         try:
             distinct_values = self.sample_metadata_source.get_distinct_values(
@@ -545,7 +558,7 @@ class MonocleSampleData:
         disable_public_name_fetch was passed) public names added.
 
         Supports `batches` filter:
-           "batches": [{"institution key": "NatRefLab", "batch date": "2019-11-15"}, ... ]
+           "batches": [{"institution key": "MinHeaCenLab", "batch date": "2019-11-15"}, ... ]
 
         Also metadata, in silico and QC data filters, e.g.
            "metadata": {"serotype": ["I", "IV"], ...}
@@ -555,7 +568,7 @@ class MonocleSampleData:
         [  {  'lanes':             ['32820_2#287'],
               'creation_datetime': '2019-11-15T13:56:07Z',
               'sanger_sample_id':  '5903STDY8113167',
-              'inst_key':          'NatRefLab',
+              'inst_key':          'MinHeaCenLab',
               'public_name':       'JN_IL_ST00002'
               }
            ]
@@ -574,12 +587,12 @@ class MonocleSampleData:
         if not disable_public_name_fetch:
             institution_names = [
                 institution["name"]
-                for institution_key, institution in self.sample_tracking.get_institutions().items()
+                for institution_key, institution in self.get_sample_tracking_service().get_institutions().items()
                 if institution_key in institution_keys
             ]
             sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
         filtered_samples = []
-        sequencing_status_data = deepcopy(self.sample_tracking.get_sequencing_status())
+        sequencing_status_data = deepcopy(self.get_sample_tracking_service().get_sequencing_status())
         # lane_data is a temporary store of lane data that are needed for filters
         # (we don't want all of the lane data permanetly stored in filtered_samples)
         lane_data = {}
@@ -597,7 +610,9 @@ class MonocleSampleData:
                 continue
             for sanger_sample_id, sample in samples:
                 if (
-                    self.sample_tracking.convert_mlwh_datetime_stamp_to_date_stamp(sample["creation_datetime"])
+                    self.get_sample_tracking_service().convert_mlwh_datetime_stamp_to_date_stamp(
+                        sample["creation_datetime"]
+                    )
                     == batch_date_stamp
                 ):
                     lane_data[sanger_sample_id] = sample.get("lanes", [])
@@ -649,7 +664,7 @@ class MonocleSampleData:
                     this_lane_complete,
                     this_lane_success,
                     discard_this,
-                ) = self.sample_tracking.get_sequencing_outcome_for_lane(this_sample_id, this_lane)
+                ) = self.get_sample_tracking_service().get_sequencing_outcome_for_lane(this_sample_id, this_lane)
                 this_lane_passes_sequencing_filters = True
                 if "complete" in sequencing_filters:
                     if not sequencing_filters["complete"] == this_lane_complete:
@@ -705,7 +720,7 @@ class MonocleSampleData:
     def _get_pipeline_outcome_for_lane(self, lane_id):
         this_lane_complete = False
         this_lane_success = False
-        this_lane_pipeline_status = self.sample_tracking.pipeline_status.lane_status(lane_id)
+        this_lane_pipeline_status = self.get_sample_tracking_service().pipeline_status.lane_status(lane_id)
         # keys FAILED and SUCCESS are always defined
         # they are both False if we have no status for the lane (i.e. pending in the pipeline)
         if this_lane_pipeline_status["FAILED"] or this_lane_pipeline_status["SUCCESS"]:
@@ -721,7 +736,7 @@ class MonocleSampleData:
             )
         )
         matching_samples_ids_set = set(
-            self.sample_tracking.sample_metadata.get_samples_matching_metadata_filters(
+            self.get_sample_tracking_service().sample_metadata.get_samples_matching_metadata_filters(
                 self.current_project, metadata_filters
             )
         )
@@ -746,7 +761,7 @@ class MonocleSampleData:
             )
         )
         matching_lanes_ids_set = set(
-            self.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters(
+            self.get_sample_tracking_service().sample_metadata.get_lanes_matching_in_silico_filters(
                 self.current_project, in_silico_filters
             )
         )
@@ -776,7 +791,9 @@ class MonocleSampleData:
 
     def _get_sanger_sample_id_to_public_name_dict(self, institutions):
         sanger_sample_id_to_public_name = {}
-        for sample in self.sample_tracking.sample_metadata.get_samples(self.current_project, institutions=institutions):
+        for sample in self.get_sample_tracking_service().sample_metadata.get_samples(
+            self.current_project, institutions=institutions
+        ):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
                 public_name = sample["public_name"]
@@ -926,7 +943,7 @@ class MonocleSampleData:
         Returns the return value(s) of get_csv_download().
         """
         # validate params
-        institution_data = self.sample_tracking.get_institutions()
+        institution_data = self.get_sample_tracking_service().get_institutions()
         institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
@@ -958,7 +975,7 @@ class MonocleSampleData:
                 institution_key = this_institution
                 break
         # now get all batches for the institution
-        batches_data = self.sample_tracking.get_batches().get(institution_key)
+        batches_data = self.get_sample_tracking_service().get_batches().get(institution_key)
         for this_delivery in batches_data["deliveries"]:
             batches_filter.append({"institution key": institution_key, "batch date": this_delivery["date"]})
         # request should never have been made for an institution with no samples
@@ -1291,7 +1308,7 @@ class MonocleSampleData:
         child_dir = (
             cross_institution_dir
             if kwargs.get("cross_institution")
-            else self.sample_tracking.institution_db_key_to_dict[target_institution]
+            else self.get_sample_tracking_service().institution_db_key_to_dict[target_institution]
         )
         download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
         if not download_host_dir.is_dir():
