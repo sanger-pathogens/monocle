@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import Mock, call, patch
 
@@ -79,12 +80,13 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         with self.assertRaises(ProtocolError):
             self.under_test.parse_response(response_as_string, ["user_details"])
 
+    @patch.dict(os.environ, {"AUTH_COOKIE_NAME": "mock_cookie_name"}, clear=True)
+    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.call_request_cookies")
     @patch.object(flask, "request")
-    def test_get_authenticated_username(self, mock_request) -> None:
-        mock_request.headers = {"X-Remote-User": "mock_user"}
-
-        actual = self.under_test.get_authenticated_username(mock_request)
-
+    def test_get_username_provided(self, mock_request, mock_request_cookies) -> None:
+        # cookie value is base64-encoded "mock_user:mock_password"
+        mock_request_cookies.return_value = {"mock_cookie_name": "bW9ja191c2VyOm1vY2tfcGFzc3dvcmQ="}
+        actual = self.under_test.get_username_provided(mock_request)
         self.assertEqual(actual, "mock_user")
 
     def test_get_institution_names(self) -> None:

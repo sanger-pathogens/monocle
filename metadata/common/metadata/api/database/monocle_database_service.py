@@ -17,7 +17,7 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_authenticated_username(self, req_obj: request) -> str:
+    def get_username_provided(self, req_obj: request) -> str:
         "Return username string"
         pass
 

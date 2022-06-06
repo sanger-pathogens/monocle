@@ -1,7 +1,9 @@
 import json
 import logging
+import os
 import urllib.parse
 import urllib.request
+from base64 import b64decode
 from typing import Dict, List
 
 from flask import request
@@ -43,6 +45,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     DASHBOARD_API_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
     DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
+
+    AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
+    AUTH_TOKEN_ENCODING = "utf8"
+    AUTH_TOKEN_DELIMITER = ":"
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
@@ -333,17 +339,24 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
-    def get_authenticated_username(self, req_obj: request):
-        # TODO: Make this a separate service
-        """Return the request authenticated user name"""
-        username = None
-        try:
-            username = req_obj.headers["X-Remote-User"]
-            logging.info("X-Remote-User header = {}".format(username))
-        except KeyError:
-            pass
+    def call_request_cookies(self, request):
+        """Wraps flask.request.cookies to make testing easier"""
+        return request.cookies
 
-        return username
+    def get_username_provided(self, req_obj: request):
+        # TODO: Make this a separate service
+        """
+        Return the user name from the auth cookie
+        This does NOT check that the username is valid, that it belongs to the user making the request, or that the user is authorised for any action.
+        Authentication and authoprisation MUST be done by the NGINX proxy that grants  access to this route.
+        """
+        auth_token = self.call_request_cookies(req_obj).get(os.environ[self.AUTH_COOKIE_NAME_ENVIRON])
+        if auth_token is None or 0 == len(auth_token):
+            logging.warning("Asked to extract username from empty auth token")
+            return auth_token
+        username_password_bytes = b64decode(auth_token)
+        username_provided = username_password_bytes.decode(self.AUTH_TOKEN_ENCODING).split(self.AUTH_TOKEN_DELIMITER)[0]
+        return username_provided
 
     def convert_string(self, val: str) -> str:
         """If a given string is empty return None"""

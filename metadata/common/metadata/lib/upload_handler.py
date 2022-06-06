@@ -62,6 +62,7 @@ class UploadHandler:
 
         # immediately return true if this check is disabled
         if not self.check_file_extension:
+            logger.debug("file extension checking disabled")
             return True
 
         valid = False
@@ -190,7 +191,7 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            username = self.__dao.get_authenticated_username(request)
+            username = self.__dao.get_username_provided(request)
             self.__institutions = self.__dao.get_institutions(username)
             # Create a validation schema
             schema = self.create_schema()

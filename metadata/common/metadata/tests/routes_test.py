@@ -446,7 +446,7 @@ class TestRoutes(unittest.TestCase):
             )
             self.assertEqual(under_test, ("Invalid arguments provided", 400))
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_authenticated_username")
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_username_provided")
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions")
     @patch("metadata.api.routes.convert_to_json")
     def test_get_institutions_jsonified(self, mocked_jsoncall, mocked_query, mocked_username):
@@ -459,7 +459,7 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once()
         self.assertEqual(under_test, ("expected", 200))
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_authenticated_username")
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_username_provided")
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_institutions")
     @patch("metadata.api.routes.convert_to_json")
     def test_get_institutions_not_returned(self, mocked_jsoncall, mocked_query, mocked_username):
