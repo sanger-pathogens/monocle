@@ -55,7 +55,7 @@ services:
     environment:
       # if ENABLE_SWAGGER_UI is true the UI should be available at /metadata/ui/ (see nginx.prod.proxy.conf)
       - ENABLE_SWAGGER_UI=true
-      - LOG_LEVEL=WARNING
+      - LOG_LEVEL=DEBUG
       - API_TEST_MODE=false
       - GUNICORN_PORT=80
       - GUNICORN_WORKERS=8
