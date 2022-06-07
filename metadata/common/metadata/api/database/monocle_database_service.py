@@ -17,11 +17,6 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_username_provided(self, req_obj: request) -> str:
-        "Return username string"
-        pass
-
-    @abstractmethod
     def get_samples(self) -> List[Metadata]:
         """Return a list of samples"""
         pass
@@ -42,7 +37,7 @@ class MonocleDatabaseService(ABC):
         pass
 
     @abstractmethod
-    def get_institutions(self, username: str) -> List[Institution]:
+    def get_institutions(self, req_obj: request) -> List[Institution]:
         """Return a list of institutions"""
         pass
 

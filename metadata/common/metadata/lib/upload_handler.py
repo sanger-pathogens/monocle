@@ -191,8 +191,7 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            username = self.__dao.get_username_provided(request)
-            self.__institutions = self.__dao.get_institutions(username)
+            self.__institutions = self.__dao.get_institutions(request)
             # Create a validation schema
             schema = self.create_schema()
             # Run the validation

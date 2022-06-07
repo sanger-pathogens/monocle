@@ -318,14 +318,7 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_institutions(dao: MonocleDatabaseService):
-    username = None
-    try:
-        username = dao.get_username_provided(request)
-        logging.info("username in auth cookie = {}".format(username))
-    except KeyError:
-        pass
-
-    institutions = dao.get_institutions(username)
+    institutions = dao.get_institutions(request)
 
     result = convert_to_json({"institutions": institutions})
 
