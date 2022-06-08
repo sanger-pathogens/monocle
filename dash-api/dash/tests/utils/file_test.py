@@ -1,7 +1,7 @@
 from functools import reduce
-from pathlib import Path, PurePath
+from pathlib import PurePath
 from unittest import TestCase
-from unittest.mock import Mock, create_autospec, patch
+from unittest.mock import Mock, create_autospec
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from utils.file import WRITE_MODE, ZIP_COMPRESSION_LEVEL, complete_zipfile, format_file_size, zip_files

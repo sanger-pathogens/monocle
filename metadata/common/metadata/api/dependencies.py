@@ -3,7 +3,11 @@ import os
 
 from flask import Config
 from injector import Module, provider, singleton
-from metadata.api.configuration import *
+from metadata.api.configuration import (
+    read_database_connection_config,
+    read_mock_database_connection_config,
+    read_spreadsheet_definition_config,
+)
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.database.monocle_database_service_impl import Connector, MonocleDatabaseServiceImpl
 from metadata.api.database.monocle_database_service_noop_impl import MonocleDatabaseServiceNoOpImpl
