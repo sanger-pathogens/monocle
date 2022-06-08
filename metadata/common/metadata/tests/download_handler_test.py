@@ -80,19 +80,19 @@ class TestDownloadMetadataHandler(unittest.TestCase):
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
-            sprd_def = SpreadsheetDefinition(2, data["metadata"]["spreadsheet_definition"])
-            handler = DownloadMetadataHandler(self.dao_mock, sprd_def)
-            handler.application = application
-            handler.application.config = data
-            results = handler.create_download_response([TEST_SAMPLE_1, TEST_SAMPLE_2])
-            self.assertIsNotNone(results)
-            self.assertEqual(len(results), 2)
-            # Sample 1
-            for (k, v) in TEST_SAMPLE_1_DICT.items():
-                self.assertEqual(results[0][k][value_field_name], v)
-            # Sample 2
-            for (k, v) in TEST_SAMPLE_2_DICT.items():
-                self.assertEqual(results[1][k][value_field_name], v)
+        sprd_def = SpreadsheetDefinition(2, data["metadata"]["spreadsheet_definition"])
+        handler = DownloadMetadataHandler(self.dao_mock, sprd_def)
+        handler.application = application
+        handler.application.config = data
+        results = handler.create_download_response([TEST_SAMPLE_1, TEST_SAMPLE_2])
+        self.assertIsNotNone(results)
+        self.assertEqual(len(results), 2)
+        # Sample 1
+        for (k, v) in TEST_SAMPLE_1_DICT.items():
+            self.assertEqual(results[0][k][value_field_name], v)
+        # Sample 2
+        for (k, v) in TEST_SAMPLE_2_DICT.items():
+            self.assertEqual(results[1][k][value_field_name], v)
 
 
 class TestDownloadInSilicoHandler(unittest.TestCase):
@@ -155,19 +155,19 @@ class TestDownloadInSilicoHandler(unittest.TestCase):
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
-            sprd_def = SpreadsheetDefinition(2, data["in_silico_data"]["spreadsheet_definition"])
-            handler = DownloadInSilicoHandler(self.dao_mock, sprd_def)
-            handler.application = application
-            handler.application.config = data
-            results = handler.create_download_response([TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2])
-            self.assertIsNotNone(results)
-            self.assertEqual(len(results), 2)
-            # Sample 1
-            for (k, v) in TEST_LANE_IN_SILICO_1_DICT.items():
-                self.assertEqual(results[0][k][value_field_name], v)
-            # Sample 2
-            for (k, v) in TEST_LANE_IN_SILICO_2_DICT.items():
-                self.assertEqual(results[1][k][value_field_name], v)
+        sprd_def = SpreadsheetDefinition(2, data["in_silico_data"]["spreadsheet_definition"])
+        handler = DownloadInSilicoHandler(self.dao_mock, sprd_def)
+        handler.application = application
+        handler.application.config = data
+        results = handler.create_download_response([TEST_LANE_IN_SILICO_1, TEST_LANE_IN_SILICO_2])
+        self.assertIsNotNone(results)
+        self.assertEqual(len(results), 2)
+        # Sample 1
+        for (k, v) in TEST_LANE_IN_SILICO_1_DICT.items():
+            self.assertEqual(results[0][k][value_field_name], v)
+        # Sample 2
+        for (k, v) in TEST_LANE_IN_SILICO_2_DICT.items():
+            self.assertEqual(results[1][k][value_field_name], v)
 
 
 class TestDownloadQCHandler(unittest.TestCase):
@@ -230,16 +230,16 @@ class TestDownloadQCHandler(unittest.TestCase):
         value_field_name = "value"
         with open(self.CONFIG_FILE) as cfg:
             data = json.load(cfg)
-            sprd_def = SpreadsheetDefinition(2, data["qc_data"]["spreadsheet_definition"])
-            handler = DownloadQCDataHandler(self.dao_mock, sprd_def)
-            handler.application = application
-            handler.application.config = data
-            results = handler.create_download_response([TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2])
-            self.assertIsNotNone(results)
-            self.assertEqual(len(results), 2)
-            # Sample 1
-            for (k, v) in TEST_LANE_QC_DATA_1_DICT.items():
-                self.assertEqual(results[0][k][value_field_name], v)
-            # Sample 2
-            for (k, v) in TEST_LANE_QC_DATA_2_DICT.items():
-                self.assertEqual(results[1][k][value_field_name], v)
+        sprd_def = SpreadsheetDefinition(2, data["qc_data"]["spreadsheet_definition"])
+        handler = DownloadQCDataHandler(self.dao_mock, sprd_def)
+        handler.application = application
+        handler.application.config = data
+        results = handler.create_download_response([TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_2])
+        self.assertIsNotNone(results)
+        self.assertEqual(len(results), 2)
+        # Sample 1
+        for (k, v) in TEST_LANE_QC_DATA_1_DICT.items():
+            self.assertEqual(results[0][k][value_field_name], v)
+        # Sample 2
+        for (k, v) in TEST_LANE_QC_DATA_2_DICT.items():
+            self.assertEqual(results[1][k][value_field_name], v)
