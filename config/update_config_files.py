@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import copy
+import hashlib
 import json
 import os
 import re
@@ -266,6 +267,7 @@ class UpdateMetadataFiles:
         """Generated the file_attributes.json file for dash-api."""
         for _group, files in self.files.items():
             field_attributes_file = self.abs_path(files["field attributes"])
+            old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             field_attributes = copy.deepcopy(self.config)
             field_attributes.pop("config")
             for _, kmc in self.map_config_dict.items():
@@ -279,6 +281,11 @@ class UpdateMetadataFiles:
             json_object = json.dumps(field_attributes, indent=3)
             with open(field_attributes_file, "w") as out_file:
                 out_file.write(json_object)
+            new_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
+            if old_md5 != new_md5:
+                print(
+                    f"ATTENTION: File {field_attributes_file} has changed, you might have to update LOCAL_STORAGE_KEY_COLUMNS_STATE in frontend/src/lib/constants.js"
+                )
 
     def update_config_section(self, c, mc):
         """Updates a section of config data (c) from main config (mc)."""
