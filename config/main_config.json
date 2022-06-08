@@ -99,7 +99,7 @@
             "qc_data"
          ]
       ],
-      "test_data_var_names": {
+      "test_data_variable_names": {
          "metadata": [
             "TEST_SAMPLE_1_DICT",
             "TEST_SAMPLE_2_DICT",

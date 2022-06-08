@@ -141,39 +141,39 @@ class UpdateMetadataFiles:
         with open(test_data_file_path) as test_data_file:
             lines = test_data_file.readlines()
         output = ""
-        p_dict = re.compile(r"^(TEST_\S+_DICT)\s*=\s*dict\s*\(\S*$")
-        p_key_value = re.compile(r"^\s*(\S+?)\s*=.*\s*\"(.*?)\"\s*,{0,1}\s*$")
-        p_end_of_definition = re.compile(r"^\s*\)\S*$")
+        pattern_dict = re.compile(r"^(TEST_\S+_DICT)\s*=\s*dict\s*\(\S*$")
+        pattern_key_value = re.compile(r"^\s*(\S+?)\s*=.*\s*\"(.*?)\"\s*,{0,1}\s*$")
+        pattern_end_of_definition = re.compile(r"^\s*\)\S*$")
         while len(lines) > 0:
             line = lines.pop(0)
-            m = p_dict.match(line)
-            if not m:
+            pattern_dict_match = pattern_dict.match(line)
+            if not pattern_dict_match:
                 output += line
                 continue
-            var_name = m.group(1)
-            d = {}
+            variable_name = pattern_dict_match.group(1)
+            key_value_pairs = {}
             while len(lines) > 0:
                 row = lines.pop(0)
-                n = p_key_value.match(row)
+                n = pattern_key_value.match(row)
                 if n:
-                    d[n.group(1)] = n.group(2)
-                if p_end_of_definition.match(row):
+                    key_value_pairs[n.group(1)] = n.group(2)
+                if pattern_end_of_definition.match(row):
                     break
-            for data_group, var_names in self.test_data_var_names.items():
-                if var_name in var_names:
-                    c = data[data_group]
+            for data_group, variable_names in self.test_data_variable_names.items():
+                if variable_name in variable_names:
+                    current_group_data = data[data_group]
             # Remove obsolete fields
-            for k in d:
-                if k not in c["spreadsheet_definition"]:
+            for k in key_value_pairs:
+                if k not in current_group_data["spreadsheet_definition"]:
                     print(f"Removing {k} from test data in {test_data_file_path}")
-                    d.pop(k)
+                    key_value_pairs.pop(k)
             # Add new fields
-            for k in c["spreadsheet_definition"]:
-                if k not in d:
+            for k in current_group_data["spreadsheet_definition"]:
+                if k not in key_value_pairs:
                     print(f"Adding {k} to test data in {test_data_file_path}")
-                    d[k] = str(len(d) + 1)
+                    key_value_pairs[k] = str(len(key_value_pairs) + 1)
             output += line
-            for k, v in d.items():
+            for k, v in key_value_pairs.items():
                 output += f'{self.indent}{k}="{v}",\n'
             output += ")\n"
         with open(test_data_file_path, "w") as output_file:
