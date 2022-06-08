@@ -163,12 +163,12 @@ class UpdateMetadataFiles:
                 if var_name in var_names:
                     c = data[data_group]
             # Remove obsolete fields
-            for k in list(d.keys()):
+            for k in d:
                 if k not in c["spreadsheet_definition"]:
                     print(f"Removing {k} from test data in {test_data_file_path}")
                     d.pop(k)
             # Add new fields
-            for k in c["spreadsheet_definition"].keys():
+            for k in c["spreadsheet_definition"]:
                 if k not in d:
                     print(f"Adding {k} to test data in {test_data_file_path}")
                     d[k] = str(len(d) + 1)
