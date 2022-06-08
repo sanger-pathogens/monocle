@@ -4,15 +4,17 @@ configuration in there, run `config/update_config_files.py`. This will alter the
 - `database/tables/api_sample.sql`
 - `database/tables/in_silico.sql`
 - `database/tables/qc_data.sql`
-- `dash-api/juno/field_attributes.json` (as a subset of main_config)
-- `dash-api/juno/dash/interface/openapi.yml`
-- For each directory in `metadata`:
+- `database/tables/gps_sample.sql`
+- `database/tables/gps_in_silico.sql`
+- `database/tables/gps_qc_data.sql`
+- `metadata/common/metadata/tests/test_data.py`
+- For each of PROJECT in ['juno','gps']:
   - `config.json`
-  - `metadata/api/database/model/metadata.py` (complete replacement)
-  - `metadata/api/database/model/in_silico_data.py` (complete replacement)
-  - `metadata/api/database/model/qc_data.py` (complete replacement)
-  - `metadata/tests/test_data.py`
-  - `metadata/interface/openapi.yml`
+  - `metadata/PROJECT/metadata/api/model/metadata.py` (complete replacement)
+  - `metadata/PROJECT/metadata/api/model/in_silico_data.py` (complete replacement)
+  - `metadata/PROJECT/metadata/api/model/qc_data.py` (complete replacement)
+  - `dash-api/dash/interface/PROJECT_objects.yml`
+  - `dash-api/PROJECT_field_attributes.json` (as a subset of main_config)
 
 # main_config.json
 The main_config.json file consists of
