@@ -293,7 +293,7 @@ class UpdateMetadataFiles:
             if k in mc:
                 c[k] = mc[k]
 
-        sd = {}  # spreadsheet_definition
+        spreadsheet_definition = {}
         for category in mc["categories"]:
             for field in category["fields"]:
                 if "db" in field:
@@ -308,8 +308,8 @@ class UpdateMetadataFiles:
                         id = d.pop("id")
                     else:
                         id = field["name"]
-                    sd[id] = d
-        c["spreadsheet_definition"] = sd
+                    spreadsheet_definition[id] = d
+        c["spreadsheet_definition"] = spreadsheet_definition
         return c
 
     def update_config_json(self, config_path):

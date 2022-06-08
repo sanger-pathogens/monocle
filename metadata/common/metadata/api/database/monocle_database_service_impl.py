@@ -113,12 +113,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         self.INSERT_OR_UPDATE_SAMPLE_SQL = self.initialize_sql_insert_or_update("api_sample", md_keys)
 
         # In silico
-        is_keys = list(self.config["in_silico_data"]["spreadsheet_definition"].keys())
-        self.SELECT_ALL_IN_SILICO_SQL = text("SELECT " + ", ".join(is_keys) + " FROM in_silico ORDER BY lane_id")
+        in_silico_keys = list(self.config["in_silico_data"]["spreadsheet_definition"].keys())
+        self.SELECT_ALL_IN_SILICO_SQL = text("SELECT " + ", ".join(in_silico_keys) + " FROM in_silico ORDER BY lane_id")
         self.SELECT_LANES_IN_SILICO_SQL = text(
-            "SELECT " + ",".join(is_keys) + " FROM in_silico WHERE lane_id IN :lanes"
+            "SELECT " + ",".join(in_silico_keys) + " FROM in_silico WHERE lane_id IN :lanes"
         )
-        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("in_silico", is_keys)
+        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("in_silico", in_silico_keys)
 
         # QC data
         qc_keys = list(self.config["qc_data"]["spreadsheet_definition"].keys())
@@ -359,7 +359,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
         for row in rs:
-            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"].keys()}
+            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"]}
             results.append(Metadata(**params))
 
         return results
@@ -377,7 +377,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
-                params = {k: metadata.__dict__[k] for k in self.config["metadata"]["spreadsheet_definition"].keys()}
+                params = {k: metadata.__dict__[k] for k in self.config["metadata"]["spreadsheet_definition"]}
                 con.execute(self.INSERT_OR_UPDATE_SAMPLE_SQL, **params)
 
         logger.info("update_sample_metadata completed")
@@ -399,7 +399,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             for in_silico_data in in_silico_data_list:
                 params = {
                     k: self.convert_string(in_silico_data.__dict__[k])
-                    for k in self.config["in_silico_data"]["spreadsheet_definition"].keys()
+                    for k in self.config["in_silico_data"]["spreadsheet_definition"]
                 }
                 con.execute(self.INSERT_OR_UPDATE_IN_SILICO_SQL, **params)
 
@@ -443,7 +443,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sanger_sample_ids)
 
         for row in rs:
-            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"].keys()}
+            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"]}
             results.append(Metadata(**params))
 
         logger.debug("get_download_metadata: Pulled records of samples {} from the database...".format(results))
@@ -462,7 +462,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
 
         for row in rs:
-            params = {k: row[k] for k in self.config["in_silico_data"]["spreadsheet_definition"].keys()}
+            params = {k: row[k] for k in self.config["in_silico_data"]["spreadsheet_definition"]}
             results.append(InSilicoData(**params))
 
         return results
