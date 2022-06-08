@@ -41,7 +41,7 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
 
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
-    # check these file names for extensions
+    # when True, checks file names for extensions
     upload_handler.check_file_extension = False
 
     # Set the file delimiter
@@ -318,14 +318,7 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_institutions(dao: MonocleDatabaseService):
-    username = None
-    try:
-        username = dao.get_authenticated_username(request)
-        logging.info("X-Remote-User header = {}".format(username))
-    except KeyError:
-        pass
-
-    institutions = dao.get_institutions(username)
+    institutions = dao.get_institutions(request)
 
     result = convert_to_json({"institutions": institutions})
 

@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import Mock, call, patch
 
@@ -49,13 +50,18 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             }
         }
 
+    @patch.dict(os.environ, {"AUTH_COOKIE_NAME": "mock_cookie_name"}, clear=True)
     @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.parse_response")
     @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.make_request")
-    def test_get_institutions(self, make_request_mock, parse_response_mock) -> None:
+    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.call_request_cookies")
+    @patch.object(flask, "request")
+    def test_get_institutions(self, mock_request, mock_request_cookies, make_request_mock, parse_response_mock) -> None:
+        # cookie value is base64-encoded "mock_user:mock_password"
+        mock_request_cookies.return_value = {"mock_cookie_name": "bW9ja191c2VyOm1vY2tfcGFzc3dvcmQ="}
         make_request_mock.return_value = self.response_as_string
         parse_response_mock.return_value = self.response_as_dict
 
-        institutions = self.under_test.get_institutions("mock_user")
+        institutions = self.under_test.get_institutions(mock_request)
 
         self.assertIsNotNone(institutions)
         self.assertIsInstance(institutions, list)
@@ -78,14 +84,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         response_as_string = '[{"Not": "a dictionary"}]'
         with self.assertRaises(ProtocolError):
             self.under_test.parse_response(response_as_string, ["user_details"])
-
-    @patch.object(flask, "request")
-    def test_get_authenticated_username(self, mock_request) -> None:
-        mock_request.headers = {"X-Remote-User": "mock_user"}
-
-        actual = self.under_test.get_authenticated_username(mock_request)
-
-        self.assertEqual(actual, "mock_user")
 
     def test_get_institution_names(self) -> None:
         self.connection.execute.return_value = [

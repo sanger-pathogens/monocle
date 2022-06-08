@@ -1,10 +1,10 @@
 import json
 import logging
+import os
 import urllib.parse
 import urllib.request
 from typing import Dict, List
 
-from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
@@ -41,8 +41,12 @@ class Connector:
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """DAO for metadata,in silico data and QC data access"""
 
-    DASHBOARD_API_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
+    DASHBOARD_API_USER_DETAILS_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
     DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
+
+    AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
+    AUTH_TOKEN_ENCODING = "utf8"
+    AUTH_TOKEN_DELIMITER = ":"
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
@@ -333,18 +337,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
 
-    def get_authenticated_username(self, req_obj: request):
-        # TODO: Make this a separate service
-        """Return the request authenticated user name"""
-        username = None
-        try:
-            username = req_obj.headers["X-Remote-User"]
-            logging.info("X-Remote-User header = {}".format(username))
-        except KeyError:
-            pass
-
-        return username
-
     def convert_string(self, val: str) -> str:
         """If a given string is empty return None"""
         return val if val else None
@@ -361,6 +353,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             raise
 
         return int_val
+
+    def call_request_cookies(self, request):
+        """Wraps flask.request.cookies to make testing easier"""
+        return request.cookies
 
     def make_request(self, endpoint, request_headers, post_data=None):
         request_url = endpoint
@@ -395,7 +391,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         results_data = json.loads(response_as_string)
         if not isinstance(results_data, dict):
             error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(
-                self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER
+                self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
             )
             raise ProtocolError(error_message)
         for required_key in required_keys:
@@ -404,19 +400,27 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             except KeyError:
                 error_message = (
                     "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        self.DASHBOARD_API_ENDPOINT, self.DASHBOARD_API_SWAGGER
+                        self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
                     )
                 )
                 raise ProtocolError(error_message)
         return results_data
 
-    def get_institutions(self, username) -> List[Institution]:
-        """Return a list of allowed institutions"""
-        endpoint = self.DASHBOARD_API_ENDPOINT
-        request_headers = {"Content-type": "application/json;charset=utf-8", "X-Remote-User": username}
-        logging.debug(
-            "{}.get_institutions() using endpoint {} for username {}".format(__class__.__name__, endpoint, username)
-        )
+    def get_institutions(self, req_obj) -> List[Institution]:
+        """
+        Gets user record (based on auth cookie) and extarcts list of institution this user is a member of.
+        *IMPORTANT* the auth cookie is trusted here:
+        authentication and authorisation MUST be done by NGINX before this route is accessed!
+        Returns the list of institutions.
+        """
+        endpoint = self.DASHBOARD_API_USER_DETAILS_ENDPOINT
+        auth_cookie_name = os.environ[self.AUTH_COOKIE_NAME_ENVIRON]
+        auth_token = self.call_request_cookies(req_obj).get(auth_cookie_name)
+        request_headers = {
+            "Content-type": "application/json;charset=utf-8",
+            "Cookie": "{}={}".format(auth_cookie_name, auth_token),
+        }
+        logging.debug("{}.get_institutions() using endpoint {}".format(__class__.__name__, endpoint))
         response_as_string = self.make_request(endpoint, request_headers)
         logging.debug("{}.get_institutions() returned {}".format(__class__.__name__, response_as_string))
         results_as_dict = self.parse_response(response_as_string, required_keys=["user_details"])
@@ -429,7 +433,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         return results
 
     def get_institution_names(self) -> List[Institution]:
-        """Returns a list of all instiution names"""
+        """Returns a list of all instiution names from database"""
         results = []
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
