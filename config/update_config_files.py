@@ -246,7 +246,7 @@ class UpdateMetadataFiles:
     def update_all(self, main_config_file):
         """Runs updates on all metadata files."""
         self.update_from_main_config(self.abs_path(main_config_file))
-        for _group, files in self.files.items():
+        for files in self.files.values():
             config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
@@ -265,12 +265,12 @@ class UpdateMetadataFiles:
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
-        for _group, files in self.files.items():
+        for files in self.files.values():
             field_attributes_file = self.abs_path(files["field attributes"])
             old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             field_attributes = copy.deepcopy(self.config)
             field_attributes.pop("config")
-            for _, kmc in self.map_config_dict.items():
+            for kmc in self.map_config_dict.values():
                 for k in self.config_additional_section_keys:
                     if k in field_attributes[kmc]:
                         field_attributes[kmc].pop(k)
@@ -336,7 +336,7 @@ class UpdateMetadataFiles:
 
         self.write_field_attributes_file()
 
-        for _group, files in self.files.items():
+        for files in self.files.values():
             config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 self.update_config_json(config_path)
