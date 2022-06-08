@@ -1,767 +1,415 @@
-openapi: 3.0.0
+openapi: '3.0.0'
 info:
+  title: "Monocle Dashboard API"
+  version: "0.0.1"
+  description: "A REST API service used by the Monocle dashboard."
   contact:
-    email: path-help@sanger.ac.uk
-  description: A REST API service used by the Monocle dashboard.
-  title: Monocle Dashboard API
-  version: 0.0.1
+    email: "path-help@sanger.ac.uk"
+
 servers:
-- description: Context path
-  url: /dashboard-api
+  - url: /dashboard-api
+    description: Context path
+
 paths:
-<<<<<<< HEAD
-<<<<<<< HEAD
   /set_auth_cookie:
-=======
-  /bulk_download_info:
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
     post:
-      operationId: dash.api.routes.bulk_download_info_route
+      operationId: dash.api.routes.set_auth_cookie_route
+      summary: "Sets an authentication cookie and redirects user to page they were attempting to access. Credentials are NOT VERIFIED by this endpoint: this cookie needs to be checked by NGINX before authorisation is granted."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Target
+          in: header
+          description: "URL the user was requesting when intercepted for authorisation."
+          required: false
+          schema:
+            type: string
+            format: uri
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BulkDownloadInput'
-        required: true
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  description: "The username provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
+                password:
+                  description: "The password provided by the user"
+                  type: string
+                  minLength: 3
+                  maxLength: 256
       responses:
-        '200':
+        "307":
+          description: "The operation was successful. An UNVERIFIED authentication cookie is set and the user is redirected."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DownloadInfo'
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: No samples were found that matched the request criteria.
-      summary: Return information on expected bulk download based on standard sample
-        filters and data types
-  /bulk_download_urls:
-    post:
-      operationId: dash.api.routes.bulk_download_urls_route
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BulkDownloadInput'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadURLs'
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: No samples were found that matched the request criteria.
-      summary: Return download links corresponding to standard sample filters and
-        data types
-  /data_download/{token}:
-    get:
-      operationId: dash.api.routes.data_download_route
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      - description: Download token (generated and embeded in URL(s) by /bulk_download_urls)
-        in: path
-        name: token
-        required: true
-        schema:
-          maxLength: 32
-          minLength: 16
-          pattern: ^[a-f0-9]+$
-          type: string
-      - description: Flag indicating if the resposne should be a 303 redirect to the
-          download location.  Test in swagger with "false", otherwise swagger UI will
-          follow the redirect in the response and download the ZIP archive.
-        in: query
-        name: redirect
-        required: false
-        schema:
-          default: true
-          example: false
-          type: boolean
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  download location:
-                    format: uri
-                    type: string
                 type: object
-          description: The operation was successful. Return data provides the download
-            location.
-        '303':
-          description: The data are available.
-          headers:
-            Location:
-              description: ''
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+                    
+  /delete_auth_cookie:
+    get:
+      operationId: dash.api.routes.delete_auth_cookie_route
+      summary: "Immediately expires the authentication token used by NGINX."
+      parameters:
+        - name: X-Target
+          in: header
+          description: "URL the user should be redirected to after the cookies is deleted."
+          required: false
+          schema:
+            type: string
+            format: uri
+      responses:
+        "307":
+          description: "The operation was successful. The authentication cookie has is expired and the user is redirected."
+          content:
+            application/json:
               schema:
-                format: uri
-                type: string
-        '403':
-          description: Download token missing or invalid.
-        '404':
-          description: The data are not available (bad or expired token).
-      summary: For data download (assembly/annotation/reads in ZIP archive).  Response
-        is a 302 redirecting to static file route for the download.
+                type: object
+                properties:
+                  token:
+                    readOnly: true
+                    type: string
+
+  /get_user_details:
+    get:
+      operationId: dash.api.routes.get_user_details_route
+      summary: "Return all details for a user"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      responses:
+        "200":
+          description: "The operation was successful. A user details record is returned."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_details:
+                    $ref: "#/components/schemas/UserData"
+        "403":
+          description: "Authorization information is missing or invalid."
+
   /get_batches:
     get:
       operationId: dash.api.routes.get_batches_route
+      summary: "Return information on batches delivered, keyed by institution id."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   batches:
-                    additionalProperties:
-                      $ref: '#/components/schemas/InstitutionBatchSummary'
                     type: object
-                type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return information on batches delivered, keyed by institution id.
-  /get_distinct_values:
-    post:
-      operationId: dash.api.routes.get_distinct_values_route
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionBatchSummary"
+        "403":
+          description: "Authorization information is missing or invalid."
+
+  /sequencing_status_summary:
+    get:
+      operationId: dash.api.routes.sequencing_status_summary_route
+      summary: "Return information on sample/lane sequencing status, keyed by institution id."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      requestBody:
-        content:
-          application/json:
-            example:
-              fields:
-              - field names:
-                - serotype
-                - age_group
-                field type: metadata
-              - field names:
-                - ST
-                - cps_type
-                field type: in silico
-              sample filters:
-                batches:
-                - batch date: '2019-11-15'
-                  institution key: NatRefLab
-                in silico:
-                  ST:
-                  - '1'
-                  - '12'
-                  - '14'
-                metadata:
-                  age_group:
-                  - adult
-            schema:
-              $ref: '#/components/schemas/GetDistinctValuesInput'
-        required: true
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
           content:
             application/json:
-              example:
-                distinct values:
-                - field type: metadata
-                  fields:
-                  - matches:
-                    - number: 0
-                      value: Ia
-                    - number: 7
-                      value: Ib
-                    - number: 4
-                      value: III
-                    name: serotype
-                    values:
-                    - Ia
-                    - Ib
-                    - III
-                  - matches:
-                    - number: 15
-                      value: adult
-                    - number: 7
-                      value: adolescent
-                    - number: 0
-                      value: infant
-                    name: age_group
-                    values:
-                    - adult
-                    - adolescent
-                    - infant
-                - field type: in silico
-                  fields:
-                  - matches:
-                    - number: 4
-                      value: '1'
-                    - number: 3
-                      value: 1*
-                    - number: 0
-                      value: '103'
-                    - number: 0
-                      value: 103*?
-                    name: ST
-                    values:
-                    - '1'
-                    - 1*
-                    - '10'
-                    - '103'
-                    - 103*?
-                  - matches:
-                    - number: 4
-                      value: II
-                    - number: 3
-                      value: III
-                    - number: 11
-                      value: III/V
-                    - number: 6
-                      value: Ia/II
-                    name: cps_type
-                    values:
-                    - II
-                    - III
-                    - III/V
-                    - Ia/II
               schema:
-                properties:
-                  distinct values:
-                    $ref: '#/components/schemas/GetDistinctValuesOutput'
                 type: object
-          description: The operation was successful.
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: One or more of the requested fields not recognised.
-      summary: Return distinct values found in metadata, in silico or QC data fields
+                properties:
+                  sequencing_status:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionSequencingStatus"
+        "403":
+          description: "Authorization information is missing or invalid."
+
+  /pipeline_status_summary:
+    get:
+      operationId: dash.api.routes.pipeline_status_summary_route
+      summary: "Return information on sample/lane pipeline status, keyed by institution id."
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      responses:
+        "200":
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sequencing_status:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/InstitutionPipelineStatus"
+        "403":
+          description: "Authorization information is missing or invalid."
+          
   /get_field_attributes:
     get:
       operationId: dash.api.routes.get_field_attributes_route
+      summary: "Return attrubutes of metadata, in silico and QC data fields."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. Returned data is a JSON obnject describing metadata, in silico and QC data fields."
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   field_attributes:
-                    $ref: '#/components/schemas/FieldAttributes'
                     type: object
-<<<<<<< HEAD
                     $ref: "#/components/schemas/FieldAttributes"
         "403":
           description: "Authorization information is missing or invalid."
 
-=======
->>>>>>> running juno update
   /bulk_download_info:
     post:
       operationId: dash.api.routes.bulk_download_info_route
-=======
-                type: object
-          description: The operation was successful. Returned data is a JSON obnject
-            describing metadata, in silico and QC data fields.
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return attrubutes of metadata, in silico and QC data fields.
-  /get_institutions:
-    get:
-      operationId: dash.api.routes.get_institutions_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+      summary: "Return information on expected bulk download based on standard sample filters and data types"
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-<<<<<<< HEAD
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BulkDownloadInput'
-        required: true
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+              $ref: "#/components/schemas/BulkDownloadInput"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. The following data format will be returned..."
           content:
             application/json:
               schema:
-<<<<<<< HEAD
-                $ref: '#/components/schemas/DownloadInfo'
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: No samples were found that matched the request criteria.
-      summary: Return information on expected bulk download based on standard sample
-        filters and data types
+                $ref: "#/components/schemas/DownloadInfo"
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
+
   /bulk_download_urls:
     post:
       operationId: dash.api.routes.bulk_download_urls_route
-=======
-                properties:
-                  institutions:
-                    additionalProperties:
-                      $ref: '#/components/schemas/Institution'
-                    type: object
-                type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return a list of institutions.
-  /get_metadata:
-    post:
-      operationId: dash.api.routes.get_metadata_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+      summary: "Return download links corresponding to standard sample filters and data types"
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-<<<<<<< HEAD
-              $ref: '#/components/schemas/BulkDownloadInput'
-=======
-              $ref: '#/components/schemas/GetMetadataInput'
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-        required: true
+              $ref: "#/components/schemas/BulkDownloadInput"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. The following data format will be returned..."
           content:
             application/json:
               schema:
-<<<<<<< HEAD
-                $ref: '#/components/schemas/DownloadURLs'
-=======
-                $ref: '#/components/schemas/GetMetadataOutput'
-            text/csv:
-              schema:
-                type: string
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: No samples were found that matched the request criteria.
-<<<<<<< HEAD
-      summary: Return download links corresponding to standard sample filters and
-        data types
+                $ref: "#/components/schemas/DownloadURLs"
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
+
   /data_download/{token}:
     get:
       operationId: dash.api.routes.data_download_route
-=======
-      summary: Return metadata for samples matching standard sample filters
-  /get_metadata_for_download/{institution}/{category}/{status}:
-    get:
-      operationId: dash.api.routes.get_metadata_for_download_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+      summary: "For data download (assembly/annotation/reads in ZIP archive).  Response is a 302 redirecting to static file route for the download."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-<<<<<<< HEAD
-      - description: Download token (generated and embeded in URL(s) by /bulk_download_urls)
-        in: path
-        name: token
-        required: true
-        schema:
-          maxLength: 32
-          minLength: 16
-          pattern: ^[a-f0-9]+$
-          type: string
-      - description: Flag indicating if the resposne should be a 303 redirect to the
-          download location.  Test in swagger with "false", otherwise swagger UI will
-          follow the redirect in the response and download the ZIP archive.
-        in: query
-        name: redirect
-        required: false
-        schema:
-          default: true
-          example: false
-          type: boolean
+        - in: header
+          name: X-Remote-User
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+        - name: "token"
+          in: path
+          description: "Download token (generated and embeded in URL(s) by /bulk_download_urls)"
+          required: true
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 32
+            pattern: ^[a-f0-9]+$
+        - name: "redirect"
+          in: query
+          description: "Flag indicating if the resposne should be a 303 redirect to the download location.  Test in swagger with \"false\", otherwise swagger UI will follow the redirect in the response and download the ZIP archive."
+          required: false
+          schema:
+            type: boolean
+            default: true
+            example: false
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. Return data provides the download location."
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   download location:
-                    format: uri
                     type: string
-                type: object
-          description: The operation was successful. Return data provides the download
-            location.
-        '303':
-          description: The data are available.
+                    format: uri
+        "303":
+          description: "The data are available."
           headers:
             Location:
-              description: ''
+              description: ""
               schema:
+                type: string
                 format: uri
-                type: string
-        '403':
-          description: Download token missing or invalid.
-        '404':
-          description: The data are not available (bad or expired token).
-      summary: For data download (assembly/annotation/reads in ZIP archive).  Response
-        is a 302 redirecting to static file route for the download.
-  /get_batches:
-    get:
-      operationId: dash.api.routes.get_batches_route
-=======
-      - description: The institution name.
-        in: path
-        name: institution
-        required: true
-        schema:
-          $ref: '#/components/schemas/InstitutionName'
-      - description: 'The category to be downloaded: sequencing or pipeline.'
-        in: path
-        name: category
-        required: true
-        schema:
-          $ref: '#/components/schemas/DashboardMetadataDownloadCategory'
-      - description: 'The status type to be downloaded: successful or failed.'
-        in: path
-        name: status
-        required: true
-        schema:
-          $ref: '#/components/schemas/DashboardMetadataDownloadStatus'
-      responses:
-        '200':
-          content:
-            text/csv:
-              schema:
-                type: string
-          description: The operation was successful.
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: The operation was successful. The following data format will be returned...
+        "403":
+          description: "Download token missing or invalid."
+        "404":
+          description: "The data are not available (bad or expired token)."
+          
   /get_progress:
     get:
       operationId: dash.api.routes.get_progress_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+      summary: "Return the information necessary for plotting the project sample progress graph."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       responses:
-        '200':
-<<<<<<< HEAD
+        "200":
+          description: "The operation was successful. The following data format will be returned..."
           content:
             application/json:
               schema:
-                properties:
-                  batches:
-                    additionalProperties:
-                      $ref: '#/components/schemas/InstitutionBatchSummary'
-                    type: object
                 type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return information on batches delivered, keyed by institution id.
-  /get_distinct_values:
-    post:
-      operationId: dash.api.routes.get_distinct_values_route
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      requestBody:
-        content:
-          application/json:
-            example:
-              fields:
-              - field names:
-                - serotype
-                - age_group
-                field type: metadata
-              - field names:
-                - ST
-                - cps_type
-                field type: in silico
-              sample filters:
-                batches:
-                - batch date: '2019-11-15'
-                  institution key: NatRefLab
-                in silico:
-                  ST:
-                  - '1'
-                  - '12'
-                  - '14'
-                metadata:
-                  age_group:
-                  - adult
-            schema:
-              $ref: '#/components/schemas/GetDistinctValuesInput'
-        required: true
-      responses:
-        '200':
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-          content:
-            application/json:
-              example:
-                distinct values:
-                - field type: metadata
-                  fields:
-                  - matches:
-                    - number: 0
-                      value: Ia
-                    - number: 7
-                      value: Ib
-                    - number: 4
-                      value: III
-                    name: serotype
-                    values:
-                    - Ia
-                    - Ib
-                    - III
-                  - matches:
-                    - number: 15
-                      value: adult
-                    - number: 7
-                      value: adolescent
-                    - number: 0
-                      value: infant
-                    name: age_group
-                    values:
-                    - adult
-                    - adolescent
-                    - infant
-                - field type: in silico
-                  fields:
-                  - matches:
-                    - number: 4
-                      value: '1'
-                    - number: 3
-                      value: 1*
-                    - number: 0
-                      value: '103'
-                    - number: 0
-                      value: 103*?
-                    name: ST
-                    values:
-                    - '1'
-                    - 1*
-                    - '10'
-                    - '103'
-                    - 103*?
-                  - matches:
-                    - number: 4
-                      value: II
-                    - number: 3
-                      value: III
-                    - number: 11
-                      value: III/V
-                    - number: 6
-                      value: Ia/II
-                    name: cps_type
-                    values:
-                    - II
-                    - III
-                    - III/V
-                    - Ia/II
-              schema:
-<<<<<<< HEAD
                 properties:
-                  distinct values:
-                    $ref: '#/components/schemas/GetDistinctValuesOutput'
-                type: object
-          description: The operation was successful.
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: One or more of the requested fields not recognised.
-      summary: Return distinct values found in metadata, in silico or QC data fields
-  /get_field_attributes:
-    get:
-      operationId: dash.api.routes.get_field_attributes_route
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  field_attributes:
-                    $ref: '#/components/schemas/FieldAttributes'
-                    type: object
-                type: object
-          description: The operation was successful. Returned data is a JSON obnject
-            describing metadata, in silico and QC data fields.
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return attrubutes of metadata, in silico and QC data fields.
+                  progress_graph:
+                    $ref: "#/components/schemas/ProjectProgress"
+        "403":
+          description: "Authorization information is missing or invalid."
+
   /get_institutions:
     get:
       operationId: dash.api.routes.get_institutions_route
-=======
-                properties:
-                  progress_graph:
-                    $ref: '#/components/schemas/ProjectProgress'
-                type: object
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return the information necessary for plotting the project sample progress
-        graph.
-  /get_user_details:
-    get:
-      operationId: dash.api.routes.get_user_details_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+      summary: "Return a list of institutions."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. Returned data will be keyed on institution id, shown as additionalProp in the example below..."
           content:
             application/json:
               schema:
-                properties:
-<<<<<<< HEAD
-                  institutions:
-                    additionalProperties:
-                      $ref: '#/components/schemas/Institution'
-                    type: object
                 type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return a list of institutions.
+                properties:
+                  institutions:
+                    type: object
+                    additionalProperties:
+                      $ref: "#/components/schemas/Institution"
+        "403":
+          description: "Authorization information is missing or invalid."
+
   /get_metadata:
     post:
       operationId: dash.api.routes.get_metadata_route
+      summary: "Return metadata for samples matching standard sample filters"
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GetMetadataInput'
-        required: true
+              $ref: "#/components/schemas/GetMetadataInput"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful. The following data format will be returned..."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetMetadataOutput'
+                $ref: "#/components/schemas/GetMetadataOutput"
             text/csv:
               schema:
                 type: string
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-        '404':
-          description: No samples were found that matched the request criteria.
-      summary: Return metadata for samples matching standard sample filters
-  /get_metadata_for_download/{institution}/{category}/{status}:
-    get:
-      operationId: dash.api.routes.get_metadata_for_download_route
-=======
-                  user_details:
-                    $ref: '#/components/schemas/UserData'
-                type: object
-          description: The operation was successful. A user details record is returned.
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return all details for a user
-  /pipeline_status_summary:
-    get:
-      operationId: dash.api.routes.pipeline_status_summary_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "No samples were found that matched the request criteria."
+ 
+  /get_distinct_values:
+    post:
+      operationId: dash.api.routes.get_distinct_values_route
+      summary: "Return distinct values found in metadata, in silico or QC data fields"
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-<<<<<<< HEAD
-      - description: The institution name.
-        in: path
-        name: institution
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      requestBody:
         required: true
         content:
           application/json:
@@ -798,194 +446,132 @@ paths:
                   }
                 }
                 
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
       responses:
-        '200':
+        "200":
+          description: "The operation was successful."
           content:
             application/json:
               schema:
-<<<<<<< HEAD
-                properties:
-                  progress_graph:
-                    $ref: '#/components/schemas/ProjectProgress'
                 type: object
-          description: The operation was successful. The following data format will
-            be returned...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return the information necessary for plotting the project sample progress
-        graph.
-  /get_user_details:
+                properties:
+                  distinct values:
+                    $ref: "#/components/schemas/GetDistinctValuesOutput"
+              example:
+                { "distinct values": [
+                     {  "field type": "metadata",
+                        "fields":     [   {  "name":     "serotype",
+                                             "values":   ["Ia", "Ib", "III"],
+                                             "matches":  [  {"value": "Ia",  "number": 0 },
+                                                            {"value": "Ib",  "number": 7 },
+                                                            {"value": "III", "number": 4 }
+                                                            ]
+
+                                             },
+                                          {  "name":     "age_group",
+                                             "values":   ["adult", "adolescent", "infant"],
+                                             "matches":  [  {"value": "adult",      "number": 15 },
+                                                            {"value": "adolescent", "number": 7 },
+                                                            {"value": "infant",     "number": 0 }
+                                                            ]
+                                             }
+                                       ]
+                        },
+                     {  "field type": "in silico",
+                        "fields":      [  {  "name": "ST",
+                                             "values": ["1", "1*", "10", "103", "103*?"],
+                                             "matches":  [  {"value": "1",     "number": 4 },
+                                                            {"value": "1*",    "number": 3 },
+                                                            {"value": "103",   "number": 0 },
+                                                            {"value": "103*?", "number": 0 }
+                                                            ]
+                                             },
+                                          {  "name": "cps_type",
+                                             "values": ["II", "III", "III/V", "Ia/II"],
+                                             "matches":  [  {"value": "II",    "number": 4 },
+                                                            {"value": "III",   "number": 3 },
+                                                            {"value": "III/V", "number": 11 },
+                                                            {"value": "Ia/II", "number": 6 }
+                                                            ]
+                                             }
+                                          ]
+                        }
+                  ]}
+                                
+                    
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "One or more of the requested fields not recognised."
+ 
+  /get_metadata_for_download/{institution}/{category}/{status}:
     get:
-      operationId: dash.api.routes.get_user_details_route
+      operationId: dash.api.routes.get_metadata_for_download_route
+      summary: "The operation was successful. The following data format will be returned..."
       parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
+        - in: header
+          name: X-Remote-User
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+        - name: "institution"
+          in: path
+          description: "The institution name."
+          required: true
+          schema:
+            $ref: "#/components/schemas/InstitutionName"
+        - name: "category"
+          in: path
+          description: "The category to be downloaded: sequencing or pipeline."
+          required: true
+          schema:
+            $ref: "#/components/schemas/DashboardMetadataDownloadCategory"
+        - name: "status"
+          in: path
+          description: "The status type to be downloaded: successful or failed."
+          required: true
+          schema:
+            $ref: "#/components/schemas/DashboardMetadataDownloadStatus"
       responses:
-        '200':
+        "200":
+          description: "The operation was successful."
           content:
-            application/json:
+            text/csv:
               schema:
-                properties:
-                  user_details:
-                    $ref: '#/components/schemas/UserData'
-                type: object
-          description: The operation was successful. A user details record is returned.
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return all details for a user
-  /pipeline_status_summary:
-    get:
-      operationId: dash.api.routes.pipeline_status_summary_route
-=======
-                properties:
-                  sequencing_status:
-                    additionalProperties:
-                      $ref: '#/components/schemas/InstitutionPipelineStatus'
-                    type: object
-                type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return information on sample/lane pipeline status, keyed by institution
-        id.
-  /sequencing_status_summary:
-    get:
-      operationId: dash.api.routes.sequencing_status_summary_route
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  sequencing_status:
-                    additionalProperties:
-<<<<<<< HEAD
-                      $ref: '#/components/schemas/InstitutionPipelineStatus'
-                    type: object
-                type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return information on sample/lane pipeline status, keyed by institution
-        id.
-  /sequencing_status_summary:
-    get:
-      operationId: dash.api.routes.sequencing_status_summary_route
-      parameters:
-      - description: Username.
-        in: header
-        name: X-Remote-User
-        required: false
-        schema:
-          $ref: '#/components/schemas/UserName'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  sequencing_status:
-                    additionalProperties:
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-                      $ref: '#/components/schemas/InstitutionSequencingStatus'
-                    type: object
-                type: object
-          description: The operation was successful. Returned data will be keyed on
-            institution id, shown as additionalProp in the example below...
-        '403':
-          description: Authorization information is missing or invalid.
-      summary: Return information on sample/lane sequencing status, keyed by institution
-        id.
+                type: string
+        "403":
+          description: "Authorization information is missing or invalid."
+
 components:
   schemas:
-    Batch:
-      description: Sample batch information.
-      properties:
-        date:
-          description: The delivery date.
-          example: '2019-09-18'
-          readOnly: true
-          type: string
-        name:
-          description: The batch name.
-          example: Batch 1
-          readOnly: true
-          type: string
-        number:
-          description: The batch sample size.
-          example: 200
-          readOnly: true
-          type: integer
-      required:
-      - name
-      - date
-      - number
+
+    UserName:
+       type: string
+       minLength: 3
+       maxLength: 256
+       pattern: ^[a-zA-Z0-9à-úÀ-Ú\!#\$%&'\*\+\-\./=\?\^_`\{\|\}~;]+$
+
+    Institution:
+      description: "Institution key, name and source countries."
       type: object
-    BatchDate:
-      example: '2019-11-15'
-      format: date
-      type: string
-    BulkDownloadInput:
-      properties:
-        annotations:
-          type: boolean
-        assemblies:
-          type: boolean
-        max samples per zip:
-          description: The maximum number of samples in each ZIP archive.  Automatically
-            divided by 10 if reads is true.
-          example: 25
-          maximum: 500
-          minimum: 1
-          type: integer
-        reads:
-          type: boolean
-        sample filters:
-          $ref: '#/components/schemas/SampleFilters'
       required:
-      - sample filters
-      type: object
-    CombinedSampleMetadata:
-      description: Sample manifest metadata plus in silico and QC data
+        - db_key
+        - inst_name
+        - country_names
       properties:
-        in silico:
-          $ref: '#/components/schemas/InSilicoData'
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-        qc data:
-          $ref: '#/components/schemas/QCData'
-      required:
-      - metadata
-      type: object
-    CountryName:
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA _\\-',;:\\.\\(\\)\\[\\]]*$"
-      type: string
+        db_key:
+          $ref: "#/components/schemas/InstitutionID"
+        inst_name:
+          $ref: "#/components/schemas/InstitutionName"
+        country_names:
+          $ref: "#/components/schemas/CountryNames"
+
     CountryNames:
-      description: List of countries.
+      description: "List of countries."
+      type: array
       items:
-        $ref: '#/components/schemas/CountryName'
+        $ref: "#/components/schemas/CountryName"
       minItems: 1
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     InstitutionID:
        description: "The ID of the institution."
@@ -1009,49 +595,84 @@ components:
       maxLength: 256
       pattern: ^[a-zA-Z0-9à-úÀ-Ú _\-',;:\.\(\)\[\]]*$
 
-=======
-      type: array
->>>>>>> running juno update
-=======
-      type: array
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
     DashboardMetadataDownloadCategory:
-      maxLength: 20
-      minLength: 1
-      pattern: ^sequencing|pipeline$
-      type: string
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^sequencing|pipeline$
+       
     DashboardMetadataDownloadStatus:
-      maxLength: 20
-      minLength: 1
-      pattern: ^successful|failed$
-      type: string
-    DataFieldName:
-      oneOf:
-      - $ref: '#/components/schemas/MetadataFieldName'
-      - $ref: '#/components/schemas/InSilicoFieldName'
-      - $ref: '#/components/schemas/QCDataFieldName'
-    DataFieldType:
-      description: 'The type of data field:  metadata, in silico, or QC data'
-      maxLength: 20
-      minLength: 1
-      pattern: ^metadata|in silico|qc data$
-      type: string
-    DownloadField:
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^successful|failed$
+
+    SampleFilters:
+      type: object
+      required:
+        - batches
       properties:
-        order:
-          description: An ordering integer index for the field
-          readOnly: true
-          type: integer
-        title:
-          description: The name of the metadata field
-          readOnly: true
+        batches:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstKeyBatchDatePair"
+        sequencing:
+          $ref: "#/components/schemas/SequencingFilters"
+        pipeline:
+          $ref: "#/components/schemas/PipelineFilters"
+        metadata:
+          $ref: "#/components/schemas/MetadataFilters"
+        in silico:
+          $ref: "#/components/schemas/InSilicoFilters"
+
+    SequencingFilters:
+      type: object
+      properties:
+        complete:
+          description: "samples with at least one lane that has completed sequencing, whether or not sequencing was a success"
+          type: boolean
+          default: false
+        success:
+          description: "samples with at least one lane that has been successfully sequenced"
+          type: boolean
+          default: false
+      example:
+        success: true
+
+    PipelineFilters:
+      type: object
+      properties:
+        complete:
+          description: "samples with at least one lane that has completed pipeline, whether or not all stages were successful"
+          type: boolean
+          default: false
+        success:
+          description: "samples with at least one lane that was successful through all pipeline stages"
+          type: boolean
+          default: false
+      example:
+        success: true
+
+    MetadataFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
           type: string
-        value:
-          description: The value of the metadata field
-          readOnly: true
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        age_group: ["adult"]
+
+    InSilicoFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
           type: string
-<<<<<<< HEAD
-<<<<<<< HEAD
           nullable: true
           minLength: 1
           maxLength: 256
@@ -1079,77 +700,173 @@ components:
 
     GetMetadataInput:
       type: object
-=======
->>>>>>> running juno update
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
       required:
-      - title
-      - value
-      - order
-      type: object
-    DownloadInfo:
+        - sample filters
       properties:
-        num_samples:
-          readOnly: true
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+        as csv:
+          description: "Set this flag to true when a text/csv response is required"
+          type: boolean
+          default: false
+        csv filename:
+          description: "For text/csv responses: the filename to use in the Content-Disposition header"
+          type: string
+          minLength: 1
+          maxLength: 256
+          default: "monocle.csv"
+          example: "monocle.csv"
+        in silico:
+          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
+          type: boolean
+          default: true
+        qc data:
+          description: "Set this flag to true to include in QC data with the metadata (ignored when 'as csv' is true)"
+          type: boolean
+          default: true
+        start row:
+          description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
           type: integer
-        size:
-          readOnly: true
-          type: string
-        size_per_zip_options:
-          items:
-            properties:
-              max_samples_per_zip:
-                minimum: 0
-                type: integer
-              size_per_zip:
-                minLength: 1
-                type: string
-            required:
-            - max_samples_per_zip
-            - size_per_zip
-            type: object
-          readOnly: true
+          minimum: 1
+          example: 1
+        num rows:
+          description: "For pagination: number of rows of metadata to be returned (ignored when 'as csv' is true)"
+          type: integer
+          minimum: 1
+          default: 20
+          example: 20
+        metadata columns:
+          description: "List of metadata columns that should be returned (as defined by the Metadata object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
-        size_zipped:
-          readOnly: true
-          type: string
-      required:
-      - num_samples
-      - size
-      - size_zipped
-      - size_per_zip_options
-      type: object
-    DownloadURLs:
-      properties:
-        download_urls:
           items:
-            format: uri
             type: string
+            pattern: ^[a-zA-Z0-9_]*$
+          default:
+            - "submitting_institution"
+            - "public_name"
+            - "host_status"
+            - "selection_random"
+            - "country"
+            - "collection_year"
+            - "host_species"
+            - "isolation_source"
+            - "serotype"
+          example:
+            - "submitting_institution"
+            - "public_name"
+            - "host_status"
+            - "selection_random"
+            - "country"
+            - "collection_year"
+            - "host_species"
+            - "isolation_source"
+            - "serotype"
+        in silico columns:
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
-      required:
-      - download_urls
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_]*$
+          default:
+            - "ST"
+          example:
+            - "ST"
+        qc data columns:
+          description: "List of QC data columns that should be returned (as defined by the QCData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
+          type: array
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_]*$
+          default:
+            - "rel_abun_sa"
+          example:
+            - "rel_abun_sa"
+
+    GetMetadataOutput:
       type: object
-    FailureInformation:
-      properties:
-        issue:
-          description: The associated error message.
-          example: Error message
-          readOnly: true
-          type: string
-        lane:
-          description: The failed lane id.
-          example: 31741_3#378
-          readOnly: true
-          type: string
-        stage:
-          description: The name of QC stage where issues was detected.
-          example: qc_lib
-          readOnly: true
-          type: string
+      readOnly: true
       required:
-<<<<<<< HEAD
-<<<<<<< HEAD
+        - samples
+        - total rows
+        - last row
+      properties:
+        last row:
+          description: "Number of the last row in this response.  If start row + num rows exceeds the total number of rows, this will be the last available row."
+          type: integer
+          minimum: 1
+        total rows:
+          description: "Total number of rows that match the sample filters passed."
+          type: integer
+          minimum: 0
+        samples:
+          type: array
+          items:
+            $ref: "#/components/schemas/CombinedSampleMetadata"
+
+    GetDistinctValuesInput:
+      type: object
+      required:
+        - fields
+      properties:
+        fields:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              field type:
+                description: "The type of field"
+                $ref: "#/components/schemas/DataFieldType"
+              field names:
+                description: "A list of fields for which distinct values are required."
+                type: array
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/DataFieldName"
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+          
+    GetDistinctValuesOutput:
+      type: array
+      readOnly: true
+      items:
+        type: object
+        properties:
+          field type:
+            description: "The type of field"
+            $ref: "#/components/schemas/DataFieldType"
+          fields:
+            description: "A list of fields for which distinct values are required."
+            type: array
+            items:
+              type: object
+              required:
+                - name
+                - values
+              properties:
+                name:
+                  $ref: "#/components/schemas/DataFieldName"
+                values:
+                  type: array
+                  items:
+                    description: "A value of this field that exists in the database"
+                    type: string
+                matches:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value:
+                        description: "A value of this field that exists in the database"
+                        type: string
+                      number:
+                        description: "The number of filtered samples in which this value occurs"
+                        type: integer
+
+    CombinedSampleMetadata:
+      type: object
+      description: "Sample manifest metadata plus in silico and QC data"
+      required:
         - metadata
       properties:
         metadata:
@@ -1166,1655 +883,381 @@ components:
             - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSQCData"
 
     FieldAttributes:
-=======
-      - lane
-      - stage
-      - issue
->>>>>>> running juno update
-=======
-      - lane
-      - stage
-      - issue
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
       type: object
-    FieldAttributes:
+      readOnly: true
       properties:
-        in silico:
-          properties:
-            categories:
-              items:
-                $ref: '#/components/schemas/FieldCategory'
-              type: array
-          type: object
         metadata:
+          type: object
           properties:
             categories:
-              items:
-                $ref: '#/components/schemas/FieldCategory'
               type: array
+              items:
+                $ref: "#/components/schemas/FieldCategory"
+        in silico:
           type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: "#/components/schemas/FieldCategory"
         qc data:
+          type: object
           properties:
             categories:
-              items:
-                $ref: '#/components/schemas/FieldCategory'
               type: array
-          type: object
-      readOnly: true
-      type: object
+              items:
+                $ref: "#/components/schemas/FieldCategory"
+          
     FieldCategory:
-      description: A category of fields, grouped together as they describe conceptually
-        related values.
-      properties:
-        fields:
-          description: A list of fields in the category.
-          items:
-            $ref: '#/components/schemas/FieldDescription'
-          type: array
-        name:
-          description: The name of the category.
-          type: string
-      readOnly: true
+      description: "A category of fields, grouped together as they describe conceptually related values."
       type: object
-    FieldDescription:
-      description: A description of a field
+      readOnly: true
       properties:
-        display:
-          description: Flag indicating if this field should be displayed
-          type: boolean
-        display name:
-          description: The name of this field that should be used for display
-          maxLength: 256
-          minLength: 2
-          type: string
-        filter type:
-          description: 'The type of filter that should be used with this field: "discrete",
-            "numeric", or "none"'
-          pattern: ^discrete|numeric|none$
-          type: string
         name:
-          description: The name of the field
-        order:
-          description: Sort order for this field (1 = first column, etc.) in spreadsheet
-            format.  Note that this format ignores the field categories!
-          minimum: 1
-          type: integer
-        spreadsheet heading:
-          description: The heading for this field in spreadsheet format
-          maxLength: 256
-          minLength: 2
+          description: "The name of the category."
           type: string
-<<<<<<< HEAD
-<<<<<<< HEAD
+        fields:
+          description: "A list of fields in the category."
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldDescription"
+        
+    FieldDescription:
+      description: "A description of a field"
+      type: object
+      readOnly: true
+      required:
+        - name
+        - display
+        - order
+        - spreadsheet heading
+        - display name
+        - filter type
+      properties:
+        name:
+          description: "The name of the field"
+        display:
+          description: "Flag indicating if this field should be displayed"
+          type: boolean
+        order:
+          description: "Sort order for this field (1 = first column, etc.) in spreadsheet format.  Note that this format ignores the field categories!"
+          type: integer
+          minimum: 1
+        spreadsheet heading:
+          description: "The heading for this field in spreadsheet format"
+          type: string
+          minLength: 2
+          maxLength: 256
+        display name:
+          description: "The name of this field that should be used for display"
+          type: string
+          minLength: 2
+          maxLength: 256
+        filter type:
+          description: "The type of filter that should be used with this field: \"discrete\", \"numeric\", or \"none\""
+          type: string
           pattern: ^discrete|numeric|none$
     
     DownloadField:
       type: object
-=======
-=======
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-      readOnly: true
       required:
-      - name
-      - display
-      - order
-      - spreadsheet heading
-      - display name
-      - filter type
-      type: object
-    GetDistinctValuesInput:
+        - "title"
+        - "value"
+        - "order"
       properties:
-        fields:
+        order:
+          type: integer
+          description: "An ordering integer index for the field"
+          readOnly: true
+        title:
+          type: string
+          description: "The name of the metadata field"
+          readOnly: true
+        value:
+          type: string
+          description: "The value of the metadata field"
+          readOnly: true
+
+    BulkDownloadInput:
+      type: object
+      required:
+        - sample filters
+      properties:
+        sample filters:
+          $ref: "#/components/schemas/SampleFilters"
+        assemblies:
+          type: boolean
+        annotations:
+          type: boolean
+        reads:
+          type: boolean
+        max samples per zip:
+          description: "The maximum number of samples in each ZIP archive.  Automatically divided by 10 if reads is true."
+          type:    integer
+          minimum: 1
+          maximum: 500
+          example: 25
+
+    InstKeyBatchDatePair:
+      type: object
+      required:
+        - "institution key"
+        - "batch date"
+      description: "Batch of samples, identified by institution and delivery date"
+      properties:
+        institution key:
+          description: "Institution ID"
+          $ref: "#/components/schemas/InstitutionID"
+        batch date:
+          description: "Date of delivery"
+          $ref: "#/components/schemas/BatchDate"
+
+    BatchDate:
+      type: string
+      format: date
+      example: "2019-11-15"
+
+    DownloadInfo:
+      type: object
+      required:
+        - num_samples
+        - size
+        - size_zipped
+        - size_per_zip_options
+      properties:
+        num_samples:
+          type: integer
+          readOnly: true
+        size:
+          type: string
+          readOnly: true
+        size_zipped:
+          type: string
+          readOnly: true
+        size_per_zip_options:
+          type: array
           items:
-            properties:
-              field names:
-                description: A list of fields for which distinct values are required.
-                items:
-                  $ref: '#/components/schemas/DataFieldName'
-                minItems: 1
-                type: array
-              field type:
-                $ref: '#/components/schemas/DataFieldType'
-                description: The type of field
             type: object
-          minItems: 1
-          type: array
-        sample filters:
-          $ref: '#/components/schemas/SampleFilters'
-      required:
-      - fields
-<<<<<<< HEAD
+            required:
+              - max_samples_per_zip
+              - size_per_zip
+            properties:
+              max_samples_per_zip:
+                type: integer
+                minimum: 0
+              size_per_zip:
+                type: string
+                minLength: 1
+          readOnly: true
+
+    DownloadURLs:
       type: object
-    GetDistinctValuesOutput:
-      items:
-        properties:
-          field type:
-            $ref: '#/components/schemas/DataFieldType'
-            description: The type of field
-          fields:
-            description: A list of fields for which distinct values are required.
-            items:
-              properties:
-                matches:
-                  items:
-                    properties:
-                      number:
-                        description: The number of filtered samples in which this
-                          value occurs
-                        type: integer
-                      value:
-                        description: A value of this field that exists in the database
-                        type: string
-                    type: object
-                  type: array
-                name:
-                  $ref: '#/components/schemas/DataFieldName'
-                values:
-                  items:
-                    description: A value of this field that exists in the database
-                    type: string
-                  type: array
-              required:
-              - name
-              - values
-              type: object
-            type: array
-        type: object
-      readOnly: true
-      type: array
-    GetMetadataInput:
+      required:
+        - download_urls
       properties:
-        as csv:
-          default: false
-          description: Set this flag to true when a text/csv response is required
-          type: boolean
-        csv filename:
-          default: monocle.csv
-          description: 'For text/csv responses: the filename to use in the Content-Disposition
-            header'
-          example: monocle.csv
-          maxLength: 256
-          minLength: 1
-          type: string
-        in silico:
-          default: true
-          description: Set this flag to true to include in silico data with the metadata
-            (ignored when 'as csv' is true)
-          type: boolean
-        in silico columns:
-          default:
-          - ST
-          description: 'List of in silico data columns that should be returned (as
-            defined by the InSilicoData object). Pass [''_ALL''] to get all columns.
-            Ignored when ''as csv'' is true: all columns are always returned.'
-          example:
-          - ST
+        download_urls:
+          type: array
           items:
-            pattern: ^[a-zA-Z0-9_]*$
             type: string
-          type: array
-        metadata columns:
-          default:
-          - submitting_institution
-          - public_name
-          - host_status
-          - selection_random
-          - country
-          - collection_year
-          - host_species
-          - isolation_source
-          - serotype
-          description: 'List of metadata columns that should be returned (as defined
-            by the Metadata object). Pass [''_ALL''] to get all columns. Ignored when
-            ''as csv'' is true: all columns are always returned.'
-          example:
-          - submitting_institution
-          - public_name
-          - host_status
-          - selection_random
-          - country
-          - collection_year
-          - host_species
-          - isolation_source
-          - serotype
-          items:
-            pattern: ^[a-zA-Z0-9_]*$
-            type: string
-          type: array
-        num rows:
-          default: 20
-          description: 'For pagination: number of rows of metadata to be returned
-            (ignored when ''as csv'' is true)'
-          example: 20
-          minimum: 1
-          type: integer
-        qc data:
-          default: true
-          description: Set this flag to true to include in QC data with the metadata
-            (ignored when 'as csv' is true)
-          type: boolean
-        qc data columns:
-          default:
-          - rel_abun_sa
-          description: 'List of QC data columns that should be returned (as defined
-            by the QCData object). Pass [''_ALL''] to get all columns. Ignored when
-            ''as csv'' is true: all columns are always returned.'
-          example:
-          - rel_abun_sa
-          items:
-            pattern: ^[a-zA-Z0-9_]*$
-            type: string
-          type: array
-        sample filters:
-          $ref: '#/components/schemas/SampleFilters'
-        start row:
-          description: 'For pagination: the first row of metadata (starting at 1)
-            to be returned (ignored when ''as csv'' is true)'
-          example: 1
-          minimum: 1
-          type: integer
-      required:
-      - sample filters
-      type: object
-    GetMetadataOutput:
-      properties:
-        last row:
-          description: Number of the last row in this response.  If start row + num
-            rows exceeds the total number of rows, this will be the last available
-            row.
-          minimum: 1
-          type: integer
-        samples:
-          items:
-            $ref: '#/components/schemas/CombinedSampleMetadata'
-          type: array
-        total rows:
-          description: Total number of rows that match the sample filters passed.
-          minimum: 0
-          type: integer
-      readOnly: true
-      required:
-=======
-      type: object
-    GetDistinctValuesOutput:
-      items:
-        properties:
-          field type:
-            $ref: '#/components/schemas/DataFieldType'
-            description: The type of field
-          fields:
-            description: A list of fields for which distinct values are required.
-            items:
-              properties:
-                matches:
-                  items:
-                    properties:
-                      number:
-                        description: The number of filtered samples in which this
-                          value occurs
-                        type: integer
-                      value:
-                        description: A value of this field that exists in the database
-                        type: string
-                    type: object
-                  type: array
-                name:
-                  $ref: '#/components/schemas/DataFieldName'
-                values:
-                  items:
-                    description: A value of this field that exists in the database
-                    type: string
-                  type: array
-              required:
-              - name
-              - values
-              type: object
-            type: array
-        type: object
-      readOnly: true
-      type: array
-    GetMetadataInput:
-      properties:
-        as csv:
-          default: false
-          description: Set this flag to true when a text/csv response is required
-          type: boolean
-        csv filename:
-          default: monocle.csv
-          description: 'For text/csv responses: the filename to use in the Content-Disposition
-            header'
-          example: monocle.csv
-          maxLength: 256
-          minLength: 1
-          type: string
-        in silico:
-          default: true
-          description: Set this flag to true to include in silico data with the metadata
-            (ignored when 'as csv' is true)
-          type: boolean
-        in silico columns:
-          default:
-          - ST
-          description: 'List of in silico data columns that should be returned (as
-            defined by the InSilicoData object). Pass [''_ALL''] to get all columns.
-            Ignored when ''as csv'' is true: all columns are always returned.'
-          example:
-          - ST
-          items:
-            pattern: ^[a-zA-Z0-9_]*$
-            type: string
-          type: array
-        metadata columns:
-          default:
-          - submitting_institution
-          - public_name
-          - host_status
-          - selection_random
-          - country
-          - collection_year
-          - host_species
-          - isolation_source
-          - serotype
-          description: 'List of metadata columns that should be returned (as defined
-            by the Metadata object). Pass [''_ALL''] to get all columns. Ignored when
-            ''as csv'' is true: all columns are always returned.'
-          example:
-          - submitting_institution
-          - public_name
-          - host_status
-          - selection_random
-          - country
-          - collection_year
-          - host_species
-          - isolation_source
-          - serotype
-          items:
-            pattern: ^[a-zA-Z0-9_]*$
-            type: string
-          type: array
-        num rows:
-          default: 20
-          description: 'For pagination: number of rows of metadata to be returned
-            (ignored when ''as csv'' is true)'
-          example: 20
-          minimum: 1
-          type: integer
-        qc data:
-          default: true
-          description: Set this flag to true to include in QC data with the metadata
-            (ignored when 'as csv' is true)
-          type: boolean
-        qc data columns:
-          default:
-          - rel_abun_sa
-          description: 'List of QC data columns that should be returned (as defined
-            by the QCData object). Pass [''_ALL''] to get all columns. Ignored when
-            ''as csv'' is true: all columns are always returned.'
-          example:
-          - rel_abun_sa
-          items:
-            pattern: ^[a-zA-Z0-9_]*$
-            type: string
-          type: array
-        sample filters:
-          $ref: '#/components/schemas/SampleFilters'
-        start row:
-          description: 'For pagination: the first row of metadata (starting at 1)
-            to be returned (ignored when ''as csv'' is true)'
-          example: 1
-          minimum: 1
-          type: integer
-      required:
-      - sample filters
-      type: object
-    GetMetadataOutput:
-      properties:
-        last row:
-          description: Number of the last row in this response.  If start row + num
-            rows exceeds the total number of rows, this will be the last available
-            row.
-          minimum: 1
-          type: integer
-        samples:
-          items:
-            $ref: '#/components/schemas/CombinedSampleMetadata'
-          type: array
-        total rows:
-          description: Total number of rows that match the sample filters passed.
-          minimum: 0
-          type: integer
-      readOnly: true
-      required:
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-      - samples
-      - total rows
-      - last row
-      type: object
-    InSilicoData:
-      properties:
-        AAC6APH2:
-          $ref: '#/components/schemas/DownloadField'
-        AADECC:
-          $ref: '#/components/schemas/DownloadField'
-        ALP1:
-          $ref: '#/components/schemas/DownloadField'
-        ALP23:
-          $ref: '#/components/schemas/DownloadField'
-        ALPHA:
-          $ref: '#/components/schemas/DownloadField'
-        ANT6:
-          $ref: '#/components/schemas/DownloadField'
-        APH3III:
-          $ref: '#/components/schemas/DownloadField'
-        APH3OTHER:
-          $ref: '#/components/schemas/DownloadField'
-        CATPC194:
-          $ref: '#/components/schemas/DownloadField'
-        CATQ:
-          $ref: '#/components/schemas/DownloadField'
-        ERMA:
-          $ref: '#/components/schemas/DownloadField'
-        ERMB:
-          $ref: '#/components/schemas/DownloadField'
-        ERMT:
-          $ref: '#/components/schemas/DownloadField'
-        FOSA:
-          $ref: '#/components/schemas/DownloadField'
-        GYRA:
-          $ref: '#/components/schemas/DownloadField'
-        GYRA_variant:
-          $ref: '#/components/schemas/DownloadField'
-        HVGA:
-          $ref: '#/components/schemas/DownloadField'
-        LNUB:
-          $ref: '#/components/schemas/DownloadField'
-        LNUC:
-          $ref: '#/components/schemas/DownloadField'
-        LSAC:
-          $ref: '#/components/schemas/DownloadField'
-        MEFA:
-          $ref: '#/components/schemas/DownloadField'
-        MPHC:
-          $ref: '#/components/schemas/DownloadField'
-        MSRA:
-          $ref: '#/components/schemas/DownloadField'
-        MSRD:
-          $ref: '#/components/schemas/DownloadField'
-        PARC:
-          $ref: '#/components/schemas/DownloadField'
-        PARC_variant:
-          $ref: '#/components/schemas/DownloadField'
-        PI1:
-          $ref: '#/components/schemas/DownloadField'
-        PI2A1:
-          $ref: '#/components/schemas/DownloadField'
-        PI2A2:
-          $ref: '#/components/schemas/DownloadField'
-        PI2B:
-          $ref: '#/components/schemas/DownloadField'
-        RIB:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_1:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_1_variant:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_2:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_2_variant:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_3:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_3_variant:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_4:
-          $ref: '#/components/schemas/DownloadField'
-        RPOBGBS_4_variant:
-          $ref: '#/components/schemas/DownloadField'
-        SRR1:
-          $ref: '#/components/schemas/DownloadField'
-        SRR2:
-          $ref: '#/components/schemas/DownloadField'
-        ST:
-          $ref: '#/components/schemas/DownloadField'
-        SUL2:
-          $ref: '#/components/schemas/DownloadField'
-        TETB:
-          $ref: '#/components/schemas/DownloadField'
-        TETL:
-          $ref: '#/components/schemas/DownloadField'
-        TETM:
-          $ref: '#/components/schemas/DownloadField'
-        TETO:
-          $ref: '#/components/schemas/DownloadField'
-        TETS:
-          $ref: '#/components/schemas/DownloadField'
-        adhP:
-          $ref: '#/components/schemas/DownloadField'
-        atr:
-          $ref: '#/components/schemas/DownloadField'
-        cps_type:
-          $ref: '#/components/schemas/DownloadField'
-        glcK:
-          $ref: '#/components/schemas/DownloadField'
-        glnA:
-          $ref: '#/components/schemas/DownloadField'
-<<<<<<< HEAD
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        pheS:
-          $ref: '#/components/schemas/DownloadField'
-        sdhA:
-          $ref: '#/components/schemas/DownloadField'
-        tkt:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S1:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S1_variant:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S3:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S3_variant:
-          $ref: '#/components/schemas/DownloadField'
-      required:
-      - lane_id
-      - cps_type
-      - ST
-      - adhP
-      - pheS
-      - atr
-      - glnA
-      - sdhA
-      - glcK
-      - tkt
-      - twenty_three_S1
-      - twenty_three_S3
-      - AAC6APH2
-      - AADECC
-      - ANT6
-      - APH3III
-      - APH3OTHER
-      - CATPC194
-      - CATQ
-      - ERMA
-      - ERMB
-      - ERMT
-      - LNUB
-      - LNUC
-      - LSAC
-      - MEFA
-      - MPHC
-      - MSRA
-      - MSRD
-      - FOSA
-      - GYRA
-      - PARC
-      - RPOBGBS_1
-      - RPOBGBS_2
-      - RPOBGBS_3
-      - RPOBGBS_4
-      - SUL2
-      - TETB
-      - TETL
-      - TETM
-      - TETO
-      - TETS
-      - ALP1
-      - ALP23
-      - ALPHA
-      - HVGA
-      - PI1
-      - PI2A1
-      - PI2A2
-      - PI2B
-      - RIB
-      - SRR1
-      - SRR2
-      - twenty_three_S1_variant
-      - twenty_three_S3_variant
-      - GYRA_variant
-      - PARC_variant
-      - RPOBGBS_1_variant
-      - RPOBGBS_2_variant
-      - RPOBGBS_3_variant
-      - RPOBGBS_4_variant
-      type: object
-    InSilicoFieldName:
-      description: Valid in silico field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|twenty_three_S1_variant|twenty_three_S3_variant|GYRA_variant|PARC_variant|RPOBGBS_1_variant|RPOBGBS_2_variant|RPOBGBS_3_variant|RPOBGBS_4_variant$
-      type: string
-    InSilicoFilters:
-      additionalProperties:
-        items:
-          maxLength: 256
-          minLength: 1
-          nullable: true
-          type: string
-        minItems: 1
-        type: array
-      example:
-        ST:
-        - '1'
-        - '12'
-        - '14'
-      minItems: 0
-      type: object
-    InstKeyBatchDatePair:
-      description: Batch of samples, identified by institution and delivery date
-      properties:
-        batch date:
-          $ref: '#/components/schemas/BatchDate'
-          description: Date of delivery
-        institution key:
-          $ref: '#/components/schemas/InstitutionID'
-          description: Institution ID
-      required:
-      - institution key
-      - batch date
-      type: object
-    Institution:
-      description: Institution key, name and source countries.
-      properties:
-        country_names:
-          $ref: '#/components/schemas/CountryNames'
-        db_key:
-          $ref: '#/components/schemas/InstitutionID'
-        inst_name:
-          $ref: '#/components/schemas/InstitutionName'
-      required:
-      - db_key
-      - inst_name
-      - country_names
-      type: object
-    InstitutionBatchSummary:
-      description: Sample batch information for an institution.
-      properties:
-        deliveries:
-          description: Information on all batches delivered.
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
-        expected:
-          description: The number of samples expected.
-          example: 200
-          readOnly: true
-          type: integer
-        received:
-          description: The number of samples received.
-          example: 200
-          readOnly: true
-          type: integer
-      required:
-      - expected
-      - received
-      - deliveries
-      type: object
-    InstitutionID:
-      description: The ID of the institution.
-      example: NatRefLab
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA]*$"
-      type: string
-    InstitutionName:
-      description: The name of the institution.
-      example: National Reference Laboratories
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA _\\-',;:\\.\\(\\)]*$"
-      type: string
-    InstitutionPipelineStatus:
-      description: Pathogen pipelines status summary information for an institution.
-      properties:
-        completed:
-          description: The number of lanes that have completed pipelines, whether
-            pass or fail.
-          example: 300
-          readOnly: true
-          type: integer
-        fail_messages:
-          description: Error information on all pipeline failures.
-          items:
-            $ref: '#/components/schemas/FailureInformation'
-          type: array
-        failed:
-          description: The number of lanes that have failed their pipeline runs.
-          example: 2
-          readOnly: true
-          type: integer
-        running:
-          description: The number of lanes currently running.
-          example: 400
-          readOnly: true
-          type: integer
-        success:
-          description: The number of lanes that have successfully completed pipeline
-            runs.
-          example: 298
-          readOnly: true
-          type: integer
-      required:
-      - running
-      - completed
-      - success
-      - failed
-      - fail_messages
-      type: object
-    InstitutionSequencingStatus:
-      description: Sequencing status summary information for an institution.
-      properties:
-        completed:
-          description: The number of lanes that have completed sequencing, whether
-            pass or fail.
-          example: 300
-          readOnly: true
-          type: integer
-        fail_messages:
-          description: Error information on all sequencing failures.
-          items:
-            $ref: '#/components/schemas/FailureInformation'
-          type: array
-        failed:
-          description: The number of lanes that have failed sequencing.
-          example: 2
-          readOnly: true
-          type: integer
-        received:
-          description: The number of lanes received.
-          example: 400
-          readOnly: true
-          type: integer
-        success:
-          description: The number of lanes that have successfully completed sequencing.
-          example: 298
-          readOnly: true
-          type: integer
-      required:
-      - received
-      - completed
-      - success
-      - failed
-      - fail_messages
-      type: object
-    Metadata:
-      properties:
-        age_days:
-          $ref: '#/components/schemas/DownloadField'
-        age_group:
-          $ref: '#/components/schemas/DownloadField'
-        age_months:
-          $ref: '#/components/schemas/DownloadField'
-        age_weeks:
-          $ref: '#/components/schemas/DownloadField'
-        age_years:
-          $ref: '#/components/schemas/DownloadField'
-        ampicillin:
-          $ref: '#/components/schemas/DownloadField'
-        ampicillin_method:
-          $ref: '#/components/schemas/DownloadField'
-        apgar_score:
-          $ref: '#/components/schemas/DownloadField'
-        birth_weight_gram:
-          $ref: '#/components/schemas/DownloadField'
-        cefazolin:
-          $ref: '#/components/schemas/DownloadField'
-        cefazolin_method:
-          $ref: '#/components/schemas/DownloadField'
-        cefotaxime:
-          $ref: '#/components/schemas/DownloadField'
-        cefotaxime_method:
-          $ref: '#/components/schemas/DownloadField'
-        cefoxitin:
-          $ref: '#/components/schemas/DownloadField'
-        cefoxitin_method:
-          $ref: '#/components/schemas/DownloadField'
-        ceftizoxime:
-          $ref: '#/components/schemas/DownloadField'
-        ceftizoxime_method:
-          $ref: '#/components/schemas/DownloadField'
-        ciprofloxacin:
-          $ref: '#/components/schemas/DownloadField'
-        ciprofloxacin_method:
-          $ref: '#/components/schemas/DownloadField'
-        city:
-          $ref: '#/components/schemas/DownloadField'
-        clindamycin:
-          $ref: '#/components/schemas/DownloadField'
-        clindamycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        collection_day:
-          $ref: '#/components/schemas/DownloadField'
-        collection_month:
-          $ref: '#/components/schemas/DownloadField'
-        collection_year:
-          $ref: '#/components/schemas/DownloadField'
-        country:
-          $ref: '#/components/schemas/DownloadField'
-        county_state:
-          $ref: '#/components/schemas/DownloadField'
-        daptomycin:
-          $ref: '#/components/schemas/DownloadField'
-        daptomycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        disease_onset:
-          $ref: '#/components/schemas/DownloadField'
-        disease_type:
-          $ref: '#/components/schemas/DownloadField'
-        erythromycin:
-          $ref: '#/components/schemas/DownloadField'
-        erythromycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        gender:
-          $ref: '#/components/schemas/DownloadField'
-        gestational_age_weeks:
-          $ref: '#/components/schemas/DownloadField'
-        host_species:
-          $ref: '#/components/schemas/DownloadField'
-        host_status:
-          $ref: '#/components/schemas/DownloadField'
-        infection_during_pregnancy:
-          $ref: '#/components/schemas/DownloadField'
-        isolation_source:
-          $ref: '#/components/schemas/DownloadField'
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        levofloxacin:
-          $ref: '#/components/schemas/DownloadField'
-        levofloxacin_method:
-          $ref: '#/components/schemas/DownloadField'
-        linezolid:
-          $ref: '#/components/schemas/DownloadField'
-        linezolid_method:
-          $ref: '#/components/schemas/DownloadField'
-        maternal_infection_type:
-          $ref: '#/components/schemas/DownloadField'
-        penicillin:
-          $ref: '#/components/schemas/DownloadField'
-        penicillin_method:
-          $ref: '#/components/schemas/DownloadField'
-        public_name:
-          $ref: '#/components/schemas/DownloadField'
-        sanger_sample_id:
-          $ref: '#/components/schemas/DownloadField'
-        selection_random:
-          $ref: '#/components/schemas/DownloadField'
-        serotype:
-          $ref: '#/components/schemas/DownloadField'
-        serotype_method:
-          $ref: '#/components/schemas/DownloadField'
-        study_name:
-          $ref: '#/components/schemas/DownloadField'
-        study_ref:
-          $ref: '#/components/schemas/DownloadField'
-        submitting_institution:
-          $ref: '#/components/schemas/DownloadField'
-        supplier_sample_name:
-          $ref: '#/components/schemas/DownloadField'
-        tetracycline:
-          $ref: '#/components/schemas/DownloadField'
-        tetracycline_method:
-          $ref: '#/components/schemas/DownloadField'
-        vancomycin:
-          $ref: '#/components/schemas/DownloadField'
-        vancomycin_method:
-          $ref: '#/components/schemas/DownloadField'
->>>>>>> running juno update
-      required:
-      - public_name
-      - sanger_sample_id
-      - supplier_sample_name
-      - lane_id
-      - study_name
-      - study_ref
-      - submitting_institution
-      - selection_random
-      - country
-      - county_state
-      - city
-      - collection_year
-      - collection_month
-      - collection_day
-      - host_species
-      - gender
-      - age_group
-      - age_years
-      - age_months
-      - age_weeks
-      - age_days
-      - host_status
-      - disease_type
-      - disease_onset
-      - isolation_source
-      - infection_during_pregnancy
-      - maternal_infection_type
-      - gestational_age_weeks
-      - birth_weight_gram
-      - apgar_score
-      - serotype
-      - serotype_method
-      - ceftizoxime
-      - ceftizoxime_method
-      - cefoxitin
-      - cefoxitin_method
-      - cefotaxime
-      - cefotaxime_method
-      - cefazolin
-      - cefazolin_method
-      - ampicillin
-      - ampicillin_method
-      - penicillin
-      - penicillin_method
-      - erythromycin
-      - erythromycin_method
-      - clindamycin
-      - clindamycin_method
-      - tetracycline
-      - tetracycline_method
-      - levofloxacin
-      - levofloxacin_method
-      - ciprofloxacin
-      - ciprofloxacin_method
-      - daptomycin
-      - daptomycin_method
-      - vancomycin
-      - vancomycin_method
-      - linezolid
-      - linezolid_method
-      type: object
-    MetadataFieldName:
-      description: Valid metadata field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
-      type: string
-    MetadataFilters:
-      additionalProperties:
-        items:
-          maxLength: 256
-          minLength: 1
-          nullable: true
-          type: string
-        minItems: 1
-        type: array
-      example:
-        age_group:
-        - adult
-      minItems: 0
-      type: object
-    PipelineFilters:
-      example:
-        success: true
-      properties:
-        complete:
-          default: false
-          description: samples with at least one lane that has completed pipeline,
-            whether or not all stages were successful
-          type: boolean
-        success:
-          default: false
-          description: samples with at least one lane that was successful through
-            all pipeline stages
-          type: boolean
-      type: object
+            format: uri
+
     ProjectProgress:
+      type: object
+      required:
+        - data
       properties:
         data:
-          $ref: '#/components/schemas/ProjectProgressData'
-      required:
-      - data
-      type: object
+          $ref: "#/components/schemas/ProjectProgressData"
+
     ProjectProgressData:
-      description: Progress graph data.
+      type: object
+      required:
+        - "date"
+        - "samples received"
+        - "samples sequenced"
+      description: "Progress graph data."
       properties:
         date:
-          items:
-            description: The batch date.
-            example: Jan 2019
-            readOnly: true
-            type: string
           type: array
+          items:
+            description: "The batch date."
+            example: "Jan 2019"
+            type: string
+            readOnly: true
         samples received:
+          type: array
           items:
-            description: The number of samples received for the batch.
+            description: "The number of samples received for the batch."
             example: 300
-            readOnly: true
             type: string
-          type: array
+            readOnly: true
         samples sequenced:
+          type: array
           items:
-            description: The number of samples sequenced for the batch.
+            description: "The number of samples sequenced for the batch."
             example: 200
-            readOnly: true
             type: string
-          type: array
-      required:
-      - date
-      - samples received
-      - samples sequenced
-      type: object
-    QCData:
-      properties:
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        rel_abun_sa:
-          $ref: '#/components/schemas/DownloadField'
-      required:
-      - lane_id
-      - rel_abun_sa
-      type: object
-    QCDataFieldName:
-      description: Valid QC data field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^lane_id|rel_abun_sa$
-      type: string
-    SampleFilters:
-      properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/InstKeyBatchDatePair'
-          type: array
-        in silico:
-          $ref: '#/components/schemas/InSilicoFilters'
-        metadata:
-          $ref: '#/components/schemas/MetadataFilters'
-        pipeline:
-          $ref: '#/components/schemas/PipelineFilters'
-        sequencing:
-          $ref: '#/components/schemas/SequencingFilters'
-      required:
-      - batches
-      type: object
-    SequencingFilters:
-      example:
-        success: true
-      properties:
-        complete:
-          default: false
-          description: samples with at least one lane that has completed sequencing,
-            whether or not sequencing was a success
-          type: boolean
-        success:
-          default: false
-          description: samples with at least one lane that has been successfully sequenced
-          type: boolean
-      type: object
-    UserData:
-      properties:
-=======
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        pheS:
-          $ref: '#/components/schemas/DownloadField'
-        sdhA:
-          $ref: '#/components/schemas/DownloadField'
-        tkt:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S1:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S1_variant:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S3:
-          $ref: '#/components/schemas/DownloadField'
-        twenty_three_S3_variant:
-          $ref: '#/components/schemas/DownloadField'
-      required:
-      - lane_id
-      - cps_type
-      - ST
-      - adhP
-      - pheS
-      - atr
-      - glnA
-      - sdhA
-      - glcK
-      - tkt
-      - twenty_three_S1
-      - twenty_three_S3
-      - AAC6APH2
-      - AADECC
-      - ANT6
-      - APH3III
-      - APH3OTHER
-      - CATPC194
-      - CATQ
-      - ERMA
-      - ERMB
-      - ERMT
-      - LNUB
-      - LNUC
-      - LSAC
-      - MEFA
-      - MPHC
-      - MSRA
-      - MSRD
-      - FOSA
-      - GYRA
-      - PARC
-      - RPOBGBS_1
-      - RPOBGBS_2
-      - RPOBGBS_3
-      - RPOBGBS_4
-      - SUL2
-      - TETB
-      - TETL
-      - TETM
-      - TETO
-      - TETS
-      - ALP1
-      - ALP23
-      - ALPHA
-      - HVGA
-      - PI1
-      - PI2A1
-      - PI2A2
-      - PI2B
-      - RIB
-      - SRR1
-      - SRR2
-      - twenty_three_S1_variant
-      - twenty_three_S3_variant
-      - GYRA_variant
-      - PARC_variant
-      - RPOBGBS_1_variant
-      - RPOBGBS_2_variant
-      - RPOBGBS_3_variant
-      - RPOBGBS_4_variant
-      type: object
-    InSilicoFieldName:
-      description: Valid in silico field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|twenty_three_S1_variant|twenty_three_S3_variant|GYRA_variant|PARC_variant|RPOBGBS_1_variant|RPOBGBS_2_variant|RPOBGBS_3_variant|RPOBGBS_4_variant$
-      type: string
-    InSilicoFilters:
-      additionalProperties:
-        items:
-          maxLength: 256
-          minLength: 1
-          nullable: true
-          type: string
-        minItems: 1
-        type: array
-      example:
-        ST:
-        - '1'
-        - '12'
-        - '14'
-      minItems: 0
-      type: object
-    InstKeyBatchDatePair:
-      description: Batch of samples, identified by institution and delivery date
-      properties:
-        batch date:
-          $ref: '#/components/schemas/BatchDate'
-          description: Date of delivery
-        institution key:
-          $ref: '#/components/schemas/InstitutionID'
-          description: Institution ID
-      required:
-      - institution key
-      - batch date
-      type: object
-    Institution:
-      description: Institution key, name and source countries.
-      properties:
-        country_names:
-          $ref: '#/components/schemas/CountryNames'
-        db_key:
-          $ref: '#/components/schemas/InstitutionID'
-        inst_name:
-          $ref: '#/components/schemas/InstitutionName'
-      required:
-      - db_key
-      - inst_name
-      - country_names
-      type: object
+            readOnly: true
+
     InstitutionBatchSummary:
-      description: Sample batch information for an institution.
+      type: object
+      required:
+        - expected
+        - received
+        - deliveries
+      description: "Sample batch information for an institution."
       properties:
-        deliveries:
-          description: Information on all batches delivered.
-          items:
-            $ref: '#/components/schemas/Batch'
-          type: array
         expected:
-          description: The number of samples expected.
+          description: "The number of samples expected."
           example: 200
-          readOnly: true
           type: integer
+          readOnly: true
         received:
-          description: The number of samples received.
+          description: "The number of samples received."
           example: 200
-          readOnly: true
           type: integer
-      required:
-      - expected
-      - received
-      - deliveries
-      type: object
-    InstitutionID:
-      description: The ID of the institution.
-      example: NatRefLab
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA]*$"
-      type: string
-    InstitutionName:
-      description: The name of the institution.
-      example: National Reference Laboratories
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA _\\-',;:\\.\\(\\)]*$"
-      type: string
-    InstitutionPipelineStatus:
-      description: Pathogen pipelines status summary information for an institution.
-      properties:
-        completed:
-          description: The number of lanes that have completed pipelines, whether
-            pass or fail.
-          example: 300
           readOnly: true
-          type: integer
-        fail_messages:
-          description: Error information on all pipeline failures.
-          items:
-            $ref: '#/components/schemas/FailureInformation'
+        deliveries:
           type: array
-        failed:
-          description: The number of lanes that have failed their pipeline runs.
-          example: 2
-          readOnly: true
-          type: integer
-        running:
-          description: The number of lanes currently running.
-          example: 400
-          readOnly: true
-          type: integer
-        success:
-          description: The number of lanes that have successfully completed pipeline
-            runs.
-          example: 298
-          readOnly: true
-          type: integer
-      required:
-      - running
-      - completed
-      - success
-      - failed
-      - fail_messages
-      type: object
-    InstitutionSequencingStatus:
-      description: Sequencing status summary information for an institution.
-      properties:
-        completed:
-          description: The number of lanes that have completed sequencing, whether
-            pass or fail.
-          example: 300
-          readOnly: true
-          type: integer
-        fail_messages:
-          description: Error information on all sequencing failures.
           items:
-            $ref: '#/components/schemas/FailureInformation'
-          type: array
-        failed:
-          description: The number of lanes that have failed sequencing.
-          example: 2
-          readOnly: true
-          type: integer
-        received:
-          description: The number of lanes received.
-          example: 400
-          readOnly: true
-          type: integer
-        success:
-          description: The number of lanes that have successfully completed sequencing.
-          example: 298
-          readOnly: true
-          type: integer
-      required:
-      - received
-      - completed
-      - success
-      - failed
-      - fail_messages
+            $ref: "#/components/schemas/Batch"
+          description: "Information on all batches delivered."
+
+    Batch:
       type: object
-    Metadata:
+      required:
+        - name
+        - date
+        - number
+      description: "Sample batch information."
       properties:
-        age_days:
-          $ref: '#/components/schemas/DownloadField'
-        age_group:
-          $ref: '#/components/schemas/DownloadField'
-        age_months:
-          $ref: '#/components/schemas/DownloadField'
-        age_weeks:
-          $ref: '#/components/schemas/DownloadField'
-        age_years:
-          $ref: '#/components/schemas/DownloadField'
-        ampicillin:
-          $ref: '#/components/schemas/DownloadField'
-        ampicillin_method:
-          $ref: '#/components/schemas/DownloadField'
-        apgar_score:
-          $ref: '#/components/schemas/DownloadField'
-        birth_weight_gram:
-          $ref: '#/components/schemas/DownloadField'
-        cefazolin:
-          $ref: '#/components/schemas/DownloadField'
-        cefazolin_method:
-          $ref: '#/components/schemas/DownloadField'
-        cefotaxime:
-          $ref: '#/components/schemas/DownloadField'
-        cefotaxime_method:
-          $ref: '#/components/schemas/DownloadField'
-        cefoxitin:
-          $ref: '#/components/schemas/DownloadField'
-        cefoxitin_method:
-          $ref: '#/components/schemas/DownloadField'
-        ceftizoxime:
-          $ref: '#/components/schemas/DownloadField'
-        ceftizoxime_method:
-          $ref: '#/components/schemas/DownloadField'
-        ciprofloxacin:
-          $ref: '#/components/schemas/DownloadField'
-        ciprofloxacin_method:
-          $ref: '#/components/schemas/DownloadField'
-        city:
-          $ref: '#/components/schemas/DownloadField'
-        clindamycin:
-          $ref: '#/components/schemas/DownloadField'
-        clindamycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        collection_day:
-          $ref: '#/components/schemas/DownloadField'
-        collection_month:
-          $ref: '#/components/schemas/DownloadField'
-        collection_year:
-          $ref: '#/components/schemas/DownloadField'
-        country:
-          $ref: '#/components/schemas/DownloadField'
-        county_state:
-          $ref: '#/components/schemas/DownloadField'
-        daptomycin:
-          $ref: '#/components/schemas/DownloadField'
-        daptomycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        disease_onset:
-          $ref: '#/components/schemas/DownloadField'
-        disease_type:
-          $ref: '#/components/schemas/DownloadField'
-        erythromycin:
-          $ref: '#/components/schemas/DownloadField'
-        erythromycin_method:
-          $ref: '#/components/schemas/DownloadField'
-        gender:
-          $ref: '#/components/schemas/DownloadField'
-        gestational_age_weeks:
-          $ref: '#/components/schemas/DownloadField'
-        host_species:
-          $ref: '#/components/schemas/DownloadField'
-        host_status:
-          $ref: '#/components/schemas/DownloadField'
-        infection_during_pregnancy:
-          $ref: '#/components/schemas/DownloadField'
-        isolation_source:
-          $ref: '#/components/schemas/DownloadField'
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        levofloxacin:
-          $ref: '#/components/schemas/DownloadField'
-        levofloxacin_method:
-          $ref: '#/components/schemas/DownloadField'
-        linezolid:
-          $ref: '#/components/schemas/DownloadField'
-        linezolid_method:
-          $ref: '#/components/schemas/DownloadField'
-        maternal_infection_type:
-          $ref: '#/components/schemas/DownloadField'
-        penicillin:
-          $ref: '#/components/schemas/DownloadField'
-        penicillin_method:
-          $ref: '#/components/schemas/DownloadField'
-        public_name:
-          $ref: '#/components/schemas/DownloadField'
-        sanger_sample_id:
-          $ref: '#/components/schemas/DownloadField'
-        selection_random:
-          $ref: '#/components/schemas/DownloadField'
-        serotype:
-          $ref: '#/components/schemas/DownloadField'
-        serotype_method:
-          $ref: '#/components/schemas/DownloadField'
-        study_name:
-          $ref: '#/components/schemas/DownloadField'
-        study_ref:
-          $ref: '#/components/schemas/DownloadField'
-        submitting_institution:
-          $ref: '#/components/schemas/DownloadField'
-        supplier_sample_name:
-          $ref: '#/components/schemas/DownloadField'
-        tetracycline:
-          $ref: '#/components/schemas/DownloadField'
-        tetracycline_method:
-          $ref: '#/components/schemas/DownloadField'
-        vancomycin:
-          $ref: '#/components/schemas/DownloadField'
-        vancomycin_method:
-          $ref: '#/components/schemas/DownloadField'
-      required:
-      - public_name
-      - sanger_sample_id
-      - supplier_sample_name
-      - lane_id
-      - study_name
-      - study_ref
-      - submitting_institution
-      - selection_random
-      - country
-      - county_state
-      - city
-      - collection_year
-      - collection_month
-      - collection_day
-      - host_species
-      - gender
-      - age_group
-      - age_years
-      - age_months
-      - age_weeks
-      - age_days
-      - host_status
-      - disease_type
-      - disease_onset
-      - isolation_source
-      - infection_during_pregnancy
-      - maternal_infection_type
-      - gestational_age_weeks
-      - birth_weight_gram
-      - apgar_score
-      - serotype
-      - serotype_method
-      - ceftizoxime
-      - ceftizoxime_method
-      - cefoxitin
-      - cefoxitin_method
-      - cefotaxime
-      - cefotaxime_method
-      - cefazolin
-      - cefazolin_method
-      - ampicillin
-      - ampicillin_method
-      - penicillin
-      - penicillin_method
-      - erythromycin
-      - erythromycin_method
-      - clindamycin
-      - clindamycin_method
-      - tetracycline
-      - tetracycline_method
-      - levofloxacin
-      - levofloxacin_method
-      - ciprofloxacin
-      - ciprofloxacin_method
-      - daptomycin
-      - daptomycin_method
-      - vancomycin
-      - vancomycin_method
-      - linezolid
-      - linezolid_method
-      type: object
-    MetadataFieldName:
-      description: Valid metadata field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
-      type: string
-    MetadataFilters:
-      additionalProperties:
-        items:
-          maxLength: 256
-          minLength: 1
-          nullable: true
+        name:
+          description: "The batch name."
+          example: "Batch 1"
           type: string
-        minItems: 1
-        type: array
-      example:
-        age_group:
-        - adult
-      minItems: 0
-      type: object
-    PipelineFilters:
-      example:
-        success: true
-      properties:
-        complete:
-          default: false
-          description: samples with at least one lane that has completed pipeline,
-            whether or not all stages were successful
-          type: boolean
-        success:
-          default: false
-          description: samples with at least one lane that was successful through
-            all pipeline stages
-          type: boolean
-      type: object
-    ProjectProgress:
-      properties:
-        data:
-          $ref: '#/components/schemas/ProjectProgressData'
-      required:
-      - data
-      type: object
-    ProjectProgressData:
-      description: Progress graph data.
-      properties:
+          readOnly: true
         date:
-          items:
-            description: The batch date.
-            example: Jan 2019
-            readOnly: true
-            type: string
-          type: array
-        samples received:
-          items:
-            description: The number of samples received for the batch.
-            example: 300
-            readOnly: true
-            type: string
-          type: array
-        samples sequenced:
-          items:
-            description: The number of samples sequenced for the batch.
-            example: 200
-            readOnly: true
-            type: string
-          type: array
-      required:
-      - date
-      - samples received
-      - samples sequenced
+          description: "The delivery date."
+          example: "2019-09-18"
+          type: string
+          readOnly: true
+        number:
+          description: "The batch sample size."
+          example: 200
+          type: integer
+          readOnly: true
+
+    InstitutionSequencingStatus:
       type: object
-    QCData:
-      properties:
-        lane_id:
-          $ref: '#/components/schemas/DownloadField'
-        rel_abun_sa:
-          $ref: '#/components/schemas/DownloadField'
       required:
-      - lane_id
-      - rel_abun_sa
-      type: object
-    QCDataFieldName:
-      description: Valid QC data field name
-      maxLength: 256
-      minLength: 1
-      pattern: ^lane_id|rel_abun_sa$
-      type: string
-    SampleFilters:
+        - received
+        - completed
+        - success
+        - failed
+        - fail_messages
+      description: "Sequencing status summary information for an institution."
       properties:
-        batches:
-          items:
-            $ref: '#/components/schemas/InstKeyBatchDatePair'
-          type: array
-        in silico:
-          $ref: '#/components/schemas/InSilicoFilters'
-        metadata:
-          $ref: '#/components/schemas/MetadataFilters'
-        pipeline:
-          $ref: '#/components/schemas/PipelineFilters'
-        sequencing:
-          $ref: '#/components/schemas/SequencingFilters'
-      required:
-      - batches
-      type: object
-    SequencingFilters:
-      example:
-        success: true
-      properties:
-        complete:
-          default: false
-          description: samples with at least one lane that has completed sequencing,
-            whether or not sequencing was a success
-          type: boolean
+        received:
+          description: "The number of lanes received."
+          example: 400
+          type: integer
+          readOnly: true
+        completed:
+          description: "The number of lanes that have completed sequencing, whether pass or fail."
+          example: 300
+          type: integer
+          readOnly: true
         success:
-          default: false
-          description: samples with at least one lane that has been successfully sequenced
-          type: boolean
-      type: object
-    UserData:
-      properties:
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-        memberOf:
-          description: A list of institutions and source countries of institutions
-            for which the user is a member
-          items:
-            $ref: '#/components/schemas/Institution'
+          description: "The number of lanes that have successfully completed sequencing."
+          example: 298
+          type: integer
+          readOnly: true
+        failed:
+          description: "The number of lanes that have failed sequencing."
+          example: 2
+          type: integer
+          readOnly: true
+        fail_messages:
           type: array
+          items:
+            $ref: "#/components/schemas/FailureInformation"
+          description: "Error information on all sequencing failures."
+
+    InstitutionPipelineStatus:
+      type: object
+      required:
+        - running
+        - completed
+        - success
+        - failed
+        - fail_messages
+      description: "Pathogen pipelines status summary information for an institution."
+      properties:
+        running:
+          description: "The number of lanes currently running."
+          example: 400
+          type: integer
+          readOnly: true
+        completed:
+          description: "The number of lanes that have completed pipelines, whether pass or fail."
+          example: 300
+          type: integer
+          readOnly: true
+        success:
+          description: "The number of lanes that have successfully completed pipeline runs."
+          example: 298
+          type: integer
+          readOnly: true
+        failed:
+          description: "The number of lanes that have failed their pipeline runs."
+          example: 2
+          type: integer
+          readOnly: true
+        fail_messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailureInformation"
+          description: "Error information on all pipeline failures."
+
+    FailureInformation:
+      type: object
+      required:
+        - lane
+        - stage
+        - issue
+      properties:
+        lane:
+          description: "The failed lane id."
+          example: "31741_3#378"
+          type: string
+          readOnly: true
+        stage:
+          description: "The name of QC stage where issues was detected."
+          example: "qc_lib"
+          type: string
+          readOnly: true
+        issue:
+          description: "The associated error message."
+          example: "Error message"
+          type: string
+          readOnly: true
+
+    UserData:
+      type: object
+      required:
+        - "username"
+        - "memberOf"
+      properties:
+        username:
+          type: string
+          description: "The username for this user"
+          readOnly: true
         type:
-          description: Optional employee user type field, e.g. admin
+          type: string
+          description: "Optional employee user type field, e.g. admin"
           readOnly: true
-<<<<<<< HEAD
-          type: string
-        username:
-          description: The username for this user
-          readOnly: true
-          type: string
-=======
-          type: string
-        username:
-          description: The username for this user
-          readOnly: true
-          type: string
->>>>>>> 43a8384f4f30e6a30123c2d01502c0798a5a20cf
-      required:
-      - username
-      - memberOf
-      type: object
-    UserName:
-      maxLength: 256
-      minLength: 3
-      pattern: "^[a-zA-Z0-9\xE0-\xFA\xC0-\xDA\\!#\\$%&'\\*\\+\\-\\./=\\?\\^_`\\{\\\
-        |\\}~;]+$"
-      type: string
+        memberOf:
+          type: array
+          description: "A list of institutions and source countries of institutions for which the user is a member"
+          items:
+            $ref: "#/components/schemas/Institution"
