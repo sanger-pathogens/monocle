@@ -251,17 +251,17 @@ class UpdateMetadataFiles:
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
                     data = json.load(config_file)
-                    for entry in files["API model"]:
-                        table_data = data[entry["data key"]]
-                        self.generate_dataclass_file(
-                            table_data,
-                            entry["class name"],
-                            self.abs_path(entry["model file name"]),
-                        )
-                        self.update_database_definition(table_data, self.abs_path(entry["SQL file name"]))
-                    self.update_metadata_tests(data, self.abs_path(files["test directory"]))
-                    self.update_dash_yml(data, self.abs_path(files["dash YAML file"]))
-                    self.update_main_yml(data, self.abs_path(files["API YAML file"]))
+                for entry in files["API model"]:
+                    table_data = data[entry["data key"]]
+                    self.generate_dataclass_file(
+                        table_data,
+                        entry["class name"],
+                        self.abs_path(entry["model file name"]),
+                    )
+                    self.update_database_definition(table_data, self.abs_path(entry["SQL file name"]))
+                self.update_metadata_tests(data, self.abs_path(files["test directory"]))
+                self.update_dash_yml(data, self.abs_path(files["dash YAML file"]))
+                self.update_main_yml(data, self.abs_path(files["API YAML file"]))
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
