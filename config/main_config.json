@@ -35,19 +35,19 @@
                   "data key":"metadata",
                   "class name": "Metadata",
                   "model file name": "metadata/gps/metadata/api/model/metadata.py",
-                  "SQL file name": "database/tables/api_sample.sql"
+                  "SQL file name": "database/tables/gps_sample.sql"
                },
                {
                   "data key":"in_silico_data",
                   "class name": "InSilicoData",
                   "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
-                  "SQL file name": "database/tables/in_silico.sql"
+                  "SQL file name": "database/tables/gps_in_silico.sql"
                },
                {
                   "data key":"qc_data",
                   "class name": "QCData",
                   "model file name": "metadata/gps/metadata/api/model/qc_data.py",
-                  "SQL file name": "database/tables/qc_data.sql"
+                  "SQL file name": "database/tables/gps_qc_data.sql"
                }
             ],
             "test directory": "metadata/common/metadata/tests",
