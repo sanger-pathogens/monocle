@@ -35,4 +35,4 @@ VALUES ('CDC (Public GPS samples)','USA', 42.047428, -93.580467),
 --
 -- Update the database version
 --
-CALL update_database_version('0.2.92', 'Update submitting institutions');
+CALL update_database_version('0.2.93', 'Update submitting institutions');
