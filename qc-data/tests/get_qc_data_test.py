@@ -18,7 +18,10 @@ INSTITUTIONS = {
             "name": "Laboratório Central do Estado do Paraná",
             "db_key": "Laboratório Central do Estado do Paraná",
         },
-        "NatRefLab": {"name": "National Reference Laboratories", "db_key": "National Reference Laboratories"},
+        "MinHeaCenLab": {
+            "name": "Ministry of Health, Central Laboratories",
+            "db_key": "Ministry of Health, Central Laboratories",
+        },
         "TheChiUniHonKon": {
             "name": "The Chinese University of Hong Kong",
             "db_key": "The Chinese University of Hong Kong",
@@ -40,8 +43,8 @@ INSTITUTION_WITHOUT_LANES = {
 }
 INSTITUTIONS_WITH_PUBLIC_NAMES = [
     {
-        "name": INSTITUTIONS["institutions"]["NatRefLab"]["name"],
-        "id": "NatRefLab",
+        "name": INSTITUTIONS["institutions"]["MinHeaCenLab"]["name"],
+        "id": "MinHeaCenLab",
         "samples": [
             {"public_name": PUBLIC_NAMES[0], "sanger_sample_id": SAMPLE_IDS[0]},
             {"public_name": PUBLIC_NAMES[1], "sanger_sample_id": SAMPLE_IDS[1]},

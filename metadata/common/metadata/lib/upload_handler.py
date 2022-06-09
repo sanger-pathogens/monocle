@@ -3,6 +3,7 @@ import re
 from typing import List
 
 import pandas
+from flask import current_app as application
 from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
@@ -23,6 +24,7 @@ class _StringLengthValidation(CustomElementValidation):
 
     def __init__(self, message: str, max_length: int):
         self.max_length = max_length
+        self.application = application
         super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
 
 
@@ -62,6 +64,7 @@ class UploadHandler:
 
         # immediately return true if this check is disabled
         if not self.check_file_extension:
+            logger.debug("file extension checking disabled")
             return True
 
         valid = False
@@ -190,8 +193,7 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            username = self.__dao.get_authenticated_username(request)
-            self.__institutions = self.__dao.get_institutions(username)
+            self.__institutions = self.__dao.get_institutions(request)
             # Create a validation schema
             schema = self.create_schema()
             # Run the validation

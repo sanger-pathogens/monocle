@@ -19,7 +19,7 @@
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/metadata/in-silico-upload"
+  uploadUrl="/metadata/juno/in-silico-upload"
   accept="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
   on:uploadSuccess={openDialog}
 />

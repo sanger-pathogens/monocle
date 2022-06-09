@@ -1,0 +1,547 @@
+openapi: '3.0.0'
+
+info:
+   title: "Monocle Sample Metadata API"
+   version: "0.2"
+   description: "A REST API for accessing/updating Monocle sample metadata"
+   contact:
+      email: "monocle-help@sanger.ac.uk"
+
+servers:
+  $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/APIServers"
+
+paths:
+  /metadata-upload:
+    post:
+      operationId: metadata.api.routes.update_sample_metadata_route
+      summary: "Upload a new tab-delimited file of metadata"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Spreadsheet"
+      responses:
+        "200":
+          description: "The upload succeeded"
+        "400":
+          description: "The file has not passed validation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    $ref: "#/components/schemas/ValidationErrors"
+
+  /in-silico-upload:
+    post:
+      operationId: metadata.api.routes.update_in_silico_data_route
+      summary: "Upload a new tab-delimited file of in silico data"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Spreadsheet"
+      responses:
+        "200":
+          description: "The upload succeeded"
+        "400":
+          description: "The file has not passed validation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrors"
+                
+  /qc-data-upload:
+    post:
+      operationId: metadata.api.routes.update_qc_data_route
+      summary: "Update QC data"
+      requestBody:
+        description: "A list of dictionaries of QC data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QCDataUpdates"
+      responses:
+        "200":
+          description: "The update succeeded"
+        "400":
+          description: "The update request was not valid."
+          
+  /download:
+    post:
+      operationId: metadata.api.routes.get_download_metadata_route
+      summary: "Download the metadata for the given download keys"
+      requestBody:
+        description: "A list of Sanger sample IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadSampleKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/Metadata"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /download_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_download_in_silico_data_route
+      summary: "Download the in silico data for the given download keys"
+      requestBody:
+        description: "A list of lane IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadLaneKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoData"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /download_qc_data:
+    post:
+      operationId: metadata.api.routes.get_download_qc_data_route
+      summary: "Download the QC data for the given download keys"
+      requestBody:
+        description: "A list of lane IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadLaneKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCData"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /delete_all_qc_data:
+    get:
+      operationId: metadata.api.routes.delete_all_qc_data_route
+      summary: "Delete all QC data"
+      responses:
+        "200":
+          description: "The deletion was successful."
+
+  /institutions:
+    get:
+      operationId: metadata.api.routes.get_institution_names_route
+      summary: "Gather the names for all institutions"
+      responses:
+        "200":
+          description: "The institution result set"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Institutions"
+        "404":
+          description: "Institutions could not be gathered from database"
+
+  /samples:
+    get:
+      operationId: metadata.api.routes.get_samples_route
+      summary: "Gather all sample records"
+      responses:
+        "200":
+          description: "The sample result set"
+          content:
+            application/json:
+              schema:
+                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/Metadata"
+        "404":
+          description: "No data could be found for the given institutions or filters"
+
+  /sample_ids_matching_metadata:
+    post:
+      operationId: metadata.api.routes.get_samples_filtered_by_metadata_route
+      summary: "Filter samples according to metadata values, and return matching Sanger sample IDs"
+      requestBody:
+        description: "An array of metadata filters"
+        required: true
+        content:
+          application/json:
+            schema:
+               $ref: "#/components/schemas/FiltersInput"
+            examples:
+               JUNO:
+                  value: { "name": "serotype",  "values": ["Ia", "Ib", "II"] }
+               GPS:
+                  value: { "name": "serotype",  "values": ["III"] }
+      responses:
+        "200":
+          description: "List of Sanger sample ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Samples"
+        "404":
+          description: "No data could be found for the given filters"
+          
+  /lane_ids_matching_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_lanes_filtered_by_in_silico_data_route
+      summary: "Filter lanes according to in silico data values, and return matching lane IDs"
+      requestBody:
+        description: "An array of in silico filters"
+        required: true
+        content:
+          application/json:
+            schema:
+               $ref: "#/components/schemas/FiltersInSilicoInput"
+            examples:
+               JUNO:
+                  value: { "name": "ST",  "values": ["1", "14", "ST-I", "103*?"] }
+               GPS:
+                  value: { "name": "ST",  "values": ["14"] }
+      responses:
+        "200":
+          description: "List of lane ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lanes"
+        "404":
+          description: "No data could be found for the given filters"
+
+  /distinct_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_values_route
+      summary: "Gather distinct metadata values for certain fields"
+      requestBody:
+        description: "A list of fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
+                  minItems: 1
+                institutions:
+                  type: array
+                  items:
+                     $ref: "#/components/schemas/FieldValueFilter"
+            examples:
+              JUNO:
+                value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct metadata values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_in_silico_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_in_silico_values_route
+      summary: "Gather distinct in silico data values for certain fields"
+      requestBody:
+        description: "A list of in silico fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
+                  minItems: 1
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            examples:
+              JUNO:
+                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct in silico values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_qc_data_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_qc_data_values_route
+      summary: "Gather distinct QC data values for certain fields"
+      requestBody:
+        description: "A list of QC data fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldName"
+                  minItems: 1
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            examples:
+              JUNO:
+                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct QC data values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+components:
+  schemas:
+  
+    Spreadsheet:
+      description: "File path to spreadsheet"
+      type: object
+      properties:
+        spreadsheet:
+          type: string
+          format: binary
+
+    QCDataUpdates:
+      description: "A list of dictionaries of QC data"
+      type: array
+      items:
+        $ref: "#/components/schemas/QCDataInput"
+      
+    QCDataInput:
+      description: "QC data update for a single lane"
+      type: object
+      required:
+        - lane_id
+      example: {"lane_id": "39214_1#341", "rel_abun_sa": 80.74}
+      properties:
+        lane_id:
+          type: string
+          minLength: 3
+          maxLength: 16
+          pattern: ^[0-9_#]+$
+        rel_abun_sa:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+    
+    ValidationErrors:
+      description: "Error response"
+      type: object
+      properties:
+        validationerror:
+          type: array
+          items:
+            type: string
+          minItems: 0
+          readOnly: true
+
+    DownloadSampleKeys:
+      description: "A list of Sanger sample IDs"
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 256
+        pattern: ^[a-zA-Z0-9]*$
+      minItems: 1
+      example: ["5903STDY8059122", "5903STDY8059054"]
+
+    DownloadLaneKeys:
+      description: "A list of lane IDs"
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]
+
+    DownloadField:
+      type: object
+      required:
+        - "title"
+        - "value"
+        - "order"
+      properties:
+        order:
+          type: integer
+          description: "An ordering integer index for the field"
+          readOnly: true
+        title:
+          type: string
+          description: "The name of the metadata field"
+          readOnly: true
+        value:
+          type: string
+          description: "The value of the metadata field"
+          readOnly: true
+          
+          
+    FiltersInput:
+      type: array
+      items:
+         $ref: "#/components/schemas/MetadataFilters"
+      minItems: 1
+
+    MetadataFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the metadata field"
+            $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/MetadataFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the metadata field"
+               $ref: "#/components/schemas/FieldValueFilter"
+            minItems: 1
+
+    FiltersInSilicoInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/InSilicoFilters"
+      minItems: 1
+
+    InSilicoFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the in silico field"
+            $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the in silico field"
+               $ref: "#/components/schemas/InSilicoFieldValueFilter"
+            minItems: 1
+
+    FieldValueFilter:
+      description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 256
+      # Allows one whitespace but not two or more together and allows single
+      # but not double hyphens to prevent -- injections
+      pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:/\.\(\)\[\]]+)\-?\ ?)+$
+      
+    InSilicoFieldValueFilter:
+      description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
+      type: string
+      nullable: true
+      minLength: 1
+      maxLength: 256
+      # only alphanumerics, '*',  '?', '-' and '/'
+      pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
+
+    DistinctValues:
+      description: "Object containing an array of fields, and the distinct values from the db for each"
+      type: object
+      properties:
+        distinct_values:
+          type: array
+          items:
+            type: object
+            required:
+              - "field"
+              - "distinct_values"
+            properties:
+              name:
+                type: string
+                description: "The name of the metadata field"
+                readOnly: true
+              values:
+                type: array
+                items:
+                  type: string
+                  nullable: true
+                  description: "The value of the metadata field"
+                  readOnly: true
+
+    Institutions:
+      description: "Object with list of institutions."
+      type: object
+      properties:
+        institutions:
+          type: array
+          readOnly: True
+          items:
+            type: string
+            minLength: 3
+            maxLength: 256
+          minItems: 1
+
+    Samples:
+      type: array
+      items:
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: ^[a-zA-Z0-9]*$
+      minItems: 1
+      example: ["5903STDY8059122", "5903STDY8059054"]
+
+    Lanes:
+      type: array
+      items:
+        type: string
+        minLength: 3
+        maxLength: 16
+        pattern: ^[0-9_#]+$
+      minItems: 1
+      example: ["39214_1#341", "32820_2#33"]

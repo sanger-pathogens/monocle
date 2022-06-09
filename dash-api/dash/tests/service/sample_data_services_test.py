@@ -41,7 +41,7 @@ class MonocleSampleDataTest(TestCase):
         {"institution key": "FakOne", "batch date": "1892-01-30"},
     ]
 
-    mock_project_id = "mock_project_id"
+    mock_project_id = "juno"
 
     mock_monocle_data_dir = "dash/tests/mock_data/s3"
 

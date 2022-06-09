@@ -196,6 +196,10 @@ files. There will be no groups or user accounts in the LDAP service, so log in
 as `admin` at `/ldap-admin' (the password is in your `openldap-env.yaml` file)
 and import the LDIF file you saved earlier.
 
+## Configuration
+
+See `config` subdirectory for configuration details.
+
 ## Data
 
 In production, the real data files are loaded from an S3 bucket, which is synced from farm5.
