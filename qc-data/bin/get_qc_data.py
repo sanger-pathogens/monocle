@@ -21,7 +21,7 @@ def get_lane_ids(project, db):
     """Get lane ids for each insitution"""
 
     lane_ids = []
-    institutions = list(db.get_institution_names())
+    institutions = list(db.get_institution_names(project))
 
     for institution in institutions:
         sanger_sample_ids = [

@@ -79,7 +79,7 @@ def get_sequencing_status_data(sanger_sample_ids):
 
 
 class DB:
-    def get_institution_names(self):
+    def get_institution_names(self, project):
         return map(lambda institution: institution["name"], INSTITUTIONS)
 
     def get_samples(self, project, institutions):

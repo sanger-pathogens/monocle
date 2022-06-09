@@ -48,6 +48,7 @@ def get_api_config(config_file):
                     )
                 )
                 raise KeyError("{} could not be found in data source config dict".format(required_param))
+    logging.critical("\n*********************** config = {}".format(config))
     return config
 
 
@@ -195,8 +196,8 @@ def main():
 
     project = "juno"
 
-    api_config = get_api_config(data_sources_config)
-    delete_qc_data_from_database(api_config)[project]
+    api_config = get_api_config(data_sources_config)[project]
+    delete_qc_data_from_database(api_config)
     update_database(args.pipeline_qc_dir, api_config)
 
 
