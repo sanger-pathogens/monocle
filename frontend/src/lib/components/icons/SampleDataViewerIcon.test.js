@@ -7,4 +7,3 @@ it("renders the icon and hides it for screen readers", () => {
   const icon = container.querySelector("svg");
   expect(icon.getAttribute("aria-hidden")).toBe("true");
 });
-

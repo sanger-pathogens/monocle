@@ -10,32 +10,33 @@ it("displays data passed", () => {
   const { container, getByText } = render(PipelineStatus, {
     pipelineStatus: {
       sequencedSuccess: SEQUENCED_SUCCESS,
-      completed
+      completed,
     },
   });
 
-  expect(container.querySelector("h3").textContent)
-    .toBe(`${completed} of ${SEQUENCED_SUCCESS} Sample Pipelines Completed`);
-  expect(getByText("% completed", { exact: false }))
-    .toBeDefined();
+  expect(container.querySelector("h3").textContent).toBe(
+    `${completed} of ${SEQUENCED_SUCCESS} Sample Pipelines\n        Completed`
+  );
+  expect(getByText("% completed", { exact: false })).toBeDefined();
 });
 
 it("displays a special heading when all pipelines are finished", () => {
   const { container } = render(PipelineStatus, {
     pipelineStatus: {
       sequencedSuccess: SEQUENCED_SUCCESS,
-      completed: SEQUENCED_SUCCESS
+      completed: SEQUENCED_SUCCESS,
     },
   });
 
-  expect(container.querySelector("h3").textContent)
-    .toBe(`All ${SEQUENCED_SUCCESS} Sample Pipelines Completed`);
+  expect(container.querySelector("h3").textContent).toBe(
+    `All ${SEQUENCED_SUCCESS} Sample Pipelines Completed`
+  );
 });
 
 it("displays only a heading if there are no pipelines", () => {
   const { getByRole } = render(PipelineStatus, {
     pipelineStatus: {
-      sequencedSuccess: 0
+      sequencedSuccess: 0,
     },
   });
 
@@ -56,8 +57,11 @@ it("displays the download button", () => {
     },
   });
 
-  expect(getByRole("button", { name: `Download metadata for ${succeeded} samples successfully processed through the pipeline` }))
-    .toBeDefined();
+  expect(
+    getByRole("button", {
+      name: `Download metadata for ${succeeded} samples successfully processed through the pipeline`,
+    })
+  ).toBeDefined();
 });
 
 it("displays the download failed button inside the failure messages dialog", async () => {
@@ -71,13 +75,11 @@ it("displays the download failed button inside the failure messages dialog", asy
     },
   });
 
-  expect(queryByRole("button", { name: downloadButtonText }))
-    .toBeNull();
+  expect(queryByRole("button", { name: downloadButtonText })).toBeNull();
 
   await fireEvent.click(queryByRole("button", { name: "Show failed" }));
 
-  expect(getByRole("button", { name: downloadButtonText }))
-    .toBeDefined();
+  expect(getByRole("button", { name: downloadButtonText })).toBeDefined();
 });
 
 it("displays the button to show failed pipelines", () => {
@@ -85,11 +87,9 @@ it("displays the button to show failed pipelines", () => {
     pipelineStatus: {
       sequencedSuccess: SEQUENCED_SUCCESS,
       completed: SEQUENCED_SUCCESS,
-      failed: FAILED
+      failed: FAILED,
     },
   });
 
-  expect(getByRole("button", { name: "Show failed" }))
-    .toBeDefined();
+  expect(getByRole("button", { name: "Show failed" })).toBeDefined();
 });
-

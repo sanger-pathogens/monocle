@@ -1,7 +1,10 @@
 <script>
   import { onMount } from "svelte";
   import { session as appSession } from "$app/stores";
-  import { getInstitutionStatus, getProjectProgress } from "$lib/dataLoading.js";
+  import {
+    getInstitutionStatus,
+    getProjectProgress,
+  } from "$lib/dataLoading.js";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
@@ -16,16 +19,14 @@
   onMount(() => {
     dashboardDataPromise = Promise.all([
       getInstitutionStatus(fetch),
-      getProjectProgress(fetch)
+      getProjectProgress(fetch),
     ]);
   });
 </script>
 
-
 {#await dashboardDataPromise}
   <LoadingIndicator midscreen={true} />
-
-{:then [institutions = [], projectProgress = {}]}
+{:then [institutions = [], projectProgress = { }]}
   <nav>
     <MetadataUploadLink {session} />
     <InsilicoUploadLink {session} style="margin-top: .3rem" />
@@ -49,39 +50,41 @@
       institutionName={name}
     />
   {:else}
-    <p>No institutions found for this account. This may be an error, so please try to reload the page or to log out and log in again.</p>
+    <p>
+      No institutions found for this account. This may be an error, so please
+      try to reload the page or to log out and log in again.
+    </p>
   {/each}
-
 {:catch}
-  <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
-
+  <p>
+    An unexpected error occured during page loading. Please try again by
+    reloading the page.
+  </p>
 {/await}
 
-
 <style>
-p {
-  text-align: center;
-}
-
-nav {
-  display: flex;
-  flex-direction: column;
-  align-self: flex-end;
-  margin-right: -0.8rem;
-
-  position: sticky;
-  top: 1rem;
-  z-index: 9;
-}
-@media (min-width: 2000px) {
-  /* This pushes the menu w/ the upload buttoms further to the right for larger screens. */
-  nav {
-    margin-right: -8rem;
+  p {
+    text-align: center;
   }
-}
 
-article {
-  max-width: 100%;
-}
+  nav {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    margin-right: -0.8rem;
+
+    position: sticky;
+    top: 1rem;
+    z-index: 9;
+  }
+  @media (min-width: 2000px) {
+    /* This pushes the menu w/ the upload buttoms further to the right for larger screens. */
+    nav {
+      margin-right: -8rem;
+    }
+  }
+
+  article {
+    max-width: 100%;
+  }
 </style>
-

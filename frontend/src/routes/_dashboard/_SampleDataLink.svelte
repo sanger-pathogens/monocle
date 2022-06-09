@@ -2,7 +2,6 @@
   import SampleDataViewerIcon from "$lib/components/icons/SampleDataViewerIcon.svelte";
 </script>
 
-
 <a
   aria-label="View and download sample data"
   title="View and download sample data"
@@ -16,11 +15,10 @@
   />
 </a>
 
-
 <style>
-a {
-  display: flex;
-  justify-content: center;
-  padding: .4rem .2rem .2rem 0;
-}
+  a {
+    display: flex;
+    justify-content: center;
+    padding: 0.4rem 0.2rem 0.2rem 0;
+  }
 </style>

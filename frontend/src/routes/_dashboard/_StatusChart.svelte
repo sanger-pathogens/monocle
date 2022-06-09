@@ -18,10 +18,4 @@
   }
 </script>
 
-
-<SlicedChart
-  title={CHART_TITLE}
-  {labels}
-  {values}
-  colors={SEGMENT_COLORS}
-/>
+<SlicedChart title={CHART_TITLE} {labels} {values} colors={SEGMENT_COLORS} />

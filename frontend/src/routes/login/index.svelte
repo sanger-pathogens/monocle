@@ -27,20 +27,23 @@
       .catch((err) => {
         console.error(`Error while logging in: ${err}`);
         alert(
-          "An error occured while submitting the credentials. Please try again and contact us if the problem persists.");
+          "An error occured while submitting the credentials. Please try again and contact us if the problem persists."
+        );
       })
-      .finally(() => submitting = false);
+      .finally(() => (submitting = false));
   }
 
   function logIn(usernameParam, passwordParam, fetch) {
     return fetch("/auth", {
       method: HTTP_POST,
       headers: HTTP_HEADERS_JSON,
-      body: JSON.stringify({ username: usernameParam, password: passwordParam })
+      body: JSON.stringify({
+        username: usernameParam,
+        password: passwordParam,
+      }),
     });
   }
 </script>
-
 
 <h2 id="login-heading">Log in</h2>
 
@@ -64,7 +67,12 @@
 
   <label>
     Password
-    <input type="password" bind:value={password} minlength="3" maxlength="256" />
+    <input
+      type="password"
+      bind:value={password}
+      minlength="3"
+      maxlength="256"
+    />
   </label>
 
   <button
@@ -77,29 +85,27 @@
   </button>
 </form>
 
-
 <style>
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-fieldset {
-  margin-bottom: 0;
-  text-align: center;
-}
-legend {
-  margin: 0 auto .4rem;
-}
+  fieldset {
+    margin-bottom: 0;
+    text-align: center;
+  }
+  legend {
+    margin: 0 auto 0.4rem;
+  }
 
-input:not([type=radio]) {
-  width: 14rem;
-  max-width: 78vw;
-}
+  input:not([type="radio"]) {
+    width: 14rem;
+    max-width: 78vw;
+  }
 
-button {
-  margin-top: 1rem;
-}
+  button {
+    margin-top: 1rem;
+  }
 </style>
-

@@ -2,7 +2,11 @@
   import { DATA_TYPES } from "$lib/constants.js";
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
-  import { columnsToDisplayStore, distinctColumnValuesStore, filterStore } from "../_stores.js";
+  import {
+    columnsToDisplayStore,
+    distinctColumnValuesStore,
+    filterStore,
+  } from "../_stores.js";
   import PaginationNav from "./_PaginationNav.svelte";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 
@@ -21,11 +25,20 @@
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when one of the arguments has changed.
   $: resetPageNum(batches, $columnsToDisplayStore, $filterStore);
-  $: updateMetadata(batches, $columnsToDisplayStore, $filterStore, requestedPageNum);
+  $: updateMetadata(
+    batches,
+    $columnsToDisplayStore,
+    $filterStore,
+    requestedPageNum
+  );
 
   function updateMetadata() {
     showMetadataLoading();
-    metadataTimeoutId = debounce(_updateMetadata, metadataTimeoutId, MAX_METADATA_FETCH_FREQUENCY_MS);
+    metadataTimeoutId = debounce(
+      _updateMetadata,
+      metadataTimeoutId,
+      MAX_METADATA_FETCH_FREQUENCY_MS
+    );
     preventDebouncingFirstMetadataRequest();
   }
 
@@ -35,20 +48,25 @@
     }
 
     // FIXME: prevent duplicate request when a batch is selected for the first time.
-    sortedMetadataPromise = getSampleMetadata({
-      instKeyBatchDatePairs: batches,
-      filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
-      columns: $columnsToDisplayStore,
-      numRows: NUM_METADATA_ROWS_PER_PAGE,
-      startRow: NUM_METADATA_ROWS_PER_PAGE * (requestedPageNum - 1) + 1
-    }, fetch)
-      .then((metadataResponse = {}) => {
-        const sortedMetadata = sortMetadataByOrder(metadataResponse.samples);
-        numSamples = metadataResponse["total rows"];
-        displayedPageNum = requestedPageNum;
-        initialLoading = false;
-        return sortedMetadata;
-      });
+    sortedMetadataPromise = getSampleMetadata(
+      {
+        instKeyBatchDatePairs: batches,
+        filter: {
+          filterState: $filterStore,
+          distinctColumnValuesState: $distinctColumnValuesStore,
+        },
+        columns: $columnsToDisplayStore,
+        numRows: NUM_METADATA_ROWS_PER_PAGE,
+        startRow: NUM_METADATA_ROWS_PER_PAGE * (requestedPageNum - 1) + 1,
+      },
+      fetch
+    ).then((metadataResponse = {}) => {
+      const sortedMetadata = sortMetadataByOrder(metadataResponse.samples);
+      numSamples = metadataResponse["total rows"];
+      displayedPageNum = requestedPageNum;
+      initialLoading = false;
+      return sortedMetadata;
+    });
   }
 
   function sortMetadataByOrder(unsortedMetadata = []) {
@@ -99,7 +117,6 @@
   }
 </script>
 
-
 {#if batches?.length}
   <section>
     {#if !initialLoading}
@@ -112,7 +129,10 @@
       />
     {/if}
 
-    <SampleMetadataViewerWithoutPaginaton {batches} metadataPromise={sortedMetadataPromise} />
+    <SampleMetadataViewerWithoutPaginaton
+      {batches}
+      metadataPromise={sortedMetadataPromise}
+    />
 
     <PaginationNav
       {numSamples}
@@ -123,9 +143,8 @@
   </section>
 {/if}
 
-
 <style>
-section {
-  max-width: 100%;
-}
+  section {
+    max-width: 100%;
+  }
 </style>

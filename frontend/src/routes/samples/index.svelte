@@ -1,5 +1,8 @@
 <script>
-  import { LOCAL_STORAGE_KEY_COLUMNS_STATE, LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE } from "$lib/constants.js";
+  import {
+    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+    LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE,
+  } from "$lib/constants.js";
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
@@ -11,30 +14,51 @@
     getBatches,
     getBulkDownloadInfo,
     getColumns,
-    getInstitutions
+    getInstitutions,
   } from "$lib/dataLoading.js";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
   import Configuration from "./_metadata_viewer/_Configuration.svelte";
   import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
   import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
-  import { columnsStore, distinctColumnValuesStore, filterStore } from "./_stores.js";
+  import {
+    columnsStore,
+    distinctColumnValuesStore,
+    filterStore,
+  } from "./_stores.js";
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
 
-  const dataPromise = Promise.allSettled([ getBatches(fetch), getInstitutions(fetch), loadColumnsIntoStore() ])
-    .then(([batchesSettledPromise, institutionsSettledPromise, loadColumnsIntoStorePromise]) => {
-      if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
-        console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
-        return Promise.reject(batchesSettledPromise.reason);
+  const dataPromise = Promise.allSettled([
+    getBatches(fetch),
+    getInstitutions(fetch),
+    loadColumnsIntoStore(),
+  ])
+    .then(
+      ([
+        batchesSettledPromise,
+        institutionsSettledPromise,
+        loadColumnsIntoStorePromise,
+      ]) => {
+        if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
+          console.error(
+            `/get_batches rejected: ${batchesSettledPromise.reason}`
+          );
+          return Promise.reject(batchesSettledPromise.reason);
+        }
+        if (loadColumnsIntoStorePromise.status === PROMISE_STATUS_REJECTED) {
+          console.error(
+            `failed to load columns: ${loadColumnsIntoStorePromise.reason}.`
+          );
+          return Promise.reject(loadColumnsIntoStorePromise.reason);
+        }
+        return makeListOfBatches(
+          batchesSettledPromise.value,
+          institutionsSettledPromise.value
+        );
       }
-      if (loadColumnsIntoStorePromise.status === PROMISE_STATUS_REJECTED) {
-        console.error(`failed to load columns: ${loadColumnsIntoStorePromise.reason}.`);
-        return Promise.reject(loadColumnsIntoStorePromise.reason);
-      }
-      return makeListOfBatches(batchesSettledPromise.value, institutionsSettledPromise.value);
-    })
+    )
     .catch((err) => {
       console.error(`Error while fetching batches and institutions: ${err}`);
       return Promise.reject(err);
@@ -44,7 +68,7 @@
   let bulkDownloadFormValues = {
     annotations: true,
     assemblies: true,
-    reads: false
+    reads: false,
   };
   let latestDownloadEstimateRequestId = 0;
   let shouldDisplayBulkDownload = false;
@@ -53,67 +77,90 @@
 
   $: filterStore.removeAllFilters(selectedBatches);
 
-  $: filterActive = Object.keys($filterStore).some((dataType) =>
-    Object.keys($filterStore[dataType] || []).length);
+  $: filterActive = Object.keys($filterStore).some(
+    (dataType) => Object.keys($filterStore[dataType] || []).length
+  );
 
-  $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({value}) => value);
+  $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({ value }) => value);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when some of the arguments have changed.
-  $: updateDownloadEstimate(selectedBatches, $filterStore, bulkDownloadFormValues);
+  $: updateDownloadEstimate(
+    selectedBatches,
+    $filterStore,
+    bulkDownloadFormValues
+  );
 
   function loadColumnsIntoStore() {
     const isLocalStorageAvailable = localStorageAvailable();
     let locallySavedColumnsState;
     if (isLocalStorageAvailable) {
       LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
-        localStorage.removeItem(columnsStateOldKey));
-      locallySavedColumnsState = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_COLUMNS_STATE));
+        localStorage.removeItem(columnsStateOldKey)
+      );
+      locallySavedColumnsState = JSON.parse(
+        localStorage.getItem(LOCAL_STORAGE_KEY_COLUMNS_STATE)
+      );
     }
     if (locallySavedColumnsState) {
       columnsStore.set(locallySavedColumnsState);
       return Promise.resolve();
-    }
-    else {
-      return getColumns(fetch)
-        .then((columnsResponse) => {
-          columnsStore.setFromColumnsResponse(columnsResponse);
-          if (isLocalStorageAvailable) {
-            localStorage.setItem(LOCAL_STORAGE_KEY_COLUMNS_STATE, JSON.stringify($columnsStore));
-          }
-        });
+    } else {
+      return getColumns(fetch).then((columnsResponse) => {
+        columnsStore.setFromColumnsResponse(columnsResponse);
+        if (isLocalStorageAvailable) {
+          localStorage.setItem(
+            LOCAL_STORAGE_KEY_COLUMNS_STATE,
+            JSON.stringify($columnsStore)
+          );
+        }
+      });
     }
   }
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
-    updateDownloadEstimateTimeoutId = debounce(_updateDownloadEstimate, updateDownloadEstimateTimeoutId);
+    updateDownloadEstimateTimeoutId = debounce(
+      _updateDownloadEstimate,
+      updateDownloadEstimateTimeoutId
+    );
   }
 
   function _updateDownloadEstimate() {
-    const bulkDownloadFormIncomplete = !selectedBatches?.length ||
-      (!bulkDownloadFormValues.annotations && !bulkDownloadFormValues.assemblies && !bulkDownloadFormValues.reads);
+    const bulkDownloadFormIncomplete =
+      !selectedBatches?.length ||
+      (!bulkDownloadFormValues.annotations &&
+        !bulkDownloadFormValues.assemblies &&
+        !bulkDownloadFormValues.reads);
     if (bulkDownloadFormIncomplete) {
       return;
     }
 
     unsetDownloadEstimate();
     const thisRequestId = ++latestDownloadEstimateRequestId;
-    getBulkDownloadInfo({
-      instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-      filter: { filterState: $filterStore, distinctColumnValuesState: $distinctColumnValuesStore },
-      ...bulkDownloadFormValues,
-    }, fetch)
+    getBulkDownloadInfo(
+      {
+        instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
+        filter: {
+          filterState: $filterStore,
+          distinctColumnValuesState: $distinctColumnValuesStore,
+        },
+        ...bulkDownloadFormValues,
+      },
+      fetch
+    )
       .then(({ num_samples, size_zipped, size_per_zip_options = [] }) => {
         // Ignore stale estimates (ie estimates from requests made before the latest request for an estimate):
         if (thisRequestId === latestDownloadEstimateRequestId) {
           bulkDownloadEstimate = {
             numSamples: num_samples,
             sizeZipped: size_zipped,
-            sizePerZipOptions: size_per_zip_options.map(({ size_per_zip, max_samples_per_zip }) => ({
-              sizePerZip: size_per_zip,
-              maxSamplesPerZip: max_samples_per_zip
-            }))
+            sizePerZipOptions: size_per_zip_options.map(
+              ({ size_per_zip, max_samples_per_zip }) => ({
+                sizePerZip: size_per_zip,
+                maxSamplesPerZip: max_samples_per_zip,
+              })
+            ),
           };
         }
       })
@@ -125,30 +172,45 @@
   }
 
   function makeListOfBatches(batches = {}, institutions = {}) {
-    return Object.keys(batches)
-      .reduce(((accumListOfBatches, institutionKey) =>
+    return Object.keys(batches).reduce(
+      (accumListOfBatches, institutionKey) =>
         addBatchListItems(
           accumListOfBatches,
           batches[institutionKey].deliveries,
           institutionKey,
           institutions[institutionKey]?.name
-        )
-      ), []);
+        ),
+      []
+    );
   }
 
-  function addBatchListItems(accumListOfBatches, batches = [], institutionKey, institutionName) {
+  function addBatchListItems(
+    accumListOfBatches,
+    batches = [],
+    institutionKey,
+    institutionName
+  ) {
     return batches.reduce((thisAccumListOfBatches, batch) => {
-      thisAccumListOfBatches.push(makeBatchListItem(batch, institutionKey, institutionName));
+      thisAccumListOfBatches.push(
+        makeBatchListItem(batch, institutionKey, institutionName)
+      );
       return thisAccumListOfBatches;
     }, accumListOfBatches);
   }
 
-  function makeBatchListItem({ name, date, number: numSamples }, institutionKey, institutionName) {
-    const numSamplesText = numSamples >= 0 ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})` : "";
+  function makeBatchListItem(
+    { name, date, number: numSamples },
+    institutionKey,
+    institutionName
+  ) {
+    const numSamplesText =
+      numSamples >= 0
+        ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})`
+        : "";
     return {
       label: `${date}: ${name}${numSamplesText}`,
       value: [institutionKey, date],
-      group: institutionName || institutionKey
+      group: institutionName || institutionKey,
     };
   }
 
@@ -159,26 +221,23 @@
   }
 </script>
 
-
 <h2>Sample data viewer</h2>
 
 {#await dataPromise}
   <LoadingIndicator />
-
 {:then batchList}
   <section class="batch-selection-section">
     <h3>Select batches</h3>
-    <BatchSelector
-      bind:selectedBatches
-      {batchList}
-    />
+    <BatchSelector bind:selectedBatches {batchList} />
   </section>
 
   {#if selectedBatches?.length}
     <div class="btn-group">
       <button
-        aria-label="Download samples{bulkDownloadEstimate ? ` of size ${bulkDownloadEstimate.sizeZipped}` : ''}"
-        on:click={() => shouldDisplayBulkDownload = true}
+        aria-label="Download samples{bulkDownloadEstimate
+          ? ` of size ${bulkDownloadEstimate.sizeZipped}`
+          : ''}"
+        on:click={() => (shouldDisplayBulkDownload = true)}
         class="compact"
         type="button"
       >
@@ -225,33 +284,32 @@
   </Dialog>
 
   <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
-
 {:catch}
-  <p>An unexpected error occured during page loading. Please try again by reloading the page.</p>
-
+  <p>
+    An unexpected error occured during page loading. Please try again by
+    reloading the page.
+  </p>
 {/await}
 
-
 <style>
-.batch-selection-section {
-  margin-bottom: 2.6rem;
-  width: 100%;
-}
+  .batch-selection-section {
+    margin-bottom: 2.6rem;
+    width: 100%;
+  }
 
-.btn-group {
-  margin-bottom: .5rem;
-}
-.btn-group button {
-  margin-right: 1rem;
-}
+  .btn-group {
+    margin-bottom: 0.5rem;
+  }
+  .btn-group button {
+    margin-right: 1rem;
+  }
 
-.remove-filters-btn {
-  display: inline-flex;
-  margin-left: 4rem;
-}
+  .remove-filters-btn {
+    display: inline-flex;
+    margin-left: 4rem;
+  }
 
-em {
-  font-weight: 300;
-}
+  em {
+    font-weight: 300;
+  }
 </style>
-

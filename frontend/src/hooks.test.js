@@ -45,4 +45,3 @@ describe("externalFetch", () => {
     expect(actualUrl).toBe(thirdPartyURL);
   });
 });
-

@@ -7,8 +7,6 @@ it("is rendered w/ the select all & clear buttons", () => {
   const { getByRole } = render(BatchSelector, { batchList: [] });
 
   expect(getByRole("textbox")).toBeDefined();
-  expect(getByRole(roleButton, { name: "Select all" }))
-    .toBeDefined();
-  expect(getByRole(roleButton, { name: "Clear" }))
-    .toBeDefined();
+  expect(getByRole(roleButton, { name: "Select all" })).toBeDefined();
+  expect(getByRole(roleButton, { name: "Clear" })).toBeDefined();
 });

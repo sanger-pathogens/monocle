@@ -4,7 +4,6 @@
   export let batches;
 </script>
 
-
 <StatusPane>
   <h3>
     <code>{batches.received}</code> Sample{batches.received === 1 ? "" : "s"} Received
@@ -26,9 +25,8 @@
   </table>
 </StatusPane>
 
-
 <style>
-table {
-  max-width: 21rem;
-}
+  table {
+    max-width: 21rem;
+  }
 </style>

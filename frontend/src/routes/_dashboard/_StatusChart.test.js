@@ -23,6 +23,5 @@ it("passes the right colors to the chart library", () => {
   render(StatusChart);
 
   const chartOptions = Chart.mock.calls[0][1];
-  expect(chartOptions.colors)
-    .toEqual(["light-grey", "light-green", "red"]);
+  expect(chartOptions.colors).toEqual(["light-grey", "light-green", "red"]);
 });
