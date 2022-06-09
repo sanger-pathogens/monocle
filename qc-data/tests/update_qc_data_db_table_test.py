@@ -19,6 +19,7 @@ from bin.update_qc_data_db_table import (
     update_database,
 )
 
+TEST_PROJECT = "juno"
 TEST_CONFIG = "tests/test_data_sources.yml"
 TEST_CONFIG_BAD = "tests/test_data_sources_bad.yml"
 # must mtach contents of TEST_CONFIG
@@ -91,7 +92,7 @@ EXPECTED_FILES = [
 
 class UpdateQCDataDBTable(TestCase):
     def test_get_api_config(self):
-        config = get_api_config(TEST_CONFIG)
+        config = get_api_config(TEST_CONFIG)[TEST_PROJECT]
         for expected_key in TEST_API_CONFIG:
             self.assertIn(expected_key, config)
             self.assertEqual(config.get(expected_key), TEST_API_CONFIG.get(expected_key))

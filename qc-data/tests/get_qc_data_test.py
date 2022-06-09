@@ -122,9 +122,10 @@ class GetQCData(TestCase):
 
     def setUp(self):
         self.db = DB()
+        self.project = "juno"
 
     def test_get_lane_ids(self):
-        actual = get_lane_ids(self.db)
+        actual = get_lane_ids(self.project, self.db)
 
         self.assertEqual(["x", "y", "z"], actual)
 

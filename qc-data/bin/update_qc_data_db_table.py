@@ -21,22 +21,33 @@ rel_abun_species = {"Streptococcus agalactiae": "rel_abun_sa"}
 
 # API config details
 data_sources_config = "/app/data_sources.yml"
-data_source = "monocle_metadata_api"
+metadata_common_source = "metadata_api_common"
+metadata_project_source = {"juno": "metadata_api_juno", "gps": "metadata_api_gps"}
 required_config_params = ["base_url", "qc_data_upload", "qc_data_delete_all"]
 
 
-def get_api_config(config_file_name):
-    with open(config_file_name, "r") as config_file:
-        data_sources = yaml.load(config_file, Loader=yaml.FullLoader)
-        config = data_sources[data_source]
-    for required_param in required_config_params:
-        if required_param not in config:
-            logging.error(
-                "data source config file {} does not provide the required paramter {}.{}".format(
-                    config_file_name, data_source, required_param
+def get_api_config(config_file):
+    config = {}
+    with open(config_file, "r") as file:
+        data_sources = yaml.load(file, Loader=yaml.FullLoader)
+        common_config = data_sources[metadata_common_source]
+        for this_project in metadata_project_source:
+            config[this_project] = {
+                **common_config,
+                **data_sources[metadata_project_source[this_project]],
+            }
+    for this_project in config:
+        for required_param in required_config_params:
+            if required_param not in config[this_project]:
+                logging.error(
+                    "data source config file {} does not provide the required parameter {} (should be in section {} or {})".format(
+                        config_file,
+                        required_param,
+                        metadata_common_source,
+                        metadata_project_source[this_project],
+                    )
                 )
-            )
-            raise KeyError
+                raise KeyError("{} could not be found in data source config dict".format(required_param))
     return config
 
 
@@ -181,8 +192,11 @@ def main():
     parser = get_arguments()
     args = parser.parse_args()
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=args.log_level)
+
+    project = "juno"
+
     api_config = get_api_config(data_sources_config)
-    delete_qc_data_from_database(api_config)
+    delete_qc_data_from_database(api_config)[project]
     update_database(args.pipeline_qc_dir, api_config)
 
 
