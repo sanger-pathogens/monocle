@@ -344,7 +344,7 @@ class UpdateMetadataFiles:
         for project in self.projects.values():
             config_path = self.abs_path(project["files"]["config_file"])
             if os.path.exists(config_path):
-                self.update_config_json(config_path, project.map_config_dict)
+                self.update_config_json(config_path, project["map_config_dict"])
 
 
 if __name__ == "__main__":
