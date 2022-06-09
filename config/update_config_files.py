@@ -222,7 +222,7 @@ class UpdateMetadataFiles:
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
-        yml2json = self.projects[project_key].yml2json
+        yml2json = self.projects[project_key]["yml2json"]
         y = self.update_shared_yml(data, file_path, project_key)
         for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
@@ -234,7 +234,7 @@ class UpdateMetadataFiles:
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
-        yml2json = self.projects[project_key].yml2json
+        yml2json = self.projects[project_key]["yml2json"]
         y = self.update_shared_yml(data, file_path, project_key)
         for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
