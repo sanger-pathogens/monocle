@@ -67,7 +67,7 @@
             }
          },
          "gps": {
-            "gps": {
+            "files": {
                "config_file": "metadata/gps/config.json",
                "API model" : [
                   {

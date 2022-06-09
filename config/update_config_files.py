@@ -270,7 +270,7 @@ class UpdateMetadataFiles:
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
         for project in self.projects.values():
-            files = project.files
+            files = project["files"]
             field_attributes_file = self.abs_path(files["field attributes"])
             old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             field_attributes = copy.deepcopy(self.config)
