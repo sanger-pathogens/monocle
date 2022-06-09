@@ -3,6 +3,7 @@ import re
 from typing import List
 
 import pandas
+from flask import current_app as application
 from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
@@ -23,6 +24,7 @@ class _StringLengthValidation(CustomElementValidation):
 
     def __init__(self, message: str, max_length: int):
         self.max_length = max_length
+        self.application = application
         super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
 
 

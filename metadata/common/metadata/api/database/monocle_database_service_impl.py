@@ -5,6 +5,8 @@ import urllib.parse
 import urllib.request
 from typing import Dict, List
 
+from flask import current_app as application
+from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
@@ -26,6 +28,7 @@ class Connector:
     """Provide SQL Alchemy connections"""
 
     def __init__(self, config: DbConnectionConfig) -> None:
+        self.application = application
         self.connection_url = config.connection_url
         self.engine = create_engine(self.connection_url)
 
@@ -50,114 +53,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
-    INSERT_OR_UPDATE_SAMPLE_SQL = text(
-        """ \
-            INSERT INTO api_sample (
-                sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
-                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
-                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
-                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
-                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
-                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
-                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
-                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
-                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
-                vancomycin, vancomycin_method
-            ) VALUES (
-                :sanger_sample_id, :lane_id, :supplier_sample_name, :public_name, :host_status, :serotype, :submitting_institution,
-                :age_days, :age_group, :age_months, :age_weeks, :age_years, :ampicillin,
-                :ampicillin_method, :apgar_score, :birth_weight_gram, :cefazolin, :cefazolin_method, :cefotaxime,
-                :cefotaxime_method, :cefoxitin, :cefoxitin_method, :ceftizoxime, :ceftizoxime_method,
-                :ciprofloxacin, :ciprofloxacin_method, :city, :clindamycin, :clindamycin_method, :collection_day,
-                :collection_month, :collection_year, :country, :county_state, :daptomycin, :daptomycin_method, :disease_onset,
-                :disease_type, :erythromycin, :erythromycin_method, :gender, :gestational_age_weeks,
-                :host_species, :infection_during_pregnancy, :isolation_source, :levofloxacin, :levofloxacin_method,
-                :linezolid, :linezolid_method, :maternal_infection_type, :penicillin, :penicillin_method,
-                :selection_random, :serotype_method, :study_name, :study_ref, :tetracycline, :tetracycline_method,
-                :vancomycin, :vancomycin_method
-            ) ON DUPLICATE KEY UPDATE
-                lane_id = :lane_id,
-                supplier_sample_name = :supplier_sample_name,
-                public_name = :public_name,
-                host_status = :host_status,
-                serotype = :serotype,
-                submitting_institution = :submitting_institution,
-                age_days = :age_days,
-                age_group = :age_group,
-                age_months = :age_months,
-                age_weeks = :age_weeks,
-                age_years = :age_years,
-                ampicillin = :ampicillin,
-                ampicillin_method = :ampicillin_method,
-                apgar_score = :apgar_score,
-                birth_weight_gram = :birth_weight_gram,
-                cefazolin = :cefazolin,
-                cefazolin_method = :cefazolin_method,
-                cefotaxime = :cefotaxime,
-                cefotaxime_method = :cefotaxime_method,
-                cefoxitin = :cefoxitin,
-                cefoxitin_method = :cefoxitin_method,
-                ceftizoxime = :ceftizoxime,
-                ceftizoxime_method = :ceftizoxime_method,
-                ciprofloxacin = :ciprofloxacin,
-                ciprofloxacin_method = :ciprofloxacin_method,
-                city = :city,
-                clindamycin = :clindamycin,
-                clindamycin_method = :clindamycin_method,
-                collection_day = :collection_day,
-                collection_month = :collection_month,
-                collection_year = :collection_year,
-                country = :country,
-                county_state = :county_state,
-                daptomycin = :daptomycin,
-                daptomycin_method = :daptomycin_method,
-                disease_onset = :disease_onset,
-                disease_type = :disease_type,
-                erythromycin = :erythromycin,
-                erythromycin_method = :erythromycin_method,
-                gender = :gender,
-                gestational_age_weeks = :gestational_age_weeks,
-                host_species = :host_species,
-                infection_during_pregnancy = :infection_during_pregnancy,
-                isolation_source = :isolation_source,
-                levofloxacin = :levofloxacin,
-                levofloxacin_method = :levofloxacin_method,
-                linezolid = :linezolid,
-                linezolid_method = :linezolid_method,
-                maternal_infection_type = :maternal_infection_type,
-                penicillin = :penicillin,
-                penicillin_method = :penicillin_method,
-                selection_random = :selection_random,
-                serotype_method = :serotype_method,
-                study_name = :study_name,
-                study_ref = :study_ref,
-                tetracycline = :tetracycline,
-                tetracycline_method = :tetracycline_method,
-                vancomycin = :vancomycin,
-                vancomycin_method = :vancomycin_method
-            """
-    )
-
-    SELECT_SAMPLES_SQL = text(
-        """ \
-            SELECT
-                sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
-                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
-                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
-                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
-                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
-                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
-                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
-                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
-                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
-                vancomycin, vancomycin_method
-            FROM api_sample
-            WHERE
-                sanger_sample_id IN :samples"""
-    )
-
     SELECT_INSTITUTIONS_SQL = text(
         """ \
                 SELECT name, country, latitude, longitude
@@ -172,33 +67,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 ORDER BY name"""
     )
 
-    SELECT_ALL_SAMPLES_SQL = text(
-        """ \
-                SELECT sanger_sample_id, lane_id, supplier_sample_name, public_name, host_status, serotype, submitting_institution,
-                age_days, age_group, age_months, age_weeks, age_years, ampicillin,
-                ampicillin_method, apgar_score, birth_weight_gram, cefazolin, cefazolin_method, cefotaxime,
-                cefotaxime_method, cefoxitin, cefoxitin_method, ceftizoxime, ceftizoxime_method,
-                ciprofloxacin, ciprofloxacin_method, city, clindamycin, clindamycin_method, collection_day,
-                collection_month, collection_year, country, county_state, daptomycin, daptomycin_method, disease_onset,
-                disease_type, erythromycin, erythromycin_method, gender, gestational_age_weeks,
-                host_species, infection_during_pregnancy, isolation_source, levofloxacin, levofloxacin_method,
-                linezolid, linezolid_method, maternal_infection_type, penicillin, penicillin_method,
-                selection_random, serotype_method, study_name, study_ref, tetracycline, tetracycline_method,
-                vancomycin, vancomycin_method
-                FROM api_sample
-                ORDER BY sanger_sample_id"""
-    )
-
-    SELECT_ALL_IN_SILICO_SQL = text(
-        """ \
-                SELECT lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
-                CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
-                SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
-                twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
-                FROM in_silico
-                ORDER BY lane_id"""
-    )
-
     FILTER_SAMPLES_IN_SQL = """ \
             SELECT sanger_sample_id FROM api_sample WHERE {} IN :values"""
 
@@ -211,8 +79,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
             SELECT lane_id FROM in_silico WHERE {} IN :values OR {} IS NULL"""
 
-    # DISTINCT_FIELD_VALUES_SQL = text(""" \
-    # SELECT DISTINCT :field FROM api_sample WHERE submitting_institution IN :institutions""")
     DISTINCT_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM api_sample WHERE submitting_institution IN :institutions"""
 
@@ -222,120 +88,47 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM qc_data"""
 
-    INSERT_OR_UPDATE_IN_SILICO_SQL = text(
-        """ \
-            INSERT INTO in_silico (
-                lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
-                CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
-                SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
-                twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
-            ) VALUES (
-                :lane_id, :cps_type, :ST, :adhP, :pheS, :atr, :glnA, :sdhA, :glcK, :tkt, :twenty_three_S1, :twenty_three_S3, :AAC6APH2, :AADECC, :ANT6, :APH3III, :APH3OTHER,
-                :CATPC194, :CATQ, :ERMA, :ERMB, :ERMT, :LNUB, :LNUC, :LSAC, :MEFA, :MPHC, :MSRA, :MSRD, :FOSA, :GYRA, :PARC, :RPOBGBS_1, :RPOBGBS_2, :RPOBGBS_3, :RPOBGBS_4,
-                :SUL2, :TETB, :TETL, :TETM, :TETO, :TETS, :ALP1, :ALP23, :ALPHA, :HVGA, :PI1, :PI2A1, :PI2A2, :PI2B, :RIB, :SRR1, :SRR2, :twenty_three_S1_variant,
-                :twenty_three_S3_variant, :GYRA_variant, :PARC_variant, :RPOBGBS_1_variant, :RPOBGBS_2_variant, :RPOBGBS_3_variant, :RPOBGBS_4_variant
-            ) ON DUPLICATE KEY UPDATE
-                lane_id = :lane_id,
-                cps_type = :cps_type,
-                ST = :ST,
-                adhP = :adhP,
-                pheS = :pheS,
-                atr = :atr,
-                glnA = :glnA,
-                sdhA = :sdhA,
-                glcK = :glcK,
-                tkt = :tkt,
-                twenty_three_S1 = :twenty_three_S1,
-                twenty_three_S3 = :twenty_three_S3,
-                AAC6APH2 = :AAC6APH2,
-                AADECC = :AADECC,
-                ANT6 = :ANT6,
-                APH3III = :APH3III,
-                APH3OTHER = :APH3OTHER,
-                CATPC194 = :CATPC194,
-                CATQ = :CATQ,
-                ERMA = :ERMA,
-                ERMB = :ERMB,
-                ERMT = :ERMT,
-                LNUB = :LNUB,
-                LNUC = :LNUC,
-                LSAC = :LSAC,
-                MEFA = :MEFA,
-                MPHC = :MPHC,
-                MSRA = :MSRA,
-                MSRD = :MSRD,
-                FOSA = :FOSA,
-                GYRA = :GYRA,
-                PARC = :PARC,
-                RPOBGBS_1 = :RPOBGBS_1,
-                RPOBGBS_2 = :RPOBGBS_2,
-                RPOBGBS_3 = :RPOBGBS_3,
-                RPOBGBS_4 = :RPOBGBS_4,
-                SUL2 = :SUL2,
-                TETB = :TETB,
-                TETL = :TETL,
-                TETM = :TETM,
-                TETO = :TETO,
-                TETS = :TETS,
-                ALP1 = :ALP1,
-                ALP23 = :ALP23,
-                ALPHA = :ALPHA,
-                HVGA = :HVGA,
-                PI1 = :PI1,
-                PI2A1 = :PI2A1,
-                PI2A2 = :PI2A2,
-                PI2B = :PI2B,
-                RIB = :RIB,
-                SRR1 = :SRR1,
-                SRR2 = :SRR2,
-                twenty_three_S1_variant = :twenty_three_S1_variant,
-                twenty_three_S3_variant = :twenty_three_S3_variant,
-                GYRA_variant = :GYRA_variant,
-                PARC_variant = :PARC_variant,
-                RPOBGBS_1_variant = :RPOBGBS_1_variant,
-                RPOBGBS_2_variant = :RPOBGBS_2_variant,
-                RPOBGBS_3_variant = :RPOBGBS_3_variant,
-                RPOBGBS_4_variant = :RPOBGBS_4_variant
-            """
-    )
-
-    SELECT_LANES_IN_SILICO_SQL = text(
-        """ \
-            SELECT
-                lane_id, cps_type, ST, adhP, pheS, atr, glnA, sdhA, glcK, tkt, twenty_three_S1, twenty_three_S3, AAC6APH2, AADECC, ANT6, APH3III, APH3OTHER,
-                CATPC194, CATQ, ERMA, ERMB, ERMT, LNUB, LNUC, LSAC, MEFA, MPHC, MSRA, MSRD, FOSA, GYRA, PARC, RPOBGBS_1, RPOBGBS_2, RPOBGBS_3, RPOBGBS_4,
-                SUL2, TETB, TETL, TETM, TETO, TETS, ALP1, ALP23, ALPHA, HVGA, PI1, PI2A1, PI2A2, PI2B, RIB, SRR1, SRR2, twenty_three_S1_variant,
-                twenty_three_S3_variant, GYRA_variant, PARC_variant, RPOBGBS_1_variant, RPOBGBS_2_variant, RPOBGBS_3_variant, RPOBGBS_4_variant
-            FROM in_silico
-            WHERE
-                lane_id IN :lanes"""
-    )
-
     DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
-
-    INSERT_OR_UPDATE_QC_DATA_SQL = text(
-        """ \
-            INSERT INTO qc_data (
-                lane_id, rel_abun_sa
-            ) VALUES (
-                :lane_id, :rel_abun_sa
-            ) ON DUPLICATE KEY UPDATE
-                lane_id = :lane_id,
-                rel_abun_sa = :rel_abun_sa
-            """
-    )
-
-    SELECT_LANES_QC_DATA_SQL = text(
-        """ \
-            SELECT
-                lane_id, rel_abun_sa
-            FROM qc_data
-            WHERE
-                lane_id IN :lanes"""
-    )
 
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
+        self.initialize_sql_statements()
+
+    def initialize_sql_insert_or_update(self, table, keys):
+        return text(
+            f"INSERT INTO {table} ("
+            + ", ".join(keys)
+            + ") VALUES ("
+            + ", ".join(list(map(lambda k: f":{k}", keys)))
+            + ") ON DUPLICATE KEY UPDATE "
+            + ", ".join(list(map(lambda k: f"{k} = :{k}", keys)))
+        )
+
+    def initialize_sql_statements(self):
+        self.config = self.connector.application.config
+
+        # Metadata
+        md_keys = list(self.config["metadata"]["spreadsheet_definition"].keys())
+        self.SELECT_ALL_SAMPLES_SQL = text(
+            "SELECT " + ", ".join(md_keys) + " FROM api_sample ORDER BY sanger_sample_id"
+        )
+        self.SELECT_SAMPLES_SQL = text(
+            "SELECT " + ", ".join(md_keys) + " FROM api_sample WHERE sanger_sample_id IN :samples"
+        )
+        self.INSERT_OR_UPDATE_SAMPLE_SQL = self.initialize_sql_insert_or_update("api_sample", md_keys)
+
+        # In silico
+        in_silico_keys = list(self.config["in_silico_data"]["spreadsheet_definition"].keys())
+        self.SELECT_ALL_IN_SILICO_SQL = text("SELECT " + ", ".join(in_silico_keys) + " FROM in_silico ORDER BY lane_id")
+        self.SELECT_LANES_IN_SILICO_SQL = text(
+            "SELECT " + ",".join(in_silico_keys) + " FROM in_silico WHERE lane_id IN :lanes"
+        )
+        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("in_silico", in_silico_keys)
+
+        # QC data
+        qc_keys = list(self.config["qc_data"]["spreadsheet_definition"].keys())
+        self.SELECT_LANES_QC_DATA_SQL = text("SELECT " + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
+        self.INSERT_OR_UPDATE_QC_DATA_SQL = self.initialize_sql_insert_or_update("qc_data", qc_keys)
 
     def convert_string(self, val: str) -> str:
         """If a given string is empty return None"""
@@ -534,7 +327,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_connection() as con:
             for this_field in fields:
                 try:
-                    rs = con.execute(text(sql_query[field_type].format(this_field)), institutions=tuple(institutions))
+                    rs = con.execute(
+                        text(sql_query[field_type].format(this_field)),
+                        institutions=tuple(institutions),
+                    )
                     these_distinct_values = []
                     includes_none = False
                     for row in rs:
@@ -562,74 +358,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_samples(self) -> List[Metadata]:
         """Retrieve all sample records"""
         results = []
-
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_ALL_SAMPLES_SQL)
         for row in rs:
-            results.append(
-                Metadata(
-                    sanger_sample_id=row["sanger_sample_id"],
-                    lane_id=row["lane_id"],
-                    submitting_institution=row["submitting_institution"],
-                    supplier_sample_name=row["supplier_sample_name"],
-                    public_name=row["public_name"],
-                    host_status=row["host_status"],
-                    study_name=row["study_name"],
-                    study_ref=row["study_ref"],
-                    selection_random=row["selection_random"],
-                    country=row["country"],
-                    county_state=row["county_state"],
-                    city=row["city"],
-                    collection_year=str(row["collection_year"]),
-                    collection_month=str(row["collection_month"]),
-                    collection_day=str(row["collection_day"]),
-                    host_species=row["host_species"],
-                    gender=row["gender"],
-                    age_group=row["age_group"],
-                    age_years=str(row["age_years"]),
-                    age_months=str(row["age_months"]),
-                    age_weeks=str(row["age_weeks"]),
-                    age_days=str(row["age_days"]),
-                    disease_type=row["disease_type"],
-                    disease_onset=row["disease_onset"],
-                    isolation_source=row["isolation_source"],
-                    serotype=row["serotype"],
-                    serotype_method=row["serotype_method"],
-                    infection_during_pregnancy=row["infection_during_pregnancy"],
-                    maternal_infection_type=row["maternal_infection_type"],
-                    gestational_age_weeks=str(row["gestational_age_weeks"]),
-                    birth_weight_gram=str(row["birth_weight_gram"]),
-                    apgar_score=str(row["apgar_score"]),
-                    ceftizoxime=row["ceftizoxime"],
-                    ceftizoxime_method=row["ceftizoxime_method"],
-                    cefoxitin=row["cefoxitin"],
-                    cefoxitin_method=row["cefoxitin_method"],
-                    cefotaxime=row["cefotaxime"],
-                    cefotaxime_method=row["cefotaxime_method"],
-                    cefazolin=row["cefazolin"],
-                    cefazolin_method=row["cefazolin_method"],
-                    ampicillin=row["ampicillin"],
-                    ampicillin_method=row["ampicillin_method"],
-                    penicillin=row["penicillin"],
-                    penicillin_method=row["penicillin_method"],
-                    erythromycin=row["erythromycin"],
-                    erythromycin_method=row["erythromycin_method"],
-                    clindamycin=row["clindamycin"],
-                    clindamycin_method=row["clindamycin_method"],
-                    tetracycline=row["tetracycline"],
-                    tetracycline_method=row["tetracycline_method"],
-                    levofloxacin=row["levofloxacin"],
-                    levofloxacin_method=row["levofloxacin_method"],
-                    ciprofloxacin=row["ciprofloxacin"],
-                    ciprofloxacin_method=row["ciprofloxacin_method"],
-                    daptomycin=row["daptomycin"],
-                    daptomycin_method=row["daptomycin_method"],
-                    vancomycin=row["vancomycin"],
-                    vancomycin_method=row["vancomycin_method"],
-                    linezolid=row["linezolid"],
-                    linezolid_method=row["linezolid_method"],
-                )
-            )
+            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"]}
+            results.append(Metadata(**params))
 
         return results
 
@@ -646,69 +379,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
-                con.execute(
-                    self.INSERT_OR_UPDATE_SAMPLE_SQL,
-                    sanger_sample_id=metadata.sanger_sample_id,
-                    lane_id=self.convert_string(metadata.lane_id),
-                    supplier_sample_name=metadata.supplier_sample_name,
-                    public_name=metadata.public_name,
-                    host_status=self.convert_string(metadata.host_status),
-                    serotype=self.convert_string(metadata.serotype),
-                    submitting_institution=metadata.submitting_institution,
-                    age_days=self.convert_int(metadata.age_days),
-                    age_group=self.convert_string(metadata.age_group),
-                    age_months=self.convert_int(metadata.age_months),
-                    age_weeks=self.convert_int(metadata.age_weeks),
-                    age_years=self.convert_int(metadata.age_years),
-                    ampicillin=self.convert_string(metadata.ampicillin),
-                    ampicillin_method=self.convert_string(metadata.ampicillin_method),
-                    apgar_score=self.convert_int(metadata.apgar_score),
-                    birth_weight_gram=self.convert_int(metadata.birth_weight_gram),
-                    cefazolin=self.convert_string(metadata.cefazolin),
-                    cefazolin_method=self.convert_string(metadata.cefazolin_method),
-                    cefotaxime=self.convert_string(metadata.cefotaxime),
-                    cefotaxime_method=self.convert_string(metadata.cefotaxime_method),
-                    cefoxitin=self.convert_string(metadata.cefoxitin),
-                    cefoxitin_method=self.convert_string(metadata.cefoxitin_method),
-                    ceftizoxime=self.convert_string(metadata.ceftizoxime),
-                    ceftizoxime_method=self.convert_string(metadata.ceftizoxime_method),
-                    ciprofloxacin=self.convert_string(metadata.ciprofloxacin),
-                    ciprofloxacin_method=self.convert_string(metadata.ciprofloxacin_method),
-                    city=self.convert_string(metadata.city),
-                    clindamycin=self.convert_string(metadata.clindamycin),
-                    clindamycin_method=self.convert_string(metadata.clindamycin_method),
-                    collection_day=self.convert_int(metadata.collection_day),
-                    collection_month=self.convert_int(metadata.collection_month),
-                    collection_year=self.convert_int(metadata.collection_year),
-                    country=self.convert_string(metadata.country),
-                    county_state=self.convert_string(metadata.county_state),
-                    daptomycin=self.convert_string(metadata.daptomycin),
-                    daptomycin_method=self.convert_string(metadata.daptomycin_method),
-                    disease_onset=self.convert_string(metadata.disease_onset),
-                    disease_type=self.convert_string(metadata.disease_type),
-                    erythromycin=self.convert_string(metadata.erythromycin),
-                    erythromycin_method=self.convert_string(metadata.erythromycin_method),
-                    gender=self.convert_string(metadata.gender),
-                    gestational_age_weeks=self.convert_int(metadata.gestational_age_weeks),
-                    host_species=self.convert_string(metadata.host_species),
-                    infection_during_pregnancy=self.convert_string(metadata.infection_during_pregnancy),
-                    isolation_source=self.convert_string(metadata.isolation_source),
-                    levofloxacin=self.convert_string(metadata.levofloxacin),
-                    levofloxacin_method=self.convert_string(metadata.levofloxacin_method),
-                    linezolid=self.convert_string(metadata.linezolid),
-                    linezolid_method=self.convert_string(metadata.linezolid_method),
-                    maternal_infection_type=self.convert_string(metadata.maternal_infection_type),
-                    penicillin=self.convert_string(metadata.penicillin),
-                    penicillin_method=self.convert_string(metadata.penicillin_method),
-                    selection_random=self.convert_string(metadata.selection_random),
-                    serotype_method=self.convert_string(metadata.serotype_method),
-                    study_name=self.convert_string(metadata.study_name),
-                    study_ref=self.convert_string(metadata.study_ref),
-                    tetracycline=self.convert_string(metadata.tetracycline),
-                    tetracycline_method=self.convert_string(metadata.tetracycline_method),
-                    vancomycin=self.convert_string(metadata.vancomycin),
-                    vancomycin_method=self.convert_string(metadata.vancomycin_method),
-                )
+                params = {k: metadata.__dict__[k] for k in self.config["metadata"]["spreadsheet_definition"]}
+                con.execute(self.INSERT_OR_UPDATE_SAMPLE_SQL, **params)
 
         logger.info("update_sample_metadata completed")
 
@@ -727,70 +399,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for in_silico_data in in_silico_data_list:
-                con.execute(
-                    self.INSERT_OR_UPDATE_IN_SILICO_SQL,
-                    lane_id=self.convert_string(in_silico_data.lane_id),
-                    cps_type=self.convert_string(in_silico_data.cps_type),
-                    ST=self.convert_string(in_silico_data.ST),
-                    adhP=self.convert_string(in_silico_data.adhP),
-                    pheS=self.convert_string(in_silico_data.pheS),
-                    atr=self.convert_string(in_silico_data.atr),
-                    glnA=self.convert_string(in_silico_data.glnA),
-                    sdhA=self.convert_string(in_silico_data.sdhA),
-                    glcK=self.convert_string(in_silico_data.glcK),
-                    tkt=self.convert_string(in_silico_data.tkt),
-                    twenty_three_S1=self.convert_string(in_silico_data.twenty_three_S1),
-                    twenty_three_S3=self.convert_string(in_silico_data.twenty_three_S3),
-                    AAC6APH2=self.convert_string(in_silico_data.AAC6APH2),
-                    AADECC=self.convert_string(in_silico_data.AADECC),
-                    ANT6=self.convert_string(in_silico_data.ANT6),
-                    APH3III=self.convert_string(in_silico_data.APH3III),
-                    APH3OTHER=self.convert_string(in_silico_data.APH3OTHER),
-                    CATPC194=self.convert_string(in_silico_data.CATPC194),
-                    CATQ=self.convert_string(in_silico_data.CATQ),
-                    ERMA=self.convert_string(in_silico_data.ERMA),
-                    ERMB=self.convert_string(in_silico_data.ERMB),
-                    ERMT=self.convert_string(in_silico_data.ERMT),
-                    LNUB=self.convert_string(in_silico_data.LNUB),
-                    LNUC=self.convert_string(in_silico_data.LNUC),
-                    LSAC=self.convert_string(in_silico_data.LSAC),
-                    MEFA=self.convert_string(in_silico_data.MEFA),
-                    MPHC=self.convert_string(in_silico_data.MPHC),
-                    MSRA=self.convert_string(in_silico_data.MSRA),
-                    MSRD=self.convert_string(in_silico_data.MSRD),
-                    FOSA=self.convert_string(in_silico_data.FOSA),
-                    GYRA=self.convert_string(in_silico_data.GYRA),
-                    PARC=self.convert_string(in_silico_data.PARC),
-                    RPOBGBS_1=self.convert_string(in_silico_data.RPOBGBS_1),
-                    RPOBGBS_2=self.convert_string(in_silico_data.RPOBGBS_2),
-                    RPOBGBS_3=self.convert_string(in_silico_data.RPOBGBS_3),
-                    RPOBGBS_4=self.convert_string(in_silico_data.RPOBGBS_4),
-                    SUL2=self.convert_string(in_silico_data.SUL2),
-                    TETB=self.convert_string(in_silico_data.TETB),
-                    TETL=self.convert_string(in_silico_data.TETL),
-                    TETM=self.convert_string(in_silico_data.TETM),
-                    TETO=self.convert_string(in_silico_data.TETO),
-                    TETS=self.convert_string(in_silico_data.TETS),
-                    ALP1=self.convert_string(in_silico_data.ALP1),
-                    ALP23=self.convert_string(in_silico_data.ALP23),
-                    ALPHA=self.convert_string(in_silico_data.ALPHA),
-                    HVGA=self.convert_string(in_silico_data.HVGA),
-                    PI1=self.convert_string(in_silico_data.PI1),
-                    PI2A1=self.convert_string(in_silico_data.PI2A1),
-                    PI2A2=self.convert_string(in_silico_data.PI2A2),
-                    PI2B=self.convert_string(in_silico_data.PI2B),
-                    RIB=self.convert_string(in_silico_data.RIB),
-                    SRR1=self.convert_string(in_silico_data.SRR1),
-                    SRR2=self.convert_string(in_silico_data.SRR2),
-                    twenty_three_S1_variant=self.convert_string(in_silico_data.twenty_three_S1_variant),
-                    twenty_three_S3_variant=self.convert_string(in_silico_data.twenty_three_S3_variant),
-                    GYRA_variant=self.convert_string(in_silico_data.GYRA_variant),
-                    PARC_variant=self.convert_string(in_silico_data.PARC_variant),
-                    RPOBGBS_1_variant=self.convert_string(in_silico_data.RPOBGBS_1_variant),
-                    RPOBGBS_2_variant=self.convert_string(in_silico_data.RPOBGBS_2_variant),
-                    RPOBGBS_3_variant=self.convert_string(in_silico_data.RPOBGBS_3_variant),
-                    RPOBGBS_4_variant=self.convert_string(in_silico_data.RPOBGBS_4_variant),
-                )
+                params = {
+                    k: self.convert_string(in_silico_data.__dict__[k])
+                    for k in self.config["in_silico_data"]["spreadsheet_definition"]
+                }
+                con.execute(self.INSERT_OR_UPDATE_IN_SILICO_SQL, **params)
 
         logger.info("update_lane_in_silico_data completed")
 
@@ -828,75 +441,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             "get_download_metadata: About to pull {} sample records from the database...".format(len(sanger_sample_ids))
         )
         logger.debug("get_download_metadata: Pulling sample ids {} from the database...".format(sanger_sample_ids))
-
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_SAMPLES_SQL, samples=sanger_sample_ids)
 
         for row in rs:
-            results.append(
-                Metadata(
-                    sanger_sample_id=row["sanger_sample_id"],
-                    lane_id=row["lane_id"],
-                    submitting_institution=row["submitting_institution"],
-                    supplier_sample_name=row["supplier_sample_name"],
-                    public_name=row["public_name"],
-                    host_status=row["host_status"],
-                    study_name=row["study_name"],
-                    study_ref=row["study_ref"],
-                    selection_random=row["selection_random"],
-                    country=row["country"],
-                    county_state=row["county_state"],
-                    city=row["city"],
-                    collection_year=str(row["collection_year"]),
-                    collection_month=str(row["collection_month"]),
-                    collection_day=str(row["collection_day"]),
-                    host_species=row["host_species"],
-                    gender=row["gender"],
-                    age_group=row["age_group"],
-                    age_years=str(row["age_years"]),
-                    age_months=str(row["age_months"]),
-                    age_weeks=str(row["age_weeks"]),
-                    age_days=str(row["age_days"]),
-                    disease_type=row["disease_type"],
-                    disease_onset=row["disease_onset"],
-                    isolation_source=row["isolation_source"],
-                    serotype=row["serotype"],
-                    serotype_method=row["serotype_method"],
-                    infection_during_pregnancy=row["infection_during_pregnancy"],
-                    maternal_infection_type=row["maternal_infection_type"],
-                    gestational_age_weeks=str(row["gestational_age_weeks"]),
-                    birth_weight_gram=str(row["birth_weight_gram"]),
-                    apgar_score=str(row["apgar_score"]),
-                    ceftizoxime=row["ceftizoxime"],
-                    ceftizoxime_method=row["ceftizoxime_method"],
-                    cefoxitin=row["cefoxitin"],
-                    cefoxitin_method=row["cefoxitin_method"],
-                    cefotaxime=row["cefotaxime"],
-                    cefotaxime_method=row["cefotaxime_method"],
-                    cefazolin=row["cefazolin"],
-                    cefazolin_method=row["cefazolin_method"],
-                    ampicillin=row["ampicillin"],
-                    ampicillin_method=row["ampicillin_method"],
-                    penicillin=row["penicillin"],
-                    penicillin_method=row["penicillin_method"],
-                    erythromycin=row["erythromycin"],
-                    erythromycin_method=row["erythromycin_method"],
-                    clindamycin=row["clindamycin"],
-                    clindamycin_method=row["clindamycin_method"],
-                    tetracycline=row["tetracycline"],
-                    tetracycline_method=row["tetracycline_method"],
-                    levofloxacin=row["levofloxacin"],
-                    levofloxacin_method=row["levofloxacin_method"],
-                    ciprofloxacin=row["ciprofloxacin"],
-                    ciprofloxacin_method=row["ciprofloxacin_method"],
-                    daptomycin=row["daptomycin"],
-                    daptomycin_method=row["daptomycin_method"],
-                    vancomycin=row["vancomycin"],
-                    vancomycin_method=row["vancomycin_method"],
-                    linezolid=row["linezolid"],
-                    linezolid_method=row["linezolid_method"],
-                )
-            )
+            params = {k: row[k] for k in self.config["metadata"]["spreadsheet_definition"]}
+            results.append(Metadata(**params))
+
         logger.debug("get_download_metadata: Pulled records of samples {} from the database...".format(results))
 
         return results
@@ -909,76 +460,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         results = []
         lane_ids = tuple(keys)
-
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
 
         for row in rs:
-            results.append(
-                InSilicoData(
-                    lane_id=row["lane_id"],
-                    cps_type=row["cps_type"],
-                    ST=row["ST"],
-                    adhP=row["adhP"],
-                    pheS=row["pheS"],
-                    atr=row["atr"],
-                    glnA=row["glnA"],
-                    sdhA=row["sdhA"],
-                    glcK=row["glcK"],
-                    tkt=row["tkt"],
-                    twenty_three_S1=row["twenty_three_S1"],
-                    twenty_three_S3=row["twenty_three_S3"],
-                    AAC6APH2=row["AAC6APH2"],
-                    AADECC=row["AADECC"],
-                    ANT6=row["ANT6"],
-                    APH3III=row["APH3III"],
-                    APH3OTHER=row["APH3OTHER"],
-                    CATPC194=row["CATPC194"],
-                    CATQ=row["CATQ"],
-                    ERMA=row["ERMA"],
-                    ERMB=row["ERMB"],
-                    ERMT=row["ERMT"],
-                    LNUB=row["LNUB"],
-                    LNUC=row["LNUC"],
-                    LSAC=row["LSAC"],
-                    MEFA=row["MEFA"],
-                    MPHC=row["MPHC"],
-                    MSRA=row["MSRA"],
-                    MSRD=row["MSRD"],
-                    FOSA=row["FOSA"],
-                    GYRA=row["GYRA"],
-                    PARC=row["PARC"],
-                    RPOBGBS_1=row["RPOBGBS_1"],
-                    RPOBGBS_2=row["RPOBGBS_2"],
-                    RPOBGBS_3=row["RPOBGBS_3"],
-                    RPOBGBS_4=row["RPOBGBS_4"],
-                    SUL2=row["SUL2"],
-                    TETB=row["TETB"],
-                    TETL=row["TETL"],
-                    TETM=row["TETM"],
-                    TETO=row["TETO"],
-                    TETS=row["TETS"],
-                    ALP1=row["ALP1"],
-                    ALP23=row["ALP23"],
-                    ALPHA=row["ALPHA"],
-                    HVGA=row["HVGA"],
-                    PI1=row["PI1"],
-                    PI2A1=row["PI2A1"],
-                    PI2A2=row["PI2A2"],
-                    PI2B=row["PI2B"],
-                    RIB=row["RIB"],
-                    SRR1=row["SRR1"],
-                    SRR2=row["SRR2"],
-                    twenty_three_S1_variant=row["twenty_three_S1_variant"],
-                    twenty_three_S3_variant=row["twenty_three_S3_variant"],
-                    GYRA_variant=row["GYRA_variant"],
-                    PARC_variant=row["PARC_variant"],
-                    RPOBGBS_1_variant=row["RPOBGBS_1_variant"],
-                    RPOBGBS_2_variant=row["RPOBGBS_2_variant"],
-                    RPOBGBS_3_variant=row["RPOBGBS_3_variant"],
-                    RPOBGBS_4_variant=row["RPOBGBS_4_variant"],
-                )
-            )
+            params = {k: row[k] for k in self.config["in_silico_data"]["spreadsheet_definition"]}
+            results.append(InSilicoData(**params))
 
         return results
 
@@ -990,7 +477,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         results = []
         lane_ids = tuple(keys)
-
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
 
