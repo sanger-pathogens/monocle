@@ -6,7 +6,6 @@ import urllib.request
 from typing import Dict, List
 
 from flask import current_app as application
-from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
