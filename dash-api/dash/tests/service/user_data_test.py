@@ -1,9 +1,9 @@
 import logging
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import call, patch
 
-from DataSources.user_data import UserAuthentication, UserData, UserDataError
-from ldap import SERVER_DOWN
+from dash.api.exceptions import LdapDataError
+from DataSources.user_data import UserAuthentication, UserData
 
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")
 
@@ -42,15 +42,11 @@ class MonocleUserAuthenticationTest(TestCase):
 class MonocleUserDataTest(TestCase):
 
     test_config = "dash/tests/mock_data/data_sources.yml"
-    bad_config = "dash/tests/mock_data/data_sources_bad.yml"
-    bad_openldap_config = "dash/tests/mock_data/openldap-bad.yaml"
-    # in UserData object variable config (dict of config parames) the OpenLDAP params are stored using this key:
-    openldap_config_key = "openldap"
-    expected_config_str = [
+    expected_config_keys = [
         "openldap_config",
         "ldap_url",
         "users_obj",
-        "groups_obj",
+        "user_group_obj",
         "country_names_attr",
         "username_attr",
         "uid_attr",
@@ -61,18 +57,6 @@ class MonocleUserDataTest(TestCase):
         "inst_name_attr",
         "employee_type_attr",
     ]
-    expected_ldap_str = [
-        "LDAP_ORGANISATION",
-        "LDAP_DOMAIN",
-        "LDAP_ADMIN_PASSWORD",
-        "LDAP_CONFIG_PASSWORD",
-        "LDAP_READONLY_USER_USERNAME",
-        "LDAP_READONLY_USER_PASSWORD",
-        "MONOCLE_LDAP_BASE_DN",
-        "MONOCLE_LDAP_BIND_DN",
-        "MONOCLE_LDAP_BIND_PASSWORD",
-    ]
-    expected_ldap_bool = ["LDAP_READONLY_USER"]
 
     mock_ldap_result_user = (
         "cn=mock_user_sanger_ac_uk,ou=users,dc=monocle,dc=pam,dc=sanger,dc=ac,dc=uk",
@@ -175,148 +159,79 @@ class MonocleUserDataTest(TestCase):
             "memberUid": [b"UK"],
         },
     )
-    mock_ldap_result_group_no_country = (
-        "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
-        {
-            "cn": [b"WelSanIns"],
-            "description": [b"Wellcome Sanger Institute"],
-            "gidNumber": [b"501"],
-            "objectClass": [b"posixGroup", b"top"],
-            "memberUid": [],
-        },
-    )
-    mock_ldap_result_group_no_desc = (
-        "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
-        {"cn": [b"WelSanIns"], "gidNumber": [b"501"], "objectClass": [b"posixGroup", b"top"], "memberUid": [b"UK"]},
-    )
 
     def setUp(self):
-        self.userdata = UserData(set_up=False)
-        self.userdata.set_up(self.test_config)
+        self.user_data = UserData(set_up=False)
+        self.user_data.set_up(self.test_config)
 
     def test_init(self):
-        self.assertIsInstance(self.userdata, UserData)
-        for this_expected_string in self.expected_config_str:
-            this_value = self.userdata.config[this_expected_string]
-            self.assertIsInstance(this_value, type("a string"))
-        for this_expected_string in self.expected_ldap_str:
-            this_value = self.userdata.config[self.openldap_config_key][this_expected_string]
-            self.assertIsInstance(this_value, type("a string"))
-        for this_expected_bool in self.expected_ldap_bool:
-            this_value = self.userdata.config[self.openldap_config_key][this_expected_bool]
-            self.assertIsInstance(this_value, type(True))
-
-    def test_reject_bad_config(self):
-        with self.assertRaises(KeyError):
-            doomed = UserData(set_up=False)
-            doomed.set_up(self.bad_config)
-
-    def test_missing_config(self):
-        with self.assertRaises(FileNotFoundError):
-            doomed = UserData(set_up=False)
-            doomed.set_up("no_such_config.yml")
-
-    def test_reject_bad_ldap_config(self):
-        with self.assertRaises(KeyError):
-            doomed = UserData(set_up=False)
-            doomed.read_openldap_config(self.bad_openldap_config)
-
-    def test_missing_ldap_config(self):
-        with self.assertRaises(FileNotFoundError):
-            doomed = UserData(set_up=False)
-            doomed.read_openldap_config("no_such.yaml")
-
-    def test_low_level_search(self):
-        with self.assertRaises(TypeError):
-            self.userdata.ldap_search("inetOrgPerson", "uid")
-        with self.assertRaises(UserDataError):
-            self.userdata.ldap_search("inetOrgPerson", "uid", None)
-        with self.assertRaises(UserDataError):
-            self.userdata.ldap_search("inetOrgPerson", "uid", "")
-        with self.assertRaises(SERVER_DOWN):
-            self.userdata.ldap_search("inetOrgPerson", "uid", "this_is_valid")
+        for expected_config_key in self.expected_config_keys:
+            expected_config_value = self.user_data.config[expected_config_key]
+            self.assertIsInstance(expected_config_value, str)
 
     @patch.object(UserData, "ldap_search")
     def test_user_search(self, mock_query):
         # reject multiple search results
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_query.return_value = [self.mock_ldap_result_user, self.mock_ldap_result_user]
-            user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
+            user_ldap_result = self.user_data.ldap_search_user_by_username("any_valid_string")
         # reject user record not group record
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_query.return_value = [self.mock_ldap_result_group]
-            user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
+            user_ldap_result = self.user_data.ldap_search_user_by_username("any_valid_string")
         # reject user record without required attributes
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_query.return_value = [self.mock_ldap_result_user_no_businessCategory]
-            user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
-        with self.assertRaises(UserDataError):
+            user_ldap_result = self.user_data.ldap_search_user_by_username("any_valid_string")
+        with self.assertRaises(LdapDataError):
             mock_query.return_value = [self.mock_ldap_result_user_no_o]
-            user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
+            user_ldap_result = self.user_data.ldap_search_user_by_username("any_valid_string")
         # TODO this method needs more validation
         mock_query.return_value = [self.mock_ldap_result_user]
-        user_ldap_result = self.userdata.ldap_search_user_by_username("any_valid_string")
-        self.assertIsInstance(user_ldap_result, type(("a", "tuple")))
-
-    @patch.object(UserData, "ldap_search")
-    def test_group_search(self, mock_query):
-        # reject multiple search results
-        with self.assertRaises(UserDataError):
-            mock_query.return_value = [self.mock_ldap_result_group, self.mock_ldap_result_group]
-            user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
-        # reject group record without required country name attribute
-        with self.assertRaises(UserDataError):
-            mock_query.return_value = [self.mock_ldap_result_group_no_country]
-            user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
-        # reject group record without required description attributes
-        with self.assertRaises(UserDataError):
-            mock_query.return_value = [self.mock_ldap_result_group_no_desc]
-            user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
-        mock_query.return_value = [self.mock_ldap_result_group]
-        user_ldap_result = self.userdata.ldap_search_group_by_gid("any_valid_string")
-        self.assertIsInstance(user_ldap_result, type(("a", "tuple")))
+        user_ldap_result = self.user_data.ldap_search_user_by_username("any_valid_string")
+        self.assertIsInstance(user_ldap_result, tuple)
 
     @patch.object(UserData, "ldap_search_group_by_gid")
     @patch.object(UserData, "ldap_search_user_by_username")
     def test_get_user_details(self, mock_user_query, mock_group_query):
         # reject search that finds no user (should never happen: search should only be done after authentication)
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_user_query.return_value = None
             mock_group_query.return_value = self.mock_ldap_result_group
-            user_details = self.userdata.get_user_details("mock_does_not_exist")
+            user_details = self.user_data.get_user_details("mock_does_not_exist")
         # reject user record with uid attribute that doesn't match search term
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_user_query.return_value = self.mock_ldap_result_user
             mock_group_query.return_value = self.mock_ldap_result_group
-            user_details = self.userdata.get_user_details("some_other_user")
+            user_details = self.user_data.get_user_details("some_other_user")
         # reject user record with empty project attribute
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_user_query.return_value = self.mock_ldap_result_user_empty_businessCategory
             mock_group_query.return_value = self.mock_ldap_result_group
-            user_details = self.userdata.get_user_details("mock_user_empty_projects")
+            user_details = self.user_data.get_user_details("mock_user_empty_projects")
         # reject user record with empty membership attribute
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_user_query.return_value = self.mock_ldap_result_user_empty_o
             mock_group_query.return_value = self.mock_ldap_result_group
-            user_details = self.userdata.get_user_details("mock_user_empty_o")
+            user_details = self.user_data.get_user_details("mock_user_empty_o")
         # reject user record with membership of non-existent group
-        with self.assertRaises(UserDataError):
+        with self.assertRaises(LdapDataError):
             mock_user_query.return_value = self.mock_ldap_result_user
             mock_group_query.return_value = None
-            user_details = self.userdata.get_user_details("mock_user")
+            user_details = self.user_data.get_user_details("mock_user")
         # now test a working search, to check data returned are correct
         mock_user_query.return_value = self.mock_ldap_result_user
         mock_group_query.return_value = self.mock_ldap_result_group
-        user_details = self.userdata.get_user_details("mock_user")
+        user_details = self.user_data.get_user_details("mock_user")
         # data structure
-        self.assertIsInstance(user_details, type({"a": "dict"}))
-        self.assertIsInstance(user_details["username"], type("a string"))
-        self.assertIsInstance(user_details["type"], type("a string"))
-        self.assertIsInstance(user_details["memberOf"], type(["a", "list"]))
-        self.assertIsInstance(user_details["memberOf"][0], type({"a": "dict"}))
-        self.assertIsInstance(user_details["memberOf"][0]["inst_id"], type("a string"))
-        self.assertIsInstance(user_details["memberOf"][0]["inst_name"], type("a string"))
-        self.assertIsInstance(user_details["memberOf"][0]["country_names"], type(["a", "list"]))
+        self.assertIsInstance(user_details, dict)
+        self.assertIsInstance(user_details["username"], str)
+        self.assertIsInstance(user_details["type"], str)
+        self.assertIsInstance(user_details["memberOf"], list)
+        self.assertIsInstance(user_details["memberOf"][0], dict)
+        self.assertIsInstance(user_details["memberOf"][0]["inst_id"], str)
+        self.assertIsInstance(user_details["memberOf"][0]["inst_name"], str)
+        self.assertIsInstance(user_details["memberOf"][0]["country_names"], list)
         # data values
         self.assertEqual("mock_user", user_details["username"])
         self.assertEqual("admin", user_details["type"])
@@ -326,10 +241,25 @@ class MonocleUserDataTest(TestCase):
 
     @patch.object(UserData, "ldap_search_group_by_gid")
     @patch.object(UserData, "ldap_search_user_by_username")
+    def test_get_user_details_calls_group_search_with_expected_args(self, mock_user_query, mock_group_query):
+        mock_user_query.return_value = self.mock_ldap_result_user
+        mock_group_query.return_value = self.mock_ldap_result_group
+
+        self.user_data.get_user_details("mock_user")
+
+        expected_group_object_config_key = "user_group_obj"
+        expected_group_search_calls = [
+            call(org_gid_bytes.decode("UTF-8"), expected_group_object_config_key)
+            for org_gid_bytes in self.mock_ldap_result_user[1]["o"]
+        ]
+        mock_group_query.assert_has_calls(expected_group_search_calls)
+
+    @patch.object(UserData, "ldap_search_group_by_gid")
+    @patch.object(UserData, "ldap_search_user_by_username")
     def test_get_user_details_no_employee_type(self, mock_user_query, mock_group_query):
         mock_user_query.return_value = self.mock_ldap_result_user_no_type
         mock_group_query.return_value = self.mock_ldap_result_group
-        user_details = self.userdata.get_user_details("mock_user_no_type")
+        user_details = self.user_data.get_user_details("mock_user_no_type")
         self.assertEqual("mock_user_no_type", user_details["username"])
         with self.assertRaises(KeyError):
             user_details["type"]

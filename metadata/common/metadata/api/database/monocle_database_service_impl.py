@@ -430,10 +430,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     def get_institution_names(self) -> List[Institution]:
         """Returns a list of all instiution names"""
-        results = []
         with self.connector.get_connection() as con:
             rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
 
+        results = []
         for row in rs:
             results.append(row["name"])
 
