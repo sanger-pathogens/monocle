@@ -48,7 +48,6 @@ def get_api_config(config_file):
                     )
                 )
                 raise KeyError("{} could not be found in data source config dict".format(required_param))
-    logging.critical("\n*********************** config = {}".format(config))
     return config
 
 
