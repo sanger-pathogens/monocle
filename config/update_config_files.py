@@ -203,7 +203,7 @@ class UpdateMetadataFiles:
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
-        yml_field_patterns = self.projects[project_key].yml_field_patterns
+        yml_field_patterns = self.projects[project_key]["yml_field_patterns"]
         self.update_yml_field_patterns(y, data, project_key, yml_field_patterns)
         return y
 
