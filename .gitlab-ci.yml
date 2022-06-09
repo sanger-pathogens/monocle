@@ -31,7 +31,7 @@ Check that Python code is formatted & linted:
     - black --check --line-length ${LINE_LENGTH} . && isort --check-only . && flake8 || exit_code=$?
     - >
       if [[ $exit_code -eq 1 ]]; then
-        echo "❌ Some Python code isn't formatted or linted. Ensure that you have `pre-commit` hooks insatlled locally (see the main README in `monocle` for details)."
+        echo "❌ Some Python code isn't formatted or linted. Ensure that you have `pre-commit` hooks installed locally (see the main README in `monocle` for details)."
       fi
     - exit $exit_code
 
@@ -52,7 +52,7 @@ Check that FE code & non-Python files are formatted & linted:
     - prettier --check --no-config --ignore-path .eslintignore . && eslint . || exit_code=$?
     - >
       if [[ $exit_code -eq 1 ]]; then
-        echo "❌ Some FE code or non-Python files aren't formatted or linted. Ensure that you have `pre-commit` hooks insatlled locally (see the main README in `monocle` for details)."
+        echo "❌ Some FE code or non-Python files aren't formatted or linted. Ensure that you have `pre-commit` hooks installed locally (see the main README in `monocle` for details)."
       fi
     - exit $exit_code
 
