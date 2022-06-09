@@ -31,34 +31,35 @@
             } ,
             "yml2json": [
                {
-                  "Schema name": "Metadata",
+                  "Schema name": "JUNOMetadata",
+                  "Schema name dash": "JUNOMetadata",
+                  "Schema name metadata": "MetadataFieldName",
+                  "Data key metadata": "Metadata",
                   "Property name": "metadata",
-                  "API config section": "metadata"
+                  "API config section": "metadata",
+                  "field pattern dash": "metadata",
+                  "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "InSilicoData",
+                  "Schema name": "JUNOInSilicoData",
+                  "Schema name dash": "JUNOInSilicoData",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
                   "Property name": "in_silico_data",
-                  "API config section":"insilicodata"
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                },
                {
-                  "Schema name": "QCData",
+                  "Schema name": "JUNOQCData",
+                  "Schema name dash": "JUNOQCData",
+                  "Schema name metadata": "QCDataFieldName",
+                  "Data key metadata": "QCData",
                   "Property name": "qc_data",
-                  "API config section":"qcdata"
+                  "API config section":"qcdata",
+                  "field pattern dash": "qc_data",
+                  "field pattern metadata": "qc_data"
                }
-            ],
-            "yml_field_patterns": [
-               [
-                  "MetadataFieldName",
-                  "metadata"
-               ],
-               [
-                  "InSilicoFieldName",
-                  "in_silico_data"
-               ],
-               [
-                  "QCDataFieldName",
-                  "qc_data"
-               ]
             ],
             "map_config_dict": {
                "metadata": "metadata",
@@ -96,34 +97,35 @@
             },
             "yml2json": [
                {
-                  "Schema name": "Metadata",
+                  "Schema name": "GPSMetadata",
+                  "Schema name dash": "GPSMetadataFieldName",
+                  "Schema name metadata": "MetadataFieldName",
+                  "Data key metadata": "Metadata",
                   "Property name": "metadata",
-                  "API config section": "metadata"
+                  "API config section": "metadata",
+                  "field pattern dash": "metadata",
+                  "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "InSilicoData",
+                  "Schema name": "GPSInSilicoData",
+                  "Schema name dash": "GPSInSilicoFieldName",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
                   "Property name": "in_silico_data",
-                  "API config section":"insilicodata"
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                },
                {
-                  "Schema name": "QCData",
+                  "Schema name": "GPSQCData",
+                  "Schema name dash": "GPSQCDataFieldName",
+                  "Schema name metadata": "QCDataFieldName",
+                  "Data key metadata": "QCData",
                   "Property name": "qc_data",
-                  "API config section":"qcdata"
+                  "API config section":"qcdata",
+                  "field pattern dash": "qc_data",
+                  "field pattern metadata": "qc_data"
                }
-            ],
-            "yml_field_patterns": [
-               [
-                  "MetadataFieldName",
-                  "metadata"
-               ],
-               [
-                  "InSilicoFieldName",
-                  "in_silico_data"
-               ],
-               [
-                  "QCDataFieldName",
-                  "qc_data"
-               ]
             ],
             "map_config_dict": {
                "metadata": "metadata",

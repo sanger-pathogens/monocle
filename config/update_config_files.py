@@ -197,13 +197,13 @@ class UpdateMetadataFiles:
             y["properties"][k] = {"$ref": "#/components/schemas/DownloadField"}
         y["required"] = json_keys
 
-    def update_shared_yml(self, data, file_path, project_key):
+    def update_shared_yml(self, data, file_path, yml_field_patterns):
         if not os.path.exists(file_path):
             print(f"Skipping: {file_path} does not exist")
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
-        yml_field_patterns = self.projects[project_key]["yml_field_patterns"]
+        print(file_path)
         self.update_yml_field_patterns(y, data, yml_field_patterns)
         return y
 
@@ -223,7 +223,8 @@ class UpdateMetadataFiles:
         TODO: default/required fields need to be annotated in upstream config and set here
         """
         yml2json = self.projects[project_key]["yml2json"]
-        y = self.update_shared_yml(data, file_path, project_key)
+        yml_field_patterns = list(map(lambda x: [x["Schema name dash"], x["field pattern dash"]], yml2json))
+        y = self.update_shared_yml(data, file_path, yml_field_patterns)
         for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
@@ -235,9 +236,10 @@ class UpdateMetadataFiles:
         TODO: default/required fields need to be annotated in upstream config and set here
         """
         yml2json = self.projects[project_key]["yml2json"]
-        y = self.update_shared_yml(data, file_path, project_key)
+        yml_field_patterns = list(map(lambda x: [x["Schema name metadata"], x["field pattern metadata"]], yml2json))
+        y = self.update_shared_yml(data, file_path, yml_field_patterns)
         for entry in yml2json:
-            this_schema = y["components"]["schemas"][entry["Schema name"]]
+            this_schema = y["components"]["schemas"][entry["Data key metadata"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
             items_list = this_schema["properties"][entry["API config section"]]["items"]
             self.update_yml_field_list(items_list, field_definitions)
