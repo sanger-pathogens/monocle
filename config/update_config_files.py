@@ -194,7 +194,9 @@ class UpdateMetadataFiles:
         y["required"].clear()
         json_keys = list(j.keys())
         for k in json_keys:
-            y["properties"][k] = {"$ref": "#/components/schemas/DownloadField"}
+            y["properties"][k] = {
+                "$ref": "file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField"
+            }
         y["required"] = json_keys
 
     def update_shared_yml(self, data, file_path, yml_field_patterns):
@@ -203,7 +205,6 @@ class UpdateMetadataFiles:
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
-        print(file_path)
         self.update_yml_field_patterns(y, data, yml_field_patterns)
         return y
 
