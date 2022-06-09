@@ -183,9 +183,9 @@ class UpdateMetadataFiles:
         """Updates tests that use data from config files."""
         self.update_test_data(data, f"{tests_path}/test_data.py")
 
-    def update_yml_field_patterns(self, y, data):
+    def update_yml_field_patterns(self, y, data, yml_field_patterns):
         """Updates YAML field patterns."""
-        for (yk, jk) in self.yml_field_patterns:
+        for (yk, jk) in yml_field_patterns:
             json_keys = list(data[jk]["spreadsheet_definition"].keys())
             y["components"]["schemas"][yk]["pattern"] = "^" + "|".join(json_keys) + "$"
 
@@ -197,13 +197,14 @@ class UpdateMetadataFiles:
             y["properties"][k] = {"$ref": "#/components/schemas/DownloadField"}
         y["required"] = json_keys
 
-    def update_shared_yml(self, data, file_path):
+    def update_shared_yml(self, data, file_path, project_key):
         if not os.path.exists(file_path):
             print(f"Skipping: {file_path} does not exist")
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
-        self.update_yml_field_patterns(y, data)
+        yml_field_patterns = self.projects[project_key].yml_field_patterns
+        self.update_yml_field_patterns(y, data, project_key, yml_field_patterns)
         return y
 
     def output_shared_yml(self, yml, file_path):
@@ -217,23 +218,25 @@ class UpdateMetadataFiles:
             if len(yml) > 0:
                 yaml.dump(yml, out_file)
 
-    def update_dash_yml(self, data, file_path):
+    def update_dash_yml(self, data, file_path, project_key):
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
-        y = self.update_shared_yml(data, file_path)
-        for entry in self.yml2json:
+        yml2json = self.projects[project_key].yml2json
+        y = self.update_shared_yml(data, file_path, project_key)
+        for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
             self.update_yml_field_list(this_schema, field_definitions)
         self.output_shared_yml(y, file_path)
 
-    def update_main_yml(self, data, file_path):
+    def update_main_yml(self, data, file_path, project_key):
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
-        y = self.update_shared_yml(data, file_path)
-        for entry in self.yml2json:
+        yml2json = self.projects[project_key].yml2json
+        y = self.update_shared_yml(data, file_path, project_key)
+        for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
             items_list = this_schema["properties"][entry["API config section"]]["items"]
@@ -246,7 +249,8 @@ class UpdateMetadataFiles:
     def update_all(self, main_config_file):
         """Runs updates on all metadata files."""
         self.update_from_main_config(self.abs_path(main_config_file))
-        for files in self.files.values():
+        for project_key, project in self.projects.items():
+            files = project.files
             config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
@@ -260,17 +264,18 @@ class UpdateMetadataFiles:
                     )
                     self.update_database_definition(table_data, self.abs_path(entry["SQL file name"]))
                 self.update_metadata_tests(data, self.abs_path(files["test directory"]))
-                self.update_dash_yml(data, self.abs_path(files["dash YAML file"]))
-                self.update_main_yml(data, self.abs_path(files["API YAML file"]))
+                self.update_dash_yml(data, self.abs_path(files["dash YAML file"]), project_key)
+                self.update_main_yml(data, self.abs_path(files["API YAML file"]), project_key)
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
-        for files in self.files.values():
+        for project in self.projects.values():
+            files = project.files
             field_attributes_file = self.abs_path(files["field attributes"])
             old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             field_attributes = copy.deepcopy(self.config)
             field_attributes.pop("config")
-            for kmc in self.map_config_dict.values():
+            for kmc in project.map_config_dict.values():
                 for k in self.config_additional_section_keys:
                     if k in field_attributes[kmc]:
                         field_attributes[kmc].pop(k)
@@ -312,12 +317,12 @@ class UpdateMetadataFiles:
         c["spreadsheet_definition"] = spreadsheet_definition
         return c
 
-    def update_config_json(self, config_path):
+    def update_config_json(self, config_path, map_config_dict):
         """Updates a config.json file based on main_config.json"""
         with open(config_path) as config_file:
             config = json.load(config_file)
 
-        for kc, kmc in self.map_config_dict.items():
+        for kc, kmc in map_config_dict.items():
             config[kc] = self.update_config_section(config[kc], self.config[kmc])
 
         json_object = json.dumps(config, indent=3)
@@ -336,10 +341,10 @@ class UpdateMetadataFiles:
 
         self.write_field_attributes_file()
 
-        for files in self.files.values():
-            config_path = self.abs_path(files["config_file"])
+        for project in self.projects.values():
+            config_path = self.abs_path(project.files["config_file"])
             if os.path.exists(config_path):
-                self.update_config_json(config_path)
+                self.update_config_json(config_path, project.map_config_dict)
 
 
 if __name__ == "__main__":

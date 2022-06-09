@@ -1,65 +1,136 @@
 {
    "config": {
-      "files":{
-         "juno": {
-            "config_file": "metadata/juno/config.json",
-            "API model" : [
+      "projects":{
+         "juno":{
+            "files": {
+               "config_file": "metadata/juno/config.json",
+               "API model" : [
+                  {
+                     "data key":"metadata",
+                     "class name": "Metadata",
+                     "model file name": "metadata/juno/metadata/api/model/metadata.py",
+                     "SQL file name": "database/tables/api_sample.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/in_silico.sql"
+                  },
+                  {
+                     "data key":"qc_data",
+                     "class name": "QCData",
+                     "model file name": "metadata/juno/metadata/api/model/qc_data.py",
+                     "SQL file name": "database/tables/qc_data.sql"
+                  }
+               ],
+               "test directory": "metadata/common/metadata/tests",
+               "dash YAML file": "dash-api/dash/interface/juno_objects.yml",
+               "API YAML file": "metadata/juno/metadata/interface/project_objects.yml",
+               "field attributes": "dash-api/juno_field_attributes.json"
+            } ,
+            "yml2json": [
                {
-                  "data key":"metadata",
-                  "class name": "Metadata",
-                  "model file name": "metadata/juno/metadata/api/model/metadata.py",
-                  "SQL file name": "database/tables/api_sample.sql"
+                  "Schema name": "Metadata",
+                  "Property name": "metadata",
+                  "API config section": "metadata"
                },
                {
-                  "data key":"in_silico_data",
-                  "class name": "InSilicoData",
-                  "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
-                  "SQL file name": "database/tables/in_silico.sql"
+                  "Schema name": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata"
                },
                {
-                  "data key":"qc_data",
-                  "class name": "QCData",
-                  "model file name": "metadata/juno/metadata/api/model/qc_data.py",
-                  "SQL file name": "database/tables/qc_data.sql"
+                  "Schema name": "QCData",
+                  "Property name": "qc_data",
+                  "API config section":"qcdata"
                }
             ],
-            "test directory": "metadata/common/metadata/tests",
-            "dash YAML file": "dash-api/dash/interface/juno_objects.yml",
-            "API YAML file": "metadata/juno/metadata/interface/project_objects.yml",
-            "field attributes": "dash-api/juno_field_attributes.json"
-         } ,
+            "yml_field_patterns": [
+               [
+                  "MetadataFieldName",
+                  "metadata"
+               ],
+               [
+                  "InSilicoFieldName",
+                  "in_silico_data"
+               ],
+               [
+                  "QCDataFieldName",
+                  "qc_data"
+               ]
+            ],
+            "map_config_dict": {
+               "metadata": "metadata",
+               "in_silico_data": "in silico",
+               "qc_data": "qc data"
+            }
+         },
          "gps": {
-            "config_file": "metadata/gps/config.json",
-            "API model" : [
+            "gps": {
+               "config_file": "metadata/gps/config.json",
+               "API model" : [
+                  {
+                     "data key":"metadata",
+                     "class name": "Metadata",
+                     "model file name": "metadata/gps/metadata/api/model/metadata.py",
+                     "SQL file name": "database/tables/gps_sample.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/gps_in_silico.sql"
+                  },
+                  {
+                     "data key":"qc_data",
+                     "class name": "QCData",
+                     "model file name": "metadata/gps/metadata/api/model/qc_data.py",
+                     "SQL file name": "database/tables/gps_qc_data.sql"
+                  }
+               ],
+               "test directory": "metadata/common/metadata/tests",
+               "dash YAML file": "dash-api/dash/interface/gps_objects.yml",
+               "API YAML file": "metadata/gps/metadata/interface/project_objects.yml",
+               "field attributes": "dash-api/gps_field_attributes.json"
+            },
+            "yml2json": [
                {
-                  "data key":"metadata",
-                  "class name": "Metadata",
-                  "model file name": "metadata/gps/metadata/api/model/metadata.py",
-                  "SQL file name": "database/tables/gps_sample.sql"
+                  "Schema name": "Metadata",
+                  "Property name": "metadata",
+                  "API config section": "metadata"
                },
                {
-                  "data key":"in_silico_data",
-                  "class name": "InSilicoData",
-                  "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
-                  "SQL file name": "database/tables/gps_in_silico.sql"
+                  "Schema name": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata"
                },
                {
-                  "data key":"qc_data",
-                  "class name": "QCData",
-                  "model file name": "metadata/gps/metadata/api/model/qc_data.py",
-                  "SQL file name": "database/tables/gps_qc_data.sql"
+                  "Schema name": "QCData",
+                  "Property name": "qc_data",
+                  "API config section":"qcdata"
                }
             ],
-            "test directory": "metadata/common/metadata/tests",
-            "dash YAML file": "dash-api/dash/interface/gps_objects.yml",
-            "API YAML file": "metadata/gps/metadata/interface/project_objects.yml",
-            "field attributes": "dash-api/gps_field_attributes.json"
+            "yml_field_patterns": [
+               [
+                  "MetadataFieldName",
+                  "metadata"
+               ],
+               [
+                  "InSilicoFieldName",
+                  "in_silico_data"
+               ],
+               [
+                  "QCDataFieldName",
+                  "qc_data"
+               ]
+            ],
+            "map_config_dict": {
+               "metadata": "metadata",
+               "in_silico_data": "in silico",
+               "qc_data": "qc data"
+            }
          }
-      },
-      "map_config_dict": {
-         "metadata": "metadata",
-         "in_silico_data": "in silico",
-         "qc_data": "qc data"
       },
       "config_additional_section_keys": [
          "spreadsheet_header_row_position",
@@ -68,37 +139,6 @@
       "yml_key_order" : [
          "openapi", "info", "servers", "paths", "components"
       ] ,
-      "yml2json": [
-         {
-            "Schema name": "Metadata",
-            "Property name": "metadata",
-            "API config section": "metadata"
-         },
-         {
-            "Schema name": "InSilicoData",
-            "Property name": "in_silico_data",
-            "API config section":"insilicodata"
-         },
-         {
-            "Schema name": "QCData",
-            "Property name": "qc_data",
-            "API config section":"qcdata"
-         }
-      ],
-      "yml_field_patterns": [
-         [
-            "MetadataFieldName",
-            "metadata"
-         ],
-         [
-            "InSilicoFieldName",
-            "in_silico_data"
-         ],
-         [
-            "QCDataFieldName",
-            "qc_data"
-         ]
-      ],
       "test_data_variable_names": {
          "metadata": [
             "TEST_SAMPLE_1_DICT",
