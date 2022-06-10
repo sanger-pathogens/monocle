@@ -17,15 +17,15 @@ from lib.qc_data import QCData
 QC_DIR = "monocle_pipeline_qc"
 
 
-def get_lane_ids(db):
+def get_lane_ids(project, db):
     """Get lane ids for each insitution"""
 
     lane_ids = []
-    institutions = list(db.get_institution_names())
+    institutions = list(db.get_institution_names(project))
 
     for institution in institutions:
         sanger_sample_ids = [
-            sample["sanger_sample_id"] for sample in db.get_samples("juno", institutions=[institution])
+            sample["sanger_sample_id"] for sample in db.get_samples(project, institutions=[institution])
         ]
 
         logging.info(f"{institution}: {len(sanger_sample_ids)} sample ids")
@@ -123,8 +123,9 @@ def main():
 
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=args.log_level)
 
+    project = "juno"
     sample_metadata = SampleMetadata()
-    lane_ids = get_lane_ids(sample_metadata)
+    lane_ids = get_lane_ids(project, sample_metadata)
 
     # Update the QC data file for each line
     for lane_id in lane_ids:

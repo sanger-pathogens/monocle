@@ -19,13 +19,16 @@ from bin.update_qc_data_db_table import (
     update_database,
 )
 
+TEST_PROJECT = "juno"
 TEST_CONFIG = "tests/test_data_sources.yml"
 TEST_CONFIG_BAD = "tests/test_data_sources_bad.yml"
 # must mtach contents of TEST_CONFIG
 TEST_API_CONFIG = {
-    "base_url": "http://mock.metadata.api",
-    "qc_data_upload": "/metadata/mock_upload_endpoint",
-    "qc_data_delete_all": "/metadata/mock_delete_endpoint",
+    TEST_PROJECT: {
+        "base_url": "http://mock.metadata.api",
+        "qc_data_upload": "/metadata/mock_upload_endpoint",
+        "qc_data_delete_all": "/metadata/mock_delete_endpoint",
+    }
 }
 TEST_ENVIRONMENT = {"MONOCLE_PIPELINE_QC_DATA": "other/dir"}
 TEST_DATA_DIR = "tests/update_qc_test_data"
@@ -91,10 +94,10 @@ EXPECTED_FILES = [
 
 class UpdateQCDataDBTable(TestCase):
     def test_get_api_config(self):
-        config = get_api_config(TEST_CONFIG)
-        for expected_key in TEST_API_CONFIG:
+        config = get_api_config(TEST_CONFIG)[TEST_PROJECT]
+        for expected_key in TEST_API_CONFIG[TEST_PROJECT]:
             self.assertIn(expected_key, config)
-            self.assertEqual(config.get(expected_key), TEST_API_CONFIG.get(expected_key))
+            self.assertEqual(config.get(expected_key), TEST_API_CONFIG[TEST_PROJECT].get(expected_key))
 
     def test_get_api_config_reject_bad_config(self):
         with self.assertRaises(KeyError):
@@ -103,7 +106,9 @@ class UpdateQCDataDBTable(TestCase):
     @patch("urllib.request.Request")
     @patch("urllib.request.urlopen")
     def test_make_request_GET(self, mock_urlopen, mock_request):
-        mock_request_url = TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_delete_all"]
+        mock_request_url = (
+            TEST_API_CONFIG[TEST_PROJECT]["base_url"] + TEST_API_CONFIG[TEST_PROJECT]["qc_data_delete_all"]
+        )
         mock_urlopen.return_value = urllib.request.Request(mock_request_url)
         _make_request(mock_request_url)
         mock_request.assert_called_with(mock_request_url, data=None, headers={})
@@ -111,7 +116,9 @@ class UpdateQCDataDBTable(TestCase):
     @patch("urllib.request.Request")
     @patch("urllib.request.urlopen")
     def test_make_request_POST(self, mock_urlopen, mock_request):
-        mock_request_url = TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_delete_all"]
+        mock_request_url = (
+            TEST_API_CONFIG[TEST_PROJECT]["base_url"] + TEST_API_CONFIG[TEST_PROJECT]["qc_data_delete_all"]
+        )
         mock_urlopen.return_value = urllib.request.Request(mock_request_url)
         _make_request(mock_request_url, post_data=TEST_UPLOAD)
         mock_request.assert_called_with(
@@ -155,15 +162,18 @@ class UpdateQCDataDBTable(TestCase):
     @patch("bin.update_qc_data_db_table._make_request")
     def test_update_database(self, mock_make_request, mock_get_update_request_body):
         mock_get_update_request_body.return_value = TEST_UPLOAD
-        update_database(TEST_DATA_DIR, TEST_API_CONFIG)
+        update_database(TEST_DATA_DIR, TEST_API_CONFIG[TEST_PROJECT])
         mock_make_request.assert_called_once_with(
-            TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_upload"], post_data=TEST_UPLOAD
+            TEST_API_CONFIG[TEST_PROJECT]["base_url"] + TEST_API_CONFIG[TEST_PROJECT]["qc_data_upload"],
+            post_data=TEST_UPLOAD,
         )
 
     @patch("bin.update_qc_data_db_table._make_request")
     def test_delete_qc_data_from_database(self, mock_make_request):
-        delete_qc_data_from_database(TEST_API_CONFIG)
-        mock_make_request.assert_called_once_with(TEST_API_CONFIG["base_url"] + TEST_API_CONFIG["qc_data_delete_all"])
+        delete_qc_data_from_database(TEST_API_CONFIG[TEST_PROJECT])
+        mock_make_request.assert_called_once_with(
+            TEST_API_CONFIG[TEST_PROJECT]["base_url"] + TEST_API_CONFIG[TEST_PROJECT]["qc_data_delete_all"]
+        )
 
     def test_get_arguments(self):
         actual = get_arguments().parse_args(["--pipeline_qc_dir", "qc_data_root_directory", "--log_level", "INFO"])
@@ -198,5 +208,5 @@ class UpdateQCDataDBTable(TestCase):
         main()
 
         mock_get_api_config.assert_called_once()
-        mock_delete_qc_data_from_database.assert_called_once_with(TEST_API_CONFIG)
-        mock_update_database.assert_called_once_with(TEST_DATA_DIR, TEST_API_CONFIG)
+        mock_delete_qc_data_from_database.assert_called_once_with(TEST_API_CONFIG[TEST_PROJECT])
+        mock_update_database.assert_called_once_with(TEST_DATA_DIR, TEST_API_CONFIG[TEST_PROJECT])
