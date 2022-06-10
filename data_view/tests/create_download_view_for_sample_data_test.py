@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from bin.create_download_view_for_sample_data import create_download_view_for_sample_data
 
+PROJECT = "juno"
 DATA_DIR = "/abs/path/data"
 INSTITUTION_NAME_TO_ID = {
     "Faculty of Pharmacy, Suez Canal University": "FacPhaSueCanUni",
@@ -74,7 +75,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         self.mkdir = mkdir_patch.start()
 
     def test_create_folder_per_institute_with_public_name(self):
-        create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
 
         for institution in INSTITUTIONS_WITH_PUBLIC_NAMES:
             self.mkdir.assert_any_call(institution["id"])
@@ -82,7 +83,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
             self.assert_mkdir_not_called_with(institution["id"])
 
     def test_create_public_name_folder_for_each_institute(self):
-        create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
 
         for public_name in PUBLIC_NAMES:
             self.mkdir.assert_any_call(public_name)
@@ -92,7 +93,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         data_files.append(Path(f"{LANES[0]}.fastq"))
         patch("bin.create_download_view_for_sample_data._get_data_files", return_value=data_files).start()
 
-        create_download_view_for_sample_data(self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_NAME_TO_ID, DATA_DIR)
 
         self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
         for data_file in data_files:
@@ -112,7 +113,7 @@ def get_sequencing_status_data(sanger_sample_ids):
 
 
 class DB:
-    def get_institution_names(self):
+    def get_institution_names(self, project):
         return map(lambda institution: institution["name"], INSTITUTIONS)
 
     def get_samples(self, project, institutions):

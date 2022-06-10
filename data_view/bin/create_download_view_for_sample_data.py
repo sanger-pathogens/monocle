@@ -15,11 +15,12 @@ from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
 INITIAL_DIR = Path().absolute()
 OUTPUT_SUBDIR = "monocle_juno_institution_view"
+PROJECT = "juno"
 
 
-def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
+def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir):
     logging.info("Getting list of institutions")
-    institutions = list(db.get_institution_names())
+    institutions = list(db.get_institution_names(project))
 
     if 0 == len(institutions):
         logging.warning("No institutions were found.")
@@ -27,7 +28,7 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
     else:
         for institution in institutions:
             logging.info(f"{institution}: getting samples and lane information")
-            public_names_to_lane_ids = _get_public_names_with_lane_ids(institution, db)
+            public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution, db)
 
             logging.info(f"{institution}: creating subdirectories")
             with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
@@ -45,10 +46,10 @@ def create_download_view_for_sample_data(db, institution_name_to_id, data_dir):
                                 _mkdir(public_name)
 
 
-def _get_public_names_with_lane_ids(institution, db):
+def _get_public_names_with_lane_ids(project, institution, db):
     public_names_to_sanger_sample_id = {
         sample["public_name"]: sample["sanger_sample_id"]
-        for sample in db.get_samples("juno", institutions=[institution])
+        for sample in db.get_samples(project, institutions=[institution])
     }
 
     logging.info(f"{institution}: {len(public_names_to_sanger_sample_id)} public names")
@@ -129,12 +130,14 @@ def _create_symlink_to(path_to_file, symlink_name):
             Path(symlink_name).symlink_to(path_to_file)
 
 
-def get_institutions(sample_metadata):
+def get_institutions(project, sample_metadata):
     name_to_id = {}
     # set_up = False stops MonocleSampleTracking instantiating lots of objects we don't need...
     dashboard_data = MonocleSampleTracking(set_up=False)
-    # ...but that means we need to give it a SampleMetadata
+    # ...but that means we need to give it a SampleMetadata...
     dashboard_data.sample_metadata = sample_metadata
+    # ...and assign the project
+    dashboard_data.current_project = project
     institutions = dashboard_data.get_institutions()
     for this_institution_id in institutions.keys():
         name_to_id[institutions[this_institution_id]["name"]] = this_institution_id
@@ -174,11 +177,16 @@ if __name__ == "__main__":
     )
     options = parser.parse_args(argv[1:])
 
+    project = PROJECT
+
     # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
     # which can be handy
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=options.log_level)
 
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
+    sample_metadata.current_project = project
 
-    create_download_view_for_sample_data(sample_metadata, get_institutions(sample_metadata), options.data_dir)
+    create_download_view_for_sample_data(
+        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir
+    )
