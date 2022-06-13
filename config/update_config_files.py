@@ -51,8 +51,10 @@ class UpdateMetadataFiles:
 
     def generate_dataclass_file(self, data, class_name, filename):
         """Generated a Python dataclass file."""
+        logging.info("Updating dataclass file {}".format(filename))
         autogeneration_note = self.get_autogeneration_note("FILE")
         output = f"from dataclasses import dataclass\n\n{autogeneration_note}\n\n@dataclass\nclass {class_name}:\n"
+        logging.debug("dataclass variables: {}".format(list(data["spreadsheet_definition"])))
         for (k, v) in data["spreadsheet_definition"].items():
             var_type = v["var_type"] if "var_type" in v else "str"
             var_comment = self.var_comment_heuristic(v)
@@ -100,10 +102,12 @@ class UpdateMetadataFiles:
 
         NOTE: This could use some additional metadata in config.json, eg unusual MySQL types, ranges etc
         """
+        logging.info("Updating database definition file {}".format(filename))
         with open(filename, "r") as in_file:
             lines = in_file.readlines()
         original_lines = list(map(lambda l: l.strip(), lines))
 
+        logging.debug("Database fields: {}".format(list(data["spreadsheet_definition"])))
         new_code = ""
         p = re.compile(r"^\s*CREATE TABLE .*$")
         while len(lines) > 0:
@@ -138,6 +142,7 @@ class UpdateMetadataFiles:
         """Updates the test_data.py file if required.
         Uses as much of the existing test values as possible.
         """
+        logging.info("Updating unit test data file {}".format(test_data_file_path))
         if not os.path.exists(test_data_file_path):
             print(f"Skipping non-existing file {test_data_file_path}")
             return
@@ -226,7 +231,11 @@ class UpdateMetadataFiles:
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
+        logging.info("Updating dashboard API OpenAPI spec. {}".format(file_path))
         yml2json = self.projects[project_key]["yml2json"]
+        logging.debug(
+            "Updating OpenAPI objects {}".format([this_object["Schema name dash"] for this_object in yml2json])
+        )
         yml_field_patterns = list(map(lambda x: [x["Schema name dash"], x["field pattern dash"]], yml2json))
         y = self.update_shared_yml(data, file_path, yml_field_patterns)
         for entry in yml2json:
@@ -239,7 +248,11 @@ class UpdateMetadataFiles:
         """Updates the dash openapi.yml file with various properties.
         TODO: default/required fields need to be annotated in upstream config and set here
         """
+        logging.info("Updating metadata API OpenAPI spec. {}".format(file_path))
         yml2json = self.projects[project_key]["yml2json"]
+        logging.debug(
+            "Updating OpenAPI objects {}".format([this_object["Schema name metadata"] for this_object in yml2json])
+        )
         yml_field_patterns = list(map(lambda x: [x["Schema name metadata"], x["field pattern metadata"]], yml2json))
         y = self.update_shared_yml(data, file_path, yml_field_patterns)
         for entry in yml2json:
@@ -271,7 +284,7 @@ class UpdateMetadataFiles:
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
                     data = json.load(config_file)
-                    logging.debug("loaded data from {}".format(config_path))
+                    logging.debug("loaded metadata API data from {}".format(config_path))
                 for entry in files["API model"]:
                     table_data = data[entry["data key"]]
                     self.generate_dataclass_file(
@@ -338,6 +351,11 @@ class UpdateMetadataFiles:
 
         spreadsheet_definition = {}
         for category in mc["categories"]:
+            logging.debug(
+                "Updating category {}, fields {}".format(
+                    category["name"], [each_field["name"] for each_field in category["fields"]]
+                )
+            )
             for field in category["fields"]:
                 if "db" in field:
                     d = {}
@@ -390,7 +408,7 @@ class UpdateMetadataFiles:
         self.write_field_attributes_file()
 
         for project_key, project in self.projects.items():
-            logging.info("Updating metadata API config files for {}".format(project_key))
+            logging.info("Updating metadata API config file for {}".format(project_key))
             config_path = self.abs_path(project["files"]["config_file"])
             if os.path.exists(config_path):
                 self.update_config_json(config_path, project["map_config_dict"])
@@ -411,7 +429,8 @@ if __name__ == "__main__":
     )
     options = parser.parse_args(argv[1:])
 
-    logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level=options.log_level)
+    # logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level=options.log_level)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=options.log_level)
 
     umf = UpdateMetadataFiles()
     umf.update_all("config/main_config.json")
