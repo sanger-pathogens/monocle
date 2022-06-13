@@ -270,7 +270,6 @@ class UpdateMetadataFiles:
         main_config_path = self.abs_path(main_config_file)
         logging.info("Updating all config files from {}".format(main_config_path))
         self.update_from_main_config(main_config_path)
-        # TODO comment below is a draft: check it!
         # the metadata API config files (`metadata/juno/config.json` etc.) have now been updated
         # these files are now used to update other files:
         # - python data classes and unit test data for each metadta API
@@ -331,7 +330,7 @@ class UpdateMetadataFiles:
                             fields.pop("db")
             logging.debug(
                 "Copying {} (with minor tweaks) from main config file into {}".format(
-                    list(field_attributes.keys()), field_attributes_file
+                    list(field_attributes), field_attributes_file
                 )
             )
             json_object = json.dumps(field_attributes, indent=3)
