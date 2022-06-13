@@ -41,7 +41,7 @@ it("stores a fetched user role in the session", async () => {
 
   render(Layout);
 
-  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(2);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
   const sessionStore = getStores().session;
   await waitFor(() => {

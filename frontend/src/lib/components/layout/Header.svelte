@@ -7,7 +7,7 @@
   let project;
 
   onMount(() => {
-    getProjectInformation(fetch).then((r) => (project = r.json()));
+    getProjectInformation(fetch).then((r) => (project = r));
   });
 </script>
 
