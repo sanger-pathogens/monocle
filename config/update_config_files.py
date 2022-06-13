@@ -171,7 +171,7 @@ class UpdateMetadataFiles:
                 if variable_name in variable_names:
                     current_group_data = data[data_group]
             # Remove obsolete fields
-            for k in key_value_pairs:
+            for k in list(key_value_pairs):
                 if k not in current_group_data["spreadsheet_definition"]:
                     logging.warning(f"Removing {k} from test data in {test_data_file_path}")
                     key_value_pairs.pop(k)
