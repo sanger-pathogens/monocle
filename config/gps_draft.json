@@ -1,0 +1,1009 @@
+{
+    "metadata" : {
+       "spreadsheet_header_row_position": 2,
+       "upload_validation_enabled": true,  
+       "categories" : [
+          {  "name"   : "Sample Identifiers",
+             "fields" : [
+                {  "name"               : "public_name",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 1,
+                   "spreadsheet heading": "Public_Name",
+                   "display name"       : "Public Name",
+                   "filter type"        : "none",
+                   "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": "true",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "sanger_sample_id",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 2,
+                   "spreadsheet heading": "Sanger_Sample_ID",
+                   "display name"       : "Sanger Sample ID",
+                   "filter type"        : "none",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "supplier_sample_name",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 3,
+                   "spreadsheet heading": "Sample_Name",
+                   "display name"       : "Sample Name",
+                   "filter type"        : "none",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Study Identifiers",
+             "fields" : [
+                {  "name"               : "study_name",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 4,
+                   "spreadsheet heading": "Study_Name",
+                   "display name"       : "Study Name",
+                   "filter type"        : "none",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "submitting_institution",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 5,
+                   "spreadsheet heading": "Submitting_Institution",
+                   "display name"       : "Submitting Institution",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Collection Information",
+             "fields" : [
+                {  "name"               : "selection_random",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 6,
+                   "spreadsheet heading": "Selection_Random",
+                   "display name"       : "Selection Random",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "country",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 7,
+                   "spreadsheet heading": "Country",
+                   "display name"       : "Country",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "region",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 8,
+                   "spreadsheet heading": "Region",
+                   "display name"       : "Region",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "city",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 9,
+                   "spreadsheet heading": "City",
+                   "display name"       : "City",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "facility_where_collected",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 10,
+                   "spreadsheet heading": "Facility_of_Collection",
+                   "display name"       : "Facility of Collection",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "year_collection",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 11,
+                   "spreadsheet heading": "Collection_Year",
+                   "display name"       : "Collection Year",
+                   "filter type"        : "numeric",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "month_collection",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 12,
+                   "spreadsheet heading": "Collection_Month",
+                   "display name"       : "Collection Month",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Host Information",
+             "fields" : [
+                {  "name"               : "gender_m/f",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 13,
+                   "spreadsheet heading": "Gender",
+                   "display name"       : "Gender",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "gender",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 14,
+                   "spreadsheet heading": "Gender",
+                   "display name"       : "Gender",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "age_years",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 15,
+                   "spreadsheet heading": "Age_years",
+                   "display name"       : "Age years",
+                   "filter type"        : "numeric",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "age_months",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 16,
+                   "spreadsheet heading": "Age_months",
+                   "display name"       : "Age months",
+                   "filter type"        : "numeric",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "age_days",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 17,
+                   "spreadsheet heading": "Age_days",
+                   "display name"       : "Age days",
+                   "filter type"        : "numeric",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "source",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 18,
+                   "spreadsheet heading": "Source",
+                   "display name"       : "Source",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "HIV_status",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 19,
+                   "spreadsheet heading": "HIV_status",
+                   "display name"       : "HIV status",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "underlying_conditions",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 20,
+                   "spreadsheet heading": "Underlying_Conditions",
+                   "display name"       : "Underlying Conditions",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Serotyping",
+             "fields" : [
+                {  "name"               : "phenotypic_serotype",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 21,
+                   "spreadsheet heading": "Serotype",
+                   "display name"       : "Serotype",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "phenotypic_serotype_method",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 22,
+                   "spreadsheet heading": "Serotype_Method",
+                   "display name"       : "Serotype Method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "sequence_type",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 23,
+                   "spreadsheet heading": "Sequence_Type",
+                   "display name"       : "Sequence Type",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Antimicrobial Susceptibility",
+             "fields" : [
+                {  "name"               : "penicillin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 24,
+                   "spreadsheet heading": "Penicillin",
+                   "display name"       : "Penicillin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_penicillin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 25,
+                   "spreadsheet heading": "Penicillin_method",
+                   "display name"       : "Penicillin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "amoxicillin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 26,
+                   "spreadsheet heading": "Amoxicillin",
+                   "display name"       : "Amoxicillin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_amoxicillin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 27,
+                   "spreadsheet heading": "Amoxicillin method",
+                   "display name"       : "Amoxicillin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "cefotaxime",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 28,
+                   "spreadsheet heading": "Cefotaxime",
+                   "display name"       : "Cefotaxime",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_cefotaxime",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 29,
+                   "spreadsheet heading": "Cefotaxime_method",
+                   "display name"       : "Cefotaxime method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "ceftriaxone",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 30,
+                   "spreadsheet heading": "Ceftriaxone",
+                   "display name"       : "Ceftriaxone",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_ceftriaxone",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 31,
+                   "spreadsheet heading": "Ceftriaxone_method",
+                   "display name"       : "Ceftriaxone method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "cefuroxime",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 32,
+                   "spreadsheet heading": "Cefuroxime",
+                   "display name"       : "Cefuroxime",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_cefuroxime",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 33,
+                   "spreadsheet heading": "Cefuroxime_method",
+                   "display name"       : "Cefuroxime method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "Meropenem",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 34,
+                   "spreadsheet heading": "Meropenem",
+                   "display name"       : "Meropenem",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_meropenem",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 35,
+                   "spreadsheet heading": "Meropenem_method",
+                   "display name"       : "Meropenem method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "erythromycin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 36,
+                   "spreadsheet heading": "Erythromycin",
+                   "display name"       : "Erythromycin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_erythromycin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 37,
+                   "spreadsheet heading": "Erythromycin_method",
+                   "display name"       : "Erythromycin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "clindamycin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 38,
+                   "spreadsheet heading": "Clindamycin",
+                   "display name"       : "Clindamycin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_clindamycin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 39,
+                   "spreadsheet heading": "Clindamycin_method",
+                   "display name"       : "Clindamycin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "trim/sulfa",
+                   "default"            : false,
+                   "display"            : true,
+                   "order"              : 40,
+                   "spreadsheet heading": "Trim/Sulfa",
+                   "display name"       : "Trim/Sulfa",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_trim/sulfa",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 41,
+                   "spreadsheet heading": "Trim/Sulfa_method",
+                   "display name"       : "Trim/Sulfa method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "vancomycinn",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 42,
+                   "spreadsheet heading": "Vancomycin",
+                   "display name"       : "Vancomycin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_vancomycin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 43,
+                   "spreadsheet heading": "Vancomycin_method",
+                   "display name"       : "Vancomycin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "linezolid",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 44,
+                   "spreadsheet heading": "Linezolid",
+                   "display name"       : "Linezolid",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_linezolid",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 45,
+                   "spreadsheet heading": "Linezolid_method",
+                   "display name"       : "Linezolid method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "ciprofloxacin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 46,
+                   "spreadsheet heading": "Ciprofloxacin",
+                   "display name"       : "Ciprofloxacin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_ciprofloxacin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 47,
+                   "spreadsheet heading": "Ciprofloxacin_method",
+                   "display name"       : "Ciprofloxacin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "chloramphenicol",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 48,
+                   "spreadsheet heading": "Chloramphenicol",
+                   "display name"       : "Chloramphenicol",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_chloramphenicol",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 49,
+                   "spreadsheet heading": "Chloramphenicol_method",
+                   "display name"       : "Chloramphenicol method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "tetracycline",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 50,
+                   "spreadsheet heading": "Tetracycline",
+                   "display name"       : "Tetracyclined",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_tetracycline",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 51,
+                   "spreadsheet heading": "Tetracycline_method",
+                   "display name"       : "Tetracycline method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "levofloxacin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 52,
+                   "spreadsheet heading": "Levofloxacin",
+                   "display name"       : "Levofloxacin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_levofloxacin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 53,
+                   "spreadsheet heading": "Levofloxacin_method",
+                   "display name"       : "Levofloxacin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "synercid",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 54,
+                   "spreadsheet heading": "Synercid",
+                   "display name"       : "Synercid",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_synercid",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 55,
+                   "spreadsheet heading": "Synercid_method",
+                   "display name"       : "Synercid method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "rifampin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 56,
+                   "spreadsheet heading": "Rifampin",
+                   "display name"       : "Rifampin",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "AST_method_rifampin",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 57,
+                   "spreadsheet heading": "Rifampin_method",
+                   "display name"       : "Rifampin method",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "MLST and Allele Number",
+             "fields" : [
+                {  "name"               : "aroe",
+                   "display"            : true,
+                   "default"            : true,
+                   "order"              : 58,
+                   "spreadsheet heading": "aroe",
+                   "display name"       : "aroe",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "gdh",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 59,
+                   "spreadsheet heading": "gdh",
+                   "display name"       : "gdh",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "gki",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 60,
+                   "spreadsheet heading": "gki",
+                   "display name"       : "gki",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "recp",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 61,
+                   "spreadsheet heading": "recp",
+                   "display name"       : "recp",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "spi",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 62,
+                   "spreadsheet heading": "spi",
+                   "display name"       : "spi",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "xpt",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 63,
+                   "spreadsheet heading": "xpt",
+                   "display name"       : "xpt",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                {  "name"               : "ddl",
+                   "display"            : true,
+                   "default"            : false,
+                   "order"              : 64,
+                   "spreadsheet heading": "ddl",
+                   "display name"       : "ddl",
+                   "filter type"        :  "discrete",
+                   "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+             ]
+                  },
+          {  "name"   : "Additional Information",
+             "fields" : [
+                {  "name"               : "comments",
+                    "display"            : true,
+                    "default"            : true,
+                    "order"              : 65,
+                    "spreadsheet heading": "Comments",
+                    "display name"       : "Comments",
+                    "filter type"        :  "discrete",
+                    "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                 {  "name"               : "vaccine_period",
+                    "display"            : true,
+                    "default"            : true,
+                    "order"              : 66,
+                    "spreadsheet heading": "Vaccine_Period",
+                    "display name"       : "Vaccine Period",
+                    "filter type"        :  "discrete",
+                    "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                 {  "name"               : "intro_year",
+                    "display"            : true,
+                    "default"            : true,
+                    "order"              : 67,
+                    "spreadsheet heading": "Intro_Year",
+                    "display name"       : "Intro Year",
+                    "filter type"        :  "discrete",
+                    "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                 {  "name"               : "PCV_type",
+                    "display"            : true,
+                    "default"            : true,
+                    "order"              : 68,
+                    "spreadsheet heading": "PCV_Type",
+                    "display name"       : "PCV_Type",
+                    "filter type"        :  "discrete",
+                    "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                 {  "name"               : "resolution",
+                    "display"            : true,
+                    "default"            : true,
+                    "order"              : 69,
+                    "spreadsheet heading": "Resolution",
+                    "display name"       : "Resolution",
+                    "filter type"        :  "discrete",
+                    "db": {
+                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "max_length": 20,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                    }
+                  }                     
+             ]
+            }
+        ]
+    }
+}
+
+ 
