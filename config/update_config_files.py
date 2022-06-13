@@ -131,9 +131,9 @@ class UpdateMetadataFiles:
             if line not in original_lines:
                 mysql_changes.append(f"Added or updated: {line}")
         if len(mysql_changes) > 0:
-            print(f"THE FOLLOWING CHANGES NEED TO BE PERFORMED IN THE LIVE MySQL DB for {filename}:")
-            print("\n".join(mysql_changes))
-            print("")
+            logging.critical(f"THE FOLLOWING CHANGES NEED TO BE PERFORMED IN THE LIVE MySQL DB for {filename}:")
+            logging.critical("\n".join(mysql_changes))
+            logging.critical("")
 
         with open(filename, "w") as output_file:
             _ = output_file.write(new_code)
@@ -144,7 +144,7 @@ class UpdateMetadataFiles:
         """
         logging.info("Updating unit test data file {}".format(test_data_file_path))
         if not os.path.exists(test_data_file_path):
-            print(f"Skipping non-existing file {test_data_file_path}")
+            logging.warning(f"Skipping non-existing file {test_data_file_path}")
             return
         with open(test_data_file_path) as test_data_file:
             lines = test_data_file.readlines()
@@ -173,12 +173,12 @@ class UpdateMetadataFiles:
             # Remove obsolete fields
             for k in key_value_pairs:
                 if k not in current_group_data["spreadsheet_definition"]:
-                    print(f"Removing {k} from test data in {test_data_file_path}")
+                    logging.warning(f"Removing {k} from test data in {test_data_file_path}")
                     key_value_pairs.pop(k)
             # Add new fields
             for k in current_group_data["spreadsheet_definition"]:
                 if k not in key_value_pairs:
-                    print(f"Adding {k} to test data in {test_data_file_path}")
+                    logging.warning(f"Adding {k} to test data in {test_data_file_path}")
                     key_value_pairs[k] = str(len(key_value_pairs) + 1)
             output += line
             for k, v in key_value_pairs.items():
@@ -209,7 +209,7 @@ class UpdateMetadataFiles:
 
     def update_shared_yml(self, data, file_path, yml_field_patterns):
         if not os.path.exists(file_path):
-            print(f"Skipping: {file_path} does not exist")
+            logging.warning(f"Skipping: {file_path} does not exist")
             return
         with open(file_path) as file:
             y = yaml.safe_load(file)
@@ -339,7 +339,7 @@ class UpdateMetadataFiles:
                 out_file.write(json_object)
             new_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             if old_md5 != new_md5:
-                print(
+                logging.critical(
                     f"ATTENTION: File {field_attributes_file} has changed, you might have to update LOCAL_STORAGE_KEY_COLUMNS_STATE in frontend/src/lib/constants.js"
                 )
 
