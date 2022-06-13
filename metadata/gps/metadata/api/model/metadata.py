@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Metadata:
-    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO: str  # mandatory; contains illegal characters
     public_name: str  # mandatory; contains illegal characters
     sanger_sample_id: str  # mandatory; contains illegal characters
     supplier_sample_name: str  # mandatory; contains illegal characters

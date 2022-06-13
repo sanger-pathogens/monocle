@@ -1409,22 +1409,6 @@
                "name": "Sample Identifiers",
                "fields": [
                   {
-                     "name": "TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO",
-                     "display": false,
-                     "default": false,
-                     "order": 666,
-                     "spreadsheet heading": "THIS_SHOULD_NEVER_BE_USED_IN_A_LIVE_DEPLOYMENT",
-                     "display name": "This should never be used in a live deployment",
-                     "filter type": "none",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  },
-                  {
                      "name": "public_name",
                      "display": true,
                      "default": true,
