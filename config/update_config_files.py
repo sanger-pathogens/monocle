@@ -348,13 +348,6 @@ class UpdateMetadataFiles:
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
-        # FIXME this reads `metadata`, `in_silico_data` and `qc_data` from the main config file and writes them into
-        #       *both* the JUNO and GPS field attributes files.
-        #       This is wrong: the main config needs TWO sets of `metadata`, `in_silico_data` and `qc_data`;
-        #       one for JUNO and the other for GPS.
-        logging.critical(
-            "field attributes files share metadata/in silico data/qc data sections in the main config: THESE SHOULD BE SPECIFIC TO PROJECT"
-        )
         for this_project in self.projects:
             map_config_dict = self.projects[this_project]["map_config_dict"]
             files = self.projects[this_project]["files"]
