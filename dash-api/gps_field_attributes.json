@@ -5,6 +5,15 @@
             "name": "Sample Identifiers",
             "fields": [
                {
+                  "name": "TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATEHR_TAHN_JUNO",
+                  "display": false,
+                  "default": false,
+                  "order": 666,
+                  "spreadsheet heading": "THIS_SHOULD_NEVER_BE_USED_IN_A_LIVE_DEPLOYMENT",
+                  "display name": "This should never be used in a live deployment",
+                  "filter type": "none"
+               },
+               {
                   "name": "public_name",
                   "display": true,
                   "default": true,

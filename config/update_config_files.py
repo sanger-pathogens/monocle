@@ -302,6 +302,50 @@ class UpdateMetadataFiles:
                     )
                 )
 
+    def _remove_keys_not_wanted_in_field_attributes(self, sections, field_attributes):
+        """
+        The main config file has sections that list all the fields and their attributes,
+        and this is almost exactly what isrequired in the <projectname>_field_attributes.json
+        files used by the dashboard API.  There are just a few keys that aren't wanted in those
+        field attribiutes files.  This fucntion removes the unwanted keys.
+        Only use this with a COPY of the main config dict, because the dict is modified!
+        Pass the list of sections to be checked, and a a dict with the copied
+        config.
+        Returns modified dict.
+        """
+        for this_section in sections:
+            for this_key in self.config_additional_section_keys:
+                if this_key in field_attributes[this_section]:
+                    field_attributes[this_section].pop(this_key)
+            for category in field_attributes[this_section]["categories"]:
+                for fields in category["fields"]:
+                    if "db" in fields:
+                        fields.pop("db")
+        return field_attributes
+
+    def _copy_project_field_attributes_from_main_config(self, sections, this_project):
+        """
+        Makes a copy of the fields attributes for a given project, into a new dict.
+        This is a copy of the project-specific config from each of a list of sections.
+        e.g. if the section is "metadata" and the project is "juno" and the
+        main config contains
+        {  "metadata": { "juno": "all the juno stuff",
+                         "gps":  "all the gps stuff
+                         }
+        }
+        then the new dict would be
+        {  "metadata":  "all the juno stuff"
+        }
+        Finally, calls _remove_keys_not_wanted_in_field_attributes() on the new dict.
+        Pass the list of sections ("metadata", etc.) and the name of tghe project.
+        Returns the new dict.
+        """
+        field_attributes = {}
+        for this_section in sections:
+            field_attributes[this_section] = copy.deepcopy(self.config[this_section][this_project])
+        self._remove_keys_not_wanted_in_field_attributes(sections, field_attributes)
+        return field_attributes
+
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
         # FIXME this reads `metadata`, `in_silico_data` and `qc_data` from the main config file and writes them into
@@ -311,23 +355,15 @@ class UpdateMetadataFiles:
         logging.critical(
             "field attributes files share metadata/in silico data/qc data sections in the main config: THESE SHOULD BE SPECIFIC TO PROJECT"
         )
-        for project in self.projects.values():
-            files = project["files"]
+        for this_project in self.projects:
+            map_config_dict = self.projects[this_project]["map_config_dict"]
+            files = self.projects[this_project]["files"]
             field_attributes_file = self.abs_path(files["field attributes"])
             logging.info("Updating field attributes file {}".format(field_attributes_file))
             old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
-            field_attributes = copy.deepcopy(self.config)
-            field_attributes.pop("config")
-            # the main config section contains keys that are not wanted in the field attribuets file
-            # this section removes them from `field_attributes`
-            for kmc in project["map_config_dict"].values():
-                for k in self.config_additional_section_keys:
-                    if k in field_attributes[kmc]:
-                        field_attributes[kmc].pop(k)
-                for category in field_attributes[kmc]["categories"]:
-                    for fields in category["fields"]:
-                        if "db" in fields:
-                            fields.pop("db")
+            field_attributes = self._copy_project_field_attributes_from_main_config(
+                map_config_dict.values(), this_project
+            )
             logging.debug(
                 "Copying {} (with minor tweaks) from main config file into {}".format(
                     list(field_attributes), field_attributes_file
