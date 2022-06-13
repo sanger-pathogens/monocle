@@ -5,7 +5,7 @@
             "name": "Sample Identifiers",
             "fields": [
                {
-                  "name": "TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATEHR_TAHN_JUNO",
+                  "name": "TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO",
                   "display": false,
                   "default": false,
                   "order": 666,
