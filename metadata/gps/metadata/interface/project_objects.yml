@@ -208,6 +208,8 @@ components:
         metadata:
           items:
             properties:
+              TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               age_days:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               age_group:
@@ -329,6 +331,7 @@ components:
               vancomycin_method:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
+            - TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO
             - public_name
             - sanger_sample_id
             - supplier_sample_name
@@ -396,7 +399,7 @@ components:
       description: Valid metadata field name
       maxLength: 256
       minLength: 1
-      pattern: ^public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
+      pattern: ^TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO|public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
       type: string
     QCData:
       description: Object containing an array of lane ids and their QC data

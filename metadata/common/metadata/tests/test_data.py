@@ -65,6 +65,7 @@ TEST_SAMPLE_1_DICT = dict(
     vancomycin_method="method13",
     linezolid="14",
     linezolid_method="method14",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_SAMPLE_1 = Metadata(**TEST_SAMPLE_1_DICT)
@@ -130,6 +131,7 @@ TEST_SAMPLE_2_DICT = dict(
     vancomycin_method="method23",
     linezolid="24",
     linezolid_method="method24",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_SAMPLE_2 = Metadata(**TEST_SAMPLE_2_DICT)
@@ -340,6 +342,7 @@ TEST_UPLOAD_SAMPLE_1_DICT = dict(
     vancomycin_method="agar dilution",
     linezolid="20",
     linezolid_method="agar dilution",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_UPLOAD_SAMPLE_2_DICT = dict(
@@ -403,6 +406,7 @@ TEST_UPLOAD_SAMPLE_2_DICT = dict(
     vancomycin_method="",
     linezolid="S",
     linezolid_method="",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_UPLOAD_SAMPLE_3_DICT = dict(
@@ -466,6 +470,7 @@ TEST_UPLOAD_SAMPLE_3_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_UPLOAD_SAMPLE_4_DICT = dict(
@@ -529,6 +534,7 @@ TEST_UPLOAD_SAMPLE_4_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_UPLOAD_SAMPLE_5_DICT = dict(
@@ -592,6 +598,7 @@ TEST_UPLOAD_SAMPLE_5_DICT = dict(
     vancomycin_method="",
     linezolid="",
     linezolid_method="",
+    TEST_FIELD_ADDED_TO_CHECK_GPS_CONFIG_IS_USED_RATHER_THAN_JUNO="61",
 )
 
 TEST_UPLOAD_SAMPLE_1 = Metadata(**TEST_UPLOAD_SAMPLE_1_DICT)

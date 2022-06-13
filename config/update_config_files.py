@@ -401,22 +401,18 @@ class UpdateMetadataFiles:
         c["spreadsheet_definition"] = spreadsheet_definition
         return c
 
-    def update_config_json(self, config_path, map_config_dict):
+    def update_config_json(self, config_path, project_key, map_config_dict):
         """Updates a config.json file based on main_config.json"""
-        # FIXME this reads `metadata`, `in_silico_data` and `qc_data` from the main config file and writes them into
-        #       *both* the JUNO and GPS metadta API config files.
-        #       This is wrong: the main config needs TWO sets of `metadata`, `in_silico_data` and `qc_data`;
-        #       one for JUNO and the other for GPS.
-        logging.critical(
-            "metadata API config files share metadata/in silico data/qc data sections in the main config: THESE SHOULD BE SPECIFIC TO PROJECT"
-        )
         logging.info("Updating metadata API config file {}".format(config_path))
         with open(config_path) as config_file:
             config = json.load(config_file)
 
-        for kc, kmc in map_config_dict.items():
-            logging.debug("Updating metadata API config section {}".format(kc))
-            config[kc] = self.update_config_section(config[kc], self.config[kmc])
+        for section_name_in_metadata_api_config in map_config_dict:
+            section_name_in_main_config = map_config_dict[section_name_in_metadata_api_config]
+            logging.debug("Updating metadata API config section {}".format(section_name_in_metadata_api_config))
+            config[section_name_in_metadata_api_config] = self.update_config_section(
+                config[section_name_in_metadata_api_config], self.config[section_name_in_main_config][project_key]
+            )
 
         json_object = json.dumps(config, indent=3)
         with open(config_path, "w") as out_file:
@@ -435,11 +431,12 @@ class UpdateMetadataFiles:
 
         self.write_field_attributes_file()
 
-        for project_key, project in self.projects.items():
-            logging.info("Updating metadata API config file for {}".format(project_key))
-            config_path = self.abs_path(project["files"]["config_file"])
+        for this_project_key in self.projects:
+            this_project_config = self.projects[this_project_key]
+            logging.info("Updating metadata API config file for {}".format(this_project_key))
+            config_path = self.abs_path(this_project_config["files"]["config_file"])
             if os.path.exists(config_path):
-                self.update_config_json(config_path, project["map_config_dict"])
+                self.update_config_json(config_path, this_project_key, this_project_config["map_config_dict"])
             else:
                 logging.warning(
                     "Metadata API config file {} could not be found: no update attempted".format(config_path)
