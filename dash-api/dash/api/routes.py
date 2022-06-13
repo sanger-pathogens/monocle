@@ -113,6 +113,12 @@ def sequencing_status_summary_route():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
+def interface_route():
+    """Get interface information"""
+    response_dict = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
+    return call_jsonify(response_dict), HTTPStatus.OK
+
+
 def pipeline_status_summary_route():
     """Get dashboard pipeline status summary information"""
     data = ServiceFactory.sample_tracking_service(get_authenticated_username()).pipeline_status_summary()

@@ -197,6 +197,10 @@ function getPipelineStatus(fetch) {
   );
 }
 
+export function getProjectInformation(fetch) {
+  return fetchDashboardApiResource("interface", "", fetch);
+}
+
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
   if (browser) {
     // Prevent API requests from the login page:

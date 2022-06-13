@@ -1,13 +1,25 @@
 <script>
+  import { onMount } from "svelte";
   import { browser } from "$app/env";
   import { PATHNAME_LOGIN } from "$lib/constants.js";
+  import { getProjectInformation } from "$lib/dataLoading.js";
+
+  let project;
+
+  onMount(() => {
+    getProjectInformation(fetch).then((r) => (project = r.json()));
+  });
 </script>
 
 <header>
   <h1><a href="/">Monocle</a></h1>
   <nav>
     <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      <img alt="JUNO Project" src="/imgs/junologo.svg" title="JUNO Project" />
+      {#if typeof logo_url != "undefined"}
+        <img alt="JUNO Project" src={project.logo_url} title={project.name} />
+      {:else}
+        {project.name}
+      {/if}
     </a>
     <a href="https://www.gbsgen.net/#about" target="_blank">About</a>
     <a href="https://www.gbsgen.net/#team" target="_blank">Team</a>
