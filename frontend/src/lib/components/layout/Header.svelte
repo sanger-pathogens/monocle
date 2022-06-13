@@ -15,7 +15,7 @@
   <h1><a href="/">Monocle</a></h1>
   <nav>
     <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      {#if typeof logo_url != "undefined"}
+      {#if typeof project != "undefined"}
         <img alt="JUNO Project" src={project.logo_url} title={project.name} />
       {:else}
         {project.name}
