@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+import argparse
 import copy
 import hashlib
 import json
+import logging
 import os
 import re
+from sys import argv
 
 import yaml
 
@@ -251,13 +254,24 @@ class UpdateMetadataFiles:
 
     def update_all(self, main_config_file):
         """Runs updates on all metadata files."""
-        self.update_from_main_config(self.abs_path(main_config_file))
+        main_config_path = self.abs_path(main_config_file)
+        logging.info("Updating all config files from {}".format(main_config_path))
+        self.update_from_main_config(main_config_path)
+        # TODO comment below is a draft: check it!
+        # the metadata API config files (`metadata/juno/config.json` etc.) have now been updated
+        # these files are now used to update other files:
+        # - python data classes and unit test data for each metadta API
+        # - the OpenAPI specs. (YAML files) for each metadta API
+        # - the OpenAPI spec. for the dashboard
+        # - the SQL files that create the monocle database tables
         for project_key, project in self.projects.items():
+            logging.info("Updating data class, unit test data, SQL and OpenAPI spec. files for {}".format(project_key))
             files = project["files"]
             config_path = self.abs_path(files["config_file"])
             if os.path.exists(config_path):
                 with open(config_path) as config_file:
                     data = json.load(config_file)
+                    logging.debug("loaded data from {}".format(config_path))
                 for entry in files["API model"]:
                     table_data = data[entry["data key"]]
                     self.generate_dataclass_file(
@@ -269,15 +283,31 @@ class UpdateMetadataFiles:
                 self.update_metadata_tests(data, self.abs_path(files["test directory"]))
                 self.update_dash_yml(data, self.abs_path(files["dash YAML file"]), project_key)
                 self.update_main_yml(data, self.abs_path(files["API YAML file"]), project_key)
+            else:
+                logging.error(
+                    "Project {} config file {} could not be found.  Data class, unit test data, SQL and OpenAPI spec. files for this project have NOT been updated!".format(
+                        project_key, config_path
+                    )
+                )
 
     def write_field_attributes_file(self):
         """Generated the file_attributes.json file for dash-api."""
+        # FIXME this reads `metadata`, `in_silico_data` and `qc_data` from the main config file and writes them into
+        #       *both* the JUNO and GPS field attributes files.
+        #       This is wrong: the main config needs TWO sets of `metadata`, `in_silico_data` and `qc_data`;
+        #       one for JUNO and the other for GPS.
+        logging.critical(
+            "field attributes files share metadata/in silico data/qc data sections in the main config: THESE SHOULD BE SPECIFIC TO PROJECT"
+        )
         for project in self.projects.values():
             files = project["files"]
             field_attributes_file = self.abs_path(files["field attributes"])
+            logging.info("Updating field attributes file {}".format(field_attributes_file))
             old_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             field_attributes = copy.deepcopy(self.config)
             field_attributes.pop("config")
+            # the main config section contains keys that are not wanted in the field attribuets file
+            # this section removes them from `field_attributes`
             for kmc in project["map_config_dict"].values():
                 for k in self.config_additional_section_keys:
                     if k in field_attributes[kmc]:
@@ -286,6 +316,11 @@ class UpdateMetadataFiles:
                     for fields in category["fields"]:
                         if "db" in fields:
                             fields.pop("db")
+            logging.debug(
+                "Copying {} (with minor tweaks) from main config file into {}".format(
+                    list(field_attributes.keys()), field_attributes_file
+                )
+            )
             json_object = json.dumps(field_attributes, indent=3)
             with open(field_attributes_file, "w") as out_file:
                 out_file.write(json_object)
@@ -322,10 +357,19 @@ class UpdateMetadataFiles:
 
     def update_config_json(self, config_path, map_config_dict):
         """Updates a config.json file based on main_config.json"""
+        # FIXME this reads `metadata`, `in_silico_data` and `qc_data` from the main config file and writes them into
+        #       *both* the JUNO and GPS metadta API config files.
+        #       This is wrong: the main config needs TWO sets of `metadata`, `in_silico_data` and `qc_data`;
+        #       one for JUNO and the other for GPS.
+        logging.critical(
+            "metadata API config files share metadata/in silico data/qc data sections in the main config: THESE SHOULD BE SPECIFIC TO PROJECT"
+        )
+        logging.info("Updating metadata API config file {}".format(config_path))
         with open(config_path) as config_file:
             config = json.load(config_file)
 
         for kc, kmc in map_config_dict.items():
+            logging.debug("Updating metadata API config section {}".format(kc))
             config[kc] = self.update_config_section(config[kc], self.config[kmc])
 
         json_object = json.dumps(config, indent=3)
@@ -338,18 +382,36 @@ class UpdateMetadataFiles:
         """
         with open(main_config_file) as config_file:
             self.config = json.load(config_file)
+            logging.debug("Successfully loaded main config from {}".format(main_config_file))
 
         for k, v in self.config["config"].items():
             self.__dict__[k] = v
 
         self.write_field_attributes_file()
 
-        for project in self.projects.values():
+        for project_key, project in self.projects.items():
+            logging.info("Updating metadata API config files for {}".format(project_key))
             config_path = self.abs_path(project["files"]["config_file"])
             if os.path.exists(config_path):
                 self.update_config_json(config_path, project["map_config_dict"])
+            else:
+                logging.warning(
+                    "Metadata API config file {} could not be found: no update attempted".format(config_path)
+                )
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Update all config files from  main config")
+    parser.add_argument(
+        "-L",
+        "--log_level",
+        help="Logging level [default: WARNING]",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        default="WARNING",
+    )
+    options = parser.parse_args(argv[1:])
+
+    logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level=options.log_level)
+
     umf = UpdateMetadataFiles()
     umf.update_all("config/main_config.json")
