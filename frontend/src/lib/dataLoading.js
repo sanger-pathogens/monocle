@@ -198,7 +198,7 @@ function getPipelineStatus(fetch) {
 }
 
 export function getProjectInformation(fetch) {
-  return fetchDashboardApiResource("interface", "interface", fetch);
+  return fetchDashboardApiResource("interface", "project", fetch);
 }
 
 function fetchDashboardApiResource(endpoint, resourceKey, fetch, fetchOptions) {
