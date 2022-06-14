@@ -1,5 +1,6 @@
 {
     "metadata" : {
+       "gps": {
        "spreadsheet_header_row_position": 2,
        "upload_validation_enabled": true,  
        "categories" : [
@@ -910,6 +911,1455 @@
             }
         ]
     }
-}
+},
 
- 
+
+"in silico": {
+   "gps": {
+      "spreadsheet_header_row_position": 0,
+      "upload_validation_enabled": true,
+      "categories": [
+         {
+            "name": "Sample Identifiers",
+            "fields": [
+               {
+                  "name": "lane_id",
+                  "display": false,
+                  "spreadsheet heading": "lane_id",
+                  "display name": "Lane id",
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {  "name"               : "public_name",
+                  "display"            : true,
+                  "default"            : true,
+                  "order"              : 1,
+                  "spreadsheet heading": "Resolution",
+                  "display name"       : "Resolution",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {  "name"               : "sample",
+                  "display"            : true,
+                  "default"            : true,
+                  "order"              : 2,
+                  "spreadsheet heading": "Sanger_Sample_ID",
+                  "display name"       : "Sanger Sample ID",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {  "name"               : "ERR",
+                  "display"            : true,
+                  "default"            : true,
+                  "order"              : 3,
+                  "spreadsheet heading": "ERR",
+                  "display name"       : "ERR",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(256)",
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {  "name"               : "ERS",
+                  "display"            : true,
+                  "default"            : true,
+                  "order"              : 4,
+                  "spreadsheet heading": "ERS",
+                  "display name"       : "ERS",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(256)",
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {  "name"               : "no_of_genome",
+                  "display"            : true,
+                  "default"            : true,
+                  "order"              : 5,
+                  "spreadsheet heading": "Number_of_Genome",
+                  "display name"       : "Number of Genome",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "SMALLINT(6) DEFAULT NULL"
+                  }
+               }
+            ]
+         },
+         {
+            "name": "Not sure",
+            "fields": [
+               {  
+                  "name"               : "duplicate",
+                  "display"            : true,
+                  "default"            : false,
+                  "order"              : 6,
+                  "spreadsheet heading": "Duplicate",
+                  "display name"       : "Duplicate",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {  
+                  "name"               : "Paper_1",
+                  "display"            : true,
+                  "default"            : false,
+                  "order"              : 7,
+                  "spreadsheet heading": "Paper_1",
+                  "display name"       : "Paper",
+                  "filter type"        :  "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "In_Silico_St",
+                  "display": true,
+                  "default": false,
+                  "order": 8,
+                  "spreadsheet heading": "In_Silico_St",
+                  "display name": "In Silico St",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(20) NOT NULL",
+                     "max_length": 20
+                  }
+               },
+               {
+                  "name": "Aroe",
+                  "display": true,
+                  "default": false,
+                  "order": 9,
+                  "spreadsheet heading": "Aroe",
+                  "display name": "Aroe",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Gdh",
+                  "display": true,
+                  "default": false,
+                  "order": 10,
+                  "spreadsheet heading": "Gdh",
+                  "display name": "Gdh",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Gki",
+                  "display": true,
+                  "default": false,
+                  "order": 11,
+                  "spreadsheet heading": "Gki",
+                  "display name": "Gki",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Recp",
+                  "display": true,
+                  "default": false,
+                  "order": 12,
+                  "spreadsheet heading": "Recp",
+                  "display name": "Recp",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Spi",
+                  "display": true,
+                  "default": false,
+                  "order": 13,
+                  "spreadsheet heading": "Aroe",
+                  "display name": "Aroe",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Xpt",
+                  "display": true,
+                  "default": false,
+                  "order": 14,
+                  "spreadsheet heading": "Xpt",
+                  "display name": "Xpt",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Ddl",
+                  "display": true,
+                  "default": false,
+                  "order": 15,
+                  "spreadsheet heading": "Ddl",
+                  "display name": "Ddl",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "country",
+                  "display": true,
+                  "default": false,
+                  "order": 16,
+                  "spreadsheet heading": "Country",
+                  "display name": "Country",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(256)",
+                     "max_length": 256
+                  }
+               },
+               {
+                  "name": "Manifest_type",
+                  "display": true,
+                  "default": false,
+                  "order": 17,
+                  "spreadsheet heading": "Manifest_type",
+                  "display name": "Manifest type",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "children<5yrs",
+                  "display": true,
+                  "default": false,
+                  "order": 18,
+                  "spreadsheet heading": "children<5yrs",
+                  "display name": "Children < 5yrs",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "GPSC_PoPUNK2",
+                  "display": true,
+                  "default": false,
+                  "order": 19,
+                  "spreadsheet heading": "GPSC_PoPUNK2",
+                  "display name": "GPSC PoPUNK2",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "GPSC_PoPUNK2__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 20,
+                  "spreadsheet heading": "GPSC_PoPUNK2__colour",
+                  "display name": "GPSC PoPUNK2 Colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "In_Silico_serotype",
+                  "display": true,
+                  "default": false,
+                  "order": 21,
+                  "spreadsheet heading": "In_Silico_serotype",
+                  "display name": "In Silico Serotype",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "In_Silico_serotype__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 22,
+                  "spreadsheet heading": "In_Silico_serotype__colour",
+                  "display name": "In Silico Serotype Colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PBP1A",
+                  "display": true,
+                  "default": false,
+                  "order": 23,
+                  "spreadsheet heading": "PBP1A",
+                  "display name": "PBP1A",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PBP2B",
+                  "display": true,
+                  "default": false,
+                  "order": 24,
+                  "spreadsheet heading": "PBP2B",
+                  "display name": "PBP2B",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PBP2X",
+                  "display": true,
+                  "default": false,
+                  "order": 25,
+                  "spreadsheet heading": "PBP2X",
+                  "display name": "PBP2X",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_PEN",
+                  "display": true,
+                  "default": false,
+                  "order": 26,
+                  "spreadsheet heading": "WGS_PEN",
+                  "display name": "WGS PEN",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_PEN_SIR_Meningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 27,
+                  "spreadsheet heading": "WGS_PEN_SIR_Meningitis",
+                  "display name": "WGS PEN SIR Meningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_PEN_SIR_Nonmeningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 28,
+                  "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis",
+                  "display name": "WGS PEN SIR Nonmeningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_AMO",
+                  "display": true,
+                  "default": false,
+                  "order": 29,
+                  "spreadsheet heading": "WGS_AMO",
+                  "display name": "WGS AMO",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_AMO_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 30,
+                  "spreadsheet heading": "WGS_AMO_SIR",
+                  "display name": "WGS AMO SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_MER",
+                  "display": true,
+                  "default": false,
+                  "order": 31,
+                  "spreadsheet heading": "WGS_MER",
+                  "display name": "WGS MER",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_MER_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 32,
+                  "spreadsheet heading": "WGS_MER_SIR",
+                  "display name": "WGS MER SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TAX",
+                  "display": true,
+                  "default": false,
+                  "order": 33,
+                  "spreadsheet heading": "WGS_TAX",
+                  "display name": "WGS TAX",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TAX_SIR_Meningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 34,
+                  "spreadsheet heading": "WGS_TAX_SIR_Meningitis",
+                  "display name": "WGS TAX SIR Meningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TAX_SIR_Nonmeningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 35,
+                  "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis",
+                  "display name": "WGS_TAX_SIR_Nonmeningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFT",
+                  "display": true,
+                  "default": false,
+                  "order": 36,
+                  "spreadsheet heading": "WGS_CFT",
+                  "display name": "WGS_CFT",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFT_SIR_Meningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 37,
+                  "spreadsheet heading": "WGS_CFT_SIR_Meningitis",
+                  "display name": "WGS_CFT_SIR_Meningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFT_SIR_Nonmeningitis",
+                  "display": true,
+                  "default": false,
+                  "order": 38,
+                  "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis",
+                  "display name": "WGS_CFT_SIR_Nonmeningitis",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFX",
+                  "display": true,
+                  "default": false,
+                  "order": 39,
+                  "spreadsheet heading": "WGS_CFX",
+                  "display name": "WGS_CFX",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFX_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 40,
+                  "spreadsheet heading": "WGS_CFX_SIR",
+                  "display name": "WGS_CFX_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_ERY",
+                  "display": true,
+                  "default": false,
+                  "order": 41,
+                  "spreadsheet heading": "WGS_ERY",
+                  "display name": "WGS_ERY",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_ERY_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 42,
+                  "spreadsheet heading": "WGS_ERY_SIR",
+                  "display name": "WGS_ERY_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CLI",
+                  "display": true,
+                  "default": false,
+                  "order": 43,
+                  "spreadsheet heading": "WGS_CLI",
+                  "display name": "WGS_CLI",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CLI_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 44,
+                  "spreadsheet heading": "WGS_CLI_SIR",
+                  "display name": "WGS_CLI_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_SYN",
+                  "display": true,
+                  "default": false,
+                  "order": 45,
+                  "spreadsheet heading": "WGS_SYN",
+                  "display name": "WGS_SYN",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_SYN_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 46,
+                  "spreadsheet heading": "WGS_SYN_SIR",
+                  "display name": "WGS_SYN_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LZO",
+                  "display": true,
+                  "default": false,
+                  "order": 47,
+                  "spreadsheet heading": "WGS_LZO",
+                  "display name": "WGS_LZO",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LZO_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 48,
+                  "spreadsheet heading": "WGS_LZO_SIR",
+                  "display name": "WGS_LZO_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_ERY_CLI",
+                  "display": true,
+                  "default": false,
+                  "order": 49,
+                  "spreadsheet heading": "WGS_ERY_CLI",
+                  "display name": "WGS_ERY_CLI",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_COT",
+                  "display": true,
+                  "default": false,
+                  "order": 50,
+                  "spreadsheet heading": "WGS_COT",
+                  "display name": "WGS_COT",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_COT_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 51,
+                  "spreadsheet heading": "WGS_COT_SIR",
+                  "display name": "WGS_COT_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TET",
+                  "display": true,
+                  "default": false,
+                  "order": 52,
+                  "spreadsheet heading": "WGS_TET",
+                  "display name": "WGS_TET",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TET_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 53,
+                  "spreadsheet heading": "WGS_TET_SIR",
+                  "display name": "WGS_TET_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_DOX",
+                  "display": true,
+                  "default": false,
+                  "order": 54,
+                  "spreadsheet heading": "WGS_DOX",
+                  "display name": "WGS_DOX",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_DOX_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 55,
+                  "spreadsheet heading": "WGS_DOX_SIR",
+                  "display name": "WGS_DOX_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LFX",
+                  "display": true,
+                  "default": false,
+                  "order": 56,
+                  "spreadsheet heading": "WGS_LFX",
+                  "display name": "WGS_LFX",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LFX_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 57,
+                  "spreadsheet heading": "WGS_LFX_SIR",
+                  "display name": "WGS_LFX_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CHL",
+                  "display": true,
+                  "default": false,
+                  "order": 58,
+                  "spreadsheet heading": "WGS_CHL",
+                  "display name": "WGS_CHL",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CHL_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 59,
+                  "spreadsheet heading": "WGS_CHL_SIR",
+                  "display name": "WGS_CHL_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_RIF",
+                  "display": true,
+                  "default": false,
+                  "order": 60,
+                  "spreadsheet heading": "WGS_RIF",
+                  "display name": "WGS_RIF",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_RIF_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 61,
+                  "spreadsheet heading": "WGS_RIF_SIR",
+                  "display name": "WGS_RIF_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_VAN",
+                  "display": true,
+                  "default": false,
+                  "order": 62,
+                  "spreadsheet heading": "WGS_VAN",
+                  "display name": "WGS_VAN",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_VAN_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 63,
+                  "spreadsheet heading": "WGS_VAN_SIR",
+                  "display name": "WGS_VAN_SIR",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "EC",
+                  "display": true,
+                  "default": false,
+                  "order": 64,
+                  "spreadsheet heading": "EC",
+                  "display name": "EC",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Cot",
+                  "display": true,
+                  "default": false,
+                  "order": 65,
+                  "spreadsheet heading": "Cot",
+                  "display name": "Cot",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Tet__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 66,
+                  "spreadsheet heading": "Tet__autocolour",
+                  "display name": "Tet__autocolour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "FQ__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 67,
+                  "spreadsheet heading": "FQ__autocolour",
+                  "display name": "FQ__autocolour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Other",
+                  "display": true,
+                  "default": false,
+                  "order": 68,
+                  "spreadsheet heading": "Other",
+                  "display name": "Other",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PBP1A_2B_2X__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 69,
+                  "spreadsheet heading": "PBP1A_2B_2X__autocolour",
+                  "display name": "PBP1A_2B_2X__autocolour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_PEN_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 70,
+                  "spreadsheet heading": "WGS_PEN_SIR_Meningitis__colour",
+                  "display name": "WGS_PEN_SIR_Meningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 71,
+                  "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "display name": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_AMO_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 72,
+                  "spreadsheet heading": "WGS_AMO_SIR__colour",
+                  "display name": "WGS_AMO_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_MER_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 73,
+                  "spreadsheet heading": "WGS_MER_SIR__colour",
+                  "display name": "WGS_MER_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TAX_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 74,
+                  "spreadsheet heading": "WGS_TAX_SIR_Meningitis__colour",
+                  "display name": "WGS_TAX_SIR_Meningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 75,
+                  "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "display name": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFT_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 76,
+                  "spreadsheet heading": "WGS_CFT_SIR_Meningitis__colour",
+                  "display name": "WGS_CFT_SIR_Meningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 77,
+                  "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "display name": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CFX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 78,
+                  "spreadsheet heading": "WGS_CFX_SIR__colour",
+                  "display name": "WGS_CFX_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_ERY_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 79,
+                  "spreadsheet heading": "WGS_ERY_SIR__colour",
+                  "display name": "WGS_ERY_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CLI_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 80,
+                  "spreadsheet heading": "WGS_CLI_SIR__colour",
+                  "display name": "WGS_CLI_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_SYN_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 81,
+                  "spreadsheet heading": "WGS_SYN_SIR__colour",
+                  "display name": "WGS_SYN_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LZO_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 82,
+                  "spreadsheet heading": "WGS_LZO_SIR__colour",
+                  "display name": "WGS_LZO_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_COT_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 83,
+                  "spreadsheet heading": "WGS_COT_SIR__colour",
+                  "display name": "WGS_COT_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_TET_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 84,
+                  "spreadsheet heading": "WGS_TET_SIR__colour",
+                  "display name": "WGS_TET_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_DOX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 85,
+                  "spreadsheet heading": "WGS_DOX_SIR__colour",
+                  "display name": "WGS_DOX_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_LFX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 86,
+                  "spreadsheet heading": "WGS_LFX_SIR__colour",
+                  "display name": "WGS_LFX_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_CHL_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 87,
+                  "spreadsheet heading": "WGS_CHL_SIR__colour",
+                  "display name": "WGS_CHL_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_RIF_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 88,
+                  "spreadsheet heading": "WGS_RIF_SIR__colour",
+                  "display name": "WGS_RIF_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "WGS_VAN_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 89,
+                  "spreadsheet heading": "WGS_VAN_SIR__colour",
+                  "display name": "WGS_VAN_SIR__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "ermB",
+                  "display": true,
+                  "default": false,
+                  "order": 90,
+                  "spreadsheet heading": "ermB",
+                  "display name": "ermB",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "ermB__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 91,
+                  "spreadsheet heading": "ermB__colour",
+                  "display name": "ermB__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "mefA",
+                  "display": true,
+                  "default": false,
+                  "order": 92,
+                  "spreadsheet heading": "mefA",
+                  "display name": "mefA",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "mefA__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 93,
+                  "spreadsheet heading": "mefA__colour",
+                  "display name": "mefA__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "folA_I100L",
+                  "display": true,
+                  "default": false,
+                  "order": 94,
+                  "spreadsheet heading": "folA_I100L",
+                  "display name": "folA_I100L",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "folA_I100L__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 95,
+                  "spreadsheet heading": "folA_I100L__colour",
+                  "display name": "folA_I100L__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "folP__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 96,
+                  "spreadsheet heading": "folP__autocolour",
+                  "display name": "folP__autocolour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "cat",
+                  "display": true,
+                  "default": false,
+                  "order": 97,
+                  "spreadsheet heading": "cat",
+                  "display name": "cat",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "cat__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 98,
+                  "spreadsheet heading": "cat__colour",
+                  "display name": "cat__colour",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PCV7",
+                  "display": true,
+                  "default": false,
+                  "order": 99,
+                  "spreadsheet heading": "PCV7",
+                  "display name": "PCV7",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PCV10",
+                  "display": true,
+                  "default": false,
+                  "order": 100,
+                  "spreadsheet heading": "PCV10",
+                  "display name": "PCV10",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PCV13",
+                  "display": true,
+                  "default": false,
+                  "order": 101,
+                  "spreadsheet heading": "PCV13",
+                  "display name": "PCV13",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PCV15",
+                  "display": true,
+                  "default": false,
+                  "order": 102,
+                  "spreadsheet heading": "PCV15",
+                  "display name": "PCV15",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "PCV20",
+                  "display": true,
+                  "default": false,
+                  "order": 103,
+                  "spreadsheet heading": "PCV20",
+                  "display name": "PCV20",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Pneumosil",
+                  "display": true,
+                  "default": false,
+                  "order": 104,
+                  "spreadsheet heading": "Pneumosil",
+                  "display name": "Pneumosil",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               },
+               {
+                  "name": "Published(Y/N)",
+                  "display": true,
+                  "default": false,
+                  "order": 105,
+                  "spreadsheet heading": "Published(Y/N)",
+                  "display name": "Published(Y/N)",
+                  "filter type": "discrete",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30
+                  }
+               }
+            ]
+         }
+      ]
+   }
+},
+
+
+// NEED TO AMEND (AND EDIT DISPLAY NAME FOR IN SILICO!!)
+
+"qc data": {
+   "gps": {
+      "spreadsheet_header_row_position": 0,
+      "upload_validation_enabled": true,
+      "categories": [
+         {
+            "name": "Sample Identifiers",
+            "fields": [
+               {
+                  "name": "lane_id",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               }
+            ]
+         },
+         {
+            "name": "Pipeline QC",
+            "fields": [
+               {
+                  "name": "rel_abun_sa",
+                  "display": true,
+                  "default": true,
+                  "order": 1,
+                  "filter type": "numeric",
+                  "display name": "Relative abundance S. agalactiae",
+                  "db": {
+                     "mysql_type": "VARCHAR(6) DEFAULT NULL",
+                     "var_type": "float",
+                     "mandatory": false,
+                     "max_length": 6,
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
+                  }
+               }
+            ]
+         }
+      ]
+   }
+}
+}
