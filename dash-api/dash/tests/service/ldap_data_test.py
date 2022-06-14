@@ -1,9 +1,9 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from dash.api.exceptions import LdapDataError
 from DataSources.ldap_data import LdapData
-from ldap import SERVER_DOWN
+from ldap import SCOPE_SUBTREE
 
 ADDITIONAL_LDAP_CONFIG_KEYS = ["uid_attr"]
 TEST_CONFIG = "dash/tests/mock_data/data_sources.yml"
@@ -25,7 +25,9 @@ OPENLDAP_STRING_PARAMETERS = [
 OPENLDAP_BOOL_PARAMETERS = ["LDAP_READONLY_USER"]
 
 GROUP_OBJ_CONFIG_KEY = "user_group_obj"
-MOCK_GID = "any_string"
+MOCK_ID = "any_string"
+MOCK_LDAP_OBJECT_CLASS = "posixAccount"
+MOCK_LDAP_OBJECT_ATTRIBUTE = "uid"
 MOCK_LDAP_RESULT_GROUP = (
     "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
     {
@@ -36,6 +38,8 @@ MOCK_LDAP_RESULT_GROUP = (
         "memberUid": [b"UK"],
     },
 )
+MOCK_LDAP_SEARCH_FILTER = "(some string)"
+MOCK_REQUIRED_ATTRIBUTES_FOR_GROUP_SEARCH = ["cn"]
 
 
 class LdapDataTest(TestCase):
@@ -78,14 +82,23 @@ class LdapDataTest(TestCase):
             doomed = LdapData(ADDITIONAL_LDAP_CONFIG_KEYS, set_up=False)
             doomed.read_openldap_config("no_such.yaml")
 
-    @patch.object(LdapData, "ldap_search")
+    @patch.object(LdapData, "ldap_search_by_attribute_value")
+    def test_group_search_rejects_empty_required_attributes(self, mock_query):
+        with self.assertRaises(ValueError):
+            self.ldap_data.ldap_search_group_by_gid(MOCK_ID, GROUP_OBJ_CONFIG_KEY, None)
+        with self.assertRaises(ValueError):
+            self.ldap_data.ldap_search_group_by_gid(MOCK_ID, GROUP_OBJ_CONFIG_KEY, [])
+
+    @patch.object(LdapData, "ldap_search_by_attribute_value")
     def test_group_search_rejects_multiple_search_results(self, mock_query):
         with self.assertRaises(LdapDataError):
             mock_query.return_value = [MOCK_LDAP_RESULT_GROUP, MOCK_LDAP_RESULT_GROUP]
-            self.ldap_data.ldap_search_group_by_gid(MOCK_GID, GROUP_OBJ_CONFIG_KEY)
+            self.ldap_data.ldap_search_group_by_gid(
+                MOCK_ID, GROUP_OBJ_CONFIG_KEY, MOCK_REQUIRED_ATTRIBUTES_FOR_GROUP_SEARCH
+            )
 
-    @patch.object(LdapData, "ldap_search")
-    def test_group_search_rejects_group_record_without_country_name_attribute(self, mock_query):
+    @patch.object(LdapData, "ldap_search_by_attribute_value")
+    def test_group_search_rejects_group_record_without_required_attribute(self, mock_query):
         mock_ldap_result_group_no_country = (
             "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
             {
@@ -96,34 +109,80 @@ class LdapDataTest(TestCase):
                 "memberUid": [],
             },
         )
-        with self.assertRaises(LdapDataError):
-            mock_query.return_value = [mock_ldap_result_group_no_country]
-            self.ldap_data.ldap_search_group_by_gid(MOCK_GID, GROUP_OBJ_CONFIG_KEY)
+        mock_query.return_value = [mock_ldap_result_group_no_country]
 
-    @patch.object(LdapData, "ldap_search")
-    def test_group_search_rejects_group_record_without_description_attribute(self, mock_query):
-        MOCK_LDAP_RESULT_GROUP_NO_DESC = (
-            "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",
-            {"cn": [b"WelSanIns"], "gidNumber": [b"501"], "objectClass": [b"posixGroup", b"top"], "memberUid": [b"UK"]},
-        )
         with self.assertRaises(LdapDataError):
-            mock_query.return_value = [MOCK_LDAP_RESULT_GROUP_NO_DESC]
-            self.ldap_data.ldap_search_group_by_gid(MOCK_GID, GROUP_OBJ_CONFIG_KEY)
+            self.ldap_data.ldap_search_group_by_gid(MOCK_ID, GROUP_OBJ_CONFIG_KEY, ["country"])
 
-    @patch.object(LdapData, "ldap_search")
+    @patch.object(LdapData, "ldap_search_by_attribute_value")
     def test_group_search(self, mock_query):
         mock_query.return_value = [MOCK_LDAP_RESULT_GROUP]
 
-        user_ldap_result = self.ldap_data.ldap_search_group_by_gid(MOCK_GID, GROUP_OBJ_CONFIG_KEY)
+        user_ldap_result = self.ldap_data.ldap_search_group_by_gid(
+            MOCK_ID, GROUP_OBJ_CONFIG_KEY, MOCK_REQUIRED_ATTRIBUTES_FOR_GROUP_SEARCH
+        )
 
         self.assertIsInstance(user_ldap_result, tuple)
 
-    def test_low_level_search(self):
-        with self.assertRaises(TypeError):
-            self.ldap_data.ldap_search("inetOrgPerson", "uid")
+    def test_ldap_search_by_attribute_value_rejects_on_empty_value(self):
         with self.assertRaises(LdapDataError):
-            self.ldap_data.ldap_search("inetOrgPerson", "uid", None)
+            self.ldap_data.ldap_search_by_attribute_value(MOCK_LDAP_OBJECT_CLASS, MOCK_LDAP_OBJECT_ATTRIBUTE, None)
         with self.assertRaises(LdapDataError):
-            self.ldap_data.ldap_search("inetOrgPerson", "uid", "")
-        with self.assertRaises(SERVER_DOWN):
-            self.ldap_data.ldap_search("inetOrgPerson", "uid", "this_is_valid")
+            self.ldap_data.ldap_search_by_attribute_value(MOCK_LDAP_OBJECT_CLASS, MOCK_LDAP_OBJECT_ATTRIBUTE, "")
+
+    @patch.object(LdapData, "ldap_search")
+    def test_ldap_search_by_attribute_value_call_ldap_search_with_expected_search_filter(self, mock_ldap_search):
+        self.ldap_data.ldap_search_by_attribute_value(MOCK_LDAP_OBJECT_CLASS, MOCK_LDAP_OBJECT_ATTRIBUTE, MOCK_ID)
+
+        mock_ldap_search.assert_called_once_with(
+            f"(&(objectClass={MOCK_LDAP_OBJECT_CLASS})({MOCK_LDAP_OBJECT_ATTRIBUTE}={MOCK_ID}))"
+        )
+
+    @patch.object(LdapData, "ldap_search")
+    def test_ldap_search_by_attribute_value_returns_result_from_ldap_search(self, mock_ldap_search):
+        expected_result = 42
+        mock_ldap_search.return_value = expected_result
+
+        actual_result = self.ldap_data.ldap_search_by_attribute_value(
+            MOCK_LDAP_OBJECT_CLASS, MOCK_LDAP_OBJECT_ATTRIBUTE, MOCK_ID
+        )
+
+        self.assertEqual(expected_result, actual_result)
+
+    @patch.object(LdapData, "connection")
+    def test_ldap_search_raises_on_connection_exception(self, mock_connection):
+        mock_connection.side_effect = ConnectionError()
+
+        with self.assertRaises(LdapDataError):
+            self.ldap_data.ldap_search(MOCK_LDAP_SEARCH_FILTER)
+
+    @patch.object(LdapData, "connection")
+    def test_ldap_search_raises_on_library_exception(self, mock_connection):
+        mock_ldap_object = Mock()
+        mock_ldap_object.search_s.side_effect = ValueError()
+        mock_connection.return_value = mock_ldap_object
+
+        with self.assertRaises(LdapDataError):
+            self.ldap_data.ldap_search(MOCK_LDAP_SEARCH_FILTER)
+
+    @patch.object(LdapData, "connection")
+    def test_ldap_search_calls_ldap_library_search_method_with_expected_search_filter(self, mock_connection):
+        mock_ldap_object = Mock()
+        mock_connection.return_value = mock_ldap_object
+
+        self.ldap_data.ldap_search(MOCK_LDAP_SEARCH_FILTER)
+
+        mock_ldap_object.search_s.assert_called_once_with(
+            self.ldap_data.config["openldap"]["MONOCLE_LDAP_BASE_DN"], SCOPE_SUBTREE, MOCK_LDAP_SEARCH_FILTER
+        )
+
+    @patch.object(LdapData, "connection")
+    def test_ldap_search_returns_result_from_ldap_library_search_method(self, mock_connection):
+        mock_ldap_object = Mock()
+        expected_result = 42
+        mock_ldap_object.search_s.return_value = expected_result
+        mock_connection.return_value = mock_ldap_object
+
+        actual_result = self.ldap_data.ldap_search(MOCK_LDAP_SEARCH_FILTER)
+
+        self.assertEqual(expected_result, actual_result)

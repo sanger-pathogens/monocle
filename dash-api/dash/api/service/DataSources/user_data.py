@@ -62,6 +62,7 @@ class UserData(LdapData):
             ],
             set_up=set_up,
         )
+        self.required_attributes_for_group_search = None
 
     def get_user_details(self, username):
         """
@@ -123,8 +124,16 @@ class UserData(LdapData):
         except Exception:
             pass
 
+        if self.required_attributes_for_group_search is None:
+            self.required_attributes_for_group_search = [
+                self.config["inst_id_attr"],
+                self.config["inst_name_attr"],
+                self.config["country_names_attr"],
+            ]
         for this_gid in org_gids:
-            ldap_group_rec = self.ldap_search_group_by_gid(this_gid, GROUP_OBJ_CONFIG_KEY)
+            ldap_group_rec = self.ldap_search_group_by_gid(
+                this_gid, GROUP_OBJ_CONFIG_KEY, self.required_attributes_for_group_search
+            )
             if ldap_group_rec is None:
                 logging.error(
                     "A group with GID {} could not be found in LDAP, which indicates an invalid user record.".format(
@@ -159,7 +168,7 @@ class UserData(LdapData):
 
     def ldap_search_user_by_username(self, username):
         """
-        Wraps ldap_search() adding params for search for a user using the username passed.
+        Wraps ldap_search_by_attribute_value() adding params for search for a user using the username passed.
         Returns LDAP user record for the user if found, None if not found.
         Raises LdapDataError if more than 1 match (username should be unique)
         or if returned data are not valid for a user record.
@@ -169,7 +178,9 @@ class UserData(LdapData):
         Note attribute valids are bytes, require decode() to convert to string
         """
         logging.debug("searching for username {}".format(username))
-        result_list = self.ldap_search(self.config["users_obj"], self.config["username_attr"], username)
+        result_list = self.ldap_search_by_attribute_value(
+            self.config["users_obj"], self.config["username_attr"], username
+        )
         if 0 == len(result_list):
             return None
         # believe there should be only one hit -- or usernames aren't unique :-/

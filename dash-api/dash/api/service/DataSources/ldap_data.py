@@ -105,9 +105,9 @@ class LdapData:
         if self._current_ldap_connection is not None:
             self._current_ldap_connection = None
 
-    def ldap_search_group_by_gid(self, gid, group_object_config_key):
+    def ldap_search_group_by_gid(self, gid, group_object_config_key, required_attributes):
         """
-        Wraps ldap_search() adding params for search for a group using the GID value passed.
+        Wraps ldap_search_by_attribute_value() adding params for search for a group using the GID value passed.
         Returns LDAP group record for the group if found, None if not found.
         Returns None if no match; raises LdapDataError if more than 1 match (GID should be unique)
         or if returned data are not valid for a group record.
@@ -116,8 +116,14 @@ class LdapData:
         - a dict of attributes
         Note attribute valids are bytes, require decode() to convert to string
         """
+        if required_attributes is None or len(required_attributes) == 0:
+            logging.error("`required_attributes` argument is empty")
+            raise ValueError("`required_attributes` argument must not be empty")
+
         logging.debug("searching for GID {}".format(gid))
-        result_list = self.ldap_search(self.config[group_object_config_key], self.config["gid_attr"], gid)
+        result_list = self.ldap_search_by_attribute_value(
+            self.config[group_object_config_key], self.config["gid_attr"], gid
+        )
         if 0 == len(result_list):
             return None
         if len(result_list) > 1:
@@ -129,11 +135,7 @@ class LdapData:
             raise LdapDataError("GID {} is not unique".format(gid))
         result = result_list[0]
         group_attr = result[1]
-        for required_attr in [
-            self.config["inst_id_attr"],
-            self.config["inst_name_attr"],
-            self.config["country_names_attr"],
-        ]:
+        for required_attr in required_attributes:
             if required_attr not in group_attr or len(group_attr[required_attr]) < 1:
                 logging.error(
                     "group with GID {} doesn't seem to contain the required attribute {} (complete data = {})".format(
@@ -144,18 +146,29 @@ class LdapData:
         logging.debug("found group: {}".format(result))
         return result
 
-    def ldap_search(self, object_class, attr, value):
+    def ldap_search_by_attribute_value(self, object_class, attr, value):
         """
-        Generic LDAP search method
-        Searches for specified objects with attributes equal to the given value, and returns whatever data is retrieved from LDAP
+        Generic LDAP search method that searches for specified objects with attributes equal to
+        the given value, and returns whatever data is retrieved from LDAP
         """
         if value is None or len(str(value)) < 1:
             raise LdapDataError("LDAP search string must not be None and must not be an empty string")
-        this_search = "(&(objectClass={})({}={}))".format(object_class, attr, value)
-        logging.debug("LDAP search: {}".format(this_search))
-        # FIXME add more graceful error handling
-        result = self.connection().search_s(
-            self.config["openldap"]["MONOCLE_LDAP_BASE_DN"], ldap.SCOPE_SUBTREE, this_search
-        )
-        logging.debug("LDAP search result: {}".format(result))
+
+        return self.ldap_search(f"(&(objectClass={object_class})({attr}={value}))")
+
+    def ldap_search(self, ldap_search_string):
+        """
+        Low-level LDAP search: wraps LDAP's own `search_s()`.
+        `ldap_search_string` is a search filter in the format understood by LDAP.
+        """
+        logging.debug(f"LDAP search: {ldap_search_string}")
+        try:
+            result = self.connection().search_s(
+                self.config["openldap"]["MONOCLE_LDAP_BASE_DN"], ldap.SCOPE_SUBTREE, ldap_search_string
+            )
+        # The docs are silent on what exception the underlying `ldap_get_dn` may raise. So catch generic `Exception`:
+        except Exception as e:
+            logging.error(f"LDAP search: {e}")
+            raise LdapDataError(e)
+        logging.debug(f"LDAP search result: {result}")
         return result

@@ -169,7 +169,7 @@ class MonocleUserDataTest(TestCase):
             expected_config_value = self.user_data.config[expected_config_key]
             self.assertIsInstance(expected_config_value, str)
 
-    @patch.object(UserData, "ldap_search")
+    @patch.object(UserData, "ldap_search_by_attribute_value")
     def test_user_search(self, mock_query):
         # reject multiple search results
         with self.assertRaises(LdapDataError):
@@ -248,8 +248,9 @@ class MonocleUserDataTest(TestCase):
         self.user_data.get_user_details("mock_user")
 
         expected_group_object_config_key = "user_group_obj"
+        expected_attributes = ["cn", "description", "memberUid"]
         expected_group_search_calls = [
-            call(org_gid_bytes.decode("UTF-8"), expected_group_object_config_key)
+            call(org_gid_bytes.decode("UTF-8"), expected_group_object_config_key, expected_attributes)
             for org_gid_bytes in self.mock_ldap_result_user[1]["o"]
         ]
         mock_group_query.assert_has_calls(expected_group_search_calls)
