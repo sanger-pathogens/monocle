@@ -1,26 +1,25 @@
 <script>
-  import { onMount } from "svelte";
   import { browser } from "$app/env";
   import { PATHNAME_LOGIN } from "$lib/constants.js";
-  import { getProjectInformation } from "$lib/dataLoading.js";
+  import { getStores } from "$app/stores";
 
-  let project;
-
-  onMount(() => {
-    getProjectInformation(fetch).then((r) => (project = r));
-  });
+  const { session } = getStores();
 </script>
 
 <header>
   <h1><a href="/">Monocle</a></h1>
   <nav>
     <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      {#if typeof project == "undefined"}
+      {#if typeof session.project == "undefined"}
         ...
-      {:else if typeof project.logo_url != "undefined" && project.logo_url != ""}
-        <img alt="JUNO Project" src={project.logo_url} title={project.name} />
+      {:else if typeof session.project.logo_url != "undefined" && session.project.logo_url != ""}
+        <img
+          alt="JUNO Project"
+          src={session.project.logo_url}
+          title={session.project.name}
+        />
       {:else}
-        {project.name}
+        {session.project.name}
       {/if}
     </a>
     <a href="https://www.gbsgen.net/#about" target="_blank">About</a>

@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { getStores } from "$app/stores";
-  import { getUserDetails } from "$lib/dataLoading.js";
+  import { getUserDetails, getProjectInformation } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
@@ -21,6 +21,8 @@
       .catch((err) => {
         console.error(err);
       });
+
+    getProjectInformation(fetch).then((r) => session.set({ project: r }));
   });
 
   function appendScriptToHead(src, options) {
