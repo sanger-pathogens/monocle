@@ -320,13 +320,14 @@ class UpdateMetadataFiles:
         c["spreadsheet_definition"] = spreadsheet_definition
         return c
 
-    def update_config_json(self, config_path, map_config_dict):
+    def update_config_json(self, config_path, map_config_dict, project_key):
         """Updates a config.json file based on main_config.json"""
         with open(config_path) as config_file:
             config = json.load(config_file)
 
         for kc, kmc in map_config_dict.items():
             config[kc] = self.update_config_section(config[kc], self.config[kmc])
+        config["project"] = self.config["config"]["projects"][project_key]["project"]
 
         json_object = json.dumps(config, indent=3)
         with open(config_path, "w") as out_file:
@@ -344,10 +345,10 @@ class UpdateMetadataFiles:
 
         self.write_field_attributes_file()
 
-        for project in self.projects.values():
+        for project_key, project in self.projects.items():
             config_path = self.abs_path(project["files"]["config_file"])
             if os.path.exists(config_path):
-                self.update_config_json(config_path, project["map_config_dict"])
+                self.update_config_json(config_path, project["map_config_dict"], project_key)
 
 
 if __name__ == "__main__":

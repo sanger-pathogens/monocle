@@ -2,6 +2,21 @@
    "config": {
       "projects":{
          "juno":{
+            "project" : {
+               "name": "JUNO Project", 
+               "logo_url": "/imgs/junologo.svg",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ]
+            } ,
             "files": {
                "config_file": "metadata/juno/config.json",
                "API model" : [
@@ -68,6 +83,21 @@
             }
          },
          "gps": {
+            "project" : {
+               "name": "GPS Project", 
+               "logo_url": "",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ]
+            } ,
             "files": {
                "config_file": "metadata/gps/config.json",
                "API model" : [

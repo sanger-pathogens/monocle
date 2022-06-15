@@ -15,7 +15,9 @@ import yaml
 from dash.api.exceptions import NotAuthorisedException
 from dash.api.service.service_factory import ServiceFactory
 from dash.api.utils.file import ZIP_SUFFIX, complete_zipfile, zip_files
-from flask import Response, jsonify, request
+from flask import Response
+from flask import current_app as application
+from flask import jsonify, request
 
 logger = logging.getLogger()
 
@@ -115,7 +117,8 @@ def sequencing_status_summary_route():
 
 def interface_route():
     """Get interface information"""
-    response_dict = {"project": {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}}
+    response_dict = application.config["project"]
+    # response_dict = {"project": {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}}
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
