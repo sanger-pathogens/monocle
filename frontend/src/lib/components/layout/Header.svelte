@@ -10,7 +10,7 @@
   <h1><a href="/">Monocle</a></h1>
   <nav>
     <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      {#if typeof session.project == "undefined"}{:else if typeof session.project.logo_url != "undefined" && session.project.logo_url != ""}
+      {#if typeof session.project === "undefined"}{:else if typeof session.project.logo_url !== "undefined" && session.project.logo_url !== ""}
         <img
           alt="JUNO Project"
           src={session.project.logo_url}
