@@ -10,14 +10,14 @@
   <h1><a href="/">Monocle</a></h1>
   <nav>
     <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      {#if typeof session.project === "undefined"}{:else if typeof session.project.logo_url !== "undefined" && session.project.logo_url !== ""}
+      {#if typeof $session.project === "undefined"}{:else if typeof $session.project.logo_url !== "undefined" && $session.project.logo_url !== ""}
         <img
-          alt="JUNO Project"
-          src={session.project.logo_url}
-          title={session.project.name}
+          alt={$session.project.name}
+          src={$session.project.logo_url}
+          title={$session.project.name}
         />
       {:else}
-        {session.project.name}
+        {$session.project.name}
       {/if}
     </a>
     <a href="https://www.gbsgen.net/#about" target="_blank">About</a>
