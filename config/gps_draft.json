@@ -251,7 +251,53 @@
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(256)",
-                          "max_length": 256
+                          "max_length": 256,
+                          "allowed_values": [
+                           "PNEUMONIA",
+                           "BACTEREMIA",
+                           "MENINGITIS",
+                           "SINUSITIS",
+                           "_",
+                           "UNKNOWN",
+                           "OTITIS",
+                           "CELLULITIS",
+                           "OSTEOMYELITIS",
+                           "FEVER UNSPECIFIED",
+                           "EMPYEMA",
+                           "BRONCHITIS",
+                           "SEPTIC ARTHRITIS",
+                           "JOINT INFECTION",
+                           "ABSCESS",
+                           "ARTHRITIS",
+                           "SURGICAL SITE INFECTION",
+                           "PERITONITIS",
+                           "PLEURAL EFFUSION",
+                           "SEPSIS",
+                           "OTHER",
+                           "OTITIS MEDIA",
+                           "PERICARDITIS",
+                           "SEPTICEMIA",
+                           "CARRIAGE",
+                           "UNSPECIFIED",
+                           "LOWER RESPIRATORY TRACT INFECTION",
+                           "DISEASE",
+                           "BRONCHIAL ASTHMA",
+                           "BRONCHIOLITIS",
+                           "ENCEPHALITIS",
+                           "LEUKEMIA",
+                           "BACTERAEMIA",
+                           "UNSPECIFIED IPD",
+                           "CONJUNCTIVITIS",
+                           "Bacteraemia",
+                           "Carriage"
+                        ],
+                        "convert_case": {
+                           "case": "upper",
+                           "preserve": [
+                              "Bacteraemia",
+                              "Carriage"
+                           ]
+                        }
                      }
                     },
                 {  "name"               : "source",
@@ -264,8 +310,35 @@
                    "db": {
                         "mysql_type": "VARCHAR(100)",
                         "max_length": 100,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                        "regex_validation_message": "contains illegal characters"
+                        "allowed_values": [
+                           "BLOOD",
+                           "PLEURAL FLUID",
+                           "CEREBROSPINAL FLUID",
+                           "OTHER",
+                           "PERITONEAL FLUID",
+                           "ASCITIC FLUID",
+                           "BRONCHIAL SECRETION",
+                           "CSF",
+                           "MIDDLE EAR FLUID",
+                           "NP SWAB",
+                           "OP SWAB",
+                           "SPUTUM",
+                           "SYNOVIAL FLUID",
+                           "_",
+                           "LUNG ASPIRATE",
+                           "PLEURAL ASPIRATE",
+                           "PUS",
+                           "ASCETIC FLUID",
+                           "NP SWAP",
+                           "KNEE ASPIRATE",
+                           "JOINT FLUID",
+                           "CSF & BLOOD",
+                           "EAR SWAB",
+                           "NASOPHARYNGEAL SWAB"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "HIV_status",
@@ -278,8 +351,14 @@
                    "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                        "regex_validation_message": "contains illegal characters"
+                        "allowed_values": [
+                           "_",
+                           "P",
+                           "N"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "underlying_conditions",
@@ -292,8 +371,23 @@
                    "db": {
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                        "regex_validation_message": "contains illegal characters"
+                        "allowed_values": [
+                           "_",
+                           "HIV EXPOSED",
+                           "CHEST INFECTION",
+                           "KWASHIORKOR",
+                           "CEREBROVASCULAR ACCIDENT",
+                           "SICKLE CELL DISEASE",
+                           "EPILEPSY",
+                           "PRETERM",
+                           "TUBEROSCLEROSIS",
+                           "DOWN SYNDROME",
+                           "SEIZURES",
+                           "CONGENITAL HEART DISEASE"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   }
              ]
@@ -310,8 +404,18 @@
                   "db": {
                        "mysql_type": "VARCHAR(100)",
                        "max_length": 100,
-                       "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                       "regex_validation_message": "contains illegal characters"
+                       "allowed_values": [
+                        "QUELLUNG",
+                        "_",
+                        "PCR",
+                        "LATEX AGGLUTINATION",
+                        "NT",
+                        "PCR AND QUELLUNG",
+                        "MICROARRAY"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                     }
                  },
                 {  "name"               : "phenotypic_serotype",
@@ -324,7 +428,7 @@
                    "db": {
                         "mysql_type": "VARCHAR(100)",
                         "max_length": 100,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex": "^(?:[A-Z0-9/\\(/)\\-_]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },
@@ -337,7 +441,9 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(256)",
-                        "max_length": 256
+                        "max_length": 256,
+                        "regex": "^[0-9_]{1,5}|NEW",
+                        "regex_validation_message": "contains illegal characters"
                      }
                   }
              ]
@@ -365,7 +471,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "ETEST",
+                           "BROTH DILUTION",
+                           "DISK DIFFUSION",
+                           "DISC DIFFUSION",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "amoxicillin",
@@ -389,7 +508,18 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "AGAR DILUTION",
+                           "ETEST",
+                           "DISK DIFFUSION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "cefotaxime",
@@ -413,7 +543,19 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "ETEST",
+                           "DISK DIFFUSION",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "ceftriaxone",
@@ -437,7 +579,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "ETEST",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "DISK DIFFUSION",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "cefuroxime",
@@ -462,8 +617,16 @@
                    "db": {
                         "mysql_type": "VARCHAR(60)",
                         "max_length": 60,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                        "regex_validation_message": "contains illegal characters"
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "DISK DIFFUSION",
+                           "ETEST"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "Meropenem",
@@ -487,7 +650,17 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "ETEST",
+                           "DISK DIFFUSION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "erythromycin",
@@ -511,7 +684,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "ETEST",
+                           "BROTH DILUTION",
+                           "DISK DIFFUSION",
+                           "DISC DIFFUSION",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "clindamycin",
@@ -536,8 +722,19 @@
                    "db": {
                         "mysql_type": "VARCHAR(60)",
                         "max_length": 60,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
-                        "regex_validation_message": "contains illegal characters"
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "DISK DIFFUSION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "OTHER",
+                           "AGAR DILUTION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "trim/sulfa",
@@ -561,7 +758,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "DISK DIFFUSION",
+                           "OTHER",
+                           "AGAR DILUTION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "vancomycinn",
@@ -585,7 +795,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "DISK DIFFUSION",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "linezolid",
@@ -609,7 +832,18 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "ETEST",
+                           "DISK DIFFUSION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "ciprofloxacin",
@@ -633,7 +867,18 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "DISK DIFFUSION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "chloramphenicol",
@@ -657,7 +902,19 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "DISK DIFFUSION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "AGAR DILUTION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "tetracycline",
@@ -681,7 +938,20 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "DISK DIFFUSION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "levofloxacin",
@@ -705,7 +975,19 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "DISK DIFFUSION",
+                           "BROTH DILUTION",
+                           "ETEST",
+                           "AGAR DILUTION",
+                           "OTHER"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "synercid",
@@ -729,7 +1011,16 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "ETEST",
+                           "BROTH DILUTION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   },
                 {  "name"               : "rifampin",
@@ -753,7 +1044,17 @@
                    "filter type"        :  "discrete",
                    "db": {
                         "mysql_type": "VARCHAR(60)",
-                        "max_length": 60
+                        "max_length": 60,
+                        "allowed_values": [
+                           "_",
+                           "BROTH_DILUTION",
+                           "BROTH DILUTION",
+                           "ETEST",
+                           "DISK DIFFUSION"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
                      }
                   }
              ]
