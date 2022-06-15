@@ -226,6 +226,7 @@ class UpdateMetadataFiles:
         yml2json = self.projects[project_key]["yml2json"]
         yml_field_patterns = list(map(lambda x: [x["Schema name dash"], x["field pattern dash"]], yml2json))
         y = self.update_shared_yml(data, file_path, yml_field_patterns)
+        y["project"] = self.config["config"]["projects"][project_key]["project"]
         for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
