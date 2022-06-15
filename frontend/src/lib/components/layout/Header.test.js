@@ -1,5 +1,11 @@
 import { render } from "@testing-library/svelte";
+// eslint-disable-next-line no-unused-vars
+import { getStores } from "$app/stores";
 import Header from "$lib/components/layout/Header.svelte";
+
+jest.mock("$app/stores", () => ({
+  getStores: jest.fn(() => ({ session: {} })),
+}));
 
 const LABEL_LOG_OUT = "Log out";
 const ROLE_LINK = "link";
