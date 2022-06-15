@@ -22,7 +22,9 @@
         console.error(err);
       });
 
-    getProjectInformation(fetch).then((r) => session.set({ project: r }));
+    getProjectInformation(fetch)
+      .then((r) => console.log(r))
+      .then((r) => session.set({ project: r.project }));
   });
 
   function appendScriptToHead(src, options) {
