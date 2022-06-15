@@ -9,8 +9,6 @@
 
   const { session } = getStores();
 
-  // Dummy comment
-
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
 
