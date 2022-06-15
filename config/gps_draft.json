@@ -104,7 +104,6 @@
                         "convert_case": {
                            "case": "upper"
                         }
-
                      }
                   },
                 {  "name"               : "country",
@@ -914,6 +913,10 @@
 },
 
 
+
+
+
+
 "in silico": {
    "gps": {
       "spreadsheet_header_row_position": 0,
@@ -1392,7 +1395,7 @@
                   "default": false,
                   "order": 35,
                   "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis",
-                  "display name": "WGS_TAX_SIR_Nonmeningitis",
+                  "display name": "WGS TAX SIR Nonmeningitis",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1405,7 +1408,7 @@
                   "default": false,
                   "order": 36,
                   "spreadsheet heading": "WGS_CFT",
-                  "display name": "WGS_CFT",
+                  "display name": "WGS CFT",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1418,7 +1421,7 @@
                   "default": false,
                   "order": 37,
                   "spreadsheet heading": "WGS_CFT_SIR_Meningitis",
-                  "display name": "WGS_CFT_SIR_Meningitis",
+                  "display name": "WGS CFT SIR Meningitis",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1431,7 +1434,7 @@
                   "default": false,
                   "order": 38,
                   "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis",
-                  "display name": "WGS_CFT_SIR_Nonmeningitis",
+                  "display name": "WGS CFT SIR Nonmeningitis",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1444,7 +1447,7 @@
                   "default": false,
                   "order": 39,
                   "spreadsheet heading": "WGS_CFX",
-                  "display name": "WGS_CFX",
+                  "display name": "WGS CFX",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1457,7 +1460,7 @@
                   "default": false,
                   "order": 40,
                   "spreadsheet heading": "WGS_CFX_SIR",
-                  "display name": "WGS_CFX_SIR",
+                  "display name": "WGS CFX SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1470,7 +1473,7 @@
                   "default": false,
                   "order": 41,
                   "spreadsheet heading": "WGS_ERY",
-                  "display name": "WGS_ERY",
+                  "display name": "WGS ERY",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1483,7 +1486,7 @@
                   "default": false,
                   "order": 42,
                   "spreadsheet heading": "WGS_ERY_SIR",
-                  "display name": "WGS_ERY_SIR",
+                  "display name": "WGS ERY SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1496,7 +1499,7 @@
                   "default": false,
                   "order": 43,
                   "spreadsheet heading": "WGS_CLI",
-                  "display name": "WGS_CLI",
+                  "display name": "WGS CLI",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1509,7 +1512,7 @@
                   "default": false,
                   "order": 44,
                   "spreadsheet heading": "WGS_CLI_SIR",
-                  "display name": "WGS_CLI_SIR",
+                  "display name": "WGS CLI SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1522,7 +1525,7 @@
                   "default": false,
                   "order": 45,
                   "spreadsheet heading": "WGS_SYN",
-                  "display name": "WGS_SYN",
+                  "display name": "WGS SYN",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1535,7 +1538,7 @@
                   "default": false,
                   "order": 46,
                   "spreadsheet heading": "WGS_SYN_SIR",
-                  "display name": "WGS_SYN_SIR",
+                  "display name": "WGS SYN SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1548,7 +1551,7 @@
                   "default": false,
                   "order": 47,
                   "spreadsheet heading": "WGS_LZO",
-                  "display name": "WGS_LZO",
+                  "display name": "WGS LZO",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1561,7 +1564,7 @@
                   "default": false,
                   "order": 48,
                   "spreadsheet heading": "WGS_LZO_SIR",
-                  "display name": "WGS_LZO_SIR",
+                  "display name": "WGS LZO SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1574,7 +1577,7 @@
                   "default": false,
                   "order": 49,
                   "spreadsheet heading": "WGS_ERY_CLI",
-                  "display name": "WGS_ERY_CLI",
+                  "display name": "WGS ERY CLI",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1587,7 +1590,7 @@
                   "default": false,
                   "order": 50,
                   "spreadsheet heading": "WGS_COT",
-                  "display name": "WGS_COT",
+                  "display name": "WGS COT",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1600,7 +1603,7 @@
                   "default": false,
                   "order": 51,
                   "spreadsheet heading": "WGS_COT_SIR",
-                  "display name": "WGS_COT_SIR",
+                  "display name": "WGS COT SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1613,7 +1616,7 @@
                   "default": false,
                   "order": 52,
                   "spreadsheet heading": "WGS_TET",
-                  "display name": "WGS_TET",
+                  "display name": "WGS TET",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1626,7 +1629,7 @@
                   "default": false,
                   "order": 53,
                   "spreadsheet heading": "WGS_TET_SIR",
-                  "display name": "WGS_TET_SIR",
+                  "display name": "WGS TET SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1639,7 +1642,7 @@
                   "default": false,
                   "order": 54,
                   "spreadsheet heading": "WGS_DOX",
-                  "display name": "WGS_DOX",
+                  "display name": "WGS DOX",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1652,7 +1655,7 @@
                   "default": false,
                   "order": 55,
                   "spreadsheet heading": "WGS_DOX_SIR",
-                  "display name": "WGS_DOX_SIR",
+                  "display name": "WGS DOX SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1665,7 +1668,7 @@
                   "default": false,
                   "order": 56,
                   "spreadsheet heading": "WGS_LFX",
-                  "display name": "WGS_LFX",
+                  "display name": "WGS LFX",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1678,7 +1681,7 @@
                   "default": false,
                   "order": 57,
                   "spreadsheet heading": "WGS_LFX_SIR",
-                  "display name": "WGS_LFX_SIR",
+                  "display name": "WGS LFX SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1691,7 +1694,7 @@
                   "default": false,
                   "order": 58,
                   "spreadsheet heading": "WGS_CHL",
-                  "display name": "WGS_CHL",
+                  "display name": "WGS CHL",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1704,7 +1707,7 @@
                   "default": false,
                   "order": 59,
                   "spreadsheet heading": "WGS_CHL_SIR",
-                  "display name": "WGS_CHL_SIR",
+                  "display name": "WGS CHL SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1717,7 +1720,7 @@
                   "default": false,
                   "order": 60,
                   "spreadsheet heading": "WGS_RIF",
-                  "display name": "WGS_RIF",
+                  "display name": "WGS RIF",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1730,7 +1733,7 @@
                   "default": false,
                   "order": 61,
                   "spreadsheet heading": "WGS_RIF_SIR",
-                  "display name": "WGS_RIF_SIR",
+                  "display name": "WGS RIF SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1743,7 +1746,7 @@
                   "default": false,
                   "order": 62,
                   "spreadsheet heading": "WGS_VAN",
-                  "display name": "WGS_VAN",
+                  "display name": "WGS VAN",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1756,7 +1759,7 @@
                   "default": false,
                   "order": 63,
                   "spreadsheet heading": "WGS_VAN_SIR",
-                  "display name": "WGS_VAN_SIR",
+                  "display name": "WGS VAN SIR",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1795,7 +1798,7 @@
                   "default": false,
                   "order": 66,
                   "spreadsheet heading": "Tet__autocolour",
-                  "display name": "Tet__autocolour",
+                  "display name": "Tet autocolour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1808,7 +1811,7 @@
                   "default": false,
                   "order": 67,
                   "spreadsheet heading": "FQ__autocolour",
-                  "display name": "FQ__autocolour",
+                  "display name": "FQ autocolour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1834,7 +1837,7 @@
                   "default": false,
                   "order": 69,
                   "spreadsheet heading": "PBP1A_2B_2X__autocolour",
-                  "display name": "PBP1A_2B_2X__autocolour",
+                  "display name": "PBP1A 2B 2X autocolour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1847,7 +1850,7 @@
                   "default": false,
                   "order": 70,
                   "spreadsheet heading": "WGS_PEN_SIR_Meningitis__colour",
-                  "display name": "WGS_PEN_SIR_Meningitis__colour",
+                  "display name": "WGS PEN SIR Meningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1860,7 +1863,7 @@
                   "default": false,
                   "order": 71,
                   "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis__colour",
-                  "display name": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "display name": "WGS PEN SIR Nonmeningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1873,7 +1876,7 @@
                   "default": false,
                   "order": 72,
                   "spreadsheet heading": "WGS_AMO_SIR__colour",
-                  "display name": "WGS_AMO_SIR__colour",
+                  "display name": "WGS AMO SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1886,7 +1889,7 @@
                   "default": false,
                   "order": 73,
                   "spreadsheet heading": "WGS_MER_SIR__colour",
-                  "display name": "WGS_MER_SIR__colour",
+                  "display name": "WGS MER SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1899,7 +1902,7 @@
                   "default": false,
                   "order": 74,
                   "spreadsheet heading": "WGS_TAX_SIR_Meningitis__colour",
-                  "display name": "WGS_TAX_SIR_Meningitis__colour",
+                  "display name": "WGS TAX SIR Meningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1912,7 +1915,7 @@
                   "default": false,
                   "order": 75,
                   "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis__colour",
-                  "display name": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "display name": "WGS TAX SIR Nonmeningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1925,7 +1928,7 @@
                   "default": false,
                   "order": 76,
                   "spreadsheet heading": "WGS_CFT_SIR_Meningitis__colour",
-                  "display name": "WGS_CFT_SIR_Meningitis__colour",
+                  "display name": "WGS CFT SIR Meningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1938,7 +1941,7 @@
                   "default": false,
                   "order": 77,
                   "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis__colour",
-                  "display name": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "display name": "WGS CFT SIR Nonmeningitis colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1964,7 +1967,7 @@
                   "default": false,
                   "order": 79,
                   "spreadsheet heading": "WGS_ERY_SIR__colour",
-                  "display name": "WGS_ERY_SIR__colour",
+                  "display name": "WGS ERY SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1977,7 +1980,7 @@
                   "default": false,
                   "order": 80,
                   "spreadsheet heading": "WGS_CLI_SIR__colour",
-                  "display name": "WGS_CLI_SIR__colour",
+                  "display name": "WGS CLI SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -1990,7 +1993,7 @@
                   "default": false,
                   "order": 81,
                   "spreadsheet heading": "WGS_SYN_SIR__colour",
-                  "display name": "WGS_SYN_SIR__colour",
+                  "display name": "WGS SYN SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2003,7 +2006,7 @@
                   "default": false,
                   "order": 82,
                   "spreadsheet heading": "WGS_LZO_SIR__colour",
-                  "display name": "WGS_LZO_SIR__colour",
+                  "display name": "WGS LZO SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2016,7 +2019,7 @@
                   "default": false,
                   "order": 83,
                   "spreadsheet heading": "WGS_COT_SIR__colour",
-                  "display name": "WGS_COT_SIR__colour",
+                  "display name": "WGS COT SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2029,7 +2032,7 @@
                   "default": false,
                   "order": 84,
                   "spreadsheet heading": "WGS_TET_SIR__colour",
-                  "display name": "WGS_TET_SIR__colour",
+                  "display name": "WGS TET SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2042,7 +2045,7 @@
                   "default": false,
                   "order": 85,
                   "spreadsheet heading": "WGS_DOX_SIR__colour",
-                  "display name": "WGS_DOX_SIR__colour",
+                  "display name": "WGS DOX SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2055,7 +2058,7 @@
                   "default": false,
                   "order": 86,
                   "spreadsheet heading": "WGS_LFX_SIR__colour",
-                  "display name": "WGS_LFX_SIR__colour",
+                  "display name": "WGS LFX SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2068,7 +2071,7 @@
                   "default": false,
                   "order": 87,
                   "spreadsheet heading": "WGS_CHL_SIR__colour",
-                  "display name": "WGS_CHL_SIR__colour",
+                  "display name": "WGS CHL SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2081,7 +2084,7 @@
                   "default": false,
                   "order": 88,
                   "spreadsheet heading": "WGS_RIF_SIR__colour",
-                  "display name": "WGS_RIF_SIR__colour",
+                  "display name": "WGS RIF SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2094,7 +2097,7 @@
                   "default": false,
                   "order": 89,
                   "spreadsheet heading": "WGS_VAN_SIR__colour",
-                  "display name": "WGS_VAN_SIR__colour",
+                  "display name": "WGS VAN SIR colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2120,7 +2123,7 @@
                   "default": false,
                   "order": 91,
                   "spreadsheet heading": "ermB__colour",
-                  "display name": "ermB__colour",
+                  "display name": "ermB colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2146,7 +2149,7 @@
                   "default": false,
                   "order": 93,
                   "spreadsheet heading": "mefA__colour",
-                  "display name": "mefA__colour",
+                  "display name": "mefA colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2159,7 +2162,7 @@
                   "default": false,
                   "order": 94,
                   "spreadsheet heading": "folA_I100L",
-                  "display name": "folA_I100L",
+                  "display name": "folA I100L",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2172,7 +2175,7 @@
                   "default": false,
                   "order": 95,
                   "spreadsheet heading": "folA_I100L__colour",
-                  "display name": "folA_I100L__colour",
+                  "display name": "folA I100L colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2185,7 +2188,7 @@
                   "default": false,
                   "order": 96,
                   "spreadsheet heading": "folP__autocolour",
-                  "display name": "folP__autocolour",
+                  "display name": "folP autocolour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2198,7 +2201,7 @@
                   "default": false,
                   "order": 97,
                   "spreadsheet heading": "cat",
-                  "display name": "cat",
+                  "display name": "Cat",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2211,7 +2214,7 @@
                   "default": false,
                   "order": 98,
                   "spreadsheet heading": "cat__colour",
-                  "display name": "cat__colour",
+                  "display name": "Cat colour",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
@@ -2316,7 +2319,9 @@
 },
 
 
-// NEED TO AMEND (AND EDIT DISPLAY NAME FOR IN SILICO!!)
+
+
+
 
 "qc data": {
    "gps": {
@@ -2336,6 +2341,61 @@
                      "regex": "^(?:\\d+_\\d+#\\d+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
+               },
+               {
+                  "name": "sample_name",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {
+                  "name": "sample_accession",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {
+                  "name": "lane_accession",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {
+                  "name": "supplier_name",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
+               },
+               {
+                  "name": "public_name",
+                  "display": false,
+                  "db": {
+                     "mysql_type": "VARCHAR(256) NOT NULL",
+                     "mandatory": true,
+                     "max_length": 256,
+                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex_validation_message": "contains illegal characters"
+                  }
                }
             ]
          },
@@ -2343,18 +2403,91 @@
             "name": "Pipeline QC",
             "fields": [
                {
-                  "name": "rel_abun_sa",
+                  "name": "Streptococcus_pneumoniae",
                   "display": true,
                   "default": true,
                   "order": 1,
                   "filter type": "numeric",
-                  "display name": "Relative abundance S. agalactiae",
+                  "display name": "Streptococcus pneumoniae",
                   "db": {
-                     "mysql_type": "VARCHAR(6) DEFAULT NULL",
-                     "var_type": "float",
-                     "mandatory": false,
-                     "max_length": 6,
-                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
+                     "mysql_type": "DECIMAL(3,2)"
+                  }
+               },
+               {
+                  "name": "total_length",
+                  "display": true,
+                  "default": true,
+                  "order": 2,
+                  "filter type": "numeric",
+                  "display name": "Total length",
+                  "db": {
+                     "mysql_type": "INT(11)"
+                  }
+               },
+               {
+                  "name": "No_contigs",
+                  "display": true,
+                  "default": true,
+                  "order": 3,
+                  "filter type": "numeric",
+                  "display name": "Number of contigs",
+                  "db": {
+                     "mysql_type": "INT(11)"
+                  }
+               },
+               {
+                  "name": "genome_covered",
+                  "display": true,
+                  "default": true,
+                  "order": 4,
+                  "filter type": "numeric",
+                  "display name": "Genome covered",
+                  "db": {
+                     "mysql_type": "DECIMAL(3,2)"
+                  }
+               },
+               {
+                  "name": "depth_of_coverage",
+                  "display": true,
+                  "default": true,
+                  "order": 5,
+                  "filter type": "numeric",
+                  "display name": "Depth of coverage",
+                  "db": {
+                     "mysql_type": "DECIMAL(3,2)"
+                  }
+               },
+               {
+                  "name": "X_Het_SNPs_Total_No_of_SNPs",
+                  "display": true,
+                  "default": true,
+                  "order": 6,
+                  "filter type": "numeric",
+                  "display name": "Total No of SNPs (X Het SNPs)",
+                  "db": {
+                     "mysql_type": "DECIMAL(3,2)"
+                  }
+               },
+               {
+                  "name": "qc",
+                  "display": true,
+                  "default": true,
+                  "order": 7,
+                  "display name": "Streptococqccus pneumoniae",
+                  "db": {
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 256
+                  }
+               },
+               {
+                  "name": "Hetsites_50bp",
+                  "display": true,
+                  "default": true,
+                  "order": 8,
+                  "filter type": "numeric",
+                  "display name": "Hetsites 50bp",
+                  "db": {
+                     "mysql_type": "INT(11)"
                   }
                }
             ]
