@@ -878,7 +878,7 @@
                     "order"              : 67,
                     "spreadsheet heading": "Intro_Year",
                     "display name"       : "Intro Year",
-                    "filter type"        :  "discrete",
+                    "filter type"        :  "numeric",
                     "db": {
                         "mysql_type": "SMALLINT(6) DEFAULT NULL"
                      }
@@ -901,7 +901,7 @@
                     "order"              : 69,
                     "spreadsheet heading": "Resolution",
                     "display name"       : "Resolution",
-                    "filter type"        :  "discrete",
+                    "filter type"        :  "numeric",
                     "db": {
                         "mysql_type": "SMALLINT(4)"
                     }
@@ -1002,7 +1002,7 @@
                   "order"              : 5,
                   "spreadsheet heading": "Number_of_Genome",
                   "display name"       : "Number of Genome",
-                  "filter type"        :  "discrete",
+                  "filter type"        :  "numeric",
                   "db": {
                      "mysql_type": "SMALLINT(6) DEFAULT NULL"
                   }
