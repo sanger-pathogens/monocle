@@ -17,6 +17,7 @@ module.exports = {
     },
   ],
   rules: {
+    eqeqeq: "error",
     "jest/expect-expect": [
       "error",
       {
