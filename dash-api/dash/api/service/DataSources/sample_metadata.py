@@ -22,6 +22,12 @@ class SampleMetadata:
     def set_up(self):
         self.monocle_client = Monocle_Client()
 
+    def get_project_information(self, project):
+        result = self.monocle_client.project_information(project)
+        logging.debug("{}.get_project_information() result(s) = {}".format(__class__.__name__, result))
+
+        return result
+
     def get_institution_names(self, project):
         result = self.monocle_client.institutions(project)
         logging.debug("{}.get_institution_names() result(s) = {}".format(__class__.__name__, result))
@@ -189,6 +195,16 @@ class Monocle_Client:
                         )
                     )
                     raise KeyError("{} could not be found in data source config dict".format(required_param))
+
+    def project_information(self, project):
+        # this_config = self.config[project]
+        # endpoint_url = this_config["base_url"] + this_config["institutions"]
+        # logging.debug("{}.project_information() using endpoint {}".format(__class__.__name__, endpoint_url))
+        # response = self.make_request(endpoint_url)
+        # logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
+        # result = self.parse_response(endpoint_url, response, required_keys=[this_config["institutions_key"]])
+        result = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
+        return result
 
     def institutions(self, project):
         this_config = self.config[project]

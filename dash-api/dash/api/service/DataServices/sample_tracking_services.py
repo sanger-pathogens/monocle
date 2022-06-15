@@ -449,6 +449,9 @@ class MonocleSampleTracking:
         )
         return (this_lane_completed, this_lane_success, fail_messages)
 
+    def project_information(self):
+        return self.sample_metadata.get_project_information(self.current_project)
+
     def pipeline_status_summary(self):
         """
         Returns dict with summary of the pipeline outcomes for each institution.
