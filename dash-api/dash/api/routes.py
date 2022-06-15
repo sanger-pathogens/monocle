@@ -117,8 +117,8 @@ def sequencing_status_summary_route():
 
 def interface_route():
     """Get interface information"""
-    if "project" in application.config:
-        response_dict = {"project": application.config["project"]}
+    if "project" in application.app.config:
+        response_dict = {"project": application.app.config["project"]}
     else:
         response_dict = {}
     # response_dict = {"project": {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}}
