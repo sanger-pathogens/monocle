@@ -3,6 +3,8 @@ metadata_api_common:
    download              : '/download'
    metadata_key          : 'download'
    institutions          : '/institutions'
+   project_information     : '/project_information'
+   project_information_key : 'project'
    samples               : '/samples'
    filter_by_metadata    : '/sample_ids_matching_metadata'
    filter_by_in_silico   : '/lane_ids_matching_in_silico_data'
