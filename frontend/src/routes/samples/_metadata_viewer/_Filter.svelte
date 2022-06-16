@@ -13,7 +13,7 @@
 
   export let batches;
   export let column;
-  let { name: columnName, dataType: columnDataType } = column || {};
+  const { name: columnName, dataType: columnDataType } = column || {};
 
   let filterContainerElement;
   let exclude = $filterStore[columnDataType][columnName]?.exclude || false;

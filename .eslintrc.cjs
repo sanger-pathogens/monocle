@@ -27,15 +27,19 @@ module.exports = {
     ],
     eqeqeq: ERROR,
     "no-param-reassign": ERROR,
-    "no-promise-executor-return": ERROR,
     "no-return-await": ERROR,
     "no-shadow": ERROR,
-    "no-unused-expressions": ERROR,
+    "no-unused-expressions": [
+      ERROR,
+      {
+        allowShortCircuit: true,
+        allowTernary: true,
+      },
+    ],
     "no-useless-concat": ERROR,
     "no-useless-return": ERROR,
     "prefer-const": ERROR,
     "prefer-rest-params": ERROR,
-    "require-await": ERROR,
     // Code style rules:
     // FIXME: enforce camelcase as well:
     // "camelcase": ERROR,
