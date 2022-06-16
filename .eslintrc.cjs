@@ -37,7 +37,8 @@ module.exports = {
     "prefer-rest-params": ERROR,
     "require-await": ERROR,
     // Code style rules:
-    camelcase: ERROR,
+    // FIXME: enforce camelcase as well:
+    // "camelcase": ERROR,
     "dot-notation": ERROR,
     yoda: ERROR,
   },
