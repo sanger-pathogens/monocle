@@ -2,14 +2,6 @@ import { render } from "@testing-library/svelte";
 import { writable } from "svelte/store";
 import Header from "$lib/components/layout/Header.svelte";
 
-jest.mock("$app/stores", () => ({
-  getStores: jest.fn(() => ({
-    session: {
-      subscribe: () => ({ unsubscribe: () => ({}) }),
-    },
-  })),
-}));
-
 const LABEL_LOG_OUT = "Log out";
 const ROLE_LINK = "link";
 
