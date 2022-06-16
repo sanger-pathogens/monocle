@@ -9,22 +9,22 @@
 <header>
   <h1><a href="/">Monocle</a></h1>
   <nav>
-    <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      {#if typeof $session.project === "undefined"}{:else if typeof $session.project.logo_url !== "undefined" && $session.project.logo_url !== ""}
-        <img
-          alt={$session.project.name}
-          src={$session.project.logo_url}
-          title={$session.project.name}
-        />
-      {:else}
-        {$session.project.name}
-      {/if}
-    </a>
-    <a href="https://www.gbsgen.net/#about" target="_blank">About</a>
-    <a href="https://www.gbsgen.net/#team" target="_blank">Team</a>
-    <a href="https://www.gbsgen.net/#partners" target="_blank">Partners</a>
-    <a href="https://www.gbsgen.net/#twitterFeed" target="_blank">News</a>
-    <a href="https://www.gbsgen.net/#funders" target="_blank">Funders</a>
+    {#if typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
+      <a href={$session.project.project_url} target="_blank" class="juno-link">
+        {#if typeof $session.project.logo_url !== "undefined" && $session.project.logo_url !== ""}
+          <img
+            alt={$session.project.name}
+            src={$session.project.logo_url}
+            title={$session.project.name}
+          />
+        {:else}
+          {$session.project.name}
+        {/if}
+      </a>
+      {#each $session.project.header_links as hl}
+        <a href={hl.url} target="_blank">{hl.label}</a>
+      {/each}
+    {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
       <a rel="external" href="/logout" class="login-out-link"> Log out </a>
     {/if}

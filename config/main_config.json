@@ -5,6 +5,7 @@
             "project" : {
                "name": "JUNO Project", 
                "logo_url": "/imgs/junologo.svg",
+               "project_url": "https://www.gbsgen.net/",
                "header_links": [
                   {"label": "About", "url": "https://www.gbsgen.net/#about"},
                   {"label": "Team", "url": "https://www.gbsgen.net/#team"},
@@ -86,6 +87,7 @@
             "project" : {
                "name": "GPS Project", 
                "logo_url": "",
+               "project_url": "",
                "header_links": [
                   {"label": "About", "url": "https://www.gbsgen.net/#about"},
                   {"label": "Team", "url": "https://www.gbsgen.net/#team"},

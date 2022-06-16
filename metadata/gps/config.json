@@ -1262,6 +1262,7 @@
    "project": {
       "name": "GPS Project",
       "logo_url": "",
+      "project_url": "",
       "header_links": [
          {
             "label": "About",

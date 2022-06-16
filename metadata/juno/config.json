@@ -1262,6 +1262,7 @@
    "project": {
       "name": "JUNO Project",
       "logo_url": "/imgs/junologo.svg",
+      "project_url": "https://www.gbsgen.net/",
       "header_links": [
          {
             "label": "About",

@@ -1,14 +1,21 @@
 <script>
-  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import { getStores } from "$app/stores";
+
+  const { session } = getStores();
 </script>
 
 <footer>
   <div class="max-inner-width">
     <address>
       <div>Contacts</div>
-      <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>Monocle Help</a>
-      <span aria-hidden="true">|</span>
-      <a href="mailto:sdb@sanger.ac.uk">Stephen Bentley</a>
+      {#if typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
+        {#each $session.project.contacts as contact, num}
+          {#if num > 0}
+            <span aria-hidden="true">&nbsp;|</span>
+          {/if}
+          <a href={contact.url}>{contact.label}</a>
+        {/each}
+      {/if}
     </address>
 
     <a href="https://www.sanger.ac.uk/" target="_blank" class="sanger-link">
