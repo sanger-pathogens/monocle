@@ -1334,8 +1334,8 @@
                   "db": {
                      "mysql_type": "VARCHAR(256)",
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^ERR\\d{7}$",
+                     "regex_validation_message": "must be an accession number (ERR#)"
                   }
                },
                {  "name"               : "ERS",
@@ -1348,8 +1348,8 @@
                   "db": {
                      "mysql_type": "VARCHAR(256)",
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^ERS\\d{7}$",
+                     "regex_validation_message": "must be an accession number (ERS#)"
                   }
                },
                {  "name"               : "no_of_genome",
