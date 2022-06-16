@@ -7,7 +7,7 @@
   import "../base.css";
   import "../simplecookie.css";
 
-  const { session } = getStores();
+  export let session = getStores().session;
 
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
@@ -41,7 +41,7 @@
   <slot />
 </main>
 
-<Footer />
+<Footer {session} />
 
 <style>
   :root {

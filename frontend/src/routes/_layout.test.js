@@ -1,11 +1,9 @@
 import { render, waitFor } from "@testing-library/svelte";
-import { getStores } from "$app/stores";
+import { writable } from "svelte/store";
 import { HTTP_HEADER_CONTENT_TYPE, HTTP_HEADERS_JSON } from "$lib/constants.js";
 import Layout from "./__layout.svelte";
 
 const USER_ROLE = "support";
-
-getStores.mockReturnValue({ session: { set: jest.fn() } });
 
 global.fetch = jest.fn(() =>
   Promise.resolve({
@@ -18,16 +16,10 @@ global.fetch = jest.fn(() =>
   })
 );
 
-jest.mock("$app/stores", () => ({
-  getStores: jest.fn(),
-}));
-
-getStores.mockReturnValue({ session: { set: jest.fn() } });
-
 it("loads a script w/ simple-cookie library", () => {
   document.head.appendChild = jest.fn();
 
-  render(Layout);
+  render(Layout, { session: writable({}) });
 
   const actualScriptElement = document.head.appendChild.mock.calls[3][0];
   expect(actualScriptElement.src).toBe(
@@ -37,13 +29,14 @@ it("loads a script w/ simple-cookie library", () => {
 });
 
 it("stores a fetched user role in the session", async () => {
+  const sessionStore = writable({});
+  sessionStore.set = jest.fn();
   fetch.mockClear();
 
-  render(Layout);
+  render(Layout, { session: sessionStore });
 
   expect(fetch).toHaveBeenCalledTimes(2);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
-  const sessionStore = getStores().session;
   await waitFor(() => {
     expect(sessionStore.set).toHaveBeenCalledTimes(2);
     expect(sessionStore.set).toHaveBeenCalledWith({
@@ -57,7 +50,7 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   fetch.mockRejectedValueOnce(errorMessage);
   global.console.error = jest.fn();
 
-  const { getByRole } = render(Layout);
+  const { getByRole } = render(Layout, { session: writable({}) });
 
   await waitFor(() => {
     expect(getByRole("heading", { name: "Monocle" })).toBeDefined();

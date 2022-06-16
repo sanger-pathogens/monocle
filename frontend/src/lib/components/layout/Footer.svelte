@@ -1,7 +1,5 @@
 <script>
-  import { getStores } from "$app/stores";
-
-  const { session } = getStores();
+  export let session;
 </script>
 
 <footer>
