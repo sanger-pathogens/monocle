@@ -317,6 +317,13 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 
 @inject
+def get_project_information(dao: MonocleDatabaseService):
+    project = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
+    result = convert_to_json({"project": project})
+    return result, HTTP_SUCCEEDED_STATUS
+
+
+@inject
 def get_institutions(dao: MonocleDatabaseService):
     institutions = dao.get_institutions(request)
 

@@ -158,6 +158,8 @@ class Monocle_Client:
     required_config_params = [
         "base_url",
         "institutions",
+        "project_information",
+        "project_information_key",
         "samples",
         "filter_by_metadata",
         "filter_by_in_silico",
@@ -197,14 +199,13 @@ class Monocle_Client:
                     raise KeyError("{} could not be found in data source config dict".format(required_param))
 
     def project_information(self, project):
-        # this_config = self.config[project]
-        # endpoint_url = this_config["base_url"] + this_config["institutions"]
-        # logging.debug("{}.project_information() using endpoint {}".format(__class__.__name__, endpoint_url))
-        # response = self.make_request(endpoint_url)
-        # logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
-        # result = self.parse_response(endpoint_url, response, required_keys=[this_config["institutions_key"]])
-        result = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
-        return result
+        this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["project_information"]
+        logging.debug("{}.project_information() using endpoint {}".format(__class__.__name__, endpoint_url))
+        response = self.make_request(endpoint_url)
+        logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
+        result = self.parse_response(endpoint_url, response, required_keys=[this_config["project_information_key"]])
+        return result["project"]
 
     def institutions(self, project):
         this_config = self.config[project]
