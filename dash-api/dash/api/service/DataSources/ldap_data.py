@@ -28,9 +28,9 @@ OPENLDAP_PARAMS_SECRET = [
 
 
 class LdapData:
-    def __init__(self, required_attributes, set_up=True):
+    def __init__(self, required_config_params, set_up=True):
         self._current_ldap_connection = None
-        self.required_config_params = MIN_REQUIRED_CONFIG_PARAMS + required_attributes
+        self.required_config_params = MIN_REQUIRED_CONFIG_PARAMS + required_config_params
 
         if set_up:
             self.set_up(DATA_SOURCES_CONFIG)
