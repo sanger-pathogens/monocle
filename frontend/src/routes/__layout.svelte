@@ -35,7 +35,7 @@
   }
 </script>
 
-<Header />
+<Header {session} />
 
 <main>
   <slot />

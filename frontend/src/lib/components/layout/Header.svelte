@@ -1,9 +1,8 @@
 <script>
   import { browser } from "$app/env";
   import { PATHNAME_LOGIN } from "$lib/constants.js";
-  import { getStores } from "$app/stores";
 
-  const { session } = getStores();
+  export let session;
 </script>
 
 <header>
