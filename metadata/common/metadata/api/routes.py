@@ -4,6 +4,7 @@ import re
 import uuid
 
 import connexion
+from flask import current_app as application
 from flask import jsonify, request
 from injector import inject
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -318,7 +319,8 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_project_information(dao: MonocleDatabaseService):
-    project = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
+    project = application.config["project"]
+    # project = {"name": "JUNO Project!", "logo_url": "/imgs/junologo.svg?testing"}
     result = convert_to_json({"project": project})
     return result, HTTP_SUCCEEDED_STATUS
 
