@@ -1378,7 +1378,14 @@
                   "filter type"        :  "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "UNIQUE",
+                        "DUPLICATE"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {  
@@ -1391,7 +1398,14 @@
                   "filter type"        :  "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "YES",
+                        "NO"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1521,20 +1535,44 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Carriage",
+                        "#N/A",
+                        "IPD",
+                        "UKWN",
+                        "Non-IPD",
+                        "Dis-Car"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Non-IPD",
+                           "Dis-Car"
+                        ]
+                     }
                   }
                },
                {
-                  "name": "children<5yrs",
+                  "name": "children_under_5yrs",
                   "display": true,
                   "default": false,
                   "order": 18,
-                  "spreadsheet heading": "children<5yrs",
-                  "display name": "Children < 5yrs",
+                  "spreadsheet heading": "children_under_5yrs",
+                  "display name": "Children under 5yrs",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "N",
+                        "Y",
+                        "#N/A",
+                        "UKWN"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1560,7 +1598,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -1586,7 +1626,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -1599,7 +1641,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
+                     "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
                   }
                },
                {
@@ -1612,7 +1656,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
+                     "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
                   }
                },
                {
@@ -1625,7 +1671,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$|^NF$",
+                     "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW', 'ERROR' or 'NF'"
                   }
                },
                {
@@ -1638,7 +1686,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1651,7 +1701,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "R",
+                        "I",
+                        "S",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1664,7 +1723,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1677,7 +1745,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1690,7 +1760,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1703,7 +1782,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1716,7 +1797,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1729,7 +1819,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1742,7 +1834,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1755,7 +1856,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1768,7 +1878,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1781,7 +1893,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1794,7 +1915,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1807,7 +1937,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                   }
                },
                {
@@ -1820,7 +1952,16 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "I",
+                        "R",
+                        "NF"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -1833,7 +1974,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1846,7 +1989,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -1859,7 +2013,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1872,7 +2028,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -1885,7 +2052,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1898,7 +2067,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -1911,7 +2091,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1924,7 +2106,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -1937,7 +2130,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "NEG",
+                        "POS",
+                        "neg",
+                        "pos",
+                        "Flag"
+                     ]
                   }
                },
                {
@@ -1950,7 +2150,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1963,7 +2165,19 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "I",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -1976,7 +2190,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -1989,7 +2205,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2002,7 +2229,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -2015,7 +2244,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2028,7 +2268,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -2041,7 +2283,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2054,7 +2307,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -2067,7 +2322,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2080,7 +2346,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -2093,7 +2361,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2106,7 +2385,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                     "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                   }
                },
                {
@@ -2119,7 +2400,18 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "S",
+                        "R",
+                        "Flag"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2158,7 +2450,21 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "TETM",
+                        "NEG",
+                        "TET",
+                        "neg",
+                        "TETO",
+                        "TETM:TETO"
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "neg"
+                        ]
+                     }
                   }
                },
                {
@@ -2210,7 +2516,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2223,7 +2531,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2236,7 +2546,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2249,7 +2561,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2262,7 +2576,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2275,7 +2591,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2288,7 +2606,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2301,7 +2621,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2327,7 +2649,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2340,7 +2664,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2353,7 +2679,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2366,7 +2694,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2379,7 +2709,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2392,7 +2724,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2405,7 +2739,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2418,7 +2754,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2431,7 +2769,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2444,7 +2784,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2457,7 +2799,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2470,7 +2814,13 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "NEG",
+                        "POS",
+                        "neg",
+                        "pos"
+                     ]
                   }
                },
                {
@@ -2483,7 +2833,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2496,7 +2848,13 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "NEG",
+                        "POS",
+                        "neg",
+                        "pos"
+                     ]
                   }
                },
                {
@@ -2509,7 +2867,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2522,7 +2882,13 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "NEG",
+                        "POS",
+                        "neg",
+                        "pos"
+                     ]
                   }
                },
                {
@@ -2535,7 +2901,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2561,7 +2929,13 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "NEG",
+                        "POS",
+                        "neg",
+                        "pos"
+                     ]
                   }
                },
                {
@@ -2574,7 +2948,9 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2587,7 +2963,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2600,7 +2983,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2613,7 +3003,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2626,7 +3023,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2639,7 +3043,14 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2652,20 +3063,34 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "Y",
+                        "N"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
-                  "name": "Published(Y/N)",
+                  "name": "Published",
                   "display": true,
                   "default": false,
                   "order": 105,
-                  "spreadsheet heading": "Published(Y/N)",
-                  "display name": "Published(Y/N)",
+                  "spreadsheet heading": "Published",
+                  "display name": "Published",
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "allowed_values": [
+                        "N",
+                        "Y"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                }
             ]
