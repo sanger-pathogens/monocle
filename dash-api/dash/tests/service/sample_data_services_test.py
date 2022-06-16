@@ -729,7 +729,6 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
 
-    @patch.object(Monocle_Client, "project_information")
     @patch.object(Monocle_Client, "distinct_values")
     @patch.object(Monocle_Client, "distinct_in_silico_values")
     @patch.object(MonocleSampleData, "get_filtered_samples")
