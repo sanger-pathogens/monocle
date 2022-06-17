@@ -44,6 +44,7 @@ module.exports = {
     // FIXME: enforce camelcase as well:
     // "camelcase": ERROR,
     "dot-notation": ERROR,
+    "id-length": ERROR,
     yoda: ERROR,
   },
   settings: {
