@@ -32,8 +32,8 @@
                           "mysql_type": "VARCHAR(256) NOT NULL",
                           "mandatory": true,
                           "max_length": 256,
-                          "regex": "^(?:[0-9a-zA-Z\\-_]+)$",
-                          "regex_validation_message": "contains illegal characters"
+                          "regex": "^(?:[0-9a-zA-Z]+)$",
+                          "regex_validation_message": "must not contain illegal characters"
                        }
                     },
                {  "name"               : "public_name",
@@ -1294,14 +1294,14 @@
                   "display"            : true,
                   "default"            : true,
                   "order"              : 1,
-                  "spreadsheet heading": "Resolution",
-                  "display name"       : "Resolution",
+                  "spreadsheet heading": "Public name",
+                  "display name"       : "Public name",
                   "filter type"        :  "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -1316,8 +1316,8 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^(?:[0-9a-zA-Z]+)$",
+                     "regex_validation_message": "must not contain illegal characters"
                   }
                },
                {  "name"               : "ERR",
@@ -3245,7 +3245,7 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                }
