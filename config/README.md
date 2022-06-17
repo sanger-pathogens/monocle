@@ -20,3 +20,4 @@ configuration in there, run `config/update_config_files.py`. This will alter the
 The main_config.json file consists of
 - `config`, this is mapped into the `UpdateMetadataFiles` class automatically
 - `metadata`, `in silico`, and `qc data` represent different database tables, and their rules (validity patterns, field type etc)
+- each of `metadata`, `in silico`, and `qc data` require a subsection for each project (currently, `juno` and `gps`)
