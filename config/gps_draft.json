@@ -202,7 +202,7 @@
                   },
           {  "name"   : "Host Information",
              "fields" : [
-                {  "name"               : "gender_m/f",
+                {  "name"               : "gender",
                    "display"            : true,
                    "default"            : false,
                    "order"              : 13,
@@ -768,11 +768,11 @@
                         }
                      }
                   },
-                {  "name"               : "trim/sulfa",
+                {  "name"               : "trim_sulfa",
                    "default"            : false,
                    "display"            : true,
                    "order"              : 40,
-                   "spreadsheet heading": "Trim/Sulfa",
+                   "spreadsheet heading": "Trim_Sulfa",
                    "display name"       : "Trim/Sulfa",
                    "filter type"        :  "discrete",
                    "db": {
@@ -782,11 +782,11 @@
                         "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                      }
                   },
-                {  "name"               : "AST_method_trim/sulfa",
+                {  "name"               : "AST_method_trim_sulfa",
                    "display"            : true,
                    "default"            : false,
                    "order"              : 41,
-                   "spreadsheet heading": "Trim/Sulfa_method",
+                   "spreadsheet heading": "Trim_Sulfa_method",
                    "display name"       : "Trim/Sulfa method",
                    "filter type"        :  "discrete",
                    "db": {
