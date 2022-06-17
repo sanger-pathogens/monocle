@@ -3264,7 +3264,7 @@
                   "db": {
                      "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
                      "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                     "regex_validation_message": "must be a number between 0-100; (1 or 2 decimal places are needed)"
+                     "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                   }
                },
                {
