@@ -2673,7 +2673,25 @@
                "name": "Sample Identifiers",
                "fields": [
                   {
-                     "name": "public_name",
+                     "name": "lane_id",
+                     "display": false,
+                     "spreadsheet heading": "Sample_id",
+                     "display name": "Sample id",
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:\\d+_\\d+#\\d+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+               ]
+            },
+            {
+               "name": "Serotype",
+               "fields": [
+                  {
+                     "name": "cps_type",
                      "display": true,
                      "default": false,
                      "order": 1,
@@ -5581,8 +5599,7 @@
                ]
             }
          ]
-      },
-      "gps": {
+      },"gps": {
          "spreadsheet_header_row_position": 0,
          "upload_validation_enabled": true,
          "categories": [
@@ -5670,7 +5687,7 @@
                      "db": {
                         "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
                         "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "regex_validation_message": "must be a number between 0-100; (1 or 2 decimal places are needed)"
                      }
                   },
                   {
@@ -5777,3 +5794,4 @@
       }
    }
 }
+   
