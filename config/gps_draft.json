@@ -311,11 +311,7 @@
                            "Carriage"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Bacteraemia",
-                              "Carriage"
-                           ]
+                           "case": "upper"
                         }
                      }
                     },
@@ -1706,10 +1702,14 @@
                         "R",
                         "I",
                         "S",
-                        "NF"
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1725,13 +1725,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1762,13 +1766,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1799,13 +1807,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1836,13 +1848,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1858,13 +1874,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1895,13 +1915,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1917,13 +1941,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1954,13 +1982,17 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
-                        "I",
                         "R",
-                        "NF"
+                        "I",
+                        "S",
+                        "NF",
+                        "Flag"
                      ],
                      "convert_case": {
-                        "case": "upper"
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
                      }
                   }
                },
@@ -1991,8 +2023,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2030,8 +2064,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2069,8 +2105,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2108,8 +2146,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2137,7 +2177,13 @@
                         "neg",
                         "pos",
                         "Flag"
-                     ]
+                     ],
+                     "convert_case": {
+                        "case": "upper",
+                        "preserve": [
+                           "Flag"
+                        ]
+                     }
                   }
                },
                {
@@ -2167,9 +2213,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
                         "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2207,8 +2254,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2246,8 +2295,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2285,8 +2336,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2324,8 +2377,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2363,8 +2418,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2402,8 +2459,10 @@
                      "mysql_type": "VARCHAR(30)",
                      "max_length": 30,
                      "allowed_values": [
-                        "S",
                         "R",
+                        "I",
+                        "S",
+                        "NF",
                         "Flag"
                      ],
                      "convert_case": {
@@ -2460,10 +2519,7 @@
                         "TETM:TETO"
                      ],
                      "convert_case": {
-                        "case": "upper",
-                        "preserve": [
-                           "neg"
-                        ]
+                        "case": "upper"
                      }
                   }
                },
@@ -2636,7 +2692,10 @@
                   "filter type": "discrete",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 30
+                     "max_length": 30,
+                     "max_length": 30,
+                     "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                     "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                   }
                },
                {
@@ -2820,7 +2879,10 @@
                         "POS",
                         "neg",
                         "pos"
-                     ]
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2854,7 +2916,10 @@
                         "POS",
                         "neg",
                         "pos"
-                     ]
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2888,7 +2953,10 @@
                         "POS",
                         "neg",
                         "pos"
-                     ]
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -2935,7 +3003,10 @@
                         "POS",
                         "neg",
                         "pos"
-                     ]
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -3130,8 +3201,8 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^(?:[0-9a-zA-Z]+)$",
+                     "regex_validation_message": "must not contain illegal characters"
                   }
                },
                {
@@ -3141,8 +3212,8 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^ERS\\d{7}$",
+                     "regex_validation_message": "must be a ERS accession number (ERS# format)"
                   }
                },
                {
@@ -3152,8 +3223,8 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
-                     "regex_validation_message": "contains illegal characters"
+                     "regex": "^ERR\\d{7}$",
+                     "regex_validation_message": "must be a ERR accession number (ERR# format)"
                   }
                },
                {
@@ -3163,7 +3234,7 @@
                      "mysql_type": "VARCHAR(256) NOT NULL",
                      "mandatory": true,
                      "max_length": 256,
-                     "regex": "^(?:\\d+_\\d+#\\d+)$",
+                     "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
                      "regex_validation_message": "contains illegal characters"
                   }
                },
@@ -3191,7 +3262,9 @@
                   "filter type": "numeric",
                   "display name": "Streptococcus pneumoniae",
                   "db": {
-                     "mysql_type": "DECIMAL(3,2)"
+                     "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                     "regex_validation_message": "must be a number between 0-100; 2 decimal places are allowed"
                   }
                },
                {
@@ -3202,7 +3275,9 @@
                   "filter type": "numeric",
                   "display name": "Total length",
                   "db": {
-                     "mysql_type": "INT(11)"
+                     "mysql_type": "INT(11)",
+                     "regex": "^\\d+$",
+                     "regex_validation_message": "must be an integer (whole number)"
                   }
                },
                {
@@ -3213,7 +3288,9 @@
                   "filter type": "numeric",
                   "display name": "Number of contigs",
                   "db": {
-                     "mysql_type": "INT(11)"
+                     "mysql_type": "INT(11)",
+                     "regex": "^\\d+$",
+                     "regex_validation_message": "must be an integer (whole number)"
                   }
                },
                {
@@ -3224,7 +3301,9 @@
                   "filter type": "numeric",
                   "display name": "Genome covered",
                   "db": {
-                     "mysql_type": "DECIMAL(3,2)"
+                     "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                     "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                   }
                },
                {
@@ -3235,7 +3314,9 @@
                   "filter type": "numeric",
                   "display name": "Depth of coverage",
                   "db": {
-                     "mysql_type": "DECIMAL(3,2)"
+                     "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
+                     "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                     "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are needed); "
                   }
                },
                {
@@ -3245,8 +3326,10 @@
                   "order": 6,
                   "filter type": "numeric",
                   "display name": "Total No of SNPs (X Het SNPs)",
-                  "db": {
-                     "mysql_type": "DECIMAL(3,2)"
+                  "db": {                     
+                     "mysql_type": "DECIMAL(5,2) CHECK (X_Het_SNPs_Total_No_of_SNPs>=0 AND X_Het_SNPs_Total_No_of_SNPs<=100)",
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                     "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                   }
                },
                {
@@ -3254,10 +3337,19 @@
                   "display": true,
                   "default": true,
                   "order": 7,
-                  "display name": "Streptococqccus pneumoniae",
+                  "display name": "QC",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 256
+                     "max_length": 256,
+                     "allowed_values": [
+                        "Pass",
+                        "PassPlus",
+                        "Fail",
+                        "NA"
+                     ],
+                     "convert_case": {
+                        "case": "upper"
+                     }
                   }
                },
                {
@@ -3265,10 +3357,12 @@
                   "display": true,
                   "default": true,
                   "order": 8,
-                  "filter type": "numeric",
                   "display name": "Hetsites 50bp",
                   "db": {
-                     "mysql_type": "INT(11)"
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30,
+                     "regex": "^\\d{4}$|^#N/A$",
+                     "regex_validation_message": "must be a max 4 digits number or '#N/A'"
                   }
                }
             ]
