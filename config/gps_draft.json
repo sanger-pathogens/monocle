@@ -3324,12 +3324,12 @@
                   "display": true,
                   "default": true,
                   "order": 6,
-                  "filter type": "numeric",
                   "display name": "Total No of SNPs (X Het SNPs)",
                   "db": {                     
-                     "mysql_type": "DECIMAL(5,2) CHECK (X_Het_SNPs_Total_No_of_SNPs>=0 AND X_Het_SNPs_Total_No_of_SNPs<=100)",
-                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                     "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                     "mysql_type": "VARCHAR(30)",
+                     "max_length": 30,
+                     "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^NA$",
+                     "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be 'NA'"
                   }
                },
                {
@@ -3340,7 +3340,7 @@
                   "display name": "QC",
                   "db": {
                      "mysql_type": "VARCHAR(30)",
-                     "max_length": 256,
+                     "max_length": 30,
                      "allowed_values": [
                         "Pass",
                         "PassPlus",
