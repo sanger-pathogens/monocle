@@ -2664,8 +2664,6 @@
           ]
       }
   },
-  
-  
    "in silico": {
       "juno": {
          "spreadsheet_header_row_position": 0,
@@ -2675,25 +2673,7 @@
                "name": "Sample Identifiers",
                "fields": [
                   {
-                     "name": "lane_id",
-                     "display": false,
-                     "spreadsheet heading": "Sample_id",
-                     "display name": "Sample id",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:\\d+_\\d+#\\d+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  }
-               ]
-            },
-            {
-               "name": "Serotype",
-               "fields": [
-                  {
-                     "name": "cps_type",
+                     "name": "public_name",
                      "display": true,
                      "default": false,
                      "order": 1,
