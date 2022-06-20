@@ -489,7 +489,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
 
         for row in rs:
-            results.append(QCData(lane_id=row["lane_id"], rel_abun_sa=row["rel_abun_sa"]))
+            params = {k: row[k] for k in self.config["qc_data"]["spreadsheet_definition"]}
+            results.append(QCData(**params))
 
         return results
 
