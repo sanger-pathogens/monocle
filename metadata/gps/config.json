@@ -1259,7 +1259,7 @@
          }
       }
    },
-   "project": {
+   "project_links": {
       "name": "GPS Project",
       "logo_url": "",
       "project_url": "",
