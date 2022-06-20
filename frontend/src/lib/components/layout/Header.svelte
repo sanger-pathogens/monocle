@@ -10,7 +10,7 @@
   <nav>
     {#if typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
       <a href={$session.project.project_url} target="_blank" class="juno-link">
-        {#if typeof $session.project.logo_url !== "undefined" && $session.project.logo_url !== ""}
+        {#if $session.project.logo_url}
           <img
             alt={$session.project.name}
             src={$session.project.logo_url}

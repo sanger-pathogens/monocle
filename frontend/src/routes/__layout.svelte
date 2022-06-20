@@ -15,14 +15,16 @@
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
-          session.set({ user: { role: userRole } });
+          session.update((sess) => (sess.user = { role: userRole }));
         }
       })
       .catch((err) => {
         console.error(err);
       });
 
-    getProjectInformation(fetch).then((r) => session.set({ project: r }));
+    getProjectInformation(fetch).then((project) =>
+      session.update((sess) => (sess.project = project))
+    );
   });
 
   function appendScriptToHead(src, options) {

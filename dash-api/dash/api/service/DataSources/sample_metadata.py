@@ -205,7 +205,7 @@ class Monocle_Client:
         response = self.make_request(endpoint_url)
         logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
         result = self.parse_response(endpoint_url, response, required_keys=[this_config["project_information_key"]])
-        return result["project"]
+        return result[this_config["project_information_key"]]
 
     def institutions(self, project):
         this_config = self.config[project]

@@ -48,7 +48,7 @@ module.exports = {
       ERROR,
       {
         min: 3,
-        exceptions: ["a", "e", "i", "x", "y", "z"],
+        exceptions: ["a", "e", "i", "x", "y", "z", "ST", "SR", "ok"],
       },
     ],
     yoda: ERROR,

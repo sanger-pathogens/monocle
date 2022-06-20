@@ -6,12 +6,9 @@
   <div class="max-inner-width">
     <address>
       <div>Contacts</div>
-      {#if typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
-        {#each $session.project.contacts as contact, num}
-          {#if num > 0}
-            <span aria-hidden="true">&nbsp;|</span>
-          {/if}
-          <a href={contact.url}>{contact.label}</a>
+      {#if $session.project?.name}
+        {#each $session.project.contacts as contact}
+          <a class="contact" href={contact.url}>{contact.label}</a>
         {/each}
       {/if}
     </address>
@@ -34,6 +31,14 @@
     color: white;
     margin-top: auto;
     padding: 1.4rem 1.4rem 1.8rem;
+  }
+
+  a.contact::after {
+    content: "&nbsp;|";
+  }
+
+  a.contact:last-of-type::after {
+    content: "";
   }
 
   .max-inner-width {
