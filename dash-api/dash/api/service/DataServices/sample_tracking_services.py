@@ -5,6 +5,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 
+import DataSources.institution_data
 import DataSources.metadata_download
 import DataSources.pipeline_status
 import DataSources.sample_metadata
@@ -20,6 +21,7 @@ API_ERROR_KEY = "_ERROR"
 FORMAT_DATE = "%Y-%m-%d"
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f"{FORMAT_DATE}T%H:%M:%S%z"
+SAMPLE_TABLE_INST_KEY_COLUMN_NAME = "submitting_institution_key"
 
 
 class MonocleSampleTracking:
@@ -29,7 +31,6 @@ class MonocleSampleTracking:
     and whatever form is most convenient for rendering the dashboard.
     """
 
-    sample_table_inst_key = "submitting_institution"
     # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
     # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
     sequencing_flags = {
@@ -44,15 +45,14 @@ class MonocleSampleTracking:
         self.user_record = None
         self.current_project = None
         self.institutions_data = None
-        self.institution_names = None
         self.samples_data = None
         self.sequencing_status_data = None
-        self.institution_db_key_to_dict = {}  # see get_institutions for the purpose of this
         self.all_institutions_data_irrespective_of_user_membership = None
         # set_up flag causes data objects to be loaded on instantiation
         # only set to False if you know what you're doing
         if set_up:
             self.updated = datetime.now()
+            self.institution_ldap_data = DataSources.institution_data.InstitutionData()
             self.sample_metadata = DataSources.sample_metadata.SampleMetadata()
             self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
             self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
@@ -106,26 +106,13 @@ class MonocleSampleTracking:
         """
         Returns a dict of institutions.
 
-        {  institution_1   => { 'name':     'the institution name',
-                                'db_key':   'db key'
-                                }
+        {  institution_1   => { 'name':     'the institution name' }
            institution_2...
            }
 
         If .user_record is defined, it will be used to filter the institutions for those the user belongs to.
 
-        Dict keys are alphanumeric-only and safe for HTML id attr. The monocle db keys are not
-        suitable for this as they are full institution names.   It's useful to be able to lookup
-        a dict key from a db key (i.e. institution name) so institution_db_key_to_dict()
-        is provided.
-
-        ***IMPORTANT / FIXME***
-        Institution IDs (`cn`) are now in LDAP, as are their names.
-        We need to stop reading institutions from monocledb, and read the names and IDs from LDAP
-        The IDs from LDAP will be used as the dict keys in the code in this module, and we can
-        then deprecate `institution_name_to_dict_key()`
-        *During the transition* the IDs used in LDAP will be the same as the values returned by
-        `institution_name_to_dict_key()`
+        Dict keys are alphanumeric-only and safe for HTML id attr.
 
         The data are cached so this can safely be called multiple times without
         repeated monocle db queries being made.
@@ -133,34 +120,18 @@ class MonocleSampleTracking:
         if self.institutions_data is not None:
             return self.institutions_data
 
-        names = self.get_institution_names()
-        institutions = {}
-        for this_name in names:
-            dict_key = self.institution_name_to_dict_key(this_name, institutions.keys())
-            this_db_key = this_name
-            institutions[dict_key] = {"name": this_name, "db_key": this_db_key}
-            # this allows lookup of the institution dict key from a db key
-            self.institution_db_key_to_dict[this_db_key] = dict_key
-
-        self.institutions_data = institutions
-        return self.institutions_data
-
-    def get_institution_names(self):
-        """
-        Return a list of institution names.
-        If `user_record` is defined, returns only those institutions that the user is a member of.
-        """
-        if self.institution_names is not None:
-            return self.institution_names
-
-        institution_names = None
         if self.user_record is not None:
-            institution_names = [inst["inst_name"] for inst in self.user_record.get("memberOf", [])]
+            self.institutions_data = {
+                user_institution["inst_id"]: {"name": user_institution["inst_name"]}
+                for user_institution in self.user_record.get("memberOf", [])
+            }
         else:
-            institution_names = self.sample_metadata.get_institution_names()
+            self.institutions_data = {
+                institution["key"]: {"name": institution["name"]}
+                for institution in self.institution_ldap_data.get_all_institutions_regardless_of_user_membership()
+            }
 
-        self.institution_names = institution_names
-        return institution_names
+        return self.institutions_data
 
     def get_all_institutions_irrespective_of_user_membership(self):
         """
@@ -176,7 +147,7 @@ class MonocleSampleTracking:
         YOU HAVE BEEN WARNED.  Only use this method if you are REALLY CERTAIN that
         you know what you are doing.
 
-        See the documentation for get_institions for details of the dict that is
+        See the documentation for get_institutions for details of the dict that is
         returned.
         """
         if self.all_institutions_data_irrespective_of_user_membership is not None:
@@ -221,13 +192,13 @@ class MonocleSampleTracking:
         samples = {i: [] for i in self.institutions_data}
         for this_sample in all_juno_samples:
             try:
-                this_institution_key = self.institution_db_key_to_dict[this_sample[self.sample_table_inst_key]]
-                this_sample.pop(self.sample_table_inst_key, None)
+                this_institution_key = this_sample[SAMPLE_TABLE_INST_KEY_COLUMN_NAME]
+                this_sample.pop(SAMPLE_TABLE_INST_KEY_COLUMN_NAME, None)
                 samples[this_institution_key].append(this_sample)
             except KeyError:
                 logging.info(
                     "samples excluded because {} is not in current user's institutions list".format(
-                        this_sample[self.sample_table_inst_key]
+                        this_sample[SAMPLE_TABLE_INST_KEY_COLUMN_NAME]
                     )
                 )
         self.samples_data = samples
@@ -523,22 +494,6 @@ class MonocleSampleTracking:
                     else:
                         status[this_institution]["running"] += 1
         return status
-
-    def institution_name_to_dict_key(self, name, existing_keys):
-        """
-        Private method that creates a shortened, all-alphanumeric version of the institution name
-        that can be used as a dict key and also as an HTML id attr
-        """
-        key = ""
-        for word in name.split():
-            if word[0].isupper():
-                key += word[0:3]
-            if 12 < len(key):
-                break
-        # almost certain to be unique, but...
-        while key in existing_keys:
-            key += "_X"
-        return key
 
     def convert_mlwh_datetime_stamp_to_date_stamp(self, datetime_stamp):
         return datetime.strptime(datetime_stamp, FORMAT_MLWH_DATETIME).strftime(FORMAT_DATE)
