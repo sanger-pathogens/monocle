@@ -60,7 +60,7 @@ class SampleMetadataTest(TestCase):
         "National Reference Laboratories",
         "The Chinese University of Hong Kong",
     ]
-    required_sample_dict_keys = ["sanger_sample_id", "public_name", "host_status", "serotype", "submitting_institution"]
+    required_sample_dict_keys = ["sanger_sample_id", "public_name", "submitting_institution"]
 
     expected_distinct_values = [
         {"field type": "metadata", "fields": mock_distinct_values},

@@ -51,8 +51,6 @@ class SampleMetadata:
                     "sanger_sample_id": this_result["sanger_sample_id"],
                     "submitting_institution": this_result["submitting_institution"],
                     "public_name": this_result["public_name"],
-                    "host_status": this_result["host_status"],
-                    "serotype": this_result["serotype"],
                 }
                 if not exclude_lane_id:
                     this_sample["lane_id"] = this_result["lane_id"]
