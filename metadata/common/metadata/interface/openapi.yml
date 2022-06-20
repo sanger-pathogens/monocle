@@ -154,7 +154,7 @@ paths:
         "200":
           description: "The project result set"
         "404":
-          description: "Institutions could not be gathered from database"
+          description: "Project information could not be gathered from database"
 
   /institutions:
     get:
