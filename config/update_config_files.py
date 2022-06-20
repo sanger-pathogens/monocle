@@ -414,6 +414,9 @@ class UpdateMetadataFiles:
                 config[section_name_in_metadata_api_config], self.config[section_name_in_main_config][project_key]
             )
 
+        for sub_key in ["project_links"]:
+            config[sub_key] = self.projects[project_key][sub_key]
+
         json_object = json.dumps(config, indent=3)
         with open(config_path, "w") as out_file:
             out_file.write(json_object)
