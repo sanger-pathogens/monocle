@@ -12,6 +12,8 @@
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
 
+    session.set({});
+
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
