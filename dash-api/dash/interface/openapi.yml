@@ -157,7 +157,7 @@ paths:
 
   /project:
     get:
-      operationId: dash.api.routes.project
+      operationId: dash.api.routes.project_route
       summary: "Returns information used in the UI, like the logo URL."
       responses:
         "200":
