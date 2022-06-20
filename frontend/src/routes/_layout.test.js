@@ -35,13 +35,28 @@ it("stores a fetched user role in the session", async () => {
 
   render(Layout, { session: sessionStore });
 
-  expect(fetch).toHaveBeenCalledTimes(2);
+  expect(fetch).toHaveBeenCalledTimes(2); // getUserDetails and getProjectInformation
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
   await waitFor(() => {
-    expect(sessionStore.set).toHaveBeenCalledTimes(2);
+    expect(sessionStore.set).toHaveBeenCalledTimes(2); // getUserDetails and getProjectInformation
     expect(sessionStore.set).toHaveBeenCalledWith({
       user: { role: USER_ROLE },
     });
+  });
+});
+
+it("stores the fetched project link data in the session", async () => {
+  const sessionStore = writable({});
+  sessionStore.set = jest.fn();
+  fetch.mockClear();
+
+  render(Layout, { session: sessionStore });
+
+  expect(fetch).toHaveBeenCalledTimes(2); // getUserDetails and getProjectInformation
+  expect(fetch).toHaveBeenCalledWith("/dashboard-api/project");
+  await waitFor(() => {
+    expect(sessionStore.set).toHaveBeenCalledTimes(2); // getUserDetails and getProjectInformation
+    // skipping toHaveBeenCalledWith as large, project-dependent JSON that might change
   });
 });
 

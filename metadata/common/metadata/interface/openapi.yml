@@ -149,7 +149,7 @@ paths:
   /project_information:
     get:
       operationId: metadata.api.routes.get_project_information
-      summary: "Gather project information, mainly for interface"
+      summary: "Gather project information, mainly for UI"
       responses:
         "200":
           description: "The project result set"
