@@ -265,7 +265,7 @@ class UpdateMetadataFiles:
     def abs_path(self, relative_path):
         return f"{self.root_path}/{relative_path}"
 
-    def update_all(self, main_config_file):
+    def update_all(self, main_config_file, metadata_tests_project):
         """Runs updates on all metadata files."""
         main_config_path = self.abs_path(main_config_file)
         logging.info("Updating all config files from {}".format(main_config_path))
@@ -292,7 +292,8 @@ class UpdateMetadataFiles:
                         self.abs_path(entry["model file name"]),
                     )
                     self.update_database_definition(table_data, self.abs_path(entry["SQL file name"]))
-                self.update_metadata_tests(data, self.abs_path(files["test directory"]))
+                if metadata_tests_project == project_key:
+                    self.update_metadata_tests(data, self.abs_path(files["test directory"]))
                 self.update_dash_yml(data, self.abs_path(files["dash YAML file"]), project_key)
                 self.update_main_yml(data, self.abs_path(files["API YAML file"]), project_key)
             else:
@@ -457,5 +458,8 @@ if __name__ == "__main__":
     # logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level=options.log_level)
     logging.basicConfig(format="%(levelname)s: %(message)s", level=options.log_level)
 
+    # the unit tests are require test data for this project
+    metadata_unit_test_data_project = "juno"
+
     umf = UpdateMetadataFiles()
-    umf.update_all("config/main_config.json")
+    umf.update_all("config/main_config.json", metadata_unit_test_data_project)

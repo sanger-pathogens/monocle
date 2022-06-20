@@ -1,3 +1,12 @@
+# FIXME
+#
+# This was temporarily copied from metadata/common/... to metadata/juno... and metadata/gps/...
+# so that the JUNO and GPS metadta APIs have a different version of this file
+#
+# This was necessary because the database table names are hardcoded into the SQL queries in error
+#
+# The table names (as well as the list of columns in each table) should be read from the config.json file
+
 import json
 import logging
 import os
@@ -50,7 +59,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     AUTH_TOKEN_ENCODING = "utf8"
     AUTH_TOKEN_DELIMITER = ":"
 
-    DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
+    DELETE_ALL_SAMPLES_SQL = text("""delete from gps_sample""")
 
     SELECT_INSTITUTIONS_SQL = text(
         """ \
@@ -67,27 +76,27 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     )
 
     FILTER_SAMPLES_IN_SQL = """ \
-            SELECT sanger_sample_id FROM api_sample WHERE {} IN :values"""
+            SELECT sanger_sample_id FROM gps_sample WHERE {} IN :values"""
 
     FILTER_SAMPLES_IN_SQL_INCL_NULL = """ \
-            SELECT sanger_sample_id FROM api_sample WHERE {} IN :values OR {} IS NULL"""
+            SELECT sanger_sample_id FROM gps_sample WHERE {} IN :values OR {} IS NULL"""
 
     IN_SILICO_FILTER_LANES_IN_SQL = """ \
-            SELECT lane_id FROM in_silico WHERE {} IN :values"""
+            SELECT lane_id FROM gps_in_silico WHERE {} IN :values"""
 
     IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
-            SELECT lane_id FROM in_silico WHERE {} IN :values OR {} IS NULL"""
+            SELECT lane_id FROM gps_in_silico WHERE {} IN :values OR {} IS NULL"""
 
     DISTINCT_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM api_sample WHERE submitting_institution IN :institutions"""
+            SELECT DISTINCT {} FROM gps_sample WHERE submitting_institution IN :institutions"""
 
     DISTINCT_IN_SILICO_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM in_silico"""
+            SELECT DISTINCT {} FROM gps_in_silico"""
 
     DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM qc_data"""
+            SELECT DISTINCT {} FROM gps_qc_data"""
 
-    DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
+    DELETE_ALL_QC_DATA_SQL = text("""delete from gps_qc_data""")
 
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
@@ -109,25 +118,29 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Metadata
         md_keys = list(self.config["metadata"]["spreadsheet_definition"].keys())
         self.SELECT_ALL_SAMPLES_SQL = text(
-            "SELECT " + ", ".join(md_keys) + " FROM api_sample ORDER BY sanger_sample_id"
+            "SELECT " + ", ".join(md_keys) + " FROM gps_sample ORDER BY sanger_sample_id"
         )
         self.SELECT_SAMPLES_SQL = text(
-            "SELECT " + ", ".join(md_keys) + " FROM api_sample WHERE sanger_sample_id IN :samples"
+            "SELECT " + ", ".join(md_keys) + " FROM gps_sample WHERE sanger_sample_id IN :samples"
         )
-        self.INSERT_OR_UPDATE_SAMPLE_SQL = self.initialize_sql_insert_or_update("api_sample", md_keys)
+        self.INSERT_OR_UPDATE_SAMPLE_SQL = self.initialize_sql_insert_or_update("gps_sample", md_keys)
 
         # In silico
         in_silico_keys = list(self.config["in_silico_data"]["spreadsheet_definition"].keys())
-        self.SELECT_ALL_IN_SILICO_SQL = text("SELECT " + ", ".join(in_silico_keys) + " FROM in_silico ORDER BY lane_id")
-        self.SELECT_LANES_IN_SILICO_SQL = text(
-            "SELECT " + ",".join(in_silico_keys) + " FROM in_silico WHERE lane_id IN :lanes"
+        self.SELECT_ALL_IN_SILICO_SQL = text(
+            "SELECT " + ", ".join(in_silico_keys) + " FROM gps_in_silico ORDER BY lane_id"
         )
-        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("in_silico", in_silico_keys)
+        self.SELECT_LANES_IN_SILICO_SQL = text(
+            "SELECT " + ",".join(in_silico_keys) + " FROM gps_in_silico WHERE lane_id IN :lanes"
+        )
+        self.INSERT_OR_UPDATE_IN_SILICO_SQL = self.initialize_sql_insert_or_update("gps_in_silico", in_silico_keys)
 
         # QC data
         qc_keys = list(self.config["qc_data"]["spreadsheet_definition"].keys())
-        self.SELECT_LANES_QC_DATA_SQL = text("SELECT " + ", ".join(qc_keys) + " FROM qc_data WHERE lane_id IN :lanes")
-        self.INSERT_OR_UPDATE_QC_DATA_SQL = self.initialize_sql_insert_or_update("qc_data", qc_keys)
+        self.SELECT_LANES_QC_DATA_SQL = text(
+            "SELECT " + ", ".join(qc_keys) + " FROM gps_qc_data WHERE lane_id IN :lanes"
+        )
+        self.INSERT_OR_UPDATE_QC_DATA_SQL = self.initialize_sql_insert_or_update("gps_qc_data", qc_keys)
 
     def convert_string(self, val: str) -> str:
         """If a given string is empty return None"""
@@ -480,7 +493,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             rs = con.execute(self.SELECT_LANES_QC_DATA_SQL, lanes=lane_ids)
 
         for row in rs:
-            results.append(QCData(lane_id=row["lane_id"], rel_abun_sa=row["rel_abun_sa"]))
+            params = {k: row[k] for k in self.config["qc_data"]["spreadsheet_definition"]}
+            results.append(QCData(**params))
 
         return results
 
