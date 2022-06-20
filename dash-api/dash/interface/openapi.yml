@@ -155,10 +155,10 @@ paths:
         "403":
           description: "Authorization information is missing or invalid."
 
-  /interface:
+  /project:
     get:
       operationId: dash.api.routes.project
-      summary: "Returns information used in the interface, like the logo URL."
+      summary: "Returns information used in the UI, like the logo URL."
       responses:
         "200":
           description: "The operation was successful."
