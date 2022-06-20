@@ -2,7 +2,7 @@
    "config": {
       "projects":{
          "juno":{
-            "project" : {
+            "project_links" : {
                "name": "JUNO Project", 
                "logo_url": "/imgs/junologo.svg",
                "project_url": "https://www.gbsgen.net/",
@@ -84,7 +84,7 @@
             }
          },
          "gps": {
-            "project" : {
+            "project_links" : {
                "name": "GPS Project", 
                "logo_url": "",
                "project_url": "",

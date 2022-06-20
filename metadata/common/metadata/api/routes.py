@@ -319,8 +319,8 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_project_information(dao: MonocleDatabaseService):
-    project = application.config["project"]
-    result = convert_to_json({"project": project})
+    project_links = application.config["project_links"]
+    result = convert_to_json({"project": project_links})
     return result, HTTP_SUCCEEDED_STATUS
 
 
