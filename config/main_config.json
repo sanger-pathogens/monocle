@@ -2208,7 +2208,7 @@
                           }
                        }
                     },
-                  {  "name"               : "vancomycinn",
+                  {  "name"               : "vancomycin",
                      "display"            : true,
                      "default"            : false,
                      "order"              : 42,
