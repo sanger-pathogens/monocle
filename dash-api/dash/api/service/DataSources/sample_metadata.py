@@ -7,10 +7,6 @@ import yaml
 
 # logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
-# class DataSourceParamError(Exception):
-#    """ exception when data source methods are called with invalid parameter(s) """
-#    pass
-
 
 class SampleMetadata:
     """provides access to pipeline status data"""
@@ -22,15 +18,9 @@ class SampleMetadata:
     def set_up(self):
         self.monocle_client = MonocleClient()
 
-    def get_institution_names(self):
-        result = self.monocle_client.institutions()
-        logging.debug("{}.get_institution_names() result(s) = {}".format(__class__.__name__, result))
-
-        return result
-
-    def get_samples(self, project, exclude_lane_id=True, institutions=None):
+    def get_samples(self, project, exclude_lane_id=True, institution_keys=None):
         """
-        Optionally pass a list of institutions that filters samples according to submitting institution
+        Optionally pass a list of institution keys that filters samples according to submitting institution
         Optiomally pass exclude_lane_id=False to stop the lane ID being removed (the laner ID retrieved here
         is from the monocle db, where it was added for *some* samples for historical reasons, but it is not
         generally useful or necessarily accurate.  Lane IDs for a sample should be retrieved from MLWH)
@@ -40,7 +30,7 @@ class SampleMetadata:
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results)))
         samples = []
         for this_result in results:
-            if institutions is None or this_result["submitting_institution"] in institutions:
+            if institution_keys is None or this_result["submitting_institution_key"] in institution_keys:
                 # For historical reasons the following code was needed to replace the old keys
                 # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
                 # 'submitting_institution', respectively.
@@ -113,7 +103,7 @@ class SampleMetadata:
         )
         return results
 
-    def get_distinct_values(self, project, fields, institutions):
+    def get_distinct_values(self, project, fields, institution_keys):
         """
         Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
         as keys; values are arrays of field names.
@@ -123,11 +113,11 @@ class SampleMetadata:
         for this_field_type in fields:
             field_list = fields[this_field_type]
             if "metadata" == this_field_type:
-                this_field_list = self.monocle_client.distinct_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_values(project, field_list, institution_keys)
             elif "in silico" == this_field_type:
-                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institution_keys)
             elif "qc data" == this_field_type:
-                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institution_keys)
             else:
                 logging.error(
                     "{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(
@@ -151,11 +141,9 @@ class MonocleClient:
     required_config_params = [
         "base_url",
         "swagger",
-        "institutions",
         "samples",
         "filter_by_metadata",
         "filter_by_in_silico",
-        "institutions_key",
         "samples_key",
         "distinct_values",
         "distinct_in_silico_values",
@@ -170,7 +158,7 @@ class MonocleClient:
     def set_up(self, config_file_name):
         with open(config_file_name, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            self.config = data_sources[self.data_source]
+        self.config = data_sources[self.data_source]
         for required_param in self.required_config_params:
             if required_param not in self.config:
                 logging.error(
@@ -179,14 +167,6 @@ class MonocleClient:
                     )
                 )
                 raise KeyError
-
-    def institutions(self):
-        endpoint = self.config["institutions"]
-        logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint))
-        response = self.make_request(endpoint)
-        logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint, response, required_keys=[self.config["institutions_key"]])
-        return results[self.config["institutions_key"]]
 
     def samples(self, project):
         endpoint = self.config["samples"]
@@ -230,20 +210,20 @@ class MonocleClient:
         results = json.loads(response)
         return results
 
-    def distinct_values(self, project, fields, institutions):
+    def distinct_values(self, project, fields, institution_keys):
         endpoint = self.config["distinct_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institution_keys)
 
-    def distinct_in_silico_values(self, project, fields, institutions):
+    def distinct_in_silico_values(self, project, fields, institution_keys):
         endpoint = self.config["distinct_in_silico_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institution_keys)
 
-    def distinct_qc_data_values(self, project, fields, institutions):
+    def distinct_qc_data_values(self, project, fields, institution_keys):
         endpoint = self.config["distinct_qc_data_values"]
-        return self._distinct_values_common(endpoint, project, fields, institutions)
+        return self._distinct_values_common(endpoint, project, fields, institution_keys)
 
-    def _distinct_values_common(self, endpoint, project, fields, institutions):
-        query = {"fields": fields, "institutions": institutions}
+    def _distinct_values_common(self, endpoint, project, fields, institution_keys):
+        query = {"fields": fields, "institutions": institution_keys}
         logging.debug("{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint, query))
         logging.warning(
             '{}._distinct_values_common was passed project "{}" but the metadata API does not support this yet'.format(

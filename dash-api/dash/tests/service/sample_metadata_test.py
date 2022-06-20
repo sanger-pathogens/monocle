@@ -43,23 +43,12 @@ class SampleMetadataTest(TestCase):
 
     mock_distinct_qc_data_values = [{"name": "field4", "values": ["i"]}]
 
-    mock_institution_names = """{ "institutions":   [  "Ministry of Health, Central laboratories",
-                                                      "National Reference Laboratories",
-                                                      "The Chinese University of Hong Kong"
-                                                      ]
-                                 }"""
-
     mock_metadata_field = "any_filter_field"
     mock_in_silico_field = "any_in_silico_field"
     mock_metadata_values = ["any", "metadata", "values"]
     mock_in_silico_values = ["any", "in", "silico", "values"]
 
     expected_sanger_sample_ids = ["5903STDY8059053", "5903STDY8059055"]
-    expected_institution_names = [
-        "Ministry of Health, Central laboratories",
-        "National Reference Laboratories",
-        "The Chinese University of Hong Kong",
-    ]
     required_sample_dict_keys = ["sanger_sample_id", "public_name", "host_status", "serotype", "submitting_institution"]
 
     expected_distinct_values = [
@@ -101,13 +90,6 @@ class SampleMetadataTest(TestCase):
             doomed.config["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.expected_sanger_sample_ids[0]
             doomed.make_request(endpoint)
-
-    @patch("DataSources.sample_metadata.MonocleClient.make_request")
-    def test_get_institution_names(self, mock_query):
-        mock_query.return_value = self.mock_institution_names
-        names = self.sample_metadata.get_institution_names()
-        self.assertIsInstance(names, list)
-        self.assertEqual(self.expected_institution_names, names)
 
     @patch("DataSources.sample_metadata.MonocleClient.make_request")
     def test_get_samples(self, mock_query):
