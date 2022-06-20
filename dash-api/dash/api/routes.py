@@ -113,7 +113,7 @@ def sequencing_status_summary_route():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def project():
+def project_route():
     """Get interface information"""
     project_data = ServiceFactory.sample_tracking_service(get_authenticated_username()).project_information()
     response_dict = {"project": project_data}
