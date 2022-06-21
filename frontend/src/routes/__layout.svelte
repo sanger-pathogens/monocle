@@ -12,23 +12,25 @@
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
 
-    const tmp_session = {};
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
-          tmp_session.user = { role: userRole };
+          session.update((currentSession) => {
+            currentSession.user = { role: userRole };
+            return currentSession;
+          });
         }
       })
       .catch((err) => {
         console.error(err);
-      })
-      .then(() => getProjectInformation(fetch))
-      .then((project) => {
-        tmp_session.project = project;
-      })
-      .then(() => {
-        session.set(tmp_session);
       });
+
+    getProjectInformation(fetch).then((project) =>
+      session.update((currentSession) => {
+        currentSession.project = project;
+        return currentSession;
+      })
+    );
   });
 
   function appendScriptToHead(src, options) {

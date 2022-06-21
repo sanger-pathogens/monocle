@@ -1,5 +1,5 @@
 import { render, waitFor } from "@testing-library/svelte";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { HTTP_HEADER_CONTENT_TYPE, HTTP_HEADERS_JSON } from "$lib/constants.js";
 import Layout from "./__layout.svelte";
 
@@ -28,21 +28,22 @@ it("loads a script w/ simple-cookie library", () => {
   expect(actualScriptElement.async).toBeTruthy();
 });
 
-it("stores a fetched user role and project information in the session", async () => {
+it("stores a fetched user role in the session", async () => {
   const sessionStore = writable({});
-  sessionStore.set = jest.fn();
+  jest.spyOn(sessionStore, "update");
   fetch.mockClear();
 
   render(Layout, { session: sessionStore });
 
-  expect(fetch).toHaveBeenCalledTimes(1);
+  // Called two times because there's another fetch call for project information.
+  expect(fetch).toHaveBeenCalledTimes(2);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
   await waitFor(() => {
-    expect(sessionStore.set).toHaveBeenCalledTimes(1);
+    // The session is updated two times because we also set project information once it's
+    // fetched elsewhere.
+    expect(sessionStore.update).toHaveBeenCalledTimes(2);
 
-    expect(sessionStore.set).toHaveBeenCalledWith({
-      user: { role: USER_ROLE },
-    });
+    expect(get(sessionStore).user).toStrictEqual({ role: USER_ROLE });
   });
 });
 
@@ -56,5 +57,29 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   await waitFor(() => {
     expect(getByRole("heading", { name: "Monocle" })).toBeDefined();
     expect(console.error).toHaveBeenCalledWith(errorMessage);
+  });
+});
+
+it("stores fetched project information in the session", async () => {
+  const project = "some project data";
+  const sessionStore = writable({});
+  jest.spyOn(sessionStore, "update");
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      headers: { get: () => HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE] },
+      json: () => Promise.resolve({ project }),
+    })
+  );
+
+  render(Layout, { session: sessionStore });
+
+  // Called two times because there's another fetch call for a user role.
+  expect(fetch).toHaveBeenCalledTimes(2);
+  expect(fetch).toHaveBeenCalledWith("/dashboard-api/project");
+  await waitFor(() => {
+    expect(sessionStore.update).toHaveBeenCalledTimes(1);
+
+    expect(get(sessionStore).project).toBe(project);
   });
 });
