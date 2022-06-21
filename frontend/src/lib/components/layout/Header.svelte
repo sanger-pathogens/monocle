@@ -8,7 +8,7 @@
 <header>
   <h1><a href="/">Monocle</a></h1>
   <nav>
-    {#if typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
+    {#if typeof $session !== "undefined" && typeof $session.project !== "undefined" && typeof $session.project.name !== "undefined"}
       <a href={$session.project.project_url} target="_blank" class="juno-link">
         {#if $session.project.logo_url}
           <img
