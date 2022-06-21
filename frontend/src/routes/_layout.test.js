@@ -40,10 +40,9 @@ it("stores a fetched user role and project information in the session", async ()
   await waitFor(() => {
     expect(sessionStore.set).toHaveBeenCalledTimes(1);
 
-    // This is a larget JSON blob now...
-    /*expect(sessionStore.set).toHaveBeenCalledWith({
+    expect(sessionStore.set).toHaveBeenCalledWith({
       user: { role: USER_ROLE },
-    });*/
+    });
   });
 });
 
