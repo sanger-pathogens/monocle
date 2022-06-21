@@ -34,7 +34,7 @@
   }
 
   a.contact::after {
-    content: "&nbsp;|";
+    content: " |";
   }
 
   a.contact:last-of-type::after {
