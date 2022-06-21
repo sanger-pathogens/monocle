@@ -22,11 +22,9 @@
       })
       .catch((err) => {
         console.error(err);
-      });
-
-    getProjectInformation(fetch).then((project) =>
-      session.update((sess) => (sess.project = project))
-    );
+      })
+      .then(() => getProjectInformation(fetch))
+      .then((project) => session.update((sess) => (sess.project = project)));
   });
 
   function appendScriptToHead(src, options) {
