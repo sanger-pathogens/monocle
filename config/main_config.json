@@ -213,9 +213,9 @@
                      "display name": "Supplier Sample Name",
                      "filter type": "none",
                      "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mysql_type": "VARCHAR(20) NOT NULL",
                         "mandatory": true,
-                        "max_length": 256,
+                        "max_length": 20,
                         "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
