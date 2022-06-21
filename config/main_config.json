@@ -32,7 +32,7 @@
             "yml2json": [
                {
                   "Schema name": "JUNOMetadata",
-                  "Schema name dash": "JUNOMetadata",
+                  "Schema name dash": "JUNOMetadataFieldName",
                   "Schema name metadata": "MetadataFieldName",
                   "Data key metadata": "Metadata",
                   "Property name": "metadata",
@@ -42,7 +42,7 @@
                },
                {
                   "Schema name": "JUNOInSilicoData",
-                  "Schema name dash": "JUNOInSilicoData",
+                  "Schema name dash": "JUNOInSilicoFieldName",
                   "Schema name metadata": "InSilicoFieldName",
                   "Data key metadata": "InSilicoData",
                   "Property name": "in_silico_data",
@@ -52,7 +52,7 @@
                },
                {
                   "Schema name": "JUNOQCData",
-                  "Schema name dash": "JUNOQCData",
+                  "Schema name dash": "JUNOQCDataFieldName",
                   "Schema name metadata": "QCDataFieldName",
                   "Data key metadata": "QCData",
                   "Property name": "qc_data",
