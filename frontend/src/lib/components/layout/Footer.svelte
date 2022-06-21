@@ -34,11 +34,15 @@
   }
 
   a.contact::after {
-    content: " |";
+    content: "|";
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
   }
 
   a.contact:last-of-type::after {
     content: "";
+    margin-left: 0rem;
+    margin-right: 0rem;
   }
 
   .max-inner-width {
