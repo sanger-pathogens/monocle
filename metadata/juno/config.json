@@ -1251,11 +1251,12 @@
          },
          "rel_abun_sa": {
             "title": "rel_abun_sa",
-            "mysql_type": "VARCHAR(6) DEFAULT NULL",
+            "mysql_type": "DECIMAL(5,2) CHECK (rel_abun_sa>=0 AND rel_abun_sa<=100)",
             "var_type": "float",
             "mandatory": false,
             "max_length": 6,
-            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$"
+            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          }
       }
    }
