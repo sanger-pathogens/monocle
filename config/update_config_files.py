@@ -197,14 +197,12 @@ class UpdateMetadataFiles:
             json_keys = list(data[jk]["spreadsheet_definition"].keys())
             y["components"]["schemas"][yk]["pattern"] = "^" + "|".join(json_keys) + "$"
 
-    def update_yml_field_list(self, y, j):
+    def update_yml_field_list(self, y, j, download_field_external_ref):
         y["properties"].clear()
         y["required"].clear()
         json_keys = list(j.keys())
         for k in json_keys:
-            y["properties"][k] = {
-                "$ref": "file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField"
-            }
+            y["properties"][k] = {"$ref": download_field_external_ref}
         y["required"] = json_keys
 
     def update_shared_yml(self, data, file_path, yml_field_patterns):
@@ -241,7 +239,13 @@ class UpdateMetadataFiles:
         for entry in yml2json:
             this_schema = y["components"]["schemas"][entry["Schema name"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
-            self.update_yml_field_list(this_schema, field_definitions)
+            # FIXME this reference to the `DownloadField` shouldn't be hardcoded like this
+            #       it could easily be changed in the openapi.yml file
+            self.update_yml_field_list(
+                this_schema,
+                field_definitions,
+                "file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField",
+            )
         self.output_shared_yml(y, file_path)
 
     def update_main_yml(self, data, file_path, project_key):
@@ -259,7 +263,13 @@ class UpdateMetadataFiles:
             this_schema = y["components"]["schemas"][entry["Data key metadata"]]
             field_definitions = data[entry["Property name"]]["spreadsheet_definition"]
             items_list = this_schema["properties"][entry["API config section"]]["items"]
-            self.update_yml_field_list(items_list, field_definitions)
+            # FIXME this reference to the `DownloadField` shouldn't be hardcoded like this
+            #       it could easily be changed in the openapi.yml file
+            self.update_yml_field_list(
+                items_list,
+                field_definitions,
+                "file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField",
+            )
         self.output_shared_yml(y, file_path)
 
     def abs_path(self, relative_path):
