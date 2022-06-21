@@ -13,10 +13,10 @@ import {
   getColumns,
   getDistinctColumnValues,
   getInstitutionStatus,
+  getProjectInformation,
   getProjectProgress,
   getSampleMetadata,
   getUserDetails,
-  getProjectInformation,
 } from "./dataLoading.js";
 
 const DASHBOARD_API_URL = "/dashboard-api";
@@ -367,6 +367,17 @@ describe.each([
     ],
   },
   {
+    fnName: "getProjectInformation",
+    getResource: getProjectInformation,
+    expectedEndpoints: ["project"],
+    responsePayload: {
+      user_details: {
+        type: "support",
+      },
+    },
+    expectedResult: undefined,
+  },
+  {
     fnName: "getProjectProgress",
     getResource: getProjectProgress,
     expectedEndpoints: ["get_progress"],
@@ -469,17 +480,6 @@ describe.each([
     expectedResult: {
       type: "support",
     },
-  },
-  {
-    fnName: "getProjectInformation",
-    getResource: getProjectInformation,
-    expectedEndpoints: ["project"],
-    responsePayload: {
-      user_details: {
-        type: "support",
-      },
-    },
-    expectedResult: undefined,
   },
 ])(
   "$fnName",
