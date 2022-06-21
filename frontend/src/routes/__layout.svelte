@@ -16,7 +16,6 @@
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
-          console.log(userRole);
           tmp_session.user = { role: userRole };
         }
       })
@@ -25,11 +24,9 @@
       })
       .then(() => getProjectInformation(fetch))
       .then((project) => {
-        console.log(project);
         tmp_session.project = project;
       })
       .then(() => {
-        console.log(tmp_session);
         session.set(tmp_session);
       });
   });

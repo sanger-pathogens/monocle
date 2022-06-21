@@ -31,18 +31,17 @@ it("loads a script w/ simple-cookie library", () => {
 it("stores a fetched user role and project information in the session", async () => {
   const sessionStore = writable({});
   sessionStore.set = jest.fn();
-  sessionStore.update = jest.fn();
   fetch.mockClear();
 
   render(Layout, { session: sessionStore });
 
-  expect(fetch).toHaveBeenCalledTimes(1); // getUserDetails
+  expect(fetch).toHaveBeenCalledTimes(1);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
   await waitFor(() => {
-    // Says it hasn't been called, but it works?
-    //expect(sessionStore.update).toHaveBeenCalledTimes(2); // getUserDetails and getProjectInformation
-    // .update() takes an anonymous function, not sure how to test for that
-    /*expect(sessionStore.update).toHaveBeenCalledWith({
+    expect(sessionStore.set).toHaveBeenCalledTimes(1);
+
+    // This is a larget JSON blob now...
+    /*expect(sessionStore.set).toHaveBeenCalledWith({
       user: { role: USER_ROLE },
     });*/
   });
