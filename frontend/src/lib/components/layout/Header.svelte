@@ -20,8 +20,8 @@
           {$session.project.name}
         {/if}
       </a>
-      {#each $session.project.header_links as hl}
-        <a href={hl.url} target="_blank">{hl.label}</a>
+      {#each $session.project.header_links as { label, url } (`${label}${url}`)}
+        <a href={url} target="_blank">{label}</a>
       {/each}
     {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}

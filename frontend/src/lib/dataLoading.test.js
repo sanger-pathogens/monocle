@@ -38,7 +38,7 @@ const DISTINCT_COLUMN_VALUES_STATE = {
     country: ["doesn't", " mattter"],
   },
   "in silico": {
-    ST: ["doesn't", " mattter"],
+    adhP: ["doesn't", " mattter"],
   },
 };
 const FILTER_STATE = {
@@ -46,7 +46,7 @@ const FILTER_STATE = {
     serotype: { values: ["1a", "1b"], exclude: true },
     country: { values: ["AU"] },
   },
-  "in silico": { ST: { values: ["x", "y"] } },
+  "in silico": { adhP: { values: ["x", "y"] } },
 };
 const MIME_TYPE_JSON = HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE];
 const HEADERS_JSON = { get: () => MIME_TYPE_JSON };
@@ -221,7 +221,7 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { ST: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -255,7 +255,7 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { ST: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -290,7 +290,7 @@ describe.each([
             dataType: DATA_TYPE_METADATA,
           },
           {
-            name: "ST",
+            name: "adhP",
             dataType: "in silico",
           },
           {
@@ -311,14 +311,14 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { ST: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         fields: [
           {
             "field type": DATA_TYPE_METADATA,
             "field names": ["age_group", "serotype"],
           },
-          { "field type": "in silico", "field names": ["ST"] },
+          { "field type": "in silico", "field names": ["adhP"] },
         ],
       }),
     },
@@ -339,27 +339,27 @@ describe.each([
     ],
     responsePayload: {
       institutions: {
-        CRS: { name: "Center for Reducing Suffering" },
-        SR: { name: "Sentience Research" },
+        CenRedSuf: { name: "Center for Reducing Suffering" },
+        SenRes: { name: "Sentience Research" },
       },
       batches: {},
       sequencing_status: {
-        CRS: { success: 42 },
-        SR: { success: 99 },
+        CenRedSuf: { success: 42 },
+        SenRes: { success: 99 },
       },
       pipeline_status: {},
     },
     expectedResult: [
       {
         batches: undefined,
-        key: "CRS",
+        key: "CenRedSuf",
         name: "Center for Reducing Suffering",
         pipelineStatus: { sequencedSuccess: 42 },
         sequencingStatus: { success: 42 },
       },
       {
         batches: undefined,
-        key: "SR",
+        key: "SenRes",
         name: "Sentience Research",
         pipelineStatus: { sequencedSuccess: 99 },
         sequencingStatus: { success: 99 },
@@ -423,7 +423,7 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { ST: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,
@@ -457,7 +457,7 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { ST: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,
