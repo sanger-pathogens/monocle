@@ -409,12 +409,10 @@ class MonocleSampleData:
         This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
         except that 404 are caught and result in returning `None`
         """
-        institutions = [
-            this_institution["db_key"] for this_institution in self.sample_tracking.get_institutions().values()
-        ]
+        institution_keys = list(self.sample_tracking.get_institutions().keys())
         try:
             distinct_values = self.sample_metadata_source.get_distinct_values(
-                self.current_project, fields, institutions
+                self.current_project, fields, institution_keys
             )
         except urllib.error.HTTPError as e:
             if "404" not in str(e):
@@ -976,7 +974,7 @@ class MonocleSampleData:
         )
 
         filename = "{}_{}_{}.csv".format(institution_key, category, status)
-        download_links = {"hostname": download_hostname, "institution": institution_data[institution_key]["name"]}
+        download_links = {"hostname": download_hostname, "institution_key": institution_key}
         # wrap get_csv_download()
         return self.get_csv_download(filename, sample_filters, download_links=download_links)
 
@@ -1014,14 +1012,16 @@ class MonocleSampleData:
         download_base_url = None
         if download_links is not None:
             try:
-                institution = download_links["institution"]
+                institution_key = download_links["institution_key"]
                 hostname = download_links["hostname"]
             except KeyError:
                 logging.error(
-                    "{} parameter download_links must provide 'institution' and 'hostname'".format(__class__.__name__)
+                    "{} parameter download_links must provide 'institution_key' and 'hostname'".format(
+                        __class__.__name__
+                    )
                 )
                 raise
-            institution_download_symlink_url_path = self.make_download_symlink(institution)
+            institution_download_symlink_url_path = self.make_download_symlink(institution_key)
             if institution_download_symlink_url_path is None:
                 logging.error("Failed to create a symlink for data downloads.")
                 return {
@@ -1213,7 +1213,7 @@ class MonocleSampleData:
             first_row = False
         return pandas_data, col_order
 
-    def make_download_symlink(self, target_institution=None, **kwargs):
+    def make_download_symlink(self, target_institution_key=None, **kwargs):
         """
         Pass the institution name _or_ cross_institution=True
 
@@ -1226,8 +1226,8 @@ class MonocleSampleData:
 
         The symlink path (relative to web server document root) is returned.
         """
-        if target_institution is None and not kwargs.get("cross_institution"):
-            message = "must pass either a target_institution name or 'cross_institution=True'"
+        if target_institution_key is None and not kwargs.get("cross_institution"):
+            message = "must pass either a target institution key or 'cross_institution=True'"
             logging.error("{} parameter error: {}".format(__class__.__name__, message))
             raise ValueError(message)
 
@@ -1279,11 +1279,7 @@ class MonocleSampleData:
         # to a volume mount that is also set up by docker-compose.)
         if DATA_INST_VIEW_ENVIRON not in environ:
             return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
-        child_dir = (
-            cross_institution_dir
-            if kwargs.get("cross_institution")
-            else self.sample_tracking.institution_db_key_to_dict[target_institution]
-        )
+        child_dir = cross_institution_dir if kwargs.get("cross_institution") else target_institution_key
         download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
         if not download_host_dir.is_dir():
             return self._download_config_error(
