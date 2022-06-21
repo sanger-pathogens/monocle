@@ -57,9 +57,9 @@
          },
          "supplier_sample_name": {
             "title": "Supplier_Sample_Name",
-            "mysql_type": "VARCHAR(20) NOT NULL",
+            "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
-            "max_length": 20,
+            "max_length": 256,
             "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
             "regex_validation_message": "contains illegal characters"
          },
@@ -119,19 +119,19 @@
          },
          "collection_year": {
             "title": "Collection_year",
-            "mysql_type": "int(11) DEFAULT NULL",
+            "mysql_type": "smallint(6) DEFAULT NULL",
             "regex": "^(?:\\d{4})$",
             "regex_validation_message": "must be a YYYY format year"
          },
          "collection_month": {
             "title": "Collection_month",
-            "mysql_type": "int(11) DEFAULT NULL",
+            "mysql_type": "smallint(6) DEFAULT NULL",
             "regex": "^(?:\\d{1,2})$",
             "regex_validation_message": "must be a MM format month"
          },
          "collection_day": {
             "title": "Collection_day",
-            "mysql_type": "int(11) DEFAULT NULL",
+            "mysql_type": "smallint(6) DEFAULT NULL",
             "regex": "^(?:\\d{1,2})$",
             "regex_validation_message": "must be a DD format day"
          },
@@ -366,7 +366,7 @@
          },
          "gestational_age_weeks": {
             "title": "Gestational_age_weeks",
-            "mysql_type": "int(11) DEFAULT NULL",
+            "mysql_type": "smallint(6) DEFAULT NULL",
             "regex": "^(?:\\d{1,3})$",
             "regex_validation_message": "should be a valid 1 to 3 digit number",
             "convert_case": {
@@ -384,7 +384,7 @@
          },
          "apgar_score": {
             "title": "Apgar_score",
-            "mysql_type": "int(11) DEFAULT NULL",
+            "mysql_type": "smallint(6) DEFAULT NULL",
             "regex": "^(?:[0-9]|10)$",
             "regex_validation_message": "should be a valid number between 0 and 10",
             "convert_case": {
