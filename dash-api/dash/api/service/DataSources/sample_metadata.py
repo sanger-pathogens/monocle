@@ -33,13 +33,13 @@ class SampleMetadata:
             if institution_keys is None or this_result["submitting_institution_key"] in institution_keys:
                 # For historical reasons the following code was needed to replace the old keys
                 # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
-                # 'submitting_institution', respectively.
+                # 'submitting_institution_key', respectively.
                 # TODO  see if we can now replace this, and simply return `results`, except with
                 #       `lane_id` removed from each item in `results` (unless `exclude_lane_id`
                 #       is False)
                 this_sample = {
                     "sanger_sample_id": this_result["sanger_sample_id"],
-                    "submitting_institution": this_result["submitting_institution"],
+                    "submitting_institution_key": this_result["submitting_institution_key"],
                     "public_name": this_result["public_name"],
                     "host_status": this_result["host_status"],
                     "serotype": this_result["serotype"],

@@ -25,13 +25,13 @@ class SampleMetadataTest(TestCase):
 
     mock_get_samples = """{   "samples":  [  {  "lane_id": "fake_lane_1#123", "sanger_sample_id":"fake_sample_id_1", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution": "Ministry of Health, Central laboratories", "id": "an_id"},
+                                                "submitting_institution_key": "MinHeaCen", "id": "an_id"},
                                              {  "lane_id": "fake_lane_1#124", "sanger_sample_id":"fake_sample_id_2", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution": "National Reference Laboratories", "id": "an_id"},
+                                                "submitting_institution_key": "NatRefLab", "id": "an_id"},
                                              {  "lane_id": "fake_lane_1#125", "sanger_sample_id":"fake_sample_id_3", "public_name":"fake_name",
                                                 "disease_name":"fake disease", "serotype": "fake_serotype", "host_status": "unknown",
-                                                "submitting_institution": "The Chinese University of Hong Kong", "id": "an_id"}
+                                                "submitting_institution_key": "ChiUniHonKon", "id": "an_id"}
                                              ]
                               }"""
 
@@ -49,7 +49,13 @@ class SampleMetadataTest(TestCase):
     mock_in_silico_values = ["any", "in", "silico", "values"]
 
     expected_sanger_sample_ids = ["5903STDY8059053", "5903STDY8059055"]
-    required_sample_dict_keys = ["sanger_sample_id", "public_name", "host_status", "serotype", "submitting_institution"]
+    required_sample_dict_keys = [
+        "sanger_sample_id",
+        "public_name",
+        "host_status",
+        "serotype",
+        "submitting_institution_key",
+    ]
 
     expected_distinct_values = [
         {"field type": "metadata", "fields": mock_distinct_values},
