@@ -6,7 +6,7 @@
   <div class="max-inner-width">
     <address>
       <div>Contacts</div>
-      {#if typeof $session !== "undefined" && $session.project?.name}
+      {#if $session?.project?.contacts}
         {#each $session.project.contacts as contact}
           <a class="contact" href={contact.url}>{contact.label}</a>
         {/each}
