@@ -6,10 +6,6 @@ import urllib.request
 
 import yaml
 
-# class DataSourceParamError(Exception):
-#    """ exception when data source methods are called with invalid parameter(s) """
-#    pass
-
 
 class SequencingStatus:
     """provides access to pipeline status data"""
