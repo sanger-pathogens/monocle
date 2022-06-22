@@ -7,8 +7,8 @@
     <address>
       <div>Contacts</div>
       {#if $session?.project?.contacts}
-        {#each $session.project.contacts as contact}
-          <a class="contact" href={contact.url}>{contact.label}</a>
+        {#each $session.project.contacts as { label, url } (`${label}${url}`)}
+          <a class="contact" href={url}>{label}</a>
         {/each}
       {/if}
     </address>

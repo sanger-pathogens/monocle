@@ -24,7 +24,8 @@
         <a href={url} target="_blank">{label}</a>
       {/each}
     {:else}
-      <span class="juno-link" />
+      <!-- FIXME use CSS instead to keep the logout link to the right when the project info is still loading -->
+      <span aria-hidden="true" class="juno-link" />
     {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
       <a rel="external" href="/logout" class="login-out-link"> Log out </a>
