@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 from bin.get_qc_data import _get_relative_abundance, get_arguments, get_lane_ids, main, update_relative_abundance
 from lib.qc_data import QCData
 
-INSTITUTIONS = {
+INSTITUTION_DATA = {
     "institutions": {
         "FacPhaSueCanUni": {
             "name": "Faculty of Pharmacy, Suez Canal University",
@@ -34,13 +34,13 @@ INSTITUTIONS = {
 SAMPLE_IDS = ["a", "b", "c", "d", "e"]
 PUBLIC_NAMES = list(map(lambda sanger_sample_id: sanger_sample_id * 2, SAMPLE_IDS))
 INSTITUTION_WITHOUT_LANES = {
-    "name": INSTITUTIONS["institutions"]["FacPhaSueCanUni"]["name"],
+    "name": INSTITUTION_DATA["institutions"]["FacPhaSueCanUni"]["name"],
     "id": "FacPhaSueCanUni",
     "samples": [{"public_name": PUBLIC_NAMES[4], "sanger_sample_id": SAMPLE_IDS[4]}],
 }
 INSTITUTIONS_WITH_PUBLIC_NAMES = [
     {
-        "name": INSTITUTIONS["institutions"]["NatRefLab"]["name"],
+        "name": INSTITUTION_DATA["institutions"]["NatRefLab"]["name"],
         "id": "NatRefLab",
         "samples": [
             {"public_name": PUBLIC_NAMES[0], "sanger_sample_id": SAMPLE_IDS[0]},
@@ -48,7 +48,7 @@ INSTITUTIONS_WITH_PUBLIC_NAMES = [
         ],
     },
     {
-        "name": INSTITUTIONS["institutions"]["WelSanIns"]["name"],
+        "name": INSTITUTION_DATA["institutions"]["WelSanIns"]["name"],
         "id": "WelSanIns",
         "samples": [
             {"public_name": PUBLIC_NAMES[2], "sanger_sample_id": SAMPLE_IDS[2]},
@@ -58,7 +58,7 @@ INSTITUTIONS_WITH_PUBLIC_NAMES = [
     INSTITUTION_WITHOUT_LANES,
 ]
 INSTITUTIONS_WITHOUT_PUBLIC_NAMES = [
-    {"name": INSTITUTIONS["institutions"]["UniFedRioJan"]["name"], "id": "UniFedRioJan", "samples": []}
+    {"name": INSTITUTION_DATA["institutions"]["UniFedRioJan"]["name"], "id": "UniFedRioJan", "samples": []}
 ]
 INSTITUTIONS = INSTITUTIONS_WITH_PUBLIC_NAMES + INSTITUTIONS_WITHOUT_PUBLIC_NAMES
 LANES = ["x", "y", "z"]
@@ -76,15 +76,12 @@ def get_sequencing_status_data(sanger_sample_ids):
 
 
 class DB:
-    def get_institution_names(self):
-        return map(lambda institution: institution["name"], INSTITUTIONS)
-
-    def get_samples(self, project, institutions):
-        if institutions[0] == INSTITUTIONS[0]["name"]:
+    def get_samples(self, project, institution_keys):
+        if institution_keys[0] == INSTITUTIONS[0]["id"]:
             return INSTITUTIONS[0]["samples"]
-        elif institutions[0] == INSTITUTIONS[1]["name"]:
+        elif institution_keys[0] == INSTITUTIONS[1]["id"]:
             return INSTITUTIONS[1]["samples"]
-        elif institutions[0] == INSTITUTIONS[2]["name"]:
+        elif institution_keys[0] == INSTITUTIONS[2]["id"]:
             return INSTITUTIONS[2]["samples"]
         return []
 
@@ -121,7 +118,9 @@ class GetQCData(TestCase):
         self.db = DB()
 
     def test_get_lane_ids(self):
-        actual = get_lane_ids(self.db)
+        institution_keys = [institution["id"] for institution in INSTITUTIONS]
+
+        actual = get_lane_ids(self.db, institution_keys)
 
         self.assertEqual(["x", "y", "z"], actual)
 
@@ -198,15 +197,19 @@ class GetQCData(TestCase):
         )
 
     @patch("bin.get_qc_data.get_arguments")
+    @patch("bin.get_qc_data.InstitutionData")
     @patch("bin.get_qc_data.SampleMetadata")
     @patch("bin.get_qc_data.get_lane_ids")
     @patch("bin.get_qc_data.datetime")
-    def test_main(self, mock_datetime, mock_get_lane_ids, mock_sample_metadata, mock_get_arguments):
+    def test_main(
+        self, mock_datetime, mock_get_lane_ids, mock_sample_metadata, mock_institution_data, mock_get_arguments
+    ):
 
         args = mock_get_arguments.return_value.parse_args()
         args.kraken_data_dir = TEST_DATA_DIR
         args.species = "Streptococcus agalactiae"
         args.log_level = "WARNING"
+        mock_institution_data.return_value = Mock()
         mock_sample_metadata.return_value = DB
         mock_get_lane_ids.return_value = [LANE_ID2]
         mock_datetime.now = Mock(return_value=datetime(2021, 12, 21))

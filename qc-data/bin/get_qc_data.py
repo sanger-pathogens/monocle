@@ -10,29 +10,30 @@ from datetime import datetime
 from pathlib import Path
 from urllib.error import HTTPError
 
+from dash.api.service.DataSources.institution_data import InstitutionData
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 from lib.qc_data import QCData
 
+PROJECT_JUNO = "juno"
 QC_DIR = "monocle_pipeline_qc"
 
 
-def get_lane_ids(db):
+def get_lane_ids(db, institution_keys):
     """Get lane ids for each insitution"""
 
     lane_ids = []
-    institutions = list(db.get_institution_names())
 
-    for institution in institutions:
+    for institution_key in institution_keys:
         sanger_sample_ids = [
-            sample["sanger_sample_id"] for sample in db.get_samples("juno", institutions=[institution])
+            sample["sanger_sample_id"] for sample in db.get_samples(PROJECT_JUNO, institution_keys=[institution_key])
         ]
 
-        logging.info(f"{institution}: {len(sanger_sample_ids)} sample ids")
+        logging.info(f"{institution_key}: {len(sanger_sample_ids)} sample ids")
 
         if not sanger_sample_ids:
             # we expect institutions without samples => this could be noisy in a cron job => INFO
-            logging.info(f"No sample ids found for {institution}")
+            logging.info(f"No sample ids found for {institution_key}")
 
         for sanger_sample_id in sanger_sample_ids:
             try:
@@ -42,7 +43,9 @@ def get_lane_ids(db):
                         lane_ids.append(lane["id"])
             except HTTPError as e:
                 logging.error(
-                    "Failed to get sequence data for {} sample {}: {}".format(institution, sanger_sample_id, repr(e))
+                    "Failed to get sequence data for {} sample {}: {}".format(
+                        institution_key, sanger_sample_id, repr(e)
+                    )
                 )
 
     return lane_ids
@@ -123,8 +126,8 @@ def main():
 
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=args.log_level)
 
-    sample_metadata = SampleMetadata()
-    lane_ids = get_lane_ids(sample_metadata)
+    institution_keys = InstitutionData().get_all_institution_keys_regardless_of_user_membership()
+    lane_ids = get_lane_ids(SampleMetadata(), institution_keys)
 
     # Update the QC data file for each line
     for lane_id in lane_ids:
