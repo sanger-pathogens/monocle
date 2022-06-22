@@ -391,3 +391,13 @@ class MonocleSampleTrackingTest(TestCase):
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
         self.assertEqual(self.expected_dropout_data, pipeline_summary)
+
+    def test_project_information(self):
+        project_information = self.monocle_sample_tracking.project_information()
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+
+        self.assertTrue("name" in project_information)
+        self.assertTrue("logo_url" in project_information)
+        self.assertTrue("project_url" in project_information)
+        self.assertTrue("header_links" in project_information)
+        self.assertTrue("contacts" in project_information)
