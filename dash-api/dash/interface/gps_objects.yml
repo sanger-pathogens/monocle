@@ -399,22 +399,3 @@ components:
       minLength: 1
       pattern: ^lane_id|rel_abun_sa$
       type: string
-project:
-  contacts:
-  - label: Monocle Help
-    url: mailto:monocle-help@sanger.ac.uk
-  - label: Stephen Bentley
-    url: mailto:sdb@sanger.ac.uk
-  header_links:
-  - label: About
-    url: https://www.gbsgen.net/#about
-  - label: Team
-    url: https://www.gbsgen.net/#team
-  - label: Partners
-    url: https://www.gbsgen.net/#partners
-  - label: News
-    url: https://www.gbsgen.net/#twitterFeed
-  - label: Funders
-    url: https://www.gbsgen.net/#funders
-  logo_url: ''
-  name: GPS Project
