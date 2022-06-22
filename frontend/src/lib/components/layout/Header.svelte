@@ -23,6 +23,8 @@
       {#each $session.project.header_links as { label, url } (`${label}${url}`)}
         <a href={url} target="_blank">{label}</a>
       {/each}
+    {:else}
+      <span class="juno-link" />
     {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
       <a rel="external" href="/logout" class="login-out-link"> Log out </a>
