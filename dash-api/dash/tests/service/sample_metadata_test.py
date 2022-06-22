@@ -110,6 +110,16 @@ class SampleMetadataTest(TestCase):
         self.assertEqual(self.expected_institution_names, names)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
+    def test_get_project_information(self, mock_query):
+        project_information = self.sample_metadata.get_project_information(self.mock_project)
+        self.assertIsInstance(project_information, object)
+        self.assertTrue("name" in project_information)
+        self.assertTrue("logo_url" in project_information)
+        self.assertTrue("project_url" in project_information)
+        self.assertTrue("header_links" in project_information)
+        self.assertTrue("contacts" in project_information)
+
+    @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_samples(self, mock_query):
         mock_query.return_value = self.mock_get_samples
         samples = self.sample_metadata.get_samples(self.mock_project, self.mock_project)
