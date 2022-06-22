@@ -43,6 +43,23 @@ class SampleMetadataTest(TestCase):
 
     mock_distinct_qc_data_values = [{"name": "field4", "values": ["i"]}]
 
+    mock_project_information = """{
+                                "name": "JUNO Project",
+                                "logo_url": "/imgs/junologo.svg",
+                                "project_url": "https://www.gbsgen.net/",
+                                "header_links": [
+                                    {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                                    {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                                    {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                                    {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                                    {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+                                ],
+                                "contacts": [
+                                    {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                                    {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+                                ]
+                                }"""
+
     mock_institution_names = """{ "institutions":   [  "Ministry of Health, Central laboratories",
                                                       "National Reference Laboratories",
                                                       "The Chinese University of Hong Kong"
@@ -111,6 +128,7 @@ class SampleMetadataTest(TestCase):
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_project_information(self, mock_query):
+        mock_query.return_value = self.mock_institution_names
         project_information = self.sample_metadata.get_project_information(self.mock_project)
         self.assertIsInstance(project_information, object)
         self.assertTrue("name" in project_information)
