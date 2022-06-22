@@ -451,7 +451,8 @@ class MonocleSampleTracking:
 
     def project_information(self):
         if self.current_project is None:
-            return {"error": "Current project not set"}
+            logging.error("project_information: The current project is not set")
+            raise Exception("The current project is not set")
         return self.sample_metadata.get_project_information(self.current_project)
 
     def pipeline_status_summary(self):
