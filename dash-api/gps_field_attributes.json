@@ -5,12 +5,12 @@
             "name": "Sample Identifiers",
             "fields": [
                {
-                  "name": "public_name",
+                  "name": "sample_name",
                   "display": true,
-                  "default": true,
+                  "default": false,
                   "order": 1,
-                  "spreadsheet heading": "Public_Name",
-                  "display name": "Public Name",
+                  "spreadsheet heading": "Sample_Name",
+                  "display name": "Sample name",
                   "filter type": "none"
                },
                {
@@ -23,21 +23,12 @@
                   "filter type": "none"
                },
                {
-                  "name": "supplier_sample_name",
+                  "name": "public_name",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 3,
-                  "spreadsheet heading": "Supplier_Sample_Name",
-                  "display name": "Supplier Sample Name",
-                  "filter type": "none"
-               },
-               {
-                  "name": "lane_id",
-                  "display": true,
-                  "default": false,
-                  "order": 4,
-                  "spreadsheet heading": "Lane_ID",
-                  "display name": "Lane ID",
+                  "spreadsheet heading": "Public_Name",
+                  "display name": "Public Name",
                   "filter type": "none"
                }
             ]
@@ -49,25 +40,16 @@
                   "name": "study_name",
                   "display": true,
                   "default": false,
-                  "order": 5,
+                  "order": 4,
                   "spreadsheet heading": "Study_Name",
                   "display name": "Study Name",
-                  "filter type": "none"
-               },
-               {
-                  "name": "study_ref",
-                  "display": true,
-                  "default": false,
-                  "order": 6,
-                  "spreadsheet heading": "Study_Reference",
-                  "display name": "Study Reference",
                   "filter type": "none"
                },
                {
                   "name": "submitting_institution",
                   "display": true,
                   "default": true,
-                  "order": 11,
+                  "order": 5,
                   "spreadsheet heading": "Submitting_Institution",
                   "display name": "Submitting Institution",
                   "filter type": "discrete"
@@ -81,7 +63,7 @@
                   "name": "selection_random",
                   "display": true,
                   "default": true,
-                  "order": 7,
+                  "order": 6,
                   "spreadsheet heading": "Selection_Random",
                   "display name": "Selection Random",
                   "filter type": "discrete"
@@ -90,55 +72,55 @@
                   "name": "country",
                   "display": true,
                   "default": true,
-                  "order": 8,
+                  "order": 7,
                   "spreadsheet heading": "Country",
                   "display name": "Country",
                   "filter type": "discrete"
                },
                {
-                  "name": "county_state",
+                  "name": "region",
                   "display": true,
                   "default": false,
-                  "order": 9,
-                  "spreadsheet heading": "County/state",
-                  "display name": "County/state",
+                  "order": 8,
+                  "spreadsheet heading": "Region",
+                  "display name": "Region",
                   "filter type": "discrete"
                },
                {
                   "name": "city",
                   "display": true,
                   "default": false,
-                  "order": 10,
+                  "order": 9,
                   "spreadsheet heading": "City",
                   "display name": "City",
                   "filter type": "discrete"
                },
                {
-                  "name": "collection_year",
+                  "name": "facility_where_collected",
+                  "display": true,
+                  "default": false,
+                  "order": 10,
+                  "spreadsheet heading": "Facility_of_Collection",
+                  "display name": "Facility of Collection",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "month_collection",
+                  "display": true,
+                  "default": false,
+                  "order": 11,
+                  "spreadsheet heading": "Collection_Month",
+                  "display name": "Collection Month",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "year_collection",
                   "display": true,
                   "default": true,
                   "order": 12,
-                  "spreadsheet heading": "Collection_year",
-                  "display name": "Collection year",
+                  "spreadsheet heading": "Collection_Year",
+                  "display name": "Collection Year",
                   "filter type": "numeric"
-               },
-               {
-                  "name": "collection_month",
-                  "display": true,
-                  "default": false,
-                  "order": 13,
-                  "spreadsheet heading": "Collection_month",
-                  "display name": "Collection month",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "collection_day",
-                  "display": true,
-                  "default": false,
-                  "order": 14,
-                  "spreadsheet heading": "Collection_day",
-                  "display name": "Collection day",
-                  "filter type": "discrete"
                }
             ]
          },
@@ -146,37 +128,19 @@
             "name": "Host Information",
             "fields": [
                {
-                  "name": "host_species",
-                  "display": true,
-                  "default": true,
-                  "order": 15,
-                  "spreadsheet heading": "Host_species",
-                  "display name": "Host species",
-                  "filter type": "discrete"
-               },
-               {
                   "name": "gender",
                   "display": true,
                   "default": false,
-                  "order": 16,
+                  "order": 13,
                   "spreadsheet heading": "Gender",
                   "display name": "Gender",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "age_group",
-                  "display": true,
-                  "default": false,
-                  "order": 17,
-                  "spreadsheet heading": "Age_group",
-                  "display name": "Age group",
                   "filter type": "discrete"
                },
                {
                   "name": "age_years",
                   "display": true,
                   "default": false,
-                  "order": 18,
+                  "order": 14,
                   "spreadsheet heading": "Age_years",
                   "display name": "Age years",
                   "filter type": "numeric"
@@ -185,109 +149,55 @@
                   "name": "age_months",
                   "display": true,
                   "default": false,
-                  "order": 19,
+                  "order": 15,
                   "spreadsheet heading": "Age_months",
                   "display name": "Age months",
-                  "filter type": "numeric"
-               },
-               {
-                  "name": "age_weeks",
-                  "display": true,
-                  "default": false,
-                  "order": 20,
-                  "spreadsheet heading": "Age_weeks",
-                  "display name": "Age weeks",
                   "filter type": "numeric"
                },
                {
                   "name": "age_days",
                   "display": true,
                   "default": false,
-                  "order": 21,
+                  "order": 16,
                   "spreadsheet heading": "Age_days",
                   "display name": "Age days",
                   "filter type": "numeric"
                },
                {
-                  "name": "host_status",
+                  "name": "clinical_manifestation",
+                  "display": true,
+                  "default": false,
+                  "order": 17,
+                  "spreadsheet heading": "Clinical_manifestation",
+                  "display name": "Clinical manifestation",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "source",
                   "display": true,
                   "default": true,
-                  "order": 22,
-                  "spreadsheet heading": "Host_status",
-                  "display name": "Host status",
+                  "order": 18,
+                  "spreadsheet heading": "Source",
+                  "display name": "Source",
                   "filter type": "discrete"
                },
                {
-                  "name": "disease_type",
-                  "display": true,
-                  "default": false,
-                  "order": 23,
-                  "spreadsheet heading": "Disease_type",
-                  "display name": "Disease type",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "disease_onset",
-                  "display": true,
-                  "default": false,
-                  "order": 24,
-                  "spreadsheet heading": "Disease_onset",
-                  "display name": "Disease onset",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "isolation_source",
+                  "name": "HIV_status",
                   "display": true,
                   "default": true,
-                  "order": 25,
-                  "spreadsheet heading": "Isolation_source",
-                  "display name": "Isolation source",
+                  "order": 19,
+                  "spreadsheet heading": "HIV_status",
+                  "display name": "HIV status",
                   "filter type": "discrete"
                },
                {
-                  "name": "infection_during_pregnancy",
+                  "name": "underlying_conditions",
                   "display": true,
                   "default": false,
-                  "order": 28,
-                  "spreadsheet heading": "Infection_during_pregnancy",
-                  "display name": "Infection during pregnancy",
+                  "order": 20,
+                  "spreadsheet heading": "Underlying_Conditions",
+                  "display name": "Underlying Conditions",
                   "filter type": "discrete"
-               },
-               {
-                  "name": "maternal_infection_type",
-                  "display": true,
-                  "default": false,
-                  "order": 29,
-                  "spreadsheet heading": "Maternal_infection_type",
-                  "display name": "Maternal infection type",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "gestational_age_weeks",
-                  "display": true,
-                  "order": 30,
-                  "default": false,
-                  "spreadsheet heading": "Gestational_age_weeks",
-                  "display name": "Gestational age weeks",
-                  "filter type": "numeric"
-               },
-               {
-                  "name": "birth_weight_gram",
-                  "display": true,
-                  "default": false,
-                  "order": 31,
-                  "spreadsheet heading": "Birthweight_gram",
-                  "display name": "Birth weight gram",
-                  "filter type": "numeric"
-               },
-               {
-                  "name": "apgar_score",
-                  "display": true,
-                  "default": false,
-                  "order": 32,
-                  "spreadsheet heading": "Apgar_score",
-                  "display name": "Apgar score",
-                  "filter type": "numeric"
                }
             ]
          },
@@ -295,21 +205,30 @@
             "name": "Serotyping",
             "fields": [
                {
-                  "name": "serotype",
+                  "name": "phenotypic_serotype_method",
                   "display": true,
-                  "default": true,
-                  "order": 26,
-                  "spreadsheet heading": "Serotype",
-                  "display name": "Serotype",
+                  "default": false,
+                  "order": 21,
+                  "spreadsheet heading": "Phenotypic_Serotype_Method",
+                  "display name": "Phenotypic Serotype Method",
                   "filter type": "discrete"
                },
                {
-                  "name": "serotype_method",
+                  "name": "phenotypic_serotype",
+                  "display": true,
+                  "default": true,
+                  "order": 22,
+                  "spreadsheet heading": "Phenotypic_Serotype",
+                  "display name": "Phenotypic Serotype",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "sequence_type",
                   "display": true,
                   "default": false,
-                  "order": 27,
-                  "spreadsheet heading": "Serotype_method",
-                  "display name": "Serotype method",
+                  "order": 23,
+                  "spreadsheet heading": "Sequence_Type",
+                  "display name": "Sequence Type",
                   "filter type": "discrete"
                }
             ]
@@ -318,127 +237,127 @@
             "name": "Antimicrobial Susceptibility",
             "fields": [
                {
-                  "name": "ceftizoxime",
+                  "name": "penicillin",
                   "display": true,
                   "default": false,
-                  "order": 33,
-                  "spreadsheet heading": "Ceftizoxime",
-                  "display name": "Ceftizoxime",
+                  "order": 24,
+                  "spreadsheet heading": "Penicillin",
+                  "display name": "Penicillin",
                   "filter type": "discrete"
                },
                {
-                  "name": "ceftizoxime_method",
+                  "name": "AST_method_penicillin",
                   "display": true,
                   "default": false,
-                  "order": 34,
-                  "spreadsheet heading": "Ceftizoxime_method",
-                  "display name": "Ceftizoxime method",
+                  "order": 25,
+                  "spreadsheet heading": "Penicillin_method",
+                  "display name": "Penicillin method",
                   "filter type": "discrete"
                },
                {
-                  "name": "cefoxitin",
+                  "name": "amoxicillin",
                   "display": true,
                   "default": false,
-                  "order": 35,
-                  "spreadsheet heading": "Cefoxitin",
-                  "display name": "Cefoxitin",
+                  "order": 26,
+                  "spreadsheet heading": "Amoxicillin",
+                  "display name": "Amoxicillin",
                   "filter type": "discrete"
                },
                {
-                  "name": "cefoxitin_method",
+                  "name": "AST_method_amoxicillin",
                   "display": true,
                   "default": false,
-                  "order": 36,
-                  "spreadsheet heading": "Cefoxitin_method",
-                  "display name": "Cefoxitin method",
+                  "order": 27,
+                  "spreadsheet heading": "Amoxicillin method",
+                  "display name": "Amoxicillin method",
                   "filter type": "discrete"
                },
                {
                   "name": "cefotaxime",
                   "display": true,
                   "default": false,
-                  "order": 37,
+                  "order": 28,
                   "spreadsheet heading": "Cefotaxime",
                   "display name": "Cefotaxime",
                   "filter type": "discrete"
                },
                {
-                  "name": "cefotaxime_method",
+                  "name": "AST_method_cefotaxime",
                   "display": true,
                   "default": false,
-                  "order": 38,
+                  "order": 29,
                   "spreadsheet heading": "Cefotaxime_method",
                   "display name": "Cefotaxime method",
                   "filter type": "discrete"
                },
                {
-                  "name": "cefazolin",
+                  "name": "ceftriaxone",
                   "display": true,
                   "default": false,
-                  "order": 39,
-                  "spreadsheet heading": "Cefazolin",
-                  "display name": "Cefazolin",
+                  "order": 30,
+                  "spreadsheet heading": "Ceftriaxone",
+                  "display name": "Ceftriaxone",
                   "filter type": "discrete"
                },
                {
-                  "name": "cefazolin_method",
+                  "name": "AST_method_ceftriaxone",
                   "display": true,
                   "default": false,
-                  "order": 40,
-                  "spreadsheet heading": "Cefazolin_method",
-                  "display name": "Cefazolin method",
+                  "order": 31,
+                  "spreadsheet heading": "Ceftriaxone_method",
+                  "display name": "Ceftriaxone method",
                   "filter type": "discrete"
                },
                {
-                  "name": "ampicillin",
+                  "name": "cefuroxime",
                   "display": true,
                   "default": false,
-                  "order": 41,
-                  "spreadsheet heading": "Ampicillin",
-                  "display name": "Ampicillin",
+                  "order": 32,
+                  "spreadsheet heading": "Cefuroxime",
+                  "display name": "Cefuroxime",
                   "filter type": "discrete"
                },
                {
-                  "name": "ampicillin_method",
+                  "name": "AST_method_cefuroxime",
                   "display": true,
                   "default": false,
-                  "order": 42,
-                  "spreadsheet heading": "Ampicillin_method",
-                  "display name": "Ampicillin method",
+                  "order": 33,
+                  "spreadsheet heading": "Cefuroxime_method",
+                  "display name": "Cefuroxime method",
                   "filter type": "discrete"
                },
                {
-                  "name": "penicillin",
+                  "name": "Meropenem",
                   "display": true,
                   "default": false,
-                  "order": 43,
-                  "spreadsheet heading": "Penicillin",
-                  "display name": "Penicillin",
+                  "order": 34,
+                  "spreadsheet heading": "Meropenem",
+                  "display name": "Meropenem",
                   "filter type": "discrete"
                },
                {
-                  "name": "penicillin_method",
+                  "name": "AST_method_meropenem",
                   "display": true,
                   "default": false,
-                  "order": 44,
-                  "spreadsheet heading": "Penicillin_method",
-                  "display name": "Penicillin method",
+                  "order": 35,
+                  "spreadsheet heading": "Meropenem_method",
+                  "display name": "Meropenem method",
                   "filter type": "discrete"
                },
                {
                   "name": "erythromycin",
                   "display": true,
                   "default": false,
-                  "order": 45,
+                  "order": 36,
                   "spreadsheet heading": "Erythromycin",
                   "display name": "Erythromycin",
                   "filter type": "discrete"
                },
                {
-                  "name": "erythromycin_method",
+                  "name": "AST_method_erythromycin",
                   "display": true,
                   "default": false,
-                  "order": 46,
+                  "order": 37,
                   "spreadsheet heading": "Erythromycin_method",
                   "display name": "Erythromycin method",
                   "filter type": "discrete"
@@ -447,106 +366,52 @@
                   "name": "clindamycin",
                   "display": true,
                   "default": false,
-                  "order": 47,
+                  "order": 38,
                   "spreadsheet heading": "Clindamycin",
                   "display name": "Clindamycin",
                   "filter type": "discrete"
                },
                {
-                  "name": "clindamycin_method",
+                  "name": "AST_method_clindamycin",
                   "display": true,
                   "default": false,
-                  "order": 48,
+                  "order": 39,
                   "spreadsheet heading": "Clindamycin_method",
                   "display name": "Clindamycin method",
                   "filter type": "discrete"
                },
                {
-                  "name": "tetracycline",
+                  "name": "trim_sulfa",
                   "default": false,
                   "display": true,
-                  "order": 49,
-                  "spreadsheet heading": "Tetracycline",
-                  "display name": "Tetracycline",
+                  "order": 40,
+                  "spreadsheet heading": "Trim_Sulfa",
+                  "display name": "Trim/Sulfa",
                   "filter type": "discrete"
                },
                {
-                  "name": "tetracycline_method",
+                  "name": "AST_method_trim_sulfa",
                   "display": true,
                   "default": false,
-                  "order": 50,
-                  "spreadsheet heading": "Tetracycline_method",
-                  "display name": "Tetracycline method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "levofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 51,
-                  "spreadsheet heading": "Levofloxacin",
-                  "display name": "Levofloxacin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "levofloxacin_method",
-                  "display": true,
-                  "default": false,
-                  "order": 52,
-                  "spreadsheet heading": "Levofloxacin_method",
-                  "display name": "Levofloxacin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "ciprofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 53,
-                  "spreadsheet heading": "Ciprofloxacin",
-                  "display name": "Ciprofloxacin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "ciprofloxacin_method",
-                  "display": true,
-                  "default": false,
-                  "order": 54,
-                  "spreadsheet heading": "Ciprofloxacin_method",
-                  "display name": "Ciprofloxacin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "daptomycin",
-                  "display": true,
-                  "default": false,
-                  "order": 55,
-                  "spreadsheet heading": "Daptomycin",
-                  "display name": "Daptomycin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "daptomycin_method",
-                  "display": true,
-                  "default": false,
-                  "order": 56,
-                  "spreadsheet heading": "Daptomycin_method",
-                  "display name": "Daptomycin method",
+                  "order": 41,
+                  "spreadsheet heading": "Trim_Sulfa_method",
+                  "display name": "Trim/Sulfa method",
                   "filter type": "discrete"
                },
                {
                   "name": "vancomycin",
                   "display": true,
                   "default": false,
-                  "order": 57,
+                  "order": 42,
                   "spreadsheet heading": "Vancomycin",
                   "display name": "Vancomycin",
                   "filter type": "discrete"
                },
                {
-                  "name": "vancomycin_method",
+                  "name": "AST_method_vancomycin",
                   "display": true,
                   "default": false,
-                  "order": 58,
+                  "order": 43,
                   "spreadsheet heading": "Vancomycin_method",
                   "display name": "Vancomycin method",
                   "filter type": "discrete"
@@ -555,19 +420,245 @@
                   "name": "linezolid",
                   "display": true,
                   "default": false,
-                  "order": 59,
+                  "order": 44,
                   "spreadsheet heading": "Linezolid",
                   "display name": "Linezolid",
                   "filter type": "discrete"
                },
                {
-                  "name": "linezolid_method",
+                  "name": "AST_method_linezolid",
                   "display": true,
                   "default": false,
-                  "order": 60,
+                  "order": 45,
                   "spreadsheet heading": "Linezolid_method",
                   "display name": "Linezolid method",
                   "filter type": "discrete"
+               },
+               {
+                  "name": "ciprofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 46,
+                  "spreadsheet heading": "Ciprofloxacin",
+                  "display name": "Ciprofloxacin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_ciprofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 47,
+                  "spreadsheet heading": "Ciprofloxacin_method",
+                  "display name": "Ciprofloxacin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "chloramphenicol",
+                  "display": true,
+                  "default": false,
+                  "order": 48,
+                  "spreadsheet heading": "Chloramphenicol",
+                  "display name": "Chloramphenicol",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_chloramphenicol",
+                  "display": true,
+                  "default": false,
+                  "order": 49,
+                  "spreadsheet heading": "Chloramphenicol_method",
+                  "display name": "Chloramphenicol method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "tetracycline",
+                  "display": true,
+                  "default": false,
+                  "order": 50,
+                  "spreadsheet heading": "Tetracycline",
+                  "display name": "Tetracyclined",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_tetracycline",
+                  "display": true,
+                  "default": false,
+                  "order": 51,
+                  "spreadsheet heading": "Tetracycline_method",
+                  "display name": "Tetracycline method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "levofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 52,
+                  "spreadsheet heading": "Levofloxacin",
+                  "display name": "Levofloxacin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_levofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 53,
+                  "spreadsheet heading": "Levofloxacin_method",
+                  "display name": "Levofloxacin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "synercid",
+                  "display": true,
+                  "default": false,
+                  "order": 54,
+                  "spreadsheet heading": "Synercid",
+                  "display name": "Synercid",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_synercid",
+                  "display": true,
+                  "default": false,
+                  "order": 55,
+                  "spreadsheet heading": "Synercid_method",
+                  "display name": "Synercid method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "rifampin",
+                  "display": true,
+                  "default": false,
+                  "order": 56,
+                  "spreadsheet heading": "Rifampin",
+                  "display name": "Rifampin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_rifampin",
+                  "display": true,
+                  "default": false,
+                  "order": 57,
+                  "spreadsheet heading": "Rifampin_method",
+                  "display name": "Rifampin method",
+                  "filter type": "discrete"
+               }
+            ]
+         },
+         {
+            "name": "MLST and Allele Number",
+            "fields": [
+               {
+                  "name": "aroe",
+                  "display": true,
+                  "default": true,
+                  "order": 58,
+                  "spreadsheet heading": "aroe",
+                  "display name": "aroe",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "gdh",
+                  "display": true,
+                  "default": false,
+                  "order": 59,
+                  "spreadsheet heading": "gdh",
+                  "display name": "gdh",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "gki",
+                  "display": true,
+                  "default": false,
+                  "order": 60,
+                  "spreadsheet heading": "gki",
+                  "display name": "gki",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "recp",
+                  "display": true,
+                  "default": false,
+                  "order": 61,
+                  "spreadsheet heading": "recp",
+                  "display name": "recp",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "spi",
+                  "display": true,
+                  "default": false,
+                  "order": 62,
+                  "spreadsheet heading": "spi",
+                  "display name": "spi",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "xpt",
+                  "display": true,
+                  "default": false,
+                  "order": 63,
+                  "spreadsheet heading": "xpt",
+                  "display name": "xpt",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "ddl",
+                  "display": true,
+                  "default": false,
+                  "order": 64,
+                  "spreadsheet heading": "ddl",
+                  "display name": "ddl",
+                  "filter type": "discrete"
+               }
+            ]
+         },
+         {
+            "name": "Additional Information",
+            "fields": [
+               {
+                  "name": "comments",
+                  "display": true,
+                  "default": true,
+                  "order": 65,
+                  "spreadsheet heading": "Comments",
+                  "display name": "Comments",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "vaccine_period",
+                  "display": true,
+                  "default": true,
+                  "order": 66,
+                  "spreadsheet heading": "Vaccine_Period",
+                  "display name": "Vaccine Period",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "intro_year",
+                  "display": true,
+                  "default": true,
+                  "order": 67,
+                  "spreadsheet heading": "Intro_Year",
+                  "display name": "Intro Year",
+                  "filter type": "numeric"
+               },
+               {
+                  "name": "PCV_type",
+                  "display": true,
+                  "default": true,
+                  "order": 68,
+                  "spreadsheet heading": "PCV_Type",
+                  "display name": "PCV_Type",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "resolution",
+                  "display": true,
+                  "default": true,
+                  "order": 69,
+                  "spreadsheet heading": "Resolution",
+                  "display name": "Resolution",
+                  "filter type": "numeric"
                }
             ]
          }
@@ -581,572 +672,957 @@
                {
                   "name": "lane_id",
                   "display": false,
-                  "spreadsheet heading": "Sample_id",
-                  "display name": "Sample id"
-               }
-            ]
-         },
-         {
-            "name": "Serotype",
-            "fields": [
+                  "spreadsheet heading": "lane_id",
+                  "display name": "Lane id"
+               },
                {
-                  "name": "cps_type",
+                  "name": "public_name",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 1,
-                  "spreadsheet heading": "cps_type",
-                  "display name": "cps type",
+                  "spreadsheet heading": "Public name",
+                  "display name": "Public name",
                   "filter type": "discrete"
-               }
-            ]
-         },
-         {
-            "name": "MLST and Allele Number",
-            "fields": [
+               },
                {
-                  "name": "ST",
+                  "name": "sample",
                   "display": true,
                   "default": true,
                   "order": 2,
-                  "spreadsheet heading": "ST",
-                  "display name": "ST",
+                  "spreadsheet heading": "Sanger_Sample_ID",
+                  "display name": "Sanger Sample ID",
                   "filter type": "discrete"
                },
                {
-                  "name": "adhP",
+                  "name": "ERR",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 3,
-                  "spreadsheet heading": "adhP",
-                  "display name": "adhP",
+                  "spreadsheet heading": "ERR",
+                  "display name": "ERR",
                   "filter type": "discrete"
                },
                {
-                  "name": "pheS",
+                  "name": "ERS",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 4,
-                  "spreadsheet heading": "pheS",
-                  "display name": "pheS",
+                  "spreadsheet heading": "ERS",
+                  "display name": "ERS",
                   "filter type": "discrete"
                },
                {
-                  "name": "atr",
+                  "name": "no_of_genome",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 5,
-                  "spreadsheet heading": "atr",
-                  "display name": "atr",
-                  "filter type": "discrete"
-               },
+                  "spreadsheet heading": "Number_of_Genome",
+                  "display name": "Number of Genome",
+                  "filter type": "numeric"
+               }
+            ]
+         },
+         {
+            "name": "Not sure",
+            "fields": [
                {
-                  "name": "glnA",
+                  "name": "duplicate",
                   "display": true,
                   "default": false,
                   "order": 6,
-                  "spreadsheet heading": "glnA",
-                  "display name": "glnA",
+                  "spreadsheet heading": "Duplicate",
+                  "display name": "Duplicate",
                   "filter type": "discrete"
                },
                {
-                  "name": "sdhA",
+                  "name": "Paper_1",
                   "display": true,
                   "default": false,
                   "order": 7,
-                  "spreadsheet heading": "sdhA",
-                  "display name": "sdhA",
+                  "spreadsheet heading": "Paper_1",
+                  "display name": "Paper",
                   "filter type": "discrete"
                },
                {
-                  "name": "glcK",
+                  "name": "In_Silico_St",
                   "display": true,
                   "default": false,
                   "order": 8,
-                  "spreadsheet heading": "glcK",
-                  "display name": "glcK",
+                  "spreadsheet heading": "In_Silico_St",
+                  "display name": "In Silico St",
                   "filter type": "discrete"
                },
                {
-                  "name": "tkt",
+                  "name": "Aroe",
                   "display": true,
                   "default": false,
                   "order": 9,
-                  "spreadsheet heading": "tkt",
-                  "display name": "tkt",
+                  "spreadsheet heading": "Aroe",
+                  "display name": "Aroe",
                   "filter type": "discrete"
                },
                {
-                  "name": "23S1",
+                  "name": "Gdh",
                   "display": true,
                   "default": false,
                   "order": 10,
-                  "spreadsheet heading": "23S1",
-                  "display name": "23S1",
+                  "spreadsheet heading": "Gdh",
+                  "display name": "Gdh",
                   "filter type": "discrete"
                },
                {
-                  "name": "23S3",
+                  "name": "Gki",
                   "display": true,
                   "default": false,
                   "order": 11,
-                  "spreadsheet heading": "23S3",
-                  "display name": "23S3",
+                  "spreadsheet heading": "Gki",
+                  "display name": "Gki",
                   "filter type": "discrete"
-               }
-            ]
-         },
-         {
-            "name": "AMR Alleles",
-            "fields": [
+               },
                {
-                  "name": "AAC6APH2",
+                  "name": "Recp",
                   "display": true,
                   "default": false,
                   "order": 12,
-                  "spreadsheet heading": "AAC6APH2",
-                  "display name": "AAC6APH2",
+                  "spreadsheet heading": "Recp",
+                  "display name": "Recp",
                   "filter type": "discrete"
                },
                {
-                  "name": "AADECC",
+                  "name": "Spi",
                   "display": true,
                   "default": false,
                   "order": 13,
-                  "spreadsheet heading": "AADECC",
-                  "display name": "AADECC",
+                  "spreadsheet heading": "Aroe",
+                  "display name": "Aroe",
                   "filter type": "discrete"
                },
                {
-                  "name": "ANT6",
+                  "name": "Xpt",
                   "display": true,
                   "default": false,
                   "order": 14,
-                  "spreadsheet heading": "ANT6",
-                  "display name": "ANT6",
+                  "spreadsheet heading": "Xpt",
+                  "display name": "Xpt",
                   "filter type": "discrete"
                },
                {
-                  "name": "APH3III",
+                  "name": "Ddl",
                   "display": true,
                   "default": false,
                   "order": 15,
-                  "spreadsheet heading": "APH3III",
-                  "display name": "APH3III",
+                  "spreadsheet heading": "Ddl",
+                  "display name": "Ddl",
                   "filter type": "discrete"
                },
                {
-                  "name": "APH3OTHER",
+                  "name": "country",
                   "display": true,
                   "default": false,
                   "order": 16,
-                  "spreadsheet heading": "APH3OTHER",
-                  "display name": "APH3OTHER",
+                  "spreadsheet heading": "Country",
+                  "display name": "Country",
                   "filter type": "discrete"
                },
                {
-                  "name": "CATPC194",
+                  "name": "Manifest_type",
                   "display": true,
                   "default": false,
                   "order": 17,
-                  "spreadsheet heading": "CATPC194",
-                  "display name": "CATPC194",
+                  "spreadsheet heading": "Manifest_type",
+                  "display name": "Manifest type",
                   "filter type": "discrete"
                },
                {
-                  "name": "CATQ",
+                  "name": "children_under_5yrs",
                   "display": true,
                   "default": false,
                   "order": 18,
-                  "spreadsheet heading": "CATQ",
-                  "display name": "CATQ",
+                  "spreadsheet heading": "children_under_5yrs",
+                  "display name": "Children under 5yrs",
                   "filter type": "discrete"
                },
                {
-                  "name": "ERMA",
+                  "name": "GPSC_PoPUNK2",
                   "display": true,
                   "default": false,
                   "order": 19,
-                  "spreadsheet heading": "ERMA",
-                  "display name": "ERMA",
+                  "spreadsheet heading": "GPSC_PoPUNK2",
+                  "display name": "GPSC PoPUNK2",
                   "filter type": "discrete"
                },
                {
-                  "name": "ERMB",
+                  "name": "GPSC_PoPUNK2__colour",
                   "display": true,
                   "default": false,
                   "order": 20,
-                  "spreadsheet heading": "ERMB",
-                  "display name": "ERMB",
+                  "spreadsheet heading": "GPSC_PoPUNK2__colour",
+                  "display name": "GPSC PoPUNK2 Colour",
                   "filter type": "discrete"
                },
                {
-                  "name": "ERMT",
+                  "name": "In_Silico_serotype",
                   "display": true,
                   "default": false,
                   "order": 21,
-                  "spreadsheet heading": "ERMT",
-                  "display name": "ERMT",
+                  "spreadsheet heading": "In_Silico_serotype",
+                  "display name": "In Silico Serotype",
                   "filter type": "discrete"
                },
                {
-                  "name": "LNUB",
+                  "name": "In_Silico_serotype__colour",
                   "display": true,
                   "default": false,
                   "order": 22,
-                  "spreadsheet heading": "LNUB",
-                  "display name": "LNUB",
+                  "spreadsheet heading": "In_Silico_serotype__colour",
+                  "display name": "In Silico Serotype Colour",
                   "filter type": "discrete"
                },
                {
-                  "name": "LNUC",
+                  "name": "PBP1A",
                   "display": true,
                   "default": false,
                   "order": 23,
-                  "spreadsheet heading": "LNUC",
-                  "display name": "LNUC",
+                  "spreadsheet heading": "PBP1A",
+                  "display name": "PBP1A",
                   "filter type": "discrete"
                },
                {
-                  "name": "LSAC",
+                  "name": "PBP2B",
                   "display": true,
                   "default": false,
                   "order": 24,
-                  "spreadsheet heading": "LSAC",
-                  "display name": "LSAC",
+                  "spreadsheet heading": "PBP2B",
+                  "display name": "PBP2B",
                   "filter type": "discrete"
                },
                {
-                  "name": "MEFA",
+                  "name": "PBP2X",
                   "display": true,
                   "default": false,
                   "order": 25,
-                  "spreadsheet heading": "MEFA",
-                  "display name": "MEFA",
+                  "spreadsheet heading": "PBP2X",
+                  "display name": "PBP2X",
                   "filter type": "discrete"
                },
                {
-                  "name": "MPHC",
+                  "name": "WGS_PEN",
                   "display": true,
                   "default": false,
                   "order": 26,
-                  "spreadsheet heading": "MPHC",
-                  "display name": "MPHC",
+                  "spreadsheet heading": "WGS_PEN",
+                  "display name": "WGS PEN",
                   "filter type": "discrete"
                },
                {
-                  "name": "MSRA",
+                  "name": "WGS_PEN_SIR_Meningitis",
                   "display": true,
                   "default": false,
                   "order": 27,
-                  "spreadsheet heading": "MSRA",
-                  "display name": "MSRA",
+                  "spreadsheet heading": "WGS_PEN_SIR_Meningitis",
+                  "display name": "WGS PEN SIR Meningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "MSRD",
+                  "name": "WGS_PEN_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
                   "order": 28,
-                  "spreadsheet heading": "MSRD",
-                  "display name": "MSRD",
+                  "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis",
+                  "display name": "WGS PEN SIR Nonmeningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "FOSA",
+                  "name": "WGS_AMO",
                   "display": true,
                   "default": false,
                   "order": 29,
-                  "spreadsheet heading": "FOSA",
-                  "display name": "FOSA",
+                  "spreadsheet heading": "WGS_AMO",
+                  "display name": "WGS AMO",
                   "filter type": "discrete"
                },
                {
-                  "name": "GYRA",
+                  "name": "WGS_AMO_SIR",
                   "display": true,
                   "default": false,
                   "order": 30,
-                  "spreadsheet heading": "GYRA",
-                  "display name": "GYRA",
+                  "spreadsheet heading": "WGS_AMO_SIR",
+                  "display name": "WGS AMO SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "PARC",
+                  "name": "WGS_MER",
                   "display": true,
                   "default": false,
                   "order": 31,
-                  "spreadsheet heading": "PARC",
-                  "display name": "PARC",
+                  "spreadsheet heading": "WGS_MER",
+                  "display name": "WGS MER",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_1",
+                  "name": "WGS_MER_SIR",
                   "display": true,
                   "default": false,
                   "order": 32,
-                  "spreadsheet heading": "RPOBGBS-1",
-                  "display name": "RPOBGBS-1",
+                  "spreadsheet heading": "WGS_MER_SIR",
+                  "display name": "WGS MER SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_2",
+                  "name": "WGS_TAX",
                   "display": true,
                   "default": false,
                   "order": 33,
-                  "spreadsheet heading": "RPOBGBS-2",
-                  "display name": "RPOBGBS-2",
+                  "spreadsheet heading": "WGS_TAX",
+                  "display name": "WGS TAX",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_3",
+                  "name": "WGS_TAX_SIR_Meningitis",
                   "display": true,
                   "default": false,
                   "order": 34,
-                  "spreadsheet heading": "RPOBGBS-3",
-                  "display name": "RPOBGBS-3",
+                  "spreadsheet heading": "WGS_TAX_SIR_Meningitis",
+                  "display name": "WGS TAX SIR Meningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_4",
+                  "name": "WGS_TAX_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
                   "order": 35,
-                  "spreadsheet heading": "RPOBGBS-4",
-                  "display name": "RPOBGBS-4",
+                  "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis",
+                  "display name": "WGS TAX SIR Nonmeningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "SUL2",
+                  "name": "WGS_CFT",
                   "display": true,
                   "default": false,
                   "order": 36,
-                  "spreadsheet heading": "SUL2",
-                  "display name": "SUL2",
+                  "spreadsheet heading": "WGS_CFT",
+                  "display name": "WGS CFT",
                   "filter type": "discrete"
                },
                {
-                  "name": "TETB",
+                  "name": "WGS_CFT_SIR_Meningitis",
                   "display": true,
                   "default": false,
                   "order": 37,
-                  "spreadsheet heading": "TETB",
-                  "display name": "TETB",
+                  "spreadsheet heading": "WGS_CFT_SIR_Meningitis",
+                  "display name": "WGS CFT SIR Meningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "TETL",
+                  "name": "WGS_CFT_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
                   "order": 38,
-                  "spreadsheet heading": "TETL",
-                  "display name": "TETL",
+                  "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis",
+                  "display name": "WGS CFT SIR Nonmeningitis",
                   "filter type": "discrete"
                },
                {
-                  "name": "TETM",
+                  "name": "WGS_CFX",
                   "display": true,
                   "default": false,
                   "order": 39,
-                  "spreadsheet heading": "TETM",
-                  "display name": "TETM",
+                  "spreadsheet heading": "WGS_CFX",
+                  "display name": "WGS CFX",
                   "filter type": "discrete"
                },
                {
-                  "name": "TETO",
+                  "name": "WGS_CFX_SIR",
                   "display": true,
                   "default": false,
                   "order": 40,
-                  "spreadsheet heading": "TETO",
-                  "display name": "TETO",
+                  "spreadsheet heading": "WGS_CFX_SIR",
+                  "display name": "WGS CFX SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "TETS",
+                  "name": "WGS_ERY",
                   "display": true,
                   "default": false,
                   "order": 41,
-                  "spreadsheet heading": "TETS",
-                  "display name": "TETS",
+                  "spreadsheet heading": "WGS_ERY",
+                  "display name": "WGS ERY",
                   "filter type": "discrete"
-               }
-            ]
-         },
-         {
-            "name": "Surface Proteins",
-            "fields": [
+               },
                {
-                  "name": "ALP1",
+                  "name": "WGS_ERY_SIR",
                   "display": true,
                   "default": false,
                   "order": 42,
-                  "spreadsheet heading": "ALP1",
-                  "display name": "ALP1",
+                  "spreadsheet heading": "WGS_ERY_SIR",
+                  "display name": "WGS ERY SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "ALP23",
+                  "name": "WGS_CLI",
                   "display": true,
                   "default": false,
                   "order": 43,
-                  "spreadsheet heading": "ALP23",
-                  "display name": "ALP23",
+                  "spreadsheet heading": "WGS_CLI",
+                  "display name": "WGS CLI",
                   "filter type": "discrete"
                },
                {
-                  "name": "ALPHA",
+                  "name": "WGS_CLI_SIR",
                   "display": true,
                   "default": false,
                   "order": 44,
-                  "spreadsheet heading": "ALPHA",
-                  "display name": "ALPHA",
+                  "spreadsheet heading": "WGS_CLI_SIR",
+                  "display name": "WGS CLI SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "HVGA",
+                  "name": "WGS_SYN",
                   "display": true,
                   "default": false,
                   "order": 45,
-                  "spreadsheet heading": "HVGA",
-                  "display name": "HVGA",
+                  "spreadsheet heading": "WGS_SYN",
+                  "display name": "WGS SYN",
                   "filter type": "discrete"
                },
                {
-                  "name": "PI1",
+                  "name": "WGS_SYN_SIR",
                   "display": true,
                   "default": false,
                   "order": 46,
-                  "spreadsheet heading": "PI1",
-                  "display name": "PI1",
+                  "spreadsheet heading": "WGS_SYN_SIR",
+                  "display name": "WGS SYN SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "PI2A1",
+                  "name": "WGS_LZO",
                   "display": true,
                   "default": false,
                   "order": 47,
-                  "spreadsheet heading": "PI2A1",
-                  "display name": "PI2A1",
+                  "spreadsheet heading": "WGS_LZO",
+                  "display name": "WGS LZO",
                   "filter type": "discrete"
                },
                {
-                  "name": "PI2A2",
+                  "name": "WGS_LZO_SIR",
                   "display": true,
                   "default": false,
                   "order": 48,
-                  "spreadsheet heading": "PI2A2",
-                  "display name": "PI2A2",
+                  "spreadsheet heading": "WGS_LZO_SIR",
+                  "display name": "WGS LZO SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "PI2B",
+                  "name": "WGS_ERY_CLI",
                   "display": true,
                   "default": false,
                   "order": 49,
-                  "spreadsheet heading": "PI2B",
-                  "display name": "PI2B",
+                  "spreadsheet heading": "WGS_ERY_CLI",
+                  "display name": "WGS ERY CLI",
                   "filter type": "discrete"
                },
                {
-                  "name": "RIB",
+                  "name": "WGS_COT",
                   "display": true,
                   "default": false,
                   "order": 50,
-                  "spreadsheet heading": "RIB",
-                  "display name": "RIB",
+                  "spreadsheet heading": "WGS_COT",
+                  "display name": "WGS COT",
                   "filter type": "discrete"
                },
                {
-                  "name": "SRR1",
+                  "name": "WGS_COT_SIR",
                   "display": true,
                   "default": false,
                   "order": 51,
-                  "spreadsheet heading": "SRR1",
-                  "display name": "SRR1",
+                  "spreadsheet heading": "WGS_COT_SIR",
+                  "display name": "WGS COT SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "SRR2",
+                  "name": "WGS_TET",
                   "display": true,
                   "default": false,
                   "order": 52,
-                  "spreadsheet heading": "SRR2",
-                  "display name": "SRR2",
+                  "spreadsheet heading": "WGS_TET",
+                  "display name": "WGS TET",
                   "filter type": "discrete"
-               }
-            ]
-         },
-         {
-            "name": "AMR SNPs",
-            "fields": [
+               },
                {
-                  "name": "twenty_three_S1_variant",
+                  "name": "WGS_TET_SIR",
                   "display": true,
                   "default": false,
                   "order": 53,
-                  "spreadsheet heading": "23S1_SNP",
-                  "display name": "23S1 SNP",
+                  "spreadsheet heading": "WGS_TET_SIR",
+                  "display name": "WGS TET SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "twenty_three_S3_variant",
+                  "name": "WGS_DOX",
                   "display": true,
                   "default": false,
                   "order": 54,
-                  "spreadsheet heading": "23S3_SNP",
-                  "display name": "23S3 SNP",
+                  "spreadsheet heading": "WGS_DOX",
+                  "display name": "WGS DOX",
                   "filter type": "discrete"
                },
                {
-                  "name": "GYRA_variant",
+                  "name": "WGS_DOX_SIR",
                   "display": true,
                   "default": false,
                   "order": 55,
-                  "spreadsheet heading": "GYRA_SNP",
-                  "display name": "GYRA SNP",
+                  "spreadsheet heading": "WGS_DOX_SIR",
+                  "display name": "WGS DOX SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "PARC_variant",
+                  "name": "WGS_LFX",
                   "display": true,
                   "default": false,
                   "order": 56,
-                  "spreadsheet heading": "PARC_SNP",
-                  "display name": "PARC SNP",
+                  "spreadsheet heading": "WGS_LFX",
+                  "display name": "WGS LFX",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_1_variant",
+                  "name": "WGS_LFX_SIR",
                   "display": true,
                   "default": false,
                   "order": 57,
-                  "spreadsheet heading": "RPOBGBS-1_SNP",
-                  "display name": "RPOBGBS-1 SNP",
+                  "spreadsheet heading": "WGS_LFX_SIR",
+                  "display name": "WGS LFX SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_2_variant",
+                  "name": "WGS_CHL",
                   "display": true,
                   "default": false,
                   "order": 58,
-                  "spreadsheet heading": "RPOBGBS-2_SNP",
-                  "display name": "RPOBGBS-2 SNP",
+                  "spreadsheet heading": "WGS_CHL",
+                  "display name": "WGS CHL",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_3_variant",
+                  "name": "WGS_CHL_SIR",
                   "display": true,
                   "default": false,
                   "order": 59,
-                  "spreadsheet heading": "RPOBGBS-3_SNP",
-                  "display name": "RPOBGBS-3 SNP",
+                  "spreadsheet heading": "WGS_CHL_SIR",
+                  "display name": "WGS CHL SIR",
                   "filter type": "discrete"
                },
                {
-                  "name": "RPOBGBS_4_variant",
+                  "name": "WGS_RIF",
                   "display": true,
                   "default": false,
                   "order": 60,
-                  "spreadsheet heading": "RPOBGBS-4_SNP",
-                  "display name": "RPOBGBS-4 SNP",
+                  "spreadsheet heading": "WGS_RIF",
+                  "display name": "WGS RIF",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_RIF_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 61,
+                  "spreadsheet heading": "WGS_RIF_SIR",
+                  "display name": "WGS RIF SIR",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_VAN",
+                  "display": true,
+                  "default": false,
+                  "order": 62,
+                  "spreadsheet heading": "WGS_VAN",
+                  "display name": "WGS VAN",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_VAN_SIR",
+                  "display": true,
+                  "default": false,
+                  "order": 63,
+                  "spreadsheet heading": "WGS_VAN_SIR",
+                  "display name": "WGS VAN SIR",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "EC",
+                  "display": true,
+                  "default": false,
+                  "order": 64,
+                  "spreadsheet heading": "EC",
+                  "display name": "EC",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Cot",
+                  "display": true,
+                  "default": false,
+                  "order": 65,
+                  "spreadsheet heading": "Cot",
+                  "display name": "Cot",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Tet__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 66,
+                  "spreadsheet heading": "Tet__autocolour",
+                  "display name": "Tet autocolour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "FQ__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 67,
+                  "spreadsheet heading": "FQ__autocolour",
+                  "display name": "FQ autocolour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Other",
+                  "display": true,
+                  "default": false,
+                  "order": 68,
+                  "spreadsheet heading": "Other",
+                  "display name": "Other",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PBP1A_2B_2X__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 69,
+                  "spreadsheet heading": "PBP1A_2B_2X__autocolour",
+                  "display name": "PBP1A 2B 2X autocolour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_PEN_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 70,
+                  "spreadsheet heading": "WGS_PEN_SIR_Meningitis__colour",
+                  "display name": "WGS PEN SIR Meningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 71,
+                  "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis__colour",
+                  "display name": "WGS PEN SIR Nonmeningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_AMO_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 72,
+                  "spreadsheet heading": "WGS_AMO_SIR__colour",
+                  "display name": "WGS AMO SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_MER_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 73,
+                  "spreadsheet heading": "WGS_MER_SIR__colour",
+                  "display name": "WGS MER SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_TAX_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 74,
+                  "spreadsheet heading": "WGS_TAX_SIR_Meningitis__colour",
+                  "display name": "WGS TAX SIR Meningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 75,
+                  "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis__colour",
+                  "display name": "WGS TAX SIR Nonmeningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_CFT_SIR_Meningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 76,
+                  "spreadsheet heading": "WGS_CFT_SIR_Meningitis__colour",
+                  "display name": "WGS CFT SIR Meningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 77,
+                  "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis__colour",
+                  "display name": "WGS CFT SIR Nonmeningitis colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_CFX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 78,
+                  "spreadsheet heading": "WGS_CFX_SIR__colour",
+                  "display name": "WGS_CFX_SIR__colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_ERY_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 79,
+                  "spreadsheet heading": "WGS_ERY_SIR__colour",
+                  "display name": "WGS ERY SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_CLI_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 80,
+                  "spreadsheet heading": "WGS_CLI_SIR__colour",
+                  "display name": "WGS CLI SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_SYN_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 81,
+                  "spreadsheet heading": "WGS_SYN_SIR__colour",
+                  "display name": "WGS SYN SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_LZO_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 82,
+                  "spreadsheet heading": "WGS_LZO_SIR__colour",
+                  "display name": "WGS LZO SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_COT_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 83,
+                  "spreadsheet heading": "WGS_COT_SIR__colour",
+                  "display name": "WGS COT SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_TET_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 84,
+                  "spreadsheet heading": "WGS_TET_SIR__colour",
+                  "display name": "WGS TET SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_DOX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 85,
+                  "spreadsheet heading": "WGS_DOX_SIR__colour",
+                  "display name": "WGS DOX SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_LFX_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 86,
+                  "spreadsheet heading": "WGS_LFX_SIR__colour",
+                  "display name": "WGS LFX SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_CHL_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 87,
+                  "spreadsheet heading": "WGS_CHL_SIR__colour",
+                  "display name": "WGS CHL SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_RIF_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 88,
+                  "spreadsheet heading": "WGS_RIF_SIR__colour",
+                  "display name": "WGS RIF SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "WGS_VAN_SIR__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 89,
+                  "spreadsheet heading": "WGS_VAN_SIR__colour",
+                  "display name": "WGS VAN SIR colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "ermB",
+                  "display": true,
+                  "default": false,
+                  "order": 90,
+                  "spreadsheet heading": "ermB",
+                  "display name": "ermB",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "ermB__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 91,
+                  "spreadsheet heading": "ermB__colour",
+                  "display name": "ermB colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "mefA",
+                  "display": true,
+                  "default": false,
+                  "order": 92,
+                  "spreadsheet heading": "mefA",
+                  "display name": "mefA",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "mefA__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 93,
+                  "spreadsheet heading": "mefA__colour",
+                  "display name": "mefA colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "folA_I100L",
+                  "display": true,
+                  "default": false,
+                  "order": 94,
+                  "spreadsheet heading": "folA_I100L",
+                  "display name": "folA I100L",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "folA_I100L__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 95,
+                  "spreadsheet heading": "folA_I100L__colour",
+                  "display name": "folA I100L colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "folP__autocolour",
+                  "display": true,
+                  "default": false,
+                  "order": 96,
+                  "spreadsheet heading": "folP__autocolour",
+                  "display name": "folP autocolour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "cat",
+                  "display": true,
+                  "default": false,
+                  "order": 97,
+                  "spreadsheet heading": "cat",
+                  "display name": "Cat",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "cat__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 98,
+                  "spreadsheet heading": "cat__colour",
+                  "display name": "Cat colour",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PCV7",
+                  "display": true,
+                  "default": false,
+                  "order": 99,
+                  "spreadsheet heading": "PCV7",
+                  "display name": "PCV7",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PCV10",
+                  "display": true,
+                  "default": false,
+                  "order": 100,
+                  "spreadsheet heading": "PCV10",
+                  "display name": "PCV10",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PCV13",
+                  "display": true,
+                  "default": false,
+                  "order": 101,
+                  "spreadsheet heading": "PCV13",
+                  "display name": "PCV13",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PCV15",
+                  "display": true,
+                  "default": false,
+                  "order": 102,
+                  "spreadsheet heading": "PCV15",
+                  "display name": "PCV15",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "PCV20",
+                  "display": true,
+                  "default": false,
+                  "order": 103,
+                  "spreadsheet heading": "PCV20",
+                  "display name": "PCV20",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Pneumosil",
+                  "display": true,
+                  "default": false,
+                  "order": 104,
+                  "spreadsheet heading": "Pneumosil",
+                  "display name": "Pneumosil",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Published",
+                  "display": true,
+                  "default": false,
+                  "order": 105,
+                  "spreadsheet heading": "Published",
+                  "display name": "Published",
                   "filter type": "discrete"
                }
             ]
@@ -1161,6 +1637,26 @@
                {
                   "name": "lane_id",
                   "display": false
+               },
+               {
+                  "name": "sample_name",
+                  "display": false
+               },
+               {
+                  "name": "sample_accession",
+                  "display": false
+               },
+               {
+                  "name": "lane_accession",
+                  "display": false
+               },
+               {
+                  "name": "supplier_name",
+                  "display": false
+               },
+               {
+                  "name": "public_name",
+                  "display": false
                }
             ]
          },
@@ -1168,12 +1664,65 @@
             "name": "Pipeline QC",
             "fields": [
                {
-                  "name": "rel_abun_sa",
+                  "name": "Streptococcus_pneumoniae",
                   "display": true,
                   "default": true,
                   "order": 1,
                   "filter type": "numeric",
-                  "display name": "Relative abundance S. agalactiae"
+                  "display name": "Streptococcus pneumoniae"
+               },
+               {
+                  "name": "total_length",
+                  "display": true,
+                  "default": true,
+                  "order": 2,
+                  "filter type": "numeric",
+                  "display name": "Total length"
+               },
+               {
+                  "name": "No_contigs",
+                  "display": true,
+                  "default": true,
+                  "order": 3,
+                  "filter type": "numeric",
+                  "display name": "Number of contigs"
+               },
+               {
+                  "name": "genome_covered",
+                  "display": true,
+                  "default": true,
+                  "order": 4,
+                  "filter type": "numeric",
+                  "display name": "Genome covered"
+               },
+               {
+                  "name": "depth_of_coverage",
+                  "display": true,
+                  "default": true,
+                  "order": 5,
+                  "filter type": "numeric",
+                  "display name": "Depth of coverage"
+               },
+               {
+                  "name": "X_Het_SNPs_Total_No_of_SNPs",
+                  "display": true,
+                  "default": true,
+                  "order": 6,
+                  "display name": "Total No of SNPs (X Het SNPs)"
+               },
+               {
+                  "name": "qc",
+                  "display": true,
+                  "default": true,
+                  "order": 7,
+                  "display name": "QC"
+               },
+               {
+                  "name": "Hetsites_50bp",
+                  "display": true,
+                  "default": true,
+                  "order": 8,
+                  "display name": "Hetsites 50bp"
                }
             ]
          }

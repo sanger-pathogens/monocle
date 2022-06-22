@@ -6,4 +6,4 @@ from dataclasses import dataclass
 @dataclass
 class QCData:
     lane_id: str  # mandatory; contains illegal characters
-    rel_abun_sa: float  # optional
+    rel_abun_sa: float  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)

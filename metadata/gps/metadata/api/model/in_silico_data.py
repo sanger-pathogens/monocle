@@ -6,63 +6,108 @@ from dataclasses import dataclass
 @dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
-    cps_type: str  # mandatory
-    ST: str  # mandatory
-    adhP: str  # mandatory
-    pheS: str  # mandatory
-    atr: str  # mandatory
-    glnA: str  # mandatory
-    sdhA: str  # mandatory
-    glcK: str  # mandatory
-    tkt: str  # mandatory
-    twenty_three_S1: str  # mandatory; must be pos, neg or empty
-    twenty_three_S3: str  # mandatory; must be pos, neg or empty
-    AAC6APH2: str  # mandatory; must be pos, neg or empty
-    AADECC: str  # mandatory; must be pos, neg or empty
-    ANT6: str  # mandatory; must be pos, neg or empty
-    APH3III: str  # mandatory; must be pos, neg or empty
-    APH3OTHER: str  # mandatory; must be pos, neg or empty
-    CATPC194: str  # mandatory; must be pos, neg or empty
-    CATQ: str  # mandatory; must be pos, neg or empty
-    ERMA: str  # mandatory; must be pos, neg or empty
-    ERMB: str  # mandatory; must be pos, neg or empty
-    ERMT: str  # mandatory; must be pos, neg or empty
-    LNUB: str  # mandatory; must be pos, neg or empty
-    LNUC: str  # mandatory; must be pos, neg or empty
-    LSAC: str  # mandatory; must be pos, neg or empty
-    MEFA: str  # mandatory; must be pos, neg or empty
-    MPHC: str  # mandatory; must be pos, neg or empty
-    MSRA: str  # mandatory; must be pos, neg or empty
-    MSRD: str  # mandatory; must be pos, neg or empty
-    FOSA: str  # mandatory; must be pos, neg or empty
-    GYRA: str  # mandatory; must be pos, neg or empty
-    PARC: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_1: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_2: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_3: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_4: str  # mandatory; must be pos, neg or empty
-    SUL2: str  # mandatory; must be pos, neg or empty
-    TETB: str  # mandatory; must be pos, neg or empty
-    TETL: str  # mandatory; must be pos, neg or empty
-    TETM: str  # mandatory; must be pos, neg or empty
-    TETO: str  # mandatory; must be pos, neg or empty
-    TETS: str  # mandatory; must be pos, neg or empty
-    ALP1: str  # mandatory; must be pos, neg or empty
-    ALP23: str  # mandatory; must be pos, neg or empty
-    ALPHA: str  # mandatory; must be pos, neg or empty
-    HVGA: str  # mandatory; must be pos, neg or empty
-    PI1: str  # mandatory; must be pos, neg or empty
-    PI2A1: str  # mandatory; must be pos, neg or empty
-    PI2A2: str  # mandatory; must be pos, neg or empty
-    PI2B: str  # mandatory; must be pos, neg or empty
-    RIB: str  # mandatory; must be pos, neg or empty
-    SRR1: str  # mandatory; must be pos, neg or empty
-    SRR2: str  # mandatory; must be pos, neg or empty
-    twenty_three_S1_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    twenty_three_S3_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    GYRA_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    PARC_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_1_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_2_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_3_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_4_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
+    public_name: str  # mandatory; contains illegal characters
+    sample: str  # mandatory; must not contain illegal characters
+    ERR: str  # optional; must be a ERR accession number (ERR# format)
+    ERS: str  # optional; must be a ERS accession number (ERS# format)
+    no_of_genome: str  # optional
+    duplicate: str  # optional
+    Paper_1: str  # optional
+    In_Silico_St: str  # optional
+    Aroe: str  # optional
+    Gdh: str  # optional
+    Gki: str  # optional
+    Recp: str  # optional
+    Spi: str  # optional
+    Xpt: str  # optional
+    Ddl: str  # optional
+    country: str  # optional
+    Manifest_type: str  # optional
+    children_under_5yrs: str  # optional
+    GPSC_PoPUNK2: str  # optional
+    GPSC_PoPUNK2__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    In_Silico_serotype: str  # optional
+    In_Silico_serotype__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    PBP1A: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'
+    PBP2B: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'
+    PBP2X: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW', 'ERROR' or 'NF'
+    WGS_PEN: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_PEN_SIR_Meningitis: str  # optional
+    WGS_PEN_SIR_Nonmeningitis: str  # optional
+    WGS_AMO: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_AMO_SIR: str  # optional
+    WGS_MER: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_MER_SIR: str  # optional
+    WGS_TAX: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_TAX_SIR_Meningitis: str  # optional
+    WGS_TAX_SIR_Nonmeningitis: str  # optional
+    WGS_CFT: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_CFT_SIR_Meningitis: str  # optional
+    WGS_CFT_SIR_Nonmeningitis: str  # optional
+    WGS_CFX: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'
+    WGS_CFX_SIR: str  # optional
+    WGS_ERY: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_ERY_SIR: str  # optional
+    WGS_CLI: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_CLI_SIR: str  # optional
+    WGS_SYN: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_SYN_SIR: str  # optional
+    WGS_LZO: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_LZO_SIR: str  # optional
+    WGS_ERY_CLI: str  # optional
+    WGS_COT: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_COT_SIR: str  # optional
+    WGS_TET: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_TET_SIR: str  # optional
+    WGS_DOX: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_DOX_SIR: str  # optional
+    WGS_LFX: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_LFX_SIR: str  # optional
+    WGS_CHL: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_CHL_SIR: str  # optional
+    WGS_RIF: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_RIF_SIR: str  # optional
+    WGS_VAN: str  # optional; can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'
+    WGS_VAN_SIR: str  # optional
+    EC: str  # optional
+    Cot: str  # optional
+    Tet__autocolour: str  # optional
+    FQ__autocolour: str  # optional
+    Other: str  # optional
+    PBP1A_2B_2X__autocolour: str  # optional
+    WGS_PEN_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_PEN_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_AMO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_MER_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_TAX_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_TAX_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_CFT_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_CFT_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_CFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_ERY_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_CLI_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_SYN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_LZO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_COT_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_TET_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_DOX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_LFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_CHL_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_RIF_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    WGS_VAN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    ermB: str  # optional
+    ermB__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    mefA: str  # optional
+    mefA__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    folA_I100L: str  # optional
+    folA_I100L__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    folP__autocolour: str  # optional
+    cat: str  # optional
+    cat__colour: str  # optional; should be an hex colour code (format #000000), '#NA', '-' or 'transparent'
+    PCV7: str  # optional
+    PCV10: str  # optional
+    PCV13: str  # optional
+    PCV15: str  # optional
+    PCV20: str  # optional
+    Pneumosil: str  # optional
+    Published: str  # optional

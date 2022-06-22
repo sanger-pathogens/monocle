@@ -1,130 +1,129 @@
 components:
   schemas:
     JUNOInSilicoData:
-      pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|twenty_three_S1_variant|twenty_three_S3_variant|GYRA_variant|PARC_variant|RPOBGBS_1_variant|RPOBGBS_2_variant|RPOBGBS_3_variant|RPOBGBS_4_variant$
       properties:
         AAC6APH2:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         AADECC:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ALP1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ALP23:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ALPHA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ANT6:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         APH3III:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         APH3OTHER:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         CATPC194:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         CATQ:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ERMA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ERMB:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ERMT:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         FOSA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         GYRA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         GYRA_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         HVGA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         LNUB:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         LNUC:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         LSAC:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         MEFA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         MPHC:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         MSRA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         MSRD:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PARC:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PARC_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PI1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PI2A1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PI2A2:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         PI2B:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RIB:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_1_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_2:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_2_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_3:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_3_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_4:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         RPOBGBS_4_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         SRR1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         SRR2:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ST:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         SUL2:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         TETB:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         TETL:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         TETM:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         TETO:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         TETS:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         adhP:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         atr:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cps_type:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         glcK:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         glnA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         lane_id:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         pheS:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         sdhA:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         tkt:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         twenty_three_S1:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         twenty_three_S1_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         twenty_three_S3:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         twenty_three_S3_variant:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
       required:
       - lane_id
       - cps_type
@@ -195,128 +194,127 @@ components:
       pattern: ^lane_id|cps_type|ST|adhP|pheS|atr|glnA|sdhA|glcK|tkt|twenty_three_S1|twenty_three_S3|AAC6APH2|AADECC|ANT6|APH3III|APH3OTHER|CATPC194|CATQ|ERMA|ERMB|ERMT|LNUB|LNUC|LSAC|MEFA|MPHC|MSRA|MSRD|FOSA|GYRA|PARC|RPOBGBS_1|RPOBGBS_2|RPOBGBS_3|RPOBGBS_4|SUL2|TETB|TETL|TETM|TETO|TETS|ALP1|ALP23|ALPHA|HVGA|PI1|PI2A1|PI2A2|PI2B|RIB|SRR1|SRR2|twenty_three_S1_variant|twenty_three_S3_variant|GYRA_variant|PARC_variant|RPOBGBS_1_variant|RPOBGBS_2_variant|RPOBGBS_3_variant|RPOBGBS_4_variant$
       type: string
     JUNOMetadata:
-      pattern: ^public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
       properties:
         age_days:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         age_group:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         age_months:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         age_weeks:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         age_years:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ampicillin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ampicillin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         apgar_score:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         birth_weight_gram:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefazolin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefazolin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefotaxime:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefotaxime_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefoxitin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         cefoxitin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ceftizoxime:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ceftizoxime_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ciprofloxacin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         ciprofloxacin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         city:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         clindamycin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         clindamycin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         collection_day:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         collection_month:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         collection_year:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         country:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         county_state:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         daptomycin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         daptomycin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         disease_onset:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         disease_type:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         erythromycin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         erythromycin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         gender:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         gestational_age_weeks:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         host_species:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         host_status:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         infection_during_pregnancy:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         isolation_source:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         lane_id:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         levofloxacin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         levofloxacin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         linezolid:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         linezolid_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         maternal_infection_type:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         penicillin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         penicillin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         public_name:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         sanger_sample_id:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         selection_random:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         serotype:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         serotype_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         study_name:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         study_ref:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         submitting_institution:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         supplier_sample_name:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         tetracycline:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         tetracycline_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         vancomycin:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         vancomycin_method:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
       required:
       - public_name
       - sanger_sample_id
@@ -386,12 +384,11 @@ components:
       pattern: ^public_name|sanger_sample_id|supplier_sample_name|lane_id|study_name|study_ref|submitting_institution|selection_random|country|county_state|city|collection_year|collection_month|collection_day|host_species|gender|age_group|age_years|age_months|age_weeks|age_days|host_status|disease_type|disease_onset|isolation_source|infection_during_pregnancy|maternal_infection_type|gestational_age_weeks|birth_weight_gram|apgar_score|serotype|serotype_method|ceftizoxime|ceftizoxime_method|cefoxitin|cefoxitin_method|cefotaxime|cefotaxime_method|cefazolin|cefazolin_method|ampicillin|ampicillin_method|penicillin|penicillin_method|erythromycin|erythromycin_method|clindamycin|clindamycin_method|tetracycline|tetracycline_method|levofloxacin|levofloxacin_method|ciprofloxacin|ciprofloxacin_method|daptomycin|daptomycin_method|vancomycin|vancomycin_method|linezolid|linezolid_method$
       type: string
     JUNOQCData:
-      pattern: ^lane_id|rel_abun_sa$
       properties:
         lane_id:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         rel_abun_sa:
-          $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
       required:
       - lane_id
       - rel_abun_sa
