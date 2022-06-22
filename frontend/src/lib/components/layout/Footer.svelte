@@ -33,16 +33,10 @@
     padding: 1.4rem 1.4rem 1.8rem;
   }
 
-  a.contact::after {
+  a.contact:not(:last-of-type)::after {
     content: "|";
     margin-left: 0.4rem;
     margin-right: 0.4rem;
-  }
-
-  a.contact:last-of-type::after {
-    content: "";
-    margin-left: 0rem;
-    margin-right: 0rem;
   }
 
   .max-inner-width {
