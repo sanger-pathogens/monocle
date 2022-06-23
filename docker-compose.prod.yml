@@ -27,7 +27,7 @@ services:
       # juno_data_institution_view must have the same path in the container as on the host, otherwise symlinks from juno_data_downloads break
       - juno_data_institution_view:/home/<USER>/monocle_juno_institution_view
       # the download directory must have mode 331, so users can access files via their own download path, but cannot see other download paths
-      - juno_juno_data_downloads:/usr/share/nginx/html/downloads
+      - juno_data_downloads:/usr/share/nginx/html/downloads
       # TODO will need `gps_data_institution_view` and `gps_data_downloads`, when these dirs have been created
     depends_on:
       - dash-api
