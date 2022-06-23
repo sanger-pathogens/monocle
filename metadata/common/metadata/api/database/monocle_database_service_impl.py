@@ -8,7 +8,6 @@ from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
-from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
 from sqlalchemy import create_engine
@@ -152,20 +151,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             FROM api_sample
             WHERE
                 sanger_sample_id IN :samples"""
-    )
-
-    SELECT_INSTITUTIONS_SQL = text(
-        """ \
-                SELECT name, country, latitude, longitude
-                FROM api_institution
-                ORDER BY name"""
-    )
-
-    SELECT_INSTITUTION_NAMES_SQL = text(
-        """ \
-                SELECT name
-                FROM api_institution
-                ORDER BY name"""
     )
 
     SELECT_ALL_SAMPLES_SQL = text(
@@ -410,35 +395,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 raise ProtocolError(error_message)
         return results_data
 
-    def get_institutions(self, username) -> List[Institution]:
-        """Return a list of allowed institutions"""
-        endpoint = self.DASHBOARD_API_ENDPOINT
-        request_headers = {"Content-type": "application/json;charset=utf-8", "X-Remote-User": username}
-        logging.debug(
-            "{}.get_institutions() using endpoint {} for username {}".format(__class__.__name__, endpoint, username)
-        )
-        response_as_string = self.make_request(endpoint, request_headers)
-        logging.debug("{}.get_institutions() returned {}".format(__class__.__name__, response_as_string))
-        results_as_dict = self.parse_response(response_as_string, required_keys=["user_details"])
-
-        results = []
-        for item in results_as_dict["user_details"]["memberOf"]:
-            for country_name in item["country_names"]:
-                results.append(Institution(item["inst_name"], country_name))
-
-        return results
-
-    def get_institution_names(self) -> List[Institution]:
-        """Returns a list of all instiution names"""
-        with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
-
-        results = []
-        for row in rs:
-            results.append(row["name"])
-
-        return results
-
     def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """Get sample ids where their columns' values are in specified filters"""
         # TODO: Also consider other filters such as greater than/less than...
@@ -509,7 +465,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """
         Return distinct values found in db for each field name passed,
-        from samples from certain instititons.
+        from samples from certain institutions.
         Pass the field type ('metadata', 'in silico' or 'qc data');
         a list of names of the fields of interest; and a list of institution
         names.

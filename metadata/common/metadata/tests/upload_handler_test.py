@@ -4,7 +4,6 @@ import unittest
 from typing import List
 from unittest.mock import patch
 
-from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler
@@ -32,21 +31,18 @@ class TestUploadHandler(unittest.TestCase):
         self.maxDiff = None
         with patch("metadata.api.database.monocle_database_service.MonocleDatabaseService", autospec=True) as dao_mock:
             self.dao_mock = dao_mock
-            self.dao_mock.get_institutions.return_value = [
-                Institution("Test Institution A", "TestCountryA"),
-                Institution("Test Institution B", "TestCountryB"),
-            ]
-            self.dao_mock.get_authenticated_username.return_value = "mock_user"
+        self.dao_mock.get_authenticated_username.return_value = "mock_user"
 
-            # Read in the spreadsheet field definitions
-            with open(self.CONFIG_FILE_PATH, "r") as app_config_file:
-                data = app_config_file.read()
-                self.config = json.loads(data)
-                self.test_spreadsheet_def = SpreadsheetDefinition(
-                    self.config["metadata"]["spreadsheet_header_row_position"],
-                    self.config["metadata"]["spreadsheet_definition"],
-                )
-            self.under_test = UploadMetadataHandler(self.dao_mock, self.test_spreadsheet_def, True)
+        # Read in the spreadsheet field definitions
+        with open(self.CONFIG_FILE_PATH, "r") as app_config_file:
+            data = app_config_file.read()
+        self.config = json.loads(data)
+        self.test_spreadsheet_def = SpreadsheetDefinition(
+            self.config["metadata"]["spreadsheet_header_row_position"],
+            self.config["metadata"]["spreadsheet_definition"],
+        )
+
+        self.under_test = UploadMetadataHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """Assert validation errors are correct"""
@@ -761,21 +757,17 @@ class TestInSilicoUploadHandler(unittest.TestCase):
         self.maxDiff = None
         with patch("metadata.api.database.monocle_database_service.MonocleDatabaseService", autospec=True) as dao_mock:
             self.dao_mock = dao_mock
-            self.dao_mock.get_institutions.return_value = [
-                Institution("Test Institution A", "TestCountryA"),
-                Institution("Test Institution B", "TestCountryB"),
-            ]
 
-            # Read in the spreadsheet field definitions
-            with open(self.CONFIG_FILE_PATH, "r") as app_config_file:
-                data = app_config_file.read()
-                self.config = json.loads(data)
-                self.test_spreadsheet_def = SpreadsheetDefinition(
-                    self.config["in_silico_data"]["spreadsheet_header_row_position"],
-                    self.config["in_silico_data"]["spreadsheet_definition"],
-                )
+        # Read in the spreadsheet field definitions
+        with open(self.CONFIG_FILE_PATH, "r") as app_config_file:
+            data = app_config_file.read()
+        self.config = json.loads(data)
+        self.test_spreadsheet_def = SpreadsheetDefinition(
+            self.config["in_silico_data"]["spreadsheet_header_row_position"],
+            self.config["in_silico_data"]["spreadsheet_definition"],
+        )
 
-            self.under_test = UploadInSilicoHandler(self.dao_mock, self.test_spreadsheet_def, True)
+        self.under_test = UploadInSilicoHandler(self.dao_mock, self.test_spreadsheet_def, True)
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """Assert validation errors are correct"""

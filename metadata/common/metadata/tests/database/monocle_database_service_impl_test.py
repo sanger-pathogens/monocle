@@ -3,7 +3,6 @@ from unittest.mock import Mock, call, patch
 
 import flask
 from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, ProtocolError
-from metadata.api.model.institution import Institution
 from metadata.tests.test_data import (
     TEST_LANE_IN_SILICO_1,
     TEST_LANE_IN_SILICO_2,
@@ -49,27 +48,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
             }
         }
 
-    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.parse_response")
-    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.make_request")
-    def test_get_institutions(self, make_request_mock, parse_response_mock) -> None:
-        make_request_mock.return_value = self.response_as_string
-        parse_response_mock.return_value = self.response_as_dict
-
-        institutions = self.under_test.get_institutions("mock_user")
-
-        self.assertIsNotNone(institutions)
-        self.assertIsInstance(institutions, list)
-        self.assertEqual(len(institutions), 3)
-        self.assertIsInstance(institutions[0], Institution)
-        self.assertEqual(institutions[0].name, "mock_name")
-        self.assertEqual(institutions[0].country, "name1")
-        self.assertIsInstance(institutions[1], Institution)
-        self.assertEqual(institutions[1].name, "mock_name")
-        self.assertEqual(institutions[1].country, "name2")
-        self.assertIsInstance(institutions[2], Institution)
-        self.assertEqual(institutions[2].name, "Laboratório Central do Estado do Paraná")
-        self.assertEqual(institutions[2].country, "Brazil")
-
     def test_parse_response(self) -> None:
         actual = self.under_test.parse_response(self.response_as_string, ["user_details"])
         self.assertEqual(actual, self.response_as_dict)
@@ -86,27 +64,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         actual = self.under_test.get_authenticated_username(mock_request)
 
         self.assertEqual(actual, "mock_user")
-
-    def test_get_institution_names(self) -> None:
-        self.connection.execute.return_value = [
-            dict(name="Institution1", country="Israel", latitude=20.0, longitude=30.0),
-            dict(name="Institution2", country="China", latitude=50.0, longitude=60.0),
-        ]
-
-        names = self.under_test.get_institution_names()
-        self.assertIsNotNone(names)
-        self.assertIsInstance(names, list)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertEqual(len(names), 2)
-        self.assertEqual(names[0], "Institution1")
-        self.assertEqual(names[1], "Institution2")
-
-    def test_get_institution_names_noresults(self) -> None:
-        self.connection.execute.return_value = []
-        names = self.under_test.get_institution_names()
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertIsNotNone(names)
-        self.assertEqual(len(names), 0)
 
     # basically the same as test_get_download_metadata except query is SELECT_ALL_SAMPLES_SQL
     def test_get_samples(self) -> None:
