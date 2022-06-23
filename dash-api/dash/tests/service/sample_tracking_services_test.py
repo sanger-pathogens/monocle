@@ -393,6 +393,7 @@ class MonocleSampleTrackingTest(TestCase):
         self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
     def test_project_information(self):
+        self.monocle_sample_tracking.current_project = "juno"
         project_information = self.monocle_sample_tracking.project_information()
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
 
