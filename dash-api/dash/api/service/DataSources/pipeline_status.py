@@ -29,7 +29,7 @@ class PipelineStatus:
         with open(config, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             this_source = data_sources[self.data_source]
-        data_path_environ = this_source["data_path_environ"]
+        data_path_environ = this_source["juno_data_path_environ"]
         try:
             data_path = environ[data_path_environ]
         except KeyError:

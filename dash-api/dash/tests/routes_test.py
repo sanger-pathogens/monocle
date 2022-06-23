@@ -15,7 +15,10 @@ class TestRoutes(unittest.TestCase):
     """Test class for the routes module"""
 
     # this has mock values for the environment variables set by docker-compose
-    MOCK_ENVIRONMENT = {"DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3", "AUTH_COOKIE_NAME": "mock_auth_cookie_name"}
+    MOCK_ENVIRONMENT = {
+        "JUNO_DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3",
+        "AUTH_COOKIE_NAME": "mock_auth_cookie_name",
+    }
 
     MOCK_FIELD_ATTRIBUTES = {
         "metadata": {
@@ -444,8 +447,8 @@ class TestRoutes(unittest.TestCase):
         )
         lane_files = {
             "pubname": [
-                "/".join([environ["DATA_INSTITUTION_VIEW"], "lane file"]),
-                "/".join([environ["DATA_INSTITUTION_VIEW"], "another lane file"]),
+                "/".join([environ["JUNO_DATA_INSTITUTION_VIEW"], "lane file"]),
+                "/".join([environ["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"]),
             ]
         }
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -495,9 +498,9 @@ class TestRoutes(unittest.TestCase):
         lane_files = {}
         for i in range((download_max_samples_per_zip * 2) + 1):  # will create enough items to require 3 download URLs
             lane_files["pubname_{}".format(i)] = [
-                "/".join([self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
+                "/".join([self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
                 "/".join(
-                    [self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
+                    [self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
                 ),
             ]
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -552,9 +555,9 @@ class TestRoutes(unittest.TestCase):
         lane_files = {}
         for i in range((download_max_samples_per_zip * 2) + 1):  # will create enough items to require 3 download URLs
             lane_files["pubname_{}".format(i)] = [
-                "/".join([self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
+                "/".join([self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
                 "/".join(
-                    [self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
+                    [self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
                 ),
             ]
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -633,8 +636,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)
@@ -691,8 +694,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)
@@ -747,8 +750,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)

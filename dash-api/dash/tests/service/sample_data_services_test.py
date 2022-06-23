@@ -56,7 +56,7 @@ class MonocleSampleDataTest(TestCase):
     mock_download_max_samples_per_zip_with_reads = 10
 
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"MONOCLE_DATA": mock_monocle_data_dir, "DATA_INSTITUTION_VIEW": mock_inst_view_dir}
+    mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "JUNO_DATA_INSTITUTION_VIEW": mock_inst_view_dir}
 
     # mock values for patching queries in DataSources modules
     mock_institutions = ["Fake institution One", "Fake institution Two"]
@@ -1098,7 +1098,7 @@ class MonocleSampleDataTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):
-        del environ["DATA_INSTITUTION_VIEW"]
+        del environ["JUNO_DATA_INSTITUTION_VIEW"]
 
         with self.assertRaises(DataSourceConfigError):
             self.monocle_data.get_bulk_download_location()

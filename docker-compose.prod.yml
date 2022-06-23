@@ -21,12 +21,14 @@ services:
       - "/tmp:rw,noexec,nosuid"
     volumes:
       - ./nginx.proxy.conf:/etc/nginx/conf.d/default.conf
-      # data must have the same path in the container as on the host, otherwise symlinks from data_institution_view break
-      - data:/home/<USER>/monocle_juno
-      # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
-      - data_institution_view:/home/<USER>/monocle_juno_institution_view
+      # juno_data and gps_data must have the same path in the container as on the host, otherwise symlinks from juno_data_institution_view/gps_data_institution_view break
+      - juno_data:/home/<USER>/monocle_juno
+      - gps_data:/home/<USER>/monocle_gps
+      # juno_data_institution_view must have the same path in the container as on the host, otherwise symlinks from juno_data_downloads break
+      - juno_data_institution_view:/home/<USER>/monocle_juno_institution_view
       # the download directory must have mode 331, so users can access files via their own download path, but cannot see other download paths
-      - data_downloads:/usr/share/nginx/html/downloads
+      - juno_juno_data_downloads:/usr/share/nginx/html/downloads
+      # TODO will need `gps_data_institution_view` and `gps_data_downloads`, when these dirs have been created
     depends_on:
       - dash-api
       - frontend
@@ -105,11 +107,13 @@ services:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
     volumes:
-      # data must have the same path as MONOCLE_DATA, as lane symlinks in DATA_INSTITUTION_VIEW point to this location
-      - data:/home/<USER>/monocle_juno
-      # data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
-      - data_institution_view:/home/<USER>/monocle_juno_institution_view
-      - data_downloads:/app/monocle_juno_web_root/downloads
+      # juno_data/gps_data must have the same path as JUNO_DATA as lane symlinks in JUNO_DATA_INSTITUTION_VIEW/GPS_DATA_INSTITUTION_VIEW point to this location
+      - juno_data:/home/<USER>/monocle_juno
+      - gps_data:/home/<USER>/monocle_gps
+      # juno_data_institution_view must have the same path in the container as on the host, otherwise symlinks from juno_data_downloads break
+      - juno_data_institution_view:/home/<USER>/monocle_juno_institution_view
+      - juno_data_downloads:/app/monocle_juno_web_root/downloads
+      # TODO will need `gps_data_institution_view` and `gps_data_downloads`, when these dirs have been created
       - ./my.cnf:/app/my.cnf
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
@@ -119,10 +123,12 @@ services:
       - LOG_LEVEL=WARNING
       # AUTH_COOKIE_NAME ***must*** match the cookie name expected by  the NGINX auth module
       - AUTH_COOKIE_NAME=nginxauth
-      # MONOCLE_DATA ***must*** be the same path as the mount point for data
-      - MONOCLE_DATA=/home/<USER>/monocle_juno
-      # DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for data_institution_view
-      - DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+      # JUNO_DATA and GPS_DATA ***must*** be the same path as the mount point for data
+      - JUNO_DATA=/home/<USER>/monocle_juno
+      - GPS_DATA=/home/<USER>/monocle_gps
+      # JUNO_DATA_INSTITUTION_VIEW ***must*** be the same path as the mount point for juno_data_institution_view
+      - JUNO_DATA_INSTITUTION_VIEW=/home/<USER>/monocle_juno_institution_view
+      # TODO will need to add GPS_DATA_INSTITUTION_VIEW, when `gps_data_institution_view` dir has been created
       - GUNICORN_PORT=5000
       - GUNICORN_WORKERS=16
       - GUNICORN_TIMEOUT=120
@@ -216,24 +222,31 @@ services:
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
-  data:
+  juno_data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/<USER>/monocle_juno
-  data_institution_view:
+  juno_data_institution_view:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/<USER>/monocle_juno_institution_view
-  data_downloads:
+  juno_data_downloads:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: /home/<USER>/monocle_juno_web_root/downloads
+  gps_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/<USER>/monocle_gps
+  # TODO will need `gps_data_institution_view` and `gps_data_downloads`, when these dirs have been created
 
 # Change address range of default compose network so as
 # not to clash with ISG infrastructure

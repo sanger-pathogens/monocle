@@ -30,7 +30,8 @@ mlwh_rest_api:
    findByIds               : '/sequencing/data/samples/findByIds'
    findByIds_key           : 'samples'
 pipeline_status:
-   data_path_environ       : 'MONOCLE_DATA'
+   juno_data_path_environ  : 'JUNO_DATA'
+   gps_data_path_environ   : 'GPS_DATA'
    csv_file                : 'status/pipelines.csv'
    num_columns             : 10
 monocle_ldap:

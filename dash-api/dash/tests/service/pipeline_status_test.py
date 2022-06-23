@@ -19,7 +19,7 @@ class PipelineStatusTest(TestCase):
     missing_col_csv_file = "dash/tests/mock_data/s3/status/pipelines_9_cols.csv"
     empty_csv_file = "dash/tests/mock_data/s3/status/pipelines_empty.csv"
 
-    mock_environment = {"MONOCLE_DATA": "dash/tests/mock_data/s3"}
+    mock_environment = {"JUNO_DATA": "dash/tests/mock_data/s3"}
 
     # these lane IDs should be picked from test_csv_file as examples of various states
     mock_missing_lane_id = "no_such#lane"

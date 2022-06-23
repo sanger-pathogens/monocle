@@ -22,7 +22,7 @@ logger = logging.getLogger()
 # Testing only
 ServiceFactory.TEST_MODE = False
 
-DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+DATA_INST_VIEW_ENVIRON = "JUNO_DATA_INSTITUTION_VIEW"
 
 OPENAPI_SPEC_FILE = "./dash/interface/openapi.yml"
 GET_METADATA_INPUT_SCHEMA = "GetMetadataInput"

@@ -21,8 +21,9 @@ mlwh_rest_api:
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
 pipeline_status:
-   data_path_environ : 'MONOCLE_DATA'
-   csv_file          : 'status/pipelines.csv'
+   juno_data_path_environ  : 'JUNO_DATA'
+   gps_data_path_environ   : 'GPS_DATA'
+   csv_file                : 'status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    users_obj         : 'inetOrgPerson'
