@@ -4,7 +4,7 @@ import re
 import uuid
 
 import connexion
-from flask import jsonify, request
+from flask import jsonify
 from injector import inject
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
@@ -210,19 +210,6 @@ def delete_all_qc_data_route(dao: MonocleDatabaseService):
 
 
 @inject
-def get_institution_names_route(dao: MonocleDatabaseService):
-    """Download all institution names from the database"""
-    institutions = dao.get_institution_names()
-
-    result = convert_to_json({"institutions": institutions})
-
-    if len(institutions) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-
-
-@inject
 def get_samples_route(dao: MonocleDatabaseService):
     """Download all samples and their metadata from the database"""
     try:
@@ -314,25 +301,6 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
     institutions = body["institutions"]
     result = _get_distinct_values_common("qc data", fields, institutions, dao)
     return result
-
-
-@inject
-def get_institutions(dao: MonocleDatabaseService):
-    username = None
-    try:
-        username = dao.get_authenticated_username(request)
-        logging.info("X-Remote-User header = {}".format(username))
-    except KeyError:
-        pass
-
-    institutions = dao.get_institutions(username)
-
-    result = convert_to_json({"institutions": institutions})
-
-    if len(institutions) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
 
 
 def _get_distinct_values_common(field_type, fields, institutions, dao):

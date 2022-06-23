@@ -191,6 +191,7 @@ class UploadHandler:
         if self.__do_validation:
             # Get a list of valid institutions and cache them
             username = self.__dao.get_authenticated_username(request)
+            # FIXME get institutions from LDAP
             self.__institutions = self.__dao.get_institutions(username)
             # Create a validation schema
             schema = self.create_schema()
