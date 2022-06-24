@@ -15,17 +15,16 @@ class PipelineStatus:
     """provides access to pipeline status data"""
 
     data_sources_config = "data_sources.yml"
-    data_source = "pipeline_status"
+    data_source_common = "pipeline_status_common"
+    data_source_project = {"juno": "pipeline_status_juno", "gps": "pipeline_status_gps"}
     pipeline_lane_field = "Name"
     stage_done_string = "Done"
     stage_failed_string = "Failed"
     stage_null_string = "-"
     # these are the pipeline stages we'd like information about
     pipeline_stage_fields = ["Import", "QC", "Assemble", "Annotate"]
-    project_data_path_environ_param = {"juno": "juno_data_path_environ", "gps": "gps_data_path_environ"}
     required_config_params = [
-        project_data_path_environ_param["juno"],
-        project_data_path_environ_param["gps"],
+        "data_path_environ",
         "csv_file",
         "num_columns",
     ]
@@ -35,24 +34,22 @@ class PipelineStatus:
             config = self.data_sources_config
         with open(config, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            this_source = data_sources[self.data_source]
+            common_config = data_sources[self.data_source_common]
+            project_config = data_sources[self.data_source_project[project]]
+        this_source = {**common_config, **project_config}
         # check required params are in config
         for required_param in self.required_config_params:
             if required_param not in this_source:
                 logging.error(
-                    "data source config file {} section {} does not provide the required parameter {}".format(
-                        self.data_sources_config, self.data_source, required_param
+                    "data source config file {} does not provide the required parameter {} (should be in section {} or {})".format(
+                        self.data_sources_config,
+                        required_param,
+                        self.data_source_common,
+                        self.data_source_project[project],
                     )
                 )
                 raise KeyError("{} could not be found in data source config dict".format(required_param))
-        try:
-            data_path_environ_param = self.project_data_path_environ_param[project]
-        except KeyError:
-            message = 'don\'t recognize the project "{}"'.format(project)
-            logging.error(message)
-            raise PipelineStatusDataError(message)
-
-        data_path_environ = this_source[data_path_environ_param]
+        data_path_environ = this_source["data_path_environ"]
         try:
             data_path = environ[data_path_environ]
         except KeyError:

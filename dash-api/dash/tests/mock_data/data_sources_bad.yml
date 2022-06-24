@@ -16,14 +16,16 @@ metadata_api_juno:
    base_url              : 'http://fake-container/metadata/juno'
 metadata_api_gps:
    base_url              : 'http://other-fake-container/metadata/gps'
+pipeline_status_common:
+   csv_file              : 'status/pipelines.csv'
+pipeline_status_juno:
+   data_path_environ     : 'JUNO_DATA'
+pipeline_status_gps:
+   data_path_environ     : 'GPS_DATA'
 mlwh_rest_api:
    mlwh_api_config   : 'dash/tests/mock_data/mock-mlwh-api.yml'
    swagger           : '/sequencing/data/ui/'
    findById          : '/sequencing/data/samples/findById'
-pipeline_status:
-   juno_data_path_environ  : 'JUNO_DATA'
-   gps_data_path_environ   : 'GPS_DATA'
-   csv_file                : 'status/pipelines.csv'
 monocle_ldap:
    openldap_config   : 'openldap-env.yaml'
    users_obj         : 'inetOrgPerson'
