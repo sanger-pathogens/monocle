@@ -1107,6 +1107,7 @@ class MonocleSampleDataTest(TestCase):
         monocle_data_with_bad_config = MonocleSampleData(
             MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False
         )
+        monocle_data_with_bad_config.current_project = self.mock_project_id
         monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
         with self.assertRaises(DataSourceConfigError):
