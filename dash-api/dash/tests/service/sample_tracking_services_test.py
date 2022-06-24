@@ -30,6 +30,7 @@ class MonocleSampleTrackingTest(TestCase):
         {"institution key": "FakOne", "batch date": "1892-01-30"},
     ]
 
+    mock_project_id = "juno"
     mock_monocle_data_dir = "dash/tests/mock_data/s3"
 
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
@@ -256,6 +257,7 @@ class MonocleSampleTrackingTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def setUp(self):
+        self.monocle_sample_tracking.current_project = self.mock_project_id
         # mock sample_metadata
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
@@ -266,7 +268,7 @@ class MonocleSampleTrackingTest(TestCase):
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
         # mock pipeline_status
-        self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
+        self.monocle_sample_tracking.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
         # load mock data
         self.get_mock_data()
 

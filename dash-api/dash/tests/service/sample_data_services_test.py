@@ -585,7 +585,7 @@ class MonocleSampleDataTest(TestCase):
     @patch.dict(environ, mock_environment, clear=True)
     def get_mock_data2(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
         self.monocle_sample_tracking.sequencing_status_data = None
-        self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
+        self.monocle_sample_tracking.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
         mock_institution_query.return_value = self.mock_institutions
         mock_db_sample_query.return_value = self.mock_samples2
         mock_seq_samples_query.return_value = self.mock_seq_status2

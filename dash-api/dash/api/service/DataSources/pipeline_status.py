@@ -22,14 +22,37 @@ class PipelineStatus:
     stage_null_string = "-"
     # these are the pipeline stages we'd like information about
     pipeline_stage_fields = ["Import", "QC", "Assemble", "Annotate"]
+    project_data_path_environ_param = {"juno": "juno_data_path_environ", "gps": "gps_data_path_environ"}
+    required_config_params = [
+        project_data_path_environ_param["juno"],
+        project_data_path_environ_param["gps"],
+        "csv_file",
+        "num_columns",
+    ]
 
-    def __init__(self, config=None):
+    def __init__(self, project, config=None):
         if config is None:
             config = self.data_sources_config
         with open(config, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
             this_source = data_sources[self.data_source]
-        data_path_environ = this_source["juno_data_path_environ"]
+        # check required params are in config
+        for required_param in self.required_config_params:
+            if required_param not in this_source:
+                logging.error(
+                    "data source config file {} section {} does not provide the required parameter {}".format(
+                        self.data_sources_config, self.data_source, required_param
+                    )
+                )
+                raise KeyError("{} could not be found in data source config dict".format(required_param))
+        try:
+            data_path_environ_param = self.project_data_path_environ_param[project]
+        except KeyError:
+            message = 'don\'t recognize the project "{}"'.format(project)
+            logging.error(message)
+            raise PipelineStatusDataError(message)
+
+        data_path_environ = this_source[data_path_environ_param]
         try:
             data_path = environ[data_path_environ]
         except KeyError:
