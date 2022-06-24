@@ -23,19 +23,20 @@
       // success. Don't ask me why.
       if (ajaxRequest.status >= 400) {
         onError(event);
-      }
-      else {
+      } else {
         let zipFileUrl;
         try {
-          zipFileUrl = JSON.parse(ajaxRequest.responseText)["download location"];
+          zipFileUrl = JSON.parse(ajaxRequest.responseText)[
+            "download location"
+          ];
           if (!zipFileUrl?.trim?.()) {
             throw `"download location" key in the response text is falsy: ${ajaxRequest.responseText}`;
           }
-        }
-        catch (err) {
+        } catch (err) {
           console.error(`Cannot parse JSON response: ${err}`);
           reject(
-            `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`);
+            `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`
+          );
         }
         window.location.assign(zipFileUrl);
         resolve(zipFileUrl);
@@ -44,20 +45,26 @@
 
     const onError = () => {
       const status = ajaxRequest.status;
-      console.error(`GET ${downloadUrl} error: ${ajaxRequest.statusText || "uknown"}`);
+      console.error(
+        `GET ${downloadUrl} error: ${ajaxRequest.statusText || "uknown"}`
+      );
       if (status >= 400 && status < 500) {
-        reject("Download might have expired. Please close the tab and start new download.");
-      }
-      else if (status === HTTP_TIMEOUT_STATUS_CODE) {
+        reject(
+          "Download might have expired. Please close the tab and start new download."
+        );
+      } else if (status === HTTP_TIMEOUT_STATUS_CODE) {
         reject("Timeout error. Please reduce the download size and try again.");
-      }
-      else {
-        reject("Download error. Please try again by reloading the page or try to reduce the download size.");
+      } else {
+        reject(
+          "Download error. Please try again by reloading the page or try to reduce the download size."
+        );
       }
     };
 
     const onCancel = () => {
-      reject("Download was cancelled. Refresh the page to start again or try to reduce the download size.");
+      reject(
+        "Download was cancelled. Refresh the page to start again or try to reduce the download size."
+      );
     };
 
     ajaxRequest.addEventListener("load", onLoad);
@@ -70,19 +77,18 @@
   });
 </script>
 
-
 {#await prepareDownloadPromise}
   <LoadingIndicator
     message="Please wait: your download is being prepared. Large downloads may take a minute or two."
   />
-
 {:then resolvedDownloadUrl}
   <p>
-    Your download is ready. You can close this tab once the download starts.
-    (If you don't see a prompt to save the file, follow this <a href={resolvedDownloadUrl} download="{downloadToken}.zip">download link</a>.)
+    Your download is ready. You can close this tab once the download starts. (If
+    you don't see a prompt to save the file, follow this <a
+      href={resolvedDownloadUrl}
+      download="{downloadToken}.zip">download link</a
+    >.)
   </p>
-
 {:catch error}
   <p>{@html error}</p>
-
 {/await}

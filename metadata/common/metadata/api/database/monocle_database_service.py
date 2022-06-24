@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from flask import request
 from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
@@ -9,11 +8,6 @@ from metadata.api.model.qc_data import QCData
 
 class MonocleDatabaseService(ABC):
     """Base class for metadata access"""
-
-    @abstractmethod
-    def get_authenticated_username(self, req_obj: request) -> str:
-        "Return username string"
-        pass
 
     @abstractmethod
     def get_samples(self) -> List[Metadata]:

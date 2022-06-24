@@ -9,11 +9,8 @@
   let hasNestedComponents = $$slots?.default;
 </script>
 
-
 {#if hasFailureMessages || hasNestedComponents}
-  <button on:click={() => dialogOpen = true}>
-    Show failed
-  </button>
+  <button on:click={() => (dialogOpen = true)}> Show failed </button>
 
   <Dialog bind:isOpen={dialogOpen} ariaLabel={title}>
     <h4>{title}</h4>
@@ -24,7 +21,7 @@
         <th>stage</th>
         <th class="fail-msg-column">fail message</th>
       </tr>
-      {#each failures as { lane, stage, issue } (lane+stage+issue)}
+      {#each failures as { lane, stage, issue } (lane + stage + issue)}
         <tr>
           <td>{lane}</td>
           <td>{stage}</td>
@@ -33,18 +30,16 @@
       {/each}
     </table>
 
-    <slot></slot>
+    <slot />
   </Dialog>
 {/if}
 
-
 <style>
-table {
-  margin-bottom: 1rem;
-}
+  table {
+    margin-bottom: 1rem;
+  }
 
-.fail-msg-column {
-  width: 48%;
-}
+  .fail-msg-column {
+    width: 48%;
+  }
 </style>
-

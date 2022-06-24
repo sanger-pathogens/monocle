@@ -15,18 +15,18 @@ from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 from lib.qc_data import QCData
 
-PROJECT_JUNO = "juno"
+PROJECT = "juno"
 QC_DIR = "monocle_pipeline_qc"
 
 
-def get_lane_ids(db, institution_keys):
+def get_lane_ids(project, db, institution_keys):
     """Get lane ids for each insitution"""
 
     lane_ids = []
 
     for institution_key in institution_keys:
         sanger_sample_ids = [
-            sample["sanger_sample_id"] for sample in db.get_samples(PROJECT_JUNO, institution_keys=[institution_key])
+            sample["sanger_sample_id"] for sample in db.get_samples(project, institution_keys=[institution_key])
         ]
 
         logging.info(f"{institution_key}: {len(sanger_sample_ids)} sample ids")
@@ -127,7 +127,7 @@ def main():
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=args.log_level)
 
     institution_keys = InstitutionData().get_all_institution_keys_regardless_of_user_membership()
-    lane_ids = get_lane_ids(SampleMetadata(), institution_keys)
+    lane_ids = get_lane_ids(PROJECT, SampleMetadata(), institution_keys)
 
     # Update the QC data file for each line
     for lane_id in lane_ids:

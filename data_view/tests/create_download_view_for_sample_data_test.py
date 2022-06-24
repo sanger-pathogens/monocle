@@ -4,11 +4,12 @@ from unittest.mock import patch
 
 from bin.create_download_view_for_sample_data import create_download_view_for_sample_data
 
+PROJECT = "juno"
 DATA_DIR = "/abs/path/data"
 INSTITUTION_KEYS = [
     "FacPhaSueCanUni",
     "LabCenEstPar",
-    "NatRefLab",
+    "MinHeaCenLab",
     "TheChiUniHonKon",
     "UniFedRioJan",
     "WelSanIns",
@@ -22,8 +23,8 @@ INSTITUTION_WITHOUT_LANES = {
 }
 INSTITUTIONS_WITH_PUBLIC_NAMES = [
     {
-        "name": "National Reference Laboratories",
-        "id": "NatRefLab",
+        "name": "Ministry of Health, Central Laboratories",
+        "id": "MinHeaCenLab",
         "samples": [
             {"public_name": PUBLIC_NAMES[0], "sanger_sample_id": SAMPLE_IDS[0]},
             {"public_name": PUBLIC_NAMES[1], "sanger_sample_id": SAMPLE_IDS[1]},
@@ -74,7 +75,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         self.mkdir = mkdir_patch.start()
 
     def test_create_folder_per_institution_with_public_name(self):
-        create_download_view_for_sample_data(self.db, DATA_DIR, INSTITUTION_KEYS)
+        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
 
         for institution in INSTITUTIONS_WITH_PUBLIC_NAMES:
             self.mkdir.assert_any_call(institution["id"])
@@ -82,7 +83,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
             self.assert_mkdir_not_called_with(institution["id"])
 
     def test_create_public_name_folder_for_each_institution(self):
-        create_download_view_for_sample_data(self.db, DATA_DIR, INSTITUTION_KEYS)
+        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
 
         for public_name in PUBLIC_NAMES:
             self.mkdir.assert_any_call(public_name)
@@ -92,7 +93,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         data_files.append(Path(f"{LANES[0]}.fastq"))
         patch("bin.create_download_view_for_sample_data._get_data_files", return_value=data_files).start()
 
-        create_download_view_for_sample_data(self.db, DATA_DIR, INSTITUTION_KEYS)
+        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
 
         self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
         for data_file in data_files:

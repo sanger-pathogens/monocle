@@ -10,26 +10,27 @@ it("displays data passed", () => {
   const { container, getByText } = render(SequencingStatus, {
     sequencingStatus: {
       received: RECEIVED,
-      completed
+      completed,
     },
   });
 
-  expect(container.querySelector("h3").textContent)
-    .toBe(`${completed} of ${RECEIVED} Samples Sequenced`);
-  expect(getByText("% completed", { exact: false }))
-    .toBeDefined();
+  expect(container.querySelector("h3").textContent).toBe(
+    `${completed} of ${RECEIVED} Samples Sequenced`
+  );
+  expect(getByText("% completed", { exact: false })).toBeDefined();
 });
 
 it("displays a special heading when all samples are sequenced", () => {
   const { container } = render(SequencingStatus, {
     sequencingStatus: {
       received: RECEIVED,
-      completed: RECEIVED
+      completed: RECEIVED,
     },
   });
 
-  expect(container.querySelector("h3").textContent)
-    .toBe(`All ${RECEIVED} Samples Sequenced`);
+  expect(container.querySelector("h3").textContent).toBe(
+    `All ${RECEIVED} Samples Sequenced`
+  );
 });
 
 it("displays the download button", () => {
@@ -43,8 +44,11 @@ it("displays the download button", () => {
     },
   });
 
-  expect(getByRole("button", { name: `Download metadata for ${succeeded} successfully sequenced samples` }))
-    .toBeDefined();
+  expect(
+    getByRole("button", {
+      name: `Download metadata for ${succeeded} successfully sequenced samples`,
+    })
+  ).toBeDefined();
 });
 
 it("displays the download failed button inside the failure messages dialog", async () => {
@@ -58,13 +62,11 @@ it("displays the download failed button inside the failure messages dialog", asy
     },
   });
 
-  expect(queryByRole("button", { name: downloadButtonText }))
-    .toBeNull();
+  expect(queryByRole("button", { name: downloadButtonText })).toBeNull();
 
   await fireEvent.click(queryByRole("button", { name: "Show failed" }));
 
-  expect(getByRole("button", { name: downloadButtonText }))
-    .toBeDefined();
+  expect(getByRole("button", { name: downloadButtonText })).toBeDefined();
 });
 
 it("displays the button to show failed sample sequencing", () => {
@@ -72,10 +74,9 @@ it("displays the button to show failed sample sequencing", () => {
     sequencingStatus: {
       received: RECEIVED,
       completed: RECEIVED,
-      failed: FAILED
+      failed: FAILED,
     },
   });
 
-  expect(getByRole("button", { name: "Show failed" }))
-    .toBeDefined();
+  expect(getByRole("button", { name: "Show failed" })).toBeDefined();
 });

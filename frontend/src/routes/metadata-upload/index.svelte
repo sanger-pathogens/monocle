@@ -11,14 +11,15 @@
   }
 </script>
 
-
 <h2>Metadata upload</h2>
 
-<p id={DESCRIPTION_ELEMENT_ID}>Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:</p>
+<p id={DESCRIPTION_ELEMENT_ID}>
+  Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:
+</p>
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/metadata/metadata-upload"
+  uploadUrl="/metadata/juno/metadata-upload"
   on:uploadSuccess={openDialog}
 />
 
@@ -29,9 +30,8 @@
   <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
 </Dialog>
 
-
 <style>
-p {
-  text-align: center;
-}
+  p {
+    text-align: center;
+  }
 </style>

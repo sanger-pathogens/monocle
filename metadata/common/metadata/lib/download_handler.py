@@ -1,3 +1,4 @@
+from flask import current_app as application
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 
@@ -12,6 +13,7 @@ class DownloadHandler:
         self.__spreadsheet_def = in_def
         self.__field_index = 1
         self.replace_null_with_empty_string = replace_null_with_empty_string
+        self.application = application
 
     def _append_to_dict(self, response_dict: {}, key: str, value: str) -> None:
         if self.replace_null_with_empty_string:

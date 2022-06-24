@@ -15,16 +15,17 @@ from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
 INITIAL_DIR = Path().absolute()
 OUTPUT_SUBDIR = "monocle_juno_institution_view"
+PROJECT = "juno"
 
 
-def create_download_view_for_sample_data(db, data_dir, institution_keys):
+def create_download_view_for_sample_data(project, db, data_dir, institution_keys):
     if len(institution_keys) == 0:
         logging.warning("No institutions were given.")
 
     else:
         for institution_key in institution_keys:
             logging.info(f"{institution_key}: getting samples and lane information")
-            public_names_to_lane_ids = _get_public_names_with_lane_ids(institution_key, db)
+            public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution_key, db)
 
             logging.info(f"{institution_key}: creating subdirectories")
             with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
@@ -41,10 +42,10 @@ def create_download_view_for_sample_data(db, data_dir, institution_keys):
                                 _mkdir(public_name)
 
 
-def _get_public_names_with_lane_ids(institution_key, db):
+def _get_public_names_with_lane_ids(project, institution_key, db):
     public_names_to_sanger_sample_id = {
         sample["public_name"]: sample["sanger_sample_id"]
-        for sample in db.get_samples("juno", institution_keys=[institution_key])
+        for sample in db.get_samples(project, institution_keys=[institution_key])
     }
 
     logging.info(f"{institution_key}: {len(public_names_to_sanger_sample_id)} public names")
@@ -166,7 +167,11 @@ if __name__ == "__main__":
 
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
+    sample_metadata.current_project = PROJECT
 
     create_download_view_for_sample_data(
-        sample_metadata, options.data_dir, InstitutionData().get_all_institution_keys_regardless_of_user_membership()
+        PROJECT,
+        sample_metadata,
+        options.data_dir,
+        InstitutionData().get_all_institution_keys_regardless_of_user_membership(),
     )

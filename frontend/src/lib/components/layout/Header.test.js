@@ -17,6 +17,5 @@ it("doesn't show a logout link on the login page", () => {
   global.location = new URL("http://localhost/login");
   const { queryByRole } = render(Header);
 
-  expect(queryByRole(ROLE_LINK, { name: LABEL_LOG_OUT }))
-    .toBeNull();
+  expect(queryByRole(ROLE_LINK, { name: LABEL_LOG_OUT })).toBeNull();
 });

@@ -41,7 +41,7 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
 
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
-    # check these file names for extensions
+    # when True, checks file names for extensions
     upload_handler.check_file_extension = False
 
     # Set the file delimiter

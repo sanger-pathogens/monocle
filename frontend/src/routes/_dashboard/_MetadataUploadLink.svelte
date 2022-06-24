@@ -9,13 +9,8 @@
   $: isAdmin = $session?.user?.role === USER_ROLE_ADMIN;
 </script>
 
-
 {#if isAdmin}
-  <a
-    aria-label={LINK_TITLE}
-    title={LINK_TITLE}
-    href="/metadata-upload"
-  >
+  <a aria-label={LINK_TITLE} title={LINK_TITLE} href="/metadata-upload">
     <UploadIcon
       color="rgba(0,0,0,.35)"
       colorHover="black"
