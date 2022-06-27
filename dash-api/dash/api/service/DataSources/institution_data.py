@@ -26,11 +26,13 @@ class InstitutionData(LdapData):
             institution_ldap_data = self._get_all_institution_ldap_data_regardless_of_user_membership()
             for this_institution_ldap_data in institution_ldap_data:
                 institution = {}
-                country = this_institution_ldap_data.get("memberUid")
-                if not country:
-                    logging.warning(f"institution {this_institution_ldap_data['description']} has no specified country")
+                countries = this_institution_ldap_data.get("memberUid")
+                if not countries:
+                    logging.warning(
+                        f"institution {this_institution_ldap_data['description']} has no specified countries"
+                    )
                 else:
-                    institution["country"] = country
+                    institution["countries"] = countries
                 institution["key"] = this_institution_ldap_data["cn"]
                 institution["name"] = this_institution_ldap_data["description"]
                 institutions.append(institution)

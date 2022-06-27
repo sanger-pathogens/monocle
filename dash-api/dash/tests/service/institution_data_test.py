@@ -5,8 +5,8 @@ from DataSources.institution_data import InstitutionData
 from DataSources.ldap_data import LdapDataError
 
 LDAP_INSTITUTIONS_SEARCH_RESULT = [
-    ("dn1", {"cn": "CenQuaRes", "description": "Center for Qualia Research", "memberUid": "US"}),
-    ("dn2", {"cn": "WelSanIns", "description": "Wellcome Sanger Institute", "memberUid": "UK"}),
+    ("dn1", {"cn": "CenQuaRes", "description": "Center for Qualia Research", "memberUid": ["US", "AU"]}),
+    ("dn2", {"cn": "WelSanIns", "description": "Wellcome Sanger Institute", "memberUid": ["UK"]}),
 ]
 TEST_CONFIG = "dash/tests/mock_data/data_sources.yml"
 
@@ -30,14 +30,14 @@ class InstitutionDataTest(TestCase):
 
     @patch.object(InstitutionData, "ldap_search")
     def test_get_institutions_rejects_on_missing_institution_key(self, mock_ldap_search):
-        mock_ldap_search.return_value = [("dn1", {"description": "Center for Qualia Research", "memberUid": "US"})]
+        mock_ldap_search.return_value = [("dn1", {"description": "Center for Qualia Research", "memberUid": ["US"]})]
 
         with self.assertRaisesRegex(LdapDataError, "Retrieving institution LDAP data: "):
             self.institution_data.get_all_institutions_regardless_of_user_membership()
 
     @patch.object(InstitutionData, "ldap_search")
     def test_get_institutions_rejects_on_missing_institution_name(self, mock_ldap_search):
-        mock_ldap_search.return_value = [("dn1", {"cn": "FakIns", "memberUid": "US"})]
+        mock_ldap_search.return_value = [("dn1", {"cn": "FakIns", "memberUid": ["US"]})]
 
         with self.assertRaisesRegex(LdapDataError, "Retrieving institution LDAP data: "):
             self.institution_data.get_all_institutions_regardless_of_user_membership()
@@ -64,7 +64,7 @@ class InstitutionDataTest(TestCase):
                 {
                     "key": institution_ldap_tuple[1]["cn"],
                     "name": institution_ldap_tuple[1]["description"],
-                    "country": institution_ldap_tuple[1]["memberUid"],
+                    "countries": institution_ldap_tuple[1]["memberUid"],
                 }
                 for institution_ldap_tuple in LDAP_INSTITUTIONS_SEARCH_RESULT
             ],
