@@ -13,12 +13,8 @@ from dash.api.service.DataServices.sample_tracking_services import MonocleSample
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
-INITIAL_DIR = Path().absolute()
-OUTPUT_SUBDIR = "monocle_juno_institution_view"
-PROJECT = "juno"
 
-
-def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir):
+def create_download_view_for_sample_data(db, institution_name_to_id, project, data_dir, output_dir):
     logging.info("Getting list of institutions")
     institutions = list(db.get_institution_names(project))
 
@@ -31,7 +27,7 @@ def create_download_view_for_sample_data(project, db, institution_name_to_id, da
             public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution, db)
 
             logging.info(f"{institution}: creating subdirectories")
-            with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
+            with _cd(Path(output_dir)):
 
                 if public_names_to_lane_ids:
                     institution_readable_id = institution_name_to_id[institution]
@@ -161,13 +157,15 @@ def _mkdir(dir_name):
     if Path(dir_name).is_dir():
         logging.debug(f"Directory {dir_name} already exists in {Path().absolute()}.")
     else:
+        logging.info(f"Directory {dir_name} being created at {Path().absolute()}.")
         Path(dir_name).mkdir()
-        logging.info(f"Directory {dir_name} was created at {Path().absolute()}.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
+    parser.add_argument("-P", "--project", help="Project", choices=["juno", "gps"])
     parser.add_argument("-D", "--data_dir", help="Data file directory")
+    parser.add_argument("-O", "--output_dir", help="Output directory")
     parser.add_argument(
         "-L",
         "--log_level",
@@ -177,16 +175,18 @@ if __name__ == "__main__":
     )
     options = parser.parse_args(argv[1:])
 
-    project = PROJECT
-
     # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
     # which can be handy
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=options.log_level)
 
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
-    sample_metadata.current_project = project
+    sample_metadata.current_project = options.project
 
     create_download_view_for_sample_data(
-        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir
+        sample_metadata,
+        get_institutions(options.project, sample_metadata),
+        options.project,
+        options.data_dir,
+        options.output_dir,
     )

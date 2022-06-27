@@ -4,8 +4,8 @@
 # `monocle-dash-api` container.  Using the -u option ensures that
 # file/directories are owned by the application user rather than root.
 # 
-# Volume mounts required are:
-# - the s3 bucket (source data) directory as SAMPLE_DATA_PATH
+# Volume mounts required are (using "juno" as example):
+# - the s3 bucket (source data) directory as ${HOME}/monocle_juno
 # - the output directory as `/app/monocle_juno_institution_view`
 # - the db config file as `/app/my.cnf`
 # - the MLWH API config file as `/app/mlwh-api.yml`
@@ -18,31 +18,58 @@
 # The s3 bucket is mounted as SAMPLE_DATA_PATH to that target of the symlinks
 # has the same path within the container as on the host machine.
 # 
-# Any arguments provided will be passed to the script
+# USAGE
+# 
+# ./run_data_view_script_in_docker.sh (juno|gps) [optional args]
+#
+# Optional arguments provided will be passed to
+# `create_download_view_for_sample_data.py`
 
-SAMPLE_DATA_PATH="${HOME}/monocle_juno"
+
+# Initial command line argument is the project
+# Use it to set the vars we need, then shift it so only following args are used as OPTIONS
+PROJECT=$1
+shift 1
+if [[ "juno" == "$PROJECT" ]]
+then
+   SAMPLE_DATA_PATH="monocle_juno"
+   OUTPUT_DIR="monocle_juno_institution_view"
+   OPTIONS=$@
+   CONTAINER_NAME_UNIQUE_SUFFIX="juno_$$"
+elif [[ "gps" == "$PROJECT" ]]
+then
+   SAMPLE_DATA_PATH="monocle_gps"
+   OUTPUT_DIR="monocle_gps_institution_view"
+   OPTIONS=$@
+   CONTAINER_NAME_UNIQUE_SUFFIX="gps_$$"
+else
+   echo "Usage: $0 (juno|gps) [options]"
+   exit 255
+fi
+
+
+# Run the required command in docker as the appropriate user
 if ! docker run  -u `id -u`:`id -g` \
             --rm \
-            --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
-            --volume `pwd`/monocle_juno_institution_view:/app/monocle_juno_institution_view  \
+            --volume ${HOME}/${SAMPLE_DATA_PATH}:${HOME}/${SAMPLE_DATA_PATH}  \
+            --volume `pwd`/${OUTPUT_DIR}:/app/${OUTPUT_DIR}  \
             --volume `pwd`/my.cnf:/app/my.cnf \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
-            --env "MONOCLE_DATA=/home/<USER>/monocle_juno" \
-            --name "create_download_view_for_sample_data_$$" \
+            --env "MONOCLE_DATA=/home/<USER>/${SAMPLE_DATA_PATH}" \
+            --name "create_download_view_for_sample_data_${CONTAINER_NAME_UNIQUE_SUFFIX}" \
             --network <USER>_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
-            python3 ./create_download_view_for_sample_data.py --data_dir "$SAMPLE_DATA_PATH" $@
+            python3 ./create_download_view_for_sample_data.py --project $PROJECT --data_dir "${HOME}/${SAMPLE_DATA_PATH}" --output_dir $OUTPUT_DIR  $OPTIONS
 then
   exit 255
 fi
 
 
-
 # Add MD5 checksum files to each lane after all the directories have been
 # created.   Doing this here should ensure that any new lanes/data get MD5
 # checksum files added asap.
-MD5_ROOT_DIR="${HOME}/monocle_juno_institution_view"
+MD5_ROOT_DIR="${HOME}/${OUTPUT_DIR}"
 DOWNLOADS_DIR="${MD5_ROOT_DIR}/downloads"
 # be careful with this for loop:  DIR may include a space so patterns like
 # `for DIR $(ls pattern | some | pipe)` won't work as expected
