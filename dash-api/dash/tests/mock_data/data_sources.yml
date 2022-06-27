@@ -22,6 +22,13 @@ metadata_api_juno:
    base_url              : 'http://fake-container/metadata/juno'
 metadata_api_gps:
    base_url              : 'http://other-fake-container/metadata/gps'
+pipeline_status_common:
+   csv_file              : 'status/pipelines.csv'
+   num_columns           : 10
+pipeline_status_juno:
+   data_path_environ     : 'JUNO_DATA'
+pipeline_status_gps:
+   data_path_environ     : 'GPS_DATA'
 mlwh_rest_api:
    mlwh_api_config       : 'dash/tests/mock_data/mock-mlwh-api.yml'
    swagger               : '/sequencing/data/ui/'
@@ -29,10 +36,6 @@ mlwh_rest_api:
    findById_key          : 'sample'
    findByIds             : '/sequencing/data/samples/findByIds'
    findByIds_key         : 'samples'
-pipeline_status:
-   data_path_environ     : 'MONOCLE_DATA'
-   csv_file              : 'status/pipelines.csv'
-   num_columns           : 10
 monocle_ldap:
    openldap_config       : 'dash/tests/mock_data/openldap-mock.yaml'
    ldap_url              : 'ldap://fake-container:389'

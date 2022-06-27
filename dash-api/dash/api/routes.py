@@ -22,7 +22,7 @@ logger = logging.getLogger()
 # Testing only
 ServiceFactory.TEST_MODE = False
 
-DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "JUNO_DATA_INSTITUTION_VIEW"}
 
 OPENAPI_SPEC_FILE = "./dash/interface/openapi.yml"
 GET_METADATA_INPUT_SCHEMA = "GetMetadataInput"
@@ -273,11 +273,12 @@ def bulk_download_urls_route(body):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), download_param_file_location)
 
     # the data we want to serialize contains PosixPath objects that we need to make into strings
-    data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
+    data_inst_view_environ = DATA_INST_VIEW_ENVIRON[get_authenticated_project()]
+    data_inst_view_path = os.environ[data_inst_view_environ]
     for this_public_name in public_name_to_lane_files:
         file_paths_as_strings = []
         for this_file in public_name_to_lane_files[this_public_name]:
-            # this slice removes the leading path defined by the environment variable DATA_INST_VIEW_ENVIRON
+            # this slice removes the leading path defined by the environment variable `data_inst_view_environ`
             # to (a) avoid exposing our file system structure oin plublically accessible file, and
             # (b) ensure downlaods don't break if we move the data to a new directory
             file_paths_as_strings.append(str(this_file)[len(data_inst_view_path) :])
@@ -371,8 +372,9 @@ def data_download_route(token: str):
             )
         public_name_to_lane_files = json.loads(read_text_file(param_file_path))
 
-        # the file paths need to be prefixed with DATA_INST_VIEW_ENVIRON and then turned into PosixPath objects
-        data_inst_view_path = os.environ[DATA_INST_VIEW_ENVIRON]
+        # the file paths need to be prefixed with the value of environment variable `data_inst_view_environ` and then turned into PosixPath objects
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[get_authenticated_project()]
+        data_inst_view_path = os.environ[data_inst_view_environ]
         for this_public_name in public_name_to_lane_files:
             complete_file_paths = []
             for this_file in public_name_to_lane_files[this_public_name]:
@@ -519,6 +521,19 @@ def get_authenticated_username():
             raise NotAuthorisedException(msg)
 
     return username
+
+
+def get_authenticated_project():
+    """Return the user's project"""
+    user_details = ServiceFactory.user_service(get_authenticated_username()).user_details
+    project_list = user_details.get("projects")
+    if project_list is None or 0 == len(project_list):
+        raise RuntimeError("User accounts must have a projects attribute (user record: {})".format(user_details))
+    elif len(project_list) > 1:
+        raise RuntimeError(
+            "Multiple project membership for users is not currently supported (user record: {})".format(user_details)
+        )
+    return project_list[0]
 
 
 def get_metadata_input_default(property_name=None):

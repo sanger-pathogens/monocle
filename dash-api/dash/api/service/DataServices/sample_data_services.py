@@ -20,7 +20,7 @@ import yaml
 from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
-DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "JUNO_DATA_INSTITUTION_VIEW"}
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
@@ -849,10 +849,11 @@ class MonocleSampleData:
            <public name 2>: ...
         }
         """
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
         try:
-            data_inst_view_path = environ[DATA_INST_VIEW_ENVIRON]
+            data_inst_view_path = environ[data_inst_view_environ]
         except KeyError:
-            self._download_config_error(f"environment variable {DATA_INST_VIEW_ENVIRON} is not set")
+            self._download_config_error(f"environment variable {data_inst_view_environ} is not set")
 
         public_name_to_lane_files = {}
         assemblies = kwargs.get("assemblies", False)
@@ -892,11 +893,12 @@ class MonocleSampleData:
 
     def get_bulk_download_location(self):
         data_source_config = self._load_data_source_config()
-        if DATA_INST_VIEW_ENVIRON not in environ:
-            return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
+        if data_inst_view_environ not in environ:
+            return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
         try:
             cross_institution_dir = data_source_config["data_download"]["cross_institution_dir"]
-            return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
+            return Path(environ[data_inst_view_environ], cross_institution_dir)
         except KeyError as err:
             self._download_config_error(err)
 
@@ -1303,14 +1305,15 @@ class MonocleSampleData:
         # get the "target" directory where the data for the institution is kept, and check it exists
         # (Why an environment variable? Because this can be set by docker-compose, and it is a path
         # to a volume mount that is also set up by docker-compose.)
-        if DATA_INST_VIEW_ENVIRON not in environ:
-            return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
+        if data_inst_view_environ not in environ:
+            return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
         child_dir = (
             cross_institution_dir
             if kwargs.get("cross_institution")
             else self.get_sample_tracking_service().institution_db_key_to_dict[target_institution]
         )
-        download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
+        download_host_dir = Path(environ[data_inst_view_environ], child_dir)
         if not download_host_dir.is_dir():
             return self._download_config_error(
                 "data download host directory {} does not exist (or not a directory)".format(str(download_host_dir))

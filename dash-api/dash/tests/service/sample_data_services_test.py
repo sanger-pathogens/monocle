@@ -56,7 +56,7 @@ class MonocleSampleDataTest(TestCase):
     mock_download_max_samples_per_zip_with_reads = 10
 
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"MONOCLE_DATA": mock_monocle_data_dir, "DATA_INSTITUTION_VIEW": mock_inst_view_dir}
+    mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "JUNO_DATA_INSTITUTION_VIEW": mock_inst_view_dir}
 
     # mock values for patching queries in DataSources modules
     mock_institutions = ["Fake institution One", "Fake institution Two"]
@@ -585,7 +585,7 @@ class MonocleSampleDataTest(TestCase):
     @patch.dict(environ, mock_environment, clear=True)
     def get_mock_data2(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
         self.monocle_sample_tracking.sequencing_status_data = None
-        self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
+        self.monocle_sample_tracking.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
         mock_institution_query.return_value = self.mock_institutions
         mock_db_sample_query.return_value = self.mock_samples2
         mock_seq_samples_query.return_value = self.mock_seq_status2
@@ -1098,7 +1098,7 @@ class MonocleSampleDataTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def test_get_zip_download_location_raises_if_data_inst_view_is_not_in_environ(self):
-        del environ["DATA_INSTITUTION_VIEW"]
+        del environ["JUNO_DATA_INSTITUTION_VIEW"]
 
         with self.assertRaises(DataSourceConfigError):
             self.monocle_data.get_bulk_download_location()
@@ -1107,6 +1107,7 @@ class MonocleSampleDataTest(TestCase):
         monocle_data_with_bad_config = MonocleSampleData(
             MonocleSampleTracking_ref=self.monocle_sample_tracking, set_up=False
         )
+        monocle_data_with_bad_config.current_project = self.mock_project_id
         monocle_data_with_bad_config.data_source_config_name = self.test_config_bad
 
         with self.assertRaises(DataSourceConfigError):

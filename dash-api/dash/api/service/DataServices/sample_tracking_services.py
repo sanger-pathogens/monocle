@@ -55,7 +55,6 @@ class MonocleSampleTracking:
             self.updated = datetime.now()
             self.sample_metadata = DataSources.sample_metadata.SampleMetadata()
             self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
-            self.pipeline_status = DataSources.pipeline_status.PipelineStatus()
 
     def get_progress(self):
         institutions_data = self.get_all_institutions_irrespective_of_user_membership()
@@ -467,7 +466,7 @@ class MonocleSampleTracking:
             institution_2...
             }
 
-        Note that when self.pipeline_status is instantiated it creates a dataframe with
+        Note that when `pipeline_status` is instantiated it creates a dataframe with
         the data, rather than querying an API, there is no separate method to "get" pipeline
         data and it isn't cached -- which is a bit dofferent to how institution/samples/sequencing data
         are handled in this class.
@@ -476,6 +475,7 @@ class MonocleSampleTracking:
         """
         institutions_data = self.get_institutions()
         sequencing_status_data = self.get_sequencing_status()
+        pipeline_status = DataSources.pipeline_status.PipelineStatus(self.current_project)
         status = {}
         for this_institution in institutions_data.keys():
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
@@ -497,15 +497,15 @@ class MonocleSampleTracking:
                     continue
                 this_sample_lanes = sequencing_status_data[this_institution][this_sanger_sample_id]["lanes"]
                 for this_lane_id in [lane["id"] for lane in this_sample_lanes]:
-                    this_pipeline_status = self.pipeline_status.lane_status(this_lane_id)
+                    this_pipeline_status = pipeline_status.lane_status(this_lane_id)
                     # if the lane failed, increment failed and completed counter
                     if this_pipeline_status["FAILED"]:
                         status[this_institution]["failed"] += 1
                         status[this_institution]["completed"] += 1
                         # check each stage of the pipeline...
-                        for this_stage in self.pipeline_status.pipeline_stage_fields:
+                        for this_stage in pipeline_status.pipeline_stage_fields:
                             # ...and if the stage failed...
-                            if this_pipeline_status[this_stage] == self.pipeline_status.stage_failed_string:
+                            if this_pipeline_status[this_stage] == pipeline_status.stage_failed_string:
                                 # ...record a message for the failed stage
                                 status[this_institution]["fail_messages"].append(
                                     {

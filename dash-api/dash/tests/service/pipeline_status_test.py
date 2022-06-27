@@ -19,7 +19,8 @@ class PipelineStatusTest(TestCase):
     missing_col_csv_file = "dash/tests/mock_data/s3/status/pipelines_9_cols.csv"
     empty_csv_file = "dash/tests/mock_data/s3/status/pipelines_empty.csv"
 
-    mock_environment = {"MONOCLE_DATA": "dash/tests/mock_data/s3"}
+    mock_project_id = "juno"
+    mock_environment = {"JUNO_DATA": "dash/tests/mock_data/s3"}
 
     # these lane IDs should be picked from test_csv_file as examples of various states
     mock_missing_lane_id = "no_such#lane"
@@ -101,7 +102,7 @@ class PipelineStatusTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def setUp(self):
-        self.pipeline_status = PipelineStatus(config=self.test_config)
+        self.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
 
     def test_init(self):
         self.assertIsInstance(self.pipeline_status, PipelineStatus)
@@ -112,18 +113,20 @@ class PipelineStatusTest(TestCase):
     @patch.dict(environ, mock_environment, clear=True)
     def test_reject_bad_config(self):
         with self.assertRaises(KeyError):
-            PipelineStatus(config=self.bad_config)
+            PipelineStatus(self.mock_project_id, config=self.bad_config)
 
     @patch.dict(environ, mock_environment, clear=True)
     def test_reject_bad_input_file(self):
         with self.assertRaises(FileNotFoundError):
-            PipelineStatus(config=self.test_config).populate_dataframe("good_luck_finding_this_chum")
+            PipelineStatus(self.mock_project_id, config=self.test_config).populate_dataframe(
+                "good_luck_finding_this_chum"
+            )
         with self.assertRaises(errors.EmptyDataError):
-            PipelineStatus(config=self.test_config).populate_dataframe(self.empty_csv_file)
+            PipelineStatus(self.mock_project_id, config=self.test_config).populate_dataframe(self.empty_csv_file)
         with self.assertRaises(PipelineStatusDataError):
-            PipelineStatus(config=self.test_config).populate_dataframe(self.missing_col_csv_file)
+            PipelineStatus(self.mock_project_id, config=self.test_config).populate_dataframe(self.missing_col_csv_file)
         with self.assertRaises(PipelineStatusDataError):
-            PipelineStatus(config=self.test_config).populate_dataframe(self.bad_csv_file)
+            PipelineStatus(self.mock_project_id, config=self.test_config).populate_dataframe(self.bad_csv_file)
 
     def test_missing_lane_status(self):
         lane_status = self.pipeline_status.lane_status(self.mock_missing_lane_id)
