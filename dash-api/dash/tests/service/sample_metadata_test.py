@@ -1,3 +1,4 @@
+import json
 import logging
 from unittest import TestCase
 from unittest.mock import patch
@@ -123,19 +124,16 @@ class SampleMetadataTest(TestCase):
     def test_get_institution_names(self, mock_query):
         mock_query.return_value = self.mock_institution_names
         names = self.sample_metadata.get_institution_names(self.mock_project)
-        self.assertIsInstance(names, list)
         self.assertEqual(self.expected_institution_names, names)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_project_information(self, mock_query):
-        mock_query.return_value = self.mock_project_information
-        project_information = self.sample_metadata.get_project_information(self.mock_project)
-        self.assertIsInstance(project_information, object)
-        self.assertTrue("name" in project_information)
-        self.assertTrue("logo_url" in project_information)
-        self.assertTrue("project_url" in project_information)
-        self.assertTrue("header_links" in project_information)
-        self.assertTrue("contacts" in project_information)
+        expected_project_response = {"project": 42}
+        mock_query.return_value = json.dumps(expected_project_response)
+
+        actual_project_information = self.sample_metadata.get_project_information(self.mock_project)
+
+        self.assertEqual(expected_project_response["project"], actual_project_information)
 
     @patch("DataSources.sample_metadata.Monocle_Client.make_request")
     def test_get_samples(self, mock_query):
