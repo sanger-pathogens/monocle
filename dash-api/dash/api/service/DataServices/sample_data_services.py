@@ -20,7 +20,7 @@ import yaml
 from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
-DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "JUNO_DATA_INSTITUTION_VIEW"}
+DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "GPS_DATA_INSTITUTION_VIEW"}
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
@@ -70,6 +70,7 @@ class MonocleSampleData:
     ):
         self.user_record = None
         self.current_project = None
+        self.data_source_config = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
         if not Path(self.data_source_config_name).is_file():
@@ -720,7 +721,7 @@ class MonocleSampleData:
     def _get_pipeline_outcome_for_lane(self, lane_id):
         this_lane_complete = False
         this_lane_success = False
-        this_lane_pipeline_status = self.get_sample_tracking_service().pipeline_status.lane_status(lane_id)
+        this_lane_pipeline_status = self.get_sample_tracking_service().get_pipeline_status().lane_status(lane_id)
         # keys FAILED and SUCCESS are always defined
         # they are both False if we have no status for the lane (i.e. pending in the pipeline)
         if this_lane_pipeline_status["FAILED"] or this_lane_pipeline_status["SUCCESS"]:
@@ -892,7 +893,7 @@ class MonocleSampleData:
         return lane_file_names
 
     def get_bulk_download_location(self):
-        data_source_config = self._load_data_source_config()
+        data_source_config = self._get_data_source_config()
         data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
         if data_inst_view_environ not in environ:
             return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
@@ -903,14 +904,14 @@ class MonocleSampleData:
             self._download_config_error(err)
 
     def get_bulk_download_route(self):
-        data_source_config = self._load_data_source_config()
+        data_source_config = self._get_data_source_config()
         try:
             return data_source_config["data_download"]["download_route"]
         except KeyError as err:
             self._download_config_error(err)
 
     def get_bulk_download_max_samples_per_zip(self, including_reads=False):
-        data_source_config = self._load_data_source_config()
+        data_source_config = self._get_data_source_config()
         try:
             max_samples_per_zip = (
                 int(data_source_config["data_download"]["max_samples_per_zip_with_reads"])
@@ -1158,12 +1159,22 @@ class MonocleSampleData:
             self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
         )
         if len(in_silico_data) > 0:
+            metadata_merge_field, in_silico_merge_field, qc_data_merge_field = self._get_metadata_merge_fields()
+            logging.info(
+                "merging using metadata field {} and in silico data field {}".format(
+                    metadata_merge_field, in_silico_merge_field
+                )
+            )
             in_silico_data_df = pandas.DataFrame(in_silico_data)
             logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
             # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadata row
             # validate to ensure lane ID is unique in both dataframes
             metadata_df = metadata_df.merge(
-                in_silico_data_df, left_on="Lane_ID", right_on="Sample_id", how="left", validate="one_to_one"
+                in_silico_data_df,
+                left_on=metadata_merge_field,
+                right_on=in_silico_merge_field,
+                how="left",
+                validate="one_to_one",
             )
             del in_silico_data_df
             # add silico data columns to the list
@@ -1176,12 +1187,22 @@ class MonocleSampleData:
                 self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
             )
             if len(qc_data) > 0:
+                metadata_merge_field, in_silico_merge_field, qc_data_merge_field = self._get_metadata_merge_fields()
+                logging.info(
+                    "merging using metadata field {} and QC data field {}".format(
+                        metadata_merge_field, qc_data_merge_field
+                    )
+                )
                 qc_data_df = pandas.DataFrame(qc_data)
                 logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
                 # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
                 # validate to ensure lane ID is unique in both dataframes
                 metadata_df = metadata_df.merge(
-                    qc_data_df, left_on="Lane_ID", right_on="lane_id", how="left", validate="one_to_one"
+                    qc_data_df,
+                    left_on=metadata_merge_field,
+                    right_on=qc_data_merge_field,
+                    how="left",
+                    validate="one_to_one",
                 )
                 del qc_data_df
                 # add QC data columns to the list
@@ -1204,6 +1225,18 @@ class MonocleSampleData:
             metadata_col_order.append("Download_Link")
 
         return (metadata_df, metadata_col_order)
+
+    def _get_metadata_merge_fields(self):
+        data_source_config = self._get_data_source_config()
+        project_specific_sections = {"juno": "metadata_download_juno", "gps": "metadata_download_gps"}
+        section_wanted = project_specific_sections[self.current_project]
+        try:
+            metadata_merge_field = data_source_config[section_wanted]["metadata_merge_field"]
+            in_silico_merge_field = data_source_config[section_wanted]["in_silico_merge_field"]
+            qc_data_merge_field = data_source_config[section_wanted]["qc_data_merge_field"]
+        except KeyError as err:
+            self._download_config_error(err)
+        return metadata_merge_field, in_silico_merge_field, qc_data_merge_field
 
     def _metadata_df_to_csv(self, metadata_df, metadata_col_order):
         """
@@ -1264,7 +1297,7 @@ class MonocleSampleData:
         download_url_path_param = "url_path"
         cross_institution_dir_param = "cross_institution_dir"
         # read config, check required params
-        data_sources = self._load_data_source_config()
+        data_sources = self._get_data_source_config()
         if (
             download_config_section not in data_sources
             or download_dir_param not in data_sources[download_config_section]
@@ -1338,12 +1371,16 @@ class MonocleSampleData:
             logging.info(f"Failed to open file {path_instance}: {err}")
             return 0
 
-    def _load_data_source_config(self):
-        try:
-            with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
-                return yaml.load(data_source_config_file, Loader=yaml.FullLoader)
-        except EnvironmentError as err:
-            self._download_config_error(err)
+    def _get_data_source_config(self):
+        # read file if not cached
+        if self.data_source_config is None:
+            try:
+                with open(self.data_source_config_name, READ_MODE) as data_source_config_file:
+                    self.data_source_config = yaml.load(data_source_config_file, Loader=yaml.FullLoader)
+            except EnvironmentError as err:
+                self._download_config_error(err)
+        # return config
+        return self.data_source_config
 
     def _download_config_error(self, description):
         """
