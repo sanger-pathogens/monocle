@@ -3679,8 +3679,7 @@
                      }
                   },
                   {  "name"               : "public_name",
-                     "display"            : true,
-                     "default"            : true,
+                     "display"            : false,
                      "order"              : 1,
                      "spreadsheet heading": "Public name",
                      "display name"       : "Public name",
@@ -3694,8 +3693,7 @@
                      }
                   },
                   {  "name"               : "sample",
-                     "display"            : true,
-                     "default"            : true,
+                     "display"            : false,
                      "order"              : 2,
                      "spreadsheet heading": "Sanger_Sample_ID",
                      "display name"       : "Sanger Sample ID",
@@ -3898,8 +3896,7 @@
                   },
                   {
                      "name": "country",
-                     "display": true,
-                     "default": false,
+                     "display": false,
                      "order": 16,
                      "spreadsheet heading": "Country",
                      "display name": "Country",
