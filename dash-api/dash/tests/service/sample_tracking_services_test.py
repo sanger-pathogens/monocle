@@ -392,13 +392,13 @@ class MonocleSampleTrackingTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
         self.assertEqual(self.expected_dropout_data, pipeline_summary)
 
-    def test_project_information(self):
-        # self.monocle_sample_tracking.current_project = "juno"
-        project_information = self.monocle_sample_tracking.project_information()
+    @patch.object(SampleMetadata, "get_project_information")
+    def test_project_information(self, get_project_information_mock):
+        expected_project_information = "some project info"
+        get_project_information_mock.return_value = expected_project_information
+        self.monocle_sample_tracking.current_project = "juno"
+
+        actual_project_information = self.monocle_sample_tracking.project_information()
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
 
-        self.assertTrue("name" in project_information)
-        self.assertTrue("logo_url" in project_information)
-        self.assertTrue("project_url" in project_information)
-        self.assertTrue("header_links" in project_information)
-        self.assertTrue("contacts" in project_information)
+        self.assertEqual(expected_project_information, actual_project_information)
