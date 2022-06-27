@@ -249,6 +249,23 @@ class TestRoutes(unittest.TestCase):
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
     @patch.object(ServiceFactory, "sample_tracking_service")
+    def test_project_route(self, sample_tracking_service_mock, username_mock, resp_mock):
+        expected_project_data = "some project data"
+        sample_tracking_service_mock.return_value.project_information.return_value = expected_project_data
+        username_mock.return_value = self.TEST_USER
+
+        result = routes.project_route()
+
+        sample_tracking_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_tracking_service_mock.return_value.project_information.assert_called_once()
+        resp_mock.assert_called_once_with({"project": expected_project_data})
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch("dash.api.routes.call_jsonify")
+    @patch("dash.api.routes.get_authenticated_username")
+    @patch.object(ServiceFactory, "sample_tracking_service")
     def test_pipeline_status_summary_route(self, sample_tracking_service_mock, username_mock, resp_mock):
         # Given
         sample_tracking_service_mock.return_value.pipeline_status_summary.return_value = self.SERVICE_CALL_RETURN_DATA
