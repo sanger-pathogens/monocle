@@ -12,7 +12,6 @@ variables:
   FRONTEND_CONTEXT: "frontend"
   QC_DATA_CONTEXT: "qc-data"
   DOCKER_IMAGE_LIST: "monocle-${DASH_API_CONTEXT} monocle-${METADATA_CONTEXT}-juno monocle-${METADATA_CONTEXT}-gps monocle-${FRONTEND_CONTEXT} monocle-proxy monocle-ldap-admin"
-  DOCKER_COMMON_BUILD_ARGS: '--build-arg "CACHE_BUST=$(date)"'
   DOCKER_IMAGE: "${CI_REGISTRY_IMAGE}/docker:20"
   DOCKER_DIND_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-ci-dind:latest"
   LINE_LENGTH: 120
@@ -79,7 +78,7 @@ Dashboard API docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
@@ -105,7 +104,7 @@ Metadata API for JUNO docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
@@ -131,7 +130,7 @@ Metadata API for GPS docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg PROJECT=${this_project} --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
@@ -156,7 +155,7 @@ Front End docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
@@ -181,7 +180,7 @@ Proxy docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag} --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
@@ -206,7 +205,7 @@ LDAP Admin docker build:
       this_commit_tag="commit-${CI_COMMIT_SHORT_SHA}";
       echo "🐳 Building ${CI_REGISTRY_IMAGE}/${this_image}:${this_commit_tag} 🐳";
       docker pull $CI_REGISTRY_IMAGE/${this_image}:unstable || true;
-      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag}  ${DOCKER_COMMON_BUILD_ARGS} . ;
+      docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE/${this_image}:unstable --tag $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag}  --build-arg "CACHE_BUST=$(date)" . ;
       echo "🐳 Pushing ${CI_REGISTRY_IMAGE}:${this_image}:${this_commit_tag} 🐳";
       docker push $CI_REGISTRY_IMAGE/${this_image}:${this_commit_tag};
 
