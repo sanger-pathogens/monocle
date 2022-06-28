@@ -199,16 +199,27 @@ class Monocle_Client:
                     raise KeyError("{} could not be found in data source config dict".format(required_param))
 
     def project_information(self, project):
-        return self.config
-        """
+        if project not in self.config:
+            logging.error(
+                "data source config file {} does not provide the required parameter {}".format(
+                    self.data_sources_config,
+                    project,
+                )
+            )
+            raise KeyError("{} could not be found in data source config dict".format(project))
+
         this_config = self.config[project]
+        for param in ["base_url", "project_information", "project_information_key"]:
+            if param not in this_config:
+                raise KeyError("{} could not be found in data source config project dict".format(param))
+
         endpoint_url = this_config["base_url"] + this_config["project_information"]
         logging.debug("{}.project_information() using endpoint {}".format(__class__.__name__, endpoint_url))
         response = self.make_request(endpoint_url)
         logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
-        result = self.parse_response(endpoint_url, response, required_keys=[this_config["project_information_key"]])
-        return result[this_config["project_information_key"]]
-        """
+        project_information_key = this_config["project_information_key"]
+        result = self.parse_response(endpoint_url, response, required_keys=[project_information_key])
+        return result[project_information_key]
 
     def institutions(self, project):
         this_config = self.config[project]
