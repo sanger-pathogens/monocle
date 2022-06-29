@@ -1,13 +1,13 @@
 <script>
   import { onMount } from "svelte";
   import { getStores } from "$app/stores";
-  import { getUserDetails } from "$lib/dataLoading.js";
+  import { getUserDetails, getProjectInformation } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
   import "../base.css";
   import "../simplecookie.css";
 
-  const { session } = getStores();
+  export let session = getStores().session;
 
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
@@ -15,12 +15,22 @@
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
-          session.set({ user: { role: userRole } });
+          session.update((currentSession) => {
+            currentSession.user = { role: userRole };
+            return currentSession;
+          });
         }
       })
       .catch((err) => {
         console.error(err);
       });
+
+    getProjectInformation(fetch).then((project) =>
+      session.update((currentSession) => {
+        currentSession.project = project;
+        return currentSession;
+      })
+    );
   });
 
   function appendScriptToHead(src, options) {
@@ -33,13 +43,13 @@
   }
 </script>
 
-<Header />
+<Header {session} />
 
 <main>
   <slot />
 </main>
 
-<Footer />
+<Footer {session} />
 
 <style>
   :root {

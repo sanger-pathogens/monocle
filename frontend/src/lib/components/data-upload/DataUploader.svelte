@@ -66,8 +66,8 @@
     dispatch("uploadSuccess");
   }
 
-  function handleValidationErrors(errors, files) {
-    validationErrors = mapFilesToValidationErrors(errors, files);
+  function handleValidationErrors(errors, filesParam) {
+    validationErrors = mapFilesToValidationErrors(errors, filesParam);
   }
 
   function onUploadError(err) {
@@ -83,11 +83,11 @@
     return errors.some((error) => error !== undefined);
   }
 
-  function mapFilesToValidationErrors(errors, files) {
+  function mapFilesToValidationErrors(errors, filesParam) {
     return errors.reduce((accum, error = {}, i) => {
       if (typeof error === "string" || error.errors) {
         accum.push({
-          fileName: files[i].name,
+          fileName: filesParam[i].name,
           errorMessages: error.errors || [error],
         });
       }

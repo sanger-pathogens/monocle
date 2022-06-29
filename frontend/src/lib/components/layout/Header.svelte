@@ -1,19 +1,32 @@
 <script>
   import { browser } from "$app/env";
   import { PATHNAME_LOGIN } from "$lib/constants.js";
+
+  export let session;
 </script>
 
 <header>
   <h1><a href="/">Monocle</a></h1>
   <nav>
-    <a href="https://www.gbsgen.net/" target="_blank" class="juno-link">
-      <img alt="JUNO Project" src="/imgs/junologo.svg" title="JUNO Project" />
-    </a>
-    <a href="https://www.gbsgen.net/#about" target="_blank">About</a>
-    <a href="https://www.gbsgen.net/#team" target="_blank">Team</a>
-    <a href="https://www.gbsgen.net/#partners" target="_blank">Partners</a>
-    <a href="https://www.gbsgen.net/#twitterFeed" target="_blank">News</a>
-    <a href="https://www.gbsgen.net/#funders" target="_blank">Funders</a>
+    {#if $session?.project?.name}
+      <a href={$session.project.project_url} target="_blank" class="juno-link">
+        {#if $session.project.logo_url}
+          <img
+            alt={$session.project.name}
+            src={$session.project.logo_url}
+            title={$session.project.name}
+          />
+        {:else}
+          {$session.project.name}
+        {/if}
+      </a>
+      {#each $session.project.header_links as { label, url } (`${label}${url}`)}
+        <a href={url} target="_blank">{label}</a>
+      {/each}
+    {:else}
+      <!-- FIXME use CSS instead to keep the logout link to the right when the project info is still loading -->
+      <span aria-hidden="true" class="juno-link" />
+    {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
       <a rel="external" href="/logout" class="login-out-link"> Log out </a>
     {/if}

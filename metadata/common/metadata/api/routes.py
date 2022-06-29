@@ -4,6 +4,7 @@ import re
 import uuid
 
 import connexion
+from flask import current_app as application
 from flask import jsonify, request
 from injector import inject
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -314,6 +315,13 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
     institutions = body["institutions"]
     result = _get_distinct_values_common("qc data", fields, institutions, dao)
     return result
+
+
+@inject
+def get_project_information(dao: MonocleDatabaseService):
+    project_links = application.config["project_links"]
+    result = convert_to_json({"project": project_links})
+    return result, HTTP_SUCCEEDED_STATUS
 
 
 @inject

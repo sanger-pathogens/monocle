@@ -89,18 +89,13 @@ it("disables the submit button while the form is being submitted", async () => {
 
   expect(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }).disabled).toBeFalsy();
 
-  const submitting = fireEvent.click(
-    getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN })
-  );
+  fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }));
 
   await waitFor(() => {
     expect(
       getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }).disabled
     ).toBeTruthy();
   });
-
-  submitting;
-
   await waitFor(() => {
     expect(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }).disabled).toBeFalsy();
   });

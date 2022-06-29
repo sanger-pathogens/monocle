@@ -17,12 +17,12 @@
   );
 
   const onlyFailedButton = !succeeded;
-  let titleDownloadSucceeded = isPipeline
+  const titleDownloadSucceeded = isPipeline
     ? succeeded &&
       `Download metadata for ${succeeded} samples successfully processed through the pipeline`
     : succeeded &&
       `Download metadata for ${succeeded} successfully sequenced samples`;
-  let titleDownloadFailed = isPipeline
+  const titleDownloadFailed = isPipeline
     ? failed &&
       `Download metadata for ${failed} samples that failed processing through the pipeline`
     : failed &&

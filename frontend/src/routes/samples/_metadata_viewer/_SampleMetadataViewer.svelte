@@ -83,7 +83,9 @@
           return column;
         })
         .sort(compareMetadataByOrder)
-        .forEach((sampleMetadata) => accumSampleMetadata.push(sampleMetadata));
+        .forEach((sampleMetadataParam) =>
+          accumSampleMetadata.push(sampleMetadataParam)
+        );
       return accumSampleMetadata;
     }, []);
   }

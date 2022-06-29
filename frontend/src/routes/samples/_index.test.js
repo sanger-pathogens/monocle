@@ -170,7 +170,7 @@ describe("once batches are fetched", () => {
       expect(getColumns).not.toHaveBeenCalled();
     });
 
-    it("clears the local storage from old columns state", async () => {
+    it("clears the local storage from old columns state", () => {
       Storage.prototype.removeItem = jest.fn();
 
       render(DataViewerPage);
@@ -464,8 +464,6 @@ describe("once batches are fetched", () => {
     });
 
     it("waits for and displayes the latest estimate even if a stale one arrives after the latest requested", async () => {
-      const ESTIMATE_STALE = { size: "12 GB", size_zipped: "2 GB" };
-      const ESTIMATE_LATEST = { size: "64 GB", size_zipped: "17 GB" };
       const requestWaitTimeMS = 6000;
       const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {

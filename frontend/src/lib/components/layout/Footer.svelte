@@ -1,14 +1,16 @@
 <script>
-  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  export let session;
 </script>
 
 <footer>
   <div class="max-inner-width">
     <address>
       <div>Contacts</div>
-      <a href={`mailto:${EMAIL_MONOCLE_HELP}`}>Monocle Help</a>
-      <span aria-hidden="true">|</span>
-      <a href="mailto:sdb@sanger.ac.uk">Stephen Bentley</a>
+      {#if $session?.project?.contacts}
+        {#each $session.project.contacts as { label, url } (`${label}${url}`)}
+          <a class="contact" href={url}>{label}</a>
+        {/each}
+      {/if}
     </address>
 
     <a href="https://www.sanger.ac.uk/" target="_blank" class="sanger-link">
@@ -29,6 +31,12 @@
     color: white;
     margin-top: auto;
     padding: 1.4rem 1.4rem 1.8rem;
+  }
+
+  a.contact:not(:last-of-type)::after {
+    content: "|";
+    margin-left: 0.4rem;
+    margin-right: 0.4rem;
   }
 
   .max-inner-width {
