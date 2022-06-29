@@ -1166,6 +1166,16 @@ class MonocleSampleData:
                 )
             )
             in_silico_data_df = pandas.DataFrame(in_silico_data)
+
+            for this_in_silico_column in in_silico_data_df:
+                if this_in_silico_column != in_silico_merge_field and this_in_silico_column in metadata_df:
+                    in_silico_data_df.pop(this_in_silico_column)
+                    logging.debug(
+                        "In silico column {} will not be included in merged data because it already exists in the metadata".format(
+                            this_in_silico_column
+                        )
+                    )
+
             logging.debug("in silico data DataFrame.head:\n{}".format(in_silico_data_df.head()))
             # merge with left join on LaneID: incl. all metadata rows, only in silico rows where they match a metadata row
             # validate to ensure lane ID is unique in both dataframes
@@ -1194,6 +1204,15 @@ class MonocleSampleData:
                     )
                 )
                 qc_data_df = pandas.DataFrame(qc_data)
+                for this_qc_data_column in qc_data_df:
+                    if this_qc_data_column != qc_data_merge_field and this_qc_data_column in metadata_df:
+                        qc_data_df.pop(this_qc_data_column)
+                        logging.debug(
+                            "In silico column {} will not be included in merged data because it already exists in the metadata".format(
+                                this_qc_data_column
+                            )
+                        )
+
                 logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
                 # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
                 # validate to ensure lane ID is unique in both dataframes
