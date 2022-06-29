@@ -1070,20 +1070,18 @@ class MonocleSampleData:
             return {"success": False, "error": "not found", "message": "No matching samples were found."}
         return {"success": True, "filename": csv_response_filename, "content": csv_response_string}
 
-    def _metadata_as_csv(self, sample_filters, download_base_url=None, include_qc_data=False):
+    def _metadata_as_csv(self, sample_filters, download_base_url=None):
         """
-        Wrapper for _metadata_as_df() which paases its return values to _metadata_df_to_csv(),
+        Wrapper for _metadata_as_df() which passes its return values to _metadata_df_to_csv(),
         and returns the CSV.
         Returns None if there are no matching samples.
         """
-        metadata_df, column_order = self._metadata_as_df(
-            sample_filters, download_base_url=download_base_url, include_qc_data=include_qc_data
-        )
+        metadata_df, column_order = self._metadata_as_df(sample_filters, download_base_url=download_base_url)
         if metadata_df is None:
             return None
         return self._metadata_df_to_csv(metadata_df, column_order)
 
-    def _metadata_as_df(self, sample_filters, download_base_url=None, include_qc_data=False):
+    def _metadata_as_df(self, sample_filters, download_base_url=None):
         """
         Pass sample filters (as understood by get_filtered_samples() to indicate the samples to
         be downloaded.
@@ -1092,7 +1090,8 @@ class MonocleSampleData:
         (this base URL with the public name appended) will be added as an extra column.
 
         When available, in silico data for each sample are included.
-        Optionally set include_qc_data to true if QC data should be included.
+
+        The config file states if QC data, when available, should be included.
 
         Returns pandas data frame and column order; or None if there are no matching samples
         """
@@ -1118,6 +1117,10 @@ class MonocleSampleData:
 
         if 1 > len(samples_for_download):
             return (None, None)
+
+        # this flag indicates if QC data should be included in the CSV download
+        # it is set in the configuration file, separately for each project
+        include_qc_data = self._get_merge_qc_data_flag()
 
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
@@ -1256,6 +1259,16 @@ class MonocleSampleData:
         except KeyError as err:
             self._download_config_error(err)
         return metadata_merge_field, in_silico_merge_field, qc_data_merge_field
+
+    def _get_merge_qc_data_flag(self):
+        data_source_config = self._get_data_source_config()
+        project_specific_sections = {"juno": "metadata_download_juno", "gps": "metadata_download_gps"}
+        section_wanted = project_specific_sections[self.current_project]
+        try:
+            merge_qc_data = data_source_config[section_wanted]["merge_qc_data"]
+        except KeyError as err:
+            self._download_config_error(err)
+        return merge_qc_data
 
     def _metadata_df_to_csv(self, metadata_df, metadata_col_order):
         """
