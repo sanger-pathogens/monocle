@@ -20,7 +20,7 @@ QC_DIR = "monocle_pipeline_qc"
 
 
 def get_lane_ids(project, db, institution_keys):
-    """Get lane ids for each insitution"""
+    """Get lane ids for each institution"""
 
     lane_ids = []
 

@@ -265,7 +265,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """
         Return distinct values found in db for each field name passed,
-        from samples from certain instititons.
+        from samples from certain institutions.
         Pass the field type ('metadata', 'in silico' or 'qc data');
         a list of names of the fields of interest; and a list of institution
         names.
