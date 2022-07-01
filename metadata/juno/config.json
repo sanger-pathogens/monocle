@@ -1259,5 +1259,42 @@
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          }
       }
+   },
+   "project_links": {
+      "name": "JUNO Project",
+      "logo_url": "/imgs/junologo.svg",
+      "project_url": "https://www.gbsgen.net/",
+      "header_links": [
+         {
+            "label": "About",
+            "url": "https://www.gbsgen.net/#about"
+         },
+         {
+            "label": "Team",
+            "url": "https://www.gbsgen.net/#team"
+         },
+         {
+            "label": "Partners",
+            "url": "https://www.gbsgen.net/#partners"
+         },
+         {
+            "label": "News",
+            "url": "https://www.gbsgen.net/#twitterFeed"
+         },
+         {
+            "label": "Funders",
+            "url": "https://www.gbsgen.net/#funders"
+         }
+      ],
+      "contacts": [
+         {
+            "label": "Monocle Help",
+            "url": "mailto:monocle-help@sanger.ac.uk"
+         },
+         {
+            "label": "Stephen Bentley",
+            "url": "mailto:sdb@sanger.ac.uk"
+         }
+      ]
    }
 }

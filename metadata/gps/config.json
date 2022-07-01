@@ -1939,5 +1939,42 @@
             "regex_validation_message": "must be a max 4 digits number or '#N/A'"
          }
       }
+   },
+   "project_links": {
+      "name": "GPS Project",
+      "logo_url": "",
+      "project_url": "",
+      "header_links": [
+         {
+            "label": "About",
+            "url": "https://www.gbsgen.net/#about"
+         },
+         {
+            "label": "Team",
+            "url": "https://www.gbsgen.net/#team"
+         },
+         {
+            "label": "Partners",
+            "url": "https://www.gbsgen.net/#partners"
+         },
+         {
+            "label": "News",
+            "url": "https://www.gbsgen.net/#twitterFeed"
+         },
+         {
+            "label": "Funders",
+            "url": "https://www.gbsgen.net/#funders"
+         }
+      ],
+      "contacts": [
+         {
+            "label": "Monocle Help",
+            "url": "mailto:monocle-help@sanger.ac.uk"
+         },
+         {
+            "label": "Stephen Bentley",
+            "url": "mailto:sdb@sanger.ac.uk"
+         }
+      ]
    }
 }

@@ -18,8 +18,8 @@ it(`calls a passed function immediately if a falsy timeout ID is passed and prev
   jest.runAllTimers();
 
   expect(someFunction).toHaveBeenCalledTimes(2);
-  let clearTimeoutCallOrder = clearTimeout.mock.invocationCallOrder[0];
-  let setTimeoutCallOrder = setTimeout.mock.invocationCallOrder[0];
+  const clearTimeoutCallOrder = clearTimeout.mock.invocationCallOrder[0];
+  const setTimeoutCallOrder = setTimeout.mock.invocationCallOrder[0];
   expect(clearTimeoutCallOrder).toBeLessThan(setTimeoutCallOrder);
   const numTimesCallbackDelayed = 2;
   expect(setTimeout).toHaveBeenCalledTimes(numTimesCallbackDelayed);

@@ -448,6 +448,12 @@ class MonocleSampleTracking:
         )
         return (this_lane_completed, this_lane_success, fail_messages)
 
+    def project_information(self):
+        if self.current_project is None:
+            logging.error("project_information: The current project is not set")
+            raise ValueError("The current project is not set")
+        return self.sample_metadata.get_project_information(self.current_project)
+
     def get_pipeline_status(self):
         return DataSources.pipeline_status.PipelineStatus(self.current_project)
 
