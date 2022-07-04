@@ -5644,39 +5644,6 @@
                      }
                   },
                   {
-                     "name": "sample_name",
-                     "display": false,
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z]+)$",
-                        "regex_validation_message": "must not contain illegal characters"
-                     }
-                  },
-                  {
-                     "name": "sample_accession",
-                     "display": false,
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^ERS\\d{7}$",
-                        "regex_validation_message": "must be a ERS accession number (ERS# format)"
-                     }
-                  },
-                  {
-                     "name": "lane_accession",
-                     "display": false,
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^ERR\\d{7}$",
-                        "regex_validation_message": "must be a ERR accession number (ERR# format)"
-                     }
-                  },
-                  {
                      "name": "supplier_name",
                      "display": false,
                      "db": {
@@ -5684,17 +5651,6 @@
                         "mandatory": true,
                         "max_length": 256,
                         "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  },
-                  {
-                     "name": "public_name",
-                     "display": false,
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   }
@@ -5769,11 +5725,11 @@
                      }
                   },
                   {
-                     "name": "X_Het_SNPs_Total_No_of_SNPs",
+                     "name": "Proportion_of_Het_SNPs",
                      "display": true,
                      "default": true,
                      "order": 6,
-                     "display name": "Total No of SNPs (X Het SNPs)",
+                     "display name": "Proportion of Het SNPs",
                      "db": {                     
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
