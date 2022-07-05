@@ -24,7 +24,6 @@ class _StringLengthValidation(CustomElementValidation):
 
     def __init__(self, message: str, max_length: int):
         self.max_length = max_length
-        self.application = application
         super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
 
 
