@@ -44,6 +44,7 @@ class UploadHandler:
         self.__spreadsheet_def = in_def
         self.__do_validation = do_validation
         self.__institutions = None
+        self.application = application
         # validation will fail if file extension isn't as expected, when this flag is true
         self.check_file_extension = True
         self.file_delimiter = "\t"
