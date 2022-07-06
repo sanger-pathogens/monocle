@@ -4469,8 +4469,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
