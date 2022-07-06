@@ -3798,7 +3798,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(20) NOT NULL",
-                        "max_length": 20
+                        "max_length": 20,
+                        "regex": "^\\d{1,5}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3811,7 +3813,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3824,7 +3828,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3837,7 +3843,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3850,7 +3858,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3863,7 +3873,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3876,7 +3888,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3889,7 +3903,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,4}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
                      }
                   },
                   {
@@ -3930,19 +3946,17 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "Carriage",
-                           "#N/A",
+                           "_",
+                           "URI",
+                           "UNKNOWN",
+                           "NON_IPD",
+                           "NON_INVASIVE DISEASE",
                            "IPD",
-                           "UKWN",
-                           "Non-IPD",
-                           "Dis-Car"
+                           "DIS_CAR",
+                           "CARRIAGE"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Non-IPD",
-                              "Dis-Car"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -3958,10 +3972,10 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "N",
+                           "_",
                            "Y",
-                           "#N/A",
-                           "UKWN"
+                           "UNKNOWN",
+                           "N"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -3978,7 +3992,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "max_length": 30,
+                        "regex": "^\\d{1,4}$|^_$",
+                        "regex_validation_message": "must be an integer (1-4 digits), or '_'"
                      }
                   },
                   {
@@ -3992,8 +4008,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -4020,8 +4036,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -4035,8 +4051,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
-                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
+                        "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
+                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
                      }
                   },
                   {
@@ -4050,8 +4066,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
-                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
+                        "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
+                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
                      }
                   },
                   {
@@ -4080,7 +4096,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4100,13 +4116,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4126,13 +4139,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4147,7 +4157,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4167,13 +4177,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4188,7 +4195,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4208,13 +4215,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4229,7 +4233,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4249,13 +4253,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4275,13 +4276,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4296,7 +4294,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4316,13 +4314,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4342,13 +4337,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4383,13 +4375,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4404,8 +4393,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4424,13 +4413,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4445,8 +4431,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4465,13 +4451,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4486,7 +4469,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
@@ -4506,13 +4489,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4527,8 +4507,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4547,13 +4527,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4571,15 +4548,10 @@
                         "allowed_values": [
                            "NEG",
                            "POS",
-                           "neg",
-                           "pos",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4594,8 +4566,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4614,13 +4586,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4635,8 +4604,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4655,13 +4624,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4676,8 +4642,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4696,13 +4662,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4717,8 +4680,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4737,13 +4700,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4758,8 +4718,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4778,13 +4738,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4799,8 +4756,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4819,13 +4776,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4840,8 +4794,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
                      }
                   },
                   {
@@ -4860,13 +4814,10 @@
                            "I",
                            "S",
                            "NF",
-                           "Flag"
+                           "FLAG"
                         ],
                         "convert_case": {
-                           "case": "upper",
-                           "preserve": [
-                              "Flag"
-                           ]
+                           "case": "upper"
                         }
                      }
                   },
@@ -4908,12 +4859,11 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "TETM",
-                           "NEG",
-                           "TET",
-                           "neg",
                            "TETO",
-                           "TETM:TETO"
+                           "TETM:TETO",
+                           "TETM",
+                           "TET",
+                           "NEG"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -4929,8 +4879,8 @@
                      "display name": "FQ autocolour",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "mysql_type": "VARCHAR(400)",
+                        "max_length": 400
                      }
                   },
                   {
@@ -4942,8 +4892,8 @@
                      "display name": "Other",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "mysql_type": "VARCHAR(256)",
+                        "max_length": 256
                      }
                   },
                   {
@@ -4970,8 +4920,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -4985,8 +4935,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5000,8 +4950,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5015,8 +4965,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5030,8 +4980,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5045,8 +4995,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5060,8 +5010,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5075,8 +5025,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5090,8 +5040,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5105,8 +5055,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5120,8 +5070,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5135,8 +5085,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5150,8 +5100,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5165,8 +5115,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5180,8 +5130,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5195,8 +5145,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5210,8 +5160,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5225,8 +5175,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5240,8 +5190,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5255,8 +5205,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5272,9 +5222,7 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS",
-                           "neg",
-                           "pos"
+                           "POS"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5292,8 +5240,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5309,9 +5257,7 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS",
-                           "neg",
-                           "pos"
+                           "POS"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5329,8 +5275,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5346,9 +5292,7 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS",
-                           "neg",
-                           "pos"
+                           "POS"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5366,8 +5310,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
@@ -5396,9 +5340,7 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS",
-                           "neg",
-                           "pos"
+                           "POS"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5416,8 +5358,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
                      }
                   },
                   {
