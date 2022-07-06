@@ -5659,8 +5659,8 @@
                      "db": {                     
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^NA$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be 'NA'"
+                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be '_'"
                      }
                   },
                   {
@@ -5673,10 +5673,10 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "Pass",
-                           "PassPlus",
-                           "Fail",
-                           "NA"
+                           "_",
+                           "PASSPLUS",
+                           "PASS",
+                           "FAIL"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5692,8 +5692,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{4}$|^#N/A$",
-                        "regex_validation_message": "must be a max 4 digits number or '#N/A'"
+                        "regex": "^\\d{4}$|^_$",
+                        "regex_validation_message": "must be an integer (1-4 digits), or '_'"
                      }
                   }
                ]
