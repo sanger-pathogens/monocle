@@ -1850,7 +1850,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(100)",
                           "max_length": 100,
-                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/]+)$|^_$",
+                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/\\&]+)$|^_$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
