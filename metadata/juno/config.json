@@ -84,8 +84,8 @@
             "regex": "^(?:PMID: \\d{7,8}(?:,{1}[ ]{0,1}PMID: \\d{7,8})*)$",
             "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
          },
-         "submitting_institution": {
-            "title": "Submitting_Institution",
+         "submitting_institution_key": {
+            "title": "submitting_institution_key",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256
