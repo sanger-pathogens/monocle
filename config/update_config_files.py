@@ -276,7 +276,7 @@ class UpdateMetadataFiles:
         return f"{self.root_path}/{relative_path}"
 
     def update_all(self, main_config_file, metadata_tests_project):
-        """Runs updates on all metadata files."""
+        """Updates all metadata files."""
         main_config_path = self.abs_path(main_config_file)
         logging.info("Updating all config files from {}".format(main_config_path))
         self.update_from_main_config(main_config_path)
@@ -316,11 +316,11 @@ class UpdateMetadataFiles:
     def _remove_keys_not_wanted_in_field_attributes(self, sections, field_attributes):
         """
         The main config file has sections that list all the fields and their attributes,
-        and this is almost exactly what isrequired in the <projectname>_field_attributes.json
+        and this is almost exactly what is required in the <projectname>_field_attributes.json
         files used by the dashboard API.  There are just a few keys that aren't wanted in those
-        field attribiutes files.  This fucntion removes the unwanted keys.
+        field attribiutes files.  This function removes the unwanted keys.
         Only use this with a COPY of the main config dict, because the dict is modified!
-        Pass the list of sections to be checked, and a a dict with the copied
+        Pass the list of sections to be checked, and a dict with the copied
         config.
         Returns modified dict.
         """
