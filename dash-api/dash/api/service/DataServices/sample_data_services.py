@@ -28,8 +28,8 @@ ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS = 1
 ZIP_SIZE_OVERESTIMATE_FACTOR = 1.11
 ZIP_SIZE_OVERESTIMATE_FACTOR_WITH_READS = 1.15
 
-ASSEMBLY_FILE_SUFFIX = ".contigs_spades.fa"
-ANNOTATION_FILE_SUFFIX = ".spades.gff"
+ASSEMBLY_FILE_SUFFIX = {"juno": ".contigs_spades.fa", "gps": ".contigs_velvet.fa"}
+ANNOTATION_FILE_SUFFIX = {"juno": ".spades.gff", "gps": ".velvet.gff"}
 READS_FILE_SUFFIXES = ("_1.fastq.gz", "_2.fastq.gz")
 UNKNOWN_PUBLIC_NAME = "unknown"
 
@@ -884,9 +884,9 @@ class MonocleSampleData:
     def _get_lane_file_names(self, lane_id, **kwargs):
         lane_file_names = []
         if kwargs.get("assemblies"):
-            lane_file_names.append(f"{lane_id}{ASSEMBLY_FILE_SUFFIX}")
+            lane_file_names.append(f"{lane_id}{ASSEMBLY_FILE_SUFFIX[self.current_project]}")
         if kwargs.get("annotations"):
-            lane_file_names.append(f"{lane_id}{ANNOTATION_FILE_SUFFIX}")
+            lane_file_names.append(f"{lane_id}{ANNOTATION_FILE_SUFFIX[self.current_project]}")
         if kwargs.get("reads"):
             for file_suffix in READS_FILE_SUFFIXES:
                 lane_file_names.append(f"{lane_id}{file_suffix}")
