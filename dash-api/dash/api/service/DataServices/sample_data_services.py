@@ -299,19 +299,22 @@ class MonocleSampleData:
             this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
             # now get in silico data for this sample's lane(s)
             # some samples may legitimately have no lanes
+            multiple_in_silico_lanes = False
             for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
                 # some lanes may legitimately have no in silico data
                 this_lane_in_silico_data = lane_to_in_silico_lookup.get(this_lane_id, None)
                 if this_lane_in_silico_data is not None:
                     if "in silico" in combined_metadata_item:
-                        message = "sample {} has more than one lane with in silico data, which is not supported".format(
-                            this_sanger_sample_id
-                        )
-                        logging.error(message)
-                        raise ValueError(message)
+                        multiple_in_silico_lanes = True
                     else:
                         combined_metadata_item["in silico"] = this_lane_in_silico_data
-
+            if multiple_in_silico_lanes:
+                logging.warning(
+                    "sample {} has more than one lane with in silico data, which is not supported: no in silico data will be provided for this sample".format(
+                        this_sanger_sample_id
+                    )
+                )
+                combined_metadata_item.pop("in silico")
         return combined_metadata
 
     def _merge_qc_data_into_combined_metadata(self, filtered_samples, combined_metadata):
@@ -362,18 +365,22 @@ class MonocleSampleData:
             this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
             # now get QC data for this sample's lane(s)
             # some samples may legitimately have no lanes
+            multiple_qc_data_lanes = False
             for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
                 # some lanes may legitimately have no QC data
                 this_lane_qc_data = lane_to_qc_data_lookup.get(this_lane_id, None)
                 if this_lane_qc_data is not None:
                     if "qc data" in combined_metadata_item:
-                        message = "sample {} has more than one lane with QC data, which is not supported".format(
-                            this_sanger_sample_id
-                        )
-                        logging.error(message)
-                        raise ValueError(message)
+                        multiple_qc_data_lanes = True
                     else:
                         combined_metadata_item["qc data"] = this_lane_qc_data
+            if multiple_qc_data_lanes:
+                logging.warning(
+                    "sample {} has more than one lane with QC data, which is not supported: no QC data will be provided for this sample".format(
+                        this_sanger_sample_id
+                    )
+                )
+                combined_metadata_item.pop("qc data")
 
         return combined_metadata
 
