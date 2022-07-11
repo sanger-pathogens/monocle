@@ -71,10 +71,6 @@
                   "spreadsheet heading": "Submitting_Institution",
                   "display name": "Submitting Institution",
                   "filter type": "discrete"
-               },
-               {
-                  "name": "submitting_institution_key",
-                  "display": false
                }
             ]
          },
