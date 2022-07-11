@@ -30,7 +30,7 @@ jest.mock("$lib/dataLoading.js", () => ({
       samples: [
         {
           metadata: {
-            qc: { title: "QC", value: "90", order: 7 },
+            qualityControl: { title: "QC", value: "90", order: 7 },
             host_species: {
               title: "Host species",
               value: "Sciurus carolinensis",
@@ -38,7 +38,7 @@ jest.mock("$lib/dataLoading.js", () => ({
             },
           },
           "in silico": {
-            ST: { title: "ST", value: "some value", order: 1 },
+            adhP: { title: "adhP", value: "some value", order: 1 },
           },
         },
         {
@@ -48,10 +48,10 @@ jest.mock("$lib/dataLoading.js", () => ({
               value: "Ailuropoda melanoleuca",
               order: 2,
             },
-            qc: { title: "QC", value: "40", order: 7 },
+            qualityControl: { title: "QC", value: "40", order: 7 },
           },
           "in silico": {
-            ST: { title: "ST", value: "another value", order: 1 },
+            adhP: { title: "adhP", value: "another value", order: 1 },
           },
         },
       ],
@@ -68,7 +68,7 @@ it("isn't displayed if no batches are passed", () => {
 it("displays resolved metadata w/ each row sorted by order", async () => {
   const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
-  const expectedColumnHeaders = ["Host species", "QC", "ST"];
+  const expectedColumnHeaders = ["Host species", "QC", "adhP"];
   await waitFor(() => {
     // Data rows + the header row
     expect(getAllByRole("row")).toHaveLength(3);

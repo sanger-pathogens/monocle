@@ -1,3 +1,5 @@
+const ERROR = "error";
+
 module.exports = {
   env: {
     browser: true,
@@ -18,11 +20,38 @@ module.exports = {
   ],
   rules: {
     "jest/expect-expect": [
-      "error",
+      ERROR,
       {
         assertFunctionNames: ["expect*"],
       },
     ],
+    eqeqeq: ERROR,
+    "no-param-reassign": ERROR,
+    "no-return-await": ERROR,
+    "no-shadow": ERROR,
+    "no-unused-expressions": [
+      ERROR,
+      {
+        allowShortCircuit: true,
+        allowTernary: true,
+      },
+    ],
+    "no-useless-concat": ERROR,
+    "no-useless-return": ERROR,
+    "prefer-const": ERROR,
+    "prefer-rest-params": ERROR,
+    // Code style rules:
+    // FIXME: enforce camelcase as well:
+    // "camelcase": ERROR,
+    "dot-notation": ERROR,
+    "id-length": [
+      ERROR,
+      {
+        min: 3,
+        exceptions: ["a", "e", "i", "x", "y", "z", "ok", "id"],
+      },
+    ],
+    yoda: ERROR,
   },
   settings: {
     jest: {

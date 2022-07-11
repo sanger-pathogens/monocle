@@ -1,4 +1,4 @@
-const ORIGINAL = { k: { things: [{ k: 42 }, { k: null }] } };
+const ORIGINAL = { key: { things: [{ key: 42 }, { key: null }] } };
 
 afterEach(() => {
   jest.resetModules();

@@ -155,6 +155,23 @@ paths:
         "403":
           description: "Authorization information is missing or invalid."
 
+  /project:
+    get:
+      operationId: dash.api.routes.project_route
+      summary: "Returns information used in the UI, like the logo URL."
+      responses:
+        "200":
+          description: "The operation was successful."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    type: object
+        "403":
+          description: "Authorization information is missing or invalid."
+
   /pipeline_status_summary:
     get:
       operationId: dash.api.routes.pipeline_status_summary_route

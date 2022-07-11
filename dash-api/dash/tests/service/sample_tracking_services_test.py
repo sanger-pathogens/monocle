@@ -395,3 +395,20 @@ class MonocleSampleTrackingTest(TestCase):
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
         self.assertEqual(self.expected_dropout_data, pipeline_summary)
+
+    def test_project_information_rejects_if_no_project_given(self):
+        self.monocle_sample_tracking.current_project = None
+
+        with self.assertRaisesRegex(ValueError, "The current project is not set"):
+            self.monocle_sample_tracking.project_information()
+
+    @patch.object(SampleMetadata, "get_project_information")
+    def test_project_information(self, get_project_information_mock):
+        expected_project_information = "some project info"
+        get_project_information_mock.return_value = expected_project_information
+        self.monocle_sample_tracking.current_project = "juno"
+
+        actual_project_information = self.monocle_sample_tracking.project_information()
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+
+        self.assertEqual(expected_project_information, actual_project_information)
