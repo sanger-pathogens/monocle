@@ -37,9 +37,6 @@ class MonocleSampleTracking:
         "qc_seq": "sequencing",
     }
 
-    # date from which progress is counted
-    day_zero = datetime(2019, 9, 17)
-
     def __init__(self, set_up=True):
         self.user_record = None
         self.current_project = None
@@ -56,6 +53,14 @@ class MonocleSampleTracking:
             self.sample_metadata = DataSources.sample_metadata.SampleMetadata()
             self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
 
+    # date from which progress is counted
+    def get_day_zero(self):
+        # HARDCODED TODO FIXME
+        if self.current_project == "GPS":
+            return datetime(2013, 2, 12)  # Earliest sample_creation_datetime
+        # Default (JUNO)
+        return datetime(2019, 9, 17)
+
     def get_progress(self):
         institutions_data = self.get_all_institutions_irrespective_of_user_membership()
         total_num_samples_received_by_month = defaultdict(int)
@@ -71,8 +76,10 @@ class MonocleSampleTracking:
             this_institution_num_samples_received_by_date = self._num_samples_received_by_date(this_institution)
             for this_date_string in this_institution_num_samples_received_by_date.keys():
                 this_date = datetime.fromisoformat(this_date_string)
-                # days_elapsed   = (this_date - self.day_zero).days
-                months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+                # days_elapsed   = (this_date - self.get_day_zero()).days
+                months_elapsed = ((this_date.year - self.get_day_zero().year) * 12) + (
+                    this_date.month - self.get_day_zero().month
+                )
                 total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[
                     this_date_string
                 ]
@@ -80,15 +87,17 @@ class MonocleSampleTracking:
             this_institution_num_lanes_sequenced_by_date = self._num_lanes_sequenced_by_date(this_institution)
             for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
                 this_date = datetime.fromisoformat(this_date_string)
-                months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+                months_elapsed = ((this_date.year - self.get_day_zero().year) * 12) + (
+                    this_date.month - self.get_day_zero().month
+                )
                 total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[
                     this_date_string
                 ]
         # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
         num_samples_received_cumulative = 0
         num_lanes_sequenced_cumulative = 0
-        project_months_elapsed = ((self.updated.year - self.day_zero.year) * 12) + (
-            self.updated.month - self.day_zero.month
+        project_months_elapsed = ((self.updated.year - self.get_day_zero().year) * 12) + (
+            self.updated.month - self.get_day_zero().month
         )
         for this_month_elapsed in range(0, project_months_elapsed + 1, 1):
             if this_month_elapsed in total_num_samples_received_by_month:
@@ -96,7 +105,7 @@ class MonocleSampleTracking:
             if this_month_elapsed in total_num_lanes_sequenced_by_month:
                 num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_month_elapsed]
             # progress['date'].append( this_month_elapsed )
-            progress["date"].append((self.day_zero + relativedelta(months=this_month_elapsed)).strftime("%b %Y"))
+            progress["date"].append((self.get_day_zero() + relativedelta(months=this_month_elapsed)).strftime("%b %Y"))
             progress["samples received"].append(num_samples_received_cumulative)
             progress["samples sequenced"].append(num_lanes_sequenced_cumulative)
         return progress
