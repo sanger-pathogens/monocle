@@ -62,7 +62,8 @@ class MonocleSampleTracking:
     def _get_day_zero(self):
         if self.current_project in self.zero_days:
             return self.zero_days[self.current_project]
-        raise ValueError("The current project is not set, or invalid")
+        # raise ValueError("The current project is not set, or invalid")
+        return self.zero_days["juno"]  # Default
 
     def get_progress(self):
         institutions_data = self.get_all_institutions_irrespective_of_user_membership()
