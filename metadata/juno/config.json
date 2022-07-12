@@ -1295,6 +1295,20 @@
             "label": "Stephen Bentley",
             "url": "mailto:sdb@sanger.ac.uk"
          }
+      ],
+      "upload_links": [
+         {
+            "label": "metadata",
+            "url": "/metadata/juno/metadata-upload"
+         },
+         {
+            "label": "in silico",
+            "url": "/metadata/juno/in-silico-upload"
+         },
+         {
+            "label": "qc data",
+            "url": "/metadata/juno/qc-data-upload"
+         }
       ]
    }
 }

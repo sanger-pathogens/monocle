@@ -16,6 +16,11 @@
                "contacts": [
                   {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
                   {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/juno/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/juno/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/juno/qc-data-upload"}
                ]
             } ,
             "files": {
@@ -98,8 +103,13 @@
                "contacts": [
                   {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
                   {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
-               ]
-            } ,
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/gps/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/gps/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/gps/qc-data-upload"}
+               ]               
+            },
             "files": {
                "config_file": "metadata/gps/config.json",
                "API model" : [
