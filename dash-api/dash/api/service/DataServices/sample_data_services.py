@@ -51,12 +51,6 @@ class MonocleSampleData:
         "gps": "gps_field_attributes.json",
     }
     sample_table_inst_key = "submitting_institution"
-    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
-    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
-    sequencing_flags = {
-        "qc_lib": "library",
-        "qc_seq": "sequencing",
-    }
 
     # date from which progress is counted
     day_zero = datetime(2019, 9, 17)

@@ -30,12 +30,6 @@ class MonocleSampleTracking:
     """
 
     sample_table_inst_key = "submitting_institution"
-    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
-    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
-    sequencing_flags = {
-        "qc_lib": "library",
-        "qc_seq": "sequencing",
-    }
 
     zero_days = {
         "gps": datetime(2013, 2, 12),
@@ -435,13 +429,6 @@ class MonocleSampleTracking:
         this_lane_success = True
         fail_messages = []
 
-        # According to the annotation in the MLWH iseq_product_metrics table, qc_lib can be 0, 1, or NULL
-        # If it is NULL the QC status defaults back to qc_seq, for historic reasons
-        logging.info("A: qc_lib: {}, qc_seq: {}", format(this_lane["qc_lib"], this_lane["qc_seq"]))
-        if "qc_lib" in this_lane and "qc_seq" in this_lane and this_lane["qc_lib"] is None:
-            this_lane["qc_lib"] = this_lane["qc_seq"]
-        logging.info("B: qc_lib: {}, qc_seq: {}", format(this_lane["qc_lib"], this_lane["qc_seq"]))
-
         if (
             "qc complete" == this_lane["run_status"]
             and this_lane["qc_complete_datetime"]
@@ -450,17 +437,16 @@ class MonocleSampleTracking:
             # lane has completed, whether success or failure
             this_lane_completed = True
             # look for any failures; note one lane could have more than one failure
-            for this_flag in self.sequencing_flags.keys():
-                if not 1 == this_lane[this_flag]:
-                    this_lane_success = False
-                    # record details of this failure
-                    fail_messages.append(
-                        {
-                            "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
-                            "stage": self.sequencing_flags[this_flag],
-                            "issue": "sorry, failure messages cannot currently be seen here",
-                        }
-                    )
+            if not 1 == this_lane["qc_success"]:
+                this_lane_success = False
+                # record details of this failure
+                fail_messages.append(
+                    {
+                        "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
+                        "stage": this_lane["qc_status_text"],
+                        "issue": "sorry, failure messages cannot currently be seen here",
+                    }
+                )
         logging.debug(
             "\nsequencing_is_success({},{}) returns {}".format(
                 this_sample_id, this_lane, (this_lane_completed, this_lane_success, fail_messages)
