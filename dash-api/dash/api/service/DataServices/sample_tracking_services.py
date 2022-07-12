@@ -431,6 +431,12 @@ class MonocleSampleTracking:
         this_lane_completed = False
         this_lane_success = True
         fail_messages = []
+
+        # According to the annotation in the MLWH iseq_product_metrics table, qc_lib can be 0, 1, or NULL
+        # If it is NULL the QC status defaults back to qc_seq, for historic reasons
+        if "qc_lib" in this_lane and "qc_seq" in this_lane and this_lane["qc_lib"] in None:
+            this_lane["qc_lib"] = this_lane["qc_seq"]
+
         if (
             "qc complete" == this_lane["run_status"]
             and this_lane["qc_complete_datetime"]
