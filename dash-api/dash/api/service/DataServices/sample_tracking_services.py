@@ -56,10 +56,11 @@ class MonocleSampleTracking:
     # date from which progress is counted
     def get_day_zero(self):
         # HARDCODED TODO FIXME
-        if self.current_project == "GPS":
+        if self.current_project == "gps":
             return datetime(2013, 2, 12)  # Earliest sample_creation_datetime
-        # Default (JUNO)
-        return datetime(2019, 9, 17)
+        if self.current_project == "juno":
+            return datetime(2019, 9, 17)
+        raise ValueError("The current project is not set")
 
     def get_progress(self):
         institutions_data = self.get_all_institutions_irrespective_of_user_membership()
