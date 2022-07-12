@@ -437,8 +437,10 @@ class MonocleSampleTracking:
 
         # According to the annotation in the MLWH iseq_product_metrics table, qc_lib can be 0, 1, or NULL
         # If it is NULL the QC status defaults back to qc_seq, for historic reasons
+        logging.info("A: qc_lib: {}, qc_seq: {}", format(this_lane["qc_lib"], this_lane["qc_seq"]))
         if "qc_lib" in this_lane and "qc_seq" in this_lane and this_lane["qc_lib"] is None:
             this_lane["qc_lib"] = this_lane["qc_seq"]
+        logging.info("B: qc_lib: {}, qc_seq: {}", format(this_lane["qc_lib"], this_lane["qc_seq"]))
 
         if (
             "qc complete" == this_lane["run_status"]
