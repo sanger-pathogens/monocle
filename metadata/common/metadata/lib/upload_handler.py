@@ -24,7 +24,6 @@ class _StringLengthValidation(CustomElementValidation):
 
     def __init__(self, message: str, max_length: int):
         self.max_length = max_length
-        self.application = application
         super().__init__(validation=lambda s: len(s) <= self.max_length, message=message)
 
 
@@ -44,6 +43,7 @@ class UploadHandler:
         self.__spreadsheet_def = in_def
         self.__do_validation = do_validation
         self.__institutions = None
+        self.application = application
         # validation will fail if file extension isn't as expected, when this flag is true
         self.check_file_extension = True
         self.file_delimiter = "\t"
@@ -186,6 +186,8 @@ class UploadHandler:
                 file_path, dtype=str, sep=self.file_delimiter, header=self.__spreadsheet_def.header_row_position
             )
         data.fillna("", inplace=True)
+
+        logger.info("Loaded spreadsheet:\n{}".format(data.head()))
 
         # Display spreadsheet contents for debugging if required
         # for key, value in data.iterrows():

@@ -2,6 +2,27 @@
    "config": {
       "projects":{
          "juno":{
+            "project_links" : {
+               "name": "JUNO Project", 
+               "logo_url": "/imgs/junologo.svg",
+               "project_url": "https://www.gbsgen.net/",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/juno/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/juno/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/juno/qc-data-upload"}
+               ]
+            } ,
             "files": {
                "config_file": "metadata/juno/config.json",
                "API model" : [
@@ -68,6 +89,27 @@
             }
          },
          "gps": {
+            "project_links" : {
+               "name": "GPS Project", 
+               "logo_url": "",
+               "project_url": "",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/gps/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/gps/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/gps/qc-data-upload"}
+               ]               
+            },
             "files": {
                "config_file": "metadata/gps/config.json",
                "API model" : [
@@ -1411,7 +1453,7 @@
                      "display"            : true,
                      "default"            : false,
                      "order"              : 1,
-                     "spreadsheet heading": "Sample_name",
+                     "spreadsheet heading": "Sample_Name",
                      "display name"       : "Sample name",
                      "filter type"        : "none",
                      "db": {
@@ -1441,7 +1483,7 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 3,
-                     "spreadsheet heading": "Public_name",
+                     "spreadsheet heading": "Public_Name",
                      "display name"       : "Public Name",
                      "filter type"        : "none",
                      "db": {
@@ -1460,7 +1502,7 @@
                      "display"            : true,
                      "default"            : false,
                      "order"              : 4,
-                     "spreadsheet heading": "Study_name",
+                     "spreadsheet heading": "Study_Name",
                      "display name"       : "Study Name",
                      "filter type"        : "none",
                      "db": {
@@ -1474,7 +1516,7 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 5,
-                     "spreadsheet heading": "Submitting_institution",
+                     "spreadsheet heading": "Submitting_Institution",
                      "display name"       : "Submitting Institution",
                      "filter type"        :  "discrete",
                      "db": {
@@ -1519,22 +1561,10 @@
                           "max_length": 90
                        }
                     },
-                  {  "name"               : "continent",
-                     "display"            : true,
-                     "default"            : true,
-                     "order"              : 8,
-                     "spreadsheet heading": "Continent",
-                     "display name"       : "Continent",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(90)",
-                          "max_length": 90
-                       }
-                    },
                   {  "name"               : "region",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 9,
+                     "order"              : 8,
                      "spreadsheet heading": "Region",
                      "display name"       : "Region",
                      "filter type"        :  "discrete",
@@ -1546,7 +1576,7 @@
                   {  "name"               : "city",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 10,
+                     "order"              : 9,
                      "spreadsheet heading": "City",
                      "display name"       : "City",
                      "filter type"        :  "discrete",
@@ -1558,9 +1588,9 @@
                   {  "name"               : "facility_where_collected",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 11,
-                     "spreadsheet heading": "Facility_where_collected",
-                     "display name"       : "Facility where collected",
+                     "order"              : 10,
+                     "spreadsheet heading": "Facility_of_Collection",
+                     "display name"       : "Facility of Collection",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(256) DEFAULT NULL",
@@ -1570,8 +1600,8 @@
                   {  "name"               : "month_collection",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 12,
-                     "spreadsheet heading": "Month_collection",
+                     "order"              : 11,
+                     "spreadsheet heading": "Collection_Month",
                      "display name"       : "Collection Month",
                      "filter type"        :  "discrete",
                      "db": {
@@ -1601,8 +1631,8 @@
                     {  "name"               : "year_collection",
                        "display"            : true,
                        "default"            : true,
-                       "order"              : 13,
-                       "spreadsheet heading": "Year_collection",
+                       "order"              : 12,
+                       "spreadsheet heading": "Collection_Year",
                        "display name"       : "Collection Year",
                        "filter type"        : "numeric",
                        "db": {
@@ -1618,7 +1648,7 @@
                   {  "name"               : "gender",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 14,
+                     "order"              : 13,
                      "spreadsheet heading": "Gender",
                      "display name"       : "Gender",
                      "filter type"        :  "discrete",
@@ -1638,7 +1668,7 @@
                   {  "name"               : "age_years",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 15,
+                     "order"              : 14,
                      "spreadsheet heading": "Age_years",
                      "display name"       : "Age years",
                      "filter type"        : "numeric",
@@ -1651,7 +1681,7 @@
                   {  "name"               : "age_months",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 16,
+                     "order"              : 15,
                      "spreadsheet heading": "Age_months",
                      "display name"       : "Age months",
                      "filter type"        : "numeric",
@@ -1664,7 +1694,7 @@
                   {  "name"               : "age_days",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 17,
+                     "order"              : 16,
                      "spreadsheet heading": "Age_days",
                      "display name"       : "Age days",
                      "filter type"        : "numeric",
@@ -1677,7 +1707,7 @@
                     {  "name"               : "clinical_manifestation",
                        "display"            : true,
                        "default"            : false,
-                       "order"              : 18,
+                       "order"              : 17,
                        "spreadsheet heading": "Clinical_manifestation",
                        "display name"       : "Clinical manifestation",
                        "filter type"        :  "discrete",
@@ -1685,40 +1715,43 @@
                             "mysql_type": "VARCHAR(256)",
                             "max_length": 256,
                             "allowed_values": [
-                              "ABSCESS",
-                              "ARTHRITIS",
-                              "BACTEREMIA",
-                              "BRONCHIAL ASTHMA",
-                              "BRONCHIOLITIS",
-                              "BRONCHITIS",
-                              "CARRIAGE",
-                              "CELLULITIS",
-                              "CONJUNCTIVITIS",
-                              "DISEASE",
-                              "EMPYEMA",
-                              "ENCEPHALITIS",
-                              "FEVER UNSPECIFIED",
-                              "JOINT INFECTION",
-                              "LEUKEMIA",
-                              "LOWER RESPIRATORY TRACT INFECTION",
-                              "MENINGITIS",
-                              "OSTEOMYELITIS",
-                              "OTHER",
-                              "OTITIS",
-                              "OTITIS MEDIA",
-                              "PERICARDITIS",
-                              "PERITONITIS",
-                              "PLEURAL EFFUSION",
-                              "PNEUMONIA",
-                              "SEPSIS",
-                              "SEPTIC ARTHRITIS",
-                              "SEPTICEMIA",
-                              "SINUSITIS",
-                              "SURGICAL SITE INFECTION",
-                              "UNKNOWN",
-                              "UNSPECIFIED",
-                              "UNSPECIFIED IPD",
-                              "_"
+                             "PNEUMONIA",
+                             "BACTEREMIA",
+                             "MENINGITIS",
+                             "SINUSITIS",
+                             "_",
+                             "UNKNOWN",
+                             "OTITIS",
+                             "CELLULITIS",
+                             "OSTEOMYELITIS",
+                             "FEVER UNSPECIFIED",
+                             "EMPYEMA",
+                             "BRONCHITIS",
+                             "SEPTIC ARTHRITIS",
+                             "JOINT INFECTION",
+                             "ABSCESS",
+                             "ARTHRITIS",
+                             "SURGICAL SITE INFECTION",
+                             "PERITONITIS",
+                             "PLEURAL EFFUSION",
+                             "SEPSIS",
+                             "OTHER",
+                             "OTITIS MEDIA",
+                             "PERICARDITIS",
+                             "SEPTICEMIA",
+                             "CARRIAGE",
+                             "UNSPECIFIED",
+                             "LOWER RESPIRATORY TRACT INFECTION",
+                             "DISEASE",
+                             "BRONCHIAL ASTHMA",
+                             "BRONCHIOLITIS",
+                             "ENCEPHALITIS",
+                             "LEUKEMIA",
+                             "BACTERAEMIA",
+                             "UNSPECIFIED IPD",
+                             "CONJUNCTIVITIS",
+                             "Bacteraemia",
+                             "Carriage"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1728,7 +1761,7 @@
                   {  "name"               : "source",
                      "display"            : true,
                      "default"            : true,
-                     "order"              : 19,
+                     "order"              : 18,
                      "spreadsheet heading": "Source",
                      "display name"       : "Source",
                      "filter type"        :  "discrete",
@@ -1736,27 +1769,30 @@
                           "mysql_type": "VARCHAR(100)",
                           "max_length": 100,
                           "allowed_values": [
-                           "ASCITIC FLUID",
-                           "BLOOD",
-                           "BRONCHIAL SECRETION",
-                           "CEREBROSPINAL FLUID",
-                           "CSF",
-                           "CSF & BLOOD",
-                           "EAR SWAB",
-                           "JOINT FLUID",
-                           "KNEE ASPIRATE",
-                           "LUNG ASPIRATE",
-                           "MIDDLE EAR FLUID",
-                           "NASOPHARYNGEAL SWAB",
-                           "OP SWAB",
-                           "OTHER",
-                           "PERITONEAL FLUID",
-                           "PLEURAL ASPIRATE",
-                           "PLEURAL FLUID",
-                           "PUS",
-                           "SPUTUM",
-                           "SYNOVIAL FLUID",
-                           "_"
+                             "BLOOD",
+                             "PLEURAL FLUID",
+                             "CEREBROSPINAL FLUID",
+                             "OTHER",
+                             "PERITONEAL FLUID",
+                             "ASCITIC FLUID",
+                             "BRONCHIAL SECRETION",
+                             "CSF",
+                             "MIDDLE EAR FLUID",
+                             "NP SWAB",
+                             "OP SWAB",
+                             "SPUTUM",
+                             "SYNOVIAL FLUID",
+                             "_",
+                             "LUNG ASPIRATE",
+                             "PLEURAL ASPIRATE",
+                             "PUS",
+                             "ASCETIC FLUID",
+                             "NP SWAP",
+                             "KNEE ASPIRATE",
+                             "JOINT FLUID",
+                             "CSF & BLOOD",
+                             "EAR SWAB",
+                             "NASOPHARYNGEAL SWAB"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1766,7 +1802,7 @@
                   {  "name"               : "HIV_status",
                      "display"            : true,
                      "default"            : true,
-                     "order"              : 20,
+                     "order"              : 19,
                      "spreadsheet heading": "HIV_status",
                      "display name"       : "HIV status",
                      "filter type"        :  "discrete",
@@ -1786,26 +1822,26 @@
                   {  "name"               : "underlying_conditions",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 21,
-                     "spreadsheet heading": "Underlying_conditions",
+                     "order"              : 20,
+                     "spreadsheet heading": "Underlying_Conditions",
                      "display name"       : "Underlying Conditions",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(256)",
                           "max_length": 256,
                           "allowed_values": [
-                           "CEREBROVASCULAR ACCIDENT",
-                           "CHEST INFECTION",
-                           "CONGENITAL HEART DISEASE",
-                           "DOWN SYNDROME",
-                           "EPILEPSY",
-                           "HIV EXPOSED",
-                           "KWASHIORKOR",
-                           "PRETERM",
-                           "SEIZURES",
-                           "SICKLE CELL DISEASE",
-                           "TUBEROSCLEROSIS",
-                           "_"
+                             "_",
+                             "HIV EXPOSED",
+                             "CHEST INFECTION",
+                             "KWASHIORKOR",
+                             "CEREBROVASCULAR ACCIDENT",
+                             "SICKLE CELL DISEASE",
+                             "EPILEPSY",
+                             "PRETERM",
+                             "TUBEROSCLEROSIS",
+                             "DOWN SYNDROME",
+                             "SEIZURES",
+                             "CONGENITAL HEART DISEASE"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1819,21 +1855,21 @@
                  {  "name"               : "phenotypic_serotype_method",
                     "display"            : true,
                     "default"            : false,
-                    "order"              : 22,
-                    "spreadsheet heading": "Phenotypic_serotype_method",
+                    "order"              : 21,
+                    "spreadsheet heading": "Phenotypic_Serotype_Method",
                     "display name"       : "Phenotypic Serotype Method",
                     "filter type"        :  "discrete",
                     "db": {
                          "mysql_type": "VARCHAR(100)",
                          "max_length": 100,
                          "allowed_values": [
-                           "LATEX AGGLUTINATION",
-                           "MICROARRAY",
-                           "NT",
-                           "PCR",
-                           "PCR AND QUELLUNG",
-                           "QUELLUNG",
-                           "_"
+                          "QUELLUNG",
+                          "_",
+                          "PCR",
+                          "LATEX AGGLUTINATION",
+                          "NT",
+                          "PCR AND QUELLUNG",
+                          "MICROARRAY"
                        ],
                        "convert_case": {
                           "case": "upper"
@@ -1843,28 +1879,28 @@
                   {  "name"               : "phenotypic_serotype",
                      "display"            : true,
                      "default"            : true,
-                     "order"              : 23,
-                     "spreadsheet heading": "Phenotypic_serotype",
+                     "order"              : 22,
+                     "spreadsheet heading": "Phenotypic_Serotype",
                      "display name"       : "Phenotypic Serotype",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(100)",
                           "max_length": 100,
-                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/\\&]+)$|^_$",
+                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/]+)$|^_$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
                   {  "name"               : "sequence_type",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 24,
+                     "order"              : 23,
                      "spreadsheet heading": "Sequence_Type",
                      "display name"       : "Sequence Type",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(256)",
                           "max_length": 256,
-                          "regex": "^[0-9]{1,5}$|^UNKNOWN$|^_$",
+                          "regex": "^[0-9]{1,5}$|^NEW$|^_$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     }
@@ -1875,34 +1911,36 @@
                   {  "name"               : "penicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 25,
+                     "order"              : 24,
                      "spreadsheet heading": "Penicillin",
                      "display name"       : "Penicillin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_penicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 26,
-                     "spreadsheet heading": "AST_method_Penicillin",
+                     "order"              : 25,
+                     "spreadsheet heading": "Penicillin_method",
                      "display name"       : "Penicillin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "ETEST",
+                             "BROTH DILUTION",
+                             "DISK DIFFUSION",
+                             "DISC DIFFUSION",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1912,33 +1950,34 @@
                   {  "name"               : "amoxicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 27,
+                     "order"              : 26,
                      "spreadsheet heading": "Amoxicillin",
                      "display name"       : "Amoxicillin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_amoxicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 28,
-                     "spreadsheet heading": "AST_method_Amoxicillin",
+                     "order"              : 27,
+                     "spreadsheet heading": "Amoxicillin method",
                      "display name"       : "Amoxicillin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "AGAR DILUTION",
+                             "ETEST",
+                             "DISK DIFFUSION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1948,34 +1987,35 @@
                   {  "name"               : "cefotaxime",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 29,
+                     "order"              : 28,
                      "spreadsheet heading": "Cefotaxime",
                      "display name"       : "Cefotaxime",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_cefotaxime",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 30,
-                     "spreadsheet heading": "AST_method_Cefotaxime",
+                     "order"              : 29,
+                     "spreadsheet heading": "Cefotaxime_method",
                      "display name"       : "Cefotaxime method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "ETEST",
+                             "DISK DIFFUSION",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1985,34 +2025,36 @@
                   {  "name"               : "ceftriaxone",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 31,
+                     "order"              : 30,
                      "spreadsheet heading": "Ceftriaxone",
                      "display name"       : "Ceftriaxone",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_ceftriaxone",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 32,
-                     "spreadsheet heading": "AST_method_Ceftriaxone",
+                     "order"              : 31,
+                     "spreadsheet heading": "Ceftriaxone_method",
                      "display name"       : "Ceftriaxone method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "ETEST",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "DISK DIFFUSION",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2022,67 +2064,69 @@
                   {  "name"               : "cefuroxime",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 33,
+                     "order"              : 32,
                      "spreadsheet heading": "Cefuroxime",
                      "display name"       : "Cefuroxime",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_cefuroxime",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 34,
-                     "spreadsheet heading": "AST_method_Cefuroxime",
+                     "order"              : 33,
+                     "spreadsheet heading": "Cefuroxime_method",
                      "display name"       : "Cefuroxime method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "DISK DIFFUSION",
+                             "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
                           }
                        }
                     },
-                  {  "name"               : "meropenem",
+                  {  "name"               : "Meropenem",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 35,
+                     "order"              : 34,
                      "spreadsheet heading": "Meropenem",
                      "display name"       : "Meropenem",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_meropenem",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 36,
-                     "spreadsheet heading": "AST_method_Meropenem",
+                     "order"              : 35,
+                     "spreadsheet heading": "Meropenem_method",
                      "display name"       : "Meropenem method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "ETEST",
+                             "DISK DIFFUSION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2092,34 +2136,36 @@
                   {  "name"               : "erythromycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 37,
+                     "order"              : 36,
                      "spreadsheet heading": "Erythromycin",
                      "display name"       : "Erythromycin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_erythromycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 38,
-                     "spreadsheet heading": "AST_method_Erythromycin",
+                     "order"              : 37,
+                     "spreadsheet heading": "Erythromycin_method",
                      "display name"       : "Erythromycin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "ETEST",
+                             "BROTH DILUTION",
+                             "DISK DIFFUSION",
+                             "DISC DIFFUSION",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2129,34 +2175,36 @@
                   {  "name"               : "clindamycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 39,
+                     "order"              : 38,
                      "spreadsheet heading": "Clindamycin",
                      "display name"       : "Clindamycin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_clindamycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 40,
-                     "spreadsheet heading": "AST_method_Clindamycin",
+                     "order"              : 39,
+                     "spreadsheet heading": "Clindamycin_method",
                      "display name"       : "Clindamycin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "DISK DIFFUSION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "OTHER",
+                             "AGAR DILUTION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2166,34 +2214,36 @@
                   {  "name"               : "trim_sulfa",
                      "default"            : false,
                      "display"            : true,
-                     "order"              : 41,
+                     "order"              : 40,
                      "spreadsheet heading": "Trim_Sulfa",
                      "display name"       : "Trim/Sulfa",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_trim_sulfa",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 42,
-                     "spreadsheet heading": "AST_method_Trim_Sulfa",
+                     "order"              : 41,
+                     "spreadsheet heading": "Trim_Sulfa_method",
                      "display name"       : "Trim/Sulfa method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "DISK DIFFUSION",
+                             "OTHER",
+                             "AGAR DILUTION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2203,34 +2253,36 @@
                   {  "name"               : "vancomycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 43,
+                     "order"              : 42,
                      "spreadsheet heading": "Vancomycin",
                      "display name"       : "Vancomycin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_vancomycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 44,
-                     "spreadsheet heading": "AST_method_Vancomycin",
+                     "order"              : 43,
+                     "spreadsheet heading": "Vancomycin_method",
                      "display name"       : "Vancomycin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "DISK DIFFUSION",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2240,33 +2292,34 @@
                   {  "name"               : "linezolid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 45,
+                     "order"              : 44,
                      "spreadsheet heading": "Linezolid",
                      "display name"       : "Linezolid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_linezolid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 46,
-                     "spreadsheet heading": "AST_method_Linezolid",
+                     "order"              : 45,
+                     "spreadsheet heading": "Linezolid_method",
                      "display name"       : "Linezolid method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "ETEST",
+                             "DISK DIFFUSION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2276,32 +2329,34 @@
                   {  "name"               : "ciprofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 47,
+                     "order"              : 46,
                      "spreadsheet heading": "Ciprofloxacin",
                      "display name"       : "Ciprofloxacin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_ciprofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 48,
-                     "spreadsheet heading": "AST_method_Ciprofloxacin",
+                     "order"              : 47,
+                     "spreadsheet heading": "Ciprofloxacin_method",
                      "display name"       : "Ciprofloxacin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "DISK DIFFUSION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2311,33 +2366,35 @@
                   {  "name"               : "chloramphenicol",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 49,
+                     "order"              : 48,
                      "spreadsheet heading": "Chloramphenicol",
                      "display name"       : "Chloramphenicol",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_chloramphenicol",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 50,
-                     "spreadsheet heading": "AST_method_Chloramphenicol",
+                     "order"              : 49,
+                     "spreadsheet heading": "Chloramphenicol_method",
                      "display name"       : "Chloramphenicol method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "DISK DIFFUSION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "AGAR DILUTION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2347,34 +2404,36 @@
                   {  "name"               : "tetracycline",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 51,
+                     "order"              : 50,
                      "spreadsheet heading": "Tetracycline",
                      "display name"       : "Tetracyclined",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_tetracycline",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 52,
-                     "spreadsheet heading": "AST_method_Tetracycline",
+                     "order"              : 51,
+                     "spreadsheet heading": "Tetracycline_method",
                      "display name"       : "Tetracycline method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "DISK DIFFUSION",
+                             "BROTH DILUTION",
+                             "DISC DIFFUSION",
+                             "ETEST",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2384,34 +2443,35 @@
                   {  "name"               : "levofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 53,
+                     "order"              : 52,
                      "spreadsheet heading": "Levofloxacin",
                      "display name"       : "Levofloxacin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_levofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 54,
-                     "spreadsheet heading": "AST_method_Levofloxacin",
+                     "order"              : 53,
+                     "spreadsheet heading": "Levofloxacin_method",
                      "display name"       : "Levofloxacin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "DISK DIFFUSION",
+                             "BROTH DILUTION",
+                             "ETEST",
+                             "AGAR DILUTION",
+                             "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2421,31 +2481,32 @@
                   {  "name"               : "synercid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 55,
+                     "order"              : 54,
                      "spreadsheet heading": "Synercid",
                      "display name"       : "Synercid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_synercid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 56,
-                     "spreadsheet heading": "AST_method_Synercid",
+                     "order"              : 55,
+                     "spreadsheet heading": "Synercid_method",
                      "display name"       : "Synercid method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "ETEST",
+                             "BROTH DILUTION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2455,32 +2516,33 @@
                   {  "name"               : "rifampin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 57,
+                     "order"              : 56,
                      "spreadsheet heading": "Rifampin",
                      "display name"       : "Rifampin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^_$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, or R"
                        }
                     },
                   {  "name"               : "AST_method_rifampin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 58,
-                     "spreadsheet heading": "AST_method_Rifampin",
+                     "order"              : 57,
+                     "spreadsheet heading": "Rifampin_method",
                      "display name"       : "Rifampin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
                           "max_length": 60,
                           "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                             "_",
+                             "BROTH_DILUTION",
+                             "BROTH DILUTION",
+                             "ETEST",
+                             "DISK DIFFUSION"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2491,102 +2553,88 @@
                     },
             {  "name"   : "MLST and Allele Number",
                "fields" : [
-                  {  "name"               : "aroE",
+                  {  "name"               : "aroe",
                      "display"            : true,
                      "default"            : true,
-                     "order"              : 59,
-                     "spreadsheet heading": "aroE",
-                     "display name"       : "aroE",
+                     "order"              : 58,
+                     "spreadsheet heading": "aroe",
+                     "display name"       : "aroe",
                      "filter type"        :  "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^\\d{1,3}$|^_$",
-                          "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
                        }
                     },
                   {  "name"               : "gdh",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 60,
+                     "order"              : 59,
                      "spreadsheet heading": "gdh",
                      "display name"       : "gdh",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
-                     }
-                  },
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
+                       }
+                    },
                   {  "name"               : "gki",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 61,
+                     "order"              : 60,
                      "spreadsheet heading": "gki",
                      "display name"       : "gki",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
-                     }
-                  },
-                  {  "name"               : "recP",
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
+                       }
+                    },
+                  {  "name"               : "recp",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 62,
-                     "spreadsheet heading": "recP",
+                     "order"              : 61,
+                     "spreadsheet heading": "recp",
                      "display name"       : "recp",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
-                     }
-                  },
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
+                       }
+                    },
                   {  "name"               : "spi",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 63,
+                     "order"              : 62,
                      "spreadsheet heading": "spi",
                      "display name"       : "spi",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNKNOWN$",
-                        "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN' or '_'"
-                     }
-                  },
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
+                       }
+                    },
                   {  "name"               : "xpt",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 64,
+                     "order"              : 63,
                      "spreadsheet heading": "xpt",
                      "display name"       : "xpt",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
-                     }
-                  },
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
+                       }
+                    },
                   {  "name"               : "ddl",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 65,
+                     "order"              : 64,
                      "spreadsheet heading": "ddl",
                      "display name"       : "ddl",
                      "filter type"        :  "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^\\d{1,3}$|^_$",
-                          "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                          "mysql_type": "VARCHAR(100)",
+                          "max_length": 100
                        }
                     }
                ]
@@ -2596,7 +2644,7 @@
                   {  "name"               : "comments",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 66,
+                      "order"              : 65,
                       "spreadsheet heading": "Comments",
                       "display name"       : "Comments",
                       "filter type"        :  "discrete",
@@ -2608,23 +2656,21 @@
                    {  "name"               : "vaccine_period",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 67,
-                      "spreadsheet heading": "Vaccine_period",
+                      "order"              : 66,
+                      "spreadsheet heading": "Vaccine_Period",
                       "display name"       : "Vaccine Period",
                       "filter type"        :  "discrete",
                       "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^POSTPCV\\d{1,2}-\\d{1,2}YR|^PREPCV$|^_$",
-                          "regex_validation_message": "should be 'PREPCV', 'POSTPCV#-#YR', or '_'"
+                          "mysql_type": "VARCHAR(200)",
+                          "max_length": 200
                        }
                     },
                    {  "name"               : "intro_year",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 68,
-                      "spreadsheet heading": "Introduction_year",
-                      "display name"       : "Introduction Year",
+                      "order"              : 67,
+                      "spreadsheet heading": "Intro_Year",
+                      "display name"       : "Intro Year",
                       "filter type"        :  "numeric",
                       "db": {
                           "mysql_type": "SMALLINT(6) DEFAULT NULL"
@@ -2633,8 +2679,8 @@
                    {  "name"               : "PCV_type",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 69,
-                      "spreadsheet heading": "PCV_type",
+                      "order"              : 68,
+                      "spreadsheet heading": "PCV_Type",
                       "display name"       : "PCV_Type",
                       "filter type"        :  "discrete",
                       "db": {
@@ -2647,7 +2693,7 @@
                    {  "name"               : "resolution",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 70,
+                      "order"              : 69,
                       "spreadsheet heading": "Resolution",
                       "display name"       : "Resolution",
                       "filter type"        :  "numeric",
@@ -3664,7 +3710,7 @@
                   {
                      "name": "lane_id",
                      "display": false,
-                     "spreadsheet heading": "Lane_id",
+                     "spreadsheet heading": "lane_id",
                      "display name": "Lane id",
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
@@ -3678,7 +3724,7 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 1,
-                     "spreadsheet heading": "Public_name",
+                     "spreadsheet heading": "Public name",
                      "display name"       : "Public name",
                      "filter type"        :  "discrete",
                      "db": {
@@ -3736,7 +3782,7 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 5,
-                     "spreadsheet heading": "No_of_genome",
+                     "spreadsheet heading": "Number_of_Genome",
                      "display name"       : "Number of Genome",
                      "filter type"        :  "numeric",
                      "db": {
@@ -3793,119 +3839,103 @@
                      "display": true,
                      "default": false,
                      "order": 8,
-                     "spreadsheet heading": "In_silico_ST",
+                     "spreadsheet heading": "In_Silico_St",
                      "display name": "In Silico St",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(20) NOT NULL",
-                        "max_length": 20,
-                        "regex": "^\\d{1,5}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 20
                      }
                   },
                   {
-                     "name": "aroE",
+                     "name": "Aroe",
                      "display": true,
                      "default": false,
                      "order": 9,
-                     "spreadsheet heading": "aroE",
-                     "display name": "aroE",
+                     "spreadsheet heading": "Aroe",
+                     "display name": "Aroe",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "gdh",
+                     "name": "Gdh",
                      "display": true,
                      "default": false,
                      "order": 10,
-                     "spreadsheet heading": "gdh",
-                     "display name": "gdh",
+                     "spreadsheet heading": "Gdh",
+                     "display name": "Gdh",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "gki",
+                     "name": "Gki",
                      "display": true,
                      "default": false,
                      "order": 11,
-                     "spreadsheet heading": "gki",
-                     "display name": "gki",
+                     "spreadsheet heading": "Gki",
+                     "display name": "Gki",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "recP",
+                     "name": "Recp",
                      "display": true,
                      "default": false,
                      "order": 12,
-                     "spreadsheet heading": "recP",
-                     "display name": "recP",
+                     "spreadsheet heading": "Recp",
+                     "display name": "Recp",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "spi",
+                     "name": "Spi",
                      "display": true,
                      "default": false,
                      "order": 13,
-                     "spreadsheet heading": "spi",
-                     "display name": "spi",
+                     "spreadsheet heading": "Aroe",
+                     "display name": "Aroe",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "xpt",
+                     "name": "Xpt",
                      "display": true,
                      "default": false,
                      "order": 14,
-                     "spreadsheet heading": "xpt",
-                     "display name": "xpt",
+                     "spreadsheet heading": "Xpt",
+                     "display name": "Xpt",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "ddl",
+                     "name": "Ddl",
                      "display": true,
                      "default": false,
                      "order": 15,
-                     "spreadsheet heading": "ddl",
-                     "display name": "ddl",
+                     "spreadsheet heading": "Ddl",
+                     "display name": "Ddl",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,4}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "max_length": 30
                      }
                   },
                   {
@@ -3922,23 +3952,10 @@
                      }
                   },
                   {
-                     "name": "Continent",
-                     "display": true,
-                     "default": false,
-                     "order": 17,
-                     "spreadsheet heading": "Continent",
-                     "display name": "Continent",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(256)",
-                        "max_length": 256
-                     }
-                  },
-                  {
                      "name": "Manifest_type",
                      "display": true,
                      "default": false,
-                     "order": 18,
+                     "order": 17,
                      "spreadsheet heading": "Manifest_type",
                      "display name": "Manifest type",
                      "filter type": "discrete",
@@ -3946,17 +3963,19 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
-                           "URI",
-                           "UNKNOWN",
-                           "NON_IPD",
-                           "NON_INVASIVE DISEASE",
+                           "Carriage",
+                           "#N/A",
                            "IPD",
-                           "DIS_CAR",
-                           "CARRIAGE"
+                           "UKWN",
+                           "Non-IPD",
+                           "Dis-Car"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Non-IPD",
+                              "Dis-Car"
+                           ]
                         }
                      }
                   },
@@ -3964,18 +3983,18 @@
                      "name": "children_under_5yrs",
                      "display": true,
                      "default": false,
-                     "order": 19,
-                     "spreadsheet heading": "Children_under_5yrs",
+                     "order": 18,
+                     "spreadsheet heading": "children_under_5yrs",
                      "display name": "Children under 5yrs",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
+                           "N",
                            "Y",
-                           "UNKNOWN",
-                           "N"
+                           "#N/A",
+                           "UKWN"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -3983,41 +4002,39 @@
                      }
                   },
                   {
-                     "name": "GPSC",
+                     "name": "GPSC_PoPUNK2",
                      "display": true,
                      "default": false,
-                     "order": 20,
-                     "spreadsheet heading": "GPSC",
-                     "display name": "GPSC",
+                     "order": 19,
+                     "spreadsheet heading": "GPSC_PoPUNK2",
+                     "display name": "GPSC PoPUNK2",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,4}$|^_$",
-                        "regex_validation_message": "must be an integer (1-4 digits), or '_'"
+                        "max_length": 30
                      }
                   },
                   {
-                     "name": "GPSC__colour",
+                     "name": "GPSC_PoPUNK2__colour",
                      "display": true,
                      "default": false,
-                     "order": 21,
-                     "spreadsheet heading": "GPSC__colour",
+                     "order": 20,
+                     "spreadsheet heading": "GPSC_PoPUNK2__colour",
                      "display name": "GPSC PoPUNK2 Colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
-                     "name": "In_silico_serotype",
+                     "name": "In_Silico_serotype",
                      "display": true,
                      "default": false,
-                     "order": 22,
-                     "spreadsheet heading": "In_silico_serotype",
+                     "order": 21,
+                     "spreadsheet heading": "In_Silico_serotype",
                      "display name": "In Silico Serotype",
                      "filter type": "discrete",
                      "db": {
@@ -4026,57 +4043,57 @@
                      }
                   },
                   {
-                     "name": "In_silico_serotype__colour",
+                     "name": "In_Silico_serotype__colour",
                      "display": true,
                      "default": false,
-                     "order": 23,
-                     "spreadsheet heading": "In_silico_serotype__colour",
+                     "order": 22,
+                     "spreadsheet heading": "In_Silico_serotype__colour",
                      "display name": "In Silico Serotype Colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
-                     "name": "pbp1a",
+                     "name": "PBP1A",
+                     "display": true,
+                     "default": false,
+                     "order": 23,
+                     "spreadsheet heading": "PBP1A",
+                     "display name": "PBP1A",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(30)",
+                        "max_length": 30,
+                        "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
+                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
+                     }
+                  },
+                  {
+                     "name": "PBP2B",
                      "display": true,
                      "default": false,
                      "order": 24,
-                     "spreadsheet heading": "pbp1a",
-                     "display name": "pbp1a",
+                     "spreadsheet heading": "PBP2B",
+                     "display name": "PBP2B",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
-                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
+                        "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
+                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
                      }
                   },
                   {
-                     "name": "pbp2b",
+                     "name": "PBP2X",
                      "display": true,
                      "default": false,
                      "order": 25,
-                     "spreadsheet heading": "pbp2b",
-                     "display name": "pbp2b",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
-                        "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
-                     }
-                  },
-                  {
-                     "name": "pbp2x",
-                     "display": true,
-                     "default": false,
-                     "order": 26,
-                     "spreadsheet heading": "pbp2x",
-                     "display name": "pbp2x",
+                     "spreadsheet heading": "PBP2X",
+                     "display name": "PBP2X",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
@@ -4089,14 +4106,14 @@
                      "name": "WGS_PEN",
                      "display": true,
                      "default": false,
-                     "order": 27,
+                     "order": 26,
                      "spreadsheet heading": "WGS_PEN",
                      "display name": "WGS PEN",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4104,7 +4121,7 @@
                      "name": "WGS_PEN_SIR_Meningitis",
                      "display": true,
                      "default": false,
-                     "order": 28,
+                     "order": 27,
                      "spreadsheet heading": "WGS_PEN_SIR_Meningitis",
                      "display name": "WGS PEN SIR Meningitis",
                      "filter type": "discrete",
@@ -4116,10 +4133,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4127,7 +4147,7 @@
                      "name": "WGS_PEN_SIR_Nonmeningitis",
                      "display": true,
                      "default": false,
-                     "order": 29,
+                     "order": 28,
                      "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis",
                      "display name": "WGS PEN SIR Nonmeningitis",
                      "filter type": "discrete",
@@ -4139,10 +4159,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4150,14 +4173,14 @@
                      "name": "WGS_AMO",
                      "display": true,
                      "default": false,
-                     "order": 30,
+                     "order": 29,
                      "spreadsheet heading": "WGS_AMO",
                      "display name": "WGS AMO",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4165,7 +4188,7 @@
                      "name": "WGS_AMO_SIR",
                      "display": true,
                      "default": false,
-                     "order": 31,
+                     "order": 30,
                      "spreadsheet heading": "WGS_AMO_SIR",
                      "display name": "WGS AMO SIR",
                      "filter type": "discrete",
@@ -4177,10 +4200,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4188,14 +4214,14 @@
                      "name": "WGS_MER",
                      "display": true,
                      "default": false,
-                     "order": 32,
+                     "order": 31,
                      "spreadsheet heading": "WGS_MER",
                      "display name": "WGS MER",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4203,7 +4229,7 @@
                      "name": "WGS_MER_SIR",
                      "display": true,
                      "default": false,
-                     "order": 33,
+                     "order": 32,
                      "spreadsheet heading": "WGS_MER_SIR",
                      "display name": "WGS MER SIR",
                      "filter type": "discrete",
@@ -4215,10 +4241,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4226,14 +4255,14 @@
                      "name": "WGS_TAX",
                      "display": true,
                      "default": false,
-                     "order": 34,
+                     "order": 33,
                      "spreadsheet heading": "WGS_TAX",
                      "display name": "WGS TAX",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4241,7 +4270,7 @@
                      "name": "WGS_TAX_SIR_Meningitis",
                      "display": true,
                      "default": false,
-                     "order": 35,
+                     "order": 34,
                      "spreadsheet heading": "WGS_TAX_SIR_Meningitis",
                      "display name": "WGS TAX SIR Meningitis",
                      "filter type": "discrete",
@@ -4253,10 +4282,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4264,7 +4296,7 @@
                      "name": "WGS_TAX_SIR_Nonmeningitis",
                      "display": true,
                      "default": false,
-                     "order": 36,
+                     "order": 35,
                      "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis",
                      "display name": "WGS TAX SIR Nonmeningitis",
                      "filter type": "discrete",
@@ -4276,10 +4308,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4287,14 +4322,14 @@
                      "name": "WGS_CFT",
                      "display": true,
                      "default": false,
-                     "order": 37,
+                     "order": 36,
                      "spreadsheet heading": "WGS_CFT",
                      "display name": "WGS CFT",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
                         "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
                      }
                   },
@@ -4302,7 +4337,7 @@
                      "name": "WGS_CFT_SIR_Meningitis",
                      "display": true,
                      "default": false,
-                     "order": 38,
+                     "order": 37,
                      "spreadsheet heading": "WGS_CFT_SIR_Meningitis",
                      "display name": "WGS CFT SIR Meningitis",
                      "filter type": "discrete",
@@ -4314,10 +4349,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4325,7 +4363,7 @@
                      "name": "WGS_CFT_SIR_Nonmeningitis",
                      "display": true,
                      "default": false,
-                     "order": 39,
+                     "order": 38,
                      "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis",
                      "display name": "WGS CFT SIR Nonmeningitis",
                      "filter type": "discrete",
@@ -4337,10 +4375,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4348,7 +4389,7 @@
                      "name": "WGS_CFX",
                      "display": true,
                      "default": false,
-                     "order": 40,
+                     "order": 39,
                      "spreadsheet heading": "WGS_CFX",
                      "display name": "WGS CFX",
                      "filter type": "discrete",
@@ -4363,7 +4404,7 @@
                      "name": "WGS_CFX_SIR",
                      "display": true,
                      "default": false,
-                     "order": 41,
+                     "order": 40,
                      "spreadsheet heading": "WGS_CFX_SIR",
                      "display name": "WGS CFX SIR",
                      "filter type": "discrete",
@@ -4375,10 +4416,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4386,22 +4430,22 @@
                      "name": "WGS_ERY",
                      "display": true,
                      "default": false,
-                     "order": 42,
+                     "order": 41,
                      "spreadsheet heading": "WGS_ERY",
                      "display name": "WGS ERY",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_ERY_SIR",
                      "display": true,
                      "default": false,
-                     "order": 43,
+                     "order": 42,
                      "spreadsheet heading": "WGS_ERY_SIR",
                      "display name": "WGS ERY SIR",
                      "filter type": "discrete",
@@ -4413,10 +4457,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4424,22 +4471,22 @@
                      "name": "WGS_CLI",
                      "display": true,
                      "default": false,
-                     "order": 44,
+                     "order": 43,
                      "spreadsheet heading": "WGS_CLI",
                      "display name": "WGS CLI",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_CLI_SIR",
                      "display": true,
                      "default": false,
-                     "order": 45,
+                     "order": 44,
                      "spreadsheet heading": "WGS_CLI_SIR",
                      "display name": "WGS CLI SIR",
                      "filter type": "discrete",
@@ -4451,10 +4498,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4462,22 +4512,22 @@
                      "name": "WGS_SYN",
                      "display": true,
                      "default": false,
-                     "order": 46,
+                     "order": 45,
                      "spreadsheet heading": "WGS_SYN",
                      "display name": "WGS SYN",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_SYN_SIR",
                      "display": true,
                      "default": false,
-                     "order": 47,
+                     "order": 46,
                      "spreadsheet heading": "WGS_SYN_SIR",
                      "display name": "WGS SYN SIR",
                      "filter type": "discrete",
@@ -4489,10 +4539,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4500,22 +4553,22 @@
                      "name": "WGS_LZO",
                      "display": true,
                      "default": false,
-                     "order": 48,
+                     "order": 47,
                      "spreadsheet heading": "WGS_LZO",
                      "display name": "WGS LZO",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_LZO_SIR",
                      "display": true,
                      "default": false,
-                     "order": 49,
+                     "order": 48,
                      "spreadsheet heading": "WGS_LZO_SIR",
                      "display name": "WGS LZO SIR",
                      "filter type": "discrete",
@@ -4527,10 +4580,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4538,7 +4594,7 @@
                      "name": "WGS_ERY_CLI",
                      "display": true,
                      "default": false,
-                     "order": 50,
+                     "order": 49,
                      "spreadsheet heading": "WGS_ERY_CLI",
                      "display name": "WGS ERY CLI",
                      "filter type": "discrete",
@@ -4548,10 +4604,15 @@
                         "allowed_values": [
                            "NEG",
                            "POS",
-                           "FLAG"
+                           "neg",
+                           "pos",
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4559,22 +4620,22 @@
                      "name": "WGS_COT",
                      "display": true,
                      "default": false,
-                     "order": 51,
+                     "order": 50,
                      "spreadsheet heading": "WGS_COT",
                      "display name": "WGS COT",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_COT_SIR",
                      "display": true,
                      "default": false,
-                     "order": 52,
+                     "order": 51,
                      "spreadsheet heading": "WGS_COT_SIR",
                      "display name": "WGS COT SIR",
                      "filter type": "discrete",
@@ -4586,10 +4647,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4597,22 +4661,22 @@
                      "name": "WGS_TET",
                      "display": true,
                      "default": false,
-                     "order": 53,
+                     "order": 52,
                      "spreadsheet heading": "WGS_TET",
                      "display name": "WGS TET",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_TET_SIR",
                      "display": true,
                      "default": false,
-                     "order": 54,
+                     "order": 53,
                      "spreadsheet heading": "WGS_TET_SIR",
                      "display name": "WGS TET SIR",
                      "filter type": "discrete",
@@ -4624,10 +4688,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4635,22 +4702,22 @@
                      "name": "WGS_DOX",
                      "display": true,
                      "default": false,
-                     "order": 55,
+                     "order": 54,
                      "spreadsheet heading": "WGS_DOX",
                      "display name": "WGS DOX",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_DOX_SIR",
                      "display": true,
                      "default": false,
-                     "order": 56,
+                     "order": 55,
                      "spreadsheet heading": "WGS_DOX_SIR",
                      "display name": "WGS DOX SIR",
                      "filter type": "discrete",
@@ -4662,10 +4729,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4673,22 +4743,22 @@
                      "name": "WGS_LFX",
                      "display": true,
                      "default": false,
-                     "order": 57,
+                     "order": 56,
                      "spreadsheet heading": "WGS_LFX",
                      "display name": "WGS LFX",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_LFX_SIR",
                      "display": true,
                      "default": false,
-                     "order": 58,
+                     "order": 57,
                      "spreadsheet heading": "WGS_LFX_SIR",
                      "display name": "WGS LFX SIR",
                      "filter type": "discrete",
@@ -4700,10 +4770,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4711,22 +4784,22 @@
                      "name": "WGS_CHL",
                      "display": true,
                      "default": false,
-                     "order": 59,
+                     "order": 58,
                      "spreadsheet heading": "WGS_CHL",
                      "display name": "WGS CHL",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_CHL_SIR",
                      "display": true,
                      "default": false,
-                     "order": 60,
+                     "order": 59,
                      "spreadsheet heading": "WGS_CHL_SIR",
                      "display name": "WGS CHL SIR",
                      "filter type": "discrete",
@@ -4738,10 +4811,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4749,22 +4825,22 @@
                      "name": "WGS_RIF",
                      "display": true,
                      "default": false,
-                     "order": 61,
+                     "order": 60,
                      "spreadsheet heading": "WGS_RIF",
                      "display name": "WGS RIF",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_RIF_SIR",
                      "display": true,
                      "default": false,
-                     "order": 62,
+                     "order": 61,
                      "spreadsheet heading": "WGS_RIF_SIR",
                      "display name": "WGS RIF SIR",
                      "filter type": "discrete",
@@ -4776,10 +4852,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4787,22 +4866,22 @@
                      "name": "WGS_VAN",
                      "display": true,
                      "default": false,
-                     "order": 63,
+                     "order": 62,
                      "spreadsheet heading": "WGS_VAN",
                      "display name": "WGS VAN",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
-                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
+                        "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
+                        "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
                      }
                   },
                   {
                      "name": "WGS_VAN_SIR",
                      "display": true,
                      "default": false,
-                     "order": 64,
+                     "order": 63,
                      "spreadsheet heading": "WGS_VAN_SIR",
                      "display name": "WGS VAN SIR",
                      "filter type": "discrete",
@@ -4814,10 +4893,13 @@
                            "I",
                            "S",
                            "NF",
-                           "FLAG"
+                           "Flag"
                         ],
                         "convert_case": {
-                           "case": "upper"
+                           "case": "upper",
+                           "preserve": [
+                              "Flag"
+                           ]
                         }
                      }
                   },
@@ -4825,7 +4907,7 @@
                      "name": "EC",
                      "display": true,
                      "default": false,
-                     "order": 65,
+                     "order": 64,
                      "spreadsheet heading": "EC",
                      "display name": "EC",
                      "filter type": "discrete",
@@ -4838,7 +4920,7 @@
                      "name": "Cot",
                      "display": true,
                      "default": false,
-                     "order": 66,
+                     "order": 65,
                      "spreadsheet heading": "Cot",
                      "display name": "Cot",
                      "filter type": "discrete",
@@ -4851,7 +4933,7 @@
                      "name": "Tet__autocolour",
                      "display": true,
                      "default": false,
-                     "order": 67,
+                     "order": 66,
                      "spreadsheet heading": "Tet__autocolour",
                      "display name": "Tet autocolour",
                      "filter type": "discrete",
@@ -4859,11 +4941,12 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "TETO",
-                           "TETM:TETO",
                            "TETM",
+                           "NEG",
                            "TET",
-                           "NEG"
+                           "neg",
+                           "TETO",
+                           "TETM:TETO"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -4874,33 +4957,33 @@
                      "name": "FQ__autocolour",
                      "display": true,
                      "default": false,
-                     "order": 68,
+                     "order": 67,
                      "spreadsheet heading": "FQ__autocolour",
                      "display name": "FQ autocolour",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(400)",
-                        "max_length": 400
+                        "mysql_type": "VARCHAR(30)",
+                        "max_length": 30
                      }
                   },
                   {
                      "name": "Other",
                      "display": true,
                      "default": false,
-                     "order": 69,
+                     "order": 68,
                      "spreadsheet heading": "Other",
                      "display name": "Other",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(256)",
-                        "max_length": 256
+                        "mysql_type": "VARCHAR(30)",
+                        "max_length": 30
                      }
                   },
                   {
                      "name": "PBP1A_2B_2X__autocolour",
                      "display": true,
                      "default": false,
-                     "order": 70,
+                     "order": 69,
                      "spreadsheet heading": "PBP1A_2B_2X__autocolour",
                      "display name": "PBP1A 2B 2X autocolour",
                      "filter type": "discrete",
@@ -4913,307 +4996,308 @@
                      "name": "WGS_PEN_SIR_Meningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 71,
+                     "order": 70,
                      "spreadsheet heading": "WGS_PEN_SIR_Meningitis__colour",
                      "display name": "WGS PEN SIR Meningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_PEN_SIR_Nonmeningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 72,
+                     "order": 71,
                      "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis__colour",
                      "display name": "WGS PEN SIR Nonmeningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_AMO_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 73,
+                     "order": 72,
                      "spreadsheet heading": "WGS_AMO_SIR__colour",
                      "display name": "WGS AMO SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_MER_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 74,
+                     "order": 73,
                      "spreadsheet heading": "WGS_MER_SIR__colour",
                      "display name": "WGS MER SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_TAX_SIR_Meningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 75,
+                     "order": 74,
                      "spreadsheet heading": "WGS_TAX_SIR_Meningitis__colour",
                      "display name": "WGS TAX SIR Meningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_TAX_SIR_Nonmeningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 76,
+                     "order": 75,
                      "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis__colour",
                      "display name": "WGS TAX SIR Nonmeningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_CFT_SIR_Meningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 77,
+                     "order": 76,
                      "spreadsheet heading": "WGS_CFT_SIR_Meningitis__colour",
                      "display name": "WGS CFT SIR Meningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_CFT_SIR_Nonmeningitis__colour",
                      "display": true,
                      "default": false,
-                     "order": 78,
+                     "order": 77,
                      "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis__colour",
                      "display name": "WGS CFT SIR Nonmeningitis colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_CFX_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 79,
+                     "order": 78,
                      "spreadsheet heading": "WGS_CFX_SIR__colour",
                      "display name": "WGS_CFX_SIR__colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "max_length": 30,
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_ERY_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 80,
+                     "order": 79,
                      "spreadsheet heading": "WGS_ERY_SIR__colour",
                      "display name": "WGS ERY SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_CLI_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 81,
+                     "order": 80,
                      "spreadsheet heading": "WGS_CLI_SIR__colour",
                      "display name": "WGS CLI SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_SYN_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 82,
+                     "order": 81,
                      "spreadsheet heading": "WGS_SYN_SIR__colour",
                      "display name": "WGS SYN SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_LZO_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 83,
+                     "order": 82,
                      "spreadsheet heading": "WGS_LZO_SIR__colour",
                      "display name": "WGS LZO SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_COT_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 84,
+                     "order": 83,
                      "spreadsheet heading": "WGS_COT_SIR__colour",
                      "display name": "WGS COT SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_TET_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 85,
+                     "order": 84,
                      "spreadsheet heading": "WGS_TET_SIR__colour",
                      "display name": "WGS TET SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_DOX_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 86,
+                     "order": 85,
                      "spreadsheet heading": "WGS_DOX_SIR__colour",
                      "display name": "WGS DOX SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_LFX_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 87,
+                     "order": 86,
                      "spreadsheet heading": "WGS_LFX_SIR__colour",
                      "display name": "WGS LFX SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_CHL_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 88,
+                     "order": 87,
                      "spreadsheet heading": "WGS_CHL_SIR__colour",
                      "display name": "WGS CHL SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_RIF_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 89,
+                     "order": 88,
                      "spreadsheet heading": "WGS_RIF_SIR__colour",
                      "display name": "WGS RIF SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "WGS_VAN_SIR__colour",
                      "display": true,
                      "default": false,
-                     "order": 90,
+                     "order": 89,
                      "spreadsheet heading": "WGS_VAN_SIR__colour",
                      "display name": "WGS VAN SIR colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "ermB",
                      "display": true,
                      "default": false,
-                     "order": 91,
+                     "order": 90,
                      "spreadsheet heading": "ermB",
                      "display name": "ermB",
                      "filter type": "discrete",
@@ -5222,7 +5306,9 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS"
+                           "POS",
+                           "neg",
+                           "pos"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5233,22 +5319,22 @@
                      "name": "ermB__colour",
                      "display": true,
                      "default": false,
-                     "order": 92,
+                     "order": 91,
                      "spreadsheet heading": "ermB__colour",
                      "display name": "ermB colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "mefA",
                      "display": true,
                      "default": false,
-                     "order": 93,
+                     "order": 92,
                      "spreadsheet heading": "mefA",
                      "display name": "mefA",
                      "filter type": "discrete",
@@ -5257,7 +5343,9 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS"
+                           "POS",
+                           "neg",
+                           "pos"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5268,22 +5356,22 @@
                      "name": "mefA__colour",
                      "display": true,
                      "default": false,
-                     "order": 94,
+                     "order": 93,
                      "spreadsheet heading": "mefA__colour",
                      "display name": "mefA colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "folA_I100L",
                      "display": true,
                      "default": false,
-                     "order": 95,
+                     "order": 94,
                      "spreadsheet heading": "folA_I100L",
                      "display name": "folA I100L",
                      "filter type": "discrete",
@@ -5292,7 +5380,9 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS"
+                           "POS",
+                           "neg",
+                           "pos"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5303,22 +5393,22 @@
                      "name": "folA_I100L__colour",
                      "display": true,
                      "default": false,
-                     "order": 96,
+                     "order": 95,
                      "spreadsheet heading": "folA_I100L__colour",
                      "display name": "folA I100L colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "folP__autocolour",
                      "display": true,
                      "default": false,
-                     "order": 97,
+                     "order": 96,
                      "spreadsheet heading": "folP__autocolour",
                      "display name": "folP autocolour",
                      "filter type": "discrete",
@@ -5331,7 +5421,7 @@
                      "name": "cat",
                      "display": true,
                      "default": false,
-                     "order": 98,
+                     "order": 97,
                      "spreadsheet heading": "cat",
                      "display name": "Cat",
                      "filter type": "discrete",
@@ -5340,7 +5430,9 @@
                         "max_length": 30,
                         "allowed_values": [
                            "NEG",
-                           "POS"
+                           "POS",
+                           "neg",
+                           "pos"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5351,22 +5443,22 @@
                      "name": "cat__colour",
                      "display": true,
                      "default": false,
-                     "order": 99,
+                     "order": 98,
                      "spreadsheet heading": "cat__colour",
                      "display name": "Cat colour",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
                      }
                   },
                   {
                      "name": "PCV7",
                      "display": true,
                      "default": false,
-                     "order": 100,
+                     "order": 99,
                      "spreadsheet heading": "PCV7",
                      "display name": "PCV7",
                      "filter type": "discrete",
@@ -5386,7 +5478,7 @@
                      "name": "PCV10",
                      "display": true,
                      "default": false,
-                     "order": 101,
+                     "order": 100,
                      "spreadsheet heading": "PCV10",
                      "display name": "PCV10",
                      "filter type": "discrete",
@@ -5406,7 +5498,7 @@
                      "name": "PCV13",
                      "display": true,
                      "default": false,
-                     "order": 102,
+                     "order": 101,
                      "spreadsheet heading": "PCV13",
                      "display name": "PCV13",
                      "filter type": "discrete",
@@ -5426,7 +5518,7 @@
                      "name": "PCV15",
                      "display": true,
                      "default": false,
-                     "order": 103,
+                     "order": 102,
                      "spreadsheet heading": "PCV15",
                      "display name": "PCV15",
                      "filter type": "discrete",
@@ -5446,7 +5538,7 @@
                      "name": "PCV20",
                      "display": true,
                      "default": false,
-                     "order": 104,
+                     "order": 103,
                      "spreadsheet heading": "PCV20",
                      "display name": "PCV20",
                      "filter type": "discrete",
@@ -5466,7 +5558,7 @@
                      "name": "Pneumosil",
                      "display": true,
                      "default": false,
-                     "order": 105,
+                     "order": 104,
                      "spreadsheet heading": "Pneumosil",
                      "display name": "Pneumosil",
                      "filter type": "discrete",
@@ -5486,7 +5578,7 @@
                      "name": "Published",
                      "display": true,
                      "default": false,
-                     "order": 106,
+                     "order": 105,
                      "spreadsheet heading": "Published",
                      "display name": "Published",
                      "filter type": "discrete",
@@ -5570,6 +5662,39 @@
                      }
                   },
                   {
+                     "name": "sample_name",
+                     "display": false,
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z]+)$",
+                        "regex_validation_message": "must not contain illegal characters"
+                     }
+                  },
+                  {
+                     "name": "sample_accession",
+                     "display": false,
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^ERS\\d{7}$",
+                        "regex_validation_message": "must be a ERS accession number (ERS# format)"
+                     }
+                  },
+                  {
+                     "name": "lane_accession",
+                     "display": false,
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^ERR\\d{7}$",
+                        "regex_validation_message": "must be a ERR accession number (ERR# format)"
+                     }
+                  },
+                  {
                      "name": "supplier_name",
                      "display": false,
                      "db": {
@@ -5577,6 +5702,17 @@
                         "mandatory": true,
                         "max_length": 256,
                         "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                  {
+                     "name": "public_name",
+                     "display": false,
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   }
@@ -5651,16 +5787,16 @@
                      }
                   },
                   {
-                     "name": "Proportion_of_Het_SNPs",
+                     "name": "X_Het_SNPs_Total_No_of_SNPs",
                      "display": true,
                      "default": true,
                      "order": 6,
-                     "display name": "Proportion of Het SNPs",
+                     "display name": "Total No of SNPs (X Het SNPs)",
                      "db": {                     
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be '_'"
+                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^NA$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be 'NA'"
                      }
                   },
                   {
@@ -5673,10 +5809,10 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
-                           "PASSPLUS",
-                           "PASS",
-                           "FAIL"
+                           "Pass",
+                           "PassPlus",
+                           "Fail",
+                           "NA"
                         ],
                         "convert_case": {
                            "case": "upper"
@@ -5692,8 +5828,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{4}$|^_$",
-                        "regex_validation_message": "must be an integer (1-4 digits), or '_'"
+                        "regex": "^\\d{4}$|^#N/A$",
+                        "regex_validation_message": "must be a max 4 digits number or '#N/A'"
                      }
                   }
                ]

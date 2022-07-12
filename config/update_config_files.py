@@ -47,7 +47,8 @@ class UpdateMetadataFiles:
             comments.append(data["regex_validation_message"])
         if len(comments) == 0:
             return ""
-        return "  # " + "; ".join(comments)
+        comment_string = "  # " + "; ".join(comments)
+        return comment_string.rstrip()
 
     def generate_dataclass_file(self, data, class_name, filename):
         """Generated a Python dataclass file."""
@@ -424,6 +425,9 @@ class UpdateMetadataFiles:
             config[section_name_in_metadata_api_config] = self.update_config_section(
                 config[section_name_in_metadata_api_config], self.config[section_name_in_main_config][project_key]
             )
+
+        for sub_key in ["project_links"]:
+            config[sub_key] = self.projects[project_key][sub_key]
 
         json_object = json.dumps(config, indent=3)
         with open(config_path, "w") as out_file:
