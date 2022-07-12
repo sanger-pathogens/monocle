@@ -437,7 +437,7 @@ class MonocleSampleTracking:
             # lane has completed, whether success or failure
             this_lane_completed = True
             # look for any failures; note one lane could have more than one failure
-            if not 1 == this_lane["qc_success"]:
+            if "qc_success" not in this_lane or not 1 == this_lane["qc_success"]:
                 this_lane_success = False
                 # record details of this failure
                 fail_messages.append(
