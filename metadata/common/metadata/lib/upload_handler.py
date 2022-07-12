@@ -187,6 +187,8 @@ class UploadHandler:
             )
         data.fillna("", inplace=True)
 
+        logger.info("Loaded spreadsheet:\n{}".format(data.head()))
+
         # Display spreadsheet contents for debugging if required
         # for key, value in data.iterrows():
         #     logger.debug("{} {}".format(key, value))
