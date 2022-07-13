@@ -16,7 +16,9 @@ from metadata.tests.test_data import (
     TEST_UPLOAD_SAMPLE_5,
 )
 
-RESPONSE_STRING_INSTITUTIONS = b'{"institutions": {"TesInsA": {"inst_name": "Test Institution A", "country_names": ["TestCountryA", "TestCountryB"]}}}'
+RESPONSE_STRING_INSTITUTIONS = (
+    b'{"institutions": {"TesInsA": {"db_key": "TesInsA", "country_names": ["TestCountryA", "TestCountryB"]}}}'
+)
 
 
 class TestUploadHandler(unittest.TestCase):

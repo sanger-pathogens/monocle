@@ -115,7 +115,7 @@ class UploadHandler:
 
             # Special cases for checking institutions/countries...
             if column == "submitting_institution":
-                validators.append(InListValidation([institution["inst_name"] for institution in self.__institutions]))
+                validators.append(InListValidation([institution["db_key"] for institution in self.__institutions]))
             if column == "country":
                 for institution in self.__institutions:
                     validators.append(InListValidation([country for country in institution["country_names"]]))
