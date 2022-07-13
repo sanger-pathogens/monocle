@@ -1180,12 +1180,12 @@ components:
           type: integer
           readOnly: true
         completed:
-          description: "DEPRECATED: please use samples_completed or lanes_completed"
+          description: "DEPRECATED: please use samples_completed"
           example: 300
           type: integer
           readOnly: true
         success:
-          description: "DEPRECATED: please use samples_successful or lanes_successful"
+          description: "DEPRECATED: please use lanes_successful"
           example: 300
           type: integer
           readOnly: true
