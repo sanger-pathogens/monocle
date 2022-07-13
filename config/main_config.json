@@ -91,7 +91,7 @@
          "gps": {
             "project_links" : {
                "name": "GPS Project", 
-               "logo_url": "",
+               "logo_url": "/imgs/gps_banner.png",
                "project_url": "",
                "header_links": [
                   {"label": "About", "url": "https://www.gbsgen.net/#about"},
