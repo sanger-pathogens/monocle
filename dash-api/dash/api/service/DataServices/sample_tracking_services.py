@@ -388,12 +388,16 @@ class MonocleSampleTracking:
                 API_ERROR_KEY: None,
                 "received": len(sanger_sample_id_list) - 1,
                 "completed": 0,
+                "lanes completed": 0,
                 "success": 0,
                 "failed": 0,
                 "fail_messages": [],
             }
             if len(sanger_sample_id_list) - 1 > 0:  # sanger_sample_id_list must be -1 to discount _ERROR entry
                 this_sequencing_status_data = sequencing_status_data[this_institution]
+                # this dict tracks samples with at least one completed lane
+                # it avoids double-counting any samples with two (or more) lanes sequenced
+                samples_completed = {}
                 for this_sanger_sample_id in sanger_sample_id_list:
                     if this_sanger_sample_id == API_ERROR_KEY:
                         continue
@@ -405,7 +409,16 @@ class MonocleSampleTracking:
                             this_sanger_sample_id, this_lane
                         )
                         if this_lane_completed:
-                            status[this_institution]["completed"] += 1
+                            status[this_institution]["lanes completed"] += 1
+                            if samples_completed.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "completed" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                status[this_institution]["completed"] += 1
+                            samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
                             status[this_institution]["success"] += 1
                         else:

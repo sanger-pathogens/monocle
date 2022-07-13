@@ -1180,6 +1180,11 @@ components:
           type: integer
           readOnly: true
         completed:
+          description: "The number of samples with at least one lane that as completed sequencing, whether pass or fail."
+          example: 300
+          type: integer
+          readOnly: true
+        lanes completed:
           description: "The number of lanes that have completed sequencing, whether pass or fail."
           example: 300
           type: integer
