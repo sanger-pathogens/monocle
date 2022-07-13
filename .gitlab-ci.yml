@@ -34,26 +34,26 @@ Check that Python code is formatted & linted:
       fi
     - exit $exit_code
 
-Check that FE code & non-Python files are formatted & linted:
-  stage: formatting_and_linting_check
-  tags:
-    - openstack-autoscale-theta
-  # Keep this version in sync w/ the one from `./.pre-commit-config.yaml`.
-  image: node:16.15-alpine3.14
-  before_script:
-    # These version should match the ones from `./.pre-commit-config.yaml`:
-    - npm i -g prettier@2.6.2 prettier-plugin-svelte@2.7.0 eslint@8.16.0
-    # ESLint's dependencies need be installed locally for global ESLint to work.
-    - npm i -D eslint-config-prettier@8.5.0 eslint-plugin-jest@26.4.6 eslint-plugin-svelte3@4.0.0
-  script:
-    # Keep these args in sync w/ Prettier & ESLint args in `./.gitlab-ci.yml` (besides `--check`, `--write`, & `--fix`
-    # which control whether auto-fixing is made):
-    - prettier --check --no-config --ignore-path .eslintignore . && eslint . || exit_code=$?
-    - >
-      if [[ $exit_code -eq 1 ]]; then
-        echo "❌ Some FE code or non-Python files aren't formatted or linted. Ensure that you have `pre-commit` hooks installed locally (see the main README in `monocle` for details)."
-      fi
-    - exit $exit_code
+####################Check that FE code & non-Python files are formatted & linted:
+####################stage: formatting_and_linting_check
+####################tags:
+####################- openstack-autoscale-theta
+##################### Keep this version in sync w/ the one from `./.pre-commit-config.yaml`.
+####################image: node:16.15-alpine3.14
+####################before_script:
+##################### These version should match the ones from `./.pre-commit-config.yaml`:
+####################- npm i -g prettier@2.6.2 prettier-plugin-svelte@2.7.0 eslint@8.16.0
+##################### ESLint's dependencies need be installed locally for global ESLint to work.
+####################- npm i -D eslint-config-prettier@8.5.0 eslint-plugin-jest@26.4.6 eslint-plugin-svelte3@4.0.0
+####################script:
+##################### Keep these args in sync w/ Prettier & ESLint args in `./.gitlab-ci.yml` (besides `--check`, `--write`, & `--fix`
+##################### which control whether auto-fixing is made):
+####################- prettier --check --no-config --ignore-path .eslintignore . && eslint . || exit_code=$?
+####################- >
+####################if [[ $exit_code -eq 1 ]]; then
+####################echo "❌ Some FE code or non-Python files aren't formatted or linted. Ensure that you have `pre-commit` hooks installed locally (see the main README in `monocle` for details)."
+####################fi
+####################- exit $exit_code
 
 # at every git push, build docker images
 # push the images to the container registry  with the commit SHA-1 as the tag
