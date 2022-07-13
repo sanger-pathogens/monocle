@@ -1175,7 +1175,7 @@ components:
       description: "Sequencing status summary information for an institution."
       properties:
         received:
-          description: "The number of lanes received."
+          description: "The number of samples received."
           example: 400
           type: integer
           readOnly: true
