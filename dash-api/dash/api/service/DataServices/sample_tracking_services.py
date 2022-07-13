@@ -374,8 +374,8 @@ class MonocleSampleTracking:
         status = {}
         for this_institution in sequencing_status_data.keys():
             logging.debug(
-                "{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
-                    __class__.__name__, sequencing_status_data[this_institution].keys(), this_institution
+                "{}.sequencing_status_summary() received sample ID list {} for institution {}".format(
+                    __class__.__name__, list(sequencing_status_data[this_institution]), this_institution
                 )
             )
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
