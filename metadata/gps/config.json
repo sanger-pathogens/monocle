@@ -1942,8 +1942,8 @@
    },
    "project_links": {
       "name": "GPS Project",
-      "logo_url": "",
-      "project_url": "",
+      "logo_url": "/imgs/gps_banner.png",
+      "project_url": "https://www.pneumogen.net/gps",
       "header_links": [
          {
             "label": "About",
