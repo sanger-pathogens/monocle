@@ -6,7 +6,7 @@
 
   export let pipelineStatus = {};
 
-  const CHART_LABELS = ["Pending", "Succeeded", "Failed"];
+  const CHART_LABELS = ["Pending", "Successful runs", "Failed runs"];
   const FAIL_MESSAGES_TITLE = "Pipeline Failures";
 
   const {
