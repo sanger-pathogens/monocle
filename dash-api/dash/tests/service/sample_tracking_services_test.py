@@ -232,7 +232,7 @@ class MonocleSampleTrackingTest(TestCase):
         "FakOne": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
             "samples_received": 4,
@@ -252,7 +252,7 @@ class MonocleSampleTrackingTest(TestCase):
         "FakTwo": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
             "samples_received": 4,
