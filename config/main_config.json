@@ -92,7 +92,7 @@
             "project_links" : {
                "name": "GPS Project", 
                "logo_url": "/imgs/gps_banner.png",
-               "project_url": "",
+               "project_url": "https://www.pneumogen.net/gps",
                "header_links": [
                   {"label": "About", "url": "https://www.gbsgen.net/#about"},
                   {"label": "Team", "url": "https://www.gbsgen.net/#team"},
