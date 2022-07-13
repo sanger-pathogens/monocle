@@ -231,11 +231,11 @@ class MonocleSampleTrackingTest(TestCase):
     expected_seq_summary = {
         "FakOne": {
             "_ERROR": None,
-            "received": 4,
-            "completed": 4,
-            "lanes completed": 6,
-            "success": 5,
-            "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
@@ -246,11 +246,11 @@ class MonocleSampleTrackingTest(TestCase):
         },
         "FakTwo": {
             "_ERROR": None,
-            "received": 4,
-            "completed": 4,
-            "lanes completed": 6,
-            "success": 5,
-            "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
