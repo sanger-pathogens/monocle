@@ -389,6 +389,7 @@ class MonocleSampleTracking:
                 API_ERROR_KEY: None,
                 "samples_received": len(sanger_sample_id_list) - 1,
                 "samples_completed": 0,
+                "samples_successful": 0,
                 "lanes_completed": 0,
                 "lanes_successful": 0,
                 "lanes_failed": 0,
@@ -399,6 +400,8 @@ class MonocleSampleTracking:
                 # this dict tracks samples with at least one completed lane
                 # it avoids double-counting any samples with two (or more) lanes sequenced
                 samples_completed = {}
+                # same as `samples_completed` but samples with at least one successfully sequenced lane
+                samples_successful = {}
                 for this_sanger_sample_id in sanger_sample_id_list:
                     if this_sanger_sample_id == API_ERROR_KEY:
                         continue
@@ -413,7 +416,7 @@ class MonocleSampleTracking:
                             status[this_institution]["lanes_completed"] += 1
                             if samples_completed.get(this_sanger_sample_id, False) is True:
                                 logging.debug(
-                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "completed" total'.format(
+                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "samples_completed" total'.format(
                                         this_sanger_sample_id
                                     )
                                 )
@@ -422,6 +425,15 @@ class MonocleSampleTracking:
                             samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
                             status[this_institution]["lanes_successful"] += 1
+                            if samples_successful.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one successfully sequenced lane: it is being counted only ONCE in sequencing status "samples_successful" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                status[this_institution]["samples_successful"] += 1
+                            samples_successful[this_sanger_sample_id] = True
                         else:
                             status[this_institution]["lanes_failed"] += 1
                             status[this_institution]["fail_messages"] += fail_messages
