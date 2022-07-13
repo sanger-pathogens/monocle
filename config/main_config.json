@@ -1684,11 +1684,12 @@
                      "order"              : 15,
                      "spreadsheet heading": "Age_years",
                      "display name"       : "Age years",
-                     "filter type"        : "numeric",
+                     "filter type"        : "discrete",
                      "db": {
-                          "mysql_type": "INT(11) DEFAULT NULL",
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
                           "regex": "^(?:\\d+)$|^(?:<|>)?(?:=)?(?: |)?(?:\\d+(?:\\.\\d*)?(?:<=\\d+)?(?: )?(?:&)?(?: )?(?:<|>)?(?:\\d+)?)$|^_$",
-                          "regex_validation_message": "should be an integer; can be a decimal number; can include spaces, '>','<', '=' and '&' symbols"
+                          "regex_validation_message": "should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols; can be '_'"
                        }
                     },
                   {  "name"               : "age_months",
@@ -2670,9 +2671,12 @@
                       "order"              : 68,
                       "spreadsheet heading": "Introduction_year",
                       "display name"       : "Introduction Year",
-                      "filter type"        :  "numeric",
+                      "filter type"        :  "discrete",
                       "db": {
-                          "mysql_type": "SMALLINT(6) DEFAULT NULL"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex": "^\\d{4}$|^_$",
+                        "regex_validation_message": "must be a YYYY format year, or '_'"
                        }
                     },
                    {  "name"               : "PCV_type",
@@ -2695,9 +2699,12 @@
                       "order"              : 70,
                       "spreadsheet heading": "Resolution",
                       "display name"       : "Resolution",
-                      "filter type"        :  "numeric",
+                      "filter type"        :  "discrete",
                       "db": {
-                          "mysql_type": "SMALLINT(4)"
+                          "mysql_type": "VARCHAR(10)",
+                          "max_length": 10,
+                          "regex": "^[0-2]$|^_$",
+                          "regex_validation_message": "must be an integer (range 0-2), or '_'"
                       }
                     }                     
                ]
