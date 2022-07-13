@@ -5,26 +5,26 @@ const FAILED = 2;
 const RECEIVED = 10;
 
 it("displays data passed", () => {
-  const completed = 8;
+  const samples_completed = 8;
 
   const { container, getByText } = render(SequencingStatus, {
     sequencingStatus: {
-      received: RECEIVED,
-      completed,
+      samples_received: RECEIVED,
+      samples_completed,
     },
   });
 
   expect(container.querySelector("h3").textContent).toBe(
-    `${completed} of ${RECEIVED} Samples Sequenced`
+    `${samples_completed} of ${RECEIVED} Samples Sequenced`
   );
-  expect(getByText("% completed", { exact: false })).toBeDefined();
+  expect(getByText("% samples_completed", { exact: false })).toBeDefined();
 });
 
 it("displays a special heading when all samples are sequenced", () => {
   const { container } = render(SequencingStatus, {
     sequencingStatus: {
-      received: RECEIVED,
-      completed: RECEIVED,
+      samples_received: RECEIVED,
+      samples_completed: RECEIVED,
     },
   });
 
@@ -38,8 +38,8 @@ it("displays the download button", () => {
 
   const { getByRole } = render(SequencingStatus, {
     sequencingStatus: {
-      received: RECEIVED,
-      completed: RECEIVED,
+      samples_received: RECEIVED,
+      samples_completed: RECEIVED,
       success: succeeded,
     },
   });
@@ -56,8 +56,8 @@ it("displays the download failed button inside the failure messages dialog", asy
 
   const { getByRole, queryByRole } = render(SequencingStatus, {
     sequencingStatus: {
-      received: RECEIVED,
-      completed: RECEIVED,
+      samples_received: RECEIVED,
+      samples_completed: RECEIVED,
       failed: FAILED,
     },
   });
@@ -72,8 +72,8 @@ it("displays the download failed button inside the failure messages dialog", asy
 it("displays the button to show failed sample sequencing", () => {
   const { getByRole } = render(SequencingStatus, {
     sequencingStatus: {
-      received: RECEIVED,
-      completed: RECEIVED,
+      samples_received: RECEIVED,
+      samples_completed: RECEIVED,
       failed: FAILED,
     },
   });

@@ -10,21 +10,21 @@
   const FAIL_MESSAGES_TITLE = "Sequencing Failures";
 
   const {
-    received,
-    success: succeeded,
-    failed,
-    completed,
+    samples_received,
+    lanes_successful: succeeded,
+    lanes_failed,
+    samples_completed,
     fail_messages: failures,
   } = sequencingStatus;
-  const pending = received - completed;
+  const pending = samples_received - samples_completed;
 </script>
 
 <StatusPane grow>
   <h3>
     {#if pending}
-      <code>{completed}</code> of <code>{received}</code> Samples Sequenced
+      <code>{samples_completed}</code> of <code>{samples_received}</code> Samples Sequenced
     {:else}
-      All <code>{completed}</code> Samples Sequenced
+      All <code>{samples_completed}</code> Samples Sequenced
     {/if}
   </h3>
 
