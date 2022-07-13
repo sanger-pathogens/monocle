@@ -252,7 +252,7 @@ class MonocleSampleTrackingTest(TestCase):
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "sequencing",
+                    "stage": "Sequencing QC failed",
                     "issue": "sorry, failure messages cannot currently be seen here",
                 }
             ],
