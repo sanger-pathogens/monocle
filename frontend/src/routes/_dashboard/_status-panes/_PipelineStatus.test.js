@@ -29,7 +29,7 @@ it("displays a special heading when all pipelines are finished", () => {
   });
 
   expect(container.querySelector("h3").textContent).toBe(
-    `All ${SEQUENCED_SUCCESS} Sample Pipelines Completed`
+    `All ${SEQUENCED_SUCCESS} Pipelines Completed`
   );
 });
 

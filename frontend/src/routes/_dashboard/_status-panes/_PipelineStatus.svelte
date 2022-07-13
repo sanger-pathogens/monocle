@@ -25,10 +25,9 @@
   {:else}
     <h3>
       {#if pending > 0}
-        <code>{completed}</code> of <code>{sequencedSuccess}</code> Sample Pipelines
-        Completed
+        <code>{completed}</code> of <code>{sequencedSuccess}</code> Pipelines Completed
       {:else}
-        All <code>{completed}</code> Sample Pipelines Completed
+        All <code>{completed}</code> Pipelines Completed
       {/if}
     </h3>
 
