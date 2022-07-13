@@ -385,7 +385,7 @@ class MonocleSampleTracking:
                 }
                 continue
             sanger_sample_id_list = sequencing_status_data[this_institution].keys()
-            status[this_institution] = {
+            this_institution_status = {
                 API_ERROR_KEY: None,
                 "samples_received": len(sanger_sample_id_list) - 1,
                 "samples_completed": 0,
@@ -413,7 +413,7 @@ class MonocleSampleTracking:
                             this_sanger_sample_id, this_lane
                         )
                         if this_lane_completed:
-                            status[this_institution]["lanes_completed"] += 1
+                            this_institution_status["lanes_completed"] += 1
                             if samples_completed.get(this_sanger_sample_id, False) is True:
                                 logging.debug(
                                     'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "samples_completed" total'.format(
@@ -421,10 +421,10 @@ class MonocleSampleTracking:
                                     )
                                 )
                             else:
-                                status[this_institution]["samples_completed"] += 1
+                                this_institution_status["samples_completed"] += 1
                             samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
-                            status[this_institution]["lanes_successful"] += 1
+                            this_institution_status["lanes_successful"] += 1
                             if samples_successful.get(this_sanger_sample_id, False) is True:
                                 logging.debug(
                                     'sample {} has more than one successfully sequenced lane: it is being counted only ONCE in sequencing status "samples_successful" total'.format(
@@ -432,11 +432,12 @@ class MonocleSampleTracking:
                                     )
                                 )
                             else:
-                                status[this_institution]["samples_successful"] += 1
+                                this_institution_status["samples_successful"] += 1
                             samples_successful[this_sanger_sample_id] = True
                         else:
-                            status[this_institution]["lanes_failed"] += 1
-                            status[this_institution]["fail_messages"] += fail_messages
+                            this_institution_status["lanes_failed"] += 1
+                            this_institution_status["fail_messages"] += fail_messages
+            status[this_institution] = this_institution_status
         return status
 
     def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):
