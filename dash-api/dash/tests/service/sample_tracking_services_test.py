@@ -77,6 +77,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_1",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -85,6 +87,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_2",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -93,6 +97,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_3",
                     "qc_lib": 1,
                     "qc_seq": 0,
+                    "qc_success": 0,
+                    "qc_status_text": "Sequencing QC failed",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -107,6 +113,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_4",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -121,6 +129,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_5",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -135,6 +145,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_6",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -226,7 +238,7 @@ class MonocleSampleTrackingTest(TestCase):
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "sequencing",
+                    "stage": "Sequencing QC failed",
                     "issue": "sorry, failure messages cannot currently be seen here",
                 }
             ],
@@ -240,7 +252,7 @@ class MonocleSampleTrackingTest(TestCase):
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "sequencing",
+                    "stage": "Sequencing QC failed",
                     "issue": "sorry, failure messages cannot currently be seen here",
                 }
             ],
