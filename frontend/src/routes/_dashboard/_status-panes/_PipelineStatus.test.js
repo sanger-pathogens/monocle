@@ -15,7 +15,7 @@ it("displays data passed", () => {
   });
 
   expect(container.querySelector("h3").textContent).toBe(
-    `${completed} of ${SEQUENCED_SUCCESS} Sample Pipelines\n        Completed`
+    `${completed} of ${SEQUENCED_SUCCESS} Pipelines Completed`
   );
   expect(getByText("% completed", { exact: false })).toBeDefined();
 });
