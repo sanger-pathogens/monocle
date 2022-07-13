@@ -1174,28 +1174,28 @@ components:
         - fail_messages
       description: "Sequencing status summary information for an institution."
       properties:
-        samples_received:
-          description: "The number of SAMPLES received."
+        received:
+          description: "The number of samples received."
           example: 400
           type: integer
           readOnly: true
-        samples_completed:
-          description: "The number of SAMPLES with at least one lane that as completed sequencing, whether pass or fail."
+        completed:
+          description: "The number of samples with at least one lane that as completed sequencing, whether pass or fail."
           example: 300
           type: integer
           readOnly: true
-        lanes_completed:
-          description: "The number of LANES that have completed sequencing, whether pass or fail."
+        lanes completed:
+          description: "The number of lanes that have completed sequencing, whether pass or fail."
           example: 300
           type: integer
           readOnly: true
-        lanes_successful:
-          description: "The number of LANES that have successfully completed sequencing."
+        success:
+          description: "The number of lanes that have successfully completed sequencing."
           example: 298
           type: integer
           readOnly: true
-        lanes_failed:
-          description: "The number of LANES that have failed sequencing."
+        failed:
+          description: "The number of lanes that have failed sequencing."
           example: 2
           type: integer
           readOnly: true

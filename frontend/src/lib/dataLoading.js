@@ -273,7 +273,7 @@ function collateInstitutionStatus({
     batches: batches[institutionKey],
     sequencingStatus: sequencingStatus[institutionKey],
     pipelineStatus: {
-      sequencedSuccess: sequencingStatus[institutionKey].lanes_successful,
+      sequencedSuccess: sequencingStatus[institutionKey].success,
       ...pipelineStatus[institutionKey],
     },
     key: institutionKey,
