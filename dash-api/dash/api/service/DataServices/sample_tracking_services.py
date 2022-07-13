@@ -437,6 +437,12 @@ class MonocleSampleTracking:
                         else:
                             this_institution_status["lanes_failed"] += 1
                             this_institution_status["fail_messages"] += fail_messages
+            # add deprecated keys to status object
+            # TODO remove these after FE has been updated
+            this_institution_status["received"] = this_institution_status["samples_received"]
+            this_institution_status["completed"] = this_institution_status["lanes_completed"]
+            this_institution_status["success"] = this_institution_status["lanes_successful"]
+            this_institution_status["failed"] = this_institution_status["lanes_failed"]
             status[this_institution] = this_institution_status
         return status
 
