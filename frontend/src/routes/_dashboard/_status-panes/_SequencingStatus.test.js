@@ -58,7 +58,7 @@ it("displays the download failed button inside the failure messages dialog", asy
     sequencingStatus: {
       samples_received: RECEIVED,
       samples_completed: RECEIVED,
-      failed: FAILED,
+      lanes_failed: FAILED,
     },
   });
 
@@ -74,7 +74,7 @@ it("displays the button to show failed sample sequencing", () => {
     sequencingStatus: {
       samples_received: RECEIVED,
       samples_completed: RECEIVED,
-      failed: FAILED,
+      lanes_failed: FAILED,
     },
   });
 

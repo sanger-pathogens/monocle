@@ -28,13 +28,13 @@
     {/if}
   </h3>
 
-  <StatusChart labels={CHART_LABELS} values={[pending, succeeded, failed]} />
+  <StatusChart labels={CHART_LABELS} values={[pending, succeeded, lanes_failed]} />
 
   <DownloadButtons {succeeded} />
 
-  {#if failed > 0}
+  {#if lanes_failed > 0}
     <FailMessages {failures} title={FAIL_MESSAGES_TITLE}>
-      <DownloadButtons {failed} style="float: right" />
+      <DownloadButtons {lanes_failed} style="float: right" />
     </FailMessages>
   {:else}
     <FailMessages {failures} title={FAIL_MESSAGES_TITLE} />
