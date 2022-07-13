@@ -512,7 +512,7 @@
                      "order": 18,
                      "spreadsheet heading": "Age_years",
                      "display name": "Age years",
-                     "filter type": "discrete",
+                     "filter type": "numeric",
                      "db": {
                         "mysql_type": "int(11) DEFAULT NULL",
                         "regex": "^(?:\\d{1,3})$",
