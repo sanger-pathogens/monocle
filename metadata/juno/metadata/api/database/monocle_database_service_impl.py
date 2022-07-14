@@ -72,7 +72,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             SELECT lane_id FROM in_silico WHERE {} IN :values OR {} IS NULL"""
 
     DISTINCT_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM api_sample WHERE submitting_institution IN :institutions"""
+            SELECT DISTINCT {} FROM api_sample WHERE submitting_institution_key IN :institutions"""
 
     DISTINCT_IN_SILICO_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM in_silico"""
