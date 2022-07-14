@@ -1,6 +1,9 @@
 <script>
   import DataUploader from "$lib/components/data-upload/DataUploader.svelte";
   import Dialog from "$lib/components/Dialog.svelte";
+  import { getStores } from "$app/stores";
+
+  export let session = getStores().session;
 
   const DESCRIPTION_ELEMENT_ID = "metadata-uploading-description";
 
@@ -19,7 +22,8 @@
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/metadata/juno/metadata-upload"
+  {session}
+  dataType="metadata"
   on:uploadSuccess={openDialog}
 />
 

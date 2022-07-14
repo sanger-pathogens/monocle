@@ -3,13 +3,17 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import ValidationErrorList from "./ValidationErrorList.svelte";
 
+  export let session;
   export let ariaLabelledby = undefined;
   export let files = [];
   export let accept = undefined;
-  export let uploadUrl;
+  export let dataType;
 
   const dispatch = createEventDispatcher();
   let uploading = false;
+  $: uploadUrl = $session.project?.upload_links.find(
+    (uploadLink) => uploadLink.label === dataType
+  )?.url;
   let validationErrors = [];
 
   // `files` is referenced here only to indicate Svelte's reactive statemnt that `clearValidationErrors()`
@@ -107,7 +111,11 @@
   <fieldset disabled={uploading}>
     <input bind:files type="file" {accept} multiple />
 
-    <button type="submit" class="primary" disabled={files.length === 0}>
+    <button
+      type="submit"
+      class="primary"
+      disabled={files.length === 0 || !uploadUrl}
+    >
       Upload
     </button>
   </fieldset>
