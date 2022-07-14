@@ -365,12 +365,6 @@ then
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/create_download_view_for_sample_data.py $REMOTE_USER@$REMOTE_HOST:~/create_download_view_for_sample_data.py
     scp -o ControlPath=%C $SCP_PORT_ARG data_view/bin/run_data_view_script_in_docker.sh       $REMOTE_USER@$REMOTE_HOST:~/run_data_view_script_in_docker.sh
     
-    # QC data scripts
-    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/run_get_qc_data_in_docker.sh $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/run_get_qc_data_in_docker.sh
-    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/get_qc_data.py               $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/get_qc_data.py
-    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/bin/update_qc_data_db_table.py   $REMOTE_USER@$REMOTE_HOST:~/qc-data/bin/update_qc_data_db_table.py
-    scp -o ControlPath=%C $SCP_PORT_ARG qc-data/lib/qc_data.py                   $REMOTE_USER@$REMOTE_HOST:~/qc-data/lib/qc_data.py
-
     # hopusekeeping script(s)
     scp -o ControlPath=%C $SCP_PORT_ARG housekeeping/bin/housekeeping.sh $REMOTE_USER@$REMOTE_HOST:~/housekeeping.sh
 
@@ -383,8 +377,8 @@ then
     ssh -o ControlPath=%C $SSH_PORT_ARG $REMOTE_USER@$REMOTE_HOST << EOF
         set -e
         echo "Setting configuration in docker-compose.yml..."
-        sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh qc-data/bin/run_get_qc_data_in_docker.sh
-        sed -i -e "s/<USER>/${REMOTE_USER}/g"     docker-compose.yml run_data_view_script_in_docker.sh qc-data/bin/run_get_qc_data_in_docker.sh
+        sed -i -e "s/<DOCKERTAG>/${docker_tag}/g" docker-compose.yml run_data_view_script_in_docker.sh
+        sed -i -e "s/<USER>/${REMOTE_USER}/g"     docker-compose.yml run_data_view_script_in_docker.sh
         sed -i -e "s/<USER_UID>/\$(id -u)/g"      docker-compose.yml
         sed -i -e "s/<USER_GID>/\$(id -g)/g"      docker-compose.yml
         echo "Setting configuration in nginx.proxy.conf..."
@@ -394,7 +388,7 @@ then
         echo "Setting file permissions..."
         chmod 600 docker-compose.yml
         chmod 644 nginx.proxy.conf nginx.service_maintenance.conf
-        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh qc-data/bin/get_qc_data.py qc-data/bin/run_get_qc_data_in_docker.sh housekeeping.sh
+        chmod 700 create_download_view_for_sample_data.py run_data_view_script_in_docker.sh housekeeping.sh
         echo "Pulling ${docker_tag} docker images..."
         echo "${GITLAB_TOKEN}" | docker login -u "${GITLAB_USER}" --password-stdin "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle"
         docker-compose pull
