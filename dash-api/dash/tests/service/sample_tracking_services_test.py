@@ -232,9 +232,15 @@ class MonocleSampleTrackingTest(TestCase):
         "FakOne": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "samples_successful": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
@@ -246,9 +252,15 @@ class MonocleSampleTrackingTest(TestCase):
         "FakTwo": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "samples_successful": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
@@ -380,8 +392,8 @@ class MonocleSampleTrackingTest(TestCase):
 
     def test_sequencing_status_summary(self):
         seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
 
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
         self.assertEqual(self.expected_seq_summary, seq_status_summary)
 
     def test_sequencing_status_summary_dropout(self):

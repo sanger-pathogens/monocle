@@ -2,6 +2,10 @@
   "name": "Monocle frontend",
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "npm": ">=7.20.3",
+    "node": ">=16.8.0"
+  },
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",

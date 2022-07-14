@@ -354,16 +354,17 @@ class MonocleSampleTracking:
         """
         Returns dict with a summary of sequencing outcomes for each institution.
 
-        {  institution_1: {  'received':    <int>,
-                             'completed':   <int>,
-                             'success':     <int>,
-                             'failed':      <int>,
-                             'fail_messages':  [  {  'lane':  lane_id_1,
-                                                     'stage': 'name of QC stage where issues was detected',
-                                                     'issue': 'string describing the issue'
-                                                     },
-                                                  ...
-                                                  ],
+        {  institution_1: {  'samples_received':  <int>,
+                             'samples_completed': <int>,
+                             'lanes_completed':   <int>,
+                             'lanes_successful':  <int>,
+                             'lanes_failed':      <int>,
+                             'fail_messages':     [ { 'lane':  lane_id_1,
+                                                      'stage': 'name of QC stage where issues was detected',
+                                                      'issue': 'string describing the issue'
+                                                      },
+                                                    ...
+                                                    ],
                              },
            institution_2...
            }
@@ -374,8 +375,8 @@ class MonocleSampleTracking:
         status = {}
         for this_institution in sequencing_status_data.keys():
             logging.debug(
-                "{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
-                    __class__.__name__, sequencing_status_data[this_institution].keys(), this_institution
+                "{}.sequencing_status_summary() received sample ID list {} for institution {}".format(
+                    __class__.__name__, list(sequencing_status_data[this_institution]), this_institution
                 )
             )
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
@@ -384,16 +385,23 @@ class MonocleSampleTracking:
                 }
                 continue
             sanger_sample_id_list = sequencing_status_data[this_institution].keys()
-            status[this_institution] = {
+            this_institution_status = {
                 API_ERROR_KEY: None,
-                "received": len(sanger_sample_id_list) - 1,
-                "completed": 0,
-                "success": 0,
-                "failed": 0,
+                "samples_received": len(sanger_sample_id_list) - 1,
+                "samples_completed": 0,
+                "samples_successful": 0,
+                "lanes_completed": 0,
+                "lanes_successful": 0,
+                "lanes_failed": 0,
                 "fail_messages": [],
             }
             if len(sanger_sample_id_list) - 1 > 0:  # sanger_sample_id_list must be -1 to discount _ERROR entry
                 this_sequencing_status_data = sequencing_status_data[this_institution]
+                # this dict tracks samples with at least one completed lane
+                # it avoids double-counting any samples with two (or more) lanes sequenced
+                samples_completed = {}
+                # same as `samples_completed` but samples with at least one successfully sequenced lane
+                samples_successful = {}
                 for this_sanger_sample_id in sanger_sample_id_list:
                     if this_sanger_sample_id == API_ERROR_KEY:
                         continue
@@ -405,12 +413,37 @@ class MonocleSampleTracking:
                             this_sanger_sample_id, this_lane
                         )
                         if this_lane_completed:
-                            status[this_institution]["completed"] += 1
+                            this_institution_status["lanes_completed"] += 1
+                            if samples_completed.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "samples_completed" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_completed"] += 1
+                            samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
-                            status[this_institution]["success"] += 1
+                            this_institution_status["lanes_successful"] += 1
+                            if samples_successful.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one successfully sequenced lane: it is being counted only ONCE in sequencing status "samples_successful" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_successful"] += 1
+                            samples_successful[this_sanger_sample_id] = True
                         else:
-                            status[this_institution]["failed"] += 1
-                            status[this_institution]["fail_messages"] += fail_messages
+                            this_institution_status["lanes_failed"] += 1
+                            this_institution_status["fail_messages"] += fail_messages
+            # add deprecated keys to status object
+            # TODO remove these after FE has been updated
+            this_institution_status["received"] = this_institution_status["samples_received"]
+            this_institution_status["completed"] = this_institution_status["samples_completed"]
+            this_institution_status["success"] = this_institution_status["lanes_successful"]
+            this_institution_status["failed"] = this_institution_status["lanes_failed"]
+            status[this_institution] = this_institution_status
         return status
 
     def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):

@@ -15,7 +15,7 @@ it("displays data passed", () => {
   });
 
   expect(container.querySelector("h3").textContent).toBe(
-    `${completed} of ${SEQUENCED_SUCCESS} Sample Pipelines\n        Completed`
+    `${completed} of ${SEQUENCED_SUCCESS} Pipelines Completed`
   );
   expect(getByText("% completed", { exact: false })).toBeDefined();
 });
@@ -29,7 +29,7 @@ it("displays a special heading when all pipelines are finished", () => {
   });
 
   expect(container.querySelector("h3").textContent).toBe(
-    `All ${SEQUENCED_SUCCESS} Sample Pipelines Completed`
+    `All ${SEQUENCED_SUCCESS} Pipelines Completed`
   );
 });
 
