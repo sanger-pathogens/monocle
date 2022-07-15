@@ -21,17 +21,17 @@
 # Any arguments provided will be passed to the script
 
 SAMPLE_DATA_SUBDIR="monocle_juno"
-SAMPLE_DATA_PATH="${HOME}/${SAMPLE_DATA_SUBDIR}"
+SAMPLE_DATA_PATH="/home/<USER>/${SAMPLE_DATA_SUBDIR}"
 INST_VIEW_SUBDIR="monocle_juno_institution_view"
-INST_VIEW_PATH="${HOME}/${INST_VIEW_SUBDIR}"
+INST_VIEW_PATH="/home/<USER>/${INST_VIEW_SUBDIR}"
 if ! docker run  -u `id -u`:`id -g` \
             --rm \
-            --volume ${SAMPLE_DATA_PATH}:/home/<USER>/${SAMPLE_DATA_SUBDIR}  \
+            --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}}  \
             --volume ${INST_VIEW_PATH}:/app/${INST_VIEW_SUBDIR}  \
             --volume `pwd`/my.cnf:/app/my.cnf \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
-            --env "MONOCLE_DATA=/home/<USER>/${SAMPLE_DATA_SUBDIR}" \
+            --env "MONOCLE_DATA=${SAMPLE_DATA_PATH}" \
             --name "create_download_view_for_sample_data_$$" \
             --network <USER>_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
