@@ -26,7 +26,7 @@ INST_VIEW_SUBDIR="monocle_juno_institution_view"
 INST_VIEW_PATH="/home/<USER>/${INST_VIEW_SUBDIR}"
 if ! docker run  -u `id -u`:`id -g` \
             --rm \
-            --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}}  \
+            --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
             --volume ${INST_VIEW_PATH}:/app/${INST_VIEW_SUBDIR}  \
             --volume `pwd`/my.cnf:/app/my.cnf \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
