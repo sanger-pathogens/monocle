@@ -168,6 +168,7 @@ def _mkdir(dir_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
     parser.add_argument("-D", "--data_dir", help="Data file directory")
+    parser.add_argument("-P", "--project", choices=["juno", "gps"], default="juno", help="Project")
     parser.add_argument(
         "-L",
         "--log_level",
@@ -177,7 +178,7 @@ if __name__ == "__main__":
     )
     options = parser.parse_args(argv[1:])
 
-    project = PROJECT
+    project = options.project
 
     # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
     # which can be handy
