@@ -612,7 +612,7 @@ EXPECTED_VALIDATION_ERRORS = [
     '{row: 19, column: "Study_Reference"}: "PMID: 1, PMID: 223" must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789',
     '{row: 23, column: "Selection_Random"}: "INVALID" is not in the list of legal options (yes, no)',
     '{row: 24, column: "Country"}: "UNKNOWNCOUNTRY" is not in the list of legal options (TestCountryA, TestCountryB)',
-    '{row: 29, column: "Submitting_Institution"}: "UNKNOWN" is not in the list of legal options (TesInsA)',
+    '{row: 29, column: "Submitting_Institution_Key"}: "UNKNOWN" is not in the list of legal options (TesInsA)',
     '{row: 30, column: "Collection_year"}: "1" must be a YYYY format year',
     '{row: 31, column: "Collection_year"}: "AB" must be a YYYY format year',
     '{row: 32, column: "Collection_month"}: "200" must be a MM format month',
