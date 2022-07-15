@@ -13,12 +13,8 @@ from dash.api.service.DataServices.sample_tracking_services import MonocleSample
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
-INITIAL_DIR = Path().absolute()
-OUTPUT_SUBDIR = "monocle_juno_institution_view"
-PROJECT = "juno"
 
-
-def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir):
+def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir, output_dir):
     logging.info("Getting list of institutions")
     institutions = list(db.get_institution_names(project))
 
@@ -31,7 +27,7 @@ def create_download_view_for_sample_data(project, db, institution_name_to_id, da
             public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution, db)
 
             logging.info(f"{institution}: creating subdirectories")
-            with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
+            with _cd(Path(output_dir)):
 
                 if public_names_to_lane_ids:
                     institution_readable_id = institution_name_to_id[institution]
@@ -168,6 +164,7 @@ def _mkdir(dir_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
     parser.add_argument("-D", "--data_dir", help="Data file directory")
+    parser.add_argument("-O", "--output_dir", help="Institition view (output) file directory")
     parser.add_argument("-P", "--project", choices=["juno", "gps"], default="juno", help="Project")
     parser.add_argument(
         "-L",
@@ -189,5 +186,5 @@ if __name__ == "__main__":
     sample_metadata.current_project = project
 
     create_download_view_for_sample_data(
-        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir
+        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
     )

@@ -62,7 +62,7 @@ if ! docker run  -u `id -u`:`id -g` \
             --name "create_download_view_for_sample_data_$$" \
             --network <USER>_default \
             gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-dash-api:<DOCKERTAG> \
-            python3 ./create_download_view_for_sample_data.py --project "$PROJECT" --data_dir "$SAMPLE_DATA_PATH" $PYTHON_SCRIPT_ARGS
+            python3 ./create_download_view_for_sample_data.py --project "$PROJECT" --data_dir "$SAMPLE_DATA_PATH" --output_dir "$INST_VIEW_PATH" $PYTHON_SCRIPT_ARGS
 then
   exit 255
 fi
