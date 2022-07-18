@@ -77,10 +77,28 @@ def _get_data_file_lookup_by_lane_id(data_dir):
 
 
 def _get_public_names_with_lane_ids(project, institution, db):
-    public_names_to_sanger_sample_id = {
-        sample["public_name"]: sample["sanger_sample_id"]
-        for sample in db.get_samples(project, institutions=[institution])
-    }
+
+    num_retries = 0
+    query_ok = False
+    final_exception = None
+    while num_retries < 10:
+        num_retries += 1
+        try:
+            samples_list = db.get_samples(project, institutions=[institution])
+            query_ok = True
+        except Exception as e:
+            logging.warning("failed to retrieve samples for {} institution {}; retrying".format(project, institution))
+            final_exception = e
+            time.sleep(180)
+    if not query_ok:
+        logging.error(
+            "gave up retrieving samples for {} institution {} after {} attempts".format(
+                project, institution, num_retries
+            )
+        )
+        raise final_exception
+
+    public_names_to_sanger_sample_id = {sample["public_name"]: sample["sanger_sample_id"] for sample in samples_list}
 
     logging.info(f"{institution}: {len(public_names_to_sanger_sample_id)} public names")
 
