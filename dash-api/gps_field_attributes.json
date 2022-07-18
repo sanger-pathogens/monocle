@@ -46,12 +46,12 @@
                   "filter type": "none"
                },
                {
-                  "name": "submitting_institution_key",
+                  "name": "submitting_institution",
                   "display": true,
                   "default": true,
                   "order": 5,
-                  "spreadsheet heading": "Submitting_Institution_Key",
-                  "display name": "Submitting Institution Key",
+                  "spreadsheet heading": "Submitting_Institution",
+                  "display name": "Submitting Institution",
                   "filter type": "discrete"
                }
             ]

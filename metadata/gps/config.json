@@ -70,8 +70,8 @@
             "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
             "regex_validation_message": "contains illegal characters"
          },
-         "submitting_institution_key": {
-            "title": "Submitting_Institution_Key",
+         "submitting_institution": {
+            "title": "Submitting_Institution",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256
