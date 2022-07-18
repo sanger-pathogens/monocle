@@ -316,7 +316,7 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               study_ref:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              submitting_institution_key:
+              submitting_institution:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               supplier_sample_name:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
