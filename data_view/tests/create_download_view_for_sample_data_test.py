@@ -14,6 +14,7 @@ INSTITUTION_KEYS = [
     "UniFedRioJan",
     "WelSanIns",
 ]
+OUTPUT_DIR = "/abs/path/output"
 SAMPLE_IDS = ["a", "b", "c", "d", "e"]
 PUBLIC_NAMES = list(map(lambda sanger_sample_id: sanger_sample_id * 2, SAMPLE_IDS))
 INSTITUTION_WITHOUT_LANES = {
@@ -75,15 +76,15 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         self.mkdir = mkdir_patch.start()
 
     def test_create_folder_per_institution_with_public_name(self):
-        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_KEYS, DATA_DIR, OUTPUT_DIR)
 
         for institution in INSTITUTIONS_WITH_PUBLIC_NAMES:
             self.mkdir.assert_any_call(institution["id"])
         for institution in INSTITUTIONS_WITHOUT_PUBLIC_NAMES:
             self.assert_mkdir_not_called_with(institution["id"])
 
-    def test_create_public_name_folder_for_each_institution(self):
-        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
+    def test_create_public_name_folder_for_each_institute(self):
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_KEYS, DATA_DIR, OUTPUT_DIR)
 
         for public_name in PUBLIC_NAMES:
             self.mkdir.assert_any_call(public_name)
@@ -93,7 +94,7 @@ class CreateDownloadViewForSampleDataTest(TestCase):
         data_files.append(Path(f"{LANES[0]}.fastq"))
         patch("bin.create_download_view_for_sample_data._get_data_files", return_value=data_files).start()
 
-        create_download_view_for_sample_data(PROJECT, self.db, DATA_DIR, INSTITUTION_KEYS)
+        create_download_view_for_sample_data(PROJECT, self.db, INSTITUTION_KEYS, DATA_DIR, OUTPUT_DIR)
 
         self.assertEqual(self.create_symlink_to.call_count, len(data_files) * len(LANES))
         for data_file in data_files:

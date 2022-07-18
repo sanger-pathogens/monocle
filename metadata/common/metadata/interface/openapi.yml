@@ -146,6 +146,16 @@ paths:
         "200":
           description: "The deletion was successful."
 
+  /project_information:
+    get:
+      operationId: metadata.api.routes.get_project_information
+      summary: "Gather project information, mainly for UI"
+      responses:
+        "200":
+          description: "The project result set"
+        "404":
+          description: "Project information could not be gathered from database"
+
   /samples:
     get:
       operationId: metadata.api.routes.get_samples_route

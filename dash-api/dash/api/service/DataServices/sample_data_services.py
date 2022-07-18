@@ -20,7 +20,7 @@ import yaml
 from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
-DATA_INST_VIEW_ENVIRON = "DATA_INSTITUTION_VIEW"
+DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "GPS_DATA_INSTITUTION_VIEW"}
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
@@ -49,12 +49,6 @@ class MonocleSampleData:
     default_metadata_field_configs = {
         "juno": "juno_field_attributes.json",
         "gps": "gps_field_attributes.json",
-    }
-    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
-    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
-    sequencing_flags = {
-        "qc_lib": "library",
-        "qc_seq": "sequencing",
     }
 
     # date from which progress is counted
@@ -298,19 +292,22 @@ class MonocleSampleData:
             this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
             # now get in silico data for this sample's lane(s)
             # some samples may legitimately have no lanes
+            multiple_in_silico_lanes = False
             for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
                 # some lanes may legitimately have no in silico data
                 this_lane_in_silico_data = lane_to_in_silico_lookup.get(this_lane_id, None)
                 if this_lane_in_silico_data is not None:
                     if "in silico" in combined_metadata_item:
-                        message = "sample {} has more than one lane with in silico data, which is not supported".format(
-                            this_sanger_sample_id
-                        )
-                        logging.error(message)
-                        raise ValueError(message)
+                        multiple_in_silico_lanes = True
                     else:
                         combined_metadata_item["in silico"] = this_lane_in_silico_data
-
+            if multiple_in_silico_lanes:
+                logging.warning(
+                    "sample {} has more than one lane with in silico data, which is not supported: no in silico data will be provided for this sample".format(
+                        this_sanger_sample_id
+                    )
+                )
+                combined_metadata_item.pop("in silico")
         return combined_metadata
 
     def _merge_qc_data_into_combined_metadata(self, filtered_samples, combined_metadata):
@@ -361,18 +358,22 @@ class MonocleSampleData:
             this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
             # now get QC data for this sample's lane(s)
             # some samples may legitimately have no lanes
+            multiple_qc_data_lanes = False
             for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
                 # some lanes may legitimately have no QC data
                 this_lane_qc_data = lane_to_qc_data_lookup.get(this_lane_id, None)
                 if this_lane_qc_data is not None:
                     if "qc data" in combined_metadata_item:
-                        message = "sample {} has more than one lane with QC data, which is not supported".format(
-                            this_sanger_sample_id
-                        )
-                        logging.error(message)
-                        raise ValueError(message)
+                        multiple_qc_data_lanes = True
                     else:
                         combined_metadata_item["qc data"] = this_lane_qc_data
+            if multiple_qc_data_lanes:
+                logging.warning(
+                    "sample {} has more than one lane with QC data, which is not supported: no QC data will be provided for this sample".format(
+                        this_sanger_sample_id
+                    )
+                )
+                combined_metadata_item.pop("qc data")
 
         return combined_metadata
 
@@ -845,10 +846,11 @@ class MonocleSampleData:
            <public name 2>: ...
         }
         """
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
         try:
-            data_inst_view_path = environ[DATA_INST_VIEW_ENVIRON]
+            data_inst_view_path = environ[data_inst_view_environ]
         except KeyError:
-            self._download_config_error(f"environment variable {DATA_INST_VIEW_ENVIRON} is not set")
+            self._download_config_error(f"environment variable {data_inst_view_environ} is not set")
 
         public_name_to_lane_files = {}
         assemblies = kwargs.get("assemblies", False)
@@ -888,11 +890,12 @@ class MonocleSampleData:
 
     def get_bulk_download_location(self):
         data_source_config = self._load_data_source_config()
-        if DATA_INST_VIEW_ENVIRON not in environ:
-            return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
+        if data_inst_view_environ not in environ:
+            return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
         try:
             cross_institution_dir = data_source_config["data_download"]["cross_institution_dir"]
-            return Path(environ[DATA_INST_VIEW_ENVIRON], cross_institution_dir)
+            return Path(environ[data_inst_view_environ], cross_institution_dir)
         except KeyError as err:
             self._download_config_error(err)
 
@@ -1292,10 +1295,11 @@ class MonocleSampleData:
         # get the "target" directory where the data for the institution is kept, and check it exists
         # (Why an environment variable? Because this can be set by docker-compose, and it is a path
         # to a volume mount that is also set up by docker-compose.)
-        if DATA_INST_VIEW_ENVIRON not in environ:
-            return self._download_config_error("environment variable {} is not set".format(DATA_INST_VIEW_ENVIRON))
+        data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
+        if data_inst_view_environ not in environ:
+            return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
         child_dir = cross_institution_dir if kwargs.get("cross_institution") else target_institution_key
-        download_host_dir = Path(environ[DATA_INST_VIEW_ENVIRON], child_dir)
+        download_host_dir = Path(environ[data_inst_view_environ], child_dir)
         if not download_host_dir.is_dir():
             return self._download_config_error(
                 "data download host directory {} does not exist (or not a directory)".format(str(download_host_dir))

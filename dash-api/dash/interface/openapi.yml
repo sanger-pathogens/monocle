@@ -155,6 +155,23 @@ paths:
         "403":
           description: "Authorization information is missing or invalid."
 
+  /project:
+    get:
+      operationId: dash.api.routes.project_route
+      summary: "Returns information used in the UI, like the logo URL."
+      responses:
+        "200":
+          description: "The operation was successful."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    type: object
+        "403":
+          description: "Authorization information is missing or invalid."
+
   /pipeline_status_summary:
     get:
       operationId: dash.api.routes.pipeline_status_summary_route
@@ -1158,22 +1175,52 @@ components:
       description: "Sequencing status summary information for an institution."
       properties:
         received:
-          description: "The number of lanes received."
+          description: "DEPRECATED: please use samples_received"
           example: 400
           type: integer
           readOnly: true
         completed:
-          description: "The number of lanes that have completed sequencing, whether pass or fail."
+          description: "DEPRECATED: please use samples_completed"
           example: 300
           type: integer
           readOnly: true
         success:
-          description: "The number of lanes that have successfully completed sequencing."
-          example: 298
+          description: "DEPRECATED: please use lanes_successful"
+          example: 300
           type: integer
           readOnly: true
         failed:
-          description: "The number of lanes that have failed sequencing."
+          description: "DEPRECATED: please use lanes_failed"
+          example: 300
+          type: integer
+          readOnly: true
+        samples_received:
+          description: "The number of SAMPLES received."
+          example: 400
+          type: integer
+          readOnly: true
+        samples_completed:
+          description: "The number of SAMPLES with at least one lane that as completed sequencing, whether pass or fail."
+          example: 300
+          type: integer
+          readOnly: true
+        samples_successful:
+          description: "The number of SAMPLES with at least one lane that has successfully completed sequencing."
+          example: 300
+          type: integer
+          readOnly: true
+        lanes_completed:
+          description: "The number of LANES that have completed sequencing, whether pass or fail."
+          example: 300
+          type: integer
+          readOnly: true
+        lanes_successful:
+          description: "The number of LANES that have successfully completed sequencing."
+          example: 298
+          type: integer
+          readOnly: true
+        lanes_failed:
+          description: "The number of LANES that have failed sequencing."
           example: 2
           type: integer
           readOnly: true

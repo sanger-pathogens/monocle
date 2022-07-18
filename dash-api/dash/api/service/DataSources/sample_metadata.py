@@ -18,6 +18,12 @@ class SampleMetadata:
     def set_up(self):
         self.monocle_client = MonocleClient()
 
+    def get_project_information(self, project):
+        result = self.monocle_client.project_information(project)
+        logging.debug("{}.get_project_information() result(s) = {}".format(__class__.__name__, result))
+
+        return result
+
     def get_samples(self, project, exclude_lane_id=True, institution_keys=None):
         """
         Optionally pass a list of institution keys that filters samples according to submitting institution
@@ -139,6 +145,8 @@ class MonocleClient:
     metadata_project_source = {"juno": "metadata_api_juno", "gps": "metadata_api_gps"}
     required_config_params = [
         "base_url",
+        "project_information",
+        "project_information_key",
         "samples",
         "filter_by_metadata",
         "filter_by_in_silico",
@@ -176,6 +184,29 @@ class MonocleClient:
                         )
                     )
                     raise KeyError("{} could not be found in data source config dict".format(required_param))
+
+    def project_information(self, project):
+        if project not in self.config:
+            logging.error(
+                "data source config file {} does not provide the required parameter {}".format(
+                    self.data_sources_config,
+                    project,
+                )
+            )
+            raise KeyError("{} could not be found in data source config dict".format(project))
+
+        this_config = self.config[project]
+        for param in ["base_url", "project_information", "project_information_key"]:
+            if param not in this_config:
+                raise KeyError("{} could not be found in data source config project dict".format(param))
+
+        endpoint_url = this_config["base_url"] + this_config["project_information"]
+        logging.debug("{}.project_information() using endpoint {}".format(__class__.__name__, endpoint_url))
+        response = self.make_request(endpoint_url)
+        logging.debug("{}.project_information() returned {}".format(__class__.__name__, response))
+        project_information_key = this_config["project_information_key"]
+        result = self.parse_response(endpoint_url, response, required_keys=[project_information_key])
+        return result[project_information_key]
 
     def samples(self, project):
         this_config = self.config[project]

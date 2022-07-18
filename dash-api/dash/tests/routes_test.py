@@ -15,7 +15,12 @@ class TestRoutes(unittest.TestCase):
     """Test class for the routes module"""
 
     # this has mock values for the environment variables set by docker-compose
-    MOCK_ENVIRONMENT = {"DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3", "AUTH_COOKIE_NAME": "mock_auth_cookie_name"}
+    MOCK_ENVIRONMENT = {
+        "JUNO_DATA_INSTITUTION_VIEW": "dash/tests/mock_data/s3",
+        "AUTH_COOKIE_NAME": "mock_auth_cookie_name",
+    }
+
+    MOCK_PROJECT_ID = "juno"
 
     MOCK_FIELD_ATTRIBUTES = {
         "metadata": {
@@ -249,6 +254,23 @@ class TestRoutes(unittest.TestCase):
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
     @patch.object(ServiceFactory, "sample_tracking_service")
+    def test_project_route(self, sample_tracking_service_mock, username_mock, resp_mock):
+        expected_project_data = "some project data"
+        sample_tracking_service_mock.return_value.project_information.return_value = expected_project_data
+        username_mock.return_value = self.TEST_USER
+
+        result = routes.project_route()
+
+        sample_tracking_service_mock.assert_called_once_with(self.TEST_USER)
+        sample_tracking_service_mock.return_value.project_information.assert_called_once()
+        resp_mock.assert_called_once_with({"project": expected_project_data})
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result), 2)
+        self.assertEqual(result[1], HTTPStatus.OK)
+
+    @patch("dash.api.routes.call_jsonify")
+    @patch("dash.api.routes.get_authenticated_username")
+    @patch.object(ServiceFactory, "sample_tracking_service")
     def test_pipeline_status_summary_route(self, sample_tracking_service_mock, username_mock, resp_mock):
         # Given
         sample_tracking_service_mock.return_value.pipeline_status_summary.return_value = self.SERVICE_CALL_RETURN_DATA
@@ -337,8 +359,9 @@ class TestRoutes(unittest.TestCase):
 
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_bulk_download_info_route(self, sample_data_service_mock, username_mock, resp_mock):
+    def test_get_bulk_download_info_route(self, sample_data_service_mock, project_mock, username_mock, resp_mock):
         # Given
         batches = self.SERVICE_CALL_RETURN_DATA
         assemblies = False
@@ -346,6 +369,7 @@ class TestRoutes(unittest.TestCase):
         expected_payload = "paylod"
         sample_data_service_mock.return_value.get_bulk_download_info.return_value = expected_payload
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         # When
         result = routes.bulk_download_info_route(
             {"sample filters": {"batches": batches}, "assemblies": assemblies, "annotations": annotations}
@@ -415,12 +439,20 @@ class TestRoutes(unittest.TestCase):
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.uuid4")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
     @patch("dash.api.routes.write_text_file")
     def test_get_bulk_download_urls_route(
-        self, write_text_file_mock, is_dir_mock, sample_data_service_mock, uuid4_mock, username_mock, resp_mock
+        self,
+        write_text_file_mock,
+        is_dir_mock,
+        sample_data_service_mock,
+        uuid4_mock,
+        project_mock,
+        username_mock,
+        resp_mock,
     ):
         # Given
         batches = ["2020-09-04", "2021-01-30"]
@@ -428,6 +460,7 @@ class TestRoutes(unittest.TestCase):
         annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
         uuid_hex = "123"
@@ -444,8 +477,8 @@ class TestRoutes(unittest.TestCase):
         )
         lane_files = {
             "pubname": [
-                "/".join([environ["DATA_INSTITUTION_VIEW"], "lane file"]),
-                "/".join([environ["DATA_INSTITUTION_VIEW"], "another lane file"]),
+                "/".join([environ["JUNO_DATA_INSTITUTION_VIEW"], "lane file"]),
+                "/".join([environ["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"]),
             ]
         }
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -465,12 +498,20 @@ class TestRoutes(unittest.TestCase):
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.uuid4")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
     @patch("dash.api.routes.write_text_file")
     def test_get_bulk_download_urls_route_multiple_urls(
-        self, write_text_file_mock, is_dir_mock, sample_data_service_mock, uuid4_mock, username_mock, resp_mock
+        self,
+        write_text_file_mock,
+        is_dir_mock,
+        sample_data_service_mock,
+        uuid4_mock,
+        project_mock,
+        username_mock,
+        resp_mock,
     ):
         # Given
         batches = ["2020-09-04", "2021-01-30"]
@@ -478,6 +519,7 @@ class TestRoutes(unittest.TestCase):
         annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
         uuid_hex = "123"
@@ -495,9 +537,9 @@ class TestRoutes(unittest.TestCase):
         lane_files = {}
         for i in range((download_max_samples_per_zip * 2) + 1):  # will create enough items to require 3 download URLs
             lane_files["pubname_{}".format(i)] = [
-                "/".join([self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
+                "/".join([self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
                 "/".join(
-                    [self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
+                    [self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
                 ),
             ]
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -525,12 +567,20 @@ class TestRoutes(unittest.TestCase):
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.uuid4")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
     @patch("dash.api.routes.write_text_file")
     def test_get_bulk_download_urls_route_api_property_defines_number_urls(
-        self, write_text_file_mock, is_dir_mock, sample_data_service_mock, uuid4_mock, username_mock, resp_mock
+        self,
+        write_text_file_mock,
+        is_dir_mock,
+        sample_data_service_mock,
+        uuid4_mock,
+        project_mock,
+        username_mock,
+        resp_mock,
     ):
         # Given
         batches = ["2020-09-04", "2021-01-30"]
@@ -538,6 +588,7 @@ class TestRoutes(unittest.TestCase):
         annotations = True
         samples = self.SERVICE_CALL_RETURN_DATA
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         sample_data_service_mock.return_value.get_filtered_samples.return_value = samples
         is_dir_mock.return_value = True
         uuid_hex = "123"
@@ -552,9 +603,9 @@ class TestRoutes(unittest.TestCase):
         lane_files = {}
         for i in range((download_max_samples_per_zip * 2) + 1):  # will create enough items to require 3 download URLs
             lane_files["pubname_{}".format(i)] = [
-                "/".join([self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
+                "/".join([self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file for pubname_{}".format(i)]),
                 "/".join(
-                    [self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
+                    [self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file for pubname_{}".format(i)]
                 ),
             ]
         sample_data_service_mock.return_value.get_public_name_to_lane_files_dict.return_value = lane_files
@@ -603,6 +654,7 @@ class TestRoutes(unittest.TestCase):
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.zip_files")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
@@ -619,6 +671,7 @@ class TestRoutes(unittest.TestCase):
         is_dir_mock,
         sample_data_service_mock,
         zip_files_mock,
+        project_mock,
         username_mock,
     ):
         # Given
@@ -626,6 +679,7 @@ class TestRoutes(unittest.TestCase):
         request_args_mock.return_value = {}
         request_headers_mock.return_value = {"X-Forwarded-Host": mock_host, "X-Forwarded-Port": "443"}
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
         # => mocks non-existence of the ZIP archive, followed by existence of JSON file with params
@@ -633,8 +687,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)
@@ -659,6 +713,7 @@ class TestRoutes(unittest.TestCase):
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.zip_files")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
@@ -677,6 +732,7 @@ class TestRoutes(unittest.TestCase):
         is_dir_mock,
         sample_data_service_mock,
         zip_files_mock,
+        project_mock,
         username_mock,
     ):
         # Given
@@ -684,6 +740,7 @@ class TestRoutes(unittest.TestCase):
         request_args_mock.return_value = {"redirect": "false"}
         request_headers_mock.return_value = {"X-Forwarded-Host": mock_host, "X-Forwarded-Port": "443"}
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
         # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
@@ -691,8 +748,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)
@@ -717,6 +774,7 @@ class TestRoutes(unittest.TestCase):
 
     @patch.dict(environ, MOCK_ENVIRONMENT, clear=True)
     @patch("dash.api.routes.get_authenticated_username")
+    @patch("dash.api.routes.get_authenticated_project")
     @patch("dash.api.routes.zip_files")
     @patch.object(ServiceFactory, "sample_data_service")
     @patch("pathlib.Path.is_dir")
@@ -733,6 +791,7 @@ class TestRoutes(unittest.TestCase):
         is_dir_mock,
         sample_data_service_mock,
         zip_files_mock,
+        project_mock,
         username_mock,
     ):
         # Given
@@ -740,6 +799,7 @@ class TestRoutes(unittest.TestCase):
         request_headers_mock.return_value = {}
 
         username_mock.return_value = self.TEST_USER
+        project_mock.return_value = self.MOCK_PROJECT_ID
         is_dir_mock.return_value = True
         # assigning list to side_effect returns next value each time mocked function is called
         # => mocks non-existence of the ZIP archivet, followed by existence of JSON file with params
@@ -747,8 +807,8 @@ class TestRoutes(unittest.TestCase):
         lane_files = {"pubname": ["/lane file", "/another lane file"]}
         files_to_zip = {
             "pubname": [
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "lane file"),
-                Path(self.MOCK_ENVIRONMENT["DATA_INSTITUTION_VIEW"], "another lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "lane file"),
+                Path(self.MOCK_ENVIRONMENT["JUNO_DATA_INSTITUTION_VIEW"], "another lane file"),
             ]
         }
         read_text_file_mock.return_value = json.dumps(lane_files)

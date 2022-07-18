@@ -10,8 +10,8 @@
     `${+(calcPercentCompleted(values) * 100).toFixed(1)}% completed`;
   const SEGMENT_COLORS = ["light-grey", "light-green", "red"];
 
-  function calcPercentCompleted(values) {
-    const [pending, succeeded, failed] = values;
+  function calcPercentCompleted(valuesParam) {
+    const [pending, succeeded, failed] = valuesParam;
     const completed = succeeded + failed;
     const received = completed + pending;
     return received ? completed / received : 0;

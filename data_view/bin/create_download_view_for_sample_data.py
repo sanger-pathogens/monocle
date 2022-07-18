@@ -13,12 +13,8 @@ from dash.api.service.DataSources.institution_data import InstitutionData
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
-INITIAL_DIR = Path().absolute()
-OUTPUT_SUBDIR = "monocle_juno_institution_view"
-PROJECT = "juno"
 
-
-def create_download_view_for_sample_data(project, db, data_dir, institution_keys):
+def create_download_view_for_sample_data(project, db, institution_keys, data_dir, output_dir):
     if len(institution_keys) == 0:
         logging.warning("No institutions were given.")
 
@@ -28,7 +24,7 @@ def create_download_view_for_sample_data(project, db, data_dir, institution_keys
             public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution_key, db)
 
             logging.info(f"{institution_key}: creating subdirectories")
-            with _cd(Path().joinpath(INITIAL_DIR, OUTPUT_SUBDIR)):
+            with _cd(Path(output_dir)):
 
                 if public_names_to_lane_ids:
                     _mkdir(institution_key)
@@ -152,6 +148,8 @@ def _mkdir(dir_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
     parser.add_argument("-D", "--data_dir", help="Data file directory")
+    parser.add_argument("-O", "--output_dir", help="Institition view (output) file directory")
+    parser.add_argument("-P", "--project", choices=["juno", "gps"], default="juno", help="Project")
     parser.add_argument(
         "-L",
         "--log_level",
@@ -161,17 +159,20 @@ if __name__ == "__main__":
     )
     options = parser.parse_args(argv[1:])
 
+    project = options.project
+
     # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
     # which can be handy
     logging.basicConfig(format="%(asctime)-15s %(levelname)s %(module)s:  %(message)s", level=options.log_level)
 
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
-    sample_metadata.current_project = PROJECT
+    sample_metadata.current_project = project
 
     create_download_view_for_sample_data(
-        PROJECT,
+        project,
         sample_metadata,
-        options.data_dir,
         InstitutionData().get_all_institution_keys_regardless_of_user_membership(),
+        options.data_dir,
+        options.output_dir,
     )

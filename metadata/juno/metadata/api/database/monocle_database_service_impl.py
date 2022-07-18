@@ -335,6 +335,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
                 params = {k: metadata.__dict__[k] for k in self.config["metadata"]["spreadsheet_definition"]}
+                self._convert_empty_strings_to_none(params)
+                logger.debug("SQL exec oparams:\n{}".format(params))
                 con.execute(self.INSERT_OR_UPDATE_SAMPLE_SQL, **params)
 
         logger.info("update_sample_metadata completed")
@@ -358,6 +360,8 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     k: self.convert_string(in_silico_data.__dict__[k])
                     for k in self.config["in_silico_data"]["spreadsheet_definition"]
                 }
+                self._convert_empty_strings_to_none(params)
+                logger.debug("SQL exec oparams:\n{}".format(params))
                 con.execute(self.INSERT_OR_UPDATE_IN_SILICO_SQL, **params)
 
         logger.info("update_lane_in_silico_data completed")
@@ -382,6 +386,14 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 )
 
         logger.info("update_lane_qc_data completed")
+
+    def _convert_empty_strings_to_none(self, db_params_dict):
+        """Dicts passed to SQLAlchemy execute() should have None, not empty strings, for missing values."""
+        for this_param_key in db_params_dict:
+            if "" == db_params_dict[this_param_key]:
+                logging.debug("setting {} to None".format(this_param_key))
+                db_params_dict[this_param_key] = None
+        return db_params_dict
 
     def get_download_metadata(self, keys: List[str]) -> List[Metadata]:
         """Get download metadata for given list of samples"""

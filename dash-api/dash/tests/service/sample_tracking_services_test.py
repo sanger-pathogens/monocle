@@ -31,13 +31,14 @@ class MonocleSampleTrackingTest(TestCase):
         {"institution key": "FakOne", "batch date": "1892-01-30"},
     ]
 
+    mock_project_id = "juno"
     mock_monocle_data_dir = "dash/tests/mock_data/s3"
 
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
     mock_inst_view_dir = "dash/tests/mock_data/monocle_juno_institution_view"
 
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"MONOCLE_DATA": mock_monocle_data_dir}
+    mock_environment = {"JUNO_DATA": mock_monocle_data_dir}
 
     # this is the mock date for the instantiation of MonocleSampleTracking; it must match the latest month used in `expected_progress_data`
     # (because get_progeress() always returns date values up to "now")
@@ -80,6 +81,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_1",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -88,6 +91,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_2",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -96,6 +101,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_3",
                     "qc_lib": 1,
                     "qc_seq": 0,
+                    "qc_success": 0,
+                    "qc_status_text": "Sequencing QC failed",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -110,6 +117,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_4",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -124,6 +133,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_5",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -138,6 +149,8 @@ class MonocleSampleTrackingTest(TestCase):
                     "id": "fake_lane_id_6",
                     "qc_lib": 1,
                     "qc_seq": 1,
+                    "qc_success": 1,
+                    "qc_status_text": "Success",
                     "run_status": "qc complete",
                     "qc_started": 1,
                     "qc_complete_datetime": "any string will do",
@@ -218,13 +231,19 @@ class MonocleSampleTrackingTest(TestCase):
         "FakOne": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "samples_successful": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "sequencing",
+                    "stage": "Sequencing QC failed",
                     "issue": "sorry, failure messages cannot currently be seen here",
                 }
             ],
@@ -232,13 +251,19 @@ class MonocleSampleTrackingTest(TestCase):
         "FakTwo": {
             "_ERROR": None,
             "received": 4,
-            "completed": 6,
+            "completed": 4,
             "success": 5,
             "failed": 1,
+            "samples_received": 4,
+            "samples_completed": 4,
+            "samples_successful": 4,
+            "lanes_completed": 6,
+            "lanes_successful": 5,
+            "lanes_failed": 1,
             "fail_messages": [
                 {
                     "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "sequencing",
+                    "stage": "Sequencing QC failed",
                     "issue": "sorry, failure messages cannot currently be seen here",
                 }
             ],
@@ -257,6 +282,7 @@ class MonocleSampleTrackingTest(TestCase):
     def setUp(self):
         self.monocle_sample_tracking.institution_ldap_data = InstitutionData(set_up=False)
         self.monocle_sample_tracking.institution_ldap_data.set_up(self.test_config)
+        self.monocle_sample_tracking.current_project = self.mock_project_id
         # mock sample_metadata
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client = MonocleClient(set_up=False)
@@ -267,7 +293,7 @@ class MonocleSampleTrackingTest(TestCase):
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client = MLWH_Client(set_up=False)
         self.monocle_sample_tracking.sequencing_status_source.mlwh_client.set_up(self.test_config)
         # mock pipeline_status
-        self.monocle_sample_tracking.pipeline_status = PipelineStatus(config=self.test_config)
+        self.monocle_sample_tracking.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
         # load mock data
         self.get_mock_data()
 
@@ -366,8 +392,8 @@ class MonocleSampleTrackingTest(TestCase):
 
     def test_sequencing_status_summary(self):
         seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
 
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
         self.assertEqual(self.expected_seq_summary, seq_status_summary)
 
     def test_sequencing_status_summary_dropout(self):
@@ -378,12 +404,14 @@ class MonocleSampleTrackingTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
         self.assertEqual(self.expected_dropout_data, seq_status_summary)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_pipeline_status_summary(self):
         pipeline_summary = self.monocle_sample_tracking.pipeline_status_summary()
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
 
         self.assertEqual(self.expected_pipeline_summary, pipeline_summary)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_pipeline_status_summary_dropout(self):
         self.monocle_sample_tracking.sequencing_status_data = self.expected_dropout_data
 
@@ -391,3 +419,20 @@ class MonocleSampleTrackingTest(TestCase):
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
         self.assertEqual(self.expected_dropout_data, pipeline_summary)
+
+    def test_project_information_rejects_if_no_project_given(self):
+        self.monocle_sample_tracking.current_project = None
+
+        with self.assertRaisesRegex(ValueError, "The current project is not set"):
+            self.monocle_sample_tracking.project_information()
+
+    @patch.object(SampleMetadata, "get_project_information")
+    def test_project_information(self, get_project_information_mock):
+        expected_project_information = "some project info"
+        get_project_information_mock.return_value = expected_project_information
+        self.monocle_sample_tracking.current_project = "juno"
+
+        actual_project_information = self.monocle_sample_tracking.project_information()
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_pipeline_summary, pipeline_summary))
+
+        self.assertEqual(expected_project_information, actual_project_information)

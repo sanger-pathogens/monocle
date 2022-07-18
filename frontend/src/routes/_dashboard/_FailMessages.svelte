@@ -5,8 +5,8 @@
   export let title;
 
   let dialogOpen;
-  let hasFailureMessages = failures.length;
-  let hasNestedComponents = $$slots?.default;
+  const hasFailureMessages = failures.length;
+  const hasNestedComponents = $$slots?.default;
 </script>
 
 {#if hasFailureMessages || hasNestedComponents}

@@ -2,6 +2,27 @@
    "config": {
       "projects":{
          "juno":{
+            "project_links" : {
+               "name": "JUNO Project", 
+               "logo_url": "/imgs/junologo.svg",
+               "project_url": "https://www.gbsgen.net/",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/juno/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/juno/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/juno/qc-data-upload"}
+               ]
+            } ,
             "files": {
                "config_file": "metadata/juno/config.json",
                "API model" : [
@@ -68,6 +89,27 @@
             }
          },
          "gps": {
+            "project_links" : {
+               "name": "GPS Project", 
+               "logo_url": "/imgs/gps_banner.png",
+               "project_url": "https://www.pneumogen.net/gps",
+               "header_links": [
+                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
+                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
+                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
+                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
+                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+               ],
+               "contacts": [
+                  {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},
+                  {"label": "Stephen Bentley", "url": "mailto:sdb@sanger.ac.uk"}
+               ],
+               "upload_links": [
+                  {"label": "metadata", "url": "/metadata/gps/metadata-upload"},
+                  {"label": "in silico", "url": "/metadata/gps/in-silico-upload"},
+                  {"label": "qc data", "url": "/metadata/gps/qc-data-upload"}
+               ]               
+            },
             "files": {
                "config_file": "metadata/gps/config.json",
                "API model" : [
