@@ -3,6 +3,7 @@
 import argparse
 import logging
 import os
+import time
 from contextlib import contextmanager
 from os import path
 from pathlib import Path
@@ -12,6 +13,10 @@ from urllib.error import HTTPError
 from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
+
+# symlinks will be created for data files in the following subdirectories of
+# the data directoru (see argparse option "data_dir")
+DATA_SUBDIRS_TO_BE_LINKED = ["annotation", "assembly", "kraken_report", "reads"]
 
 
 def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir, output_dir):
@@ -99,7 +104,19 @@ def _get_data_files(lane_id, data_dir):
     data_files_for_this_lane = []
 
     with _cd(data_dir):
-        data_files_for_this_lane = list(Path().glob(f"**/{lane_id}[_.]*"))
+
+        global TIMECHECK
+        TIMECHECK = time.time()
+        # iterating through DATA_SUBDIRS_TO_BE_LINKED is about twice as fast as using glob()
+        # with '**/', or using rglob()
+        # # data_files_for_this_lane = list(Path().glob(f"**/{lane_id}[_.]*"))
+        # data_files_for_this_lane = list(Path().rglob(f"{lane_id}[_.]*"))
+        data_files_for_this_lane = []
+        for top_level_dir in DATA_SUBDIRS_TO_BE_LINKED:
+            data_files_for_this_lane += list(Path().glob(f"{top_level_dir}/{lane_id}[_.]*"))
+        logging.debug("got file list in {}s".format(time.time() - TIMECHECK))
+        TIMECHECK = time.time()
+
         if len(data_files_for_this_lane) > 0:
             logging.debug("found {} data files for lane {}".format(len(data_files_for_this_lane), lane_id))
             # store absolute paths
@@ -184,6 +201,7 @@ if __name__ == "__main__":
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
     sample_metadata.current_project = project
+    TIMECHECK = time.time()
 
     create_download_view_for_sample_data(
         project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
