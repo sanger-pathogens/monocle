@@ -47,7 +47,8 @@ class UpdateMetadataFiles:
             comments.append(data["regex_validation_message"])
         if len(comments) == 0:
             return ""
-        return "  # " + "; ".join(comments)
+        comment_string = "  # " + "; ".join(comments)
+        return comment_string.rstrip()
 
     def generate_dataclass_file(self, data, class_name, filename):
         """Generated a Python dataclass file."""

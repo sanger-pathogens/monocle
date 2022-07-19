@@ -14,7 +14,7 @@ from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
 
-def create_download_view_for_sample_data(db, institution_name_to_id, project, data_dir, output_dir):
+def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir, output_dir):
     logging.info("Getting list of institutions")
     institutions = list(db.get_institution_names(project))
 
@@ -165,7 +165,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
     parser.add_argument("-P", "--project", help="Project", choices=["juno", "gps"])
     parser.add_argument("-D", "--data_dir", help="Data file directory")
-    parser.add_argument("-O", "--output_dir", help="Output directory")
+    parser.add_argument("-O", "--output_dir", help="Institition view (output) file directory")
+    parser.add_argument("-P", "--project", choices=["juno", "gps"], default="juno", help="Project")
     parser.add_argument(
         "-L",
         "--log_level",
@@ -174,6 +175,8 @@ if __name__ == "__main__":
         default="WARNING",
     )
     options = parser.parse_args(argv[1:])
+
+    project = options.project
 
     # adding `module` for log format allows us to filter out messages from SampleMetadata or squencing_status,
     # which can be handy
@@ -184,9 +187,5 @@ if __name__ == "__main__":
     sample_metadata.current_project = options.project
 
     create_download_view_for_sample_data(
-        sample_metadata,
-        get_institutions(options.project, sample_metadata),
-        options.project,
-        options.data_dir,
-        options.output_dir,
+        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
     )

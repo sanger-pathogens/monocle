@@ -30,15 +30,11 @@ class MonocleSampleTracking:
     """
 
     sample_table_inst_key = "submitting_institution"
-    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
-    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
-    sequencing_flags = {
-        "qc_lib": "library",
-        "qc_seq": "sequencing",
-    }
 
-    # date from which progress is counted
-    day_zero = datetime(2019, 9, 17)
+    zero_days = {
+        "gps": datetime(2013, 2, 12),
+        "juno": datetime(2019, 9, 17),
+    }
 
     def __init__(self, set_up=True):
         self.user_record = None
@@ -56,6 +52,12 @@ class MonocleSampleTracking:
             self.sample_metadata = DataSources.sample_metadata.SampleMetadata()
             self.sequencing_status_source = DataSources.sequencing_status.SequencingStatus()
 
+    # date from which progress is counted
+    def _get_day_zero(self):
+        if self.current_project in self.zero_days:
+            return self.zero_days[self.current_project]
+        raise ValueError("The current project is not set, or invalid")
+
     def get_progress(self):
         institutions_data = self.get_all_institutions_irrespective_of_user_membership()
         total_num_samples_received_by_month = defaultdict(int)
@@ -71,8 +73,10 @@ class MonocleSampleTracking:
             this_institution_num_samples_received_by_date = self._num_samples_received_by_date(this_institution)
             for this_date_string in this_institution_num_samples_received_by_date.keys():
                 this_date = datetime.fromisoformat(this_date_string)
-                # days_elapsed   = (this_date - self.day_zero).days
-                months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+                # days_elapsed   = (this_date - self._get_day_zero()).days
+                months_elapsed = ((this_date.year - self._get_day_zero().year) * 12) + (
+                    this_date.month - self._get_day_zero().month
+                )
                 total_num_samples_received_by_month[months_elapsed] += this_institution_num_samples_received_by_date[
                     this_date_string
                 ]
@@ -80,15 +84,17 @@ class MonocleSampleTracking:
             this_institution_num_lanes_sequenced_by_date = self._num_lanes_sequenced_by_date(this_institution)
             for this_date_string in this_institution_num_lanes_sequenced_by_date.keys():
                 this_date = datetime.fromisoformat(this_date_string)
-                months_elapsed = ((this_date.year - self.day_zero.year) * 12) + (this_date.month - self.day_zero.month)
+                months_elapsed = ((this_date.year - self._get_day_zero().year) * 12) + (
+                    this_date.month - self._get_day_zero().month
+                )
                 total_num_lanes_sequenced_by_month[months_elapsed] += this_institution_num_lanes_sequenced_by_date[
                     this_date_string
                 ]
         # get cumulative numbers received/sequenced for *every* month from 0 to most recent month for which we found something
         num_samples_received_cumulative = 0
         num_lanes_sequenced_cumulative = 0
-        project_months_elapsed = ((self.updated.year - self.day_zero.year) * 12) + (
-            self.updated.month - self.day_zero.month
+        project_months_elapsed = ((self.updated.year - self._get_day_zero().year) * 12) + (
+            self.updated.month - self._get_day_zero().month
         )
         for this_month_elapsed in range(0, project_months_elapsed + 1, 1):
             if this_month_elapsed in total_num_samples_received_by_month:
@@ -96,7 +102,7 @@ class MonocleSampleTracking:
             if this_month_elapsed in total_num_lanes_sequenced_by_month:
                 num_lanes_sequenced_cumulative += total_num_lanes_sequenced_by_month[this_month_elapsed]
             # progress['date'].append( this_month_elapsed )
-            progress["date"].append((self.day_zero + relativedelta(months=this_month_elapsed)).strftime("%b %Y"))
+            progress["date"].append((self._get_day_zero() + relativedelta(months=this_month_elapsed)).strftime("%b %Y"))
             progress["samples received"].append(num_samples_received_cumulative)
             progress["samples sequenced"].append(num_lanes_sequenced_cumulative)
         return progress
@@ -348,16 +354,17 @@ class MonocleSampleTracking:
         """
         Returns dict with a summary of sequencing outcomes for each institution.
 
-        {  institution_1: {  'received':    <int>,
-                             'completed':   <int>,
-                             'success':     <int>,
-                             'failed':      <int>,
-                             'fail_messages':  [  {  'lane':  lane_id_1,
-                                                     'stage': 'name of QC stage where issues was detected',
-                                                     'issue': 'string describing the issue'
-                                                     },
-                                                  ...
-                                                  ],
+        {  institution_1: {  'samples_received':  <int>,
+                             'samples_completed': <int>,
+                             'lanes_completed':   <int>,
+                             'lanes_successful':  <int>,
+                             'lanes_failed':      <int>,
+                             'fail_messages':     [ { 'lane':  lane_id_1,
+                                                      'stage': 'name of QC stage where issues was detected',
+                                                      'issue': 'string describing the issue'
+                                                      },
+                                                    ...
+                                                    ],
                              },
            institution_2...
            }
@@ -368,8 +375,8 @@ class MonocleSampleTracking:
         status = {}
         for this_institution in sequencing_status_data.keys():
             logging.debug(
-                "{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
-                    __class__.__name__, sequencing_status_data[this_institution].keys(), this_institution
+                "{}.sequencing_status_summary() received sample ID list {} for institution {}".format(
+                    __class__.__name__, list(sequencing_status_data[this_institution]), this_institution
                 )
             )
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
@@ -378,16 +385,23 @@ class MonocleSampleTracking:
                 }
                 continue
             sanger_sample_id_list = sequencing_status_data[this_institution].keys()
-            status[this_institution] = {
+            this_institution_status = {
                 API_ERROR_KEY: None,
-                "received": len(sanger_sample_id_list) - 1,
-                "completed": 0,
-                "success": 0,
-                "failed": 0,
+                "samples_received": len(sanger_sample_id_list) - 1,
+                "samples_completed": 0,
+                "samples_successful": 0,
+                "lanes_completed": 0,
+                "lanes_successful": 0,
+                "lanes_failed": 0,
                 "fail_messages": [],
             }
             if len(sanger_sample_id_list) - 1 > 0:  # sanger_sample_id_list must be -1 to discount _ERROR entry
                 this_sequencing_status_data = sequencing_status_data[this_institution]
+                # this dict tracks samples with at least one completed lane
+                # it avoids double-counting any samples with two (or more) lanes sequenced
+                samples_completed = {}
+                # same as `samples_completed` but samples with at least one successfully sequenced lane
+                samples_successful = {}
                 for this_sanger_sample_id in sanger_sample_id_list:
                     if this_sanger_sample_id == API_ERROR_KEY:
                         continue
@@ -399,12 +413,37 @@ class MonocleSampleTracking:
                             this_sanger_sample_id, this_lane
                         )
                         if this_lane_completed:
-                            status[this_institution]["completed"] += 1
+                            this_institution_status["lanes_completed"] += 1
+                            if samples_completed.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "samples_completed" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_completed"] += 1
+                            samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
-                            status[this_institution]["success"] += 1
+                            this_institution_status["lanes_successful"] += 1
+                            if samples_successful.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one successfully sequenced lane: it is being counted only ONCE in sequencing status "samples_successful" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_successful"] += 1
+                            samples_successful[this_sanger_sample_id] = True
                         else:
-                            status[this_institution]["failed"] += 1
-                            status[this_institution]["fail_messages"] += fail_messages
+                            this_institution_status["lanes_failed"] += 1
+                            this_institution_status["fail_messages"] += fail_messages
+            # add deprecated keys to status object
+            # TODO remove these after FE has been updated
+            this_institution_status["received"] = this_institution_status["samples_received"]
+            this_institution_status["completed"] = this_institution_status["samples_completed"]
+            this_institution_status["success"] = this_institution_status["lanes_successful"]
+            this_institution_status["failed"] = this_institution_status["lanes_failed"]
+            status[this_institution] = this_institution_status
         return status
 
     def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):
@@ -422,6 +461,7 @@ class MonocleSampleTracking:
         this_lane_completed = False
         this_lane_success = True
         fail_messages = []
+
         if (
             "qc complete" == this_lane["run_status"]
             and this_lane["qc_complete_datetime"]
@@ -430,17 +470,16 @@ class MonocleSampleTracking:
             # lane has completed, whether success or failure
             this_lane_completed = True
             # look for any failures; note one lane could have more than one failure
-            for this_flag in self.sequencing_flags.keys():
-                if not 1 == this_lane[this_flag]:
-                    this_lane_success = False
-                    # record details of this failure
-                    fail_messages.append(
-                        {
-                            "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
-                            "stage": self.sequencing_flags[this_flag],
-                            "issue": "sorry, failure messages cannot currently be seen here",
-                        }
-                    )
+            if not 1 == this_lane["qc_success"]:
+                this_lane_success = False
+                # record details of this failure
+                fail_messages.append(
+                    {
+                        "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
+                        "stage": this_lane["qc_status_text"],
+                        "issue": "sorry, failure messages cannot currently be seen here",
+                    }
+                )
         logging.debug(
             "\nsequencing_is_success({},{}) returns {}".format(
                 this_sample_id, this_lane, (this_lane_completed, this_lane_success, fail_messages)
