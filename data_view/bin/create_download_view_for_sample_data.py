@@ -157,13 +157,12 @@ def _mkdir(dir_name):
     if Path(dir_name).is_dir():
         logging.debug(f"Directory {dir_name} already exists in {Path().absolute()}.")
     else:
-        logging.info(f"Directory {dir_name} being created at {Path().absolute()}.")
         Path(dir_name).mkdir()
+        logging.info(f"Directory {dir_name} was created at {Path().absolute()}.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create sample data view")
-    parser.add_argument("-P", "--project", help="Project", choices=["juno", "gps"])
     parser.add_argument("-D", "--data_dir", help="Data file directory")
     parser.add_argument("-O", "--output_dir", help="Institition view (output) file directory")
     parser.add_argument("-P", "--project", choices=["juno", "gps"], default="juno", help="Project")
@@ -184,7 +183,7 @@ if __name__ == "__main__":
 
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
-    sample_metadata.current_project = options.project
+    sample_metadata.current_project = project
 
     create_download_view_for_sample_data(
         project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
