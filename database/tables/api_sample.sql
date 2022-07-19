@@ -76,8 +76,6 @@ CREATE TABLE `api_sample` (
   `linezolid_method` VARCHAR(60) DEFAULT NULL,
   # END OF AUTO_GENERATED SECTION
   PRIMARY KEY (`sanger_sample_id`),
-  KEY `api_sample_submitting_institution_fk` (`submitting_institution`),
-  CONSTRAINT `api_sample_submitting_institution_fk` FOREIGN KEY (`submitting_institution`) REFERENCES `api_institution` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
