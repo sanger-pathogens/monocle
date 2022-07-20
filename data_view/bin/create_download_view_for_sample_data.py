@@ -7,7 +7,7 @@ import re
 import time
 from contextlib import contextmanager
 from os import path
-from pathlib import Path
+from pathlib import Path, PurePath
 from sys import argv
 from urllib.error import HTTPError
 
@@ -64,7 +64,7 @@ def _get_data_file_lookup_by_lane_id(data_dir):
             data_file_name_match = data_file_name_pattern.search(str(this_file))
             if data_file_name_match:
                 lane_id = data_file_name_match.group(1)
-                this_file_full_path = Path(data_dir).joinpath(this_file)
+                this_file_full_path = PurePath(data_dir).joinpath(this_file)
                 logging.debug("Found file for lane {}:  {}".format(lane_id, this_file_full_path))
                 num_data_files += 1
                 if lane_id in data_file_lookup_by_lane_id:
@@ -79,18 +79,19 @@ def _get_data_file_lookup_by_lane_id(data_dir):
 def _get_public_names_with_lane_ids(project, institution, db):
 
     num_retries = 0
-    query_ok = False
     final_exception = None
-    while num_retries < 10:
+    samples_list = None
+    while samples_list is None and num_retries < 10:
         num_retries += 1
         try:
             samples_list = db.get_samples(project, institutions=[institution])
-            query_ok = True
         except Exception as e:
-            logging.warning("failed to retrieve samples for {} institution {}; retrying".format(project, institution))
+            logging.warning("failed to retrieve samples for institution {}: {}".format(institution, e))
             final_exception = e
             time.sleep(180)
-    if not query_ok:
+    if samples_list is None:
+        # if samples_list isn't a list, it means we got to max retries
+        # without db.get_samples() running successfully
         logging.error(
             "gave up retrieving samples for {} institution {} after {} attempts".format(
                 project, institution, num_retries
@@ -220,7 +221,6 @@ if __name__ == "__main__":
     logging.info("Getting sample metadata")
     sample_metadata = SampleMetadata()
     sample_metadata.current_project = project
-    TIMECHECK = time.time()
 
     create_download_view_for_sample_data(
         project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
