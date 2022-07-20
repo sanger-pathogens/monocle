@@ -111,4 +111,4 @@ UPDATE gps_sample SET submitting_institution = 'ÇukUniFacMedDep' WHERE submitti
 UPDATE gps_sample SET submitting_institution = 'CenExpBioDiaCam' WHERE submitting_institution = 'Centre of Expertise and Biological Diagnostic of Cameroon (CEDBCAM)';
 
 
-CALL update_database_version('0.3.5', 'drop FK constraint in api_sample; drop api_institution; replace institution names w/ institution keys in api_sample and gps_sample');
+CALL update_database_version('0.3.14', 'drop FK constraint in api_sample; drop api_institution; replace institution names w/ institution keys in api_sample and gps_sample');
