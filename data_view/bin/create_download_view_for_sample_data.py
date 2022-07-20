@@ -88,7 +88,7 @@ def _get_public_names_with_lane_ids(project, institution, db):
         except Exception as e:
             logging.warning("failed to retrieve samples for institution {}: {}".format(institution, e))
             final_exception = e
-            time.sleep(180)
+            time.sleep(10)
     if samples_list is None:
         # if samples_list isn't a list, it means we got to max retries
         # without db.get_samples() running successfully
