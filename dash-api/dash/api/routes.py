@@ -22,7 +22,7 @@ logger = logging.getLogger()
 # Testing only
 ServiceFactory.TEST_MODE = False
 
-DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "JUNO_DATA_INSTITUTION_VIEW"}
+DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "GPS_DATA_INSTITUTION_VIEW"}
 
 OPENAPI_SPEC_FILE = "./dash/interface/openapi.yml"
 GET_METADATA_INPUT_SCHEMA = "GetMetadataInput"
@@ -301,6 +301,9 @@ def bulk_download_urls_route(body):
     start = 0
     total = len(public_name_to_lane_files)
     num_downloads = ceil(total / max_samples_per_zip)
+    logging.debug(
+        "total = {}, max_samples_per_zip = {}, num_downloads = {}".format(total, max_samples_per_zip, num_downloads)
+    )
     samples_in_each = ceil(total / num_downloads)
     while total > start:
         this_zip_archive_contents = dict(islice(public_name_to_lane_files.items(), start, (start + samples_in_each), 1))
@@ -360,11 +363,12 @@ def data_download_route(token: str):
             raise RuntimeError("Timed out waiting for ZIP file {} to be created".format(expected_zipfile))
         logging.info("Reusing existing ZIP file {}/{}".format(download_param_file_location, zip_file_name))
     else:
-        # the ZIP file does not exist, so wwe ceate it.
+        # the ZIP file does not exist, so we ceate it.
         logging.info("Creating ZIP file {}/{}".format(download_param_file_location, zip_file_name))
         # read params from JSON file on disk containing
         download_param_file_name = "{}.params.json".format(token)
         param_file_path = os.path.join(download_param_file_location, download_param_file_name)
+        logging.debug("retrieving download params from {}".format(param_file_path))
         # if the JSON file doesn't exist return a 404
         if not Path(param_file_path).is_file():
             logging.warning(

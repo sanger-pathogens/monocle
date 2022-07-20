@@ -1016,6 +1016,7 @@ class MonocleSampleDataTest(TestCase):
         self.assertEqual(expected_samples, actual_samples)
         self.get_mock_data()
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(PipelineStatus, "lane_status")
     def test_get_filtered_samples_with_pipeline_success_filter(self, lane_status_mock, get_sample_metadata_mock):
@@ -1042,6 +1043,7 @@ class MonocleSampleDataTest(TestCase):
         self.assertEqual(expected_samples, actual_samples)
         self.get_mock_data()
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(PipelineStatus, "lane_status")
     def test_get_filtered_samples_with_pipeline_complete_filter(self, lane_status_mock, get_sample_metadata_mock):

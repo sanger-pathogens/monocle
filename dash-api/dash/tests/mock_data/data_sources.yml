@@ -59,3 +59,13 @@ data_download:
    download_route        : '/data_route_via_nginx'
    max_samples_per_zip   : 100
    max_samples_per_zip_with_reads : 10
+metadata_download_juno:
+   metadata_merge_field    : 'Lane_ID'
+   in_silico_merge_field   : 'Sample_id'
+   qc_data_merge_field     : 'lane_id'
+   merge_qc_data           : false
+metadata_download_gps:
+   metadata_merge_field    : 'Lane_ID'
+   in_silico_merge_field   : 'lane_id'
+   qc_data_merge_field     : 'lane_id'
+   merge_qc_data           : true
