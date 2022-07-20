@@ -41,7 +41,7 @@ Follow these steps:
 
 If you're changing a column or category name in `juno_field_attributes.json` or 
 `gps_field_attributes.json`, increment the cache key 
-(`LOCAL_STORAGE_KEY_COLUMNS_STATE`) in `frontend/src/lib/constants.js` as well. 
-Otherwise the user would still see the old name in the data viewer because the 
-FE doesn't fetch the field attributes from the `/get_fields_attribute` endpoint 
-if it finds the field attributes in `localStorage` cache.
+(`SESSION_STORAGE_KEY_COLUMNS_STATE`) in `frontend/src/lib/constants.js` as well to invalidate cached field attributes.
+Otherwise the user would still see the old name in the data viewer until they re-open the browser tab/window. This is because the
+FE doesn't fetch field attributes from the `/get_fields_attribute` endpoint
+if it finds the field attributes in non-stale `sessionStorage` cache.
