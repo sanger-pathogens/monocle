@@ -71,7 +71,7 @@
                {
                   "name": "country",
                   "display": true,
-                  "default": true,
+                  "default": false,
                   "order": 7,
                   "spreadsheet heading": "Country",
                   "display name": "Country",
