@@ -71,7 +71,7 @@
                {
                   "name": "country",
                   "display": true,
-                  "default": false,
+                  "default": true,
                   "order": 7,
                   "spreadsheet heading": "Country",
                   "display name": "Country",
@@ -815,7 +815,8 @@
                },
                {
                   "name": "country",
-                  "display": false,
+                  "display": true,
+                  "default": false,
                   "order": 16,
                   "spreadsheet heading": "Country",
                   "display name": "Country",
