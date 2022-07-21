@@ -36,7 +36,6 @@
     overflow-y: auto;
     padding: 1rem 1.2rem;
     position: relative;
-    min-height: 4rem;
     max-width: 100%;
   }
 
@@ -61,6 +60,7 @@
     align-items: center;
     flex-wrap: wrap;
     margin: auto;
+    min-height: 4.2rem;
     max-width: var(--bp-xl);
     min-width: 65rem;
   }
@@ -115,6 +115,7 @@
 
     nav {
       min-width: 37rem;
+      min-height: 3.8rem;
     }
     nav a {
       padding-left: 0.4rem;
