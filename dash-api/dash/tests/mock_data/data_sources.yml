@@ -53,7 +53,7 @@ monocle_ldap:
    inst_name_attr        : 'description'
    employee_type_attr: 'employeeType'
 data_download:
-   web_dir               : 'dash/tests/mock_data/monocle_juno_web_root/downloads'
+   web_dir               : 'dash/tests/mock_data/monocle_web_root/downloads'
    cross_institution_dir : 'downloads'
    url_path              : 'files/downloads'
    download_route        : '/data_route_via_nginx'

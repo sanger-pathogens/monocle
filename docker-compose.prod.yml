@@ -113,7 +113,7 @@ services:
       # juno_data_institution_view/gps_data_institution_view must have the same path in the container as on the host, otherwise symlinks from data_downloads break
       - juno_data_institution_view:/home/<USER>/monocle_juno_institution_view
       - gps_data_institution_view:/home/<USER>/monocle_gps_institution_view
-      - data_downloads:/app/monocle_juno_web_root/downloads
+      - data_downloads:/app/monocle_web_root/downloads
       - ./my.cnf:/app/my.cnf
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
@@ -247,14 +247,14 @@ volumes:
       type: none
       device: /home/<USER>/monocle_gps_institution_view
   # note we have only one data download dir in the web root
-  # despite the name on disk being monocle_juno_web_root
+  # despite the name on disk being monocle_web_root
   # it is not actually specific to JUNO
   data_downloads:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: /home/<USER>/monocle_juno_web_root/downloads
+      device: /home/<USER>/monocle_web_root/downloads
 
 # Change address range of default compose network so as
 # not to clash with ISG infrastructure
