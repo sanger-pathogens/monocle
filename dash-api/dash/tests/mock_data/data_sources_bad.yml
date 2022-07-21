@@ -39,7 +39,7 @@ monocle_ldap:
    inst_name_attr    : 'description'
    employee_type_attr: 'employeeType'
 data_download:
-   web_dir              : 'monocle_juno_web_root/downloads'
+   web_dir              : 'monocle_web_root/downloads'
    url_path             : 'files/downloads'
    max_samples_per_zip  : -3
    max_samples_per_zip_with_reads : 'foo'
