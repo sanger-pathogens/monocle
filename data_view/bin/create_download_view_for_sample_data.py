@@ -3,9 +3,11 @@
 import argparse
 import logging
 import os
+import re
+import time
 from contextlib import contextmanager
 from os import path
-from pathlib import Path
+from pathlib import Path, PurePath
 from sys import argv
 from urllib.error import HTTPError
 
@@ -17,10 +19,12 @@ from dash.api.service.DataSources.sequencing_status import SequencingStatus
 def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir, output_dir):
     logging.info("Getting list of institutions")
     institutions = list(db.get_institution_names(project))
+    logging.info("Found {} institutions".format(len(institutions)))
+
+    data_file_lookup_by_lane_id = _get_data_file_lookup_by_lane_id(data_dir)
 
     if 0 == len(institutions):
         logging.warning("No institutions were found.")
-
     else:
         for institution in institutions:
             logging.info(f"{institution}: getting samples and lane information")
@@ -36,17 +40,66 @@ def create_download_view_for_sample_data(project, db, institution_name_to_id, da
                     with _cd(institution_readable_id):
                         for public_name, lane_ids in public_names_to_lane_ids.items():
                             for lane_id in lane_ids:
-                                _create_public_name_dir_with_symlinks(public_name, lane_id, institution, data_dir)
+                                _create_public_name_dir_with_symlinks(
+                                    data_file_lookup_by_lane_id, public_name, lane_id, institution, data_dir
+                                )
                             if not lane_ids:
                                 logging.debug(f'Creating empty directory "{public_name}" for {institution}.')
                                 _mkdir(public_name)
 
 
+def _get_data_file_lookup_by_lane_id(data_dir):
+    # this find all the data files, and returns a dict to look up the paths from lane IDs
+    # (note glob() is slow on big directories, so calling it just once provides a huge speed up)
+
+    # this regex matches data files (files with names based on lane ID)
+    # and provides a capture group for the lane ID
+    data_file_name_pattern = re.compile(r"^[^/]+/(\d+_\d+#\d+)")
+    data_file_lookup_by_lane_id = {}
+    num_data_files = 0
+
+    with _cd(data_dir):
+        for this_file in list(Path().glob("**/*")):
+            # pick out the data files
+            data_file_name_match = data_file_name_pattern.search(str(this_file))
+            if data_file_name_match:
+                lane_id = data_file_name_match.group(1)
+                this_file_full_path = PurePath(data_dir).joinpath(this_file)
+                logging.debug("Found file for lane {}:  {}".format(lane_id, this_file_full_path))
+                num_data_files += 1
+                if lane_id in data_file_lookup_by_lane_id:
+                    data_file_lookup_by_lane_id[lane_id].append(this_file_full_path)
+                else:
+                    data_file_lookup_by_lane_id[lane_id] = [this_file_full_path]
+    logging.info("Found {} data files under {}".format(num_data_files, data_dir))
+
+    return data_file_lookup_by_lane_id
+
+
 def _get_public_names_with_lane_ids(project, institution, db):
-    public_names_to_sanger_sample_id = {
-        sample["public_name"]: sample["sanger_sample_id"]
-        for sample in db.get_samples(project, institutions=[institution])
-    }
+
+    num_retries = 0
+    final_exception = None
+    samples_list = None
+    while samples_list is None and num_retries < 10:
+        num_retries += 1
+        try:
+            samples_list = db.get_samples(project, institutions=[institution])
+        except Exception as e:
+            logging.warning("failed to retrieve samples for institution {}: {}".format(institution, e))
+            final_exception = e
+            time.sleep(10)
+    if samples_list is None:
+        # if samples_list isn't a list, it means we got to max retries
+        # without db.get_samples() running successfully
+        logging.error(
+            "gave up retrieving samples for {} institution {} after {} attempts".format(
+                project, institution, num_retries
+            )
+        )
+        raise final_exception
+
+    public_names_to_sanger_sample_id = {sample["public_name"]: sample["sanger_sample_id"] for sample in samples_list}
 
     logging.info(f"{institution}: {len(public_names_to_sanger_sample_id)} public names")
 
@@ -81,8 +134,8 @@ def _get_sequencing_status_data(sanger_sample_ids):
     return SequencingStatus().get_multiple_samples(sanger_sample_ids)
 
 
-def _create_public_name_dir_with_symlinks(public_name, lane_id, institution, data_dir):
-    data_files = _get_data_files(lane_id, data_dir)
+def _create_public_name_dir_with_symlinks(data_file_lookup_by_lane_id, public_name, lane_id, institution, data_dir):
+    data_files = _get_data_files(data_file_lookup_by_lane_id, lane_id)
 
     logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution}.')
     _mkdir(public_name)
@@ -94,25 +147,9 @@ def _create_public_name_dir_with_symlinks(public_name, lane_id, institution, dat
             _create_symlink_to(data_file, data_file.name)
 
 
-def _get_data_files(lane_id, data_dir):
-
-    data_files_for_this_lane = []
-
-    with _cd(data_dir):
-        data_files_for_this_lane = list(Path().glob(f"**/{lane_id}[_.]*"))
-        if len(data_files_for_this_lane) > 0:
-            logging.debug("found {} data files for lane {}".format(len(data_files_for_this_lane), lane_id))
-            # store absolute paths
-            data_files_for_this_lane = [d.resolve() for d in data_files_for_this_lane]
-        else:
-            # we expect that there will be data files that are not found;
-            # it just means that the lane has been sequenced, but has not
-            # been through the pipelines
-            # TODO we could look at the pipeline status to check if we expect
-            #      that a file should exist; this would be a useful data integrity test
-            logging.debug("no data files for lane {}".format(lane_id))
-
-    return data_files_for_this_lane
+def _get_data_files(data_file_lookup_by_lane_id, lane_id):
+    # some lanes may legitimately have no data files
+    return data_file_lookup_by_lane_id.get(lane_id, [])
 
 
 def _create_symlink_to(path_to_file, symlink_name):
