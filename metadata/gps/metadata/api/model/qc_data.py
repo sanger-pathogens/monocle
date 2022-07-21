@@ -6,16 +6,12 @@ from dataclasses import dataclass
 @dataclass
 class QCData:
     lane_id: str  # mandatory; contains illegal characters
-    sample_name: str  # mandatory; must not contain illegal characters
-    sample_accession: str  # mandatory; must be a ERS accession number (ERS# format)
-    lane_accession: str  # mandatory; must be a ERR accession number (ERR# format)
     supplier_name: str  # mandatory; contains illegal characters
-    public_name: str  # mandatory; contains illegal characters
     Streptococcus_pneumoniae: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
-    total_length: str  # optional; must be an integer (whole number)
-    No_contigs: str  # optional; must be an integer (whole number)
-    genome_covered: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
-    depth_of_coverage: str  # optional; must be a number between 0-2000 (1 or 2 decimal places are needed);
-    X_Het_SNPs_Total_No_of_SNPs: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed); can be 'NA'
+    total_length: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
+    No_contigs: str  # optional; must be a 1-5 digits number (integer), or '_'
+    genome_covered: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
+    depth_of_coverage: str  # optional; must be a number between 0-2000 (1 or 2 decimal places are needed)
+    Proportion_of_Het_SNPs: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
     qc: str  # optional
-    Hetsites_50bp: str  # optional; must be a max 4 digits number or '#N/A'
+    Hetsites_50bp: str  # optional; must be an integer between 0-5000, or '_'

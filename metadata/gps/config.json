@@ -40,7 +40,7 @@
       "upload_validation_enabled": true,
       "spreadsheet_definition": {
          "sample_name": {
-            "title": "Sample_Name",
+            "title": "Sample_name",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
@@ -56,7 +56,7 @@
             "regex_validation_message": "must not contain illegal characters"
          },
          "public_name": {
-            "title": "Public_Name",
+            "title": "Public_name",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
@@ -64,14 +64,14 @@
             "regex_validation_message": "contains illegal characters"
          },
          "study_name": {
-            "title": "Study_Name",
+            "title": "Study_name",
             "mysql_type": "VARCHAR(600)",
             "max_length": 600,
             "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
             "regex_validation_message": "contains illegal characters"
          },
          "submitting_institution": {
-            "title": "Submitting_Institution",
+            "title": "Submitting_institution",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256
@@ -94,6 +94,11 @@
             "mysql_type": "VARCHAR(90)",
             "max_length": 90
          },
+         "continent": {
+            "title": "Continent",
+            "mysql_type": "VARCHAR(90)",
+            "max_length": 90
+         },
          "region": {
             "title": "Region",
             "mysql_type": "VARCHAR(90)",
@@ -105,27 +110,27 @@
             "max_length": 200
          },
          "facility_where_collected": {
-            "title": "Facility_of_Collection",
+            "title": "Facility_where_collected",
             "mysql_type": "VARCHAR(256) DEFAULT NULL",
             "max_length": 256
          },
          "month_collection": {
-            "title": "Collection_Month",
+            "title": "Month_collection",
             "mysql_type": "VARCHAR(10) DEFAULT NULL",
             "max_length": 10,
             "allowed_values": [
-               "MAR",
                "JAN",
-               "SEP",
-               "JUN",
-               "OCT",
-               "JUL",
-               "NOV",
-               "MAY",
-               "DEC",
                "FEB",
+               "MAR",
                "APR",
+               "MAY",
+               "JUN",
+               "JUL",
                "AUG",
+               "SEP",
+               "OCT",
+               "NOV",
+               "DEC",
                "_"
             ],
             "convert_case": {
@@ -133,10 +138,11 @@
             }
          },
          "year_collection": {
-            "title": "Collection_Year",
-            "mysql_type": "INT(11) DEFAULT NULL",
+            "title": "Year_collection",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
             "regex": "^(?:\\d{4})$|^_$",
-            "regex_validation_message": "must be a YYYY format year or '_'"
+            "regex_validation_message": "must be a YYYY format year, or '_'"
          },
          "gender": {
             "title": "Gender",
@@ -153,64 +159,64 @@
          },
          "age_years": {
             "title": "Age_years",
-            "mysql_type": "INT(11) DEFAULT NULL",
-            "regex": "^(?:\\d{1,3})$",
-            "regex_validation_message": "should be a valid 1 to 3 digit number"
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^(?:\\d+)$|^(?:<|>)?(?:=)?(?: |)?(?:\\d+(?:\\.\\d*)?(?:<=\\d+)?(?: )?(?:&)?(?: )?(?:<|>)?(?:\\d+)?)$|^_$",
+            "regex_validation_message": "should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols; can be '_'"
          },
          "age_months": {
             "title": "Age_months",
-            "mysql_type": "INT(11) DEFAULT NULL",
-            "regex": "^(?:\\d{1,4})$",
-            "regex_validation_message": "should be a valid 1 to 4 digit number"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$|^_$",
+            "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals); can be '_'"
          },
          "age_days": {
             "title": "Age_days",
-            "mysql_type": "INT(11) DEFAULT NULL",
-            "regex": "^(?:\\d{1,4})$",
-            "regex_validation_message": "should be a valid 1 to 4 digit number"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d+?)?$|^_$",
+            "regex_validation_message": "should be an integer; can be '_'"
          },
          "clinical_manifestation": {
             "title": "Clinical_manifestation",
             "mysql_type": "VARCHAR(256)",
             "max_length": 256,
             "allowed_values": [
-               "PNEUMONIA",
-               "BACTEREMIA",
-               "MENINGITIS",
-               "SINUSITIS",
-               "_",
-               "UNKNOWN",
-               "OTITIS",
-               "CELLULITIS",
-               "OSTEOMYELITIS",
-               "FEVER UNSPECIFIED",
-               "EMPYEMA",
-               "BRONCHITIS",
-               "SEPTIC ARTHRITIS",
-               "JOINT INFECTION",
                "ABSCESS",
                "ARTHRITIS",
-               "SURGICAL SITE INFECTION",
-               "PERITONITIS",
-               "PLEURAL EFFUSION",
-               "SEPSIS",
-               "OTHER",
-               "OTITIS MEDIA",
-               "PERICARDITIS",
-               "SEPTICEMIA",
-               "CARRIAGE",
-               "UNSPECIFIED",
-               "LOWER RESPIRATORY TRACT INFECTION",
-               "DISEASE",
+               "BACTEREMIA",
                "BRONCHIAL ASTHMA",
                "BRONCHIOLITIS",
-               "ENCEPHALITIS",
-               "LEUKEMIA",
-               "BACTERAEMIA",
-               "UNSPECIFIED IPD",
+               "BRONCHITIS",
+               "CARRIAGE",
+               "CELLULITIS",
                "CONJUNCTIVITIS",
-               "Bacteraemia",
-               "Carriage"
+               "DISEASE",
+               "EMPYEMA",
+               "ENCEPHALITIS",
+               "FEVER UNSPECIFIED",
+               "JOINT INFECTION",
+               "LEUKEMIA",
+               "LOWER RESPIRATORY TRACT INFECTION",
+               "MENINGITIS",
+               "OSTEOMYELITIS",
+               "OTHER",
+               "OTITIS",
+               "OTITIS MEDIA",
+               "PERICARDITIS",
+               "PERITONITIS",
+               "PLEURAL EFFUSION",
+               "PNEUMONIA",
+               "SEPSIS",
+               "SEPTIC ARTHRITIS",
+               "SEPTICEMIA",
+               "SINUSITIS",
+               "SURGICAL SITE INFECTION",
+               "UNKNOWN",
+               "UNSPECIFIED",
+               "UNSPECIFIED IPD",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -221,30 +227,27 @@
             "mysql_type": "VARCHAR(100)",
             "max_length": 100,
             "allowed_values": [
-               "BLOOD",
-               "PLEURAL FLUID",
-               "CEREBROSPINAL FLUID",
-               "OTHER",
-               "PERITONEAL FLUID",
                "ASCITIC FLUID",
+               "BLOOD",
                "BRONCHIAL SECRETION",
+               "CEREBROSPINAL FLUID",
                "CSF",
-               "MIDDLE EAR FLUID",
-               "NP SWAB",
-               "OP SWAB",
-               "SPUTUM",
-               "SYNOVIAL FLUID",
-               "_",
-               "LUNG ASPIRATE",
-               "PLEURAL ASPIRATE",
-               "PUS",
-               "ASCETIC FLUID",
-               "NP SWAP",
-               "KNEE ASPIRATE",
-               "JOINT FLUID",
                "CSF & BLOOD",
                "EAR SWAB",
-               "NASOPHARYNGEAL SWAB"
+               "JOINT FLUID",
+               "KNEE ASPIRATE",
+               "LUNG ASPIRATE",
+               "MIDDLE EAR FLUID",
+               "NASOPHARYNGEAL SWAB",
+               "OP SWAB",
+               "OTHER",
+               "PERITONEAL FLUID",
+               "PLEURAL ASPIRATE",
+               "PLEURAL FLUID",
+               "PUS",
+               "SPUTUM",
+               "SYNOVIAL FLUID",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -264,78 +267,76 @@
             }
          },
          "underlying_conditions": {
-            "title": "Underlying_Conditions",
+            "title": "Underlying_conditions",
             "mysql_type": "VARCHAR(256)",
             "max_length": 256,
             "allowed_values": [
-               "_",
-               "HIV EXPOSED",
-               "CHEST INFECTION",
-               "KWASHIORKOR",
                "CEREBROVASCULAR ACCIDENT",
-               "SICKLE CELL DISEASE",
-               "EPILEPSY",
-               "PRETERM",
-               "TUBEROSCLEROSIS",
+               "CHEST INFECTION",
+               "CONGENITAL HEART DISEASE",
                "DOWN SYNDROME",
+               "EPILEPSY",
+               "HIV EXPOSED",
+               "KWASHIORKOR",
+               "PRETERM",
                "SEIZURES",
-               "CONGENITAL HEART DISEASE"
+               "SICKLE CELL DISEASE",
+               "TUBEROSCLEROSIS",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
             }
          },
          "phenotypic_serotype_method": {
-            "title": "Phenotypic_Serotype_Method",
+            "title": "Phenotypic_serotype_method",
             "mysql_type": "VARCHAR(100)",
             "max_length": 100,
             "allowed_values": [
-               "QUELLUNG",
-               "_",
-               "PCR",
                "LATEX AGGLUTINATION",
+               "MICROARRAY",
                "NT",
+               "PCR",
                "PCR AND QUELLUNG",
-               "MICROARRAY"
+               "QUELLUNG",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
             }
          },
          "phenotypic_serotype": {
-            "title": "Phenotypic_Serotype",
+            "title": "Phenotypic_serotype",
             "mysql_type": "VARCHAR(100)",
             "max_length": 100,
-            "regex": "^(?:[A-Z0-9/\\(\\)\\-/]+)$|^_$",
+            "regex": "^(?:[A-Z0-9/\\(\\)\\-/\\&]+)$|^_$",
             "regex_validation_message": "contains illegal characters"
          },
          "sequence_type": {
             "title": "Sequence_Type",
             "mysql_type": "VARCHAR(256)",
             "max_length": 256,
-            "regex": "^[0-9]{1,5}$|^NEW$|^_$",
+            "regex": "^[0-9]{1,5}$|^UNKNOWN$|^_$",
             "regex_validation_message": "contains illegal characters"
          },
          "penicillin": {
             "title": "Penicillin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_penicillin": {
-            "title": "Penicillin_method",
+            "title": "AST_method_Penicillin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "ETEST",
-               "BROTH DILUTION",
-               "DISK DIFFUSION",
-               "DISC DIFFUSION",
                "AGAR DILUTION",
-               "OTHER"
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
+               "ETEST",
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -345,20 +346,19 @@
             "title": "Amoxicillin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_amoxicillin": {
-            "title": "Amoxicillin method",
+            "title": "AST_method_Amoxicillin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "BROTH DILUTION",
                "AGAR DILUTION",
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -368,21 +368,20 @@
             "title": "Cefotaxime",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_cefotaxime": {
-            "title": "Cefotaxime_method",
+            "title": "AST_method_Cefotaxime",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "BROTH DILUTION",
-               "ETEST",
-               "DISK DIFFUSION",
                "AGAR DILUTION",
-               "OTHER"
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
+               "ETEST",
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -392,22 +391,20 @@
             "title": "Ceftriaxone",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_ceftriaxone": {
-            "title": "Ceftriaxone_method",
+            "title": "AST_method_Ceftriaxone",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "ETEST",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
-               "DISK DIFFUSION",
-               "AGAR DILUTION",
-               "OTHER"
+               "ETEST",
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -417,41 +414,39 @@
             "title": "Cefuroxime",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_cefuroxime": {
-            "title": "Cefuroxime_method",
+            "title": "AST_method_Cefuroxime",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
                "BROTH DILUTION",
-               "DISK DIFFUSION",
-               "ETEST"
+               "DISC DIFFUSION",
+               "ETEST",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
             }
          },
-         "Meropenem": {
+         "meropenem": {
             "title": "Meropenem",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_meropenem": {
-            "title": "Meropenem_method",
+            "title": "AST_method_Meropenem",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
                "BROTH DILUTION",
+               "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -461,22 +456,20 @@
             "title": "Erythromycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_erythromycin": {
-            "title": "Erythromycin_method",
+            "title": "AST_method_Erythromycin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "ETEST",
-               "BROTH DILUTION",
-               "DISK DIFFUSION",
-               "DISC DIFFUSION",
                "AGAR DILUTION",
-               "OTHER"
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
+               "ETEST",
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -486,22 +479,20 @@
             "title": "Clindamycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_clindamycin": {
-            "title": "Clindamycin_method",
+            "title": "AST_method_Clindamycin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "DISK DIFFUSION",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
                "OTHER",
-               "AGAR DILUTION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -511,22 +502,20 @@
             "title": "Trim_Sulfa",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_trim_sulfa": {
-            "title": "Trim_Sulfa_method",
+            "title": "AST_method_Trim_Sulfa",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION",
                "OTHER",
-               "AGAR DILUTION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -536,22 +525,20 @@
             "title": "Vancomycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_vancomycin": {
-            "title": "Vancomycin_method",
+            "title": "AST_method_Vancomycin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION",
-               "AGAR DILUTION",
-               "OTHER"
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -561,20 +548,19 @@
             "title": "Linezolid",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_linezolid": {
-            "title": "Linezolid_method",
+            "title": "AST_method_Linezolid",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
                "BROTH DILUTION",
+               "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION",
-               "OTHER"
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -584,20 +570,18 @@
             "title": "Ciprofloxacin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_ciprofloxacin": {
-            "title": "Ciprofloxacin_method",
+            "title": "AST_method_Ciprofloxacin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -607,21 +591,19 @@
             "title": "Chloramphenicol",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_chloramphenicol": {
-            "title": "Chloramphenicol_method",
+            "title": "AST_method_Chloramphenicol",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "DISK DIFFUSION",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
-               "AGAR DILUTION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -631,22 +613,20 @@
             "title": "Tetracycline",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_tetracycline": {
-            "title": "Tetracycline_method",
+            "title": "AST_method_Tetracycline",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "DISK DIFFUSION",
+               "AGAR DILUTION",
                "BROTH DILUTION",
                "DISC DIFFUSION",
                "ETEST",
-               "AGAR DILUTION",
-               "OTHER"
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -656,21 +636,20 @@
             "title": "Levofloxacin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_levofloxacin": {
-            "title": "Levofloxacin_method",
+            "title": "AST_method_Levofloxacin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
-               "DISK DIFFUSION",
-               "BROTH DILUTION",
-               "ETEST",
                "AGAR DILUTION",
-               "OTHER"
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
+               "ETEST",
+               "OTHER",
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -680,18 +659,17 @@
             "title": "Synercid",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_synercid": {
-            "title": "Synercid_method",
+            "title": "AST_method_Synercid",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
+               "BROTH DILUTION",
                "ETEST",
-               "BROTH DILUTION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
@@ -701,58 +679,71 @@
             "title": "Rifampin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^_$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, or R"
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
          "AST_method_rifampin": {
-            "title": "Rifampin_method",
+            "title": "AST_method_Rifampin",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
-               "_",
-               "BROTH_DILUTION",
                "BROTH DILUTION",
+               "DISC DIFFUSION",
                "ETEST",
-               "DISK DIFFUSION"
+               "_"
             ],
             "convert_case": {
                "case": "upper"
             }
          },
-         "aroe": {
-            "title": "aroe",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+         "aroE": {
+            "title": "aroE",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
          "gdh": {
             "title": "gdh",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
          "gki": {
             "title": "gki",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
-         "recp": {
-            "title": "recp",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+         "recP": {
+            "title": "recP",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
          "spi": {
             "title": "spi",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNKNOWN$",
+            "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN' or '_'"
          },
          "xpt": {
             "title": "xpt",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
          "ddl": {
             "title": "ddl",
-            "mysql_type": "VARCHAR(100)",
-            "max_length": 100
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$",
+            "regex_validation_message": "must be an integer (max 3 digits) or '_'"
          },
          "comments": {
             "title": "Comments",
@@ -760,16 +751,21 @@
             "max_length": 256
          },
          "vaccine_period": {
-            "title": "Vaccine_Period",
-            "mysql_type": "VARCHAR(200)",
-            "max_length": 200
+            "title": "Vaccine_period",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^POSTPCV\\d{1,2}-\\d{1,2}YR|^PREPCV$|^_$",
+            "regex_validation_message": "should be 'PREPCV', 'POSTPCV#-#YR', or '_'"
          },
          "intro_year": {
-            "title": "Intro_Year",
-            "mysql_type": "SMALLINT(6) DEFAULT NULL"
+            "title": "Introduction_year",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^\\d{4}$|^_$",
+            "regex_validation_message": "must be a YYYY format year, or '_'"
          },
          "PCV_type": {
-            "title": "PCV_Type",
+            "title": "PCV_type",
             "mysql_type": "VARCHAR(100)",
             "max_length": 100,
             "regex": "^PCV\\d{1,2}$|^_$",
@@ -777,7 +773,10 @@
          },
          "resolution": {
             "title": "Resolution",
-            "mysql_type": "SMALLINT(4)"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^[0-2]$|^_$",
+            "regex_validation_message": "must be an integer (range 0-2), or '_'"
          }
       }
    },
@@ -786,7 +785,7 @@
       "upload_validation_enabled": true,
       "spreadsheet_definition": {
          "lane_id": {
-            "title": "lane_id",
+            "title": "Lane_id",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
@@ -794,7 +793,7 @@
             "regex_validation_message": "contains illegal characters"
          },
          "public_name": {
-            "title": "Public name",
+            "title": "Public_name",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
@@ -824,7 +823,7 @@
             "regex_validation_message": "must be a ERS accession number (ERS# format)"
          },
          "no_of_genome": {
-            "title": "Number_of_Genome",
+            "title": "No_of_genome",
             "mysql_type": "SMALLINT(6) DEFAULT NULL"
          },
          "duplicate": {
@@ -852,47 +851,68 @@
             }
          },
          "In_Silico_St": {
-            "title": "In_Silico_St",
+            "title": "In_silico_ST",
             "mysql_type": "VARCHAR(20) NOT NULL",
-            "max_length": 20
+            "max_length": 20,
+            "regex": "^\\d{1,5}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Aroe": {
-            "title": "Aroe",
+         "aroE": {
+            "title": "aroE",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Gdh": {
-            "title": "Gdh",
+         "gdh": {
+            "title": "gdh",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Gki": {
-            "title": "Gki",
+         "gki": {
+            "title": "gki",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Recp": {
-            "title": "Recp",
+         "recP": {
+            "title": "recP",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Spi": {
-            "title": "Aroe",
+         "spi": {
+            "title": "spi",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Xpt": {
-            "title": "Xpt",
+         "xpt": {
+            "title": "xpt",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
-         "Ddl": {
-            "title": "Ddl",
+         "ddl": {
+            "title": "ddl",
             "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "max_length": 30,
+            "regex": "^\\d{1,4}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
          },
          "country": {
             "title": "Country",
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256
+         },
+         "Continent": {
+            "title": "Continent",
             "mysql_type": "VARCHAR(256)",
             "max_length": 256
          },
@@ -901,75 +921,75 @@
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [
-               "Carriage",
-               "#N/A",
+               "_",
+               "URI",
+               "UNKNOWN",
+               "NON_IPD",
+               "NON_INVASIVE DISEASE",
                "IPD",
-               "UKWN",
-               "Non-IPD",
-               "Dis-Car"
-            ],
-            "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Non-IPD",
-                  "Dis-Car"
-               ]
-            }
-         },
-         "children_under_5yrs": {
-            "title": "children_under_5yrs",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "allowed_values": [
-               "N",
-               "Y",
-               "#N/A",
-               "UKWN"
+               "DIS_CAR",
+               "CARRIAGE"
             ],
             "convert_case": {
                "case": "upper"
             }
          },
-         "GPSC_PoPUNK2": {
-            "title": "GPSC_PoPUNK2",
+         "children_under_5yrs": {
+            "title": "Children_under_5yrs",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "allowed_values": [
+               "_",
+               "Y",
+               "UNKNOWN",
+               "N"
+            ],
+            "convert_case": {
+               "case": "upper"
+            }
+         },
+         "GPSC": {
+            "title": "GPSC",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,4}$|^_$",
+            "regex_validation_message": "must be an integer (1-4 digits), or '_'"
+         },
+         "GPSC__colour": {
+            "title": "GPSC__colour",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+         },
+         "In_silico_serotype": {
+            "title": "In_silico_serotype",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30
          },
-         "GPSC_PoPUNK2__colour": {
-            "title": "GPSC_PoPUNK2__colour",
+         "In_silico_serotype__colour": {
+            "title": "In_silico_serotype__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
-         "In_Silico_serotype": {
-            "title": "In_Silico_serotype",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30
-         },
-         "In_Silico_serotype__colour": {
-            "title": "In_Silico_serotype__colour",
+         "pbp1a": {
+            "title": "pbp1a",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
+            "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
          },
-         "PBP1A": {
-            "title": "PBP1A",
+         "pbp2b": {
+            "title": "pbp2b",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
-            "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
+            "regex": "^(?:\\d{1,3})$|^NEW$|^NF$",
+            "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'"
          },
-         "PBP2B": {
-            "title": "PBP2B",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$",
-            "regex_validation_message": "should be a valid 1 to 3 digit number; can be 'NEW' or 'ERROR'"
-         },
-         "PBP2X": {
-            "title": "PBP2X",
+         "pbp2x": {
+            "title": "pbp2x",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:\\d{1,3})$|^NEW$|^ERROR$|^NF$",
@@ -979,7 +999,7 @@
             "title": "WGS_PEN",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
             "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
          },
          "WGS_PEN_SIR_Meningitis": {
@@ -991,13 +1011,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_PEN_SIR_Nonmeningitis": {
@@ -1009,20 +1026,17 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_AMO": {
             "title": "WGS_AMO",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
             "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
          },
          "WGS_AMO_SIR": {
@@ -1034,20 +1048,17 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_MER": {
             "title": "WGS_MER",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
             "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
          },
          "WGS_MER_SIR": {
@@ -1059,20 +1070,17 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_TAX": {
             "title": "WGS_TAX",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
             "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
          },
          "WGS_TAX_SIR_Meningitis": {
@@ -1084,13 +1092,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_TAX_SIR_Nonmeningitis": {
@@ -1102,20 +1107,17 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_CFT": {
             "title": "WGS_CFT",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$",
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$",
             "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF'"
          },
          "WGS_CFT_SIR_Meningitis": {
@@ -1127,13 +1129,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_CFT_SIR_Nonmeningitis": {
@@ -1145,13 +1144,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_CFX": {
@@ -1170,21 +1166,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_ERY": {
             "title": "WGS_ERY",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_ERY_SIR": {
             "title": "WGS_ERY_SIR",
@@ -1195,21 +1188,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_CLI": {
             "title": "WGS_CLI",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_CLI_SIR": {
             "title": "WGS_CLI_SIR",
@@ -1220,21 +1210,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_SYN": {
             "title": "WGS_SYN",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_SYN_SIR": {
             "title": "WGS_SYN_SIR",
@@ -1245,21 +1232,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_LZO": {
             "title": "WGS_LZO",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_LZO_SIR": {
             "title": "WGS_LZO_SIR",
@@ -1270,13 +1254,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_ERY_CLI": {
@@ -1286,23 +1267,18 @@
             "allowed_values": [
                "NEG",
                "POS",
-               "neg",
-               "pos",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_COT": {
             "title": "WGS_COT",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_COT_SIR": {
             "title": "WGS_COT_SIR",
@@ -1313,21 +1289,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_TET": {
             "title": "WGS_TET",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_TET_SIR": {
             "title": "WGS_TET_SIR",
@@ -1338,21 +1311,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_DOX": {
             "title": "WGS_DOX",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_DOX_SIR": {
             "title": "WGS_DOX_SIR",
@@ -1363,21 +1333,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_LFX": {
             "title": "WGS_LFX",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_LFX_SIR": {
             "title": "WGS_LFX_SIR",
@@ -1388,21 +1355,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_CHL": {
             "title": "WGS_CHL",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_CHL_SIR": {
             "title": "WGS_CHL_SIR",
@@ -1413,21 +1377,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_RIF": {
             "title": "WGS_RIF",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_RIF_SIR": {
             "title": "WGS_RIF_SIR",
@@ -1438,21 +1399,18 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "WGS_VAN": {
             "title": "WGS_VAN",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^Flag$",
-            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'Flag'"
+            "regex": "^(?:[<>]=?)?( )?(?:\\d+\\.)?(?:\\d+)$|^NF$|^FLAG$",
+            "regex_validation_message": "can be an integer or decimal; can bee preceeded by '<', '>', '<=' or '>='; can be 'NF' or 'FLAG'"
          },
          "WGS_VAN_SIR": {
             "title": "WGS_VAN_SIR",
@@ -1463,13 +1421,10 @@
                "I",
                "S",
                "NF",
-               "Flag"
+               "FLAG"
             ],
             "convert_case": {
-               "case": "upper",
-               "preserve": [
-                  "Flag"
-               ]
+               "case": "upper"
             }
          },
          "EC": {
@@ -1487,12 +1442,11 @@
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [
-               "TETM",
-               "NEG",
-               "TET",
-               "neg",
                "TETO",
-               "TETM:TETO"
+               "TETM:TETO",
+               "TETM",
+               "TET",
+               "NEG"
             ],
             "convert_case": {
                "case": "upper"
@@ -1500,13 +1454,13 @@
          },
          "FQ__autocolour": {
             "title": "FQ__autocolour",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "mysql_type": "VARCHAR(400)",
+            "max_length": 400
          },
          "Other": {
             "title": "Other",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256
          },
          "PBP1A_2B_2X__autocolour": {
             "title": "PBP1A_2B_2X__autocolour",
@@ -1517,141 +1471,141 @@
             "title": "WGS_PEN_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_PEN_SIR_Nonmeningitis__colour": {
             "title": "WGS_PEN_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_AMO_SIR__colour": {
             "title": "WGS_AMO_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_MER_SIR__colour": {
             "title": "WGS_MER_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_TAX_SIR_Meningitis__colour": {
             "title": "WGS_TAX_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_TAX_SIR_Nonmeningitis__colour": {
             "title": "WGS_TAX_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_CFT_SIR_Meningitis__colour": {
             "title": "WGS_CFT_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_CFT_SIR_Nonmeningitis__colour": {
             "title": "WGS_CFT_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_CFX_SIR__colour": {
             "title": "WGS_CFX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_ERY_SIR__colour": {
             "title": "WGS_ERY_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_CLI_SIR__colour": {
             "title": "WGS_CLI_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_SYN_SIR__colour": {
             "title": "WGS_SYN_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_LZO_SIR__colour": {
             "title": "WGS_LZO_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_COT_SIR__colour": {
             "title": "WGS_COT_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_TET_SIR__colour": {
             "title": "WGS_TET_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_DOX_SIR__colour": {
             "title": "WGS_DOX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_LFX_SIR__colour": {
             "title": "WGS_LFX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_CHL_SIR__colour": {
             "title": "WGS_CHL_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_RIF_SIR__colour": {
             "title": "WGS_RIF_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "WGS_VAN_SIR__colour": {
             "title": "WGS_VAN_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "ermB": {
             "title": "ermB",
@@ -1659,9 +1613,7 @@
             "max_length": 30,
             "allowed_values": [
                "NEG",
-               "POS",
-               "neg",
-               "pos"
+               "POS"
             ],
             "convert_case": {
                "case": "upper"
@@ -1671,8 +1623,8 @@
             "title": "ermB__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "mefA": {
             "title": "mefA",
@@ -1680,9 +1632,7 @@
             "max_length": 30,
             "allowed_values": [
                "NEG",
-               "POS",
-               "neg",
-               "pos"
+               "POS"
             ],
             "convert_case": {
                "case": "upper"
@@ -1692,8 +1642,8 @@
             "title": "mefA__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "folA_I100L": {
             "title": "folA_I100L",
@@ -1701,9 +1651,7 @@
             "max_length": 30,
             "allowed_values": [
                "NEG",
-               "POS",
-               "neg",
-               "pos"
+               "POS"
             ],
             "convert_case": {
                "case": "upper"
@@ -1713,8 +1661,8 @@
             "title": "folA_I100L__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "folP__autocolour": {
             "title": "folP__autocolour",
@@ -1727,9 +1675,7 @@
             "max_length": 30,
             "allowed_values": [
                "NEG",
-               "POS",
-               "neg",
-               "pos"
+               "POS"
             ],
             "convert_case": {
                "case": "upper"
@@ -1739,8 +1685,8 @@
             "title": "cat__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\-$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '-' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
          },
          "PCV7": {
             "title": "PCV7",
@@ -1840,44 +1786,12 @@
             "regex": "^(?:\\d+_\\d+#\\d+)$",
             "regex_validation_message": "contains illegal characters"
          },
-         "sample_name": {
-            "title": "sample_name",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:[0-9a-zA-Z]+)$",
-            "regex_validation_message": "must not contain illegal characters"
-         },
-         "sample_accession": {
-            "title": "sample_accession",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^ERS\\d{7}$",
-            "regex_validation_message": "must be a ERS accession number (ERS# format)"
-         },
-         "lane_accession": {
-            "title": "lane_accession",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^ERR\\d{7}$",
-            "regex_validation_message": "must be a ERR accession number (ERR# format)"
-         },
          "supplier_name": {
             "title": "supplier_name",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
             "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
-            "regex_validation_message": "contains illegal characters"
-         },
-         "public_name": {
-            "title": "public_name",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
             "regex_validation_message": "contains illegal characters"
          },
          "Streptococcus_pneumoniae": {
@@ -1888,44 +1802,45 @@
          },
          "total_length": {
             "title": "total_length",
-            "mysql_type": "INT(11)",
-            "regex": "^\\d+$",
-            "regex_validation_message": "must be an integer (whole number)"
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
          },
          "No_contigs": {
             "title": "No_contigs",
-            "mysql_type": "INT(11)",
-            "regex": "^\\d+$",
-            "regex_validation_message": "must be an integer (whole number)"
+            "mysql_type": "VARCHAR(30)",
+            "regex": "^\\d{1,5}$|^_$$",
+            "regex_validation_message": "must be a 1-5 digits number (integer), or '_'"
          },
          "genome_covered": {
             "title": "genome_covered",
-            "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
-            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+            "mysql_type": "VARCHAR(30)",
+            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$^_$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
          },
          "depth_of_coverage": {
             "title": "depth_of_coverage",
             "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
             "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-            "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are needed); "
+            "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are needed)"
          },
-         "X_Het_SNPs_Total_No_of_SNPs": {
-            "title": "X_Het_SNPs_Total_No_of_SNPs",
+         "Proportion_of_Het_SNPs": {
+            "title": "Proportion_of_Het_SNPs",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^NA$",
-            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed); can be 'NA'"
+            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
          },
          "qc": {
             "title": "qc",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [
-               "Pass",
-               "PassPlus",
-               "Fail",
-               "NA"
+               "_",
+               "PASSPLUS",
+               "PASS",
+               "FAIL"
             ],
             "convert_case": {
                "case": "upper"
@@ -1935,8 +1850,8 @@
             "title": "Hetsites_50bp",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{4}$|^#N/A$",
-            "regex_validation_message": "must be a max 4 digits number or '#N/A'"
+            "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$|^_$",
+            "regex_validation_message": "must be an integer between 0-5000, or '_'"
          }
       }
    },

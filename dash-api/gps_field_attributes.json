@@ -9,7 +9,7 @@
                   "display": true,
                   "default": false,
                   "order": 1,
-                  "spreadsheet heading": "Sample_Name",
+                  "spreadsheet heading": "Sample_name",
                   "display name": "Sample name",
                   "filter type": "none"
                },
@@ -27,7 +27,7 @@
                   "display": true,
                   "default": true,
                   "order": 3,
-                  "spreadsheet heading": "Public_Name",
+                  "spreadsheet heading": "Public_name",
                   "display name": "Public Name",
                   "filter type": "none"
                }
@@ -41,7 +41,7 @@
                   "display": true,
                   "default": false,
                   "order": 4,
-                  "spreadsheet heading": "Study_Name",
+                  "spreadsheet heading": "Study_name",
                   "display name": "Study Name",
                   "filter type": "none"
                },
@@ -50,7 +50,7 @@
                   "display": true,
                   "default": true,
                   "order": 5,
-                  "spreadsheet heading": "Submitting_Institution",
+                  "spreadsheet heading": "Submitting_institution",
                   "display name": "Submitting Institution",
                   "filter type": "discrete"
                }
@@ -78,10 +78,19 @@
                   "filter type": "discrete"
                },
                {
+                  "name": "continent",
+                  "display": true,
+                  "default": true,
+                  "order": 8,
+                  "spreadsheet heading": "Continent",
+                  "display name": "Continent",
+                  "filter type": "discrete"
+               },
+               {
                   "name": "region",
                   "display": true,
                   "default": false,
-                  "order": 8,
+                  "order": 9,
                   "spreadsheet heading": "Region",
                   "display name": "Region",
                   "filter type": "discrete"
@@ -90,7 +99,7 @@
                   "name": "city",
                   "display": true,
                   "default": false,
-                  "order": 9,
+                  "order": 10,
                   "spreadsheet heading": "City",
                   "display name": "City",
                   "filter type": "discrete"
@@ -99,17 +108,17 @@
                   "name": "facility_where_collected",
                   "display": true,
                   "default": false,
-                  "order": 10,
-                  "spreadsheet heading": "Facility_of_Collection",
-                  "display name": "Facility of Collection",
+                  "order": 11,
+                  "spreadsheet heading": "Facility_where_collected",
+                  "display name": "Facility where collected",
                   "filter type": "discrete"
                },
                {
                   "name": "month_collection",
                   "display": true,
                   "default": false,
-                  "order": 11,
-                  "spreadsheet heading": "Collection_Month",
+                  "order": 12,
+                  "spreadsheet heading": "Month_collection",
                   "display name": "Collection Month",
                   "filter type": "discrete"
                },
@@ -117,10 +126,10 @@
                   "name": "year_collection",
                   "display": true,
                   "default": true,
-                  "order": 12,
-                  "spreadsheet heading": "Collection_Year",
+                  "order": 13,
+                  "spreadsheet heading": "Year_collection",
                   "display name": "Collection Year",
-                  "filter type": "numeric"
+                  "filter type": "discrete"
                }
             ]
          },
@@ -131,7 +140,7 @@
                   "name": "gender",
                   "display": true,
                   "default": false,
-                  "order": 13,
+                  "order": 14,
                   "spreadsheet heading": "Gender",
                   "display name": "Gender",
                   "filter type": "discrete"
@@ -140,34 +149,34 @@
                   "name": "age_years",
                   "display": true,
                   "default": false,
-                  "order": 14,
+                  "order": 15,
                   "spreadsheet heading": "Age_years",
                   "display name": "Age years",
-                  "filter type": "numeric"
+                  "filter type": "discrete"
                },
                {
                   "name": "age_months",
                   "display": true,
                   "default": false,
-                  "order": 15,
+                  "order": 16,
                   "spreadsheet heading": "Age_months",
                   "display name": "Age months",
-                  "filter type": "numeric"
+                  "filter type": "discrete"
                },
                {
                   "name": "age_days",
                   "display": true,
                   "default": false,
-                  "order": 16,
+                  "order": 17,
                   "spreadsheet heading": "Age_days",
                   "display name": "Age days",
-                  "filter type": "numeric"
+                  "filter type": "discrete"
                },
                {
                   "name": "clinical_manifestation",
                   "display": true,
                   "default": false,
-                  "order": 17,
+                  "order": 18,
                   "spreadsheet heading": "Clinical_manifestation",
                   "display name": "Clinical manifestation",
                   "filter type": "discrete"
@@ -176,7 +185,7 @@
                   "name": "source",
                   "display": true,
                   "default": true,
-                  "order": 18,
+                  "order": 19,
                   "spreadsheet heading": "Source",
                   "display name": "Source",
                   "filter type": "discrete"
@@ -185,7 +194,7 @@
                   "name": "HIV_status",
                   "display": true,
                   "default": true,
-                  "order": 19,
+                  "order": 20,
                   "spreadsheet heading": "HIV_status",
                   "display name": "HIV status",
                   "filter type": "discrete"
@@ -194,8 +203,8 @@
                   "name": "underlying_conditions",
                   "display": true,
                   "default": false,
-                  "order": 20,
-                  "spreadsheet heading": "Underlying_Conditions",
+                  "order": 21,
+                  "spreadsheet heading": "Underlying_conditions",
                   "display name": "Underlying Conditions",
                   "filter type": "discrete"
                }
@@ -208,8 +217,8 @@
                   "name": "phenotypic_serotype_method",
                   "display": true,
                   "default": false,
-                  "order": 21,
-                  "spreadsheet heading": "Phenotypic_Serotype_Method",
+                  "order": 22,
+                  "spreadsheet heading": "Phenotypic_serotype_method",
                   "display name": "Phenotypic Serotype Method",
                   "filter type": "discrete"
                },
@@ -217,8 +226,8 @@
                   "name": "phenotypic_serotype",
                   "display": true,
                   "default": true,
-                  "order": 22,
-                  "spreadsheet heading": "Phenotypic_Serotype",
+                  "order": 23,
+                  "spreadsheet heading": "Phenotypic_serotype",
                   "display name": "Phenotypic Serotype",
                   "filter type": "discrete"
                },
@@ -226,7 +235,7 @@
                   "name": "sequence_type",
                   "display": true,
                   "default": false,
-                  "order": 23,
+                  "order": 24,
                   "spreadsheet heading": "Sequence_Type",
                   "display name": "Sequence Type",
                   "filter type": "discrete"
@@ -240,7 +249,7 @@
                   "name": "penicillin",
                   "display": true,
                   "default": false,
-                  "order": 24,
+                  "order": 25,
                   "spreadsheet heading": "Penicillin",
                   "display name": "Penicillin",
                   "filter type": "discrete"
@@ -249,8 +258,8 @@
                   "name": "AST_method_penicillin",
                   "display": true,
                   "default": false,
-                  "order": 25,
-                  "spreadsheet heading": "Penicillin_method",
+                  "order": 26,
+                  "spreadsheet heading": "AST_method_Penicillin",
                   "display name": "Penicillin method",
                   "filter type": "discrete"
                },
@@ -258,7 +267,7 @@
                   "name": "amoxicillin",
                   "display": true,
                   "default": false,
-                  "order": 26,
+                  "order": 27,
                   "spreadsheet heading": "Amoxicillin",
                   "display name": "Amoxicillin",
                   "filter type": "discrete"
@@ -267,8 +276,8 @@
                   "name": "AST_method_amoxicillin",
                   "display": true,
                   "default": false,
-                  "order": 27,
-                  "spreadsheet heading": "Amoxicillin method",
+                  "order": 28,
+                  "spreadsheet heading": "AST_method_Amoxicillin",
                   "display name": "Amoxicillin method",
                   "filter type": "discrete"
                },
@@ -276,7 +285,7 @@
                   "name": "cefotaxime",
                   "display": true,
                   "default": false,
-                  "order": 28,
+                  "order": 29,
                   "spreadsheet heading": "Cefotaxime",
                   "display name": "Cefotaxime",
                   "filter type": "discrete"
@@ -285,8 +294,8 @@
                   "name": "AST_method_cefotaxime",
                   "display": true,
                   "default": false,
-                  "order": 29,
-                  "spreadsheet heading": "Cefotaxime_method",
+                  "order": 30,
+                  "spreadsheet heading": "AST_method_Cefotaxime",
                   "display name": "Cefotaxime method",
                   "filter type": "discrete"
                },
@@ -294,7 +303,7 @@
                   "name": "ceftriaxone",
                   "display": true,
                   "default": false,
-                  "order": 30,
+                  "order": 31,
                   "spreadsheet heading": "Ceftriaxone",
                   "display name": "Ceftriaxone",
                   "filter type": "discrete"
@@ -303,8 +312,8 @@
                   "name": "AST_method_ceftriaxone",
                   "display": true,
                   "default": false,
-                  "order": 31,
-                  "spreadsheet heading": "Ceftriaxone_method",
+                  "order": 32,
+                  "spreadsheet heading": "AST_method_Ceftriaxone",
                   "display name": "Ceftriaxone method",
                   "filter type": "discrete"
                },
@@ -312,7 +321,7 @@
                   "name": "cefuroxime",
                   "display": true,
                   "default": false,
-                  "order": 32,
+                  "order": 33,
                   "spreadsheet heading": "Cefuroxime",
                   "display name": "Cefuroxime",
                   "filter type": "discrete"
@@ -321,16 +330,16 @@
                   "name": "AST_method_cefuroxime",
                   "display": true,
                   "default": false,
-                  "order": 33,
-                  "spreadsheet heading": "Cefuroxime_method",
+                  "order": 34,
+                  "spreadsheet heading": "AST_method_Cefuroxime",
                   "display name": "Cefuroxime method",
                   "filter type": "discrete"
                },
                {
-                  "name": "Meropenem",
+                  "name": "meropenem",
                   "display": true,
                   "default": false,
-                  "order": 34,
+                  "order": 35,
                   "spreadsheet heading": "Meropenem",
                   "display name": "Meropenem",
                   "filter type": "discrete"
@@ -339,8 +348,8 @@
                   "name": "AST_method_meropenem",
                   "display": true,
                   "default": false,
-                  "order": 35,
-                  "spreadsheet heading": "Meropenem_method",
+                  "order": 36,
+                  "spreadsheet heading": "AST_method_Meropenem",
                   "display name": "Meropenem method",
                   "filter type": "discrete"
                },
@@ -348,7 +357,7 @@
                   "name": "erythromycin",
                   "display": true,
                   "default": false,
-                  "order": 36,
+                  "order": 37,
                   "spreadsheet heading": "Erythromycin",
                   "display name": "Erythromycin",
                   "filter type": "discrete"
@@ -357,8 +366,8 @@
                   "name": "AST_method_erythromycin",
                   "display": true,
                   "default": false,
-                  "order": 37,
-                  "spreadsheet heading": "Erythromycin_method",
+                  "order": 38,
+                  "spreadsheet heading": "AST_method_Erythromycin",
                   "display name": "Erythromycin method",
                   "filter type": "discrete"
                },
@@ -366,7 +375,7 @@
                   "name": "clindamycin",
                   "display": true,
                   "default": false,
-                  "order": 38,
+                  "order": 39,
                   "spreadsheet heading": "Clindamycin",
                   "display name": "Clindamycin",
                   "filter type": "discrete"
@@ -375,8 +384,8 @@
                   "name": "AST_method_clindamycin",
                   "display": true,
                   "default": false,
-                  "order": 39,
-                  "spreadsheet heading": "Clindamycin_method",
+                  "order": 40,
+                  "spreadsheet heading": "AST_method_Clindamycin",
                   "display name": "Clindamycin method",
                   "filter type": "discrete"
                },
@@ -384,7 +393,7 @@
                   "name": "trim_sulfa",
                   "default": false,
                   "display": true,
-                  "order": 40,
+                  "order": 41,
                   "spreadsheet heading": "Trim_Sulfa",
                   "display name": "Trim/Sulfa",
                   "filter type": "discrete"
@@ -393,8 +402,8 @@
                   "name": "AST_method_trim_sulfa",
                   "display": true,
                   "default": false,
-                  "order": 41,
-                  "spreadsheet heading": "Trim_Sulfa_method",
+                  "order": 42,
+                  "spreadsheet heading": "AST_method_Trim_Sulfa",
                   "display name": "Trim/Sulfa method",
                   "filter type": "discrete"
                },
@@ -402,7 +411,7 @@
                   "name": "vancomycin",
                   "display": true,
                   "default": false,
-                  "order": 42,
+                  "order": 43,
                   "spreadsheet heading": "Vancomycin",
                   "display name": "Vancomycin",
                   "filter type": "discrete"
@@ -411,8 +420,8 @@
                   "name": "AST_method_vancomycin",
                   "display": true,
                   "default": false,
-                  "order": 43,
-                  "spreadsheet heading": "Vancomycin_method",
+                  "order": 44,
+                  "spreadsheet heading": "AST_method_Vancomycin",
                   "display name": "Vancomycin method",
                   "filter type": "discrete"
                },
@@ -420,7 +429,7 @@
                   "name": "linezolid",
                   "display": true,
                   "default": false,
-                  "order": 44,
+                  "order": 45,
                   "spreadsheet heading": "Linezolid",
                   "display name": "Linezolid",
                   "filter type": "discrete"
@@ -429,8 +438,8 @@
                   "name": "AST_method_linezolid",
                   "display": true,
                   "default": false,
-                  "order": 45,
-                  "spreadsheet heading": "Linezolid_method",
+                  "order": 46,
+                  "spreadsheet heading": "AST_method_Linezolid",
                   "display name": "Linezolid method",
                   "filter type": "discrete"
                },
@@ -438,7 +447,7 @@
                   "name": "ciprofloxacin",
                   "display": true,
                   "default": false,
-                  "order": 46,
+                  "order": 47,
                   "spreadsheet heading": "Ciprofloxacin",
                   "display name": "Ciprofloxacin",
                   "filter type": "discrete"
@@ -447,8 +456,8 @@
                   "name": "AST_method_ciprofloxacin",
                   "display": true,
                   "default": false,
-                  "order": 47,
-                  "spreadsheet heading": "Ciprofloxacin_method",
+                  "order": 48,
+                  "spreadsheet heading": "AST_method_Ciprofloxacin",
                   "display name": "Ciprofloxacin method",
                   "filter type": "discrete"
                },
@@ -456,7 +465,7 @@
                   "name": "chloramphenicol",
                   "display": true,
                   "default": false,
-                  "order": 48,
+                  "order": 49,
                   "spreadsheet heading": "Chloramphenicol",
                   "display name": "Chloramphenicol",
                   "filter type": "discrete"
@@ -465,8 +474,8 @@
                   "name": "AST_method_chloramphenicol",
                   "display": true,
                   "default": false,
-                  "order": 49,
-                  "spreadsheet heading": "Chloramphenicol_method",
+                  "order": 50,
+                  "spreadsheet heading": "AST_method_Chloramphenicol",
                   "display name": "Chloramphenicol method",
                   "filter type": "discrete"
                },
@@ -474,7 +483,7 @@
                   "name": "tetracycline",
                   "display": true,
                   "default": false,
-                  "order": 50,
+                  "order": 51,
                   "spreadsheet heading": "Tetracycline",
                   "display name": "Tetracyclined",
                   "filter type": "discrete"
@@ -483,8 +492,8 @@
                   "name": "AST_method_tetracycline",
                   "display": true,
                   "default": false,
-                  "order": 51,
-                  "spreadsheet heading": "Tetracycline_method",
+                  "order": 52,
+                  "spreadsheet heading": "AST_method_Tetracycline",
                   "display name": "Tetracycline method",
                   "filter type": "discrete"
                },
@@ -492,7 +501,7 @@
                   "name": "levofloxacin",
                   "display": true,
                   "default": false,
-                  "order": 52,
+                  "order": 53,
                   "spreadsheet heading": "Levofloxacin",
                   "display name": "Levofloxacin",
                   "filter type": "discrete"
@@ -501,8 +510,8 @@
                   "name": "AST_method_levofloxacin",
                   "display": true,
                   "default": false,
-                  "order": 53,
-                  "spreadsheet heading": "Levofloxacin_method",
+                  "order": 54,
+                  "spreadsheet heading": "AST_method_Levofloxacin",
                   "display name": "Levofloxacin method",
                   "filter type": "discrete"
                },
@@ -510,7 +519,7 @@
                   "name": "synercid",
                   "display": true,
                   "default": false,
-                  "order": 54,
+                  "order": 55,
                   "spreadsheet heading": "Synercid",
                   "display name": "Synercid",
                   "filter type": "discrete"
@@ -519,8 +528,8 @@
                   "name": "AST_method_synercid",
                   "display": true,
                   "default": false,
-                  "order": 55,
-                  "spreadsheet heading": "Synercid_method",
+                  "order": 56,
+                  "spreadsheet heading": "AST_method_Synercid",
                   "display name": "Synercid method",
                   "filter type": "discrete"
                },
@@ -528,7 +537,7 @@
                   "name": "rifampin",
                   "display": true,
                   "default": false,
-                  "order": 56,
+                  "order": 57,
                   "spreadsheet heading": "Rifampin",
                   "display name": "Rifampin",
                   "filter type": "discrete"
@@ -537,8 +546,8 @@
                   "name": "AST_method_rifampin",
                   "display": true,
                   "default": false,
-                  "order": 57,
-                  "spreadsheet heading": "Rifampin_method",
+                  "order": 58,
+                  "spreadsheet heading": "AST_method_Rifampin",
                   "display name": "Rifampin method",
                   "filter type": "discrete"
                }
@@ -548,19 +557,19 @@
             "name": "MLST and Allele Number",
             "fields": [
                {
-                  "name": "aroe",
+                  "name": "aroE",
                   "display": true,
                   "default": true,
-                  "order": 58,
-                  "spreadsheet heading": "aroe",
-                  "display name": "aroe",
+                  "order": 59,
+                  "spreadsheet heading": "aroE",
+                  "display name": "aroE",
                   "filter type": "discrete"
                },
                {
                   "name": "gdh",
                   "display": true,
                   "default": false,
-                  "order": 59,
+                  "order": 60,
                   "spreadsheet heading": "gdh",
                   "display name": "gdh",
                   "filter type": "discrete"
@@ -569,17 +578,17 @@
                   "name": "gki",
                   "display": true,
                   "default": false,
-                  "order": 60,
+                  "order": 61,
                   "spreadsheet heading": "gki",
                   "display name": "gki",
                   "filter type": "discrete"
                },
                {
-                  "name": "recp",
+                  "name": "recP",
                   "display": true,
                   "default": false,
-                  "order": 61,
-                  "spreadsheet heading": "recp",
+                  "order": 62,
+                  "spreadsheet heading": "recP",
                   "display name": "recp",
                   "filter type": "discrete"
                },
@@ -587,7 +596,7 @@
                   "name": "spi",
                   "display": true,
                   "default": false,
-                  "order": 62,
+                  "order": 63,
                   "spreadsheet heading": "spi",
                   "display name": "spi",
                   "filter type": "discrete"
@@ -596,7 +605,7 @@
                   "name": "xpt",
                   "display": true,
                   "default": false,
-                  "order": 63,
+                  "order": 64,
                   "spreadsheet heading": "xpt",
                   "display name": "xpt",
                   "filter type": "discrete"
@@ -605,7 +614,7 @@
                   "name": "ddl",
                   "display": true,
                   "default": false,
-                  "order": 64,
+                  "order": 65,
                   "spreadsheet heading": "ddl",
                   "display name": "ddl",
                   "filter type": "discrete"
@@ -619,7 +628,7 @@
                   "name": "comments",
                   "display": true,
                   "default": true,
-                  "order": 65,
+                  "order": 66,
                   "spreadsheet heading": "Comments",
                   "display name": "Comments",
                   "filter type": "discrete"
@@ -628,8 +637,8 @@
                   "name": "vaccine_period",
                   "display": true,
                   "default": true,
-                  "order": 66,
-                  "spreadsheet heading": "Vaccine_Period",
+                  "order": 67,
+                  "spreadsheet heading": "Vaccine_period",
                   "display name": "Vaccine Period",
                   "filter type": "discrete"
                },
@@ -637,17 +646,17 @@
                   "name": "intro_year",
                   "display": true,
                   "default": true,
-                  "order": 67,
-                  "spreadsheet heading": "Intro_Year",
-                  "display name": "Intro Year",
-                  "filter type": "numeric"
+                  "order": 68,
+                  "spreadsheet heading": "Introduction_year",
+                  "display name": "Introduction Year",
+                  "filter type": "discrete"
                },
                {
                   "name": "PCV_type",
                   "display": true,
                   "default": true,
-                  "order": 68,
-                  "spreadsheet heading": "PCV_Type",
+                  "order": 69,
+                  "spreadsheet heading": "PCV_type",
                   "display name": "PCV_Type",
                   "filter type": "discrete"
                },
@@ -655,10 +664,10 @@
                   "name": "resolution",
                   "display": true,
                   "default": true,
-                  "order": 69,
+                  "order": 70,
                   "spreadsheet heading": "Resolution",
                   "display name": "Resolution",
-                  "filter type": "numeric"
+                  "filter type": "discrete"
                }
             ]
          }
@@ -672,7 +681,7 @@
                {
                   "name": "lane_id",
                   "display": false,
-                  "spreadsheet heading": "lane_id",
+                  "spreadsheet heading": "Lane_id",
                   "display name": "Lane id"
                },
                {
@@ -680,7 +689,7 @@
                   "display": true,
                   "default": true,
                   "order": 1,
-                  "spreadsheet heading": "Public name",
+                  "spreadsheet heading": "Public_name",
                   "display name": "Public name",
                   "filter type": "discrete"
                },
@@ -716,7 +725,7 @@
                   "display": true,
                   "default": true,
                   "order": 5,
-                  "spreadsheet heading": "Number_of_Genome",
+                  "spreadsheet heading": "No_of_genome",
                   "display name": "Number of Genome",
                   "filter type": "numeric"
                }
@@ -748,71 +757,71 @@
                   "display": true,
                   "default": false,
                   "order": 8,
-                  "spreadsheet heading": "In_Silico_St",
+                  "spreadsheet heading": "In_silico_ST",
                   "display name": "In Silico St",
                   "filter type": "discrete"
                },
                {
-                  "name": "Aroe",
+                  "name": "aroE",
                   "display": true,
                   "default": false,
                   "order": 9,
-                  "spreadsheet heading": "Aroe",
-                  "display name": "Aroe",
+                  "spreadsheet heading": "aroE",
+                  "display name": "aroE",
                   "filter type": "discrete"
                },
                {
-                  "name": "Gdh",
+                  "name": "gdh",
                   "display": true,
                   "default": false,
                   "order": 10,
-                  "spreadsheet heading": "Gdh",
-                  "display name": "Gdh",
+                  "spreadsheet heading": "gdh",
+                  "display name": "gdh",
                   "filter type": "discrete"
                },
                {
-                  "name": "Gki",
+                  "name": "gki",
                   "display": true,
                   "default": false,
                   "order": 11,
-                  "spreadsheet heading": "Gki",
-                  "display name": "Gki",
+                  "spreadsheet heading": "gki",
+                  "display name": "gki",
                   "filter type": "discrete"
                },
                {
-                  "name": "Recp",
+                  "name": "recP",
                   "display": true,
                   "default": false,
                   "order": 12,
-                  "spreadsheet heading": "Recp",
-                  "display name": "Recp",
+                  "spreadsheet heading": "recP",
+                  "display name": "recP",
                   "filter type": "discrete"
                },
                {
-                  "name": "Spi",
+                  "name": "spi",
                   "display": true,
                   "default": false,
                   "order": 13,
-                  "spreadsheet heading": "Aroe",
-                  "display name": "Aroe",
+                  "spreadsheet heading": "spi",
+                  "display name": "spi",
                   "filter type": "discrete"
                },
                {
-                  "name": "Xpt",
+                  "name": "xpt",
                   "display": true,
                   "default": false,
                   "order": 14,
-                  "spreadsheet heading": "Xpt",
-                  "display name": "Xpt",
+                  "spreadsheet heading": "xpt",
+                  "display name": "xpt",
                   "filter type": "discrete"
                },
                {
-                  "name": "Ddl",
+                  "name": "ddl",
                   "display": true,
                   "default": false,
                   "order": 15,
-                  "spreadsheet heading": "Ddl",
-                  "display name": "Ddl",
+                  "spreadsheet heading": "ddl",
+                  "display name": "ddl",
                   "filter type": "discrete"
                },
                {
@@ -825,10 +834,19 @@
                   "filter type": "discrete"
                },
                {
-                  "name": "Manifest_type",
+                  "name": "Continent",
                   "display": true,
                   "default": false,
                   "order": 17,
+                  "spreadsheet heading": "Continent",
+                  "display name": "Continent",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "Manifest_type",
+                  "display": true,
+                  "default": false,
+                  "order": 18,
                   "spreadsheet heading": "Manifest_type",
                   "display name": "Manifest type",
                   "filter type": "discrete"
@@ -837,79 +855,79 @@
                   "name": "children_under_5yrs",
                   "display": true,
                   "default": false,
-                  "order": 18,
-                  "spreadsheet heading": "children_under_5yrs",
+                  "order": 19,
+                  "spreadsheet heading": "Children_under_5yrs",
                   "display name": "Children under 5yrs",
                   "filter type": "discrete"
                },
                {
-                  "name": "GPSC_PoPUNK2",
-                  "display": true,
-                  "default": false,
-                  "order": 19,
-                  "spreadsheet heading": "GPSC_PoPUNK2",
-                  "display name": "GPSC PoPUNK2",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "GPSC_PoPUNK2__colour",
+                  "name": "GPSC",
                   "display": true,
                   "default": false,
                   "order": 20,
-                  "spreadsheet heading": "GPSC_PoPUNK2__colour",
+                  "spreadsheet heading": "GPSC",
+                  "display name": "GPSC",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "GPSC__colour",
+                  "display": true,
+                  "default": false,
+                  "order": 21,
+                  "spreadsheet heading": "GPSC__colour",
                   "display name": "GPSC PoPUNK2 Colour",
                   "filter type": "discrete"
                },
                {
-                  "name": "In_Silico_serotype",
+                  "name": "In_silico_serotype",
                   "display": true,
                   "default": false,
-                  "order": 21,
-                  "spreadsheet heading": "In_Silico_serotype",
+                  "order": 22,
+                  "spreadsheet heading": "In_silico_serotype",
                   "display name": "In Silico Serotype",
                   "filter type": "discrete"
                },
                {
-                  "name": "In_Silico_serotype__colour",
+                  "name": "In_silico_serotype__colour",
                   "display": true,
                   "default": false,
-                  "order": 22,
-                  "spreadsheet heading": "In_Silico_serotype__colour",
+                  "order": 23,
+                  "spreadsheet heading": "In_silico_serotype__colour",
                   "display name": "In Silico Serotype Colour",
                   "filter type": "discrete"
                },
                {
-                  "name": "PBP1A",
-                  "display": true,
-                  "default": false,
-                  "order": 23,
-                  "spreadsheet heading": "PBP1A",
-                  "display name": "PBP1A",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "PBP2B",
+                  "name": "pbp1a",
                   "display": true,
                   "default": false,
                   "order": 24,
-                  "spreadsheet heading": "PBP2B",
-                  "display name": "PBP2B",
+                  "spreadsheet heading": "pbp1a",
+                  "display name": "pbp1a",
                   "filter type": "discrete"
                },
                {
-                  "name": "PBP2X",
+                  "name": "pbp2b",
                   "display": true,
                   "default": false,
                   "order": 25,
-                  "spreadsheet heading": "PBP2X",
-                  "display name": "PBP2X",
+                  "spreadsheet heading": "pbp2b",
+                  "display name": "pbp2b",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "pbp2x",
+                  "display": true,
+                  "default": false,
+                  "order": 26,
+                  "spreadsheet heading": "pbp2x",
+                  "display name": "pbp2x",
                   "filter type": "discrete"
                },
                {
                   "name": "WGS_PEN",
                   "display": true,
                   "default": false,
-                  "order": 26,
+                  "order": 27,
                   "spreadsheet heading": "WGS_PEN",
                   "display name": "WGS PEN",
                   "filter type": "discrete"
@@ -918,7 +936,7 @@
                   "name": "WGS_PEN_SIR_Meningitis",
                   "display": true,
                   "default": false,
-                  "order": 27,
+                  "order": 28,
                   "spreadsheet heading": "WGS_PEN_SIR_Meningitis",
                   "display name": "WGS PEN SIR Meningitis",
                   "filter type": "discrete"
@@ -927,7 +945,7 @@
                   "name": "WGS_PEN_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
-                  "order": 28,
+                  "order": 29,
                   "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis",
                   "display name": "WGS PEN SIR Nonmeningitis",
                   "filter type": "discrete"
@@ -936,7 +954,7 @@
                   "name": "WGS_AMO",
                   "display": true,
                   "default": false,
-                  "order": 29,
+                  "order": 30,
                   "spreadsheet heading": "WGS_AMO",
                   "display name": "WGS AMO",
                   "filter type": "discrete"
@@ -945,7 +963,7 @@
                   "name": "WGS_AMO_SIR",
                   "display": true,
                   "default": false,
-                  "order": 30,
+                  "order": 31,
                   "spreadsheet heading": "WGS_AMO_SIR",
                   "display name": "WGS AMO SIR",
                   "filter type": "discrete"
@@ -954,7 +972,7 @@
                   "name": "WGS_MER",
                   "display": true,
                   "default": false,
-                  "order": 31,
+                  "order": 32,
                   "spreadsheet heading": "WGS_MER",
                   "display name": "WGS MER",
                   "filter type": "discrete"
@@ -963,7 +981,7 @@
                   "name": "WGS_MER_SIR",
                   "display": true,
                   "default": false,
-                  "order": 32,
+                  "order": 33,
                   "spreadsheet heading": "WGS_MER_SIR",
                   "display name": "WGS MER SIR",
                   "filter type": "discrete"
@@ -972,7 +990,7 @@
                   "name": "WGS_TAX",
                   "display": true,
                   "default": false,
-                  "order": 33,
+                  "order": 34,
                   "spreadsheet heading": "WGS_TAX",
                   "display name": "WGS TAX",
                   "filter type": "discrete"
@@ -981,7 +999,7 @@
                   "name": "WGS_TAX_SIR_Meningitis",
                   "display": true,
                   "default": false,
-                  "order": 34,
+                  "order": 35,
                   "spreadsheet heading": "WGS_TAX_SIR_Meningitis",
                   "display name": "WGS TAX SIR Meningitis",
                   "filter type": "discrete"
@@ -990,7 +1008,7 @@
                   "name": "WGS_TAX_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
-                  "order": 35,
+                  "order": 36,
                   "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis",
                   "display name": "WGS TAX SIR Nonmeningitis",
                   "filter type": "discrete"
@@ -999,7 +1017,7 @@
                   "name": "WGS_CFT",
                   "display": true,
                   "default": false,
-                  "order": 36,
+                  "order": 37,
                   "spreadsheet heading": "WGS_CFT",
                   "display name": "WGS CFT",
                   "filter type": "discrete"
@@ -1008,7 +1026,7 @@
                   "name": "WGS_CFT_SIR_Meningitis",
                   "display": true,
                   "default": false,
-                  "order": 37,
+                  "order": 38,
                   "spreadsheet heading": "WGS_CFT_SIR_Meningitis",
                   "display name": "WGS CFT SIR Meningitis",
                   "filter type": "discrete"
@@ -1017,7 +1035,7 @@
                   "name": "WGS_CFT_SIR_Nonmeningitis",
                   "display": true,
                   "default": false,
-                  "order": 38,
+                  "order": 39,
                   "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis",
                   "display name": "WGS CFT SIR Nonmeningitis",
                   "filter type": "discrete"
@@ -1026,7 +1044,7 @@
                   "name": "WGS_CFX",
                   "display": true,
                   "default": false,
-                  "order": 39,
+                  "order": 40,
                   "spreadsheet heading": "WGS_CFX",
                   "display name": "WGS CFX",
                   "filter type": "discrete"
@@ -1035,7 +1053,7 @@
                   "name": "WGS_CFX_SIR",
                   "display": true,
                   "default": false,
-                  "order": 40,
+                  "order": 41,
                   "spreadsheet heading": "WGS_CFX_SIR",
                   "display name": "WGS CFX SIR",
                   "filter type": "discrete"
@@ -1044,7 +1062,7 @@
                   "name": "WGS_ERY",
                   "display": true,
                   "default": false,
-                  "order": 41,
+                  "order": 42,
                   "spreadsheet heading": "WGS_ERY",
                   "display name": "WGS ERY",
                   "filter type": "discrete"
@@ -1053,7 +1071,7 @@
                   "name": "WGS_ERY_SIR",
                   "display": true,
                   "default": false,
-                  "order": 42,
+                  "order": 43,
                   "spreadsheet heading": "WGS_ERY_SIR",
                   "display name": "WGS ERY SIR",
                   "filter type": "discrete"
@@ -1062,7 +1080,7 @@
                   "name": "WGS_CLI",
                   "display": true,
                   "default": false,
-                  "order": 43,
+                  "order": 44,
                   "spreadsheet heading": "WGS_CLI",
                   "display name": "WGS CLI",
                   "filter type": "discrete"
@@ -1071,7 +1089,7 @@
                   "name": "WGS_CLI_SIR",
                   "display": true,
                   "default": false,
-                  "order": 44,
+                  "order": 45,
                   "spreadsheet heading": "WGS_CLI_SIR",
                   "display name": "WGS CLI SIR",
                   "filter type": "discrete"
@@ -1080,7 +1098,7 @@
                   "name": "WGS_SYN",
                   "display": true,
                   "default": false,
-                  "order": 45,
+                  "order": 46,
                   "spreadsheet heading": "WGS_SYN",
                   "display name": "WGS SYN",
                   "filter type": "discrete"
@@ -1089,7 +1107,7 @@
                   "name": "WGS_SYN_SIR",
                   "display": true,
                   "default": false,
-                  "order": 46,
+                  "order": 47,
                   "spreadsheet heading": "WGS_SYN_SIR",
                   "display name": "WGS SYN SIR",
                   "filter type": "discrete"
@@ -1098,7 +1116,7 @@
                   "name": "WGS_LZO",
                   "display": true,
                   "default": false,
-                  "order": 47,
+                  "order": 48,
                   "spreadsheet heading": "WGS_LZO",
                   "display name": "WGS LZO",
                   "filter type": "discrete"
@@ -1107,7 +1125,7 @@
                   "name": "WGS_LZO_SIR",
                   "display": true,
                   "default": false,
-                  "order": 48,
+                  "order": 49,
                   "spreadsheet heading": "WGS_LZO_SIR",
                   "display name": "WGS LZO SIR",
                   "filter type": "discrete"
@@ -1116,7 +1134,7 @@
                   "name": "WGS_ERY_CLI",
                   "display": true,
                   "default": false,
-                  "order": 49,
+                  "order": 50,
                   "spreadsheet heading": "WGS_ERY_CLI",
                   "display name": "WGS ERY CLI",
                   "filter type": "discrete"
@@ -1125,7 +1143,7 @@
                   "name": "WGS_COT",
                   "display": true,
                   "default": false,
-                  "order": 50,
+                  "order": 51,
                   "spreadsheet heading": "WGS_COT",
                   "display name": "WGS COT",
                   "filter type": "discrete"
@@ -1134,7 +1152,7 @@
                   "name": "WGS_COT_SIR",
                   "display": true,
                   "default": false,
-                  "order": 51,
+                  "order": 52,
                   "spreadsheet heading": "WGS_COT_SIR",
                   "display name": "WGS COT SIR",
                   "filter type": "discrete"
@@ -1143,7 +1161,7 @@
                   "name": "WGS_TET",
                   "display": true,
                   "default": false,
-                  "order": 52,
+                  "order": 53,
                   "spreadsheet heading": "WGS_TET",
                   "display name": "WGS TET",
                   "filter type": "discrete"
@@ -1152,7 +1170,7 @@
                   "name": "WGS_TET_SIR",
                   "display": true,
                   "default": false,
-                  "order": 53,
+                  "order": 54,
                   "spreadsheet heading": "WGS_TET_SIR",
                   "display name": "WGS TET SIR",
                   "filter type": "discrete"
@@ -1161,7 +1179,7 @@
                   "name": "WGS_DOX",
                   "display": true,
                   "default": false,
-                  "order": 54,
+                  "order": 55,
                   "spreadsheet heading": "WGS_DOX",
                   "display name": "WGS DOX",
                   "filter type": "discrete"
@@ -1170,7 +1188,7 @@
                   "name": "WGS_DOX_SIR",
                   "display": true,
                   "default": false,
-                  "order": 55,
+                  "order": 56,
                   "spreadsheet heading": "WGS_DOX_SIR",
                   "display name": "WGS DOX SIR",
                   "filter type": "discrete"
@@ -1179,7 +1197,7 @@
                   "name": "WGS_LFX",
                   "display": true,
                   "default": false,
-                  "order": 56,
+                  "order": 57,
                   "spreadsheet heading": "WGS_LFX",
                   "display name": "WGS LFX",
                   "filter type": "discrete"
@@ -1188,7 +1206,7 @@
                   "name": "WGS_LFX_SIR",
                   "display": true,
                   "default": false,
-                  "order": 57,
+                  "order": 58,
                   "spreadsheet heading": "WGS_LFX_SIR",
                   "display name": "WGS LFX SIR",
                   "filter type": "discrete"
@@ -1197,7 +1215,7 @@
                   "name": "WGS_CHL",
                   "display": true,
                   "default": false,
-                  "order": 58,
+                  "order": 59,
                   "spreadsheet heading": "WGS_CHL",
                   "display name": "WGS CHL",
                   "filter type": "discrete"
@@ -1206,7 +1224,7 @@
                   "name": "WGS_CHL_SIR",
                   "display": true,
                   "default": false,
-                  "order": 59,
+                  "order": 60,
                   "spreadsheet heading": "WGS_CHL_SIR",
                   "display name": "WGS CHL SIR",
                   "filter type": "discrete"
@@ -1215,7 +1233,7 @@
                   "name": "WGS_RIF",
                   "display": true,
                   "default": false,
-                  "order": 60,
+                  "order": 61,
                   "spreadsheet heading": "WGS_RIF",
                   "display name": "WGS RIF",
                   "filter type": "discrete"
@@ -1224,7 +1242,7 @@
                   "name": "WGS_RIF_SIR",
                   "display": true,
                   "default": false,
-                  "order": 61,
+                  "order": 62,
                   "spreadsheet heading": "WGS_RIF_SIR",
                   "display name": "WGS RIF SIR",
                   "filter type": "discrete"
@@ -1233,7 +1251,7 @@
                   "name": "WGS_VAN",
                   "display": true,
                   "default": false,
-                  "order": 62,
+                  "order": 63,
                   "spreadsheet heading": "WGS_VAN",
                   "display name": "WGS VAN",
                   "filter type": "discrete"
@@ -1242,7 +1260,7 @@
                   "name": "WGS_VAN_SIR",
                   "display": true,
                   "default": false,
-                  "order": 63,
+                  "order": 64,
                   "spreadsheet heading": "WGS_VAN_SIR",
                   "display name": "WGS VAN SIR",
                   "filter type": "discrete"
@@ -1251,7 +1269,7 @@
                   "name": "EC",
                   "display": true,
                   "default": false,
-                  "order": 64,
+                  "order": 65,
                   "spreadsheet heading": "EC",
                   "display name": "EC",
                   "filter type": "discrete"
@@ -1260,7 +1278,7 @@
                   "name": "Cot",
                   "display": true,
                   "default": false,
-                  "order": 65,
+                  "order": 66,
                   "spreadsheet heading": "Cot",
                   "display name": "Cot",
                   "filter type": "discrete"
@@ -1269,7 +1287,7 @@
                   "name": "Tet__autocolour",
                   "display": true,
                   "default": false,
-                  "order": 66,
+                  "order": 67,
                   "spreadsheet heading": "Tet__autocolour",
                   "display name": "Tet autocolour",
                   "filter type": "discrete"
@@ -1278,7 +1296,7 @@
                   "name": "FQ__autocolour",
                   "display": true,
                   "default": false,
-                  "order": 67,
+                  "order": 68,
                   "spreadsheet heading": "FQ__autocolour",
                   "display name": "FQ autocolour",
                   "filter type": "discrete"
@@ -1287,7 +1305,7 @@
                   "name": "Other",
                   "display": true,
                   "default": false,
-                  "order": 68,
+                  "order": 69,
                   "spreadsheet heading": "Other",
                   "display name": "Other",
                   "filter type": "discrete"
@@ -1296,7 +1314,7 @@
                   "name": "PBP1A_2B_2X__autocolour",
                   "display": true,
                   "default": false,
-                  "order": 69,
+                  "order": 70,
                   "spreadsheet heading": "PBP1A_2B_2X__autocolour",
                   "display name": "PBP1A 2B 2X autocolour",
                   "filter type": "discrete"
@@ -1305,7 +1323,7 @@
                   "name": "WGS_PEN_SIR_Meningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 70,
+                  "order": 71,
                   "spreadsheet heading": "WGS_PEN_SIR_Meningitis__colour",
                   "display name": "WGS PEN SIR Meningitis colour",
                   "filter type": "discrete"
@@ -1314,7 +1332,7 @@
                   "name": "WGS_PEN_SIR_Nonmeningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 71,
+                  "order": 72,
                   "spreadsheet heading": "WGS_PEN_SIR_Nonmeningitis__colour",
                   "display name": "WGS PEN SIR Nonmeningitis colour",
                   "filter type": "discrete"
@@ -1323,7 +1341,7 @@
                   "name": "WGS_AMO_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 72,
+                  "order": 73,
                   "spreadsheet heading": "WGS_AMO_SIR__colour",
                   "display name": "WGS AMO SIR colour",
                   "filter type": "discrete"
@@ -1332,7 +1350,7 @@
                   "name": "WGS_MER_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 73,
+                  "order": 74,
                   "spreadsheet heading": "WGS_MER_SIR__colour",
                   "display name": "WGS MER SIR colour",
                   "filter type": "discrete"
@@ -1341,7 +1359,7 @@
                   "name": "WGS_TAX_SIR_Meningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 74,
+                  "order": 75,
                   "spreadsheet heading": "WGS_TAX_SIR_Meningitis__colour",
                   "display name": "WGS TAX SIR Meningitis colour",
                   "filter type": "discrete"
@@ -1350,7 +1368,7 @@
                   "name": "WGS_TAX_SIR_Nonmeningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 75,
+                  "order": 76,
                   "spreadsheet heading": "WGS_TAX_SIR_Nonmeningitis__colour",
                   "display name": "WGS TAX SIR Nonmeningitis colour",
                   "filter type": "discrete"
@@ -1359,7 +1377,7 @@
                   "name": "WGS_CFT_SIR_Meningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 76,
+                  "order": 77,
                   "spreadsheet heading": "WGS_CFT_SIR_Meningitis__colour",
                   "display name": "WGS CFT SIR Meningitis colour",
                   "filter type": "discrete"
@@ -1368,7 +1386,7 @@
                   "name": "WGS_CFT_SIR_Nonmeningitis__colour",
                   "display": true,
                   "default": false,
-                  "order": 77,
+                  "order": 78,
                   "spreadsheet heading": "WGS_CFT_SIR_Nonmeningitis__colour",
                   "display name": "WGS CFT SIR Nonmeningitis colour",
                   "filter type": "discrete"
@@ -1377,7 +1395,7 @@
                   "name": "WGS_CFX_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 78,
+                  "order": 79,
                   "spreadsheet heading": "WGS_CFX_SIR__colour",
                   "display name": "WGS_CFX_SIR__colour",
                   "filter type": "discrete"
@@ -1386,7 +1404,7 @@
                   "name": "WGS_ERY_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 79,
+                  "order": 80,
                   "spreadsheet heading": "WGS_ERY_SIR__colour",
                   "display name": "WGS ERY SIR colour",
                   "filter type": "discrete"
@@ -1395,7 +1413,7 @@
                   "name": "WGS_CLI_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 80,
+                  "order": 81,
                   "spreadsheet heading": "WGS_CLI_SIR__colour",
                   "display name": "WGS CLI SIR colour",
                   "filter type": "discrete"
@@ -1404,7 +1422,7 @@
                   "name": "WGS_SYN_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 81,
+                  "order": 82,
                   "spreadsheet heading": "WGS_SYN_SIR__colour",
                   "display name": "WGS SYN SIR colour",
                   "filter type": "discrete"
@@ -1413,7 +1431,7 @@
                   "name": "WGS_LZO_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 82,
+                  "order": 83,
                   "spreadsheet heading": "WGS_LZO_SIR__colour",
                   "display name": "WGS LZO SIR colour",
                   "filter type": "discrete"
@@ -1422,7 +1440,7 @@
                   "name": "WGS_COT_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 83,
+                  "order": 84,
                   "spreadsheet heading": "WGS_COT_SIR__colour",
                   "display name": "WGS COT SIR colour",
                   "filter type": "discrete"
@@ -1431,7 +1449,7 @@
                   "name": "WGS_TET_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 84,
+                  "order": 85,
                   "spreadsheet heading": "WGS_TET_SIR__colour",
                   "display name": "WGS TET SIR colour",
                   "filter type": "discrete"
@@ -1440,7 +1458,7 @@
                   "name": "WGS_DOX_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 85,
+                  "order": 86,
                   "spreadsheet heading": "WGS_DOX_SIR__colour",
                   "display name": "WGS DOX SIR colour",
                   "filter type": "discrete"
@@ -1449,7 +1467,7 @@
                   "name": "WGS_LFX_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 86,
+                  "order": 87,
                   "spreadsheet heading": "WGS_LFX_SIR__colour",
                   "display name": "WGS LFX SIR colour",
                   "filter type": "discrete"
@@ -1458,7 +1476,7 @@
                   "name": "WGS_CHL_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 87,
+                  "order": 88,
                   "spreadsheet heading": "WGS_CHL_SIR__colour",
                   "display name": "WGS CHL SIR colour",
                   "filter type": "discrete"
@@ -1467,7 +1485,7 @@
                   "name": "WGS_RIF_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 88,
+                  "order": 89,
                   "spreadsheet heading": "WGS_RIF_SIR__colour",
                   "display name": "WGS RIF SIR colour",
                   "filter type": "discrete"
@@ -1476,7 +1494,7 @@
                   "name": "WGS_VAN_SIR__colour",
                   "display": true,
                   "default": false,
-                  "order": 89,
+                  "order": 90,
                   "spreadsheet heading": "WGS_VAN_SIR__colour",
                   "display name": "WGS VAN SIR colour",
                   "filter type": "discrete"
@@ -1485,7 +1503,7 @@
                   "name": "ermB",
                   "display": true,
                   "default": false,
-                  "order": 90,
+                  "order": 91,
                   "spreadsheet heading": "ermB",
                   "display name": "ermB",
                   "filter type": "discrete"
@@ -1494,7 +1512,7 @@
                   "name": "ermB__colour",
                   "display": true,
                   "default": false,
-                  "order": 91,
+                  "order": 92,
                   "spreadsheet heading": "ermB__colour",
                   "display name": "ermB colour",
                   "filter type": "discrete"
@@ -1503,7 +1521,7 @@
                   "name": "mefA",
                   "display": true,
                   "default": false,
-                  "order": 92,
+                  "order": 93,
                   "spreadsheet heading": "mefA",
                   "display name": "mefA",
                   "filter type": "discrete"
@@ -1512,7 +1530,7 @@
                   "name": "mefA__colour",
                   "display": true,
                   "default": false,
-                  "order": 93,
+                  "order": 94,
                   "spreadsheet heading": "mefA__colour",
                   "display name": "mefA colour",
                   "filter type": "discrete"
@@ -1521,7 +1539,7 @@
                   "name": "folA_I100L",
                   "display": true,
                   "default": false,
-                  "order": 94,
+                  "order": 95,
                   "spreadsheet heading": "folA_I100L",
                   "display name": "folA I100L",
                   "filter type": "discrete"
@@ -1530,7 +1548,7 @@
                   "name": "folA_I100L__colour",
                   "display": true,
                   "default": false,
-                  "order": 95,
+                  "order": 96,
                   "spreadsheet heading": "folA_I100L__colour",
                   "display name": "folA I100L colour",
                   "filter type": "discrete"
@@ -1539,7 +1557,7 @@
                   "name": "folP__autocolour",
                   "display": true,
                   "default": false,
-                  "order": 96,
+                  "order": 97,
                   "spreadsheet heading": "folP__autocolour",
                   "display name": "folP autocolour",
                   "filter type": "discrete"
@@ -1548,7 +1566,7 @@
                   "name": "cat",
                   "display": true,
                   "default": false,
-                  "order": 97,
+                  "order": 98,
                   "spreadsheet heading": "cat",
                   "display name": "Cat",
                   "filter type": "discrete"
@@ -1557,7 +1575,7 @@
                   "name": "cat__colour",
                   "display": true,
                   "default": false,
-                  "order": 98,
+                  "order": 99,
                   "spreadsheet heading": "cat__colour",
                   "display name": "Cat colour",
                   "filter type": "discrete"
@@ -1566,7 +1584,7 @@
                   "name": "PCV7",
                   "display": true,
                   "default": false,
-                  "order": 99,
+                  "order": 100,
                   "spreadsheet heading": "PCV7",
                   "display name": "PCV7",
                   "filter type": "discrete"
@@ -1575,7 +1593,7 @@
                   "name": "PCV10",
                   "display": true,
                   "default": false,
-                  "order": 100,
+                  "order": 101,
                   "spreadsheet heading": "PCV10",
                   "display name": "PCV10",
                   "filter type": "discrete"
@@ -1584,7 +1602,7 @@
                   "name": "PCV13",
                   "display": true,
                   "default": false,
-                  "order": 101,
+                  "order": 102,
                   "spreadsheet heading": "PCV13",
                   "display name": "PCV13",
                   "filter type": "discrete"
@@ -1593,7 +1611,7 @@
                   "name": "PCV15",
                   "display": true,
                   "default": false,
-                  "order": 102,
+                  "order": 103,
                   "spreadsheet heading": "PCV15",
                   "display name": "PCV15",
                   "filter type": "discrete"
@@ -1602,7 +1620,7 @@
                   "name": "PCV20",
                   "display": true,
                   "default": false,
-                  "order": 103,
+                  "order": 104,
                   "spreadsheet heading": "PCV20",
                   "display name": "PCV20",
                   "filter type": "discrete"
@@ -1611,7 +1629,7 @@
                   "name": "Pneumosil",
                   "display": true,
                   "default": false,
-                  "order": 104,
+                  "order": 105,
                   "spreadsheet heading": "Pneumosil",
                   "display name": "Pneumosil",
                   "filter type": "discrete"
@@ -1620,7 +1638,7 @@
                   "name": "Published",
                   "display": true,
                   "default": false,
-                  "order": 105,
+                  "order": 106,
                   "spreadsheet heading": "Published",
                   "display name": "Published",
                   "filter type": "discrete"
@@ -1639,23 +1657,7 @@
                   "display": false
                },
                {
-                  "name": "sample_name",
-                  "display": false
-               },
-               {
-                  "name": "sample_accession",
-                  "display": false
-               },
-               {
-                  "name": "lane_accession",
-                  "display": false
-               },
-               {
                   "name": "supplier_name",
-                  "display": false
-               },
-               {
-                  "name": "public_name",
                   "display": false
                }
             ]
@@ -1676,7 +1678,6 @@
                   "display": true,
                   "default": true,
                   "order": 2,
-                  "filter type": "numeric",
                   "display name": "Total length"
                },
                {
@@ -1684,7 +1685,6 @@
                   "display": true,
                   "default": true,
                   "order": 3,
-                  "filter type": "numeric",
                   "display name": "Number of contigs"
                },
                {
@@ -1692,7 +1692,6 @@
                   "display": true,
                   "default": true,
                   "order": 4,
-                  "filter type": "numeric",
                   "display name": "Genome covered"
                },
                {
@@ -1704,11 +1703,11 @@
                   "display name": "Depth of coverage"
                },
                {
-                  "name": "X_Het_SNPs_Total_No_of_SNPs",
+                  "name": "Proportion_of_Het_SNPs",
                   "display": true,
                   "default": true,
                   "order": 6,
-                  "display name": "Total No of SNPs (X Het SNPs)"
+                  "display name": "Proportion of Het SNPs"
                },
                {
                   "name": "qc",
