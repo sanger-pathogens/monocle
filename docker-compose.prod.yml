@@ -246,9 +246,7 @@ volumes:
       o: bind
       type: none
       device: /home/<USER>/monocle_gps_institution_view
-  # note we have only one data download dir in the web root
-  # despite the name on disk being monocle_web_root
-  # it is not actually specific to JUNO
+  # the web server uses a single data download directory for all projects
   data_downloads:
     driver: local
     driver_opts:
