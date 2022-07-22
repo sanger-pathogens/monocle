@@ -463,6 +463,9 @@ class MonocleSampleTracking:
             raise ValueError("The current project is not set")
         return self.sample_metadata.get_project_information(self.current_project)
 
+    def get_pipeline_status(self):
+        return DataSources.pipeline_status.PipelineStatus(self.current_project)
+
     def pipeline_status_summary(self):
         """
         Returns dict with summary of the pipeline outcomes for each institution.
@@ -490,7 +493,7 @@ class MonocleSampleTracking:
         """
         institutions_data = self.get_institutions()
         sequencing_status_data = self.get_sequencing_status()
-        pipeline_status = DataSources.pipeline_status.PipelineStatus(self.current_project)
+        pipeline_status = self.get_pipeline_status()
         status = {}
         for this_institution in institutions_data.keys():
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
