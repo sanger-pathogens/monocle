@@ -17,13 +17,13 @@ CREATE TABLE IF NOT EXISTS `gps_qc_data` (
   `lane_id` VARCHAR(256) NOT NULL,
   `supplier_name` VARCHAR(256) NOT NULL,
   `Streptococcus_pneumoniae` DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100),
-  `total_length` VARCHAR(30),
-  `No_contigs` VARCHAR(30),
-  `genome_covered` VARCHAR(30),
+  `total_length` DECIMAL(5,2) CHECK (total_length>=0 AND total_length<=100),
+  `No_contigs` SMALLINT(5),
+  `genome_covered` DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100),
   `depth_of_coverage` DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000),
-  `Proportion_of_Het_SNPs` VARCHAR(30),
+  `Proportion_of_Het_SNPs` DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100),
   `qc` VARCHAR(30),
-  `Hetsites_50bp` VARCHAR(30),
+  `Hetsites_50bp` SMALLINT(4),
   # END OF AUTO_GENERATED SECTION
 PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

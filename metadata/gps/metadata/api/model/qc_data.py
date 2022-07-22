@@ -8,10 +8,10 @@ class QCData:
     lane_id: str  # mandatory; contains illegal characters
     supplier_name: str  # mandatory; contains illegal characters
     Streptococcus_pneumoniae: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
-    total_length: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
-    No_contigs: str  # optional; must be a 1-5 digits number (integer), or '_'
-    genome_covered: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
+    total_length: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
+    No_contigs: str  # optional; must be a 1-5 digits number (integer)
+    genome_covered: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
     depth_of_coverage: str  # optional; must be a number between 0-2000 (1 or 2 decimal places are needed)
-    Proportion_of_Het_SNPs: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed), or '_'
+    Proportion_of_Het_SNPs: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
     qc: str  # optional
-    Hetsites_50bp: str  # optional; must be an integer between 0-5000, or '_'
+    Hetsites_50bp: str  # optional; must be an integer between 0-5000

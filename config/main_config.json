@@ -5630,10 +5630,10 @@
                      "order": 2,
                      "display name": "Total length",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
+                        "mysql_type": "DECIMAL(5,2) CHECK (total_length>=0 AND total_length<=100)",
+                        "max_length": 6,
+                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                      }
                   },
                   {
@@ -5643,9 +5643,9 @@
                      "order": 3,
                      "display name": "Number of contigs",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "regex": "^\\d{1,5}$|^_$$",
-                        "regex_validation_message": "must be a 1-5 digits number (integer), or '_'"
+                        "mysql_type": "SMALLINT(5)",
+                        "regex": "^\\d{1,5}$",
+                        "regex_validation_message": "must be a 1-5 digits number (integer)"
                      }
                   },
                   {
@@ -5655,9 +5655,10 @@
                      "order": 4,
                      "display name": "Genome covered",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$^_$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
+                        "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
+                        "max_length": 6,
+                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                      }
                   },
                   {
@@ -5680,10 +5681,10 @@
                      "order": 6,
                      "display name": "Proportion of Het SNPs",
                      "db": {                     
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$|^_$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed), or '_'"
+                        "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
+                        "max_length": 6,
+                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
                      }
                   },
                   {
@@ -5696,7 +5697,6 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
                            "PASSPLUS",
                            "PASS",
                            "FAIL"
@@ -5711,12 +5711,12 @@
                      "display": true,
                      "default": true,
                      "order": 8,
-                     "display name": "Hetsites 50bp",
+                     "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$|^_$",
-                        "regex_validation_message": "must be an integer between 0-5000, or '_'"
+                        "mysql_type": "SMALLINT(4)",
+                        "max_length": 4,
+                        "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$",
+                        "regex_validation_message": "must be an integer between 0-5000"
                      }
                   }
                ]
