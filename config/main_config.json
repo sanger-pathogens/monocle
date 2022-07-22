@@ -3826,8 +3826,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(20) NOT NULL",
                         "max_length": 20,
-                        "regex": "^\\d{1,5}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,5}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3841,8 +3841,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3856,8 +3856,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3871,8 +3871,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3886,8 +3886,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3901,8 +3901,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3916,8 +3916,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3931,8 +3931,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,4}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-                        "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+                        "regex": "^\\d{1,4}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+                        "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
                      }
                   },
                   {
@@ -3973,7 +3973,6 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
                            "URI",
                            "UNKNOWN",
                            "NON_IPD",
@@ -3999,7 +3998,6 @@
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
                         "allowed_values": [
-                           "_",
                            "Y",
                            "UNKNOWN",
                            "N"
@@ -4018,10 +4016,10 @@
                      "display name": "GPSC",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,4}$|^_$",
-                        "regex_validation_message": "must be an integer (1-4 digits), or '_'"
+                        "mysql_type": "SMALLINT(4)",
+                        "max_length": 4,
+                        "regex": "^\\d{1,4}$",
+                        "regex_validation_message": "must be an integer (1-4 digits)"
                      }
                   },
                   {
@@ -4035,8 +4033,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', or 'transparent' "
                      }
                   },
                   {
@@ -4063,8 +4061,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', 'transparent' "
                      }
                   },
                   {
@@ -4947,8 +4945,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -4962,8 +4960,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', 'transparent' "
                      }
                   },
                   {
@@ -4977,8 +4975,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -4992,8 +4990,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5007,8 +5005,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5022,8 +5020,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5037,8 +5035,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5052,8 +5050,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5067,8 +5065,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5082,8 +5080,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5097,8 +5095,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5112,8 +5110,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5127,8 +5125,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5142,8 +5140,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5157,8 +5155,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5172,8 +5170,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5187,8 +5185,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5202,8 +5200,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5217,8 +5215,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5232,8 +5230,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5267,8 +5265,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5302,8 +5300,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5337,8 +5335,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {
@@ -5385,8 +5383,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+                        "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+                        "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
                      }
                   },
                   {

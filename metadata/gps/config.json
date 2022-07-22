@@ -829,57 +829,57 @@
             "title": "In_silico_ST",
             "mysql_type": "VARCHAR(20) NOT NULL",
             "max_length": 20,
-            "regex": "^\\d{1,5}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,5}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "aroE": {
             "title": "aroE",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "gdh": {
             "title": "gdh",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "gki": {
             "title": "gki",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "recP": {
             "title": "recP",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "spi": {
             "title": "spi",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "xpt": {
             "title": "xpt",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,3}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,3}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-3 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "ddl": {
             "title": "ddl",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^\\d{1,4}$|^_$|^UNDETERMINABLE$|^NEW$|^FAILED$",
-            "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED' or '_'"
+            "regex": "^\\d{1,4}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
+            "regex_validation_message": "must be an integer (1-4 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
          },
          "country": {
             "title": "Country",
@@ -896,7 +896,6 @@
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [
-               "_",
                "URI",
                "UNKNOWN",
                "NON_IPD",
@@ -914,7 +913,6 @@
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [
-               "_",
                "Y",
                "UNKNOWN",
                "N"
@@ -925,17 +923,17 @@
          },
          "GPSC": {
             "title": "GPSC",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "regex": "^\\d{1,4}$|^_$",
-            "regex_validation_message": "must be an integer (1-4 digits), or '_'"
+            "mysql_type": "SMALLINT(4)",
+            "max_length": 4,
+            "regex": "^\\d{1,4}$",
+            "regex_validation_message": "must be an integer (1-4 digits)"
          },
          "GPSC__colour": {
             "title": "GPSC__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', or 'transparent' "
          },
          "In_silico_serotype": {
             "title": "In_silico_serotype",
@@ -946,8 +944,8 @@
             "title": "In_silico_serotype__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', 'transparent' "
          },
          "pbp1a": {
             "title": "pbp1a",
@@ -1446,141 +1444,141 @@
             "title": "WGS_PEN_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_PEN_SIR_Nonmeningitis__colour": {
             "title": "WGS_PEN_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', 'transparent' "
          },
          "WGS_AMO_SIR__colour": {
             "title": "WGS_AMO_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_MER_SIR__colour": {
             "title": "WGS_MER_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_TAX_SIR_Meningitis__colour": {
             "title": "WGS_TAX_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_TAX_SIR_Nonmeningitis__colour": {
             "title": "WGS_TAX_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_CFT_SIR_Meningitis__colour": {
             "title": "WGS_CFT_SIR_Meningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_CFT_SIR_Nonmeningitis__colour": {
             "title": "WGS_CFT_SIR_Nonmeningitis__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_CFX_SIR__colour": {
             "title": "WGS_CFX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_ERY_SIR__colour": {
             "title": "WGS_ERY_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_CLI_SIR__colour": {
             "title": "WGS_CLI_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_SYN_SIR__colour": {
             "title": "WGS_SYN_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_LZO_SIR__colour": {
             "title": "WGS_LZO_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_COT_SIR__colour": {
             "title": "WGS_COT_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_TET_SIR__colour": {
             "title": "WGS_TET_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_DOX_SIR__colour": {
             "title": "WGS_DOX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_LFX_SIR__colour": {
             "title": "WGS_LFX_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_CHL_SIR__colour": {
             "title": "WGS_CHL_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_RIF_SIR__colour": {
             "title": "WGS_RIF_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "WGS_VAN_SIR__colour": {
             "title": "WGS_VAN_SIR__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "ermB": {
             "title": "ermB",
@@ -1598,8 +1596,8 @@
             "title": "ermB__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "mefA": {
             "title": "mefA",
@@ -1617,8 +1615,8 @@
             "title": "mefA__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "folA_I100L": {
             "title": "folA_I100L",
@@ -1636,8 +1634,8 @@
             "title": "folA_I100L__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "folP__autocolour": {
             "title": "folP__autocolour",
@@ -1660,8 +1658,8 @@
             "title": "cat__colour",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
-            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^\\_$|^transparent$",
-            "regex_validation_message": "should be an hex colour code (format #000000), '#NA', '_' or 'transparent' "
+            "regex": "^#(?:[a-fA-F0-9]{6})$|^#N/A$|^transparent$",
+            "regex_validation_message": "should be an hex colour code (format #000000), '#NA' or 'transparent' "
          },
          "PCV7": {
             "title": "PCV7",

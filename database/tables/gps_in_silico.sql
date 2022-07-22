@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `gps_in_silico` (
   `Continent` VARCHAR(256),
   `Manifest_type` VARCHAR(30),
   `children_under_5yrs` VARCHAR(30),
-  `GPSC` VARCHAR(30),
+  `GPSC` SMALLINT(4),
   `GPSC__colour` VARCHAR(30),
   `In_silico_serotype` VARCHAR(30),
   `In_silico_serotype__colour` VARCHAR(30),
