@@ -49,7 +49,7 @@
                   "name": "submitting_institution",
                   "display": true,
                   "default": true,
-                  "order": 5,
+                  "order": 11,
                   "spreadsheet heading": "Submitting_institution",
                   "display name": "Submitting Institution",
                   "filter type": "discrete"
@@ -63,7 +63,7 @@
                   "name": "selection_random",
                   "display": true,
                   "default": true,
-                  "order": 6,
+                  "order": 5,
                   "spreadsheet heading": "Selection_Random",
                   "display name": "Selection Random",
                   "filter type": "discrete"
@@ -72,7 +72,7 @@
                   "name": "continent",
                   "display": true,
                   "default": true,
-                  "order": 7,
+                  "order": 6,
                   "spreadsheet heading": "Continent",
                   "display name": "Continent",
                   "filter type": "discrete"
@@ -81,7 +81,7 @@
                   "name": "country",
                   "display": true,
                   "default": true,
-                  "order": 8,
+                  "order": 7,
                   "spreadsheet heading": "Country",
                   "display name": "Country",
                   "filter type": "discrete"
@@ -90,7 +90,7 @@
                   "name": "region",
                   "display": true,
                   "default": false,
-                  "order": 9,
+                  "order": 8,
                   "spreadsheet heading": "Region",
                   "display name": "Region",
                   "filter type": "discrete"
@@ -99,7 +99,7 @@
                   "name": "city",
                   "display": true,
                   "default": false,
-                  "order": 10,
+                  "order": 9,
                   "spreadsheet heading": "City",
                   "display name": "City",
                   "filter type": "discrete"
@@ -108,7 +108,7 @@
                   "name": "facility_where_collected",
                   "display": true,
                   "default": false,
-                  "order": 11,
+                  "order": 10,
                   "spreadsheet heading": "Facility_where_collected",
                   "display name": "Facility where collected",
                   "filter type": "discrete"
