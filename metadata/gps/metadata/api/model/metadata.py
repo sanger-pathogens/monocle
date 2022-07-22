@@ -11,8 +11,8 @@ class Metadata:
     study_name: str  # optional; contains illegal characters
     submitting_institution: str  # mandatory
     selection_random: str  # optional
-    country: str  # optional
     continent: str  # optional
+    country: str  # optional
     region: str  # optional
     city: str  # optional
     facility_where_collected: str  # optional

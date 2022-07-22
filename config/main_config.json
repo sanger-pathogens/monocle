@@ -1548,24 +1548,24 @@
                           }
                        }
                     },
-                  {  "name"               : "country",
+                  {  "name"               : "continent",
                      "display"            : true,
                      "default"            : true,
                      "order"              : 7,
-                     "spreadsheet heading": "Country",
-                     "display name"       : "Country",
+                     "spreadsheet heading": "Continent",
+                     "display name"       : "Continent",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(90)",
                           "max_length": 90
                        }
                     },
-                  {  "name"               : "continent",
+                  {  "name"               : "country",
                      "display"            : true,
                      "default"            : true,
                      "order"              : 8,
-                     "spreadsheet heading": "Continent",
-                     "display name"       : "Continent",
+                     "spreadsheet heading": "Country",
+                     "display name"       : "Country",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(90)",

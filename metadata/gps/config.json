@@ -88,13 +88,13 @@
                "case": "upper"
             }
          },
-         "country": {
-            "title": "Country",
+         "continent": {
+            "title": "Continent",
             "mysql_type": "VARCHAR(90)",
             "max_length": 90
          },
-         "continent": {
-            "title": "Continent",
+         "country": {
+            "title": "Country",
             "mysql_type": "VARCHAR(90)",
             "max_length": 90
          },

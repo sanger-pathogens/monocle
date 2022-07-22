@@ -69,21 +69,21 @@
                   "filter type": "discrete"
                },
                {
-                  "name": "country",
-                  "display": true,
-                  "default": true,
-                  "order": 7,
-                  "spreadsheet heading": "Country",
-                  "display name": "Country",
-                  "filter type": "discrete"
-               },
-               {
                   "name": "continent",
                   "display": true,
                   "default": true,
-                  "order": 8,
+                  "order": 7,
                   "spreadsheet heading": "Continent",
                   "display name": "Continent",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "country",
+                  "display": true,
+                  "default": true,
+                  "order": 8,
+                  "spreadsheet heading": "Country",
+                  "display name": "Country",
                   "filter type": "discrete"
                },
                {

@@ -493,8 +493,8 @@ components:
             - study_name
             - submitting_institution
             - selection_random
-            - country
             - continent
+            - country
             - region
             - city
             - facility_where_collected
@@ -564,7 +564,7 @@ components:
       description: Valid metadata field name
       maxLength: 256
       minLength: 1
-      pattern: ^sanger_sample_id|sample_name|public_name|study_name|submitting_institution|selection_random|country|continent|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|penicillin|AST_method_penicillin|amoxicillin|AST_method_amoxicillin|cefotaxime|AST_method_cefotaxime|ceftriaxone|AST_method_ceftriaxone|cefuroxime|AST_method_cefuroxime|meropenem|AST_method_meropenem|erythromycin|AST_method_erythromycin|clindamycin|AST_method_clindamycin|trim_sulfa|AST_method_trim_sulfa|vancomycin|AST_method_vancomycin|linezolid|AST_method_linezolid|ciprofloxacin|AST_method_ciprofloxacin|chloramphenicol|AST_method_chloramphenicol|tetracycline|AST_method_tetracycline|levofloxacin|AST_method_levofloxacin|synercid|AST_method_synercid|rifampin|AST_method_rifampin|aroE|gdh|gki|recP|spi|xpt|ddl|comments|vaccine_period|intro_year|PCV_type|resolution$
+      pattern: ^sanger_sample_id|sample_name|public_name|study_name|submitting_institution|selection_random|continent|country|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|penicillin|AST_method_penicillin|amoxicillin|AST_method_amoxicillin|cefotaxime|AST_method_cefotaxime|ceftriaxone|AST_method_ceftriaxone|cefuroxime|AST_method_cefuroxime|meropenem|AST_method_meropenem|erythromycin|AST_method_erythromycin|clindamycin|AST_method_clindamycin|trim_sulfa|AST_method_trim_sulfa|vancomycin|AST_method_vancomycin|linezolid|AST_method_linezolid|ciprofloxacin|AST_method_ciprofloxacin|chloramphenicol|AST_method_chloramphenicol|tetracycline|AST_method_tetracycline|levofloxacin|AST_method_levofloxacin|synercid|AST_method_synercid|rifampin|AST_method_rifampin|aroE|gdh|gki|recP|spi|xpt|ddl|comments|vaccine_period|intro_year|PCV_type|resolution$
       type: string
     QCData:
       description: Object containing an array of lane ids and their QC data
