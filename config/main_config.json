@@ -3938,8 +3938,7 @@
                   },
                   {
                      "name": "country",
-                     "display": true,
-                     "default": false,
+                     "display": false,
                      "order": 16,
                      "spreadsheet heading": "Country",
                      "display name": "Country",
