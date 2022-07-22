@@ -1,41 +1,19 @@
 <script>
-  import DataUploader from "$lib/components/data-upload/DataUploader.svelte";
-  import Dialog from "$lib/components/Dialog.svelte";
   import { getStores } from "$app/stores";
+  import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
 
   export let session = getStores().session;
-
-  const DESCRIPTION_ELEMENT_ID = "metadata-uploading-description";
-
-  let uploadSuccessDialogOpen;
-
-  function openDialog() {
-    uploadSuccessDialogOpen = true;
-  }
 </script>
 
-<h2>Metadata upload</h2>
+<DataUploadPage dataType="metadata" {session}>
+  <svelte:fragment slot="upload-title">Metadata upload</svelte:fragment>
 
-<p id={DESCRIPTION_ELEMENT_ID}>
-  Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:
-</p>
+  <svelte:fragment slot="upload-description">
+    Select or drag and drop your CSV files (saved as UTF-8) with sample
+    metadata:
+  </svelte:fragment>
 
-<DataUploader
-  ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  {session}
-  dataType="metadata"
-  on:uploadSuccess={openDialog}
-/>
-
-<Dialog bind:isOpen={uploadSuccessDialogOpen} ariaLabelledby="dialog-title">
-  <h3 id="dialog-title">Upload success</h3>
-
-  <p>All metadata were successfully uploaded.</p>
-  <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
-</Dialog>
-
-<style>
-  p {
-    text-align: center;
-  }
-</style>
+  <svelte:fragment slot="success-message">
+    All metadata were successfully uploaded.
+  </svelte:fragment>
+</DataUploadPage>

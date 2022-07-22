@@ -1,42 +1,24 @@
 <script>
-  import DataUploader from "$lib/components/data-upload/DataUploader.svelte";
-  import Dialog from "$lib/components/Dialog.svelte";
   import { getStores } from "$app/stores";
+  import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
 
   export let session = getStores().session;
-
-  const DESCRIPTION_ELEMENT_ID = "in-silico-uploading-description";
-
-  let uploadSuccessDialogOpen;
-
-  function openDialog() {
-    uploadSuccessDialogOpen = true;
-  }
 </script>
 
-<h2><i>In silico</i> data upload</h2>
-
-<p id={DESCRIPTION_ELEMENT_ID}>
-  Select or drag and drop your files with tab-separated <em>in silico</em> data:
-</p>
-
-<DataUploader
-  ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  {session}
+<DataUploadPage
   dataType="in silico"
-  accept="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
-  on:uploadSuccess={openDialog}
-/>
+  fileTypes="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
+  {session}
+>
+  <svelte:fragment slot="upload-title">
+    <i>In silico</i> data upload
+  </svelte:fragment>
 
-<Dialog bind:isOpen={uploadSuccessDialogOpen} ariaLabelledby="dialog-title">
-  <h3 id="dialog-title">Upload success</h3>
+  <svelte:fragment slot="upload-description">
+    Select or drag and drop your files with tab-separated <em>in silico</em> data:
+  </svelte:fragment>
 
-  <p>All <i>in silico</i> data were successfully uploaded.</p>
-  <p>You can <a href="/">go to the dashboard</a> or stay on this page.</p>
-</Dialog>
-
-<style>
-  p {
-    text-align: center;
-  }
-</style>
+  <svelte:fragment slot="success-message">
+    All <i>in silico</i> data were successfully uploaded.
+  </svelte:fragment>
+</DataUploadPage>
