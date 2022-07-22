@@ -1541,8 +1541,7 @@
                           "max_length": 10,
                           "allowed_values": [
                              "Y",
-                             "N",
-                             "_"
+                             "N"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1631,8 +1630,7 @@
                              "SEP",
                              "OCT",
                              "NOV",
-                             "DEC",
-                             "_"
+                             "DEC"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1646,12 +1644,12 @@
                        "order"              : 13,
                        "spreadsheet heading": "Year_collection",
                        "display name"       : "Collection Year",
-                       "filter type"        : "discrete",
+                       "filter type"        : "numeric",
                        "db": {
-                            "mysql_type": "VARCHAR(10)",
+                            "mysql_type": "SMALLINT(4)",
                             "max_length": 10,
-                            "regex": "^(?:\\d{4})$|^_$",
-                            "regex_validation_message": "must be a YYYY format year, or '_'"
+                            "regex": "^(?:\\d{4})$",
+                            "regex_validation_message": "must be a YYYY format year"
                          }
                       }
                ]
@@ -1670,8 +1668,7 @@
                           "max_length": 10,
                           "allowed_values": [
                              "M",
-                             "F",
-                             "_"
+                             "F"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1688,8 +1685,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:\\d+)$|^(?:<|>)?(?:=)?(?: |)?(?:\\d+(?:\\.\\d*)?(?:<=\\d+)?(?: )?(?:&)?(?: )?(?:<|>)?(?:\\d+)?)$|^_$",
-                          "regex_validation_message": "should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols; can be '_'"
+                          "regex": "^(?:\\d+)$|^(?:<|>)?(?:=)?(?: |)?(?:\\d+(?:\\.\\d*)?(?:<=\\d+)?(?: )?(?:&)?(?: )?(?:<|>)?(?:\\d+)?)$",
+                          "regex_validation_message": "should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols"
                        }
                     },
                   {  "name"               : "age_months",
@@ -1700,10 +1697,10 @@
                      "display name"       : "Age months",
                      "filter type"        : "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(10)",
-                          "max_length": 10,
-                          "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$|^_$",
-                          "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals); can be '_'"
+                          "mysql_type": "FLOAT(5,2)",
+                          "max_length": 6,
+                          "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$",
+                          "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals)"
                        }
                     },
                   {  "name"               : "age_days",
@@ -1714,10 +1711,10 @@
                      "display name"       : "Age days",
                      "filter type"        : "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(10)",
+                          "mysql_type": "SMALLINT(10)",
                           "max_length": 10,
-                          "regex": "^(?:\\d+?)?$|^_$",
-                          "regex_validation_message": "should be an integer; can be '_'"
+                          "regex": "^(?:\\d+?)?$",
+                          "regex_validation_message": "should be an integer"
                        }
                     },
                     {  "name"               : "clinical_manifestation",
@@ -1763,8 +1760,7 @@
                               "SURGICAL SITE INFECTION",
                               "UNKNOWN",
                               "UNSPECIFIED",
-                              "UNSPECIFIED IPD",
-                              "_"
+                              "UNSPECIFIED IPD"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1801,8 +1797,7 @@
                            "PLEURAL FLUID",
                            "PUS",
                            "SPUTUM",
-                           "SYNOVIAL FLUID",
-                           "_"
+                           "SYNOVIAL FLUID"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1820,7 +1815,6 @@
                           "mysql_type": "VARCHAR(10)",
                           "max_length": 10,
                           "allowed_values": [
-                             "_",
                              "P",
                              "N"
                           ],
@@ -1850,8 +1844,7 @@
                            "PRETERM",
                            "SEIZURES",
                            "SICKLE CELL DISEASE",
-                           "TUBEROSCLEROSIS",
-                           "_"
+                           "TUBEROSCLEROSIS"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1878,8 +1871,7 @@
                            "NT",
                            "PCR",
                            "PCR AND QUELLUNG",
-                           "QUELLUNG",
-                           "_"
+                           "QUELLUNG"
                        ],
                        "convert_case": {
                           "case": "upper"
@@ -1896,7 +1888,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(100)",
                           "max_length": 100,
-                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/\\&]+)$|^_$",
+                          "regex": "^(?:[A-Z0-9/\\(\\)\\-/\\&]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
@@ -1910,7 +1902,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(256)",
                           "max_length": 256,
-                          "regex": "^[0-9]{1,5}$|^UNKNOWN$|^_$",
+                          "regex": "^[0-9]{1,5}$|^UNKNOWN$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     }
@@ -1928,8 +1920,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_penicillin",
@@ -1947,8 +1939,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -1965,8 +1956,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_amoxicillin",
@@ -1983,8 +1974,7 @@
                            "AGAR DILUTION",
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2001,7 +1991,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
                           "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
                        }
                     },
@@ -2020,8 +2010,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2038,8 +2027,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_ceftriaxone",
@@ -2057,8 +2046,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2075,8 +2063,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_cefuroxime",
@@ -2092,8 +2080,7 @@
                           "allowed_values": [
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2110,8 +2097,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_meropenem",
@@ -2127,8 +2114,7 @@
                           "allowed_values": [
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2145,8 +2131,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_erythromycin",
@@ -2164,8 +2150,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2182,8 +2167,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_clindamycin",
@@ -2201,8 +2186,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2219,8 +2203,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_trim_sulfa",
@@ -2238,8 +2222,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2256,8 +2239,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_vancomycin",
@@ -2275,8 +2258,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2293,8 +2275,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_linezolid",
@@ -2311,8 +2293,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2329,8 +2310,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_ciprofloxacin",
@@ -2346,8 +2327,7 @@
                           "allowed_values": [
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2364,8 +2344,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_chloramphenicol",
@@ -2382,8 +2362,7 @@
                            "AGAR DILUTION",
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2400,8 +2379,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_tetracycline",
@@ -2419,8 +2398,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2437,8 +2415,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_levofloxacin",
@@ -2456,8 +2434,7 @@
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
                            "ETEST",
-                           "OTHER",
-                           "_"
+                           "OTHER"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2474,8 +2451,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_synercid",
@@ -2490,8 +2467,7 @@
                           "max_length": 60,
                           "allowed_values": [
                            "BROTH DILUTION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2508,8 +2484,8 @@
                      "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$|^_$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
                   {  "name"               : "AST_method_rifampin",
@@ -2525,8 +2501,7 @@
                           "allowed_values": [
                            "BROTH DILUTION",
                            "DISC DIFFUSION",
-                           "ETEST",
-                           "_"
+                           "ETEST"
                           ],
                           "convert_case": {
                              "case": "upper"
@@ -2545,10 +2520,10 @@
                      "display name"       : "aroE",
                      "filter type"        :  "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^\\d{1,3}$|^_$",
-                          "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                          "mysql_type": "SMALLINT(3)",
+                          "max_length": 3,
+                          "regex": "^\\d{1,3}$",
+                          "regex_validation_message": "must be an integer (max 3 digits)"
                        }
                     },
                   {  "name"               : "gdh",
@@ -2559,10 +2534,10 @@
                      "display name"       : "gdh",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                        "mysql_type": "SMALLINT(3)",
+                        "max_length": 3,
+                        "regex": "^\\d{1,3}$",
+                        "regex_validation_message": "must be an integer (max 3 digits)"
                      }
                   },
                   {  "name"               : "gki",
@@ -2573,10 +2548,10 @@
                      "display name"       : "gki",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                        "mysql_type": "SMALLINT(3)",
+                        "max_length": 3,
+                        "regex": "^\\d{1,3}$",
+                        "regex_validation_message": "must be an integer (max 3 digits)"
                      }
                   },
                   {  "name"               : "recP",
@@ -2587,10 +2562,10 @@
                      "display name"       : "recp",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                        "mysql_type": "SMALLINT(3)",
+                        "max_length": 3,
+                        "regex": "^\\d{1,3}$",
+                        "regex_validation_message": "must be an integer (max 3 digits)"
                      }
                   },
                   {  "name"               : "spi",
@@ -2603,8 +2578,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(30)",
                         "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$|^UNKNOWN$",
-                        "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN' or '_'"
+                        "regex": "^\\d{1,3}$|^UNKNOWN$",
+                        "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN'"
                      }
                   },
                   {  "name"               : "xpt",
@@ -2615,10 +2590,10 @@
                      "display name"       : "xpt",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "regex": "^\\d{1,3}$|^_$",
-                        "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                        "mysql_type": "SMALLINT(3)",
+                        "max_length": 3,
+                        "regex": "^\\d{1,3}$",
+                        "regex_validation_message": "must be an integer (max 3 digits)"
                      }
                   },
                   {  "name"               : "ddl",
@@ -2629,10 +2604,10 @@
                      "display name"       : "ddl",
                      "filter type"        :  "discrete",
                      "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^\\d{1,3}$|^_$",
-                          "regex_validation_message": "must be an integer (max 3 digits) or '_'"
+                          "mysql_type": "SMALLINT(3)",
+                          "max_length": 3,
+                          "regex": "^\\d{1,3}$",
+                          "regex_validation_message": "must be an integer (max 3 digits)"
                        }
                     }
                ]
@@ -2661,8 +2636,8 @@
                       "db": {
                           "mysql_type": "VARCHAR(30)",
                           "max_length": 30,
-                          "regex": "^POSTPCV\\d{1,2}-\\d{1,2}YR|^PREPCV$|^_$",
-                          "regex_validation_message": "should be 'PREPCV', 'POSTPCV#-#YR', or '_'"
+                          "regex": "^POSTPCV\\d{1,2}-\\d{1,2}YR|^PREPCV$",
+                          "regex_validation_message": "should be 'PREPCV', 'POSTPCV#-#YR'"
                        }
                     },
                    {  "name"               : "intro_year",
@@ -2673,10 +2648,10 @@
                       "display name"       : "Introduction Year",
                       "filter type"        :  "discrete",
                       "db": {
-                        "mysql_type": "VARCHAR(10)",
-                        "max_length": 10,
-                        "regex": "^\\d{4}$|^_$",
-                        "regex_validation_message": "must be a YYYY format year, or '_'"
+                        "mysql_type": "SMALLINT(4)",
+                        "max_length": 4,
+                        "regex": "^\\d{4}$",
+                        "regex_validation_message": "must be a YYYY format year"
                        }
                     },
                    {  "name"               : "PCV_type",
@@ -2689,8 +2664,8 @@
                       "db": {
                           "mysql_type": "VARCHAR(100)",
                           "max_length": 100,
-                          "regex": "^PCV\\d{1,2}$|^_$",
-                          "regex_validation_message": "should start with 'PCV' followed by a number, or '_'"
+                          "regex": "^PCV\\d{1,2}$",
+                          "regex_validation_message": "should start with 'PCV' followed by a number"
                        }
                     },
                    {  "name"               : "resolution",
@@ -2701,10 +2676,10 @@
                       "display name"       : "Resolution",
                       "filter type"        :  "discrete",
                       "db": {
-                          "mysql_type": "VARCHAR(10)",
-                          "max_length": 10,
-                          "regex": "^[0-2]$|^_$",
-                          "regex_validation_message": "must be an integer (range 0-2), or '_'"
+                          "mysql_type": "SMALLINT(1)",
+                          "max_length": 1,
+                          "regex": "^[0-2]$",
+                          "regex_validation_message": "must be an integer (range 0-2)"
                       }
                     }                     
                ]

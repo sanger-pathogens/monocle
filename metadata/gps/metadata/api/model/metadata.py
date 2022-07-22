@@ -17,11 +17,11 @@ class Metadata:
     city: str  # optional
     facility_where_collected: str  # optional
     month_collection: str  # optional
-    year_collection: str  # optional; must be a YYYY format year, or '_'
+    year_collection: str  # optional; must be a YYYY format year
     gender: str  # optional
-    age_years: str  # optional; should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols; can be '_'
-    age_months: str  # optional; should be an integer; can be a decimal (max 2 decimals); can be '_'
-    age_days: str  # optional; should be an integer; can be '_'
+    age_years: str  # optional; should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols
+    age_months: str  # optional; should be an integer; can be a decimal (max 2 decimals)
+    age_days: str  # optional; should be an integer
     clinical_manifestation: str  # optional
     source: str  # optional
     HIV_status: str  # optional
@@ -29,49 +29,49 @@ class Metadata:
     phenotypic_serotype_method: str  # optional
     phenotypic_serotype: str  # optional; contains illegal characters
     sequence_type: str  # optional; contains illegal characters
-    penicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    penicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_penicillin: str  # optional
-    amoxicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    amoxicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_amoxicillin: str  # optional
     cefotaxime: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
     AST_method_cefotaxime: str  # optional
-    ceftriaxone: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    ceftriaxone: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_ceftriaxone: str  # optional
-    cefuroxime: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    cefuroxime: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_cefuroxime: str  # optional
-    meropenem: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    meropenem: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_meropenem: str  # optional
-    erythromycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    erythromycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_erythromycin: str  # optional
-    clindamycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    clindamycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_clindamycin: str  # optional
-    trim_sulfa: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    trim_sulfa: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_trim_sulfa: str  # optional
-    vancomycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    vancomycin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_vancomycin: str  # optional
-    linezolid: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    linezolid: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_linezolid: str  # optional
-    ciprofloxacin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    ciprofloxacin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_ciprofloxacin: str  # optional
-    chloramphenicol: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    chloramphenicol: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_chloramphenicol: str  # optional
-    tetracycline: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    tetracycline: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_tetracycline: str  # optional
-    levofloxacin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    levofloxacin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_levofloxacin: str  # optional
-    synercid: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    synercid: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_synercid: str  # optional
-    rifampin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'
+    rifampin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_rifampin: str  # optional
-    aroE: str  # optional; must be an integer (max 3 digits) or '_'
-    gdh: str  # optional; must be an integer (max 3 digits) or '_'
-    gki: str  # optional; must be an integer (max 3 digits) or '_'
-    recP: str  # optional; must be an integer (max 3 digits) or '_'
-    spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN' or '_'
-    xpt: str  # optional; must be an integer (max 3 digits) or '_'
-    ddl: str  # optional; must be an integer (max 3 digits) or '_'
+    aroE: str  # optional; must be an integer (max 3 digits)
+    gdh: str  # optional; must be an integer (max 3 digits)
+    gki: str  # optional; must be an integer (max 3 digits)
+    recP: str  # optional; must be an integer (max 3 digits)
+    spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN'
+    xpt: str  # optional; must be an integer (max 3 digits)
+    ddl: str  # optional; must be an integer (max 3 digits)
     comments: str  # optional
-    vaccine_period: str  # optional; should be 'PREPCV', 'POSTPCV#-#YR', or '_'
-    intro_year: str  # optional; must be a YYYY format year, or '_'
-    PCV_type: str  # optional; should start with 'PCV' followed by a number, or '_'
-    resolution: str  # optional; must be an integer (range 0-2), or '_'
+    vaccine_period: str  # optional; should be 'PREPCV', 'POSTPCV#-#YR'
+    intro_year: str  # optional; must be a YYYY format year
+    PCV_type: str  # optional; should start with 'PCV' followed by a number
+    resolution: str  # optional; must be an integer (range 0-2)

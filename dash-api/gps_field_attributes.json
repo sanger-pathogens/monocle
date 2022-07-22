@@ -129,7 +129,7 @@
                   "order": 13,
                   "spreadsheet heading": "Year_collection",
                   "display name": "Collection Year",
-                  "filter type": "discrete"
+                  "filter type": "numeric"
                }
             ]
          },
