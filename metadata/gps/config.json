@@ -163,7 +163,7 @@
          },
          "age_months": {
             "title": "Age_months",
-            "mysql_type": "FLOAT(5,2)",
+            "mysql_type": "DECIMAL(5,2)",
             "max_length": 6,
             "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$",
             "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals)"

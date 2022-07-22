@@ -31,7 +31,7 @@ CREATE TABLE `gps_sample` (
   `year_collection` SMALLINT(4),
   `gender` VARCHAR(10) DEFAULT NULL,
   `age_years` VARCHAR(30),
-  `age_months` FLOAT(5,2),
+  `age_months` DECIMAL(5,2),
   `age_days` SMALLINT(10),
   `clinical_manifestation` VARCHAR(256),
   `source` VARCHAR(100),
