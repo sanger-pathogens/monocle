@@ -30,12 +30,6 @@ class MonocleSampleTracking:
     """
 
     sample_table_inst_key = "submitting_institution"
-    # these are the sequencing QC flags from MLWH that are checked; if any are false the sample is counted as failed
-    # keys are the keys from the JSON the API giuves us;  strings are what we display on the dashboard when the failure occurs.
-    sequencing_flags = {
-        "qc_lib": "library",
-        "qc_seq": "sequencing",
-    }
 
     zero_days = {
         "gps": datetime(2013, 2, 12),
@@ -360,16 +354,17 @@ class MonocleSampleTracking:
         """
         Returns dict with a summary of sequencing outcomes for each institution.
 
-        {  institution_1: {  'received':    <int>,
-                             'completed':   <int>,
-                             'success':     <int>,
-                             'failed':      <int>,
-                             'fail_messages':  [  {  'lane':  lane_id_1,
-                                                     'stage': 'name of QC stage where issues was detected',
-                                                     'issue': 'string describing the issue'
-                                                     },
-                                                  ...
-                                                  ],
+        {  institution_1: {  'samples_received':  <int>,
+                             'samples_completed': <int>,
+                             'lanes_completed':   <int>,
+                             'lanes_successful':  <int>,
+                             'lanes_failed':      <int>,
+                             'fail_messages':     [ { 'lane':  lane_id_1,
+                                                      'stage': 'name of QC stage where issues was detected',
+                                                      'issue': 'string describing the issue'
+                                                      },
+                                                    ...
+                                                    ],
                              },
            institution_2...
            }
@@ -380,8 +375,8 @@ class MonocleSampleTracking:
         status = {}
         for this_institution in sequencing_status_data.keys():
             logging.debug(
-                "{}.sequencing_status_summary() received sample key pairs {} for institution {}".format(
-                    __class__.__name__, sequencing_status_data[this_institution].keys(), this_institution
+                "{}.sequencing_status_summary() received sample ID list {} for institution {}".format(
+                    __class__.__name__, list(sequencing_status_data[this_institution]), this_institution
                 )
             )
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:
@@ -390,16 +385,23 @@ class MonocleSampleTracking:
                 }
                 continue
             sanger_sample_id_list = sequencing_status_data[this_institution].keys()
-            status[this_institution] = {
+            this_institution_status = {
                 API_ERROR_KEY: None,
-                "received": len(sanger_sample_id_list) - 1,
-                "completed": 0,
-                "success": 0,
-                "failed": 0,
+                "samples_received": len(sanger_sample_id_list) - 1,
+                "samples_completed": 0,
+                "samples_successful": 0,
+                "lanes_completed": 0,
+                "lanes_successful": 0,
+                "lanes_failed": 0,
                 "fail_messages": [],
             }
             if len(sanger_sample_id_list) - 1 > 0:  # sanger_sample_id_list must be -1 to discount _ERROR entry
                 this_sequencing_status_data = sequencing_status_data[this_institution]
+                # this dict tracks samples with at least one completed lane
+                # it avoids double-counting any samples with two (or more) lanes sequenced
+                samples_completed = {}
+                # same as `samples_completed` but samples with at least one successfully sequenced lane
+                samples_successful = {}
                 for this_sanger_sample_id in sanger_sample_id_list:
                     if this_sanger_sample_id == API_ERROR_KEY:
                         continue
@@ -411,12 +413,37 @@ class MonocleSampleTracking:
                             this_sanger_sample_id, this_lane
                         )
                         if this_lane_completed:
-                            status[this_institution]["completed"] += 1
+                            this_institution_status["lanes_completed"] += 1
+                            if samples_completed.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one sequenced lane: it is being counted only ONCE in sequencing status "samples_completed" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_completed"] += 1
+                            samples_completed[this_sanger_sample_id] = True
                         if this_lane_success:
-                            status[this_institution]["success"] += 1
+                            this_institution_status["lanes_successful"] += 1
+                            if samples_successful.get(this_sanger_sample_id, False) is True:
+                                logging.debug(
+                                    'sample {} has more than one successfully sequenced lane: it is being counted only ONCE in sequencing status "samples_successful" total'.format(
+                                        this_sanger_sample_id
+                                    )
+                                )
+                            else:
+                                this_institution_status["samples_successful"] += 1
+                            samples_successful[this_sanger_sample_id] = True
                         else:
-                            status[this_institution]["failed"] += 1
-                            status[this_institution]["fail_messages"] += fail_messages
+                            this_institution_status["lanes_failed"] += 1
+                            this_institution_status["fail_messages"] += fail_messages
+            # add deprecated keys to status object
+            # TODO remove these after FE has been updated
+            this_institution_status["received"] = this_institution_status["samples_received"]
+            this_institution_status["completed"] = this_institution_status["samples_completed"]
+            this_institution_status["success"] = this_institution_status["lanes_successful"]
+            this_institution_status["failed"] = this_institution_status["lanes_failed"]
+            status[this_institution] = this_institution_status
         return status
 
     def get_sequencing_outcome_for_lane(self, this_sample_id, this_lane):
@@ -435,11 +462,6 @@ class MonocleSampleTracking:
         this_lane_success = True
         fail_messages = []
 
-        # According to the annotation in the MLWH iseq_product_metrics table, qc_lib can be 0, 1, or NULL
-        # If it is NULL the QC status defaults back to qc_seq, for historic reasons
-        if "qc_lib" in this_lane and "qc_seq" in this_lane and this_lane["qc_lib"] is None:
-            this_lane["qc_lib"] = this_lane["qc_seq"]
-
         if (
             "qc complete" == this_lane["run_status"]
             and this_lane["qc_complete_datetime"]
@@ -448,17 +470,16 @@ class MonocleSampleTracking:
             # lane has completed, whether success or failure
             this_lane_completed = True
             # look for any failures; note one lane could have more than one failure
-            for this_flag in self.sequencing_flags.keys():
-                if not 1 == this_lane[this_flag]:
-                    this_lane_success = False
-                    # record details of this failure
-                    fail_messages.append(
-                        {
-                            "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
-                            "stage": self.sequencing_flags[this_flag],
-                            "issue": "sorry, failure messages cannot currently be seen here",
-                        }
-                    )
+            if not 1 == this_lane["qc_success"]:
+                this_lane_success = False
+                # record details of this failure
+                fail_messages.append(
+                    {
+                        "lane": "{} (sample {})".format(this_lane["id"], this_sample_id),
+                        "stage": this_lane["qc_status_text"],
+                        "issue": "sorry, failure messages cannot currently be seen here",
+                    }
+                )
         logging.debug(
             "\nsequencing_is_success({},{}) returns {}".format(
                 this_sample_id, this_lane, (this_lane_completed, this_lane_success, fail_messages)
@@ -471,6 +492,9 @@ class MonocleSampleTracking:
             logging.error("project_information: The current project is not set")
             raise ValueError("The current project is not set")
         return self.sample_metadata.get_project_information(self.current_project)
+
+    def get_pipeline_status(self):
+        return DataSources.pipeline_status.PipelineStatus(self.current_project)
 
     def pipeline_status_summary(self):
         """
@@ -499,7 +523,7 @@ class MonocleSampleTracking:
         """
         institutions_data = self.get_institutions()
         sequencing_status_data = self.get_sequencing_status()
-        pipeline_status = DataSources.pipeline_status.PipelineStatus(self.current_project)
+        pipeline_status = self.get_pipeline_status()
         status = {}
         for this_institution in institutions_data.keys():
             if sequencing_status_data[this_institution][API_ERROR_KEY] is not None:

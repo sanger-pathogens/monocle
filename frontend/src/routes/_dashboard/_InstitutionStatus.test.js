@@ -5,7 +5,7 @@ import InstitutionStatus from "./_InstitutionStatus.svelte";
 const API_ERROR = "some error";
 const INSTITUTION_NAME = "Welfare Biology Research Institute";
 const RE_STATUS_PANE_HEADING_TEXT =
-  / (?:Samples (?:Received|Sequenced))|(?:Sample Pipelines Completed)$/;
+  / (?:Samples (?:Received|Sequenced))|(?:Pipelines Completed)$/;
 const ROLE_HEADING = "heading";
 
 jest.mock("svelte", () => ({
@@ -52,7 +52,7 @@ it("displays only an institution name and a short message when no samples receiv
 it.each([
   ["batch", / Samples Received$/],
   ["sequencing status", / Samples Sequenced$/],
-  ["pipeline status", / Sample Pipelines Completed$/],
+  ["pipeline status", / Pipelines Completed$/],
 ])("displays %s pane", (paneName, expectedHeadingText) => {
   const { getByRole } = render(InstitutionStatus, {
     institutionName: INSTITUTION_NAME,

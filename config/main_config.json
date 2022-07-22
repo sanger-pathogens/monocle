@@ -91,8 +91,8 @@
          "gps": {
             "project_links" : {
                "name": "GPS Project", 
-               "logo_url": "",
-               "project_url": "",
+               "logo_url": "/imgs/gps_banner.png",
+               "project_url": "https://www.pneumogen.net/gps",
                "header_links": [
                   {"label": "About", "url": "https://www.gbsgen.net/#about"},
                   {"label": "Team", "url": "https://www.gbsgen.net/#team"},
@@ -3702,8 +3702,7 @@
                      }
                   },
                   {  "name"               : "public_name",
-                     "display"            : true,
-                     "default"            : true,
+                     "display"            : false,
                      "order"              : 1,
                      "spreadsheet heading": "Public_name",
                      "display name"       : "Public name",
@@ -3717,8 +3716,7 @@
                      }
                   },
                   {  "name"               : "sample",
-                     "display"            : true,
-                     "default"            : true,
+                     "display"            : false,
                      "order"              : 2,
                      "spreadsheet heading": "Sanger_Sample_ID",
                      "display name"       : "Sanger Sample ID",
@@ -3937,8 +3935,7 @@
                   },
                   {
                      "name": "country",
-                     "display": true,
-                     "default": false,
+                     "display": false,
                      "order": 16,
                      "spreadsheet heading": "Country",
                      "display name": "Country",

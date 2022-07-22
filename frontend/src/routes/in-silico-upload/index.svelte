@@ -1,6 +1,9 @@
 <script>
   import DataUploader from "$lib/components/data-upload/DataUploader.svelte";
   import Dialog from "$lib/components/Dialog.svelte";
+  import { getStores } from "$app/stores";
+
+  export let session = getStores().session;
 
   const DESCRIPTION_ELEMENT_ID = "in-silico-uploading-description";
 
@@ -19,7 +22,8 @@
 
 <DataUploader
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
-  uploadUrl="/metadata/juno/in-silico-upload"
+  {session}
+  dataType="in silico"
   accept="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
   on:uploadSuccess={openDialog}
 />
