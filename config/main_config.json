@@ -1449,10 +1449,25 @@
          "categories" : [
             {  "name"   : "Sample Identifiers",
                "fields" : [
+                    {  "name"               : "sanger_sample_id",
+                       "display"            : true,
+                       "default"            : false,
+                       "order"              : 1,
+                       "spreadsheet heading": "Sanger_sample_id",
+                       "display name"       : "Sanger Sample ID",
+                       "filter type"        : "none",
+                       "db": {
+                            "mysql_type": "VARCHAR(256) NOT NULL",
+                            "mandatory": true,
+                            "max_length": 256,
+                            "regex": "^(?:[0-9a-zA-Z]+)$",
+                            "regex_validation_message": "must not contain illegal characters"
+                         }
+                      },
                   {  "name"               : "sample_name",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 1,
+                     "order"              : 2,
                      "spreadsheet heading": "Sample_name",
                      "display name"       : "Sample name",
                      "filter type"        : "none",
@@ -1464,21 +1479,6 @@
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
-                    {  "name"               : "sanger_sample_id",
-                       "display"            : true,
-                       "default"            : false,
-                       "order"              : 2,
-                       "spreadsheet heading": "Sanger_Sample_ID",
-                       "display name"       : "Sanger Sample ID",
-                       "filter type"        : "none",
-                       "db": {
-                            "mysql_type": "VARCHAR(256) NOT NULL",
-                            "mandatory": true,
-                            "max_length": 256,
-                            "regex": "^(?:[0-9a-zA-Z]+)$",
-                            "regex_validation_message": "must not contain illegal characters"
-                         }
-                      },
                  {  "name"               : "public_name",
                      "display"            : true,
                      "default"            : true,

@@ -5,8 +5,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Metadata:
-    sample_name: str  # mandatory; contains illegal characters
     sanger_sample_id: str  # mandatory; must not contain illegal characters
+    sample_name: str  # mandatory; contains illegal characters
     public_name: str  # mandatory; contains illegal characters
     study_name: str  # optional; contains illegal characters
     submitting_institution: str  # mandatory

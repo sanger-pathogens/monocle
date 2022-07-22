@@ -5,21 +5,21 @@
             "name": "Sample Identifiers",
             "fields": [
                {
-                  "name": "sample_name",
-                  "display": true,
-                  "default": false,
-                  "order": 1,
-                  "spreadsheet heading": "Sample_name",
-                  "display name": "Sample name",
-                  "filter type": "none"
-               },
-               {
                   "name": "sanger_sample_id",
                   "display": true,
                   "default": false,
-                  "order": 2,
-                  "spreadsheet heading": "Sanger_Sample_ID",
+                  "order": 1,
+                  "spreadsheet heading": "Sanger_sample_id",
                   "display name": "Sanger Sample ID",
+                  "filter type": "none"
+               },
+               {
+                  "name": "sample_name",
+                  "display": true,
+                  "default": false,
+                  "order": 2,
+                  "spreadsheet heading": "Sample_name",
+                  "display name": "Sample name",
                   "filter type": "none"
                },
                {
