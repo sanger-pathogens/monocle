@@ -228,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `gps_qc_data` (
   `depth_of_coverage` DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000),
   `Proportion_of_Het_SNPs` DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100),
   `qc` VARCHAR(30),
-  `Hetsites_50bp` SMALLINT(4),
+  `Hetsites_50bp` SMALLINT(4) CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000),
   # END OF AUTO_GENERATED SECTION
 PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
