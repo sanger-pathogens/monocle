@@ -29,6 +29,13 @@ class Metadata:
     phenotypic_serotype_method: str  # optional
     phenotypic_serotype: str  # optional; contains illegal characters
     sequence_type: str  # optional; contains illegal characters
+    aroE: str  # optional; must be an integer (max 3 digits)
+    gdh: str  # optional; must be an integer (max 3 digits)
+    gki: str  # optional; must be an integer (max 3 digits)
+    recP: str  # optional; must be an integer (max 3 digits)
+    spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN'
+    xpt: str  # optional; must be an integer (max 3 digits)
+    ddl: str  # optional; must be an integer (max 3 digits)
     AST_method_penicillin: str  # optional
     penicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_amoxicillin: str  # optional
@@ -63,13 +70,6 @@ class Metadata:
     synercid: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     AST_method_rifampin: str  # optional
     rifampin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
-    aroE: str  # optional; must be an integer (max 3 digits)
-    gdh: str  # optional; must be an integer (max 3 digits)
-    gki: str  # optional; must be an integer (max 3 digits)
-    recP: str  # optional; must be an integer (max 3 digits)
-    spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN'
-    xpt: str  # optional; must be an integer (max 3 digits)
-    ddl: str  # optional; must be an integer (max 3 digits)
     comments: str  # optional
     vaccine_period: str  # optional; should be 'PREPCV', 'POSTPCV#-#YR'
     intro_year: str  # optional; must be a YYYY format year

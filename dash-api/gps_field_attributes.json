@@ -243,324 +243,13 @@
             ]
          },
          {
-            "name": "Antimicrobial Susceptibility",
-            "fields": [
-               {
-                  "name": "AST_method_penicillin",
-                  "display": true,
-                  "default": false,
-                  "order": 25,
-                  "spreadsheet heading": "AST_method_Penicillin",
-                  "display name": "Penicillin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "penicillin",
-                  "display": true,
-                  "default": false,
-                  "order": 26,
-                  "spreadsheet heading": "Penicillin",
-                  "display name": "Penicillin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_amoxicillin",
-                  "display": true,
-                  "default": false,
-                  "order": 27,
-                  "spreadsheet heading": "AST_method_Amoxicillin",
-                  "display name": "Amoxicillin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "amoxicillin",
-                  "display": true,
-                  "default": false,
-                  "order": 28,
-                  "spreadsheet heading": "Amoxicillin",
-                  "display name": "Amoxicillin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_cefotaxime",
-                  "display": true,
-                  "default": false,
-                  "order": 29,
-                  "spreadsheet heading": "AST_method_Cefotaxime",
-                  "display name": "Cefotaxime method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "cefotaxime",
-                  "display": true,
-                  "default": false,
-                  "order": 30,
-                  "spreadsheet heading": "Cefotaxime",
-                  "display name": "Cefotaxime",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_ceftriaxone",
-                  "display": true,
-                  "default": false,
-                  "order": 31,
-                  "spreadsheet heading": "AST_method_Ceftriaxone",
-                  "display name": "Ceftriaxone method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "ceftriaxone",
-                  "display": true,
-                  "default": false,
-                  "order": 32,
-                  "spreadsheet heading": "Ceftriaxone",
-                  "display name": "Ceftriaxone",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_cefuroxime",
-                  "display": true,
-                  "default": false,
-                  "order": 33,
-                  "spreadsheet heading": "AST_method_Cefuroxime",
-                  "display name": "Cefuroxime method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "cefuroxime",
-                  "display": true,
-                  "default": false,
-                  "order": 34,
-                  "spreadsheet heading": "Cefuroxime",
-                  "display name": "Cefuroxime",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_meropenem",
-                  "display": true,
-                  "default": false,
-                  "order": 35,
-                  "spreadsheet heading": "AST_method_Meropenem",
-                  "display name": "Meropenem method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "meropenem",
-                  "display": true,
-                  "default": false,
-                  "order": 36,
-                  "spreadsheet heading": "Meropenem",
-                  "display name": "Meropenem",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_erythromycin",
-                  "display": true,
-                  "default": false,
-                  "order": 37,
-                  "spreadsheet heading": "AST_method_Erythromycin",
-                  "display name": "Erythromycin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "erythromycin",
-                  "display": true,
-                  "default": false,
-                  "order": 38,
-                  "spreadsheet heading": "Erythromycin",
-                  "display name": "Erythromycin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_clindamycin",
-                  "display": true,
-                  "default": false,
-                  "order": 39,
-                  "spreadsheet heading": "AST_method_Clindamycin",
-                  "display name": "Clindamycin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "clindamycin",
-                  "display": true,
-                  "default": false,
-                  "order": 40,
-                  "spreadsheet heading": "Clindamycin",
-                  "display name": "Clindamycin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_trim_sulfa",
-                  "display": true,
-                  "default": false,
-                  "order": 41,
-                  "spreadsheet heading": "AST_method_Trim_Sulfa",
-                  "display name": "Trim/Sulfa method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "trim_sulfa",
-                  "default": false,
-                  "display": true,
-                  "order": 42,
-                  "spreadsheet heading": "Trim_Sulfa",
-                  "display name": "Trim/Sulfa",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_vancomycin",
-                  "display": true,
-                  "default": false,
-                  "order": 43,
-                  "spreadsheet heading": "AST_method_Vancomycin",
-                  "display name": "Vancomycin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "vancomycin",
-                  "display": true,
-                  "default": false,
-                  "order": 44,
-                  "spreadsheet heading": "Vancomycin",
-                  "display name": "Vancomycin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_linezolid",
-                  "display": true,
-                  "default": false,
-                  "order": 45,
-                  "spreadsheet heading": "AST_method_Linezolid",
-                  "display name": "Linezolid method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "linezolid",
-                  "display": true,
-                  "default": false,
-                  "order": 46,
-                  "spreadsheet heading": "Linezolid",
-                  "display name": "Linezolid",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_ciprofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 47,
-                  "spreadsheet heading": "AST_method_Ciprofloxacin",
-                  "display name": "Ciprofloxacin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "ciprofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 48,
-                  "spreadsheet heading": "Ciprofloxacin",
-                  "display name": "Ciprofloxacin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_chloramphenicol",
-                  "display": true,
-                  "default": false,
-                  "order": 49,
-                  "spreadsheet heading": "AST_method_Chloramphenicol",
-                  "display name": "Chloramphenicol method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "chloramphenicol",
-                  "display": true,
-                  "default": false,
-                  "order": 50,
-                  "spreadsheet heading": "Chloramphenicol",
-                  "display name": "Chloramphenicol",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_tetracycline",
-                  "display": true,
-                  "default": false,
-                  "order": 51,
-                  "spreadsheet heading": "AST_method_Tetracycline",
-                  "display name": "Tetracycline method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "tetracycline",
-                  "display": true,
-                  "default": false,
-                  "order": 52,
-                  "spreadsheet heading": "Tetracycline",
-                  "display name": "Tetracyclined",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_levofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 53,
-                  "spreadsheet heading": "AST_method_Levofloxacin",
-                  "display name": "Levofloxacin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "levofloxacin",
-                  "display": true,
-                  "default": false,
-                  "order": 54,
-                  "spreadsheet heading": "Levofloxacin",
-                  "display name": "Levofloxacin",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_synercid",
-                  "display": true,
-                  "default": false,
-                  "order": 55,
-                  "spreadsheet heading": "AST_method_Synercid",
-                  "display name": "Synercid method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "synercid",
-                  "display": true,
-                  "default": false,
-                  "order": 56,
-                  "spreadsheet heading": "Synercid",
-                  "display name": "Synercid",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "AST_method_rifampin",
-                  "display": true,
-                  "default": false,
-                  "order": 57,
-                  "spreadsheet heading": "AST_method_Rifampin",
-                  "display name": "Rifampin method",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "rifampin",
-                  "display": true,
-                  "default": false,
-                  "order": 58,
-                  "spreadsheet heading": "Rifampin",
-                  "display name": "Rifampin",
-                  "filter type": "discrete"
-               }
-            ]
-         },
-         {
             "name": "MLST and Allele Number",
             "fields": [
                {
                   "name": "aroE",
                   "display": true,
                   "default": true,
-                  "order": 59,
+                  "order": 25,
                   "spreadsheet heading": "aroE",
                   "display name": "aroE",
                   "filter type": "discrete"
@@ -569,7 +258,7 @@
                   "name": "gdh",
                   "display": true,
                   "default": false,
-                  "order": 60,
+                  "order": 26,
                   "spreadsheet heading": "gdh",
                   "display name": "gdh",
                   "filter type": "discrete"
@@ -578,7 +267,7 @@
                   "name": "gki",
                   "display": true,
                   "default": false,
-                  "order": 61,
+                  "order": 27,
                   "spreadsheet heading": "gki",
                   "display name": "gki",
                   "filter type": "discrete"
@@ -587,7 +276,7 @@
                   "name": "recP",
                   "display": true,
                   "default": false,
-                  "order": 62,
+                  "order": 28,
                   "spreadsheet heading": "recP",
                   "display name": "recp",
                   "filter type": "discrete"
@@ -596,7 +285,7 @@
                   "name": "spi",
                   "display": true,
                   "default": false,
-                  "order": 63,
+                  "order": 29,
                   "spreadsheet heading": "spi",
                   "display name": "spi",
                   "filter type": "discrete"
@@ -605,7 +294,7 @@
                   "name": "xpt",
                   "display": true,
                   "default": false,
-                  "order": 64,
+                  "order": 30,
                   "spreadsheet heading": "xpt",
                   "display name": "xpt",
                   "filter type": "discrete"
@@ -614,9 +303,320 @@
                   "name": "ddl",
                   "display": true,
                   "default": false,
-                  "order": 65,
+                  "order": 31,
                   "spreadsheet heading": "ddl",
                   "display name": "ddl",
+                  "filter type": "discrete"
+               }
+            ]
+         },
+         {
+            "name": "Antimicrobial Susceptibility",
+            "fields": [
+               {
+                  "name": "AST_method_penicillin",
+                  "display": true,
+                  "default": false,
+                  "order": 32,
+                  "spreadsheet heading": "AST_method_Penicillin",
+                  "display name": "Penicillin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "penicillin",
+                  "display": true,
+                  "default": false,
+                  "order": 33,
+                  "spreadsheet heading": "Penicillin",
+                  "display name": "Penicillin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_amoxicillin",
+                  "display": true,
+                  "default": false,
+                  "order": 34,
+                  "spreadsheet heading": "AST_method_Amoxicillin",
+                  "display name": "Amoxicillin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "amoxicillin",
+                  "display": true,
+                  "default": false,
+                  "order": 35,
+                  "spreadsheet heading": "Amoxicillin",
+                  "display name": "Amoxicillin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_cefotaxime",
+                  "display": true,
+                  "default": false,
+                  "order": 36,
+                  "spreadsheet heading": "AST_method_Cefotaxime",
+                  "display name": "Cefotaxime method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "cefotaxime",
+                  "display": true,
+                  "default": false,
+                  "order": 37,
+                  "spreadsheet heading": "Cefotaxime",
+                  "display name": "Cefotaxime",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_ceftriaxone",
+                  "display": true,
+                  "default": false,
+                  "order": 38,
+                  "spreadsheet heading": "AST_method_Ceftriaxone",
+                  "display name": "Ceftriaxone method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "ceftriaxone",
+                  "display": true,
+                  "default": false,
+                  "order": 39,
+                  "spreadsheet heading": "Ceftriaxone",
+                  "display name": "Ceftriaxone",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_cefuroxime",
+                  "display": true,
+                  "default": false,
+                  "order": 40,
+                  "spreadsheet heading": "AST_method_Cefuroxime",
+                  "display name": "Cefuroxime method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "cefuroxime",
+                  "display": true,
+                  "default": false,
+                  "order": 41,
+                  "spreadsheet heading": "Cefuroxime",
+                  "display name": "Cefuroxime",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_meropenem",
+                  "display": true,
+                  "default": false,
+                  "order": 42,
+                  "spreadsheet heading": "AST_method_Meropenem",
+                  "display name": "Meropenem method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "meropenem",
+                  "display": true,
+                  "default": false,
+                  "order": 43,
+                  "spreadsheet heading": "Meropenem",
+                  "display name": "Meropenem",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_erythromycin",
+                  "display": true,
+                  "default": false,
+                  "order": 44,
+                  "spreadsheet heading": "AST_method_Erythromycin",
+                  "display name": "Erythromycin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "erythromycin",
+                  "display": true,
+                  "default": false,
+                  "order": 45,
+                  "spreadsheet heading": "Erythromycin",
+                  "display name": "Erythromycin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_clindamycin",
+                  "display": true,
+                  "default": false,
+                  "order": 46,
+                  "spreadsheet heading": "AST_method_Clindamycin",
+                  "display name": "Clindamycin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "clindamycin",
+                  "display": true,
+                  "default": false,
+                  "order": 47,
+                  "spreadsheet heading": "Clindamycin",
+                  "display name": "Clindamycin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_trim_sulfa",
+                  "display": true,
+                  "default": false,
+                  "order": 48,
+                  "spreadsheet heading": "AST_method_Trim_Sulfa",
+                  "display name": "Trim/Sulfa method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "trim_sulfa",
+                  "default": false,
+                  "display": true,
+                  "order": 49,
+                  "spreadsheet heading": "Trim_Sulfa",
+                  "display name": "Trim/Sulfa",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_vancomycin",
+                  "display": true,
+                  "default": false,
+                  "order": 50,
+                  "spreadsheet heading": "AST_method_Vancomycin",
+                  "display name": "Vancomycin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "vancomycin",
+                  "display": true,
+                  "default": false,
+                  "order": 51,
+                  "spreadsheet heading": "Vancomycin",
+                  "display name": "Vancomycin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_linezolid",
+                  "display": true,
+                  "default": false,
+                  "order": 52,
+                  "spreadsheet heading": "AST_method_Linezolid",
+                  "display name": "Linezolid method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "linezolid",
+                  "display": true,
+                  "default": false,
+                  "order": 53,
+                  "spreadsheet heading": "Linezolid",
+                  "display name": "Linezolid",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_ciprofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 54,
+                  "spreadsheet heading": "AST_method_Ciprofloxacin",
+                  "display name": "Ciprofloxacin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "ciprofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 55,
+                  "spreadsheet heading": "Ciprofloxacin",
+                  "display name": "Ciprofloxacin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_chloramphenicol",
+                  "display": true,
+                  "default": false,
+                  "order": 56,
+                  "spreadsheet heading": "AST_method_Chloramphenicol",
+                  "display name": "Chloramphenicol method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "chloramphenicol",
+                  "display": true,
+                  "default": false,
+                  "order": 57,
+                  "spreadsheet heading": "Chloramphenicol",
+                  "display name": "Chloramphenicol",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_tetracycline",
+                  "display": true,
+                  "default": false,
+                  "order": 58,
+                  "spreadsheet heading": "AST_method_Tetracycline",
+                  "display name": "Tetracycline method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "tetracycline",
+                  "display": true,
+                  "default": false,
+                  "order": 59,
+                  "spreadsheet heading": "Tetracycline",
+                  "display name": "Tetracyclined",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_levofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 60,
+                  "spreadsheet heading": "AST_method_Levofloxacin",
+                  "display name": "Levofloxacin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "levofloxacin",
+                  "display": true,
+                  "default": false,
+                  "order": 61,
+                  "spreadsheet heading": "Levofloxacin",
+                  "display name": "Levofloxacin",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_synercid",
+                  "display": true,
+                  "default": false,
+                  "order": 62,
+                  "spreadsheet heading": "AST_method_Synercid",
+                  "display name": "Synercid method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "synercid",
+                  "display": true,
+                  "default": false,
+                  "order": 63,
+                  "spreadsheet heading": "Synercid",
+                  "display name": "Synercid",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "AST_method_rifampin",
+                  "display": true,
+                  "default": false,
+                  "order": 64,
+                  "spreadsheet heading": "AST_method_Rifampin",
+                  "display name": "Rifampin method",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "rifampin",
+                  "display": true,
+                  "default": false,
+                  "order": 65,
+                  "spreadsheet heading": "Rifampin",
+                  "display name": "Rifampin",
                   "filter type": "discrete"
                }
             ]

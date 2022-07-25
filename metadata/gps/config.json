@@ -311,6 +311,55 @@
             "regex": "^[0-9]{1,5}$|^UNKNOWN$",
             "regex_validation_message": "contains illegal characters"
          },
+         "aroE": {
+            "title": "aroE",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
+         "gdh": {
+            "title": "gdh",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
+         "gki": {
+            "title": "gki",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
+         "recP": {
+            "title": "recP",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
+         "spi": {
+            "title": "spi",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^\\d{1,3}$|^UNKNOWN$",
+            "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN'"
+         },
+         "xpt": {
+            "title": "xpt",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
+         "ddl": {
+            "title": "ddl",
+            "mysql_type": "SMALLINT(3)",
+            "max_length": 3,
+            "regex": "^\\d{1,3}$",
+            "regex_validation_message": "must be an integer (max 3 digits)"
+         },
          "AST_method_penicillin": {
             "title": "AST_method_Penicillin",
             "mysql_type": "VARCHAR(60)",
@@ -670,55 +719,6 @@
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
             "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
-         },
-         "aroE": {
-            "title": "aroE",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
-         },
-         "gdh": {
-            "title": "gdh",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
-         },
-         "gki": {
-            "title": "gki",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
-         },
-         "recP": {
-            "title": "recP",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
-         },
-         "spi": {
-            "title": "spi",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "regex": "^\\d{1,3}$|^UNKNOWN$",
-            "regex_validation_message": "must be an integer (max 3 digits), 'UNKNOWN'"
-         },
-         "xpt": {
-            "title": "xpt",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
-         },
-         "ddl": {
-            "title": "ddl",
-            "mysql_type": "SMALLINT(3)",
-            "max_length": 3,
-            "regex": "^\\d{1,3}$",
-            "regex_validation_message": "must be an integer (max 3 digits)"
          },
          "comments": {
             "title": "Comments",
