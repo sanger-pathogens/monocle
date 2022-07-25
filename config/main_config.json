@@ -3952,8 +3952,7 @@
                   },
                   {
                      "name": "ddl",
-                     "display": true,
-                     "default": false,
+                     "display": false,
                      "order": 15,
                      "spreadsheet heading": "ddl",
                      "display name": "ddl",
