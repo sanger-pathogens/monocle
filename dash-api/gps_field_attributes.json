@@ -1670,11 +1670,6 @@
                   "name": "lane_id",
                   "display": false,
                   "spreadsheet heading": "Lane_id"
-               },
-               {
-                  "name": "supplier_name",
-                  "display": false,
-                  "spreadsheet heading": "supplier_name"
                }
             ]
          },
@@ -1740,10 +1735,16 @@
                   "display name": "QC"
                },
                {
+                  "name": "supplier_name",
+                  "display": false,
+                  "order": 8,
+                  "spreadsheet heading": "Supplier_name"
+               },
+               {
                   "name": "Hetsites_50bp",
                   "display": true,
                   "default": true,
-                  "order": 8,
+                  "order": 9,
                   "spreadsheet heading": "Hetsites_50bp",
                   "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)"
                }

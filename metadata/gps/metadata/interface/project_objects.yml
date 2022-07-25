@@ -600,7 +600,6 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
             - lane_id
-            - supplier_name
             - Streptococcus_pneumoniae
             - total_length
             - No_contigs
@@ -608,6 +607,7 @@ components:
             - depth_of_coverage
             - Proportion_of_Het_SNPs
             - qc
+            - supplier_name
             - Hetsites_50bp
             type: object
           type: array
@@ -616,5 +616,5 @@ components:
       description: Valid QC data field name
       maxLength: 256
       minLength: 1
-      pattern: ^lane_id|supplier_name|Streptococcus_pneumoniae|total_length|No_contigs|genome_covered|depth_of_coverage|Proportion_of_Het_SNPs|qc|Hetsites_50bp$
+      pattern: ^lane_id|Streptococcus_pneumoniae|total_length|No_contigs|genome_covered|depth_of_coverage|Proportion_of_Het_SNPs|qc|supplier_name|Hetsites_50bp$
       type: string

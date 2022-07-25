@@ -5622,18 +5622,6 @@
                         "regex": "^(?:\\d+_\\d+#\\d+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
-                  },
-                  {
-                     "name": "supplier_name",
-                     "display": false,
-                     "spreadsheet heading": "supplier_name",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
                   }
                ]
             },
@@ -5744,10 +5732,23 @@
                      }
                   },
                   {
+                     "name": "supplier_name",
+                     "display": false,
+                     "order": 8,
+                     "spreadsheet heading": "Supplier_name",
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                  {
                      "name": "Hetsites_50bp",
                      "display": true,
                      "default": true,
-                     "order": 8,
+                     "order": 9,
                      "spreadsheet heading": "Hetsites_50bp",
                      "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
                      "db": {

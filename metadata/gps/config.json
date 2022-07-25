@@ -1777,14 +1777,6 @@
             "regex": "^(?:\\d+_\\d+#\\d+)$",
             "regex_validation_message": "contains illegal characters"
          },
-         "supplier_name": {
-            "title": "supplier_name",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
-            "regex_validation_message": "contains illegal characters"
-         },
          "Streptococcus_pneumoniae": {
             "title": "Streptococcus_pneumoniae",
             "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
@@ -1836,6 +1828,14 @@
             "convert_case": {
                "case": "upper"
             }
+         },
+         "supplier_name": {
+            "title": "Supplier_name",
+            "mysql_type": "VARCHAR(256) NOT NULL",
+            "mandatory": true,
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
+            "regex_validation_message": "contains illegal characters"
          },
          "Hetsites_50bp": {
             "title": "Hetsites_50bp",
