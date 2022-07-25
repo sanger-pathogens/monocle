@@ -311,13 +311,6 @@
             "regex": "^[0-9]{1,5}$|^UNKNOWN$",
             "regex_validation_message": "contains illegal characters"
          },
-         "penicillin": {
-            "title": "Penicillin",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
-         },
          "AST_method_penicillin": {
             "title": "AST_method_Penicillin",
             "mysql_type": "VARCHAR(60)",
@@ -333,8 +326,8 @@
                "case": "upper"
             }
          },
-         "amoxicillin": {
-            "title": "Amoxicillin",
+         "penicillin": {
+            "title": "Penicillin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -354,6 +347,28 @@
                "case": "upper"
             }
          },
+         "amoxicillin": {
+            "title": "Amoxicillin",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
+         },
+         "AST_method_cefotaxime": {
+            "title": "AST_method_Cefotaxime",
+            "mysql_type": "VARCHAR(60)",
+            "max_length": 60,
+            "allowed_values": [
+               "AGAR DILUTION",
+               "BROTH DILUTION",
+               "DISC DIFFUSION",
+               "ETEST",
+               "OTHER"
+            ],
+            "convert_case": {
+               "case": "upper"
+            }
+         },
          "cefotaxime": {
             "title": "Cefotaxime",
             "mysql_type": "VARCHAR(30)",
@@ -361,8 +376,8 @@
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
             "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS or '_'"
          },
-         "AST_method_cefotaxime": {
-            "title": "AST_method_Cefotaxime",
+         "AST_method_ceftriaxone": {
+            "title": "AST_method_Ceftriaxone",
             "mysql_type": "VARCHAR(60)",
             "max_length": 60,
             "allowed_values": [
@@ -383,28 +398,6 @@
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
             "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
          },
-         "AST_method_ceftriaxone": {
-            "title": "AST_method_Ceftriaxone",
-            "mysql_type": "VARCHAR(60)",
-            "max_length": 60,
-            "allowed_values": [
-               "AGAR DILUTION",
-               "BROTH DILUTION",
-               "DISC DIFFUSION",
-               "ETEST",
-               "OTHER"
-            ],
-            "convert_case": {
-               "case": "upper"
-            }
-         },
-         "cefuroxime": {
-            "title": "Cefuroxime",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
-            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
-         },
          "AST_method_cefuroxime": {
             "title": "AST_method_Cefuroxime",
             "mysql_type": "VARCHAR(60)",
@@ -418,8 +411,8 @@
                "case": "upper"
             }
          },
-         "meropenem": {
-            "title": "Meropenem",
+         "cefuroxime": {
+            "title": "Cefuroxime",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -438,8 +431,8 @@
                "case": "upper"
             }
          },
-         "erythromycin": {
-            "title": "Erythromycin",
+         "meropenem": {
+            "title": "Meropenem",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -460,8 +453,8 @@
                "case": "upper"
             }
          },
-         "clindamycin": {
-            "title": "Clindamycin",
+         "erythromycin": {
+            "title": "Erythromycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -482,8 +475,8 @@
                "case": "upper"
             }
          },
-         "trim_sulfa": {
-            "title": "Trim_Sulfa",
+         "clindamycin": {
+            "title": "Clindamycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -504,8 +497,8 @@
                "case": "upper"
             }
          },
-         "vancomycin": {
-            "title": "Vancomycin",
+         "trim_sulfa": {
+            "title": "Trim_Sulfa",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -526,8 +519,8 @@
                "case": "upper"
             }
          },
-         "linezolid": {
-            "title": "Linezolid",
+         "vancomycin": {
+            "title": "Vancomycin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -547,8 +540,8 @@
                "case": "upper"
             }
          },
-         "ciprofloxacin": {
-            "title": "Ciprofloxacin",
+         "linezolid": {
+            "title": "Linezolid",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -567,8 +560,8 @@
                "case": "upper"
             }
          },
-         "chloramphenicol": {
-            "title": "Chloramphenicol",
+         "ciprofloxacin": {
+            "title": "Ciprofloxacin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -588,8 +581,8 @@
                "case": "upper"
             }
          },
-         "tetracycline": {
-            "title": "Tetracycline",
+         "chloramphenicol": {
+            "title": "Chloramphenicol",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -610,8 +603,8 @@
                "case": "upper"
             }
          },
-         "levofloxacin": {
-            "title": "Levofloxacin",
+         "tetracycline": {
+            "title": "Tetracycline",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -632,8 +625,8 @@
                "case": "upper"
             }
          },
-         "synercid": {
-            "title": "Synercid",
+         "levofloxacin": {
+            "title": "Levofloxacin",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -651,8 +644,8 @@
                "case": "upper"
             }
          },
-         "rifampin": {
-            "title": "Rifampin",
+         "synercid": {
+            "title": "Synercid",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
@@ -670,6 +663,13 @@
             "convert_case": {
                "case": "upper"
             }
+         },
+         "rifampin": {
+            "title": "Rifampin",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|\u00b5|\u03bc|\u00b5)g/ml)?$|^[S|I|R]{1}$|^NS$",
+            "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"\u00b5g/ml\" ('u' permitted in place of '\u00b5'); or alternatively S, I, R or NS"
          },
          "aroE": {
             "title": "aroE",

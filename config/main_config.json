@@ -1910,24 +1910,10 @@
                     },
             {  "name"   : "Antimicrobial Susceptibility",
                "fields" : [
-                  {  "name"               : "penicillin",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 25,
-                     "spreadsheet heading": "Penicillin",
-                     "display name"       : "Penicillin",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
-                       }
-                    },
                   {  "name"               : "AST_method_penicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 26,
+                     "order"              : 25,
                      "spreadsheet heading": "AST_method_Penicillin",
                      "display name"       : "Penicillin method",
                      "filter type"        :  "discrete",
@@ -1946,12 +1932,12 @@
                           }
                        }
                     },
-                  {  "name"               : "amoxicillin",
+                  {  "name"               : "penicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 27,
-                     "spreadsheet heading": "Amoxicillin",
-                     "display name"       : "Amoxicillin",
+                     "order"              : 26,
+                     "spreadsheet heading": "Penicillin",
+                     "display name"       : "Penicillin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -1963,7 +1949,7 @@
                   {  "name"               : "AST_method_amoxicillin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 28,
+                     "order"              : 27,
                      "spreadsheet heading": "AST_method_Amoxicillin",
                      "display name"       : "Amoxicillin method",
                      "filter type"        :  "discrete",
@@ -1981,10 +1967,46 @@
                           }
                        }
                     },
-                  {  "name"               : "cefotaxime",
+                  {  "name"               : "amoxicillin",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 28,
+                     "spreadsheet heading": "Amoxicillin",
+                     "display name"       : "Amoxicillin",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
+                       }
+                    },
+                  {  "name"               : "AST_method_cefotaxime",
                      "display"            : true,
                      "default"            : false,
                      "order"              : 29,
+                     "spreadsheet heading": "AST_method_Cefotaxime",
+                     "display name"       : "Cefotaxime method",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(60)",
+                          "max_length": 60,
+                          "allowed_values": [
+                           "AGAR DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "OTHER"
+                          ],
+                          "convert_case": {
+                             "case": "upper"
+                          }
+                       }
+                    },
+                  {  "name"               : "cefotaxime",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 30,
                      "spreadsheet heading": "Cefotaxime",
                      "display name"       : "Cefotaxime",
                      "filter type"        :  "discrete",
@@ -1995,12 +2017,12 @@
                           "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS or '_'"
                        }
                     },
-                  {  "name"               : "AST_method_cefotaxime",
+                  {  "name"               : "AST_method_ceftriaxone",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 30,
-                     "spreadsheet heading": "AST_method_Cefotaxime",
-                     "display name"       : "Cefotaxime method",
+                     "order"              : 31,
+                     "spreadsheet heading": "AST_method_Ceftriaxone",
+                     "display name"       : "Ceftriaxone method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2020,45 +2042,9 @@
                   {  "name"               : "ceftriaxone",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 31,
+                     "order"              : 32,
                      "spreadsheet heading": "Ceftriaxone",
                      "display name"       : "Ceftriaxone",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
-                       }
-                    },
-                  {  "name"               : "AST_method_ceftriaxone",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 32,
-                     "spreadsheet heading": "AST_method_Ceftriaxone",
-                     "display name"       : "Ceftriaxone method",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(60)",
-                          "max_length": 60,
-                          "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER"
-                          ],
-                          "convert_case": {
-                             "case": "upper"
-                          }
-                       }
-                    },
-                  {  "name"               : "cefuroxime",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 33,
-                     "spreadsheet heading": "Cefuroxime",
-                     "display name"       : "Cefuroxime",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2070,9 +2056,43 @@
                   {  "name"               : "AST_method_cefuroxime",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 34,
+                     "order"              : 33,
                      "spreadsheet heading": "AST_method_Cefuroxime",
                      "display name"       : "Cefuroxime method",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(60)",
+                          "max_length": 60,
+                          "allowed_values": [
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST"
+                          ],
+                          "convert_case": {
+                             "case": "upper"
+                          }
+                       }
+                    },
+                  {  "name"               : "cefuroxime",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 34,
+                     "spreadsheet heading": "Cefuroxime",
+                     "display name"       : "Cefuroxime",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
+                       }
+                    },
+                  {  "name"               : "AST_method_meropenem",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 35,
+                     "spreadsheet heading": "AST_method_Meropenem",
+                     "display name"       : "Meropenem method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2090,43 +2110,9 @@
                   {  "name"               : "meropenem",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 35,
+                     "order"              : 36,
                      "spreadsheet heading": "Meropenem",
                      "display name"       : "Meropenem",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
-                       }
-                    },
-                  {  "name"               : "AST_method_meropenem",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 36,
-                     "spreadsheet heading": "AST_method_Meropenem",
-                     "display name"       : "Meropenem method",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(60)",
-                          "max_length": 60,
-                          "allowed_values": [
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST"
-                          ],
-                          "convert_case": {
-                             "case": "upper"
-                          }
-                       }
-                    },
-                  {  "name"               : "erythromycin",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 37,
-                     "spreadsheet heading": "Erythromycin",
-                     "display name"       : "Erythromycin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2138,9 +2124,45 @@
                   {  "name"               : "AST_method_erythromycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 38,
+                     "order"              : 37,
                      "spreadsheet heading": "AST_method_Erythromycin",
                      "display name"       : "Erythromycin method",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(60)",
+                          "max_length": 60,
+                          "allowed_values": [
+                           "AGAR DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "OTHER"
+                          ],
+                          "convert_case": {
+                             "case": "upper"
+                          }
+                       }
+                    },
+                  {  "name"               : "erythromycin",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 38,
+                     "spreadsheet heading": "Erythromycin",
+                     "display name"       : "Erythromycin",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
+                       }
+                    },
+                  {  "name"               : "AST_method_clindamycin",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 39,
+                     "spreadsheet heading": "AST_method_Clindamycin",
+                     "display name"       : "Clindamycin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2160,7 +2182,7 @@
                   {  "name"               : "clindamycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 39,
+                     "order"              : 40,
                      "spreadsheet heading": "Clindamycin",
                      "display name"       : "Clindamycin",
                      "filter type"        :  "discrete",
@@ -2171,12 +2193,12 @@
                           "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
-                  {  "name"               : "AST_method_clindamycin",
+                  {  "name"               : "AST_method_trim_sulfa",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 40,
-                     "spreadsheet heading": "AST_method_Clindamycin",
-                     "display name"       : "Clindamycin method",
+                     "order"              : 41,
+                     "spreadsheet heading": "AST_method_Trim_Sulfa",
+                     "display name"       : "Trim/Sulfa method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2196,7 +2218,7 @@
                   {  "name"               : "trim_sulfa",
                      "default"            : false,
                      "display"            : true,
-                     "order"              : 41,
+                     "order"              : 42,
                      "spreadsheet heading": "Trim_Sulfa",
                      "display name"       : "Trim/Sulfa",
                      "filter type"        :  "discrete",
@@ -2207,12 +2229,12 @@
                           "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     },
-                  {  "name"               : "AST_method_trim_sulfa",
+                  {  "name"               : "AST_method_vancomycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 42,
-                     "spreadsheet heading": "AST_method_Trim_Sulfa",
-                     "display name"       : "Trim/Sulfa method",
+                     "order"              : 43,
+                     "spreadsheet heading": "AST_method_Vancomycin",
+                     "display name"       : "Vancomycin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2232,45 +2254,9 @@
                   {  "name"               : "vancomycin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 43,
+                     "order"              : 44,
                      "spreadsheet heading": "Vancomycin",
                      "display name"       : "Vancomycin",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
-                       }
-                    },
-                  {  "name"               : "AST_method_vancomycin",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 44,
-                     "spreadsheet heading": "AST_method_Vancomycin",
-                     "display name"       : "Vancomycin method",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(60)",
-                          "max_length": 60,
-                          "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER"
-                          ],
-                          "convert_case": {
-                             "case": "upper"
-                          }
-                       }
-                    },
-                  {  "name"               : "linezolid",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 45,
-                     "spreadsheet heading": "Linezolid",
-                     "display name"       : "Linezolid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2282,7 +2268,7 @@
                   {  "name"               : "AST_method_linezolid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 46,
+                     "order"              : 45,
                      "spreadsheet heading": "AST_method_Linezolid",
                      "display name"       : "Linezolid method",
                      "filter type"        :  "discrete",
@@ -2300,12 +2286,12 @@
                           }
                        }
                     },
-                  {  "name"               : "ciprofloxacin",
+                  {  "name"               : "linezolid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 47,
-                     "spreadsheet heading": "Ciprofloxacin",
-                     "display name"       : "Ciprofloxacin",
+                     "order"              : 46,
+                     "spreadsheet heading": "Linezolid",
+                     "display name"       : "Linezolid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2317,7 +2303,7 @@
                   {  "name"               : "AST_method_ciprofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 48,
+                     "order"              : 47,
                      "spreadsheet heading": "AST_method_Ciprofloxacin",
                      "display name"       : "Ciprofloxacin method",
                      "filter type"        :  "discrete",
@@ -2334,12 +2320,12 @@
                           }
                        }
                     },
-                  {  "name"               : "chloramphenicol",
+                  {  "name"               : "ciprofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 49,
-                     "spreadsheet heading": "Chloramphenicol",
-                     "display name"       : "Chloramphenicol",
+                     "order"              : 48,
+                     "spreadsheet heading": "Ciprofloxacin",
+                     "display name"       : "Ciprofloxacin",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2351,7 +2337,7 @@
                   {  "name"               : "AST_method_chloramphenicol",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 50,
+                     "order"              : 49,
                      "spreadsheet heading": "AST_method_Chloramphenicol",
                      "display name"       : "Chloramphenicol method",
                      "filter type"        :  "discrete",
@@ -2369,12 +2355,12 @@
                           }
                        }
                     },
-                  {  "name"               : "tetracycline",
+                  {  "name"               : "chloramphenicol",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 51,
-                     "spreadsheet heading": "Tetracycline",
-                     "display name"       : "Tetracyclined",
+                     "order"              : 50,
+                     "spreadsheet heading": "Chloramphenicol",
+                     "display name"       : "Chloramphenicol",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2386,9 +2372,45 @@
                   {  "name"               : "AST_method_tetracycline",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 52,
+                     "order"              : 51,
                      "spreadsheet heading": "AST_method_Tetracycline",
                      "display name"       : "Tetracycline method",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(60)",
+                          "max_length": 60,
+                          "allowed_values": [
+                           "AGAR DILUTION",
+                           "BROTH DILUTION",
+                           "DISC DIFFUSION",
+                           "ETEST",
+                           "OTHER"
+                          ],
+                          "convert_case": {
+                             "case": "upper"
+                          }
+                       }
+                    },
+                  {  "name"               : "tetracycline",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 52,
+                     "spreadsheet heading": "Tetracycline",
+                     "display name"       : "Tetracyclined",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
+                       }
+                    },
+                  {  "name"               : "AST_method_levofloxacin",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 53,
+                     "spreadsheet heading": "AST_method_Levofloxacin",
+                     "display name"       : "Levofloxacin method",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(60)",
@@ -2408,45 +2430,9 @@
                   {  "name"               : "levofloxacin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 53,
+                     "order"              : 54,
                      "spreadsheet heading": "Levofloxacin",
                      "display name"       : "Levofloxacin",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(30)",
-                          "max_length": 30,
-                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
-                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
-                       }
-                    },
-                  {  "name"               : "AST_method_levofloxacin",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 54,
-                     "spreadsheet heading": "AST_method_Levofloxacin",
-                     "display name"       : "Levofloxacin method",
-                     "filter type"        :  "discrete",
-                     "db": {
-                          "mysql_type": "VARCHAR(60)",
-                          "max_length": 60,
-                          "allowed_values": [
-                           "AGAR DILUTION",
-                           "BROTH DILUTION",
-                           "DISC DIFFUSION",
-                           "ETEST",
-                           "OTHER"
-                          ],
-                          "convert_case": {
-                             "case": "upper"
-                          }
-                       }
-                    },
-                  {  "name"               : "synercid",
-                     "display"            : true,
-                     "default"            : false,
-                     "order"              : 55,
-                     "spreadsheet heading": "Synercid",
-                     "display name"       : "Synercid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2458,7 +2444,7 @@
                   {  "name"               : "AST_method_synercid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 56,
+                     "order"              : 55,
                      "spreadsheet heading": "AST_method_Synercid",
                      "display name"       : "Synercid method",
                      "filter type"        :  "discrete",
@@ -2474,12 +2460,12 @@
                           }
                        }
                     },
-                  {  "name"               : "rifampin",
+                  {  "name"               : "synercid",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 57,
-                     "spreadsheet heading": "Rifampin",
-                     "display name"       : "Rifampin",
+                     "order"              : 56,
+                     "spreadsheet heading": "Synercid",
+                     "display name"       : "Synercid",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(30)",
@@ -2491,7 +2477,7 @@
                   {  "name"               : "AST_method_rifampin",
                      "display"            : true,
                      "default"            : false,
-                     "order"              : 58,
+                     "order"              : 57,
                      "spreadsheet heading": "AST_method_Rifampin",
                      "display name"       : "Rifampin method",
                      "filter type"        :  "discrete",
@@ -2506,6 +2492,20 @@
                           "convert_case": {
                              "case": "upper"
                           }
+                       }
+                    },
+                  {  "name"               : "rifampin",
+                     "display"            : true,
+                     "default"            : false,
+                     "order"              : 58,
+                     "spreadsheet heading": "Rifampin",
+                     "display name"       : "Rifampin",
+                     "filter type"        :  "discrete",
+                     "db": {
+                          "mysql_type": "VARCHAR(30)",
+                          "max_length": 30,
+                          "regex": "^(?:<|>)?(?:=)?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:mm|(?:u|µ|\u03BC|\u00B5)g\/ml)?$|^[S|I|R]{1}$|^NS$",
+                          "regex_validation_message": "should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units \"mm\" or \"µg/ml\" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS"
                        }
                     }
                ]
