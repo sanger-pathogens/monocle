@@ -1770,7 +1770,7 @@
       "upload_validation_enabled": true,
       "spreadsheet_definition": {
          "lane_id": {
-            "title": "lane_id",
+            "title": "Lane_id",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
@@ -1792,27 +1792,27 @@
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          },
          "total_length": {
-            "title": "total_length",
+            "title": "Total_length",
             "mysql_type": "DECIMAL(5,2) CHECK (total_length>=0 AND total_length<=100)",
             "max_length": 6,
             "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          },
          "No_contigs": {
-            "title": "No_contigs",
+            "title": "No_of_contigs",
             "mysql_type": "SMALLINT(5)",
             "regex": "^\\d{1,5}$",
             "regex_validation_message": "must be a 1-5 digits number (integer)"
          },
          "genome_covered": {
-            "title": "genome_covered",
+            "title": "Genome_covered",
             "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
             "max_length": 6,
             "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          },
          "depth_of_coverage": {
-            "title": "depth_of_coverage",
+            "title": "Depth_of_coverage",
             "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
             "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
             "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are needed)"
@@ -1825,7 +1825,7 @@
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          },
          "qc": {
-            "title": "qc",
+            "title": "QC",
             "mysql_type": "VARCHAR(30)",
             "max_length": 30,
             "allowed_values": [

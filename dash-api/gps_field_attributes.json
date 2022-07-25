@@ -1668,11 +1668,13 @@
             "fields": [
                {
                   "name": "lane_id",
-                  "display": false
+                  "display": false,
+                  "spreadsheet heading": "Lane_id"
                },
                {
                   "name": "supplier_name",
-                  "display": false
+                  "display": false,
+                  "spreadsheet heading": "supplier_name"
                }
             ]
          },
@@ -1685,6 +1687,7 @@
                   "default": true,
                   "order": 1,
                   "filter type": "numeric",
+                  "spreadsheet heading": "Streptococcus_pneumoniae",
                   "display name": "Streptococcus pneumoniae"
                },
                {
@@ -1692,6 +1695,7 @@
                   "display": true,
                   "default": true,
                   "order": 2,
+                  "spreadsheet heading": "Total_length",
                   "display name": "Total length"
                },
                {
@@ -1699,6 +1703,7 @@
                   "display": true,
                   "default": true,
                   "order": 3,
+                  "spreadsheet heading": "No_of_contigs",
                   "display name": "Number of contigs"
                },
                {
@@ -1706,6 +1711,7 @@
                   "display": true,
                   "default": true,
                   "order": 4,
+                  "spreadsheet heading": "Genome_covered",
                   "display name": "Genome covered"
                },
                {
@@ -1714,6 +1720,7 @@
                   "default": true,
                   "order": 5,
                   "filter type": "numeric",
+                  "spreadsheet heading": "Depth_of_coverage",
                   "display name": "Depth of coverage"
                },
                {
@@ -1721,6 +1728,7 @@
                   "display": true,
                   "default": true,
                   "order": 6,
+                  "spreadsheet heading": "Proportion_of_Het_SNPs",
                   "display name": "Proportion of Het SNPs"
                },
                {
@@ -1728,6 +1736,7 @@
                   "display": true,
                   "default": true,
                   "order": 7,
+                  "spreadsheet heading": "QC",
                   "display name": "QC"
                },
                {
@@ -1735,6 +1744,7 @@
                   "display": true,
                   "default": true,
                   "order": 8,
+                  "spreadsheet heading": "Hetsites_50bp",
                   "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)"
                }
             ]
