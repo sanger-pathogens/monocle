@@ -703,19 +703,19 @@
                   "display name": "Lane id"
                },
                {
-                  "name": "public_name",
+                  "name": "sample",
                   "display": false,
                   "order": 1,
-                  "spreadsheet heading": "Public_name",
-                  "display name": "Public name",
+                  "spreadsheet heading": "Sample",
+                  "display name": "Sanger Sample ID",
                   "filter type": "discrete"
                },
                {
-                  "name": "sample",
+                  "name": "public_name",
                   "display": false,
                   "order": 2,
-                  "spreadsheet heading": "Sanger_Sample_ID",
-                  "display name": "Sanger Sample ID",
+                  "spreadsheet heading": "Public_name",
+                  "display name": "Public name",
                   "filter type": "discrete"
                },
                {

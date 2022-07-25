@@ -785,6 +785,14 @@
             "regex": "^(?:\\d+_\\d+#\\d+)$",
             "regex_validation_message": "contains illegal characters"
          },
+         "sample": {
+            "title": "Sample",
+            "mysql_type": "VARCHAR(256) NOT NULL",
+            "mandatory": true,
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z]+)$",
+            "regex_validation_message": "must not contain illegal characters"
+         },
          "public_name": {
             "title": "Public_name",
             "mysql_type": "VARCHAR(256) NOT NULL",
@@ -792,14 +800,6 @@
             "max_length": 256,
             "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
             "regex_validation_message": "contains illegal characters"
-         },
-         "sample": {
-            "title": "Sanger_Sample_ID",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:[0-9a-zA-Z]+)$",
-            "regex_validation_message": "must not contain illegal characters"
          },
          "ERR": {
             "title": "ERR",

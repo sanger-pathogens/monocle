@@ -6,8 +6,8 @@ from dataclasses import dataclass
 @dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
-    public_name: str  # mandatory; contains illegal characters
     sample: str  # mandatory; must not contain illegal characters
+    public_name: str  # mandatory; contains illegal characters
     ERR: str  # optional; must be a ERR accession number (ERR# format)
     ERS: str  # optional; must be a ERS accession number (ERS# format)
     no_of_genome: str  # optional
