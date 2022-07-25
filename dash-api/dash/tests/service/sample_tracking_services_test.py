@@ -52,22 +52,22 @@ class MonocleSampleTrackingTest(TestCase):
     mock_samples = [
         {
             "sanger_sample_id": "fake_sample_id_1",
-            "submitting_institution_key": "FakOne",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_1",
         },
         {
             "sanger_sample_id": "fake_sample_id_2",
-            "submitting_institution_key": "FakOne",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_2",
         },
         {
             "sanger_sample_id": "fake_sample_id_3",
-            "submitting_institution_key": "FakTwo",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_3",
         },
         {
             "sanger_sample_id": "fake_sample_id_4",
-            "submitting_institution_key": "FakTwo",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_4",
         },
     ]

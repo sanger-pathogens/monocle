@@ -21,7 +21,7 @@ API_ERROR_KEY = "_ERROR"
 FORMAT_DATE = "%Y-%m-%d"
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f"{FORMAT_DATE}T%H:%M:%S%z"
-SAMPLE_TABLE_INST_KEY_COLUMN_NAME = "submitting_institution_key"
+SAMPLE_TABLE_INST_KEY_COLUMN_NAME = "submitting_institution"
 
 
 class MonocleSampleTracking:

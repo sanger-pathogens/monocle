@@ -36,16 +36,16 @@ class SampleMetadata:
         logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results)))
         samples = []
         for this_result in results:
-            if institution_keys is None or this_result["submitting_institution_key"] in institution_keys:
+            if institution_keys is None or this_result["submitting_institution"] in institution_keys:
                 # For historical reasons the following code was needed to replace the old keys
                 # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
-                # 'submitting_institution_key', respectively.
+                # 'submitting_institution', respectively.
                 # TODO  see if we can now replace this, and simply return `results`, except with
                 #       `lane_id` removed from each item in `results` (unless `exclude_lane_id`
                 #       is False)
                 this_sample = {
                     "sanger_sample_id": this_result["sanger_sample_id"],
-                    "submitting_institution_key": this_result["submitting_institution_key"],
+                    "submitting_institution": this_result["submitting_institution"],
                     "public_name": this_result["public_name"],
                 }
                 if not exclude_lane_id:
