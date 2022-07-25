@@ -417,9 +417,13 @@ components:
           $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         intro_year:
           $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
+        latitude:
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         levofloxacin:
           $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         linezolid:
+          $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
+        longitude:
           $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
         meropenem:
           $ref: file:///app/dash/interface/openapi.yml#/components/schemas/DownloadField
@@ -540,16 +544,18 @@ components:
       - AST_method_rifampin
       - rifampin
       - comments
+      - latitude
+      - longitude
+      - resolution
       - vaccine_period
       - intro_year
       - PCV_type
-      - resolution
       type: object
     GPSMetadataFieldName:
       description: Valid metadata field name
       maxLength: 256
       minLength: 1
-      pattern: ^sanger_sample_id|sample_name|public_name|study_name|submitting_institution|selection_random|continent|country|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|aroE|gdh|gki|recP|spi|xpt|ddl|AST_method_penicillin|penicillin|AST_method_amoxicillin|amoxicillin|AST_method_cefotaxime|cefotaxime|AST_method_ceftriaxone|ceftriaxone|AST_method_cefuroxime|cefuroxime|AST_method_meropenem|meropenem|AST_method_erythromycin|erythromycin|AST_method_clindamycin|clindamycin|AST_method_trim_sulfa|trim_sulfa|AST_method_vancomycin|vancomycin|AST_method_linezolid|linezolid|AST_method_ciprofloxacin|ciprofloxacin|AST_method_chloramphenicol|chloramphenicol|AST_method_tetracycline|tetracycline|AST_method_levofloxacin|levofloxacin|AST_method_synercid|synercid|AST_method_rifampin|rifampin|comments|vaccine_period|intro_year|PCV_type|resolution$
+      pattern: ^sanger_sample_id|sample_name|public_name|study_name|submitting_institution|selection_random|continent|country|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|aroE|gdh|gki|recP|spi|xpt|ddl|AST_method_penicillin|penicillin|AST_method_amoxicillin|amoxicillin|AST_method_cefotaxime|cefotaxime|AST_method_ceftriaxone|ceftriaxone|AST_method_cefuroxime|cefuroxime|AST_method_meropenem|meropenem|AST_method_erythromycin|erythromycin|AST_method_clindamycin|clindamycin|AST_method_trim_sulfa|trim_sulfa|AST_method_vancomycin|vancomycin|AST_method_linezolid|linezolid|AST_method_ciprofloxacin|ciprofloxacin|AST_method_chloramphenicol|chloramphenicol|AST_method_tetracycline|tetracycline|AST_method_levofloxacin|levofloxacin|AST_method_synercid|synercid|AST_method_rifampin|rifampin|comments|latitude|longitude|resolution|vaccine_period|intro_year|PCV_type$
       type: string
     GPSQCData:
       properties:

@@ -634,10 +634,37 @@
                   "filter type": "discrete"
                },
                {
-                  "name": "vaccine_period",
+                  "name": "latitude",
                   "display": true,
                   "default": true,
                   "order": 67,
+                  "spreadsheet heading": "Latitude",
+                  "display name": "Latitude",
+                  "filter type": "numeric"
+               },
+               {
+                  "name": "longitude",
+                  "display": true,
+                  "default": true,
+                  "order": 68,
+                  "spreadsheet heading": "Longitude",
+                  "display name": "Longitude",
+                  "filter type": "numeric"
+               },
+               {
+                  "name": "resolution",
+                  "display": true,
+                  "default": true,
+                  "order": 69,
+                  "spreadsheet heading": "Resolution",
+                  "display name": "Resolution",
+                  "filter type": "discrete"
+               },
+               {
+                  "name": "vaccine_period",
+                  "display": true,
+                  "default": true,
+                  "order": 70,
                   "spreadsheet heading": "Vaccine_period",
                   "display name": "Vaccine Period",
                   "filter type": "discrete"
@@ -646,7 +673,7 @@
                   "name": "intro_year",
                   "display": true,
                   "default": true,
-                  "order": 68,
+                  "order": 71,
                   "spreadsheet heading": "Introduction_year",
                   "display name": "Introduction Year",
                   "filter type": "discrete"
@@ -655,18 +682,9 @@
                   "name": "PCV_type",
                   "display": true,
                   "default": true,
-                  "order": 69,
+                  "order": 72,
                   "spreadsheet heading": "PCV_type",
                   "display name": "PCV_Type",
-                  "filter type": "discrete"
-               },
-               {
-                  "name": "resolution",
-                  "display": true,
-                  "default": true,
-                  "order": 70,
-                  "spreadsheet heading": "Resolution",
-                  "display name": "Resolution",
                   "filter type": "discrete"
                }
             ]

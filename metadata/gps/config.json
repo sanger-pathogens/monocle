@@ -725,6 +725,31 @@
             "mysql_type": "VARCHAR(256)",
             "max_length": 256
          },
+         "latitude": {
+            "title": "Latitude",
+            "mysql_type": "DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180)",
+            "var_type": "float",
+            "mandatory": false,
+            "max_length": 6,
+            "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
+            "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+         },
+         "longitude": {
+            "title": "Longitude",
+            "mysql_type": "DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180)",
+            "var_type": "float",
+            "mandatory": false,
+            "max_length": 6,
+            "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
+            "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+         },
+         "resolution": {
+            "title": "Resolution",
+            "mysql_type": "SMALLINT(1)",
+            "max_length": 1,
+            "regex": "^[0-2]$",
+            "regex_validation_message": "must be an integer (range 0-2)"
+         },
          "vaccine_period": {
             "title": "Vaccine_period",
             "mysql_type": "VARCHAR(30)",
@@ -745,13 +770,6 @@
             "max_length": 100,
             "regex": "^PCV\\d{1,2}$",
             "regex_validation_message": "should start with 'PCV' followed by a number"
-         },
-         "resolution": {
-            "title": "Resolution",
-            "mysql_type": "SMALLINT(1)",
-            "max_length": 1,
-            "regex": "^[0-2]$",
-            "regex_validation_message": "must be an integer (range 0-2)"
          }
       }
    },

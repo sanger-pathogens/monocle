@@ -2625,11 +2625,57 @@
                           "mysql_type": "VARCHAR(256)",
                           "max_length": 256
                        }
+                    },                    
+                  {  "name"               : "latitude",
+                      "display"            : true,
+                      "default"            : true,
+                      "order"              : 67,
+                      "spreadsheet heading": "Latitude",
+                      "display name"       : "Latitude",
+                      "filter type"        : "numeric",
+                      "db": {
+                        "mysql_type": "DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180)",
+                        "var_type": "float",
+                        "mandatory": false,
+                        "max_length": 6,
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+                        }
+                    },
+                  {  "name"               : "longitude",
+                      "display"            : true,
+                      "default"            : true,
+                      "order"              : 68,
+                      "spreadsheet heading": "Longitude",
+                      "display name"       : "Longitude",
+                      "filter type"        : "numeric",
+                      "db": {
+                        "mysql_type": "DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180)",
+                        "var_type": "float",
+                        "mandatory": false,
+                        "max_length": 6,
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+                       }
+                    },
+                   {  "name"               : "resolution",
+                      "display"            : true,
+                      "default"            : true,
+                      "order"              : 69,
+                      "spreadsheet heading": "Resolution",
+                      "display name"       : "Resolution",
+                      "filter type"        :  "discrete",
+                      "db": {
+                          "mysql_type": "SMALLINT(1)",
+                          "max_length": 1,
+                          "regex": "^[0-2]$",
+                          "regex_validation_message": "must be an integer (range 0-2)"
+                      }
                     },
                    {  "name"               : "vaccine_period",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 67,
+                      "order"              : 70,
                       "spreadsheet heading": "Vaccine_period",
                       "display name"       : "Vaccine Period",
                       "filter type"        :  "discrete",
@@ -2643,7 +2689,7 @@
                    {  "name"               : "intro_year",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 68,
+                      "order"              : 71,
                       "spreadsheet heading": "Introduction_year",
                       "display name"       : "Introduction Year",
                       "filter type"        :  "discrete",
@@ -2657,7 +2703,7 @@
                    {  "name"               : "PCV_type",
                       "display"            : true,
                       "default"            : true,
-                      "order"              : 69,
+                      "order"              : 72,
                       "spreadsheet heading": "PCV_type",
                       "display name"       : "PCV_Type",
                       "filter type"        :  "discrete",
@@ -2667,21 +2713,7 @@
                           "regex": "^PCV\\d{1,2}$",
                           "regex_validation_message": "should start with 'PCV' followed by a number"
                        }
-                    },
-                   {  "name"               : "resolution",
-                      "display"            : true,
-                      "default"            : true,
-                      "order"              : 70,
-                      "spreadsheet heading": "Resolution",
-                      "display name"       : "Resolution",
-                      "filter type"        :  "discrete",
-                      "db": {
-                          "mysql_type": "SMALLINT(1)",
-                          "max_length": 1,
-                          "regex": "^[0-2]$",
-                          "regex_validation_message": "must be an integer (range 0-2)"
-                      }
-                    }                     
+                    }
                ]
               }
           ]

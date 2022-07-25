@@ -82,10 +82,12 @@ CREATE TABLE `gps_sample` (
   `xpt` SMALLINT(3),
   `ddl` SMALLINT(3),
   `comments` VARCHAR(256),
+  `latitude` DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180),
+  `longitude` DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180),
+  `resolution` SMALLINT(1),
   `vaccine_period` VARCHAR(30),
   `intro_year` SMALLINT(4),
   `PCV_type` VARCHAR(100),
-  `resolution` SMALLINT(1),
   # END OF AUTO_GENERATED SECTION
   PRIMARY KEY (`public_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
