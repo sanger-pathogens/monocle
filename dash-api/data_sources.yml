@@ -40,7 +40,7 @@ monocle_ldap:
    openldap_config         : 'openldap-env.yaml'
    ldap_url                : 'ldap://monocle-ldap:389'
    users_obj               : 'inetOrgPerson'
-   user_group_obj          : 'posixAccount'
+   user_group_obj          : 'posixGroup'
    institution_group_obj   : 'posixGroup'
    country_names_attr      : 'memberUid'
    username_attr           : 'uid'

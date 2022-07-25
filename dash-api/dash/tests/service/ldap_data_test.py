@@ -26,7 +26,7 @@ OPENLDAP_BOOL_PARAMETERS = ["LDAP_READONLY_USER"]
 
 GROUP_OBJ_CONFIG_KEY = "user_group_obj"
 MOCK_ID = "any_string"
-MOCK_LDAP_OBJECT_CLASS = "posixAccount"
+MOCK_LDAP_OBJECT_CLASS = "posixGroup"
 MOCK_LDAP_OBJECT_ATTRIBUTE = "uid"
 MOCK_LDAP_RESULT_GROUP = (
     "cn=WelSanIns,ou=groups,dc=monocle,dc=dev,dc=pam,dc=sanger,dc=ac,dc=uk",

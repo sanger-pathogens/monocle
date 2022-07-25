@@ -27,7 +27,7 @@ mlwh_rest_api:
 monocle_ldap:
    openldap_config       : 'openldap-env.yaml'
    users_obj             : 'inetOrgPerson'
-   user_group_obj        : 'posixAccount'
+   user_group_obj        : 'posixGroup'
    institution_group_obj : 'posixGroup'
    username_attr         : 'uid'
    uid_attr              : 'uidNumber'
