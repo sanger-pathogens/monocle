@@ -1,4 +1,4 @@
-ALTER TABLE api_sample DROP FOREIGN KEY api_sample_submitting_institution_fk;
+ALTER TABLE api_sample DROP FOREIGN KEY api_sample_submitting_instituti_7e1c7c4d_fk_api_insti;
 
 DROP TABLE IF EXISTS api_institution;
 
