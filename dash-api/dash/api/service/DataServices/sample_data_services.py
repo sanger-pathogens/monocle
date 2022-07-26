@@ -583,12 +583,7 @@ class MonocleSampleData:
             inst_key_batch_date_pair["institution key"] for inst_key_batch_date_pair in inst_key_batch_date_pairs
         ]
         if not disable_public_name_fetch:
-            institution_names = [
-                institution["name"]
-                for institution_key, institution in self.get_sample_tracking_service().get_institutions().items()
-                if institution_key in institution_keys
-            ]
-            sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
+            sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_keys)
         filtered_samples = []
         sequencing_status_data = deepcopy(self.get_sample_tracking_service().get_sequencing_status())
         # lane_data is a temporary store of lane data that are needed for filters
@@ -787,10 +782,10 @@ class MonocleSampleData:
         logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
         return filtered_samples
 
-    def _get_sanger_sample_id_to_public_name_dict(self, institutions):
+    def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}
         for sample in self.get_sample_tracking_service().sample_metadata.get_samples(
-            self.current_project, institutions=institutions
+            self.current_project, institution_keys=institution_keys
         ):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
