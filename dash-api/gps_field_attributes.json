@@ -64,7 +64,7 @@
                   "display": true,
                   "default": true,
                   "order": 5,
-                  "spreadsheet heading": "Selection_Random",
+                  "spreadsheet heading": "Selection_random",
                   "display name": "Selection Random",
                   "filter type": "discrete"
                },

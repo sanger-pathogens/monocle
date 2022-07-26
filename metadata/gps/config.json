@@ -77,7 +77,7 @@
             "max_length": 256
          },
          "selection_random": {
-            "title": "Selection_Random",
+            "title": "Selection_random",
             "mysql_type": "VARCHAR(10) DEFAULT NULL",
             "max_length": 10,
             "allowed_values": [
