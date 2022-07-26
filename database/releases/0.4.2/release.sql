@@ -1,7 +1,3 @@
-# **************************************************************
-# The qc_data table.
-# **************************************************************
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -28,6 +24,8 @@ CREATE TABLE `qc_data` (
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Update the database version
+CALL update_database_version('0.4.2', 'Complete replacement of JUNO QC data fields');
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
