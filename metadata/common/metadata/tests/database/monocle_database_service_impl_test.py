@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, call, patch
 
-from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, ProtocolError
+from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
 from metadata.tests.test_data import (
     TEST_LANE_IN_SILICO_1,
     TEST_LANE_IN_SILICO_1_DICT,
@@ -61,15 +61,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 ],
             }
         }
-
-    def test_parse_response(self) -> None:
-        actual = self.under_test.parse_response(self.response_as_string, ["user_details"])
-        self.assertEqual(actual, self.response_as_dict)
-
-    def test_parse_response_incorrect(self) -> None:
-        response_as_string = '[{"Not": "a dictionary"}]'
-        with self.assertRaises(ProtocolError):
-            self.under_test.parse_response(response_as_string, ["user_details"])
 
     # basically the same as test_get_download_metadata except query is SELECT_ALL_SAMPLES_SQL
     def test_get_samples(self) -> None:

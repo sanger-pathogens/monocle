@@ -7,10 +7,7 @@
 #
 # The table names (as well as the list of columns in each table) should be read from the config.json file
 
-import json
 import logging
-import urllib.parse
-import urllib.request
 from typing import Dict, List
 
 from flask import current_app as application
@@ -24,10 +21,6 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
 
 logger = logging.getLogger()
-
-
-class ProtocolError(Exception):
-    pass
 
 
 class Connector:
@@ -49,9 +42,6 @@ class Connector:
 
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """DAO for metadata,in silico data and QC data access"""
-
-    DASHBOARD_API_USER_DETAILS_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
-    DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
 
     DELETE_ALL_SAMPLES_SQL = text("""delete from api_sample""")
 
@@ -134,58 +124,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             raise
 
         return int_val
-
-    def call_request_cookies(self, request):
-        """Wraps flask.request.cookies to make testing easier"""
-        return request.cookies
-
-    def make_request(self, endpoint, request_headers, post_data=None):
-        request_url = endpoint
-        request_data = None
-        # if POST data were passed, convert to a UTF-8 JSON string
-        if post_data is not None:
-            assert isinstance(post_data, dict) or isinstance(
-                post_data, list
-            ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__, post_data)
-            request_data = str(json.dumps(post_data))
-            logging.debug("POST data for Monocle Download API: {}".format(request_data))
-            request_data = request_data.encode("utf-8")
-        try:
-            logging.info("request to Monocle Download: {}".format(request_url))
-            http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
-            with urllib.request.urlopen(http_request) as this_response:
-                response_as_string = this_response.read().decode("utf-8")
-                logging.debug("response from Monocle Download: {}".format(response_as_string))
-        except urllib.error.HTTPError as e:
-            if 404 == e.code:
-                logging.info(
-                    "HTTP response status {} (no data found) during Monocle Download request {}".format(
-                        e.code, request_url
-                    )
-                )
-            else:
-                logging.error("HTTP status {} during Monocle Download request {}".format(e.code, request_url))
-            raise
-        return response_as_string
-
-    def parse_response(self, response_as_string, required_keys=[]):
-        results_data = json.loads(response_as_string)
-        if not isinstance(results_data, dict):
-            error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(
-                self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
-            )
-            raise ProtocolError(error_message)
-        for required_key in required_keys:
-            try:
-                results_data[required_key]
-            except KeyError:
-                error_message = (
-                    "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
-                    )
-                )
-                raise ProtocolError(error_message)
-        return results_data
 
     def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """Get sample ids where their columns' values are in specified filters"""
