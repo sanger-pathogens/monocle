@@ -53,10 +53,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     DASHBOARD_API_USER_DETAILS_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
     DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
 
-    AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
-    AUTH_TOKEN_ENCODING = "utf8"
-    AUTH_TOKEN_DELIMITER = ":"
-
     DELETE_ALL_SAMPLES_SQL = text("""delete from gps_sample""")
 
     FILTER_SAMPLES_IN_SQL = """ \
