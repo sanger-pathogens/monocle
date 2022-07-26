@@ -1,9 +1,10 @@
 import json
 import logging
 import re
+from os import environ
 from typing import List
 from urllib.error import HTTPError
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 import pandas
 from flask import current_app as application
@@ -18,6 +19,8 @@ from pandas_schema.validation import (
     TrailingWhitespaceValidation,
 )
 
+AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
+HTTP_HEADER_COOKIE_NAME = "Cookie"
 URL_DASHBOARD_API_INSTITUTIONS = "http://dash-api:5000/dashboard-api/get_institutions"
 
 logger = logging.getLogger()
@@ -167,7 +170,7 @@ class UploadHandler:
             results.append(error_text)
         return results
 
-    def load(self, file_path: str) -> List[str]:
+    def load(self, file_path: str, request) -> List[str]:
         """
         Read the spreadsheet to a pandas data frame.
         Returns a list of validation error strings [if any].
@@ -200,7 +203,7 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            self.__institutions = self._get_user_institutions()
+            self.__institutions = self._get_user_institutions(request)
             # Create a validation schema
             schema = self.create_schema()
             # Run the validation
@@ -215,14 +218,18 @@ class UploadHandler:
 
     # FIXME: remove this method and implement an LDAP service that is separate from `dash-api`: see
     # https://jira.sanger.ac.uk/browse/PIJ-248
-    def _get_user_institutions(self):
-        response = self._make_get_request(URL_DASHBOARD_API_INSTITUTIONS)
+    def _get_user_institutions(self, upstream_request):
+        response = self._make_get_request(URL_DASHBOARD_API_INSTITUTIONS, upstream_request)
         return json.loads(response).get("institutions", {}).values()
 
-    def _make_get_request(self, endpoint_url):
+    def _make_get_request(self, endpoint_url, upstream_request):
+        request = Request(endpoint_url)
+        auth_cookie_name = environ[AUTH_COOKIE_NAME_ENVIRON]
+        auth_token = upstream_request.cookies.get(auth_cookie_name)
+        request.add_header(HTTP_HEADER_COOKIE_NAME, f"{auth_cookie_name}={auth_token}")
         try:
             logger.info(f"request to dashboard API: {endpoint_url}")
-            with urlopen(endpoint_url) as response:
+            with urlopen(request) as response:
                 response_as_string = response.read().decode("utf-8")
                 logger.debug(f"response from dashboard API: {response_as_string}")
         except HTTPError as e:

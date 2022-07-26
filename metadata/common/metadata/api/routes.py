@@ -65,7 +65,7 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
     uploaded_file.save(spreadsheet_file)
 
     try:
-        validation_errors = upload_handler.load(spreadsheet_file)
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
         if len(validation_errors) > 0:
             return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
@@ -112,7 +112,7 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
     uploaded_file.save(spreadsheet_file)
 
     try:
-        validation_errors = upload_handler.load(spreadsheet_file)
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
         if len(validation_errors) > 0:
             return jsonify({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
