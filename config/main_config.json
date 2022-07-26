@@ -5607,6 +5607,7 @@
                   {
                      "name": "lane_id",
                      "display": false,
+                     "order": 1,
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
@@ -5624,7 +5625,7 @@
                      "name": "status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 2,
                      "filter type": "discrete",
                      "display name": "Overall QC status",
                      "db": {
@@ -5640,7 +5641,7 @@
                      "name": "rel_abundance_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 3,
                      "filter type": "discrete",
                      "display name": "Relative abundance QC status",
                      "db": {
@@ -5656,7 +5657,7 @@
                      "name": "contig_no_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 4,
                      "filter type": "discrete",
                      "display name": "Contig number QC status",
                      "db": {
@@ -5672,7 +5673,7 @@
                      "name": "gc_content_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 5,
                      "filter type": "discrete",
                      "display name": "GC content QC status",
                      "db": {
@@ -5688,7 +5689,7 @@
                      "name": "genome_len_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 6,
                      "filter type": "discrete",
                      "display name": "Genome length QC status",
                      "db": {
@@ -5704,7 +5705,7 @@
                      "name": "cov_depth_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 7,
                      "filter type": "discrete",
                      "display name": "Coverage depth QC status",
                      "db": {
@@ -5720,7 +5721,7 @@
                      "name": "cov_breadth_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 8,
                      "filter type": "discrete",
                      "display name": "Coverage breadth QC status",
                      "db": {
@@ -5736,7 +5737,7 @@
                      "name": "HET_SNPs_status",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 9,
                      "filter type": "discrete",
                      "display name": "HET SNPs QC status",
                      "db": {
@@ -5752,7 +5753,7 @@
                      "name": "QC_pipeline_version",
                      "display": true,
                      "default": true,
-                     "order": 1,
+                     "order": 10,
                      "filter type": "discrete",
                      "display name": "QC pipeline version",
                      "db": {
