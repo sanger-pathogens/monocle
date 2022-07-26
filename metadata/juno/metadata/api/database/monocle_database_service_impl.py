@@ -414,7 +414,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                     for k in self.config["in_silico_data"]["spreadsheet_definition"]
                 }
                 self._convert_empty_strings_to_none(params)
-                logger.debug("SQL exec oparams:\n{}".format(params))
+                logger.debug("SQL exec params:\n{}".format(params))
                 con.execute(self.INSERT_OR_UPDATE_IN_SILICO_SQL, **params)
 
         logger.info("update_lane_in_silico_data completed")
@@ -432,11 +432,13 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for qc_data in qc_data_list:
-                con.execute(
-                    self.INSERT_OR_UPDATE_QC_DATA_SQL,
-                    lane_id=self.convert_string(qc_data.lane_id),
-                    rel_abun_sa=self.convert_string(qc_data.rel_abun_sa),
-                )
+                params = {
+                    k: self.convert_string(qc_data.__dict__[k])
+                    for k in self.config["qc_data"]["spreadsheet_definition"]
+                }
+                self._convert_empty_strings_to_none(params)
+                logger.debug("SQL exec params:\n{}".format(params))
+                con.execute(self.INSERT_OR_UPDATE_QC_DATA_SQL, **params)
 
         logger.info("update_lane_qc_data completed")
 

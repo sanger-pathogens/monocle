@@ -268,29 +268,29 @@ TEST_LANE_IN_SILICO_2 = InSilicoData(**TEST_LANE_IN_SILICO_2_DICT)
 
 TEST_LANE_QC_DATA_1_DICT = dict(
     lane_id="50000_2#282",
-    status="2",
-    rel_abundance_status="3",
-    contig_no_status="4",
-    gc_content_status="5",
-    genome_len_status="6",
-    cov_depth_status="7",
-    cov_breadth_status="8",
-    HET_SNPs_status="9",
-    QC_pipeline_version="10",
+    status="PASS",
+    rel_abundance_status="PASS",
+    contig_no_status="PASS",
+    gc_content_status="PASS",
+    genome_len_status="PASS",
+    cov_depth_status="PASS",
+    cov_breadth_status="PASS",
+    HET_SNPs_status="PASS",
+    QC_pipeline_version="v1.2.3",
 )
 TEST_LANE_QC_DATA_1 = QCData(**TEST_LANE_QC_DATA_1_DICT)
 
 TEST_LANE_QC_DATA_2_DICT = dict(
     lane_id="50000_2#287",
-    status="2",
-    rel_abundance_status="3",
-    contig_no_status="4",
-    gc_content_status="5",
-    genome_len_status="6",
-    cov_depth_status="7",
-    cov_breadth_status="8",
-    HET_SNPs_status="9",
-    QC_pipeline_version="10",
+    status="PASS",
+    rel_abundance_status="PASS",
+    contig_no_status="PASS",
+    gc_content_status="PASS",
+    genome_len_status="PASS",
+    cov_depth_status="PASS",
+    cov_breadth_status="PASS",
+    HET_SNPs_status="PASS",
+    QC_pipeline_version="v1.2.3",
 )
 TEST_LANE_QC_DATA_2 = QCData(**TEST_LANE_QC_DATA_2_DICT)
 
