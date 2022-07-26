@@ -379,7 +379,12 @@ paths:
                   institutions:
                     type: object
                     additionalProperties:
-                      $ref: "#/components/schemas/Institution"
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        name:
+                          $ref: "#/components/schemas/InstitutionName"
         "403":
           description: "Authorization information is missing or invalid."
 
