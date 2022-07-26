@@ -2,6 +2,8 @@ import logging
 
 from dash.api.service.DataSources.ldap_data import LdapData, LdapDataError
 
+UTF_8 = "utf-8"
+
 
 class InstitutionData(LdapData):
     def __init__(self, set_up=True):
@@ -26,15 +28,15 @@ class InstitutionData(LdapData):
             institution_ldap_data = self._get_all_institution_ldap_data_regardless_of_user_membership()
             for this_institution_ldap_data in institution_ldap_data:
                 institution = {}
-                countries = this_institution_ldap_data.get("memberUid")
+                countries = list(map(self._decode_byte_string, this_institution_ldap_data.get("memberUid", [])))
                 if not countries:
                     logging.warning(
-                        f"institution {this_institution_ldap_data['description']} has no specified countries"
+                        f"institution {self._decode_byte_string(this_institution_ldap_data['description'][0])} has no specified countries"
                     )
                 else:
                     institution["countries"] = countries
-                institution["key"] = this_institution_ldap_data["cn"]
-                institution["name"] = this_institution_ldap_data["description"]
+                institution["key"] = self._decode_byte_string(this_institution_ldap_data["cn"][0])
+                institution["name"] = self._decode_byte_string(this_institution_ldap_data["description"][0])
                 institutions.append(institution)
         except KeyError as err:
             error_message = f"Retrieving institution LDAP data: {err}"
@@ -51,7 +53,10 @@ class InstitutionData(LdapData):
 
     def _get_all_institution_attribute_values_regardless_of_user_membership(self, attribute):
         institution_ldap_data = self._get_all_institution_ldap_data_regardless_of_user_membership()
-        return [this_institution_ldap_data[attribute] for this_institution_ldap_data in institution_ldap_data]
+        return [
+            self._decode_byte_string(this_institution_ldap_data[attribute][0])
+            for this_institution_ldap_data in institution_ldap_data
+        ]
 
     def _get_all_institution_ldap_data_regardless_of_user_membership(self):
         if self.ldap_filter_string_institutions is None:
@@ -74,3 +79,6 @@ class InstitutionData(LdapData):
         logging.debug(f"institutions retrieved from LDAP: {institution_data}")
 
         return institution_data
+
+    def _decode_byte_string(self, byte_string):
+        return byte_string.decode(UTF_8)
