@@ -380,7 +380,7 @@ class UpdateMetadataFiles:
             new_md5 = hashlib.md5(open(field_attributes_file, "rb").read()).hexdigest()
             if old_md5 != new_md5:
                 logging.critical(
-                    f"ATTENTION: File {field_attributes_file} has changed, you might have to update LOCAL_STORAGE_KEY_COLUMNS_STATE in frontend/src/lib/constants.js"
+                    f"ATTENTION: File {field_attributes_file} has changed, you might have to update SESSION_STORAGE_KEY_COLUMNS_STATE in frontend/src/lib/constants.js"
                 )
 
     def update_config_section(self, c, mc):

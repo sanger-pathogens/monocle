@@ -4,6 +4,7 @@
 
 <script>
   import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js";
+  import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
 
   let username;
   let password;
@@ -20,7 +21,9 @@
     logIn(username, password, fetch)
       .then((response) => {
         if (response.redirected) {
-          // We don't use SvelteKit's `goto` here to force `__layout` to re-fetch user deatils after the login.
+          clearSessionStorage();
+          // Below we redirect by `window.location` reassignment instead of using SvelteKit's `goto()`
+          // because we need to force `__layout` component to re-render to re-fetch project and user deatils after the login.
           window.location.href = response.url;
         }
       })
@@ -42,6 +45,12 @@
         password: passwordParam,
       }),
     });
+  }
+
+  function clearSessionStorage() {
+    if (sessionStorageAvailable()) {
+      sessionStorage.clear();
+    }
   }
 </script>
 
