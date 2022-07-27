@@ -55,19 +55,21 @@ paths:
   /qc-data-upload:
     post:
       operationId: metadata.api.routes.update_qc_data_route
-      summary: "Update QC data"
+      summary: "Upload a new tab-delimited file of QC data"
       requestBody:
-        description: "A list of dictionaries of QC data"
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/QCDataUpdates"
+              $ref: "#/components/schemas/Spreadsheet"
       responses:
         "200":
-          description: "The update succeeded"
+          description: "The upload succeeded"
         "400":
-          description: "The update request was not valid."
+          description: "The file has not passed validation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrors"
           
   /download:
     post:
@@ -363,30 +365,6 @@ components:
         spreadsheet:
           type: string
           format: binary
-
-    QCDataUpdates:
-      description: "A list of dictionaries of QC data"
-      type: array
-      items:
-        $ref: "#/components/schemas/QCDataInput"
-      
-    QCDataInput:
-      description: "QC data update for a single lane"
-      type: object
-      required:
-        - lane_id
-      example: {"lane_id": "39214_1#341", "rel_abun_sa": 80.74}
-      properties:
-        lane_id:
-          type: string
-          minLength: 3
-          maxLength: 16
-          pattern: ^[0-9_#]+$
-        rel_abun_sa:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 100
     
     ValidationErrors:
       description: "Error response"
