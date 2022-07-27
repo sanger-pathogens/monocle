@@ -9,13 +9,33 @@ from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1,
 class TestRoutes(unittest.TestCase):
     """Test class for the routes module"""
 
-    # FIXME this upload test is inadequate
     @patch("metadata.api.routes.os")
     @patch("connexion.request")
     @patch("metadata.api.upload_handlers.UploadMetadataHandler")
     def test_update_sample_metadata_route(self, mock_upload_handler, mock_connexion_request, mock_os):
         http_status = update_sample_metadata_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_sample_metadata_route_reject_missing_file(
+        self, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_connexion_request.files = {}
+        http_status = update_sample_metadata_route([], mock_upload_handler)
+        self.assertEqual(http_status, ("Missing spreadsheet file", 400))
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_sample_metadata_route_reject_bad_file_extension(
+        self, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.is_valid_file_type.return_value = False
+        http_status = update_sample_metadata_route([], mock_upload_handler)
+        self.assertIn("must be one of the following formats", http_status[0])
+        self.assertEqual(http_status[1], 400)
 
     # FIXME this upload test is inadequate
     @patch("metadata.api.routes.os")
@@ -28,7 +48,7 @@ class TestRoutes(unittest.TestCase):
     # FIXME this upload test is inadequate
     @patch("metadata.api.routes.os")
     @patch("connexion.request")
-    @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
+    @patch("metadata.api.upload_handlers.UploadQCDataHandler")
     def test_update_qc_data_route(self, mock_upload_handler, mock_connexion_request, mock_os):
         http_status = update_qc_data_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)

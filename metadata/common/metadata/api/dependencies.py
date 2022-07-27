@@ -12,7 +12,7 @@ from metadata.api.database.monocle_database_service import MonocleDatabaseServic
 from metadata.api.database.monocle_database_service_impl import Connector, MonocleDatabaseServiceImpl
 from metadata.api.database.monocle_database_service_noop_impl import MonocleDatabaseServiceNoOpImpl
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
-from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler
+from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler, UploadQCDataHandler
 
 logger = logging.getLogger()
 
@@ -60,6 +60,18 @@ class MetadataApiModule(Module):
             metadata_dao, read_spreadsheet_definition_config(config["in_silico_data"]), do_validation
         )
         return upload_in_silico_handler
+
+    @provider
+    def upload_qc_data_handler(self, config: Config, metadata_dao: MonocleDatabaseService) -> UploadQCDataHandler:
+        do_validation = False
+        try:
+            do_validation = config["qc_data"]["upload_validation_enabled"]
+        except KeyError:
+            pass
+        upload_qc_data_handler = UploadQCDataHandler(
+            metadata_dao, read_spreadsheet_definition_config(config["qc_data"]), do_validation
+        )
+        return upload_qc_data_handler
 
     @provider
     def download_metadata_handler(

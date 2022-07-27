@@ -31,14 +31,10 @@ def convert_to_json(samples):
 @inject
 def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """Upload a spreadsheet to the database"""
-    try:
-        uploaded_file = connexion.request.files["spreadsheet"]
-        if not uploaded_file:
-            raise KeyError("No upload spreadsheet file found")
-    except KeyError:
-        logger.error("Missing upload spreadsheet file in request")
-        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
 
+    uploaded_file = _get_uploaded_spreadsheet()
+    if uploaded_file is None:
+        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
     # when True, checks file names for extensions
@@ -48,20 +44,11 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
     upload_handler.file_delimiter = ","
 
     # Check the extension...
-    if not upload_handler.is_valid_file_type(uploaded_file.filename):
-        logger.error(
-            "Upload file {} does not have a valid extension, expected one of {}".format(
-                uploaded_file.filename, upload_handler.allowed_file_types()
-            )
-        )
-        return (
-            "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types()),
-            HTTP_BAD_REQUEST_STATUS,
-        )
+    fail_message = _uploaded_spreadsheet_bad_file_type(upload_handler, uploaded_file)
+    if fail_message:
+        return (fail_message, HTTP_BAD_REQUEST_STATUS)
 
-    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
-    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
-    uploaded_file.save(spreadsheet_file)
+    spreadsheet_file = _save_spreadsheet(uploaded_file)
 
     try:
         validation_errors = upload_handler.load(spreadsheet_file)
@@ -73,6 +60,39 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
         os.remove(spreadsheet_file)
 
     return HTTP_SUCCEEDED_STATUS
+
+
+def _get_uploaded_spreadsheet():
+    # returns uploaded spreadsheet file, or None if missing
+    try:
+        uploaded_file = connexion.request.files["spreadsheet"]
+        if not uploaded_file:
+            raise KeyError("No upload spreadsheet file found")
+    except KeyError:
+        logger.error("Missing upload spreadsheet file in request")
+        return None
+    return uploaded_file
+
+
+def _uploaded_spreadsheet_bad_file_type(upload_handler, uploaded_file):
+    # check file type, and return message if there's a problem; None if OK
+    type_is_ok = upload_handler.is_valid_file_type(uploaded_file.filename)
+    if not type_is_ok:
+        logger.error(
+            "Upload file {} does not have a valid extension, expected one of {}".format(
+                uploaded_file.filename, upload_handler.allowed_file_types()
+            )
+        )
+        return "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types())
+    return None
+
+
+def _save_spreadsheet(uploaded_file):
+    # save uplooaded spreadsheet to /tmp and return path
+    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
+    uploaded_file.save(spreadsheet_file)
+    return spreadsheet_file
 
 
 @inject
