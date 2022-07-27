@@ -21,7 +21,7 @@ from pandas_schema.validation import (
 
 AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
 HTTP_HEADER_COOKIE_NAME = "Cookie"
-URL_DASHBOARD_API_INSTITUTIONS = "http://dash-api:5000/dashboard-api/get_institutions"
+URL_DASHBOARD_API_USER_DETAILS = "http://dash-api:5000/dashboard-api/get_user_details"
 
 logger = logging.getLogger()
 
@@ -118,7 +118,7 @@ class UploadHandler:
 
             # Special cases for checking institutions/countries...
             if column == "submitting_institution":
-                validators.append(InListValidation([institution["db_key"] for institution in self.__institutions]))
+                validators.append(InListValidation([institution["inst_id"] for institution in self.__institutions]))
             if column == "country":
                 for institution in self.__institutions:
                     validators.append(InListValidation([country for country in institution["country_names"]]))
@@ -219,8 +219,8 @@ class UploadHandler:
     # FIXME: remove this method and implement an LDAP service that is separate from `dash-api`: see
     # https://jira.sanger.ac.uk/browse/PIJ-248
     def _get_user_institutions(self, upstream_request):
-        response = self._make_get_request(URL_DASHBOARD_API_INSTITUTIONS, upstream_request)
-        return json.loads(response).get("institutions", {}).values()
+        response = self._make_get_request(URL_DASHBOARD_API_USER_DETAILS, upstream_request)
+        return json.loads(response).get("user_details", {}).get("memberOf", [])
 
     def _make_get_request(self, endpoint_url, upstream_request):
         request = Request(endpoint_url)

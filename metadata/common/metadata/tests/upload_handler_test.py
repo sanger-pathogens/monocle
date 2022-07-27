@@ -18,8 +18,8 @@ from metadata.tests.test_data import (
     TEST_UPLOAD_SAMPLE_5,
 )
 
-RESPONSE_STRING_INSTITUTIONS = (
-    b'{"institutions": {"TesInsA": {"db_key": "TesInsA", "country_names": ["TestCountryA", "TestCountryB"]}}}'
+RESPONSE_STRING_USER_DETAILS = (
+    b'{"user_details": {"memberOf": [{"inst_id": "TesInsA", "country_names": ["TestCountryA", "TestCountryB"]}]}}'
 )
 
 
@@ -94,7 +94,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_csv_load_with_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -114,7 +114,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_tsv_load_with_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TSV_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0], request_mock
@@ -128,7 +128,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_txt_load_with_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TXT_SPREADSHEET_WITH_VALIDATION_ERRORS, recursive=True)[0], request_mock
@@ -142,7 +142,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_no_extension_load_with_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -162,7 +162,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_csv_load_with_no_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -182,7 +182,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_tsv_load_with_no_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TSV_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0], request_mock
@@ -196,7 +196,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_txt_load_with_no_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TXT_SPREADSHEET_WITH_NO_ERRORS, recursive=True)[0], request_mock
@@ -210,7 +210,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_no_extension_load_with_no_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -230,7 +230,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_parse_metadata(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -269,7 +269,7 @@ class TestUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_store_metadata(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
         previous_check_file_extension_value = self.under_test.check_file_extension
         previous_file_delimiter = self.under_test.file_delimiter
         self.under_test.check_file_extension = False
@@ -337,7 +337,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_txt_load_with_no_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TXT_WITH_NO_ERRORS, recursive=True)[0], request_mock
@@ -351,7 +351,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
     @patch.object(flask, "request")
     def test_txt_load_with_validation_errors(self, request_mock, urlopen_mock) -> None:
         request_mock.cookies.return_value = {}
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_INSTITUTIONS
+        urlopen_mock.return_value.__enter__.return_value.read.return_value = RESPONSE_STRING_USER_DETAILS
 
         validation_errors = self.under_test.load(
             glob.glob(self.TEST_TXT_WITH_VALIDATION_ERRORS, recursive=True)[0], request_mock
