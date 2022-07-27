@@ -850,8 +850,7 @@
                },
                {
                   "name": "Continent",
-                  "display": true,
-                  "default": false,
+                  "display": false,
                   "order": 18,
                   "spreadsheet heading": "Continent",
                   "display name": "Continent",
