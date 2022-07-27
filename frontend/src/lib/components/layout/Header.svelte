@@ -23,12 +23,9 @@
       {#each $session.project.header_links as { label, url } (`${label}${url}`)}
         <a href={url} target="_blank">{label}</a>
       {/each}
-    {:else}
-      <!-- FIXME use CSS instead to keep the logout link to the right when the project info is still loading -->
-      <span aria-hidden="true" class="juno-link" />
     {/if}
     {#if browser && location && !location.pathname.includes(PATHNAME_LOGIN)}
-      <a rel="external" href="/logout" class="login-out-link"> Log out </a>
+      <a rel="external" href="/logout" class="logout-link"> Log out </a>
     {/if}
   </nav>
 </header>
@@ -39,7 +36,6 @@
     overflow-y: auto;
     padding: 1rem 1.2rem;
     position: relative;
-    min-height: 4rem;
     max-width: 100%;
   }
 
@@ -64,16 +60,21 @@
     align-items: center;
     flex-wrap: wrap;
     margin: auto;
+    min-height: 4.2rem;
     max-width: var(--bp-xl);
     min-width: 65rem;
   }
 
-  .login-out-link {
+  .logout-link {
     position: sticky;
     right: 0;
     background: var(--juno-purple);
     box-shadow: 0 0.3rem 1rem 1.4rem var(--juno-purple);
     margin-left: 1rem;
+  }
+  .logout-link:only-child {
+    /* Keep the logout link rigthmost before project links and logo are loaded: */
+    margin-left: auto;
   }
 
   nav a {
@@ -114,6 +115,7 @@
 
     nav {
       min-width: 37rem;
+      min-height: 3.8rem;
     }
     nav a {
       padding-left: 0.4rem;

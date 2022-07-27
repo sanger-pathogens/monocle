@@ -25,7 +25,7 @@ const FILTER_TYPE_NONE = "none";
   }
 ```
 */
-// IMPORTANT: when changing `columnsStore`, increment `$lib/constants/LOCAL_STORAGE_KEY_COLUMNS_STATE`.
+// IMPORTANT: when changing `columnsStore`, increment `$lib/constants/SESSION_STORAGE_KEY_COLUMNS_STATE`.
 function createColumnsStore() {
   const { set, update, subscribe } = writable();
 
