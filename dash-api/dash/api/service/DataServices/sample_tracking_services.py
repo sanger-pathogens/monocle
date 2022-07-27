@@ -201,9 +201,7 @@ class MonocleSampleTracking:
                 samples[this_institution_key].append(this_sample)
             except KeyError:
                 logging.info(
-                    "samples excluded because {} is not in current user's institutions list".format(
-                        this_sample[SAMPLE_TABLE_INST_KEY_COLUMN_NAME]
-                    )
+                    f"samples excluded because {this_institution_key} is not in current user's institutions list"
                 )
         self.samples_data = samples
         return self.samples_data
