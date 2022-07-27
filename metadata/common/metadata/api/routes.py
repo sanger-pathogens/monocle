@@ -9,8 +9,7 @@ from flask import jsonify, request
 from injector import inject
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
-from metadata.api.model.qc_data import QCData
-from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler
+from metadata.api.upload_handlers import UploadInSilicoHandler, UploadMetadataHandler, UploadQCDataHandler
 
 logger = logging.getLogger()
 
@@ -114,7 +113,7 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
     try:
         validation_errors = upload_handler.load(spreadsheet_file)
         if len(validation_errors) > 0:
-            return jsonify({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
             upload_handler.store()
     finally:
@@ -124,23 +123,50 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
 
 
 @inject
-def update_qc_data_route(body: list, dao: MonocleDatabaseService):
+def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
     """Upload a QC data to the database"""
     try:
-        qc_data_updates = []
-        for update in body:
-            qc_data_updates.append(QCData(lane_id=update["lane_id"], rel_abun_sa=update.get("rel_abun_sa", None)))
-        if qc_data_updates:
-            dao.update_lane_qc_data(qc_data_updates)
-        return HTTP_SUCCEEDED_STATUS
+        uploaded_file = connexion.request.files["spreadsheet"]
+        if not uploaded_file:
+            raise KeyError("No upload spreadsheet file found")
+    except KeyError:
+        logger.error("Missing upload spreadsheet file in request")
+        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
 
-    except KeyError as e:
-        logging.error(
-            "{}\nQC data is missing required value: this should have been blocked by the OpenAPI spec. for this endpoint!".format(
-                e
+    logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
+
+    # do NOT check these file names for extensions
+    upload_handler.check_file_extension = True
+
+    # Set the file delimiter
+    upload_handler.file_delimiter = "\t"
+
+    # Check the extension...
+    if not upload_handler.is_valid_file_type(uploaded_file.filename):
+        logger.error(
+            "Upload file {} does not have a valid extension, expected one of {}".format(
+                uploaded_file.filename, upload_handler.allowed_file_types()
             )
         )
-        return "Invalid arguments provided", HTTP_BAD_REQUEST_STATUS
+        return (
+            "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types()),
+            HTTP_BAD_REQUEST_STATUS,
+        )
+
+    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
+    uploaded_file.save(spreadsheet_file)
+
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file)
+        if len(validation_errors) > 0:
+            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+        else:
+            upload_handler.store()
+    finally:
+        os.remove(spreadsheet_file)
+
+    return HTTP_SUCCEEDED_STATUS
 
 
 @inject

@@ -2,8 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 import metadata.api.routes as mar
-from metadata.api.model.qc_data import QCData
-from metadata.api.routes import update_in_silico_data_route, update_sample_metadata_route
+from metadata.api.routes import update_in_silico_data_route, update_qc_data_route, update_sample_metadata_route
 from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_SAMPLE_1
 
 
@@ -26,40 +25,13 @@ class TestRoutes(unittest.TestCase):
         http_status = update_in_silico_data_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route(self, db_update_mock):
-        mock_qc_data = TEST_LANE_QC_DATA_1
-        mock_update = {"lane_id": mock_qc_data.lane_id, "rel_abun_sa": mock_qc_data.rel_abun_sa}
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
-        db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
+    # FIXME this upload test is inadequate
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
+    def test_update_qc_data_route(self, mock_upload_handler, mock_connexion_request, mock_os):
+        http_status = update_qc_data_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_no_updates_ok(self, db_update_mock):
-        under_test = mar.update_qc_data_route([], db_update_mock)
-        self.assertEqual(db_update_mock.update_lane_qc_data.call_count, 0)
-        self.assertEqual(under_test, 200)
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_no_rel_abun_sa(self, db_update_mock):
-        mock_qc_data = QCData(lane_id=TEST_LANE_QC_DATA_1.lane_id, rel_abun_sa=None)
-        mock_update = {"lane_id": mock_qc_data.lane_id}
-
-        mar.update_qc_data_route([mock_update], db_update_mock)
-
-        db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_missing_lane_id_rejected(self, db_update_mock):
-        mock_update = {"rel_abun_sa": TEST_LANE_QC_DATA_1.rel_abun_sa}
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
-        self.assertEqual(http_status[1], 400)
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_not_valid_rejected(self, db_update_mock):
-        mock_update = {}
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
-        self.assertEqual(http_status[1], 400)
 
     @patch("metadata.api.download_handlers.DownloadMetadataHandler")
     @patch("metadata.api.routes.convert_to_json")
