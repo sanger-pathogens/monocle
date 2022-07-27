@@ -27,7 +27,7 @@ BULK_DOWNLOAD_ZIP_EXPIRY="7"
 BULK_DOWNLOAD_JSON_GLOB="*.json"
 BULK_DOWNLOAD_JSON_EXPIRY="30"
 
-WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_juno_web_root/downloads/"
+WEB_DOWNLOAD_LINK_DIR="${SERVICE_INSTALL_DIR}/monocle_web_root/downloads/"
 # These are only symlinks so no space issues.
 # Note these provide password-less downloads (by design, to enable sharing)
 # they shouldn't be left indefinitely.
