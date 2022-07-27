@@ -355,15 +355,33 @@ class MonocleSampleTrackingTest(TestCase):
         sample_data = self.monocle_sample_tracking.get_samples()
         self.assertEqual(self.expected_sample_data, sample_data)
 
+    @patch.object(SampleMetadata, "get_samples")
+    def test_get_samples_does_not_crash_on_unauthorised_user_institution(self, mock_db_sample_query):
+        mem_samples = self.monocle_sample_tracking.samples_data
+        self.monocle_sample_tracking.samples_data = None
+        mock_db_sample_query.return_value = [
+            dict(self.mock_samples[0]),
+            {
+                "sanger_sample_id": "fake_sample_id_2",
+                "submitting_institution": "SECRET_INSTITUTION",
+                "public_name": f"{PUBLIC_NAME}_2",
+            },
+        ]
+
+        try:
+            self.monocle_sample_tracking.get_samples()
+        except KeyError:
+            self.fail("`get_samples` should not fail on institutions that aren't in user institutions")
+        finally:
+            self.monocle_sample_tracking.samples_data = mem_samples
+
     def test_get_sequencing_status(self):
         seq_status_data = self.monocle_sample_tracking.get_sequencing_status()
 
         self.assertEqual(self.expected_seq_status, seq_status_data)
 
-    @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
-    def test_get_sequencing_status_droppout(self, get_multiple_samples_mock, mock_db_sample_query):
-        mock_db_sample_query.return_value = self.mock_samples
+    def test_get_sequencing_status_droppout(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
             "/nowhere", "404", "page could not be found", "yes", "no"
         )
