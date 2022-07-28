@@ -4,11 +4,17 @@ import urllib.parse
 import urllib.request
 
 import yaml
+from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
 
 # run test metadata api server with:
 #
 # IMAGE=gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-metadata:unstable
 # docker run -p 8080:80 -v`pwd`/dash/my.cnf:/app/my.cnf -v`pwd`/metadata/juno/config.json:/app/config.json --env ENABLE_SWAGGER_UI=true --rm ${IMAGE}
+
+COLUMN_NAME_SUBMITTING_INSTITUTION = "Submitting_Institution"
+DICT_KEY_NAME = "name"
+DICT_KEY_SUBMITTING_INSTITUTION = "submitting_institution"
+DICT_KEY_VALUE = "value"
 
 
 class MetadataDownload:
@@ -20,6 +26,7 @@ class MetadataDownload:
 
     def set_up(self):
         self.download_client = MonocleDownloadClient()
+        self._institutions = None
 
     def get_metadata(self, project, lane_id_list):
         logging.debug("{}.get_metadata() called with {}".format(__class__.__name__, lane_id_list))
@@ -29,7 +36,7 @@ class MetadataDownload:
         ), "MonocleDownloadClient.metadata() was expected to return a list, not {}".format(type(results_list))
         logging.debug("{}.get_metadata() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__, len(results_list)))
-        return results_list
+        return self._in_place_replace_submitting_institution_keys_with_names(results_list)
 
     def get_in_silico_data(self, project, lane_id_list):
         logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__, lane_id_list))
@@ -52,6 +59,33 @@ class MetadataDownload:
             logging.debug("{}.get_qc_data() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_iqc_data() got {} result(s)".format(__class__.__name__, len(results_list)))
         return results_list
+
+    def _in_place_replace_submitting_institution_keys_with_names(self, metadata):
+        if len(metadata) == 0:
+            return metadata
+
+        if self._institutions is None:
+            self._institutions = MonocleSampleTracking().get_institutions()
+        for sample in metadata:
+            try:
+                submitting_institution_cell = sample[DICT_KEY_SUBMITTING_INSTITUTION]
+                submitting_institution_key = submitting_institution_cell[DICT_KEY_VALUE]
+                submitting_institution_cell[DICT_KEY_VALUE] = self._institutions[submitting_institution_key][
+                    DICT_KEY_NAME
+                ]
+            except KeyError as e:
+                if DICT_KEY_SUBMITTING_INSTITUTION in str(e):
+                    logging.warning(
+                        f"Sample w/ Sanger ID {sample['sanger_sample_id']['value']} doesn't have a submitting institution assossiated w/ it."
+                    )
+                elif "submitting_institution_key" in locals() and submitting_institution_key in str(e):
+                    logging.warning(
+                        f"Institution {submitting_institution_key} isn't in the institution list returned by the sample tracking service."
+                    )
+                else:
+                    raise
+
+        return metadata
 
 
 class ProtocolError(Exception):

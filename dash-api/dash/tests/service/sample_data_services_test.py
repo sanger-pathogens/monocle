@@ -571,6 +571,7 @@ class MonocleSampleDataTest(TestCase):
         # mock metadata_download
         self.monocle_data.current_project = self.mock_project_id
         self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
+        self.monocle_data.metadata_download_source._institutions = {}
         self.monocle_data.metadata_download_source.download_client = MonocleDownloadClient(set_up=False)
         self.monocle_data.metadata_download_source.download_client.set_up(self.test_config)
         # load mock data
