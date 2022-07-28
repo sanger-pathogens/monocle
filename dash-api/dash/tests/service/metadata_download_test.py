@@ -4,7 +4,7 @@ import urllib.request
 from unittest import TestCase
 from unittest.mock import patch
 
-from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client, ProtocolError
+from DataSources.metadata_download import MetadataDownload, MonocleDownloadClient, ProtocolError
 
 logging.basicConfig(format="%(asctime)-15s %(levelname)s:  %(message)s", level="CRITICAL")
 
@@ -312,32 +312,32 @@ class MetadataDownloadTest(TestCase):
 
     def setUp(self):
         self.download = MetadataDownload(set_up=False)
-        self.download.dl_client = Monocle_Download_Client(set_up=False)
-        self.download.dl_client.set_up(self.test_config)
+        self.download.download_client = MonocleDownloadClient(set_up=False)
+        self.download.download_client.set_up(self.test_config)
 
     def test_init(self):
         self.assertIsInstance(self.download, MetadataDownload)
-        self.assertIsInstance(self.download.dl_client, Monocle_Download_Client)
+        self.assertIsInstance(self.download.download_client, MonocleDownloadClient)
 
     def test_init_values(self):
-        self.assertRegex(self.download.dl_client.config[self.mock_project]["base_url"], self.base_url_regex)
-        self.assertRegex(self.download.dl_client.config[self.mock_project]["swagger"], self.endpoint_regex)
-        self.assertRegex(self.download.dl_client.config[self.mock_project]["download"], self.endpoint_regex)
-        self.assertIsInstance(self.download.dl_client.config[self.mock_project]["metadata_key"], type("a string"))
+        self.assertRegex(self.download.download_client.config[self.mock_project]["base_url"], self.base_url_regex)
+        self.assertRegex(self.download.download_client.config[self.mock_project]["swagger"], self.endpoint_regex)
+        self.assertRegex(self.download.download_client.config[self.mock_project]["download"], self.endpoint_regex)
+        self.assertIsInstance(self.download.download_client.config[self.mock_project]["metadata_key"], type("a string"))
 
     def test_reject_bad_config(self):
         with self.assertRaises(KeyError):
-            doomed = Monocle_Download_Client(set_up=False)
+            doomed = MonocleDownloadClient(set_up=False)
             doomed.set_up(self.bad_config)
 
     def test_missing_config(self):
         with self.assertRaises(FileNotFoundError):
-            doomed = Monocle_Download_Client(set_up=False)
+            doomed = MonocleDownloadClient(set_up=False)
             doomed.set_up("no_such_config.yml")
 
     def test_reject_bad_url(self):
         with self.assertRaises(urllib.error.URLError):
-            doomed = Monocle_Download_Client(set_up=False)
+            doomed = MonocleDownloadClient(set_up=False)
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.bad_api_host
             endpoint = doomed.config[self.mock_project]["download"] + self.mock_download_param[0]
@@ -345,13 +345,13 @@ class MetadataDownloadTest(TestCase):
 
     def test_reject_bad_endpoint(self):
         with self.assertRaises(urllib.error.URLError):
-            doomed = Monocle_Download_Client(set_up=False)
+            doomed = MonocleDownloadClient(set_up=False)
             doomed.set_up(self.test_config)
             doomed.config[self.mock_project]["base_url"] = self.genuine_api_host
             endpoint = self.bad_api_endpoint + self.mock_download_param[0]
             doomed.make_request("http://fake-container" + endpoint)
 
-    @patch.object(Monocle_Download_Client, "make_request")
+    @patch.object(MonocleDownloadClient, "make_request")
     def test_download_metadata(self, mock_request):
         mock_request.return_value = self.mock_metadata_download
         lanes = self.download.get_metadata(self.mock_project, self.mock_download_param)
@@ -367,13 +367,13 @@ class MetadataDownloadTest(TestCase):
         # check data are correct
         self.assertEqual(this_lane, self.expected_metadata, msg="returned metadata differ from expected metadata")
 
-    @patch.object(Monocle_Download_Client, "make_request")
+    @patch.object(MonocleDownloadClient, "make_request")
     def test_reject_bad_download_metadata_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_download
             self.download.get_metadata(self.mock_project, self.mock_download_param[0])
 
-    @patch.object(Monocle_Download_Client, "make_request")
+    @patch.object(MonocleDownloadClient, "make_request")
     def test_download_in_silico_data(self, mock_request):
         mock_request.return_value = self.mock_in_silico_data_download
         lanes = self.download.get_in_silico_data(self.mock_project, self.mock_download_param)
@@ -392,7 +392,7 @@ class MetadataDownloadTest(TestCase):
             this_lane, self.expected_in_silico_data, msg="returned in silico data differ from expected data"
         )
 
-    @patch.object(Monocle_Download_Client, "make_request")
+    @patch.object(MonocleDownloadClient, "make_request")
     def test_download_qc_data(self, mock_request):
         mock_request.return_value = self.mock_qc_data_download
         lanes = self.download.get_qc_data(self.mock_project, self.mock_download_param)
@@ -409,7 +409,7 @@ class MetadataDownloadTest(TestCase):
         self.maxDiff = None
         self.assertEqual(this_lane, self.expected_qc_data, msg="returned QC data differ from expected data")
 
-    @patch.object(Monocle_Download_Client, "make_request")
+    @patch.object(MonocleDownloadClient, "make_request")
     def test_reject_bad_download_qc_data_response(self, mock_request):
         with self.assertRaises(ProtocolError):
             mock_request.return_value = self.mock_bad_download

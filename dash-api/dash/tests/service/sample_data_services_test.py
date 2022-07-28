@@ -14,7 +14,7 @@ from DataServices.sample_data_services import (
 )
 from DataServices.sample_tracking_services import MonocleSampleTracking
 from DataSources.institution_data import InstitutionData
-from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client
+from DataSources.metadata_download import MetadataDownload, MonocleDownloadClient
 from DataSources.pipeline_status import PipelineStatus
 from DataSources.sample_metadata import MonocleClient, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
@@ -571,8 +571,8 @@ class MonocleSampleDataTest(TestCase):
         # mock metadata_download
         self.monocle_data.current_project = self.mock_project_id
         self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
-        self.monocle_data.metadata_download_source.dl_client = Monocle_Download_Client(set_up=False)
-        self.monocle_data.metadata_download_source.dl_client.set_up(self.test_config)
+        self.monocle_data.metadata_download_source.download_client = MonocleDownloadClient(set_up=False)
+        self.monocle_data.metadata_download_source.download_client.set_up(self.test_config)
         # load mock data
         self.get_mock_data()
 
@@ -722,7 +722,7 @@ class MonocleSampleDataTest(TestCase):
             bulk_download_info,
         )
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
@@ -757,9 +757,9 @@ class MonocleSampleDataTest(TestCase):
     @patch.object(MonocleClient, "distinct_values")
     @patch.object(MonocleClient, "distinct_in_silico_values")
     @patch.object(MonocleSampleData, "get_filtered_samples")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_distinct_values_with_sample_filters(
         self,
         mock_metadata_fetch,
@@ -790,7 +790,7 @@ class MonocleSampleDataTest(TestCase):
 
     @patch.object(MonocleClient, "distinct_values")
     @patch.object(MonocleClient, "distinct_in_silico_values")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_distinct_values_with_sample_filters_catch_error(
         self, mock_metadata_fetch, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch
     ):
@@ -823,8 +823,8 @@ class MonocleSampleDataTest(TestCase):
         with self.assertRaises(HTTPError):
             self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
@@ -838,9 +838,9 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata)
 
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico_and_qc_data(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch
     ):
@@ -857,7 +857,7 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico_qc, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata_plus_in_silico_qc, filtered_samples_metadata)
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should filter the response to include
@@ -884,8 +884,8 @@ class MonocleSampleDataTest(TestCase):
         )
         self.assertIsNone(filtered_samples_metadata_plus_in_silico_and_qc)
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_start_row_out_of_range_ok(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should gracefully handle a start_row parameter that
@@ -902,7 +902,7 @@ class MonocleSampleDataTest(TestCase):
         )
         self.assertIsNone(filtered_samples_metadata_plus_in_silico)
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should gracefully handle num_rows parameter that
@@ -926,8 +926,8 @@ class MonocleSampleDataTest(TestCase):
                 {"batches": self.inst_key_batch_date_pairs}, metadata_columns=["public_name"], start_row=2
             )
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico_filtered_columns(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         mock_metadata_fetch.return_value = deepcopy(self.mock_metadata)  # work on a copy, as metadata will be modified
         mock_in_silico_data_fetch.return_value = deepcopy(
@@ -1173,9 +1173,9 @@ class MonocleSampleDataTest(TestCase):
             monocle_data_with_bad_config.get_bulk_download_max_samples_per_zip()
 
     @patch.object(MonocleSampleData, "make_download_symlink")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch, mock_make_symlink
     ):
@@ -1204,9 +1204,9 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download_not_found, metadata_download))
         self.assertEqual(self.expected_metadata_download_not_found, metadata_download)
 
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download_reject_missing_institution(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch
     ):
@@ -1221,9 +1221,9 @@ class MonocleSampleDataTest(TestCase):
         self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
     @patch.object(MonocleSampleData, "make_download_symlink")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download_error_response(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch, mock_make_symlink
     ):
