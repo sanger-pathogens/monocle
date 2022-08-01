@@ -32,112 +32,51 @@ def convert_to_json(samples):
 def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """Upload a spreadsheet to the database"""
 
-    uploaded_file = _get_uploaded_spreadsheet()
+    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
     if uploaded_file is None:
         return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
-    # when True, checks file names for extensions
     upload_handler.check_file_extension = False
-
-    # Set the file delimiter
     upload_handler.file_delimiter = ","
 
     # Check the extension...
-    fail_message = _uploaded_spreadsheet_bad_file_type(upload_handler, uploaded_file)
-    if fail_message:
+    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
+    if not file_type_ok:
         return (fail_message, HTTP_BAD_REQUEST_STATUS)
 
     spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    try:
-        validation_errors = upload_handler.load(spreadsheet_file)
-        if len(validation_errors) > 0:
-            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-        else:
-            upload_handler.store()
-    finally:
-        os.remove(spreadsheet_file)
+    # Validate ans (if passes) store
+    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
+    if not stored_ok:
+        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
 
     return HTTP_SUCCEEDED_STATUS
-
-
-def _get_uploaded_spreadsheet():
-    # returns uploaded spreadsheet file, or None if missing
-    try:
-        uploaded_file = connexion.request.files["spreadsheet"]
-        if not uploaded_file:
-            raise KeyError("No upload spreadsheet file found")
-    except KeyError:
-        logger.error("Missing upload spreadsheet file in request")
-        return None
-    return uploaded_file
-
-
-def _uploaded_spreadsheet_bad_file_type(upload_handler, uploaded_file):
-    # check file type, and return message if there's a problem; None if OK
-    type_is_ok = upload_handler.is_valid_file_type(uploaded_file.filename)
-    if not type_is_ok:
-        logger.error(
-            "Upload file {} does not have a valid extension, expected one of {}".format(
-                uploaded_file.filename, upload_handler.allowed_file_types()
-            )
-        )
-        return "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types())
-    return None
-
-
-def _save_spreadsheet(uploaded_file):
-    # save uplooaded spreadsheet to /tmp and return path
-    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
-    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
-    uploaded_file.save(spreadsheet_file)
-    return spreadsheet_file
 
 
 @inject
 def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
     """Upload a in silico data to the database"""
-    try:
-        uploaded_file = connexion.request.files["spreadsheet"]
-        if not uploaded_file:
-            raise KeyError("No upload spreadsheet file found")
-    except KeyError:
-        logger.error("Missing upload spreadsheet file in request")
+    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
+    if uploaded_file is None:
         return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
-
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
-    # do NOT check these file names for extensions
     upload_handler.check_file_extension = True
-
-    # Set the file delimiter
     upload_handler.file_delimiter = "\t"
 
     # Check the extension...
-    if not upload_handler.is_valid_file_type(uploaded_file.filename):
-        logger.error(
-            "Upload file {} does not have a valid extension, expected one of {}".format(
-                uploaded_file.filename, upload_handler.allowed_file_types()
-            )
-        )
-        return (
-            "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types()),
-            HTTP_BAD_REQUEST_STATUS,
-        )
+    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
+    if not file_type_ok:
+        return (fail_message, HTTP_BAD_REQUEST_STATUS)
 
-    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
-    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
-    uploaded_file.save(spreadsheet_file)
+    spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    try:
-        validation_errors = upload_handler.load(spreadsheet_file)
-        if len(validation_errors) > 0:
-            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-        else:
-            upload_handler.store()
-    finally:
-        os.remove(spreadsheet_file)
+    # Validate ans (if passes) store
+    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
+    if not stored_ok:
+        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
 
     return HTTP_SUCCEEDED_STATUS
 
@@ -145,46 +84,25 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
 @inject
 def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
     """Upload a QC data to the database"""
-    try:
-        uploaded_file = connexion.request.files["spreadsheet"]
-        if not uploaded_file:
-            raise KeyError("No upload spreadsheet file found")
-    except KeyError:
-        logger.error("Missing upload spreadsheet file in request")
+    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
+    if uploaded_file is None:
         return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
-
     logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
 
-    # do NOT check these file names for extensions
     upload_handler.check_file_extension = True
-
-    # Set the file delimiter
     upload_handler.file_delimiter = "\t"
 
     # Check the extension...
-    if not upload_handler.is_valid_file_type(uploaded_file.filename):
-        logger.error(
-            "Upload file {} does not have a valid extension, expected one of {}".format(
-                uploaded_file.filename, upload_handler.allowed_file_types()
-            )
-        )
-        return (
-            "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types()),
-            HTTP_BAD_REQUEST_STATUS,
-        )
+    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
+    if not file_type_ok:
+        return (fail_message, HTTP_BAD_REQUEST_STATUS)
 
-    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
-    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
-    uploaded_file.save(spreadsheet_file)
+    spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    try:
-        validation_errors = upload_handler.load(spreadsheet_file)
-        if len(validation_errors) > 0:
-            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-        else:
-            upload_handler.store()
-    finally:
-        os.remove(spreadsheet_file)
+    # Validate ans (if passes) store
+    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
+    if not stored_ok:
+        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
 
     return HTTP_SUCCEEDED_STATUS
 
@@ -380,6 +298,65 @@ def get_institutions(dao: MonocleDatabaseService):
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
+
+
+def _get_uploaded_spreadsheet(file_name_param):
+    # returns uploaded spreadsheet file, or None if missing
+    try:
+        uploaded_file = connexion.request.files[file_name_param]
+        if not uploaded_file:
+            raise KeyError("No upload spreadsheet file found")
+    except KeyError:
+        logger.error("Missing upload spreadsheet file in request")
+        return None
+    return uploaded_file
+
+
+def _check_spreadsheet_file_type(upload_handler, uploaded_file):
+    # check file type
+    # return tuple:  flag if file type is OK, and (possibly blank) error message
+    type_is_ok = upload_handler.is_valid_file_type(uploaded_file.filename)
+    if type_is_ok:
+        file_type_ok = True
+        message = ""
+    else:
+        logger.error(
+            "Upload file {} does not have a valid extension, expected one of {}".format(
+                uploaded_file.filename, upload_handler.allowed_file_types()
+            )
+        )
+        file_type_ok = False
+        message = "The upload file must be one of the following formats: {}".format(upload_handler.allowed_file_types())
+    return (file_type_ok, message)
+
+
+def _save_spreadsheet(uploaded_file):
+    # save uplooaded spreadsheet to /tmp and return path
+    spreadsheet_file = "/tmp/{}-{}".format(str(uuid.uuid4()), uploaded_file.filename)
+    logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
+    uploaded_file.save(spreadsheet_file)
+    return spreadsheet_file
+
+
+def _store_spreadsheet(upload_handler, spreadsheet_file):
+    # validate spreadsheet and (if it passes) store it
+    # return tuple: flag indicating if the file was stored, and return value of the upload handler's load() method
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file)
+        if len(validation_errors) > 0:
+            stored_ok = False
+        else:
+            stored_ok = True
+            # valid => store
+            upload_handler.store()
+    except Exception as e:
+        # don't add this message to validation_errors, because those
+        # messages are presented to the user
+        logger.error("Failed to load uploaded spreadsheet: {}".format(e))
+        stored_ok = False
+    finally:
+        os.remove(spreadsheet_file)
+    return (stored_ok, validation_errors)
 
 
 def _get_distinct_values_common(field_type, fields, institutions, dao):
