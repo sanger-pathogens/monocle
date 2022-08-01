@@ -1,8 +1,8 @@
-export function localStorageAvailable() {
+export function sessionStorageAvailable() {
   try {
     const x = "__storage_test";
-    localStorage.setItem(x, x);
-    localStorage.removeItem(x);
+    sessionStorage.setItem(x, x);
+    sessionStorage.removeItem(x);
     return true;
   } catch (e) {
     return false;
