@@ -317,8 +317,8 @@
                      "display": true,
                      "default": true,
                      "order": 11,
-                     "spreadsheet heading": "Submitting_Institution",
-                     "display name": "Submitting Institution",
+                     "spreadsheet heading": "Submitting_Institution_Key",
+                     "display name": "Submitting Institution Key",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
@@ -1516,8 +1516,8 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 11,
-                     "spreadsheet heading": "Submitting_institution",
-                     "display name"       : "Submitting Institution",
+                     "spreadsheet heading": "Submitting_Institution_Key",
+                     "display name"       : "Submitting Institution Key",
                      "filter type"        :  "discrete",
                      "db": {
                           "mysql_type": "VARCHAR(256) NOT NULL",

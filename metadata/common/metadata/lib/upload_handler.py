@@ -1,10 +1,13 @@
+import json
 import logging
 import re
+from os import environ
 from typing import List
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 import pandas
 from flask import current_app as application
-from flask import request
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.spreadsheet_definition import SpreadsheetDefinition
 from pandas_schema import Column, Schema
@@ -15,6 +18,10 @@ from pandas_schema.validation import (
     MatchesPatternValidation,
     TrailingWhitespaceValidation,
 )
+
+AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
+HTTP_HEADER_COOKIE_NAME = "Cookie"
+URL_DASHBOARD_API_USER_DETAILS = "http://dash-api:5000/dashboard-api/get_user_details"
 
 logger = logging.getLogger()
 
@@ -111,9 +118,10 @@ class UploadHandler:
 
             # Special cases for checking institutions/countries...
             if column == "submitting_institution":
-                validators.append(InListValidation([i.name for i in self.__institutions]))
+                validators.append(InListValidation([institution["inst_id"] for institution in self.__institutions]))
             if column == "country":
-                validators.append(InListValidation([i.country for i in self.__institutions]))
+                for institution in self.__institutions:
+                    validators.append(InListValidation([country for country in institution["country_names"]]))
             else:
                 # Regex validation
                 if self.__spreadsheet_def.get_regex(column):
@@ -162,7 +170,7 @@ class UploadHandler:
             results.append(error_text)
         return results
 
-    def load(self, file_path: str) -> List[str]:
+    def load(self, file_path: str, request) -> List[str]:
         """
         Read the spreadsheet to a pandas data frame.
         Returns a list of validation error strings [if any].
@@ -195,7 +203,7 @@ class UploadHandler:
 
         if self.__do_validation:
             # Get a list of valid institutions and cache them
-            self.__institutions = self.__dao.get_institutions(request)
+            self.__institutions = self._get_user_institutions(request)
             # Create a validation schema
             schema = self.create_schema()
             # Run the validation
@@ -207,3 +215,30 @@ class UploadHandler:
 
         self.__df = pandas.DataFrame(data)
         return errors
+
+    # FIXME: remove this method and implement an LDAP service that is separate from `dash-api`: see
+    # https://jira.sanger.ac.uk/browse/PIJ-248
+    def _get_user_institutions(self, upstream_request):
+        response = self._make_get_request(URL_DASHBOARD_API_USER_DETAILS, upstream_request)
+        return json.loads(response).get("user_details", {}).get("memberOf", [])
+
+    def _make_get_request(self, endpoint_url, upstream_request):
+        request = Request(endpoint_url)
+        auth_cookie_name = environ[AUTH_COOKIE_NAME_ENVIRON]
+        auth_token = upstream_request.cookies.get(auth_cookie_name)
+        request.add_header(HTTP_HEADER_COOKIE_NAME, f"{auth_cookie_name}={auth_token}")
+        try:
+            logger.info(f"request to dashboard API: {endpoint_url}")
+            with urlopen(request) as response:
+                response_as_string = response.read().decode("utf-8")
+                logger.debug(f"response from dashboard API: {response_as_string}")
+        except HTTPError as e:
+            msg = f"HTTP error during dashboard API request {endpoint_url}: {e.code} {e.read().decode('utf-8')}"
+            if "404" in str(e):
+                logger.info(msg)
+                response_as_string = "{}"
+            else:
+                logger.error(msg)
+                raise
+
+        return response_as_string

@@ -5,7 +5,7 @@ import DataSources.user_data
 
 class MonocleAuthentication:
     """
-    Provides a wrapper for classes that provide authntication functions
+    Provides a wrapper for classes that provide authentication functions
     """
 
     def __init__(self):

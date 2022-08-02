@@ -277,7 +277,7 @@ class UpdateMetadataFiles:
         return f"{self.root_path}/{relative_path}"
 
     def update_all(self, main_config_file, metadata_tests_project):
-        """Runs updates on all metadata files."""
+        """Update all metadata files."""
         main_config_path = self.abs_path(main_config_file)
         logging.info("Updating all config files from {}".format(main_config_path))
         self.update_from_main_config(main_config_path)

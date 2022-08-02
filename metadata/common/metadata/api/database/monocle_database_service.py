@@ -1,20 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-from flask import request
 from metadata.api.model.in_silico_data import InSilicoData
-from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
 
 
 class MonocleDatabaseService(ABC):
     """Base class for metadata access"""
-
-    @abstractmethod
-    def get_institution_names(self) -> List[Institution]:
-        """Return a list of institutions, names only"""
-        pass
 
     @abstractmethod
     def get_samples(self) -> List[Metadata]:
@@ -34,11 +27,6 @@ class MonocleDatabaseService(ABC):
     @abstractmethod
     def get_distinct_values(self, fields: list) -> Dict:
         """Return a distinct values found in db for each field name passed"""
-        pass
-
-    @abstractmethod
-    def get_institutions(self, req_obj: request) -> List[Institution]:
-        """Return a list of institutions"""
         pass
 
     @abstractmethod

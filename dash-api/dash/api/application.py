@@ -2,9 +2,9 @@ import logging.config
 import os
 
 import connexion
-from dash.api.error_handlers import handle_unauthorised, handle_user_data_error
+from dash.api.error_handlers import handle_ldap_data_error, handle_unauthorised
 from dash.api.exceptions import NotAuthorisedException
-from dash.api.service.DataSources.user_data import UserDataError
+from dash.api.service.DataSources.ldap_data import LdapDataError
 
 # from flask_cors import CORS
 
@@ -42,7 +42,7 @@ def create_application():
 
     # Add error handlers
     app_handle.add_error_handler(NotAuthorisedException, handle_unauthorised)
-    app_handle.add_error_handler(UserDataError, handle_user_data_error)
+    app_handle.add_error_handler(LdapDataError, handle_ldap_data_error)
 
     # Turn off automatic ordering of JSON keys
     app_handle.app.config["JSON_SORT_KEYS"] = False

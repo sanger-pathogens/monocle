@@ -7,7 +7,7 @@ from metadata.api.model.qc_data import QCData
 TEST_SAMPLE_1_DICT = dict(
     sanger_sample_id="9999STDY8113123",
     lane_id="2000_2#10",
-    submitting_institution="UniversityA",
+    submitting_institution="UniA",
     supplier_sample_name="SUPPLIER_1",
     public_name="PUB_NAME_1",
     host_status="CARRIAGE",
@@ -72,7 +72,7 @@ TEST_SAMPLE_1 = Metadata(**TEST_SAMPLE_1_DICT)
 TEST_SAMPLE_2_DICT = dict(
     sanger_sample_id="9999STDY8113124",
     lane_id="2000_2#11",
-    submitting_institution="UniversityB",
+    submitting_institution="UniB",
     supplier_sample_name="SUPPLIER_2",
     public_name="PUB_NAME_2",
     host_status="INVASIVE",
@@ -282,7 +282,7 @@ TEST_LANE_QC_DATA_2 = QCData(**TEST_LANE_QC_DATA_2_DICT)
 TEST_UPLOAD_SAMPLE_1_DICT = dict(
     sanger_sample_id="1000STDY7000166",
     lane_id="50000_2#282",
-    submitting_institution="Test Institution A",
+    submitting_institution="TesInsA",
     supplier_sample_name="EY70425",
     public_name="CD_XX_EW00001",
     host_status="invasive disease",
@@ -345,7 +345,7 @@ TEST_UPLOAD_SAMPLE_1_DICT = dict(
 TEST_UPLOAD_SAMPLE_2_DICT = dict(
     sanger_sample_id="1000STDY7000167",
     lane_id="50000_2#287",
-    submitting_institution="Test Institution A",
+    submitting_institution="TesInsA",
     supplier_sample_name="EY_70601",
     public_name="CD_XX_EW00002",
     host_status="invasive disease",
@@ -408,7 +408,7 @@ TEST_UPLOAD_SAMPLE_2_DICT = dict(
 TEST_UPLOAD_SAMPLE_3_DICT = dict(
     sanger_sample_id="1000STDY7000168",
     lane_id="50000_2#291",
-    submitting_institution="Test Institution A",
+    submitting_institution="TesInsA",
     supplier_sample_name="EY_70602",
     public_name="CD_XX_EW00003",
     host_status="invasive disease",
@@ -471,7 +471,7 @@ TEST_UPLOAD_SAMPLE_3_DICT = dict(
 TEST_UPLOAD_SAMPLE_4_DICT = dict(
     sanger_sample_id="1000STDY7000169",
     lane_id="50000_2#296",
-    submitting_institution="Test Institution A",
+    submitting_institution="TesInsA",
     supplier_sample_name="EY70603",
     public_name="CD_XX_EW00004",
     host_status="carriage",
@@ -534,7 +534,7 @@ TEST_UPLOAD_SAMPLE_4_DICT = dict(
 TEST_UPLOAD_SAMPLE_5_DICT = dict(
     sanger_sample_id="1000STDY7000171",
     lane_id="50000_2#298",
-    submitting_institution="Test Institution A",
+    submitting_institution="TesInsA",
     supplier_sample_name="EY70603",
     public_name="CD_XX_EW00006",
     host_status="carriage",
@@ -612,7 +612,7 @@ EXPECTED_VALIDATION_ERRORS = [
     '{row: 19, column: "Study_Reference"}: "PMID: 1, PMID: 223" must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789',
     '{row: 23, column: "Selection_Random"}: "INVALID" is not in the list of legal options (yes, no)',
     '{row: 24, column: "Country"}: "UNKNOWNCOUNTRY" is not in the list of legal options (TestCountryA, TestCountryB)',
-    '{row: 29, column: "Submitting_Institution"}: "UNKNOWN" is not in the list of legal options (Test Institution A, Test Institution B)',
+    '{row: 29, column: "Submitting_Institution_Key"}: "UNKNOWN" is not in the list of legal options (TesInsA)',
     '{row: 30, column: "Collection_year"}: "1" must be a YYYY format year',
     '{row: 31, column: "Collection_year"}: "AB" must be a YYYY format year',
     '{row: 32, column: "Collection_month"}: "200" must be a MM format month',

@@ -7,18 +7,13 @@
 #
 # The table names (as well as the list of columns in each table) should be read from the config.json file
 
-import json
 import logging
-import os
-import urllib.parse
-import urllib.request
 from typing import Dict, List
 
 from flask import current_app as application
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
-from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
 from sqlalchemy import create_engine
@@ -26,10 +21,6 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import text
 
 logger = logging.getLogger()
-
-
-class ProtocolError(Exception):
-    pass
 
 
 class Connector:
@@ -52,28 +43,7 @@ class Connector:
 class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     """DAO for metadata,in silico data and QC data access"""
 
-    DASHBOARD_API_USER_DETAILS_ENDPOINT = "http://dash-api:5000/dashboard-api/get_user_details"
-    DASHBOARD_API_SWAGGER = "http://dash-api:5000/dashboard-api/ui/"
-
-    AUTH_COOKIE_NAME_ENVIRON = "AUTH_COOKIE_NAME"
-    AUTH_TOKEN_ENCODING = "utf8"
-    AUTH_TOKEN_DELIMITER = ":"
-
     DELETE_ALL_SAMPLES_SQL = text("""delete from gps_sample""")
-
-    SELECT_INSTITUTIONS_SQL = text(
-        """ \
-                SELECT name, country, latitude, longitude
-                FROM api_institution
-                ORDER BY name"""
-    )
-
-    SELECT_INSTITUTION_NAMES_SQL = text(
-        """ \
-                SELECT name
-                FROM api_institution
-                ORDER BY name"""
-    )
 
     FILTER_SAMPLES_IN_SQL = """ \
             SELECT sanger_sample_id FROM gps_sample WHERE {} IN :values"""
@@ -159,95 +129,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return int_val
 
-    def call_request_cookies(self, request):
-        """Wraps flask.request.cookies to make testing easier"""
-        return request.cookies
-
-    def make_request(self, endpoint, request_headers, post_data=None):
-        request_url = endpoint
-        request_data = None
-        # if POST data were passed, convert to a UTF-8 JSON string
-        if post_data is not None:
-            assert isinstance(post_data, dict) or isinstance(
-                post_data, list
-            ), "{}.make_request() requires post_data as a dict or a list, not {}".format(__class__.__name__, post_data)
-            request_data = str(json.dumps(post_data))
-            logging.debug("POST data for Monocle Download API: {}".format(request_data))
-            request_data = request_data.encode("utf-8")
-        try:
-            logging.info("request to Monocle Download: {}".format(request_url))
-            http_request = urllib.request.Request(request_url, data=request_data, headers=request_headers)
-            with urllib.request.urlopen(http_request) as this_response:
-                response_as_string = this_response.read().decode("utf-8")
-                logging.debug("response from Monocle Download: {}".format(response_as_string))
-        except urllib.error.HTTPError as e:
-            if 404 == e.code:
-                logging.info(
-                    "HTTP response status {} (no data found) during Monocle Download request {}".format(
-                        e.code, request_url
-                    )
-                )
-            else:
-                logging.error("HTTP status {} during Monocle Download request {}".format(e.code, request_url))
-            raise
-        return response_as_string
-
-    def parse_response(self, response_as_string, required_keys=[]):
-        results_data = json.loads(response_as_string)
-        if not isinstance(results_data, dict):
-            error_message = "request to '{}' did not return a dict as expected (see API documentation at {})".format(
-                self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
-            )
-            raise ProtocolError(error_message)
-        for required_key in required_keys:
-            try:
-                results_data[required_key]
-            except KeyError:
-                error_message = (
-                    "response data did not contain the expected key '{}' (see API documentation at {})".format(
-                        self.DASHBOARD_API_USER_DETAILS_ENDPOINT, self.DASHBOARD_API_SWAGGER
-                    )
-                )
-                raise ProtocolError(error_message)
-        return results_data
-
-    def get_institutions(self, req_obj) -> List[Institution]:
-        """
-        Gets user record (based on auth cookie) and extarcts list of institution this user is a member of.
-        *IMPORTANT* the auth cookie is trusted here:
-        authentication and authorisation MUST be done by NGINX before this route is accessed!
-        Returns the list of institutions.
-        """
-        endpoint = self.DASHBOARD_API_USER_DETAILS_ENDPOINT
-        auth_cookie_name = os.environ[self.AUTH_COOKIE_NAME_ENVIRON]
-        auth_token = self.call_request_cookies(req_obj).get(auth_cookie_name)
-        request_headers = {
-            "Content-type": "application/json;charset=utf-8",
-            "Cookie": "{}={}".format(auth_cookie_name, auth_token),
-        }
-        logging.debug("{}.get_institutions() using endpoint {}".format(__class__.__name__, endpoint))
-        response_as_string = self.make_request(endpoint, request_headers)
-        logging.debug("{}.get_institutions() returned {}".format(__class__.__name__, response_as_string))
-        results_as_dict = self.parse_response(response_as_string, required_keys=["user_details"])
-
-        results = []
-        for item in results_as_dict["user_details"]["memberOf"]:
-            for country_name in item["country_names"]:
-                results.append(Institution(item["inst_name"], country_name))
-
-        return results
-
-    def get_institution_names(self) -> List[Institution]:
-        """Returns a list of all instiution names from database"""
-        results = []
-        with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_INSTITUTIONS_SQL)
-
-        for row in rs:
-            results.append(row["name"])
-
-        return results
-
     def get_samples_filtered_by_metadata(self, filters: dict) -> List:
         """Get sample ids where their columns' values are in specified filters"""
         # TODO: Also consider other filters such as greater than/less than...
@@ -318,7 +199,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """
         Return distinct values found in db for each field name passed,
-        from samples from certain instititons.
+        from samples from certain institutions.
         Pass the field type ('metadata', 'in silico' or 'qc data');
         a list of names of the fields of interest; and a list of institution
         names.
