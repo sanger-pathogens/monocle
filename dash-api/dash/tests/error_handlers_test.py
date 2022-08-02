@@ -1,7 +1,7 @@
 import unittest
 
-from dash.api.error_handlers import handle_unauthorised
-from dash.api.exceptions import NotAuthorisedException
+from dash.api.error_handlers import handle_ldap_data_error, handle_unauthorised
+from dash.api.exceptions import LdapDataError, NotAuthorisedException
 
 
 class TestErrorHandlers(unittest.TestCase):
@@ -11,8 +11,6 @@ class TestErrorHandlers(unittest.TestCase):
         resp = handle_unauthorised(NotAuthorisedException())
         self.assertEqual(resp.status_code, 403)
 
-    def test_handle_user_data_error(self):
-        # TODO The package for this exception needs sorting out
-        # resp = handle_user_data_error()
-        # self.assertEqual(resp.status_code, 403)
-        pass
+    def test_handle_ldap_data_error(self):
+        resp = handle_ldap_data_error(LdapDataError())
+        self.assertEqual(resp.status_code, 403)

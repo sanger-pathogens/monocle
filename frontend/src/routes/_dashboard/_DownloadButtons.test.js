@@ -3,7 +3,7 @@ import { render } from "@testing-library/svelte";
 import { getContext } from "svelte";
 import DownloadButtons from "./_DownloadButtons.svelte";
 
-const INSTITUTION = "Shulgin Academy";
+const INSTITUTION = "ShuAca";
 const NUM_DONE = 9;
 const ROLE_BUTTON = "button";
 

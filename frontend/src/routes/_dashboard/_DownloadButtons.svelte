@@ -7,13 +7,13 @@
   export let isPipeline = false;
   export let style = "";
 
-  const INSTITUTION_NAME = getContext("institutionName");
+  const INSTITUTION_KEY = getContext("institutionKey");
   const PANE_TYPE = isPipeline ? "pipeline" : "sequencing";
   const URL_FAIL = encodeURI(
-    `/download/${INSTITUTION_NAME}/${PANE_TYPE}/failed`
+    `/download/${INSTITUTION_KEY}/${PANE_TYPE}/failed`
   );
   const URL_SUCCESS = encodeURI(
-    `/download/${INSTITUTION_NAME}/${PANE_TYPE}/successful`
+    `/download/${INSTITUTION_KEY}/${PANE_TYPE}/successful`
   );
 
   const onlyFailedButton = !succeeded;

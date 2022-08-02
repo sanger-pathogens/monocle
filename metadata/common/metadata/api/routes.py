@@ -5,7 +5,7 @@ import uuid
 
 import connexion
 from flask import current_app as application
-from flask import jsonify, request
+from flask import jsonify
 from injector import inject
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.download_handlers import DownloadInSilicoHandler, DownloadMetadataHandler, DownloadQCDataHandler
@@ -65,7 +65,7 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
     uploaded_file.save(spreadsheet_file)
 
     try:
-        validation_errors = upload_handler.load(spreadsheet_file)
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
         if len(validation_errors) > 0:
             return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
@@ -112,7 +112,7 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
     uploaded_file.save(spreadsheet_file)
 
     try:
-        validation_errors = upload_handler.load(spreadsheet_file)
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
         if len(validation_errors) > 0:
             return jsonify({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
         else:
@@ -208,19 +208,6 @@ def delete_all_qc_data_route(dao: MonocleDatabaseService):
     """Delete all QC data to the database"""
     dao.delete_all_qc_data()
     return HTTP_SUCCEEDED_STATUS
-
-
-@inject
-def get_institution_names_route(dao: MonocleDatabaseService):
-    """Download all institution names from the database"""
-    institutions = dao.get_institution_names()
-
-    result = convert_to_json({"institutions": institutions})
-
-    if len(institutions) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
 
 
 @inject
@@ -322,18 +309,6 @@ def get_project_information(dao: MonocleDatabaseService):
     project_links = application.config["project_links"]
     result = convert_to_json({"project": project_links})
     return result, HTTP_SUCCEEDED_STATUS
-
-
-@inject
-def get_institutions(dao: MonocleDatabaseService):
-    institutions = dao.get_institutions(request)
-
-    result = convert_to_json({"institutions": institutions})
-
-    if len(institutions) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
 
 
 def _get_distinct_values_common(field_type, fields, institutions, dao):
