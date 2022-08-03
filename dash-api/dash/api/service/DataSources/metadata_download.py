@@ -75,11 +75,11 @@ class MetadataDownload:
                 ]
             except KeyError as e:
                 if DICT_KEY_SUBMITTING_INSTITUTION in str(e):
-                    logging.warning(
+                    logging.error(
                         f"Sample w/ Sanger ID {sample['sanger_sample_id']['value']} doesn't have a submitting institution assossiated w/ it."
                     )
                 elif "submitting_institution_key" in locals() and submitting_institution_key in str(e):
-                    logging.warning(
+                    logging.error(
                         f"Institution {submitting_institution_key} isn't in the institution list returned by the sample tracking service."
                     )
                 else:
