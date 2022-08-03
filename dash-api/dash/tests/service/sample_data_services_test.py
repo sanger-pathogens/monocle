@@ -859,7 +859,6 @@ class MonocleSampleDataTest(TestCase):
             ],
         }
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_distinct_values_metadata))
-        print(expected_distinct_values_metadata)
         self.assertEqual(expected_distinct_values_metadata, actual_distinct_values[0])
 
         self.monocle_data.metadata_download_source._institutions = {}
