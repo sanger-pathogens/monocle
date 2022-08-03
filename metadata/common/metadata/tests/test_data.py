@@ -268,29 +268,13 @@ TEST_LANE_IN_SILICO_2 = InSilicoData(**TEST_LANE_IN_SILICO_2_DICT)
 
 TEST_LANE_QC_DATA_1_DICT = dict(
     lane_id="50000_2#282",
-    status="PASS",
-    rel_abundance_status="PASS",
-    contig_no_status="PASS",
-    gc_content_status="PASS",
-    genome_len_status="PASS",
-    cov_depth_status="PASS",
-    cov_breadth_status="PASS",
-    HET_SNPs_status="PASS",
-    QC_pipeline_version="v1.2.3",
+    rel_abun_sa="93.21",
 )
 TEST_LANE_QC_DATA_1 = QCData(**TEST_LANE_QC_DATA_1_DICT)
 
 TEST_LANE_QC_DATA_2_DICT = dict(
     lane_id="50000_2#287",
-    status="PASS",
-    rel_abundance_status="PASS",
-    contig_no_status="PASS",
-    gc_content_status="PASS",
-    genome_len_status="PASS",
-    cov_depth_status="PASS",
-    cov_breadth_status="PASS",
-    HET_SNPs_status="PASS",
-    QC_pipeline_version="v1.2.3",
+    rel_abun_sa="68.58",
 )
 TEST_LANE_QC_DATA_2 = QCData(**TEST_LANE_QC_DATA_2_DICT)
 

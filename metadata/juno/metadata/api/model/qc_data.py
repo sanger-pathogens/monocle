@@ -6,12 +6,4 @@ from dataclasses import dataclass
 @dataclass
 class QCData:
     lane_id: str  # mandatory; contains illegal characters
-    status: str  # optional
-    rel_abundance_status: str  # optional
-    contig_no_status: str  # optional
-    gc_content_status: str  # optional
-    genome_len_status: str  # optional
-    cov_depth_status: str  # optional
-    cov_breadth_status: str  # optional
-    HET_SNPs_status: str  # optional
-    QC_pipeline_version: str  # mandatory; Must be of the form v<major>.<minor>.<patch> (where <major>, <minor> and <patch> are positive integers)
+    rel_abun_sa: float  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)

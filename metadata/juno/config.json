@@ -1249,85 +1249,14 @@
             "regex": "^(?:\\d+_\\d+#\\d+)$",
             "regex_validation_message": "contains illegal characters"
          },
-         "status": {
-            "title": "status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "rel_abundance_status": {
-            "title": "rel_abundance_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "contig_no_status": {
-            "title": "contig_no_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "gc_content_status": {
-            "title": "gc_content_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "genome_len_status": {
-            "title": "genome_len_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "cov_depth_status": {
-            "title": "cov_depth_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "cov_breadth_status": {
-            "title": "cov_breadth_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "HET_SNPs_status": {
-            "title": "HET_SNPs_status",
-            "mysql_type": "VARCHAR(4)",
-            "allowed_values": [
-               "PASS",
-               "FAIL"
-            ],
-            "mandatory": false
-         },
-         "QC_pipeline_version": {
-            "title": "QC_pipeline_version",
-            "mysql_type": "VARCHAR(4) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:v\\d+\\.\\d+\\.\\d+)$",
-            "regex_validation_message": "Must be of the form v<major>.<minor>.<patch> (where <major>, <minor> and <patch> are positive integers)"
+         "rel_abun_sa": {
+            "title": "rel_abun_sa",
+            "mysql_type": "DECIMAL(5,2) CHECK (rel_abun_sa>=0 AND rel_abun_sa<=100)",
+            "var_type": "float",
+            "mandatory": false,
+            "max_length": 6,
+            "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
          }
       }
    },
