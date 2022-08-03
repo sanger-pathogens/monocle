@@ -3,6 +3,7 @@ import { setContext } from "svelte";
 import InstitutionStatus from "./_InstitutionStatus.svelte";
 
 const API_ERROR = "some error";
+const INSTITUTION_KEY = "WelBioResIns";
 const INSTITUTION_NAME = "Welfare Biology Research Institute";
 const RE_STATUS_PANE_HEADING_TEXT =
   / (?:Samples (?:Received|Sequenced))|(?:Pipelines Completed)$/;
@@ -15,6 +16,7 @@ jest.mock("svelte", () => ({
 
 it("displays an institution name", () => {
   const { getByRole } = render(InstitutionStatus, {
+    institutionKey: INSTITUTION_KEY,
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
@@ -26,17 +28,19 @@ it("displays an institution name", () => {
 
 it("puts an institution's name into context", () => {
   render(InstitutionStatus, {
+    institutionKey: INSTITUTION_KEY,
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
     pipelineStatus: {},
   });
 
-  expect(setContext).toHaveBeenCalledWith("institutionName", INSTITUTION_NAME);
+  expect(setContext).toHaveBeenCalledWith("institutionKey", INSTITUTION_KEY);
 });
 
 it("displays only an institution name and a short message when no samples received", () => {
   const { container, getByRole, getByText } = render(InstitutionStatus, {
+    institutionKey: INSTITUTION_KEY,
     institutionName: INSTITUTION_NAME,
     batches: { received: 0, deliveries: [] },
     sequencingStatus: {},
@@ -55,6 +59,7 @@ it.each([
   ["pipeline status", / Pipelines Completed$/],
 ])("displays %s pane", (paneName, expectedHeadingText) => {
   const { getByRole } = render(InstitutionStatus, {
+    institutionKey: INSTITUTION_KEY,
     institutionName: INSTITUTION_NAME,
     batches: { received: 42, deliveries: [] },
     sequencingStatus: {},
@@ -93,6 +98,7 @@ it.each([
   "displays an institution name and an API error if %s response has the error field",
   (endpointName, props) => {
     const { getByRole, getByText, queryByRole } = render(InstitutionStatus, {
+      institutionKey: INSTITUTION_KEY,
       institutionName: INSTITUTION_NAME,
       ...props,
     });

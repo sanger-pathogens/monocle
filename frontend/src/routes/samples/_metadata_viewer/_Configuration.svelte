@@ -2,13 +2,13 @@
   import {
     DATA_TYPES,
     EMAIL_MONOCLE_HELP,
-    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+    SESSION_STORAGE_KEY_COLUMNS_STATE,
   } from "$lib/constants.js";
   import { deepCopy } from "$lib/utils/copy.js";
   import CheckboxGroup from "$lib/components/CheckboxGroup.svelte";
   import Dialog from "$lib/components/Dialog.svelte";
   import SettingsIcon from "$lib/components/icons/SettingsIcon.svelte";
-  import { localStorageAvailable } from "$lib/utils/featureDetection.js";
+  import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
   import { columnsStore, filterStore } from "../_stores.js";
 
   const KEY_DISABLED = "disabled";
@@ -55,9 +55,9 @@
   }
 
   function saveColumnsStateToLocalStorage() {
-    if (localStorageAvailable()) {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY_COLUMNS_STATE,
+    if (sessionStorageAvailable()) {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEY_COLUMNS_STATE,
         JSON.stringify($columnsStore, cleanupColumnsStateReplacer)
       );
     }

@@ -7,8 +7,9 @@ from unittest.mock import patch
 
 import yaml
 from DataServices.sample_tracking_services import MonocleSampleTracking
+from DataSources.institution_data import InstitutionData
 from DataSources.pipeline_status import PipelineStatus
-from DataSources.sample_metadata import Monocle_Client, SampleMetadata
+from DataSources.sample_metadata import MonocleClient, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
 
 INSTITUTION_KEY = "GenWel"
@@ -21,8 +22,8 @@ class MonocleSampleTrackingTest(TestCase):
     test_config_bad = "dash/tests/mock_data/data_sources_bad.yml"
     with open(test_config, "r") as file:
         data_sources = yaml.load(file, Loader=yaml.FullLoader)
-        mock_url_path = data_sources["data_download"]["url_path"]
-        mock_web_dir = data_sources["data_download"]["web_dir"]
+    mock_url_path = data_sources["data_download"]["url_path"]
+    mock_web_dir = data_sources["data_download"]["web_dir"]
 
     inst_key_batch_date_pairs = [
         {"institution key": "FakOne", "batch date": "2020-04-29"},
@@ -44,26 +45,29 @@ class MonocleSampleTrackingTest(TestCase):
     mock_data_updated = datetime(2021, 5, 15)
 
     # mock values for patching queries in DataSources modules
-    mock_institutions = ["Fake institution One", "Fake institution Two"]
+    mock_institution_data = [
+        {"key": "FakOne", "name": "Fake institution One"},
+        {"key": "FakTwo", "name": "Fake institution Two"},
+    ]
     mock_samples = [
         {
             "sanger_sample_id": "fake_sample_id_1",
-            "submitting_institution": "Fake institution One",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_1",
         },
         {
             "sanger_sample_id": "fake_sample_id_2",
-            "submitting_institution": "Fake institution One",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_2",
         },
         {
             "sanger_sample_id": "fake_sample_id_3",
-            "submitting_institution": "Fake institution Two",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_3",
         },
         {
             "sanger_sample_id": "fake_sample_id_4",
-            "submitting_institution": "Fake institution Two",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_4",
         },
     ]
@@ -185,11 +189,6 @@ class MonocleSampleTrackingTest(TestCase):
         "samples sequenced": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     }
 
-    expected_institution_data = {
-        "FakOne": {"name": "Fake institution One", "db_key": "Fake institution One"},
-        "FakTwo": {"name": "Fake institution Two", "db_key": "Fake institution Two"},
-    }
-
     expected_dropout_data = {
         "FakOne": {"_ERROR": "Server Error: Records cannot be collected at this time. Please try again later."},
         "FakTwo": {"_ERROR": "Server Error: Records cannot be collected at this time. Please try again later."},
@@ -281,10 +280,12 @@ class MonocleSampleTrackingTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def setUp(self):
+        self.monocle_sample_tracking.institution_ldap_data = InstitutionData(set_up=False)
+        self.monocle_sample_tracking.institution_ldap_data.set_up(self.test_config)
         self.monocle_sample_tracking.current_project = self.mock_project_id
         # mock sample_metadata
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
-        self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+        self.monocle_sample_tracking.sample_metadata.monocle_client = MonocleClient(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client.set_up(self.test_config)
         self.monocle_sample_tracking.updated = self.mock_data_updated
         # mock sequencing_status
@@ -299,12 +300,12 @@ class MonocleSampleTrackingTest(TestCase):
     def test_init(self):
         self.assertIsInstance(self.monocle_sample_tracking, MonocleSampleTracking)
 
-    @patch.object(SampleMetadata, "get_institution_names")
+    @patch.object(InstitutionData, "get_all_institutions_regardless_of_user_membership")
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
-    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institutions_query):
+        mock_institutions_query.return_value = self.mock_institution_data
         self.monocle_sample_tracking.sequencing_status_data = None
-        mock_institution_query.return_value = self.mock_institutions
         mock_db_sample_query.return_value = self.mock_samples
         mock_seq_samples_query.return_value = self.mock_seq_status
         self.monocle_sample_tracking.get_institutions()
@@ -317,53 +318,70 @@ class MonocleSampleTrackingTest(TestCase):
         self.assertEqual(self.expected_progress_data, progress_data)
 
     def test_get_institutions(self):
-        institution_data = self.monocle_sample_tracking.get_institutions()
+        expected_institutions = {
+            "FakOne": {"name": "Fake institution One"},
+            "FakTwo": {"name": "Fake institution Two"},
+        }
 
-        self.assertEqual(self.expected_institution_data, institution_data)
+        actual_institutions = self.monocle_sample_tracking.get_institutions()
 
-    def test_get_institution_names(self):
-        institution_names = self.monocle_sample_tracking.get_institution_names()
+        self.assertEqual(expected_institutions, actual_institutions)
 
-        self.assertEqual(self.mock_institutions, institution_names)
-
-    def test_get_institution_names_returns_cached_response(self):
+    def test_get_institutions_returns_cached_response(self):
         expected = "some data"
-        self.monocle_sample_tracking.institution_names = expected
+        self.monocle_sample_tracking.institutions_data = expected
 
-        institution_names = self.monocle_sample_tracking.get_institution_names()
+        actual_institutions = self.monocle_sample_tracking.get_institutions()
 
-        self.assertEqual(expected, institution_names)
+        self.assertEqual(expected, actual_institutions)
         # Teardown: clear cache.
-        self.monocle_sample_tracking.institution_names = None
+        self.monocle_sample_tracking.institutions_data = None
 
-    def test_get_institution_names_returns_names_from_user_membership(self):
+    def test_get_institutions_returns_institutions_from_user_membership(self):
+        self.monocle_sample_tracking.institutions_data = None
+        expected_institution_key = "CenParEng"
         expected_institution_name = "Center of Paradise Engineering"
-        user_record = {"memberOf": [{"inst_name": expected_institution_name}]}
+        user_record = {"memberOf": [{"inst_id": expected_institution_key, "inst_name": expected_institution_name}]}
         self.monocle_sample_tracking.user_record = user_record
 
-        institution_names = self.monocle_sample_tracking.get_institution_names()
+        actual_institutions = self.monocle_sample_tracking.get_institutions()
 
-        self.assertEqual([expected_institution_name], institution_names)
-        # Teardown: clear user record.
+        self.assertEqual({expected_institution_key: {"name": expected_institution_name}}, actual_institutions)
+        # Teardown: clear cache.
         self.monocle_sample_tracking.user_record = None
+        self.monocle_sample_tracking.institutions_data = None
 
     def test_get_samples(self):
         sample_data = self.monocle_sample_tracking.get_samples()
         self.assertEqual(self.expected_sample_data, sample_data)
+
+    @patch.object(SampleMetadata, "get_samples")
+    def test_get_samples_does_not_crash_on_unauthorised_user_institution(self, mock_db_sample_query):
+        mem_samples = self.monocle_sample_tracking.samples_data
+        self.monocle_sample_tracking.samples_data = None
+        mock_db_sample_query.return_value = [
+            dict(self.mock_samples[0]),
+            {
+                "sanger_sample_id": "fake_sample_id_2",
+                "submitting_institution": "SECRET_INSTITUTION",
+                "public_name": f"{PUBLIC_NAME}_2",
+            },
+        ]
+
+        try:
+            self.monocle_sample_tracking.get_samples()
+        except KeyError:
+            self.fail("`get_samples` should not fail on institutions that aren't in user institutions")
+        finally:
+            self.monocle_sample_tracking.samples_data = mem_samples
 
     def test_get_sequencing_status(self):
         seq_status_data = self.monocle_sample_tracking.get_sequencing_status()
 
         self.assertEqual(self.expected_seq_status, seq_status_data)
 
-    @patch.object(SampleMetadata, "get_institution_names")
-    @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
-    def test_get_sequencing_status_droppout(
-        self, get_multiple_samples_mock, mock_db_sample_query, mock_institution_query
-    ):
-        mock_institution_query.return_value = self.mock_institutions
-        mock_db_sample_query.return_value = self.mock_samples
+    def test_get_sequencing_status_droppout(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
             "/nowhere", "404", "page could not be found", "yes", "no"
         )

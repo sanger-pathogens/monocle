@@ -14,10 +14,10 @@ export const HTTP_POST = "POST";
 
 export const HTTP_STATUS_CODE_UNAUTHORIZED = 401;
 
-// IMPORTANT: when incrementing this key, put the old one to `LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE`. This is
-// needed to clear `localStorage` from old data.
-export const LOCAL_STORAGE_KEY_COLUMNS_STATE = "columnsState_3";
-export const LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE = [
+// IMPORTANT: when incrementing this key, put the old one to `SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE`. This is
+// needed to clear `sessionStorage` from old data (otherwise it's cleared only on closing the browser tab/window).
+export const SESSION_STORAGE_KEY_COLUMNS_STATE = "columnsState_3";
+export const SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE = [
   "columnsState",
   "columnsState_1",
   "columnsState_2",

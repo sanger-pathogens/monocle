@@ -19,24 +19,24 @@ class MetadataDownload:
             self.set_up()
 
     def set_up(self):
-        self.dl_client = Monocle_Download_Client()
+        self.download_client = MonocleDownloadClient()
 
     def get_metadata(self, project, lane_id_list):
         logging.debug("{}.get_metadata() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.metadata(project, lane_id_list)
+        results_list = self.download_client.metadata(project, lane_id_list)
         assert isinstance(
             results_list, list
-        ), "Monocle_Download_Client.metadata() was expected to return a list, not {}".format(type(results_list))
+        ), "MonocleDownloadClient.metadata() was expected to return a list, not {}".format(type(results_list))
         logging.debug("{}.get_metadata() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__, len(results_list)))
         return results_list
 
     def get_in_silico_data(self, project, lane_id_list):
         logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.in_silico_data(project, lane_id_list)
+        results_list = self.download_client.in_silico_data(project, lane_id_list)
         assert isinstance(
             results_list, list
-        ), "Monocle_Download_Client.in_silico_data() was expected to return a list, not {}".format(type(results_list))
+        ), "MonocleDownloadClient.in_silico_data() was expected to return a list, not {}".format(type(results_list))
         if len(results_list) > 0:
             logging.debug("{}.get_in_silico_data() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__, len(results_list)))
@@ -44,10 +44,10 @@ class MetadataDownload:
 
     def get_qc_data(self, project, lane_id_list):
         logging.debug("{}.get_qc_data() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.dl_client.qc_data(project, lane_id_list)
+        results_list = self.download_client.qc_data(project, lane_id_list)
         assert isinstance(
             results_list, list
-        ), "Monocle_Download_Client.qc_data() was expected to return a list, not {}".format(type(results_list))
+        ), "MonocleDownloadClient.qc_data() was expected to return a list, not {}".format(type(results_list))
         if len(results_list) > 0:
             logging.debug("{}.get_qc_data() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_iqc_data() got {} result(s)".format(__class__.__name__, len(results_list)))
@@ -58,7 +58,7 @@ class ProtocolError(Exception):
     pass
 
 
-class Monocle_Download_Client:
+class MonocleDownloadClient:
 
     data_sources_config = "data_sources.yml"
     metadata_common_source = "metadata_api_common"

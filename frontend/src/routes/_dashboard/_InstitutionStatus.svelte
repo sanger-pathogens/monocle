@@ -4,6 +4,7 @@
   import SequencingStatus from "./_status-panes/_SequencingStatus.svelte";
   import PipelineStatus from "./_status-panes/_PipelineStatus.svelte";
 
+  export let institutionKey;
   export let institutionName;
   export let batches;
   export let sequencingStatus;
@@ -13,7 +14,7 @@
     batches._ERROR || sequencingStatus._ERROR || pipelineStatus._ERROR;
 
   // Svelte's context is like a store but available only to a component and its descendants.
-  setContext("institutionName", institutionName);
+  setContext("institutionKey", institutionKey);
 </script>
 
 <article>

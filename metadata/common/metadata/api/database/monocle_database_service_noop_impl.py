@@ -3,7 +3,6 @@ from typing import List
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
 from metadata.api.model.db_connection_config import DbConnectionConfig
 from metadata.api.model.in_silico_data import InSilicoData
-from metadata.api.model.institution import Institution
 from metadata.api.model.metadata import Metadata
 from metadata.api.model.qc_data import QCData
 
@@ -16,17 +15,6 @@ class MonocleDatabaseServiceNoOpImpl(MonocleDatabaseService):
 
     def get_connection(self) -> None:
         pass
-
-    def get_institutions(self) -> List[Institution]:
-        """Return a list of institutions"""
-        results = [
-            Institution("UniversityA", "United Kingdom", 0, 0),
-            Institution("UniversityB", "France", 0, 0),
-            Institution("UniversityC", "Germany", 0, 0),
-            Institution("UniversityD", "Italy", 0, 0),
-        ]
-
-        return results
 
     def update_sample_metadata(self, metadata_list: List[Metadata]) -> None:
         """Update sample metadata in the database"""

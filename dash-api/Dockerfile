@@ -2,8 +2,12 @@ FROM     gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/python:3
 
 WORKDIR  /app
 
-RUN      apt-get update -qq
-RUN      apt-get install -y libldap2-dev libsasl2-dev
+# Keep `apt-get update` and `apt-get install` in the same `RUN` to prevent `apt-get install` from
+# potentially installing old package versions (see https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#run).
+RUN      apt-get update -qq && apt-get install -y \
+                  libldap2-dev \
+                  libsasl2-dev \
+         && rm -rf /var/lib/apt/lists/*
 
 RUN      pip install flask==2.1.1                     \
                   flask-cors==3.0.10                  \

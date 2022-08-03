@@ -122,6 +122,24 @@ it("redirects to the URL from a response on submit", async () => {
   });
 });
 
+it("clears the session storage before redirecting on successful login", async () => {
+  Storage.prototype.clear = jest.fn();
+  const { getByRole, getByLabelText } = render(LoginPage);
+  fetch.mockResolvedValueOnce({ redirected: true });
+  fireEvent.input(getByLabelText(LABEL_USERNAME), {
+    target: { value: USERNAME },
+  });
+  await fireEvent.input(getByLabelText(LABEL_PASSWORD), {
+    target: { value: PASSWORD },
+  });
+
+  expect(sessionStorage.clear).not.toHaveBeenCalled();
+
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_LOG_IN }));
+
+  expect(sessionStorage.clear).toHaveBeenCalledTimes(1);
+});
+
 it("shows an error message on login error and re-enables the submit button", async () => {
   const { getByRole, getByLabelText } = render(LoginPage);
   global.alert = jest.fn();

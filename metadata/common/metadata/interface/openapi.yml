@@ -148,20 +148,6 @@ paths:
         "404":
           description: "Project information could not be gathered from database"
 
-  /institutions:
-    get:
-      operationId: metadata.api.routes.get_institution_names_route
-      summary: "Gather the names for all institutions"
-      responses:
-        "200":
-          description: "The institution result set"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Institutions"
-        "404":
-          description: "Institutions could not be gathered from database"
-
   /samples:
     get:
       operationId: metadata.api.routes.get_samples_route
@@ -254,9 +240,9 @@ paths:
                      $ref: "#/components/schemas/FieldValueFilter"
             examples:
               JUNO:
-                value: { "fields": ["serotype", "age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["serotype", "age_group"], "institutions": ["MinHeaCenLab"] }
               GPS:
-                value: { "fields": ["age_group"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["age_group"], "institutions": ["MinHeaCenLab"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct metadata values found."
@@ -514,19 +500,6 @@ components:
                   nullable: true
                   description: "The value of the metadata field"
                   readOnly: true
-
-    Institutions:
-      description: "Object with list of institutions."
-      type: object
-      properties:
-        institutions:
-          type: array
-          readOnly: True
-          items:
-            type: string
-            minLength: 3
-            maxLength: 256
-          minItems: 1
 
     Samples:
       type: array
