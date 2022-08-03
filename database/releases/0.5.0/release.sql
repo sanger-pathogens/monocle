@@ -25,7 +25,7 @@ CREATE TABLE `qc_data` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Update the database version
-CALL update_database_version('0.4.2', 'Complete replacement of JUNO QC data fields');
+CALL update_database_version('0.5.0', 'Complete replacement of JUNO QC data fields');
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -318,9 +318,9 @@ paths:
                     $ref: "#/components/schemas/FieldValueFilter"
             examples:
               JUNO:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
               GPS:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
