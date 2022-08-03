@@ -129,20 +129,7 @@ def update_qc_data_route(body: list, dao: MonocleDatabaseService):
     try:
         qc_data_updates = []
         for update in body:
-            qc_data_updates.append(
-                QCData(
-                    lane_id=update["lane_id"],
-                    status=update.get("status", None),
-                    rel_abundance_status=update.get("rel_abundance_status", None),
-                    contig_no_status=update.get("contig_no_status", None),
-                    gc_content_status=update.get("gc_content_status", None),
-                    genome_len_status=update.get("genome_len_status", None),
-                    cov_depth_status=update.get("cov_depth_status", None),
-                    cov_breadth_status=update.get("cov_breadth_status", None),
-                    HET_SNPs_status=update.get("HET_SNPs_status", None),
-                    QC_pipeline_version=update.get("QC_pipeline_version", None),
-                )
-            )
+            qc_data_updates.append(QCData(lane_id=update["lane_id"], rel_abun_sa=update.get("rel_abun_sa", None)))
         if qc_data_updates:
             dao.update_lane_qc_data(qc_data_updates)
         return HTTP_SUCCEEDED_STATUS

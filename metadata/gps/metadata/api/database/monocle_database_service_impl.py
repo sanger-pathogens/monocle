@@ -313,11 +313,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for qc_data in qc_data_list:
-                params = {
-                    k: self.convert_string(qc_data.__dict__[k])
-                    for k in self.config["qc_data"]["spreadsheet_definition"]
-                }
-                con.execute(self.INSERT_OR_UPDATE_QC_DATA_SQL, **params)
+                con.execute(
+                    self.INSERT_OR_UPDATE_QC_DATA_SQL,
+                    lane_id=self.convert_string(qc_data.lane_id),
+                    rel_abun_sa=self.convert_string(qc_data.rel_abun_sa),
+                )
 
         logger.info("update_lane_qc_data completed")
 
