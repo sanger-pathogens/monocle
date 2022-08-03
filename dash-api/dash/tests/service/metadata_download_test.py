@@ -298,7 +298,7 @@ class MetadataDownloadTest(TestCase):
 
     mock_qc_data_download = """{  "download": [
                                        {  "lane_id":        {"order": 0,  "name": "lane_id", "value": "50000_2#287"},
-                                          "rel_abun_sa":    {"order": 1,  "name": "rel_abun_sa", "value": "86.54"}
+                                          "status":    {"order": 1,  "name": "status", "value": "PASS"}
                                           }
                                     ]
                                  }"""
@@ -307,7 +307,7 @@ class MetadataDownloadTest(TestCase):
     # currently they are merely a python dict that exactly matches the JSON returned by the metadata API
     expected_qc_data = {
         "lane_id": {"order": 0, "name": "lane_id", "value": "50000_2#287"},
-        "rel_abun_sa": {"order": 1, "name": "rel_abun_sa", "value": "86.54"},
+        "status": {"order": 1, "name": "status", "value": "PASS"},
     }
 
     def setUp(self):

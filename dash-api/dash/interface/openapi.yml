@@ -800,9 +800,9 @@ components:
             type: string
             pattern: ^[a-zA-Z0-9_]*$
           default:
-            - "rel_abun_sa"
+            - "status"
           example:
-            - "rel_abun_sa"
+            - "status"
 
     GetMetadataOutput:
       type: object
