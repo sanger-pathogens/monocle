@@ -66,8 +66,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM qc_data"""
 
-    DELETE_ALL_QC_DATA_SQL = text("""delete from qc_data""")
-
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
         self.initialize_sql_statements()
@@ -388,8 +386,3 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             results.append(QCData(**params))
 
         return results
-
-    def delete_all_qc_data(self):
-        """Delete all QC data"""
-        with self.connector.get_connection() as con:
-            con.execute(self.DELETE_ALL_QC_DATA_SQL)

@@ -153,13 +153,6 @@ class TestRoutes(unittest.TestCase):
         mocked_jsoncall.assert_called_once_with({"download": []})
         self.assertEqual(under_test, ("expected", 404))
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_delete_all_qc_data_route(self, mocked_dao):
-        mocked_dao.delete_all_qc_data.return_value = None
-        under_test = mar.delete_all_qc_data_route(mocked_dao)
-        mocked_dao.delete_all_qc_data.assert_called_once_with()
-        self.assertEqual(under_test, 200)
-
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples")
     @patch("metadata.api.routes.convert_to_json")
     def test_get_samples_route_jsonified(self, mocked_jsoncall, mocked_query):
