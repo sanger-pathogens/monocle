@@ -492,10 +492,10 @@ class MonocleSampleData:
         try:
             return self._institutions[institution_key]["name"]
         except KeyError:
-            logging.warning(
-                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution. Returning the key instead."
+            logging.error(
+                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution."
             )
-            return institution_key
+            raise
 
     def _get_institutions(self):
         return self.get_sample_tracking_service().get_institutions()
