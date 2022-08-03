@@ -13,8 +13,8 @@ class UploadMetadataHandler(UploadHandler):
         df = self.data_frame()
         for _, row in df.iterrows():
             metadata_dict = {}
-            for k in self.application.config["metadata"]["spreadsheet_definition"].keys():
-                metadata_dict[k] = self.get_cell_value(k, row)
+            for spreadsheet_column_name in self.application.config["metadata"]["spreadsheet_definition"]:
+                metadata_dict[spreadsheet_column_name] = self.get_cell_value(spreadsheet_column_name, row)
             metadata = Metadata(**metadata_dict)
             results.append(metadata)
         return results

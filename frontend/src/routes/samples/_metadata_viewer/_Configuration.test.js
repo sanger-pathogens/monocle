@@ -1,6 +1,9 @@
 import { fireEvent, render } from "@testing-library/svelte";
 import { get } from "svelte/store";
-import { DATA_TYPES, LOCAL_STORAGE_KEY_COLUMNS_STATE } from "$lib/constants.js";
+import {
+  DATA_TYPES,
+  SESSION_STORAGE_KEY_COLUMNS_STATE,
+} from "$lib/constants.js";
 import { columnsStore, filterStore } from "../_stores.js";
 import Configuration from "./_Configuration.svelte";
 
@@ -88,7 +91,7 @@ it("correctly displays a column state", async () => {
   );
 });
 
-it("saves a columns state to the local storage on apply", async () => {
+it("saves a columns state to the session storage on apply", async () => {
   const { getByRole } = render(Configuration);
   Storage.prototype.setItem = jest.fn();
 
@@ -98,14 +101,14 @@ it("saves a columns state to the local storage on apply", async () => {
   );
 
   // 2 times because it's first called by the feature detection.
-  expect(localStorage.setItem).toHaveBeenCalledTimes(2);
-  expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+  expect(sessionStorage.setItem).toHaveBeenCalledTimes(2);
+  expect(sessionStorage.setItem).toHaveBeenCalledWith(
+    SESSION_STORAGE_KEY_COLUMNS_STATE,
     JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer)
   );
 });
 
-it("saves a columns state to the local storage on restore", async () => {
+it("saves a columns state to the session storage on restore", async () => {
   const { getByRole } = render(Configuration);
   Storage.prototype.setItem = jest.fn();
 
@@ -113,9 +116,9 @@ it("saves a columns state to the local storage on restore", async () => {
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESTORE }));
 
   // 2 times because it's first called by the feature detection.
-  expect(localStorage.setItem).toHaveBeenCalledTimes(2);
-  expect(localStorage.setItem).toHaveBeenCalledWith(
-    LOCAL_STORAGE_KEY_COLUMNS_STATE,
+  expect(sessionStorage.setItem).toHaveBeenCalledTimes(2);
+  expect(sessionStorage.setItem).toHaveBeenCalledWith(
+    SESSION_STORAGE_KEY_COLUMNS_STATE,
     JSON.stringify(get(columnsStore), cleanupColumnsStateReplacer)
   );
 });

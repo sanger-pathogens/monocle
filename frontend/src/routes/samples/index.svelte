@@ -1,7 +1,7 @@
 <script>
   import {
-    LOCAL_STORAGE_KEY_COLUMNS_STATE,
-    LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE,
+    SESSION_STORAGE_KEY_COLUMNS_STATE,
+    SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
   } from "$lib/constants.js";
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
@@ -9,7 +9,7 @@
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
-  import { localStorageAvailable } from "$lib/utils/featureDetection.js";
+  import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
   import {
     getBatches,
     getBulkDownloadInfo,
@@ -92,14 +92,14 @@
   );
 
   function loadColumnsIntoStore() {
-    const isLocalStorageAvailable = localStorageAvailable();
+    const isLocalStorageAvailable = sessionStorageAvailable();
     let locallySavedColumnsState;
     if (isLocalStorageAvailable) {
-      LOCAL_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
-        localStorage.removeItem(columnsStateOldKey)
+      SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
+        sessionStorage.removeItem(columnsStateOldKey)
       );
       locallySavedColumnsState = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEY_COLUMNS_STATE)
+        sessionStorage.getItem(SESSION_STORAGE_KEY_COLUMNS_STATE)
       );
     }
     if (locallySavedColumnsState) {
@@ -109,8 +109,8 @@
       return getColumns(fetch).then((columnsResponse) => {
         columnsStore.setFromColumnsResponse(columnsResponse);
         if (isLocalStorageAvailable) {
-          localStorage.setItem(
-            LOCAL_STORAGE_KEY_COLUMNS_STATE,
+          sessionStorage.setItem(
+            SESSION_STORAGE_KEY_COLUMNS_STATE,
             JSON.stringify($columnsStore)
           );
         }

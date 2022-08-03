@@ -7,6 +7,6 @@ def handle_unauthorised(exception):
     return Response(response="User authorisation error", status=403, mimetype="text/plain")
 
 
-def handle_user_data_error(exception):
+def handle_ldap_data_error(exception):
     """Handle an user data error"""
     return Response(response="User authorisation error", status=403, mimetype="text/plain")

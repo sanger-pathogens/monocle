@@ -430,7 +430,7 @@ def data_download_route(token: str):
         return call_jsonify({"download location": zip_file_url}), HTTPStatus.OK
 
 
-def get_metadata_for_download_route(institution: str, category: str, status: str):
+def get_metadata_for_download_route(institution_key: str, category: str, status: str):
     """
     Get metadata as CSV for the user to download.
     IMPORTANT: The other endpoints are all (at time of writing...) for consumption by the front end framework.
@@ -439,7 +439,7 @@ def get_metadata_for_download_route(institution: str, category: str, status: str
     """
     return _metadata_as_csv_response(
         ServiceFactory.sample_data_service(get_authenticated_username()).get_metadata_for_download(
-            get_host_name(request), institution, category, status
+            get_host_name(request), institution_key, category, status
         )
     )
 

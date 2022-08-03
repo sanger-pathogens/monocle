@@ -42,11 +42,12 @@
     />
   </article>
 
-  {#each institutions as { name, batches, sequencingStatus, pipelineStatus, key } (key)}
+  {#each institutions as { batches, sequencingStatus, pipelineStatus, name, key } (key)}
     <InstitutionStatus
       {batches}
       {sequencingStatus}
       {pipelineStatus}
+      institutionKey={key}
       institutionName={name}
     />
   {:else}
