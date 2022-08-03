@@ -21,6 +21,7 @@ from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "GPS_DATA_INSTITUTION_VIEW"}
+FIELD_NAME_SUBMITTING_INSTITUTION = "submitting_institution"
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
@@ -63,6 +64,7 @@ class MonocleSampleData:
     ):
         self.user_record = None
         self.current_project = None
+        self._institutions = None
         self.data_source_config = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
@@ -80,7 +82,7 @@ class MonocleSampleData:
                 "metadata field config file(s) {} are missing".format(missing_metadata_config)
             )
 
-        # DataServices.sample_tracking_servies.MonocleSampleTracking object can be passed
+        # DataServices.sample_tracking_services.MonocleSampleTracking object can be passed
         # (otherwise assign None, indicating it is to be created later)
         self.sample_tracking = None
         if MonocleSampleTracking_ref is not None:
@@ -458,19 +460,45 @@ class MonocleSampleData:
                             temp_filters, include_in_silico=True, include_qc_data=True
                         )
                         metadata_cache[cache_key] = matching_sample_metadata
-                    # count the number of matches for each field
-                    for this_value in this_field_obj["values"]:
+                    # Converting submitting institution keys to names is needed, as samples returned by
+                    # MetadataDownload.get_metadata() have institution names instead of keys (for display purposes).
+                    these_field_values_to_count_matches = (
+                        self._convert_instituion_keys_to_names(this_field_obj["values"])
+                        if this_field == FIELD_NAME_SUBMITTING_INSTITUTION
+                        else this_field_obj["values"]
+                    )
+                    for i, this_value in enumerate(this_field_obj["values"]):
                         this_field_obj["matches"].append(
                             {
                                 "value": this_value,
                                 "number": self._get_number_samples_matching_this_field_value(
-                                    matching_sample_metadata, this_field_type, this_field, this_value
+                                    matching_sample_metadata,
+                                    this_field_type,
+                                    this_field,
+                                    these_field_values_to_count_matches[i],
                                 ),
                             }
                         )
             logging.info("finished gathering of number of matches for each distinct value")
 
         return distinct_values
+
+    def _convert_instituion_keys_to_names(self, institution_keys):
+        if self._institutions is None:
+            self._institutions = self._get_institutions()
+        return list(map(self._convert_instituion_key_to_name, institution_keys))
+
+    def _convert_instituion_key_to_name(self, institution_key):
+        try:
+            return self._institutions[institution_key]["name"]
+        except KeyError:
+            logging.error(
+                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution."
+            )
+            raise
+
+    def _get_institutions(self):
+        return self.get_sample_tracking_service().get_institutions()
 
     def _get_sample_filters_excluding_field(self, sample_filters, field_type, field):
         """
