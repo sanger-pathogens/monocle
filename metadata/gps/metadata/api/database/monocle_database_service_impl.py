@@ -66,8 +66,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
     DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM gps_qc_data"""
 
-    DELETE_ALL_QC_DATA_SQL = text("""delete from gps_qc_data""")
-
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
         self.initialize_sql_statements()
@@ -313,11 +311,11 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for qc_data in qc_data_list:
-                con.execute(
-                    self.INSERT_OR_UPDATE_QC_DATA_SQL,
-                    lane_id=self.convert_string(qc_data.lane_id),
-                    rel_abun_sa=self.convert_string(qc_data.rel_abun_sa),
-                )
+                params = {
+                    k: self.convert_string(qc_data.__dict__[k])
+                    for k in self.config["qc_data"]["spreadsheet_definition"]
+                }
+                con.execute(self.INSERT_OR_UPDATE_QC_DATA_SQL, **params)
 
         logger.info("update_lane_qc_data completed")
 
@@ -378,8 +376,3 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
             results.append(QCData(**params))
 
         return results
-
-    def delete_all_qc_data(self):
-        """Delete all QC data"""
-        with self.connector.get_connection() as con:
-            con.execute(self.DELETE_ALL_QC_DATA_SQL)

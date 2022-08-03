@@ -1160,7 +1160,8 @@
             "fields": [
                {
                   "name": "lane_id",
-                  "display": false
+                  "display": false,
+                  "order": 1
                }
             ]
          },
@@ -1168,12 +1169,76 @@
             "name": "Pipeline QC",
             "fields": [
                {
-                  "name": "rel_abun_sa",
+                  "name": "status",
                   "display": true,
                   "default": true,
-                  "order": 1,
-                  "filter type": "numeric",
-                  "display name": "Relative abundance S. agalactiae"
+                  "order": 2,
+                  "filter type": "discrete",
+                  "display name": "Overall QC status"
+               },
+               {
+                  "name": "rel_abundance_status",
+                  "display": true,
+                  "default": true,
+                  "order": 3,
+                  "filter type": "discrete",
+                  "display name": "Relative abundance QC status"
+               },
+               {
+                  "name": "contig_no_status",
+                  "display": true,
+                  "default": true,
+                  "order": 4,
+                  "filter type": "discrete",
+                  "display name": "Contig number QC status"
+               },
+               {
+                  "name": "gc_content_status",
+                  "display": true,
+                  "default": true,
+                  "order": 5,
+                  "filter type": "discrete",
+                  "display name": "GC content QC status"
+               },
+               {
+                  "name": "genome_len_status",
+                  "display": true,
+                  "default": true,
+                  "order": 6,
+                  "filter type": "discrete",
+                  "display name": "Genome length QC status"
+               },
+               {
+                  "name": "cov_depth_status",
+                  "display": true,
+                  "default": true,
+                  "order": 7,
+                  "filter type": "discrete",
+                  "display name": "Coverage depth QC status"
+               },
+               {
+                  "name": "cov_breadth_status",
+                  "display": true,
+                  "default": true,
+                  "order": 8,
+                  "filter type": "discrete",
+                  "display name": "Coverage breadth QC status"
+               },
+               {
+                  "name": "HET_SNPs_status",
+                  "display": true,
+                  "default": true,
+                  "order": 9,
+                  "filter type": "discrete",
+                  "display name": "HET SNPs QC status"
+               },
+               {
+                  "name": "QC_pipeline_version",
+                  "display": true,
+                  "default": true,
+                  "order": 10,
+                  "filter type": "discrete",
+                  "display name": "QC pipeline version"
                }
             ]
          }

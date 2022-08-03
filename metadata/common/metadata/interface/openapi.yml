@@ -138,14 +138,6 @@ paths:
         "404":
           description: "No data could be found for the given download key"
 
-  /delete_all_qc_data:
-    get:
-      operationId: metadata.api.routes.delete_all_qc_data_route
-      summary: "Delete all QC data"
-      responses:
-        "200":
-          description: "The deletion was successful."
-
   /project_information:
     get:
       operationId: metadata.api.routes.get_project_information
@@ -326,9 +318,9 @@ paths:
                     $ref: "#/components/schemas/FieldValueFilter"
             examples:
               JUNO:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
               GPS:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
@@ -361,18 +353,69 @@ components:
       type: object
       required:
         - lane_id
-      example: {"lane_id": "39214_1#341", "rel_abun_sa": 80.74}
+      example:
+        {   "lane_id": "39214_1#341",
+            "status": "PASS",
+            "rel_abundance_status": "PASS",
+            "contig_no_status": "PASS",
+            "gc_content_status": "PASS",
+            "genome_len_status": "PASS",
+            "cov_depth_status": "PASS",
+            "cov_breadth_status": "PASS",
+            "HET_SNPs_status": "PASS",
+            "QC_pipeline_version": "v1.2.3"
+            }
       properties:
         lane_id:
           type: string
           minLength: 3
           maxLength: 16
           pattern: ^[0-9_#]+$
-        rel_abun_sa:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 100
+        status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        rel_abundance_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        contig_no_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        gc_content_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        genome_len_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        cov_depth_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        cov_breadth_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        HET_SNPs_status:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: ^PASS|FAIL$
+        QC_pipeline_version:
+          type: string
+          minLength: 6
+          maxLength: 15
+          pattern: ^v\d+\.\d+\.\d+$
     
     ValidationErrors:
       description: "Error response"

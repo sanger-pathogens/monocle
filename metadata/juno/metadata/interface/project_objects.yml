@@ -404,13 +404,37 @@ components:
         qcdata:
           items:
             properties:
+              HET_SNPs_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              QC_pipeline_version:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              contig_no_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              cov_breadth_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              cov_depth_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              gc_content_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              genome_len_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               lane_id:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              rel_abun_sa:
+              rel_abundance_status:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              status:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
             - lane_id
-            - rel_abun_sa
+            - status
+            - rel_abundance_status
+            - contig_no_status
+            - gc_content_status
+            - genome_len_status
+            - cov_depth_status
+            - cov_breadth_status
+            - HET_SNPs_status
+            - QC_pipeline_version
             type: object
           type: array
       type: object
@@ -418,5 +442,5 @@ components:
       description: Valid QC data field name
       maxLength: 256
       minLength: 1
-      pattern: ^lane_id|rel_abun_sa$
+      pattern: ^lane_id|status|rel_abundance_status|contig_no_status|gc_content_status|genome_len_status|cov_depth_status|cov_breadth_status|HET_SNPs_status|QC_pipeline_version$
       type: string
