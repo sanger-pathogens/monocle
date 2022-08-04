@@ -1,10 +1,11 @@
 import unittest
+from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 import metadata.api.routes as mar
 from metadata.api.model.qc_data import QCData
 from metadata.api.routes import update_in_silico_data_route, update_sample_metadata_route
-from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_SAMPLE_1
+from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_1_DICT, TEST_SAMPLE_1
 
 
 class TestRoutes(unittest.TestCase):
@@ -29,7 +30,7 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
     def test_update_qc_data_route(self, db_update_mock):
         mock_qc_data = TEST_LANE_QC_DATA_1
-        mock_update = {"lane_id": mock_qc_data.lane_id, "rel_abun_sa": mock_qc_data.rel_abun_sa}
+        mock_update = TEST_LANE_QC_DATA_1_DICT
         http_status = mar.update_qc_data_route([mock_update], db_update_mock)
         db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
         self.assertEqual(http_status, 200)
@@ -41,17 +42,39 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(under_test, 200)
 
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_no_rel_abun_sa(self, db_update_mock):
-        mock_qc_data = QCData(lane_id=TEST_LANE_QC_DATA_1.lane_id, rel_abun_sa=None)
-        mock_update = {"lane_id": mock_qc_data.lane_id}
-
+    def test_update_qc_data_route_qc_values_undefined(self, db_update_mock):
+        mock_qc_data = QCData(
+            lane_id=TEST_LANE_QC_DATA_1.lane_id,
+            status=None,
+            rel_abundance_status=None,
+            contig_no_status=None,
+            gc_content_status=None,
+            genome_len_status=None,
+            cov_depth_status=None,
+            cov_breadth_status=None,
+            HET_SNPs_status=None,
+            QC_pipeline_version=None,
+        )
+        mock_update = {
+            "lane_id": mock_qc_data.lane_id,
+            "status": None,
+            "rel_abundance_status": None,
+            "contig_no_status": None,
+            "gc_content_status": None,
+            "genome_len_status": None,
+            "cov_depth_status": None,
+            "cov_breadth_status": None,
+            "HET_SNPs_status": None,
+            "QC_pipeline_version": None,
+        }
         mar.update_qc_data_route([mock_update], db_update_mock)
 
         db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
 
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
     def test_update_qc_data_route_missing_lane_id_rejected(self, db_update_mock):
-        mock_update = {"rel_abun_sa": TEST_LANE_QC_DATA_1.rel_abun_sa}
+        mock_update = deepcopy(TEST_LANE_QC_DATA_1_DICT)
+        mock_update.pop("lane_id")
         http_status = mar.update_qc_data_route([mock_update], db_update_mock)
         self.assertEqual(http_status[1], 400)
 
@@ -129,13 +152,6 @@ class TestRoutes(unittest.TestCase):
         under_test = mar.get_download_qc_data_route([mock_lane_id], download_handler_mock)
         mocked_jsoncall.assert_called_once_with({"download": []})
         self.assertEqual(under_test, ("expected", 404))
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_delete_all_qc_data_route(self, mocked_dao):
-        mocked_dao.delete_all_qc_data.return_value = None
-        under_test = mar.delete_all_qc_data_route(mocked_dao)
-        mocked_dao.delete_all_qc_data.assert_called_once_with()
-        self.assertEqual(under_test, 200)
 
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_samples")
     @patch("metadata.api.routes.convert_to_json")

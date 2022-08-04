@@ -317,8 +317,8 @@
                      "display": true,
                      "default": true,
                      "order": 11,
-                     "spreadsheet heading": "Submitting_Institution_Key",
-                     "display name": "Submitting Institution Key",
+                     "spreadsheet heading": "Submitting_Institution",
+                     "display name": "Submitting Institution",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
@@ -5571,6 +5571,7 @@
                   {
                      "name": "lane_id",
                      "display": false,
+                     "order": 1,
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
@@ -5585,21 +5586,148 @@
                "name": "Pipeline QC",
                "fields": [
                   {
-                     "name": "rel_abun_sa",
+                     "name": "status",
                      "display": true,
                      "default": true,
-                     "order": 1,
-                     "filter type": "numeric",
-                     "display name": "Relative abundance S. agalactiae",
+                     "order": 2,
+                     "filter type": "discrete",
+                     "display name": "Overall QC status",
                      "db": {
-                        "mysql_type": "DECIMAL(5,2) CHECK (rel_abun_sa>=0 AND rel_abun_sa<=100)",
-                        "var_type": "float",
-                        "mandatory": false,
-                        "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
                      }
-                  }
+                  },
+                  {
+                     "name": "rel_abundance_status",
+                     "display": true,
+                     "default": true,
+                     "order": 3,
+                     "filter type": "discrete",
+                     "display name": "Relative abundance QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "contig_no_status",
+                     "display": true,
+                     "default": true,
+                     "order": 4,
+                     "filter type": "discrete",
+                     "display name": "Contig number QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "gc_content_status",
+                     "display": true,
+                     "default": true,
+                     "order": 5,
+                     "filter type": "discrete",
+                     "display name": "GC content QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "genome_len_status",
+                     "display": true,
+                     "default": true,
+                     "order": 6,
+                     "filter type": "discrete",
+                     "display name": "Genome length QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "cov_depth_status",
+                     "display": true,
+                     "default": true,
+                     "order": 7,
+                     "filter type": "discrete",
+                     "display name": "Coverage depth QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "cov_breadth_status",
+                     "display": true,
+                     "default": true,
+                     "order": 8,
+                     "filter type": "discrete",
+                     "display name": "Coverage breadth QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "HET_SNPs_status",
+                     "display": true,
+                     "default": true,
+                     "order": 9,
+                     "filter type": "discrete",
+                     "display name": "HET SNPs QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "QC_pipeline_version",
+                     "display": true,
+                     "default": true,
+                     "order": 10,
+                     "filter type": "discrete",
+                     "display name": "QC pipeline version",
+                     "db": {
+                        "mysql_type": "VARCHAR(4) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:v\\d+\\.\\d+\\.\\d+)$",
+                        "regex_validation_message": "Must be of the form v<major>.<minor>.<patch> (where <major>, <minor> and <patch> are positive integers)"
+                     }
+                  }                  
                ]
             }
          ]
