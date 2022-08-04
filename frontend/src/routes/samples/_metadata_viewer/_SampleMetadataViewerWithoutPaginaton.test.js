@@ -222,12 +222,12 @@ describe("on metadata resolved", () => {
         { name: new RegExp(`^${columnOfActiveFilter.title}`) }
       );
       const activeFilterButtonColor = columnHeaderElementOfActiveFilter
-        .querySelector("path")
+        .querySelector("svg")
         .getAttribute("fill");
       const filterButtonColor = getByRole("columnheader", {
         name: new RegExp(`^${METADATA[0][1].title}`),
       })
-        .querySelector("path")
+        .querySelector("svg")
         .getAttribute("fill");
       expect(activeFilterButtonColor).not.toBe(filterButtonColor);
     });

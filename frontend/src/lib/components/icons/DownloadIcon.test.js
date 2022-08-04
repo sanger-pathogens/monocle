@@ -1,9 +1,8 @@
 import { render } from "@testing-library/svelte";
 import DownloadIcon from "./DownloadIcon.svelte";
 
-it("renders the icon and hides it for screen readers", () => {
+it("renders the icon", () => {
   const { container } = render(DownloadIcon);
 
-  const icon = container.querySelector("svg");
-  expect(icon.getAttribute("aria-hidden")).toBe("true");
+  expect(container.querySelector("path")).toBeDefined();
 });
