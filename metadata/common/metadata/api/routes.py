@@ -99,7 +99,7 @@ def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
 
     spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    # Validate ans (if passes) store
+    # Validate and (if passed) store
     stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
     if not stored_ok:
         return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
