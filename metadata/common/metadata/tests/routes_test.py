@@ -4,12 +4,15 @@ from unittest.mock import MagicMock, patch
 import metadata.api.routes as mar
 from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_SAMPLE_1
 
-mar.UPLOAD_PARAMS = {
-    "mockproject": {
-        "metadata": {"check_file_extension": False, "file_delimiter": ","},
-        "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
-        "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
-    }
+MOCK_CONFIG = {
+    "project_key": "mockproject",
+    "project_links": {
+        "upload_params": {
+            "metadata": {"check_file_extension": False, "file_delimiter": ","},
+            "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
+            "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
+        }
+    },
 }
 
 
@@ -21,7 +24,7 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.get_current_app")
     @patch("metadata.api.upload_handlers.UploadMetadataHandler")
     def test_update_sample_metadata_route(self, mock_upload_handler, mock_app, mock_connexion_request, mock_os):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         http_status = mar.update_sample_metadata_route([], mock_upload_handler)
         self.assertEqual(mock_upload_handler.check_file_extension, False)
         self.assertEqual(mock_upload_handler.file_delimiter, ",")
@@ -34,7 +37,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_sample_metadata_route_reject_missing_file(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_connexion_request.files = {}
         http_status = mar.update_sample_metadata_route([], mock_upload_handler)
         self.assertEqual(http_status, ("Missing spreadsheet file", 400))
@@ -46,7 +49,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_sample_metadata_route_reject_bad_file_extension(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.is_valid_file_type.return_value = False
         http_status = mar.update_sample_metadata_route([], mock_upload_handler)
         self.assertIn("must be one of the following formats", http_status[0])
@@ -60,7 +63,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_sample_metadata_route_reject_invalid(
         self, mock_jsonify, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.load.return_value = ["any non empty list"]
         mock_jsonify.return_value = '["mock error message", "another mock error message"]'
         http_status = mar.update_sample_metadata_route([], mock_upload_handler)
@@ -72,7 +75,7 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.get_current_app")
     @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
     def test_update_in_silico_data_route(self, mock_upload_handler, mock_app, mock_connexion_request, mock_os):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         http_status = mar.update_in_silico_data_route([], mock_upload_handler)
         self.assertEqual(mock_upload_handler.check_file_extension, True)
         self.assertEqual(mock_upload_handler.file_delimiter, "\t")
@@ -85,7 +88,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_in_silico_route_reject_missing_file(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_connexion_request.files = {}
         http_status = mar.update_in_silico_data_route([], mock_upload_handler)
         self.assertEqual(http_status, ("Missing spreadsheet file", 400))
@@ -97,7 +100,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_in_silico_route_reject_bad_file_extension(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.is_valid_file_type.return_value = False
         http_status = mar.update_in_silico_data_route([], mock_upload_handler)
         self.assertIn("must be one of the following formats", http_status[0])
@@ -111,7 +114,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_in_silico_route_reject_invalid(
         self, mock_jsonify, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.load.return_value = ["any non empty list"]
         mock_jsonify.return_value = '["mock error message", "another mock error message"]'
         http_status = mar.update_in_silico_data_route([], mock_upload_handler)
@@ -123,7 +126,7 @@ class TestRoutes(unittest.TestCase):
     @patch("metadata.api.routes.get_current_app")
     @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
     def test_update_qc_data_route(self, mock_upload_handler, mock_app, mock_connexion_request, mock_os):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         http_status = mar.update_qc_data_route([], mock_upload_handler)
         self.assertEqual(mock_upload_handler.check_file_extension, True)
         self.assertEqual(mock_upload_handler.file_delimiter, "\t")
@@ -136,7 +139,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_qc_data_route_reject_missing_file(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_connexion_request.files = {}
         http_status = mar.update_qc_data_route([], mock_upload_handler)
         self.assertEqual(http_status, ("Missing spreadsheet file", 400))
@@ -148,7 +151,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_qc_data_route_reject_bad_file_extension(
         self, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.is_valid_file_type.return_value = False
         http_status = mar.update_qc_data_route([], mock_upload_handler)
         self.assertIn("must be one of the following formats", http_status[0])
@@ -162,7 +165,7 @@ class TestRoutes(unittest.TestCase):
     def test_update_qc_data_route_reject_invalid(
         self, mock_jsonify, mock_upload_handler, mock_app, mock_connexion_request, mock_os
     ):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         mock_upload_handler.load.return_value = ["any non empty list"]
         mock_jsonify.return_value = '["mock error message", "another mock error message"]'
         http_status = mar.update_qc_data_route([], mock_upload_handler)
@@ -549,12 +552,18 @@ class TestRoutes(unittest.TestCase):
 
     @patch("metadata.api.routes.get_current_app")
     def test_get_project_id(self, mock_app):
-        mock_app.return_value.config = {"project_key": "mockproject"}
+        mock_app.return_value.config = MOCK_CONFIG
         actual_project_id = mar.get_project_id()
         self.assertEqual(actual_project_id, "mockproject")
 
     @patch("metadata.api.routes.get_current_app")
-    def test_get_project_id_reject_bad_project_key_in_config(self, mock_app):
-        mock_app.return_value.config = {"project_key": "badprojectid"}
+    def test_get_project_upload_params(self, mock_app):
+        mock_app.return_value.config = MOCK_CONFIG
+        actual_upload_config = mar.get_project_upload_params("metadata")
+        self.assertEqual(actual_upload_config, {"check_file_extension": False, "file_delimiter": ","})
+
+    @patch("metadata.api.routes.get_current_app")
+    def test_get_project_upload_params_reject_bad_type(self, mock_app):
+        mock_app.return_value.config = MOCK_CONFIG
         with self.assertRaises(ValueError):
-            mar.get_project_id()
+            mar.get_project_upload_params("not_a_known_upload_type")
