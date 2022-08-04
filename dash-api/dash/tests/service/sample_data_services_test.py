@@ -451,9 +451,31 @@ class MonocleSampleDataTest(TestCase):
         },
     ]
 
+    mock_metadata_with_submitting_institutions = [
+        {
+            "sanger_sample_id": {"order": 1, "title": "Sanger_Sample_ID", "value": "fake_sample_id_1"},
+            "submitting_institution": {
+                "order": 1,
+                "title": "Submitting_Institution",
+                "value": mock_institution_keys[0],
+            },
+        },
+        {
+            "sanger_sample_id": {"order": 1, "title": "Sanger_Sample_ID", "value": "fake_sample_id_2"},
+            "submitting_institution": {
+                "order": 1,
+                "title": "Submitting_Institution",
+                "value": mock_institution_keys[1],
+            },
+        },
+    ]
+
     mock_distinct_values_query = {"metadata": ["field1", "field2"], "in silico": ["field3"]}
     bad_distinct_values_query = {"metadata": ["field1", "field2"], "NO SUCH TYPE": ["field3"]}
     mock_distinct_values = [{"name": "field1", "values": ["a", "b"]}, {"name": "field2", "values": ["d", "e"]}]
+    mock_distinct_values_with_submitting_institutions = [
+        {"name": "submitting_institution", "values": [mock_institution_keys[0], mock_institution_keys[1]]}
+    ]
     mock_distinct_in_silico_values = [{"name": "field3", "values": ["f", "g", "h"]}]
 
     expected_distinct_values = [
@@ -571,6 +593,7 @@ class MonocleSampleDataTest(TestCase):
         # mock metadata_download
         self.monocle_data.current_project = self.mock_project_id
         self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
+        self.monocle_data.metadata_download_source._institutions = {}
         self.monocle_data.metadata_download_source.download_client = MonocleDownloadClient(set_up=False)
         self.monocle_data.metadata_download_source.download_client.set_up(self.test_config)
         # load mock data
@@ -787,6 +810,58 @@ class MonocleSampleDataTest(TestCase):
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
         self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
+
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
+    @patch.object(MonocleSampleData, "get_filtered_samples")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
+    def test_get_distinct_values_counts_submitting_institution_matches(
+        self,
+        mock_metadata_fetch,
+        mock_in_silico_data_fetch,
+        mock_qc_data_fetch,
+        mock_get_filtered_samples,
+        mock_distinct_in_silico_values_fetch,
+        mock_distinct_values_fetch,
+    ):
+        mock_metadata_fetch.return_value = self.mock_metadata_with_submitting_institutions
+        mock_in_silico_data_fetch.return_value = self.mock_in_silico_data2
+        mock_qc_data_fetch.return_value = self.mock_qc_data
+        mock_get_filtered_samples.return_value = self.mock_filtered_samples
+        mock_distinct_values_fetch.return_value = self.mock_distinct_values_with_submitting_institutions
+        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
+        self.monocle_data.metadata_download_source._institutions = {
+            submitting_institution["key"]: {"name": submitting_institution["name"]}
+            for submitting_institution in self.mock_institution_data
+        }
+
+        actual_distinct_values = self.monocle_data.get_distinct_values(
+            self.mock_distinct_values_query,
+            sample_filters={
+                "batches": self.inst_key_batch_date_pairs,
+                "metadata": {"submitting_institution": [self.mock_institution_keys[0]]},
+            },
+        )
+
+        expected_distinct_values_metadata = {
+            "field type": "metadata",
+            "fields": [
+                {
+                    "name": "submitting_institution",
+                    "values": self.mock_institution_keys,
+                    "matches": [
+                        {"value": self.mock_institution_keys[0], "number": 1},
+                        {"value": self.mock_institution_keys[1], "number": 1},
+                    ],
+                }
+            ],
+        }
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_distinct_values_metadata))
+        self.assertEqual(expected_distinct_values_metadata, actual_distinct_values[0])
+
+        self.monocle_data.metadata_download_source._institutions = {}
 
     @patch.object(MonocleClient, "distinct_values")
     @patch.object(MonocleClient, "distinct_in_silico_values")

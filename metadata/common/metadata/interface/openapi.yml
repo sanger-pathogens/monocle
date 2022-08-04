@@ -140,14 +140,6 @@ paths:
         "404":
           description: "No data could be found for the given download key"
 
-  /delete_all_qc_data:
-    get:
-      operationId: metadata.api.routes.delete_all_qc_data_route
-      summary: "Delete all QC data"
-      responses:
-        "200":
-          description: "The deletion was successful."
-
   /project_information:
     get:
       operationId: metadata.api.routes.get_project_information
@@ -328,9 +320,9 @@ paths:
                     $ref: "#/components/schemas/FieldValueFilter"
             examples:
               JUNO:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
               GPS:
-                value: { "fields": ["rel_abun_sa"], "institutions": ["Ministry of Health, Central Laboratories"] }
+                value: { "fields": ["status"], "institutions": ["Ministry of Health, Central Laboratories"] }
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."

@@ -291,25 +291,25 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_distinct_qc_data_values(self) -> None:
         self.connection.execute.return_value = [
-            {"rel_abun_sa": 1.46},
-            {"rel_abun_sa": 92.93},
-            {"rel_abun_sa": None},
+            {"status": "PASS"},
+            {"status": "PASS"},
+            {"status": None},
         ]
         expected = [
-            {"name": "rel_abun_sa", "values": ["1.46", "92.93", None]},
+            {"name": "status", "values": ["PASS", "PASS", None]},
         ]
-        values = self.under_test.get_distinct_values("qc data", ["rel_abun_sa"], ["National Reference Laboratories"])
+        values = self.under_test.get_distinct_values("qc data", ["status"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
         self.assertEqual(values, expected)
 
     def test_get_distinct_dc_data_values_reject_request_if_bad_field_name(self) -> None:
         self.connection.execute.side_effect = [
-            [{"rel_abun_sa": 1.46}, {"rel_abun_sa": 92.93}, {"rel_abun_sa": None}],
+            [{"status": "PASS"}, {"status": "PASS"}, {"status": None}],
             OperationalError("mock params", "mock orig", "mock message including the substring Unknown column"),
         ]
         expected = None
         values = self.under_test.get_distinct_values(
-            "qc data", ["rel_abun_sa", "bad_field_name"], ["National Reference Laboratories"]
+            "qc data", ["status", "bad_field_name"], ["National Reference Laboratories"]
         )
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
@@ -348,13 +348,29 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         calls = [
             call(
                 self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
-                lane_id="50000_2#282",
-                rel_abun_sa="93.21",
+                lane_id=TEST_LANE_QC_DATA_1.lane_id,
+                status=TEST_LANE_QC_DATA_1.status,
+                rel_abundance_status=TEST_LANE_QC_DATA_1.rel_abundance_status,
+                contig_no_status=TEST_LANE_QC_DATA_1.contig_no_status,
+                gc_content_status=TEST_LANE_QC_DATA_1.gc_content_status,
+                genome_len_status=TEST_LANE_QC_DATA_1.gc_content_status,
+                cov_depth_status=TEST_LANE_QC_DATA_1.cov_depth_status,
+                cov_breadth_status=TEST_LANE_QC_DATA_1.cov_breadth_status,
+                HET_SNPs_status=TEST_LANE_QC_DATA_1.HET_SNPs_status,
+                QC_pipeline_version=TEST_LANE_QC_DATA_1.QC_pipeline_version,
             ),
             call(
                 self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
-                lane_id="50000_2#287",
-                rel_abun_sa="68.58",
+                lane_id=TEST_LANE_QC_DATA_2.lane_id,
+                status=TEST_LANE_QC_DATA_2.status,
+                rel_abundance_status=TEST_LANE_QC_DATA_2.rel_abundance_status,
+                contig_no_status=TEST_LANE_QC_DATA_2.contig_no_status,
+                gc_content_status=TEST_LANE_QC_DATA_2.gc_content_status,
+                genome_len_status=TEST_LANE_QC_DATA_2.gc_content_status,
+                cov_depth_status=TEST_LANE_QC_DATA_2.cov_depth_status,
+                cov_breadth_status=TEST_LANE_QC_DATA_2.cov_breadth_status,
+                HET_SNPs_status=TEST_LANE_QC_DATA_2.HET_SNPs_status,
+                QC_pipeline_version=TEST_LANE_QC_DATA_2.QC_pipeline_version,
             ),
         ]
         self.transactional_connection.execute.assert_has_calls(calls, any_order=True)
