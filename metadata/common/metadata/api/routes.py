@@ -31,80 +31,25 @@ def convert_to_json(samples):
 @inject
 def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """Upload a spreadsheet to the database"""
-
-    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
-    if uploaded_file is None:
-        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
-    logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
-
     upload_handler.check_file_extension = False
     upload_handler.file_delimiter = ","
-
-    # Check the extension...
-    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
-    if not file_type_ok:
-        return (fail_message, HTTP_BAD_REQUEST_STATUS)
-
-    spreadsheet_file = _save_spreadsheet(uploaded_file)
-
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-
-    return HTTP_SUCCEEDED_STATUS
+    return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
     """Upload a in silico data to the database"""
-    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
-    if uploaded_file is None:
-        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
-    logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
-
     upload_handler.check_file_extension = True
     upload_handler.file_delimiter = "\t"
-
-    # Check the extension...
-    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
-    if not file_type_ok:
-        return (fail_message, HTTP_BAD_REQUEST_STATUS)
-
-    spreadsheet_file = _save_spreadsheet(uploaded_file)
-
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-
-    return HTTP_SUCCEEDED_STATUS
+    return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
     """Upload a QC data to the database"""
-    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
-    if uploaded_file is None:
-        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
-    logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
-
     upload_handler.check_file_extension = True
     upload_handler.file_delimiter = "\t"
-
-    # Check the extension...
-    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
-    if not file_type_ok:
-        return (fail_message, HTTP_BAD_REQUEST_STATUS)
-
-    spreadsheet_file = _save_spreadsheet(uploaded_file)
-
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
-
-    return HTTP_SUCCEEDED_STATUS
+    return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
@@ -266,6 +211,29 @@ def get_project_information(dao: MonocleDatabaseService):
     project_links = application.config["project_links"]
     result = convert_to_json({"project": project_links})
     return result, HTTP_SUCCEEDED_STATUS
+
+
+def _spreadsheet_upload_process(upload_handler):
+    # all processes needed for uploading, and checked spreadsheet, and storing data if OK
+    # return value can be used for the route function return
+    uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
+    if uploaded_file is None:
+        return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
+    logger.info("Uploading spreadsheet {}...".format(uploaded_file.filename))
+
+    # Check the extension...
+    file_type_ok, fail_message = _check_spreadsheet_file_type(upload_handler, uploaded_file)
+    if not file_type_ok:
+        return (fail_message, HTTP_BAD_REQUEST_STATUS)
+
+    spreadsheet_file = _save_spreadsheet(uploaded_file)
+
+    # Validate and (if passed) store
+    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
+    if not stored_ok:
+        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+
+    return HTTP_SUCCEEDED_STATUS
 
 
 def _get_uploaded_spreadsheet(file_name_param):
