@@ -273,9 +273,19 @@ def _get_uploaded_spreadsheet(file_name_param):
     try:
         uploaded_file = connexion.request.files[file_name_param]
         if not uploaded_file:
-            raise KeyError("No upload spreadsheet file found")
+            # file name parameter exists in request (so no KeyError) but no file name actually passed
+            logger.error(
+                'Request includes the parameter "{}" that should provide the uploaded spreadsheet name, but the value is blank/missing'.format(
+                    file_name_param
+                )
+            )
+            return None
     except KeyError:
-        logger.error("Missing upload spreadsheet file in request")
+        logger.error(
+            'Request is missing the parameter "{}" that should provide the uploaded spreadsheet name'.format(
+                file_name_param
+            )
+        )
         return None
     return uploaded_file
 
