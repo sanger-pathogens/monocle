@@ -9,11 +9,9 @@ components:
         insilicodata:
           items:
             properties:
-              Aroe:
+              Continent:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               Cot:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Ddl:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               EC:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -23,31 +21,21 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               FQ__autocolour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              GPSC_PoPUNK2:
+              GPSC:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              GPSC_PoPUNK2__colour:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Gdh:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Gki:
+              GPSC__colour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               In_Silico_St:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              In_Silico_serotype:
+              In_silico_serotype:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              In_Silico_serotype__colour:
+              In_silico_serotype__colour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               Manifest_type:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               Other:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              PBP1A:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               PBP1A_2B_2X__autocolour:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              PBP2B:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              PBP2X:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               PCV10:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -64,10 +52,6 @@ components:
               Pneumosil:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               Published:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Recp:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Spi:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               Tet__autocolour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -187,7 +171,7 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               WGS_VAN_SIR__colour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Xpt:
+              aroE:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               cat:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -196,6 +180,8 @@ components:
               children_under_5yrs:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               country:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              ddl:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               duplicate:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -209,6 +195,10 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               folP__autocolour:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              gdh:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              gki:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               lane_id:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               mefA:
@@ -217,37 +207,50 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               no_of_genome:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              pbp1a:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              pbp2b:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              pbp2x:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               public_name:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              recP:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               sample:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              spi:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              xpt:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
             - lane_id
-            - public_name
             - sample
+            - public_name
             - ERR
             - ERS
             - no_of_genome
             - duplicate
             - Paper_1
             - In_Silico_St
-            - Aroe
-            - Gdh
-            - Gki
-            - Recp
-            - Spi
-            - Xpt
-            - Ddl
+            - aroE
+            - gdh
+            - gki
+            - recP
+            - spi
+            - xpt
+            - ddl
             - country
+            - Continent
             - Manifest_type
             - children_under_5yrs
-            - GPSC_PoPUNK2
-            - GPSC_PoPUNK2__colour
-            - In_Silico_serotype
-            - In_Silico_serotype__colour
-            - PBP1A
-            - PBP2B
-            - PBP2X
+            - GPSC
+            - GPSC__colour
+            - In_silico_serotype
+            - In_silico_serotype__colour
+            - pbp1a
+            - pbp2b
+            - pbp2x
             - WGS_PEN
             - WGS_PEN_SIR_Meningitis
             - WGS_PEN_SIR_Nonmeningitis
@@ -335,7 +338,7 @@ components:
       description: Valid in silico field name
       maxLength: 256
       minLength: 1
-      pattern: ^lane_id|public_name|sample|ERR|ERS|no_of_genome|duplicate|Paper_1|In_Silico_St|Aroe|Gdh|Gki|Recp|Spi|Xpt|Ddl|country|Manifest_type|children_under_5yrs|GPSC_PoPUNK2|GPSC_PoPUNK2__colour|In_Silico_serotype|In_Silico_serotype__colour|PBP1A|PBP2B|PBP2X|WGS_PEN|WGS_PEN_SIR_Meningitis|WGS_PEN_SIR_Nonmeningitis|WGS_AMO|WGS_AMO_SIR|WGS_MER|WGS_MER_SIR|WGS_TAX|WGS_TAX_SIR_Meningitis|WGS_TAX_SIR_Nonmeningitis|WGS_CFT|WGS_CFT_SIR_Meningitis|WGS_CFT_SIR_Nonmeningitis|WGS_CFX|WGS_CFX_SIR|WGS_ERY|WGS_ERY_SIR|WGS_CLI|WGS_CLI_SIR|WGS_SYN|WGS_SYN_SIR|WGS_LZO|WGS_LZO_SIR|WGS_ERY_CLI|WGS_COT|WGS_COT_SIR|WGS_TET|WGS_TET_SIR|WGS_DOX|WGS_DOX_SIR|WGS_LFX|WGS_LFX_SIR|WGS_CHL|WGS_CHL_SIR|WGS_RIF|WGS_RIF_SIR|WGS_VAN|WGS_VAN_SIR|EC|Cot|Tet__autocolour|FQ__autocolour|Other|PBP1A_2B_2X__autocolour|WGS_PEN_SIR_Meningitis__colour|WGS_PEN_SIR_Nonmeningitis__colour|WGS_AMO_SIR__colour|WGS_MER_SIR__colour|WGS_TAX_SIR_Meningitis__colour|WGS_TAX_SIR_Nonmeningitis__colour|WGS_CFT_SIR_Meningitis__colour|WGS_CFT_SIR_Nonmeningitis__colour|WGS_CFX_SIR__colour|WGS_ERY_SIR__colour|WGS_CLI_SIR__colour|WGS_SYN_SIR__colour|WGS_LZO_SIR__colour|WGS_COT_SIR__colour|WGS_TET_SIR__colour|WGS_DOX_SIR__colour|WGS_LFX_SIR__colour|WGS_CHL_SIR__colour|WGS_RIF_SIR__colour|WGS_VAN_SIR__colour|ermB|ermB__colour|mefA|mefA__colour|folA_I100L|folA_I100L__colour|folP__autocolour|cat|cat__colour|PCV7|PCV10|PCV13|PCV15|PCV20|Pneumosil|Published$
+      pattern: ^lane_id|sample|public_name|ERR|ERS|no_of_genome|duplicate|Paper_1|In_Silico_St|aroE|gdh|gki|recP|spi|xpt|ddl|country|Continent|Manifest_type|children_under_5yrs|GPSC|GPSC__colour|In_silico_serotype|In_silico_serotype__colour|pbp1a|pbp2b|pbp2x|WGS_PEN|WGS_PEN_SIR_Meningitis|WGS_PEN_SIR_Nonmeningitis|WGS_AMO|WGS_AMO_SIR|WGS_MER|WGS_MER_SIR|WGS_TAX|WGS_TAX_SIR_Meningitis|WGS_TAX_SIR_Nonmeningitis|WGS_CFT|WGS_CFT_SIR_Meningitis|WGS_CFT_SIR_Nonmeningitis|WGS_CFX|WGS_CFX_SIR|WGS_ERY|WGS_ERY_SIR|WGS_CLI|WGS_CLI_SIR|WGS_SYN|WGS_SYN_SIR|WGS_LZO|WGS_LZO_SIR|WGS_ERY_CLI|WGS_COT|WGS_COT_SIR|WGS_TET|WGS_TET_SIR|WGS_DOX|WGS_DOX_SIR|WGS_LFX|WGS_LFX_SIR|WGS_CHL|WGS_CHL_SIR|WGS_RIF|WGS_RIF_SIR|WGS_VAN|WGS_VAN_SIR|EC|Cot|Tet__autocolour|FQ__autocolour|Other|PBP1A_2B_2X__autocolour|WGS_PEN_SIR_Meningitis__colour|WGS_PEN_SIR_Nonmeningitis__colour|WGS_AMO_SIR__colour|WGS_MER_SIR__colour|WGS_TAX_SIR_Meningitis__colour|WGS_TAX_SIR_Nonmeningitis__colour|WGS_CFT_SIR_Meningitis__colour|WGS_CFT_SIR_Nonmeningitis__colour|WGS_CFX_SIR__colour|WGS_ERY_SIR__colour|WGS_CLI_SIR__colour|WGS_SYN_SIR__colour|WGS_LZO_SIR__colour|WGS_COT_SIR__colour|WGS_TET_SIR__colour|WGS_DOX_SIR__colour|WGS_LFX_SIR__colour|WGS_CHL_SIR__colour|WGS_RIF_SIR__colour|WGS_VAN_SIR__colour|ermB|ermB__colour|mefA|mefA__colour|folA_I100L|folA_I100L__colour|folP__autocolour|cat|cat__colour|PCV7|PCV10|PCV13|PCV15|PCV20|Pneumosil|Published$
       type: string
     Metadata:
       description: Object containing an array of Sanger sample ids and their metadata
@@ -379,8 +382,6 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               HIV_status:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Meropenem:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               PCV_type:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               age_days:
@@ -391,7 +392,7 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               amoxicillin:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              aroe:
+              aroE:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               cefotaxime:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -411,6 +412,8 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               comments:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              continent:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               country:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               ddl:
@@ -427,9 +430,15 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               intro_year:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              latitude:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               levofloxacin:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               linezolid:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              longitude:
+                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
+              meropenem:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               month_collection:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -441,7 +450,7 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               public_name:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              recp:
+              recP:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               region:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -482,12 +491,13 @@ components:
               year_collection:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
-            - sample_name
             - sanger_sample_id
+            - sample_name
             - public_name
             - study_name
             - submitting_institution
             - selection_random
+            - continent
             - country
             - region
             - city
@@ -505,52 +515,54 @@ components:
             - phenotypic_serotype_method
             - phenotypic_serotype
             - sequence_type
-            - penicillin
-            - AST_method_penicillin
-            - amoxicillin
-            - AST_method_amoxicillin
-            - cefotaxime
-            - AST_method_cefotaxime
-            - ceftriaxone
-            - AST_method_ceftriaxone
-            - cefuroxime
-            - AST_method_cefuroxime
-            - Meropenem
-            - AST_method_meropenem
-            - erythromycin
-            - AST_method_erythromycin
-            - clindamycin
-            - AST_method_clindamycin
-            - trim_sulfa
-            - AST_method_trim_sulfa
-            - vancomycin
-            - AST_method_vancomycin
-            - linezolid
-            - AST_method_linezolid
-            - ciprofloxacin
-            - AST_method_ciprofloxacin
-            - chloramphenicol
-            - AST_method_chloramphenicol
-            - tetracycline
-            - AST_method_tetracycline
-            - levofloxacin
-            - AST_method_levofloxacin
-            - synercid
-            - AST_method_synercid
-            - rifampin
-            - AST_method_rifampin
-            - aroe
+            - aroE
             - gdh
             - gki
-            - recp
+            - recP
             - spi
             - xpt
             - ddl
+            - AST_method_penicillin
+            - penicillin
+            - AST_method_amoxicillin
+            - amoxicillin
+            - AST_method_cefotaxime
+            - cefotaxime
+            - AST_method_ceftriaxone
+            - ceftriaxone
+            - AST_method_cefuroxime
+            - cefuroxime
+            - AST_method_meropenem
+            - meropenem
+            - AST_method_erythromycin
+            - erythromycin
+            - AST_method_clindamycin
+            - clindamycin
+            - AST_method_trim_sulfa
+            - trim_sulfa
+            - AST_method_vancomycin
+            - vancomycin
+            - AST_method_linezolid
+            - linezolid
+            - AST_method_ciprofloxacin
+            - ciprofloxacin
+            - AST_method_chloramphenicol
+            - chloramphenicol
+            - AST_method_tetracycline
+            - tetracycline
+            - AST_method_levofloxacin
+            - levofloxacin
+            - AST_method_synercid
+            - synercid
+            - AST_method_rifampin
+            - rifampin
             - comments
+            - latitude
+            - longitude
+            - resolution
             - vaccine_period
             - intro_year
             - PCV_type
-            - resolution
             type: object
           type: array
       type: object
@@ -558,7 +570,7 @@ components:
       description: Valid metadata field name
       maxLength: 256
       minLength: 1
-      pattern: ^sample_name|sanger_sample_id|public_name|study_name|submitting_institution|selection_random|country|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|penicillin|AST_method_penicillin|amoxicillin|AST_method_amoxicillin|cefotaxime|AST_method_cefotaxime|ceftriaxone|AST_method_ceftriaxone|cefuroxime|AST_method_cefuroxime|Meropenem|AST_method_meropenem|erythromycin|AST_method_erythromycin|clindamycin|AST_method_clindamycin|trim_sulfa|AST_method_trim_sulfa|vancomycin|AST_method_vancomycin|linezolid|AST_method_linezolid|ciprofloxacin|AST_method_ciprofloxacin|chloramphenicol|AST_method_chloramphenicol|tetracycline|AST_method_tetracycline|levofloxacin|AST_method_levofloxacin|synercid|AST_method_synercid|rifampin|AST_method_rifampin|aroe|gdh|gki|recp|spi|xpt|ddl|comments|vaccine_period|intro_year|PCV_type|resolution$
+      pattern: ^sanger_sample_id|sample_name|public_name|study_name|submitting_institution|selection_random|continent|country|region|city|facility_where_collected|month_collection|year_collection|gender|age_years|age_months|age_days|clinical_manifestation|source|HIV_status|underlying_conditions|phenotypic_serotype_method|phenotypic_serotype|sequence_type|aroE|gdh|gki|recP|spi|xpt|ddl|AST_method_penicillin|penicillin|AST_method_amoxicillin|amoxicillin|AST_method_cefotaxime|cefotaxime|AST_method_ceftriaxone|ceftriaxone|AST_method_cefuroxime|cefuroxime|AST_method_meropenem|meropenem|AST_method_erythromycin|erythromycin|AST_method_clindamycin|clindamycin|AST_method_trim_sulfa|trim_sulfa|AST_method_vancomycin|vancomycin|AST_method_linezolid|linezolid|AST_method_ciprofloxacin|ciprofloxacin|AST_method_chloramphenicol|chloramphenicol|AST_method_tetracycline|tetracycline|AST_method_levofloxacin|levofloxacin|AST_method_synercid|synercid|AST_method_rifampin|rifampin|comments|latitude|longitude|resolution|vaccine_period|intro_year|PCV_type$
       type: string
     QCData:
       description: Object containing an array of lane ids and their QC data
@@ -570,25 +582,17 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               No_contigs:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              Streptococcus_pneumoniae:
+              Proportion_of_Het_SNPs:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              X_Het_SNPs_Total_No_of_SNPs:
+              Streptococcus_pneumoniae:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               depth_of_coverage:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               genome_covered:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              lane_accession:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               lane_id:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              public_name:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               qc:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              sample_accession:
-                $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
-              sample_name:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
               supplier_name:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
@@ -596,18 +600,14 @@ components:
                 $ref: file:///app/metadata/interface/openapi.yml#/components/schemas/DownloadField
             required:
             - lane_id
-            - sample_name
-            - sample_accession
-            - lane_accession
-            - supplier_name
-            - public_name
             - Streptococcus_pneumoniae
             - total_length
             - No_contigs
             - genome_covered
             - depth_of_coverage
-            - X_Het_SNPs_Total_No_of_SNPs
+            - Proportion_of_Het_SNPs
             - qc
+            - supplier_name
             - Hetsites_50bp
             type: object
           type: array
@@ -616,5 +616,5 @@ components:
       description: Valid QC data field name
       maxLength: 256
       minLength: 1
-      pattern: ^lane_id|sample_name|sample_accession|lane_accession|supplier_name|public_name|Streptococcus_pneumoniae|total_length|No_contigs|genome_covered|depth_of_coverage|X_Het_SNPs_Total_No_of_SNPs|qc|Hetsites_50bp$
+      pattern: ^lane_id|Streptococcus_pneumoniae|total_length|No_contigs|genome_covered|depth_of_coverage|Proportion_of_Het_SNPs|qc|supplier_name|Hetsites_50bp$
       type: string
