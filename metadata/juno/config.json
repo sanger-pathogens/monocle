@@ -1381,5 +1381,6 @@
             "url": "/metadata/juno/qc-data-upload"
          }
       ]
-   }
+   },
+   "project_key": "juno"
 }

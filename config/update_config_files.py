@@ -419,6 +419,9 @@ class UpdateMetadataFiles:
         with open(config_path) as config_file:
             config = json.load(config_file)
 
+        # it is useful for each config.json file we create to have something in it identifying the project for which is was created
+        config["project_key"] = project_key
+
         for section_name_in_metadata_api_config in map_config_dict:
             section_name_in_main_config = map_config_dict[section_name_in_metadata_api_config]
             logging.debug("Updating metadata API config section {}".format(section_name_in_metadata_api_config))
