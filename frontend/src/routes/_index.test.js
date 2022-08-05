@@ -78,34 +78,34 @@ describe("after data fetching", () => {
 
   it("displays the menu w/ the upload and data viewer links", async () => {
     const ROLE_LINK = "link";
-    const domainName = window.location.host;
-    const { findByRole } = render(DashboardPage, {
+    const { findAllByRole } = render(DashboardPage, {
       session: writable({ user: { role: USER_ROLE_ADMIN } }),
     });
 
-    const linksContainer = await findByRole("navigation");
+    const linksContainer = (await findAllByRole("navigation"))[0];
 
+    const dataViewerLink = await within(linksContainer).findByRole(ROLE_LINK, {
+      name: "View and download sample data",
+    });
+    expect(dataViewerLink).toBeDefined();
+    expect(dataViewerLink.href).toMatch(
+      new RegExp(`${window.location.host}/samples`)
+    );
     const metadataUploadLink = await within(linksContainer).findByRole(
       ROLE_LINK,
       { name: "Upload metadata" }
     );
     expect(metadataUploadLink).toBeDefined();
-    expect(metadataUploadLink.href).toMatch(
-      new RegExp(`${domainName}/metadata-upload`)
-    );
     const insilicoUploadLink = await within(linksContainer).findByRole(
       ROLE_LINK,
       { name: "Upload in-silico data" }
     );
     expect(insilicoUploadLink).toBeDefined();
-    expect(insilicoUploadLink.href).toMatch(
-      new RegExp(`${domainName}/in-silico-upload`)
+    const qcDataUploadLink = await within(linksContainer).findByRole(
+      ROLE_LINK,
+      { name: "Upload QC data" }
     );
-    const dataViewerLink = await within(linksContainer).findByRole(ROLE_LINK, {
-      name: "View and download sample data",
-    });
-    expect(dataViewerLink).toBeDefined();
-    expect(dataViewerLink.href).toMatch(new RegExp(`${domainName}/samples`));
+    expect(qcDataUploadLink).toBeDefined();
   });
 
   it("displays status for each institution", async () => {
