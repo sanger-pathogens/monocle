@@ -879,11 +879,11 @@
          }
       },
       "Pipeline QC" : {
-         "rel_abun_sa" : {
+         "staus" : {
             "display"            : true,
             "order"              : 1,
-            "filter type"        : "numeric",
-            "display name"       : "Relative abundance S. agalactiae"
+            "filter type"        : "discrete",
+            "display name"       : "QC status"
          }
       }
    }

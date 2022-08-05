@@ -379,7 +379,12 @@ paths:
                   institutions:
                     type: object
                     additionalProperties:
-                      $ref: "#/components/schemas/Institution"
+                      type: object
+                      required:
+                        - name
+                      properties:
+                        name:
+                          $ref: "#/components/schemas/InstitutionName"
         "403":
           description: "Authorization information is missing or invalid."
 
@@ -520,7 +525,7 @@ paths:
         "404":
           description: "One or more of the requested fields not recognised."
  
-  /get_metadata_for_download/{institution}/{category}/{status}:
+  /get_metadata_for_download/{institution_key}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
       summary: "The operation was successful. The following data format will be returned..."
@@ -531,12 +536,12 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/UserName"
-        - name: "institution"
+        - name: "institution_key"
           in: path
-          description: "The institution name."
+          description: "The institution key."
           required: true
           schema:
-            $ref: "#/components/schemas/InstitutionName"
+            $ref: "#/components/schemas/InstitutionID"
         - name: "category"
           in: path
           description: "The category to be downloaded: sequencing or pipeline."
@@ -795,9 +800,9 @@ components:
             type: string
             pattern: ^[a-zA-Z0-9_]*$
           default:
-            - "rel_abun_sa"
+            - "status"
           example:
-            - "rel_abun_sa"
+            - "status"
 
     GetMetadataOutput:
       type: object

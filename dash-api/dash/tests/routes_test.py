@@ -1021,7 +1021,7 @@ class TestRoutes(unittest.TestCase):
         return_as_csv = routes.get_metadata_input_default("as csv")
         metadata_columns = ["submitting_institution", "public_name"]
         in_silico_columns = ["ST"]
-        qc_data_columns = ["rel_abun_sa"]
+        qc_data_columns = ["status"]
         expected_payload = "payload"
         sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
         sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
@@ -1070,7 +1070,7 @@ class TestRoutes(unittest.TestCase):
         return_as_csv = routes.get_metadata_input_default("as csv")
         metadata_columns = ["submitting_institution", "public_name"]
         in_silico_columns = ["ST"]
-        qc_data_columns = ["rel_abun_sa"]
+        qc_data_columns = ["status"]
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_metadata.side_effect = urllib.error.HTTPError(
             "/nowhere", "400", "blah blah Invalid field blah blah", "yes", "no"
@@ -1108,7 +1108,7 @@ class TestRoutes(unittest.TestCase):
         return_as_csv = routes.get_metadata_input_default("as csv")
         metadata_columns = ["submitting_institution", "public_name"]
         in_silico_columns = ["ST"]
-        qc_data_columns = ["rel_abun_sa"]
+        qc_data_columns = ["status"]
         sample_data_service_mock.return_value.get_metadata.return_value = None
         sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         username_mock.return_value = self.TEST_USER
@@ -1152,14 +1152,14 @@ class TestRoutes(unittest.TestCase):
             "fields": [
                 {"field type": "metadata", "field names": ["serotype", "age_group"]},
                 {"field type": "in silico", "field names": ["ST"]},
-                {"field type": "qc data", "field names": ["rel_abun_sa"]},
+                {"field type": "qc data", "field names": ["status"]},
             ],
             "sample filters": {"batches": batches},
         }
         expected_data_service_request = {
             "metadata": ["serotype", "age_group"],
             "in silico": ["ST"],
-            "qc data": ["rel_abun_sa"],
+            "qc data": ["status"],
         }
         expected_payload = "payload"
         sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
@@ -1186,13 +1186,13 @@ class TestRoutes(unittest.TestCase):
             "fields": [
                 {"field type": "metadata", "field names": ["serotype", "age_group"]},
                 {"field type": "in silico", "field names": ["ST"]},
-                {"field type": "qc data", "field names": ["rel_abun_sa"]},
+                {"field type": "qc data", "field names": ["status"]},
             ]
         }
         expected_data_service_request = {
             "metadata": ["serotype", "age_group"],
             "in silico": ["ST"],
-            "qc data": ["rel_abun_sa"],
+            "qc data": ["status"],
         }
         expected_payload = "payload"
         sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
@@ -1315,7 +1315,7 @@ class TestRoutes(unittest.TestCase):
         username_mock.return_value = self.TEST_USER
         host_name_mock.return_value = self.TEST_HOST_NAME
         # When
-        result = routes.get_metadata_for_download_route("Fake Institution", "pipeline", "successful")
+        result = routes.get_metadata_for_download_route("fake institution key", "pipeline", "successful")
         # Then
         sample_data_service_mock.assert_called_once_with(self.TEST_USER)
         sample_data_service_mock.return_value.get_metadata_for_download.assert_called_once()

@@ -1,10 +1,7 @@
-import os
 import unittest
 from unittest.mock import Mock, call, patch
 
-import flask
-from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl, ProtocolError
-from metadata.api.model.institution import Institution
+from metadata.api.database.monocle_database_service_impl import MonocleDatabaseServiceImpl
 from metadata.tests.test_data import (
     TEST_LANE_IN_SILICO_1,
     TEST_LANE_IN_SILICO_1_DICT,
@@ -64,62 +61,6 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
                 ],
             }
         }
-
-    @patch.dict(os.environ, {"AUTH_COOKIE_NAME": "mock_cookie_name"}, clear=True)
-    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.parse_response")
-    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.make_request")
-    @patch("metadata.api.database.monocle_database_service_impl.MonocleDatabaseServiceImpl.call_request_cookies")
-    @patch.object(flask, "request")
-    def test_get_institutions(self, mock_request, mock_request_cookies, make_request_mock, parse_response_mock) -> None:
-        # cookie value is base64-encoded "mock_user:mock_password"
-        mock_request_cookies.return_value = {"mock_cookie_name": "bW9ja191c2VyOm1vY2tfcGFzc3dvcmQ="}
-        make_request_mock.return_value = self.response_as_string
-        parse_response_mock.return_value = self.response_as_dict
-
-        institutions = self.under_test.get_institutions(mock_request)
-
-        self.assertIsNotNone(institutions)
-        self.assertIsInstance(institutions, list)
-        self.assertEqual(len(institutions), 3)
-        self.assertIsInstance(institutions[0], Institution)
-        self.assertEqual(institutions[0].name, "mock_name")
-        self.assertEqual(institutions[0].country, "name1")
-        self.assertIsInstance(institutions[1], Institution)
-        self.assertEqual(institutions[1].name, "mock_name")
-        self.assertEqual(institutions[1].country, "name2")
-        self.assertIsInstance(institutions[2], Institution)
-        self.assertEqual(institutions[2].name, "Laboratório Central do Estado do Paraná")
-        self.assertEqual(institutions[2].country, "Brazil")
-
-    def test_parse_response(self) -> None:
-        actual = self.under_test.parse_response(self.response_as_string, ["user_details"])
-        self.assertEqual(actual, self.response_as_dict)
-
-    def test_parse_response_incorrect(self) -> None:
-        response_as_string = '[{"Not": "a dictionary"}]'
-        with self.assertRaises(ProtocolError):
-            self.under_test.parse_response(response_as_string, ["user_details"])
-
-    def test_get_institution_names(self) -> None:
-        self.connection.execute.return_value = [
-            dict(name="Institution1", country="Israel", latitude=20.0, longitude=30.0),
-            dict(name="Institution2", country="China", latitude=50.0, longitude=60.0),
-        ]
-
-        names = self.under_test.get_institution_names()
-        self.assertIsNotNone(names)
-        self.assertIsInstance(names, list)
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertEqual(len(names), 2)
-        self.assertEqual(names[0], "Institution1")
-        self.assertEqual(names[1], "Institution2")
-
-    def test_get_institution_names_noresults(self) -> None:
-        self.connection.execute.return_value = []
-        names = self.under_test.get_institution_names()
-        self.connection.execute.assert_called_with(MonocleDatabaseServiceImpl.SELECT_INSTITUTIONS_SQL)
-        self.assertIsNotNone(names)
-        self.assertEqual(len(names), 0)
 
     # basically the same as test_get_download_metadata except query is SELECT_ALL_SAMPLES_SQL
     def test_get_samples(self) -> None:
@@ -350,25 +291,25 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
 
     def test_get_distinct_qc_data_values(self) -> None:
         self.connection.execute.return_value = [
-            {"rel_abun_sa": 1.46},
-            {"rel_abun_sa": 92.93},
-            {"rel_abun_sa": None},
+            {"status": "PASS"},
+            {"status": "PASS"},
+            {"status": None},
         ]
         expected = [
-            {"name": "rel_abun_sa", "values": ["1.46", "92.93", None]},
+            {"name": "status", "values": ["PASS", "PASS", None]},
         ]
-        values = self.under_test.get_distinct_values("qc data", ["rel_abun_sa"], ["National Reference Laboratories"])
+        values = self.under_test.get_distinct_values("qc data", ["status"], ["National Reference Laboratories"])
         self.connection.execute.assert_called_once()
         self.assertEqual(values, expected)
 
     def test_get_distinct_dc_data_values_reject_request_if_bad_field_name(self) -> None:
         self.connection.execute.side_effect = [
-            [{"rel_abun_sa": 1.46}, {"rel_abun_sa": 92.93}, {"rel_abun_sa": None}],
+            [{"status": "PASS"}, {"status": "PASS"}, {"status": None}],
             OperationalError("mock params", "mock orig", "mock message including the substring Unknown column"),
         ]
         expected = None
         values = self.under_test.get_distinct_values(
-            "qc data", ["rel_abun_sa", "bad_field_name"], ["National Reference Laboratories"]
+            "qc data", ["status", "bad_field_name"], ["National Reference Laboratories"]
         )
         self.assertEqual(self.connection.execute.call_count, 2)
         self.assertEqual(values, expected)
@@ -407,13 +348,29 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         calls = [
             call(
                 self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
-                lane_id="50000_2#282",
-                rel_abun_sa="93.21",
+                lane_id=TEST_LANE_QC_DATA_1.lane_id,
+                status=TEST_LANE_QC_DATA_1.status,
+                rel_abundance_status=TEST_LANE_QC_DATA_1.rel_abundance_status,
+                contig_no_status=TEST_LANE_QC_DATA_1.contig_no_status,
+                gc_content_status=TEST_LANE_QC_DATA_1.gc_content_status,
+                genome_len_status=TEST_LANE_QC_DATA_1.gc_content_status,
+                cov_depth_status=TEST_LANE_QC_DATA_1.cov_depth_status,
+                cov_breadth_status=TEST_LANE_QC_DATA_1.cov_breadth_status,
+                HET_SNPs_status=TEST_LANE_QC_DATA_1.HET_SNPs_status,
+                QC_pipeline_version=TEST_LANE_QC_DATA_1.QC_pipeline_version,
             ),
             call(
                 self.under_test.INSERT_OR_UPDATE_QC_DATA_SQL,
-                lane_id="50000_2#287",
-                rel_abun_sa="68.58",
+                lane_id=TEST_LANE_QC_DATA_2.lane_id,
+                status=TEST_LANE_QC_DATA_2.status,
+                rel_abundance_status=TEST_LANE_QC_DATA_2.rel_abundance_status,
+                contig_no_status=TEST_LANE_QC_DATA_2.contig_no_status,
+                gc_content_status=TEST_LANE_QC_DATA_2.gc_content_status,
+                genome_len_status=TEST_LANE_QC_DATA_2.gc_content_status,
+                cov_depth_status=TEST_LANE_QC_DATA_2.cov_depth_status,
+                cov_breadth_status=TEST_LANE_QC_DATA_2.cov_breadth_status,
+                HET_SNPs_status=TEST_LANE_QC_DATA_2.HET_SNPs_status,
+                QC_pipeline_version=TEST_LANE_QC_DATA_2.QC_pipeline_version,
             ),
         ]
         self.transactional_connection.execute.assert_has_calls(calls, any_order=True)

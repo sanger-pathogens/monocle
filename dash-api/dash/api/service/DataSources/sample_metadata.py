@@ -7,10 +7,6 @@ import yaml
 
 # logging.basicConfig(format='%(asctime)-15s %(levelname)s:  %(message)s', level='DEBUG')
 
-# class DataSourceParamError(Exception):
-#    """ exception when data source methods are called with invalid parameter(s) """
-#    pass
-
 
 class SampleMetadata:
     """provides access to pipeline status data"""
@@ -20,7 +16,7 @@ class SampleMetadata:
             self.set_up()
 
     def set_up(self):
-        self.monocle_client = Monocle_Client()
+        self.monocle_client = MonocleClient()
 
     def get_project_information(self, project):
         result = self.monocle_client.project_information(project)
@@ -28,30 +24,24 @@ class SampleMetadata:
 
         return result
 
-    def get_institution_names(self, project):
-        result = self.monocle_client.institutions(project)
-        logging.debug("{}.get_institution_names() result(s) = {}".format(__class__.__name__, result))
-
-        return result
-
-    def get_samples(self, project, exclude_lane_id=True, institutions=None):
+    def get_samples(self, project, exclude_lane_id=True, institution_keys=None):
         """
-        Optionally pass a list of institutions that filters samples according to submitting institution
+        Optionally pass a list of institution keys that filters samples according to submitting institution
         Optiomally pass exclude_lane_id=False to stop the lane ID being removed (the laner ID retrieved here
         is from the monocle db, where it was added for *some* samples for historical reasons, but it is not
         generally useful or necessarily accurate.  Lane IDs for a sample should be retrieved from MLWH)
         Returns a dict, keys are sample IDs, values are the selected metadata as a dict
         """
-        results_list = self.monocle_client.samples(project)
-        logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results_list)))
+        results = self.monocle_client.samples(project)
+        logging.info("{}.get_samples() got {} result(s)".format(__class__.__name__, len(results)))
         samples = []
-        for this_result in results_list:
-            if institutions is None or this_result["submitting_institution"] in institutions:
+        for this_result in results:
+            if institution_keys is None or this_result["submitting_institution"] in institution_keys:
                 # For historical reasons the following code was needed to replace the old keys
                 # `sample_id` and `submitting_institution_id` with 'sanger_sample_id' and
                 # 'submitting_institution', respectively.
-                # TODO  see if we can now replace this, and simply return `results_list`, except with
-                #       `lane_id` removed from each item in `results_list` (unless `exclude_lane_id`
+                # TODO  see if we can now replace this, and simply return `results`, except with
+                #       `lane_id` removed from each item in `results` (unless `exclude_lane_id`
                 #       is False)
                 this_sample = {
                     "sanger_sample_id": this_result["sanger_sample_id"],
@@ -84,11 +74,11 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters(project, filters_payload)
+        results = self.monocle_client.filters(project, filters_payload)
         logging.info(
-            "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results_list))
+            "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
-        return results_list
+        return results
 
     def get_lanes_matching_in_silico_filters(self, project, in_silico_filters):
         """
@@ -111,13 +101,13 @@ class SampleMetadata:
             )
         )
 
-        results_list = self.monocle_client.filters_in_silico(project, filters_payload)
+        results = self.monocle_client.filters_in_silico(project, filters_payload)
         logging.info(
-            "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results_list))
+            "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
-        return results_list
+        return results
 
-    def get_distinct_values(self, project, fields, institutions):
+    def get_distinct_values(self, project, fields, institution_keys):
         """
         Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
         as keys; values are arrays of field names.
@@ -127,11 +117,11 @@ class SampleMetadata:
         for this_field_type in fields:
             field_list = fields[this_field_type]
             if "metadata" == this_field_type:
-                this_field_list = self.monocle_client.distinct_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_values(project, field_list, institution_keys)
             elif "in silico" == this_field_type:
-                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institution_keys)
             elif "qc data" == this_field_type:
-                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institutions)
+                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institution_keys)
             else:
                 logging.error(
                     "{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(
@@ -149,19 +139,17 @@ class ProtocolError(Exception):
     pass
 
 
-class Monocle_Client:
+class MonocleClient:
     data_sources_config = "data_sources.yml"
     metadata_common_source = "metadata_api_common"
     metadata_project_source = {"juno": "metadata_api_juno", "gps": "metadata_api_gps"}
     required_config_params = [
         "base_url",
-        "institutions",
         "project_information",
         "project_information_key",
         "samples",
         "filter_by_metadata",
         "filter_by_in_silico",
-        "institutions_key",
         "samples_key",
         "distinct_values",
         "distinct_in_silico_values",
@@ -177,12 +165,13 @@ class Monocle_Client:
         self.config = {}
         with open(config_file_name, "r") as file:
             data_sources = yaml.load(file, Loader=yaml.FullLoader)
-            common_config = data_sources[self.metadata_common_source]
-            for this_project in self.metadata_project_source:
-                self.config[this_project] = {
-                    **common_config,
-                    **data_sources[self.metadata_project_source[this_project]],
-                }
+        common_config = data_sources[self.metadata_common_source]
+        for this_project in self.metadata_project_source:
+            self.config[this_project] = {
+                **common_config,
+                **data_sources[self.metadata_project_source[this_project]],
+            }
+
         for this_project in self.config:
             for required_param in self.required_config_params:
                 if required_param not in self.config[this_project]:
@@ -219,15 +208,6 @@ class Monocle_Client:
         result = self.parse_response(endpoint_url, response, required_keys=[project_information_key])
         return result[project_information_key]
 
-    def institutions(self, project):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["institutions"]
-        logging.debug("{}.institutions() using endpoint {}".format(__class__.__name__, endpoint_url))
-        response = self.make_request(endpoint_url)
-        logging.debug("{}.institutions() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint_url, response, required_keys=[this_config["institutions_key"]])
-        return results[this_config["institutions_key"]]
-
     def samples(self, project):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["samples"]
@@ -255,23 +235,23 @@ class Monocle_Client:
         results = json.loads(response)
         return results
 
-    def distinct_values(self, project, fields, institutions):
+    def distinct_values(self, project, fields, institution_keys):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["distinct_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
+        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
 
-    def distinct_in_silico_values(self, project, fields, institutions):
+    def distinct_in_silico_values(self, project, fields, institution_keys):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["distinct_in_silico_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
+        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
 
-    def distinct_qc_data_values(self, project, fields, institutions):
+    def distinct_qc_data_values(self, project, fields, institution_keys):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["distinct_qc_data_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institutions)
+        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
 
-    def _distinct_values_common(self, this_config, endpoint_url, fields, institutions):
-        query = {"fields": fields, "institutions": institutions}
+    def _distinct_values_common(self, this_config, endpoint_url, fields, institution_keys):
+        query = {"fields": fields, "institutions": institution_keys}
         logging.debug(
             "{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint_url, query)
         )

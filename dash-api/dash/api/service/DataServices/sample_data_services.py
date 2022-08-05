@@ -21,6 +21,7 @@ from utils.file import format_file_size
 
 API_ERROR_KEY = "_ERROR"
 DATA_INST_VIEW_ENVIRON = {"juno": "JUNO_DATA_INSTITUTION_VIEW", "gps": "GPS_DATA_INSTITUTION_VIEW"}
+FIELD_NAME_SUBMITTING_INSTITUTION = "submitting_institution"
 MIN_ZIP_NUM_SAMPLES_CAPACITY = 3
 MIN_ZIP_NUM_SAMPLES_CAPACITY_WITH_READS = 1
 READ_MODE = "r"
@@ -50,7 +51,6 @@ class MonocleSampleData:
         "juno": "juno_field_attributes.json",
         "gps": "gps_field_attributes.json",
     }
-    sample_table_inst_key = "submitting_institution"
 
     # date from which progress is counted
     day_zero = datetime(2019, 9, 17)
@@ -64,6 +64,7 @@ class MonocleSampleData:
     ):
         self.user_record = None
         self.current_project = None
+        self._institutions = None
         self.data_source_config = None
         # requite config files; can be passed, default to variables
         self.data_source_config_name = data_source_config
@@ -81,7 +82,7 @@ class MonocleSampleData:
                 "metadata field config file(s) {} are missing".format(missing_metadata_config)
             )
 
-        # DataServices.sample_tracking_servies.MonocleSampleTracking object can be passed
+        # DataServices.sample_tracking_services.MonocleSampleTracking object can be passed
         # (otherwise assign None, indicating it is to be created later)
         self.sample_tracking = None
         if MonocleSampleTracking_ref is not None:
@@ -423,13 +424,10 @@ class MonocleSampleData:
         This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
         except that 404 are caught and result in returning `None`
         """
-        institutions = [
-            this_institution["db_key"]
-            for this_institution in self.get_sample_tracking_service().get_institutions().values()
-        ]
+        institution_keys = list(self.get_sample_tracking_service().get_institutions().keys())
         try:
             distinct_values = self.sample_metadata_source.get_distinct_values(
-                self.current_project, fields, institutions
+                self.current_project, fields, institution_keys
             )
         except urllib.error.HTTPError as e:
             if "404" not in str(e):
@@ -462,19 +460,45 @@ class MonocleSampleData:
                             temp_filters, include_in_silico=True, include_qc_data=True
                         )
                         metadata_cache[cache_key] = matching_sample_metadata
-                    # count the number of matches for each field
-                    for this_value in this_field_obj["values"]:
+                    # Converting submitting institution keys to names is needed, as samples returned by
+                    # MetadataDownload.get_metadata() have institution names instead of keys (for display purposes).
+                    these_field_values_to_count_matches = (
+                        self._convert_instituion_keys_to_names(this_field_obj["values"])
+                        if this_field == FIELD_NAME_SUBMITTING_INSTITUTION
+                        else this_field_obj["values"]
+                    )
+                    for i, this_value in enumerate(this_field_obj["values"]):
                         this_field_obj["matches"].append(
                             {
                                 "value": this_value,
                                 "number": self._get_number_samples_matching_this_field_value(
-                                    matching_sample_metadata, this_field_type, this_field, this_value
+                                    matching_sample_metadata,
+                                    this_field_type,
+                                    this_field,
+                                    these_field_values_to_count_matches[i],
                                 ),
                             }
                         )
             logging.info("finished gathering of number of matches for each distinct value")
 
         return distinct_values
+
+    def _convert_instituion_keys_to_names(self, institution_keys):
+        if self._institutions is None:
+            self._institutions = self._get_institutions()
+        return list(map(self._convert_instituion_key_to_name, institution_keys))
+
+    def _convert_instituion_key_to_name(self, institution_key):
+        try:
+            return self._institutions[institution_key]["name"]
+        except KeyError:
+            logging.error(
+                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution."
+            )
+            raise
+
+    def _get_institutions(self):
+        return self.get_sample_tracking_service().get_institutions()
 
     def _get_sample_filters_excluding_field(self, sample_filters, field_type, field):
         """
@@ -587,12 +611,7 @@ class MonocleSampleData:
             inst_key_batch_date_pair["institution key"] for inst_key_batch_date_pair in inst_key_batch_date_pairs
         ]
         if not disable_public_name_fetch:
-            institution_names = [
-                institution["name"]
-                for institution_key, institution in self.get_sample_tracking_service().get_institutions().items()
-                if institution_key in institution_keys
-            ]
-            sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_names)
+            sanger_sample_id_to_public_name = self._get_sanger_sample_id_to_public_name_dict(institution_keys)
         filtered_samples = []
         sequencing_status_data = deepcopy(self.get_sample_tracking_service().get_sequencing_status())
         # lane_data is a temporary store of lane data that are needed for filters
@@ -791,10 +810,10 @@ class MonocleSampleData:
         logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
         return filtered_samples
 
-    def _get_sanger_sample_id_to_public_name_dict(self, institutions):
+    def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}
         for sample in self.get_sample_tracking_service().sample_metadata.get_samples(
-            self.current_project, institutions=institutions
+            self.current_project, institution_keys=institution_keys
         ):
             sanger_sample_id = sample["sanger_sample_id"]
             try:
@@ -929,7 +948,7 @@ class MonocleSampleData:
             )
         return max_samples_per_zip
 
-    def get_metadata_for_download(self, download_hostname, institution, category, status):
+    def get_metadata_for_download(self, download_hostname, institution_key, category, status):
         """
         This acts as a wrapper for get_csv_download().
 
@@ -940,7 +959,7 @@ class MonocleSampleData:
         It is useful to retain this wrapper as it supports the existing routes that (because params are simple)
         conveniently accept GET requests.
 
-        Pass host name (used for download links), institution name, category ('sequencing' or 'pipeline')
+        Pass host name (used for download links), institution key, category ('sequencing' or 'pipeline')
         and status ('successful' or 'failed').  These are translated into the parameters required by
         get_csv_download().
 
@@ -948,12 +967,11 @@ class MonocleSampleData:
         """
         # validate params
         institution_data = self.get_sample_tracking_service().get_institutions()
-        institution_names = [institution_data[i]["name"] for i in institution_data.keys()]
         categories = ["sequencing", "pipeline"]
         statuses = ["successful", "failed"]
-        if institution not in institution_names:
+        if institution_key not in institution_data:
             message = 'institution "{}" passed, but should be one of "{}"'.format(
-                institution, '", "'.join(institution_names)
+                institution_key, '", "'.join(institution_data)
             )
             logging.error("Invalid request to {}: {}".format(__class__.__name__, message))
             return {"success": False, "error": "request", "message": message}
@@ -972,19 +990,13 @@ class MonocleSampleData:
 
         # Create a sample filter that includes all batches for this institution
         batches_filter = []
-        # batches are referenced by institution key, so get that first
-        institution_key = None
-        for this_institution in institution_data:
-            if institution_data[this_institution].get("name") == institution:
-                institution_key = this_institution
-                break
-        # now get all batches for the institution
+        # get all batches for the institution
         batches_data = self.get_sample_tracking_service().get_batches().get(institution_key)
         for this_delivery in batches_data["deliveries"]:
             batches_filter.append({"institution key": institution_key, "batch date": this_delivery["date"]})
         # request should never have been made for an institution with no samples
         if 0 == len(batches_filter):
-            message = "no batches could be found for {}".format(institution)
+            message = "no batches could be found for {}".format(institution_key)
             logging.error(message)
             raise RuntimeError(message)
 
@@ -999,14 +1011,12 @@ class MonocleSampleData:
         sample_filters = {"batches": batches_filter, category: status_filter}
         logging.info(
             "metadata download {}/{}/{} will use sample filters: {}".format(
-                institution, category, status, sample_filters
+                institution_key, category, status, sample_filters
             )
         )
 
-        filename = "{}_{}_{}.csv".format(
-            "".join([ch for ch in institution if ch.isalpha() or ch.isdigit()]).rstrip(), category, status
-        )
-        download_links = {"hostname": download_hostname, "institution": institution}
+        filename = "{}_{}_{}.csv".format(institution_key, category, status)
+        download_links = {"hostname": download_hostname, "institution_key": institution_key}
         # wrap get_csv_download()
         return self.get_csv_download(filename, sample_filters, download_links=download_links)
 
@@ -1044,14 +1054,16 @@ class MonocleSampleData:
         download_base_url = None
         if download_links is not None:
             try:
-                institution = download_links["institution"]
+                institution_key = download_links["institution_key"]
                 hostname = download_links["hostname"]
             except KeyError:
                 logging.error(
-                    "{} parameter download_links must provide 'institution' and 'hostname'".format(__class__.__name__)
+                    "{} parameter download_links must provide 'institution_key' and 'hostname'".format(
+                        __class__.__name__
+                    )
                 )
                 raise
-            institution_download_symlink_url_path = self.make_download_symlink(institution)
+            institution_download_symlink_url_path = self.make_download_symlink(institution_key)
             if institution_download_symlink_url_path is None:
                 logging.error("Failed to create a symlink for data downloads.")
                 return {
@@ -1307,7 +1319,7 @@ class MonocleSampleData:
             first_row = False
         return pandas_data, col_order
 
-    def make_download_symlink(self, target_institution=None, **kwargs):
+    def make_download_symlink(self, target_institution_key=None, **kwargs):
         """
         Pass the institution name _or_ cross_institution=True
 
@@ -1320,8 +1332,8 @@ class MonocleSampleData:
 
         The symlink path (relative to web server document root) is returned.
         """
-        if target_institution is None and not kwargs.get("cross_institution"):
-            message = "must pass either a target_institution name or 'cross_institution=True'"
+        if target_institution_key is None and not kwargs.get("cross_institution"):
+            message = "must pass either a target institution key or 'cross_institution=True'"
             logging.error("{} parameter error: {}".format(__class__.__name__, message))
             raise ValueError(message)
 
@@ -1374,11 +1386,7 @@ class MonocleSampleData:
         data_inst_view_environ = DATA_INST_VIEW_ENVIRON[self.current_project]
         if data_inst_view_environ not in environ:
             return self._download_config_error("environment variable {} is not set".format(data_inst_view_environ))
-        child_dir = (
-            cross_institution_dir
-            if kwargs.get("cross_institution")
-            else self.get_sample_tracking_service().institution_db_key_to_dict[target_institution]
-        )
+        child_dir = cross_institution_dir if kwargs.get("cross_institution") else target_institution_key
         download_host_dir = Path(environ[data_inst_view_environ], child_dir)
         if not download_host_dir.is_dir():
             return self._download_config_error(

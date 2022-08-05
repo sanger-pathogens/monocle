@@ -11,40 +11,34 @@ from pathlib import Path, PurePath
 from sys import argv
 from urllib.error import HTTPError
 
-from dash.api.service.DataServices.sample_tracking_services import MonocleSampleTracking
+from dash.api.service.DataSources.institution_data import InstitutionData
 from dash.api.service.DataSources.sample_metadata import SampleMetadata
 from dash.api.service.DataSources.sequencing_status import SequencingStatus
 
 
-def create_download_view_for_sample_data(project, db, institution_name_to_id, data_dir, output_dir):
-    logging.info("Getting list of institutions")
-    institutions = list(db.get_institution_names(project))
-    logging.info("Found {} institutions".format(len(institutions)))
-
+def create_download_view_for_sample_data(project, db, institution_keys, data_dir, output_dir):
     data_file_lookup_by_lane_id = _get_data_file_lookup_by_lane_id(data_dir)
-
-    if 0 == len(institutions):
-        logging.warning("No institutions were found.")
+    if len(institution_keys) == 0:
+        logging.warning("No institutions were given.")
     else:
-        for institution in institutions:
-            logging.info(f"{institution}: getting samples and lane information")
-            public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution, db)
+        for institution_key in institution_keys:
+            logging.info(f"{institution_key}: getting samples and lane information")
+            public_names_to_lane_ids = _get_public_names_with_lane_ids(project, institution_key, db)
 
-            logging.info(f"{institution}: creating subdirectories")
+            logging.info(f"{institution_key}: creating subdirectories")
             with _cd(Path(output_dir)):
 
                 if public_names_to_lane_ids:
-                    institution_readable_id = institution_name_to_id[institution]
-                    _mkdir(institution_readable_id)
+                    _mkdir(institution_key)
 
-                    with _cd(institution_readable_id):
+                    with _cd(institution_key):
                         for public_name, lane_ids in public_names_to_lane_ids.items():
                             for lane_id in lane_ids:
                                 _create_public_name_dir_with_symlinks(
-                                    data_file_lookup_by_lane_id, public_name, lane_id, institution, data_dir
+                                    data_file_lookup_by_lane_id, public_name, lane_id, institution_key, data_dir
                                 )
                             if not lane_ids:
-                                logging.debug(f'Creating empty directory "{public_name}" for {institution}.')
+                                logging.debug(f'Creating empty directory "{public_name}" for {institution_key}.')
                                 _mkdir(public_name)
 
 
@@ -76,7 +70,7 @@ def _get_data_file_lookup_by_lane_id(data_dir):
     return data_file_lookup_by_lane_id
 
 
-def _get_public_names_with_lane_ids(project, institution, db):
+def _get_public_names_with_lane_ids(project, institution_key, db):
 
     num_retries = 0
     final_exception = None
@@ -84,9 +78,9 @@ def _get_public_names_with_lane_ids(project, institution, db):
     while samples_list is None and num_retries < 10:
         num_retries += 1
         try:
-            samples_list = db.get_samples(project, institutions=[institution])
+            samples_list = db.get_samples(project, institution_keys=[institution_key])
         except Exception as e:
-            logging.warning("failed to retrieve samples for institution {}: {}".format(institution, e))
+            logging.warning("failed to retrieve samples for institution {}: {}".format(institution_key, e))
             final_exception = e
             time.sleep(10)
     if samples_list is None:
@@ -94,14 +88,14 @@ def _get_public_names_with_lane_ids(project, institution, db):
         # without db.get_samples() running successfully
         logging.error(
             "gave up retrieving samples for {} institution {} after {} attempts".format(
-                project, institution, num_retries
+                project, institution_key, num_retries
             )
         )
         raise final_exception
 
     public_names_to_sanger_sample_id = {sample["public_name"]: sample["sanger_sample_id"] for sample in samples_list}
 
-    logging.info(f"{institution}: {len(public_names_to_sanger_sample_id)} public names")
+    logging.info(f"{institution_key}: {len(public_names_to_sanger_sample_id)} public names")
 
     num_lanes = 0
     public_names_to_lane_ids = {}
@@ -115,17 +109,19 @@ def _get_public_names_with_lane_ids(project, institution, db):
                     num_lanes += 1
                     lane_ids_of_one_sample.append(lane["id"])
             if lane_ids_of_one_sample:
-                logging.debug(f'{institution}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
+                logging.debug(f'{institution_key}: {len(lane_ids_of_one_sample)} lanes for "{public_name}"')
                 public_names_to_lane_ids[public_name] = lane_ids_of_one_sample
             else:
-                logging.debug(f'{institution}: No lanes found for "{public_name}"')
+                logging.debug(f'{institution_key}: No lanes found for "{public_name}"')
                 # We add public names w/ no lanes, as we want to
                 # create empty public name directories as well.
                 public_names_to_lane_ids[public_name] = []
         except HTTPError as e:
-            logging.error("Failed to get sequence data for {} sample {}: {}".format(institution, public_name, repr(e)))
+            logging.error(
+                "Failed to get sequence data for {} sample {}: {}".format(institution_key, public_name, repr(e))
+            )
 
-    logging.info(f"{institution} has a total of {num_lanes} lanes")
+    logging.info(f"{institution_key} has a total of {num_lanes} lanes")
 
     return public_names_to_lane_ids
 
@@ -134,15 +130,15 @@ def _get_sequencing_status_data(sanger_sample_ids):
     return SequencingStatus().get_multiple_samples(sanger_sample_ids)
 
 
-def _create_public_name_dir_with_symlinks(data_file_lookup_by_lane_id, public_name, lane_id, institution, data_dir):
+def _create_public_name_dir_with_symlinks(data_file_lookup_by_lane_id, public_name, lane_id, institution_key, data_dir):
     data_files = _get_data_files(data_file_lookup_by_lane_id, lane_id)
 
-    logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution}.')
+    logging.debug(f'Creating directory "{public_name}" for lane {lane_id} for {institution_key}.')
     _mkdir(public_name)
 
     with _cd(public_name):
         directory_containing_symlinks = Path().absolute()
-        logging.debug(f"Creating symlinks in {directory_containing_symlinks} for lane {lane_id} for {institution}.")
+        logging.debug(f"Creating symlinks in {directory_containing_symlinks} for lane {lane_id} for {institution_key}.")
         for data_file in data_files:
             _create_symlink_to(data_file, data_file.name)
 
@@ -161,20 +157,6 @@ def _create_symlink_to(path_to_file, symlink_name):
             logging.debug("symlink {} already exists: not recreated".format(symlink_name))
         else:
             Path(symlink_name).symlink_to(path_to_file)
-
-
-def get_institutions(project, sample_metadata):
-    name_to_id = {}
-    # set_up = False stops MonocleSampleTracking instantiating lots of objects we don't need...
-    dashboard_data = MonocleSampleTracking(set_up=False)
-    # ...but that means we need to give it a SampleMetadata...
-    dashboard_data.sample_metadata = sample_metadata
-    # ...and assign the project
-    dashboard_data.current_project = project
-    institutions = dashboard_data.get_institutions()
-    for this_institution_id in institutions.keys():
-        name_to_id[institutions[this_institution_id]["name"]] = this_institution_id
-    return name_to_id
 
 
 # Allows to `cd` in the context of the `with` statement and automatically
@@ -223,5 +205,9 @@ if __name__ == "__main__":
     sample_metadata.current_project = project
 
     create_download_view_for_sample_data(
-        project, sample_metadata, get_institutions(project, sample_metadata), options.data_dir, options.output_dir
+        project,
+        sample_metadata,
+        InstitutionData().get_all_institution_keys_regardless_of_user_membership(),
+        options.data_dir,
+        options.output_dir,
     )

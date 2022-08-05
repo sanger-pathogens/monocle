@@ -13,9 +13,10 @@ from DataServices.sample_data_services import (
     MonocleSampleData,
 )
 from DataServices.sample_tracking_services import MonocleSampleTracking
-from DataSources.metadata_download import MetadataDownload, Monocle_Download_Client
+from DataSources.institution_data import InstitutionData
+from DataSources.metadata_download import MetadataDownload, MonocleDownloadClient
 from DataSources.pipeline_status import PipelineStatus
-from DataSources.sample_metadata import Monocle_Client, SampleMetadata
+from DataSources.sample_metadata import MonocleClient, SampleMetadata
 from DataSources.sequencing_status import MLWH_Client, SequencingStatus
 from utils.file import format_file_size
 
@@ -32,8 +33,13 @@ class MonocleSampleDataTest(TestCase):
     test_config_bad = "dash/tests/mock_data/data_sources_bad.yml"
     with open(test_config, "r") as file:
         data_sources = yaml.load(file, Loader=yaml.FullLoader)
-        mock_url_path = data_sources["data_download"]["url_path"]
-        mock_web_dir = data_sources["data_download"]["web_dir"]
+    mock_url_path = data_sources["data_download"]["url_path"]
+    mock_web_dir = data_sources["data_download"]["web_dir"]
+
+    mock_institution_data = [
+        {"key": "FakOne", "name": "Fake institution One"},
+        {"key": "FakTwo", "name": "Fake institution Two"},
+    ]
 
     inst_key_batch_date_pairs = [
         {"institution key": "FakOne", "batch date": "2020-04-29"},
@@ -59,28 +65,28 @@ class MonocleSampleDataTest(TestCase):
     mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "JUNO_DATA_INSTITUTION_VIEW": mock_inst_view_dir}
 
     # mock values for patching queries in DataSources modules
-    mock_institutions = ["Fake institution One", "Fake institution Two"]
-    mock_bad_institution_name = "This Institution Does Not Exist"
+    mock_institution_keys = ["FakOne", "FakTwo"]
+    mock_bad_institution_key = "this institution key does not exist"
     mock_sample_id_list = ["fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3", "fake_sample_id_4"]
     mock_samples = [
         {
             "sanger_sample_id": "fake_sample_id_1",
-            "submitting_institution": "Fake institution One",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_1",
         },
         {
             "sanger_sample_id": "fake_sample_id_2",
-            "submitting_institution": "Fake institution One",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_2",
         },
         {
             "sanger_sample_id": "fake_sample_id_3",
-            "submitting_institution": "Fake institution Two",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_3",
         },
         {
             "sanger_sample_id": "fake_sample_id_4",
-            "submitting_institution": "Fake institution Two",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_4",
         },
     ]
@@ -199,12 +205,12 @@ class MonocleSampleDataTest(TestCase):
     mock_samples2 = [
         {
             "sanger_sample_id": "fake_sample_id_1",
-            "submitting_institution": "Fake institution One",
+            "submitting_institution": "FakOne",
             "public_name": f"{PUBLIC_NAME}_1",
         },
         {
             "sanger_sample_id": "fake_sample_id_2",
-            "submitting_institution": "Fake institution Two",
+            "submitting_institution": "FakTwo",
             "public_name": f"{PUBLIC_NAME}_2",
         },
     ]
@@ -445,9 +451,31 @@ class MonocleSampleDataTest(TestCase):
         },
     ]
 
+    mock_metadata_with_submitting_institutions = [
+        {
+            "sanger_sample_id": {"order": 1, "title": "Sanger_Sample_ID", "value": "fake_sample_id_1"},
+            "submitting_institution": {
+                "order": 1,
+                "title": "Submitting_Institution",
+                "value": mock_institution_keys[0],
+            },
+        },
+        {
+            "sanger_sample_id": {"order": 1, "title": "Sanger_Sample_ID", "value": "fake_sample_id_2"},
+            "submitting_institution": {
+                "order": 1,
+                "title": "Submitting_Institution",
+                "value": mock_institution_keys[1],
+            },
+        },
+    ]
+
     mock_distinct_values_query = {"metadata": ["field1", "field2"], "in silico": ["field3"]}
     bad_distinct_values_query = {"metadata": ["field1", "field2"], "NO SUCH TYPE": ["field3"]}
     mock_distinct_values = [{"name": "field1", "values": ["a", "b"]}, {"name": "field2", "values": ["d", "e"]}]
+    mock_distinct_values_with_submitting_institutions = [
+        {"name": "submitting_institution", "values": [mock_institution_keys[0], mock_institution_keys[1]]}
+    ]
     mock_distinct_in_silico_values = [{"name": "field3", "values": ["f", "g", "h"]}]
 
     expected_distinct_values = [
@@ -522,7 +550,7 @@ class MonocleSampleDataTest(TestCase):
 
     expected_metadata_download = {
         "success": True,
-        "filename": "FakeinstitutionOne_sequencing_successful.csv",
+        "filename": "FakOne_sequencing_successful.csv",
         "content": expected_metadata,
     }
 
@@ -536,7 +564,7 @@ class MonocleSampleDataTest(TestCase):
         "success": False,
         "error": "request",
         "message": 'institution "{}" passed, but should be one of "{}"'.format(
-            mock_bad_institution_name, '", "'.join(mock_institutions)
+            mock_bad_institution_key, '", "'.join(mock_institution_keys)
         ),
     }
 
@@ -554,8 +582,9 @@ class MonocleSampleDataTest(TestCase):
     @patch.dict(environ, mock_environment, clear=True)
     def setUp(self):
         # mock sample_metadata
+        self.monocle_sample_tracking.institution_ldap_data = InstitutionData(set_up=False)
         self.monocle_sample_tracking.sample_metadata = SampleMetadata(set_up=False)
-        self.monocle_sample_tracking.sample_metadata.monocle_client = Monocle_Client(set_up=False)
+        self.monocle_sample_tracking.sample_metadata.monocle_client = MonocleClient(set_up=False)
         self.monocle_sample_tracking.sample_metadata.monocle_client.set_up(self.test_config)
         # mock sequencing_status
         self.monocle_sample_tracking.sequencing_status_source = SequencingStatus(set_up=False)
@@ -564,8 +593,9 @@ class MonocleSampleDataTest(TestCase):
         # mock metadata_download
         self.monocle_data.current_project = self.mock_project_id
         self.monocle_data.metadata_download_source = MetadataDownload(set_up=False)
-        self.monocle_data.metadata_download_source.dl_client = Monocle_Download_Client(set_up=False)
-        self.monocle_data.metadata_download_source.dl_client.set_up(self.test_config)
+        self.monocle_data.metadata_download_source._institutions = {}
+        self.monocle_data.metadata_download_source.download_client = MonocleDownloadClient(set_up=False)
+        self.monocle_data.metadata_download_source.download_client.set_up(self.test_config)
         # load mock data
         self.get_mock_data()
 
@@ -588,12 +618,12 @@ class MonocleSampleDataTest(TestCase):
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
 
-    @patch.object(SampleMetadata, "get_institution_names")
+    @patch.object(InstitutionData, "get_all_institutions_regardless_of_user_membership")
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
-    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+    def get_mock_data(self, mock_seq_samples_query, mock_db_sample_query, mock_institutions_query):
         self.monocle_sample_tracking.sequencing_status_data = None
-        mock_institution_query.return_value = self.mock_institutions
+        mock_institutions_query.return_value = self.mock_institution_data
         mock_db_sample_query.return_value = self.mock_samples
         mock_seq_samples_query.return_value = self.mock_seq_status
         self.monocle_sample_tracking.get_institutions()
@@ -601,14 +631,12 @@ class MonocleSampleDataTest(TestCase):
         self.monocle_sample_tracking.get_sequencing_status()
 
     # this can be called to load alternative data set
-    @patch.object(SampleMetadata, "get_institution_names")
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
     @patch.dict(environ, mock_environment, clear=True)
-    def get_mock_data2(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+    def get_mock_data2(self, mock_seq_samples_query, mock_db_sample_query):
         self.monocle_sample_tracking.sequencing_status_data = None
         self.monocle_sample_tracking.pipeline_status = PipelineStatus(self.mock_project_id, config=self.test_config)
-        mock_institution_query.return_value = self.mock_institutions
         mock_db_sample_query.return_value = self.mock_samples2
         mock_seq_samples_query.return_value = self.mock_seq_status2
         self.monocle_sample_tracking.get_institutions()
@@ -616,12 +644,10 @@ class MonocleSampleDataTest(TestCase):
         self.monocle_sample_tracking.get_sequencing_status()
 
     # this can be called to load a 3rd data set
-    @patch.object(SampleMetadata, "get_institution_names")
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
-    def get_mock_data3(self, mock_seq_samples_query, mock_db_sample_query, mock_institution_query):
+    def get_mock_data3(self, mock_seq_samples_query, mock_db_sample_query):
         self.monocle_sample_tracking.sequencing_status_data = None
-        mock_institution_query.return_value = self.mock_institutions
         mock_db_sample_query.return_value = self.mock_samples3
         mock_seq_samples_query.return_value = self.mock_seq_status3
         self.monocle_sample_tracking.get_institutions()
@@ -719,7 +745,7 @@ class MonocleSampleDataTest(TestCase):
             bulk_download_info,
         )
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
@@ -736,27 +762,27 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     def test_get_distinct_values(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
         mock_distinct_values_fetch.return_value = self.mock_distinct_values
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
         distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institution_keys
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institution_keys
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
         self.assertEqual(self.expected_distinct_values, distinct_values)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     @patch.object(MonocleSampleData, "get_filtered_samples")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_distinct_values_with_sample_filters(
         self,
         mock_metadata_fetch,
@@ -777,17 +803,69 @@ class MonocleSampleDataTest(TestCase):
             sample_filters={"batches": self.inst_key_batch_date_pairs, "metadata": {"field2": ["x"]}},
         )
         mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institution_keys
         )
         mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institutions
+            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institution_keys
         )
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
         self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
+    @patch.object(MonocleSampleData, "get_filtered_samples")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
+    def test_get_distinct_values_counts_submitting_institution_matches(
+        self,
+        mock_metadata_fetch,
+        mock_in_silico_data_fetch,
+        mock_qc_data_fetch,
+        mock_get_filtered_samples,
+        mock_distinct_in_silico_values_fetch,
+        mock_distinct_values_fetch,
+    ):
+        mock_metadata_fetch.return_value = self.mock_metadata_with_submitting_institutions
+        mock_in_silico_data_fetch.return_value = self.mock_in_silico_data2
+        mock_qc_data_fetch.return_value = self.mock_qc_data
+        mock_get_filtered_samples.return_value = self.mock_filtered_samples
+        mock_distinct_values_fetch.return_value = self.mock_distinct_values_with_submitting_institutions
+        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
+        self.monocle_data.metadata_download_source._institutions = {
+            submitting_institution["key"]: {"name": submitting_institution["name"]}
+            for submitting_institution in self.mock_institution_data
+        }
+
+        actual_distinct_values = self.monocle_data.get_distinct_values(
+            self.mock_distinct_values_query,
+            sample_filters={
+                "batches": self.inst_key_batch_date_pairs,
+                "metadata": {"submitting_institution": [self.mock_institution_keys[0]]},
+            },
+        )
+
+        expected_distinct_values_metadata = {
+            "field type": "metadata",
+            "fields": [
+                {
+                    "name": "submitting_institution",
+                    "values": self.mock_institution_keys,
+                    "matches": [
+                        {"value": self.mock_institution_keys[0], "number": 1},
+                        {"value": self.mock_institution_keys[1], "number": 1},
+                    ],
+                }
+            ],
+        }
+        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_distinct_values_metadata))
+        self.assertEqual(expected_distinct_values_metadata, actual_distinct_values[0])
+
+        self.monocle_data.metadata_download_source._institutions = {}
+
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_distinct_values_with_sample_filters_catch_error(
         self, mock_metadata_fetch, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch
     ):
@@ -799,29 +877,29 @@ class MonocleSampleDataTest(TestCase):
                 self.mock_distinct_values_query, sample_filters={"batches": self.inst_key_batch_date_pairs}
             )
 
-    @patch.object(Monocle_Client, "distinct_values")
-    @patch.object(Monocle_Client, "distinct_in_silico_values")
+    @patch.object(MonocleClient, "distinct_values")
+    @patch.object(MonocleClient, "distinct_in_silico_values")
     def test_get_distinct_values_bad_field_type(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
         mock_distinct_values_fetch.return_value = self.mock_distinct_values
         mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
         with self.assertRaises(ValueError):
             self.monocle_data.get_distinct_values(self.bad_distinct_values_query)
 
-    @patch.object(Monocle_Client, "make_request")
+    @patch.object(MonocleClient, "make_request")
     def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
         mock_request.side_effect = HTTPError(
             "/nowhere", "404", "message including the words Invalid field", "yes", "no"
         )
         self.assertIsNone(self.monocle_data.get_distinct_values(self.mock_distinct_values_query))
 
-    @patch.object(Monocle_Client, "make_request")
+    @patch.object(MonocleClient, "make_request")
     def test_get_distinct_values_reraise_HTTPError_if_not_404(self, mock_request):
         mock_request.side_effect = HTTPError("/nowhere", "400", "any other 4xx response", "yes", "no")
         with self.assertRaises(HTTPError):
             self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should return sample metadata in expected format,
@@ -835,9 +913,9 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata_plus_in_silico, filtered_samples_metadata)
 
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico_and_qc_data(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch
     ):
@@ -854,7 +932,7 @@ class MonocleSampleDataTest(TestCase):
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata_plus_in_silico_qc, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata_plus_in_silico_qc, filtered_samples_metadata)
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_filtered_columns(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should filter the response to include
@@ -881,8 +959,8 @@ class MonocleSampleDataTest(TestCase):
         )
         self.assertIsNone(filtered_samples_metadata_plus_in_silico_and_qc)
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_start_row_out_of_range_ok(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should gracefully handle a start_row parameter that
@@ -899,7 +977,7 @@ class MonocleSampleDataTest(TestCase):
         )
         self.assertIsNone(filtered_samples_metadata_plus_in_silico)
 
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_num_rows_out_of_range_ok(self, mock_metadata_fetch):
         """
         sample_data_services.MonocleSampleData.get_metadata should gracefully handle num_rows parameter that
@@ -923,8 +1001,8 @@ class MonocleSampleDataTest(TestCase):
                 {"batches": self.inst_key_batch_date_pairs}, metadata_columns=["public_name"], start_row=2
             )
 
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_plus_in_silico_filtered_columns(self, mock_metadata_fetch, mock_in_silico_data_fetch):
         mock_metadata_fetch.return_value = deepcopy(self.mock_metadata)  # work on a copy, as metadata will be modified
         mock_in_silico_data_fetch.return_value = deepcopy(
@@ -1170,9 +1248,9 @@ class MonocleSampleDataTest(TestCase):
             monocle_data_with_bad_config.get_bulk_download_max_samples_per_zip()
 
     @patch.object(MonocleSampleData, "make_download_symlink")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch, mock_make_symlink
     ):
@@ -1182,7 +1260,7 @@ class MonocleSampleDataTest(TestCase):
         mock_make_symlink.return_value = self.mock_download_path
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institutions[0], "sequencing", "successful"
+            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
@@ -1195,15 +1273,15 @@ class MonocleSampleDataTest(TestCase):
         mock_make_symlink.return_value = self.mock_download_path
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institutions[0], "sequencing", "successful"
+            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download_not_found, metadata_download))
         self.assertEqual(self.expected_metadata_download_not_found, metadata_download)
 
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download_reject_missing_institution(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch
     ):
@@ -1212,15 +1290,15 @@ class MonocleSampleDataTest(TestCase):
         mock_qc_data_fetch.return_value = self.mock_qc_data
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_bad_institution_name, "sequencing", "successful"
+            self.mock_download_host, self.mock_bad_institution_key, "sequencing", "successful"
         )
 
         self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
 
     @patch.object(MonocleSampleData, "make_download_symlink")
-    @patch.object(Monocle_Download_Client, "qc_data")
-    @patch.object(Monocle_Download_Client, "in_silico_data")
-    @patch.object(Monocle_Download_Client, "metadata")
+    @patch.object(MonocleDownloadClient, "qc_data")
+    @patch.object(MonocleDownloadClient, "in_silico_data")
+    @patch.object(MonocleDownloadClient, "metadata")
     def test_get_metadata_for_download_error_response(
         self, mock_metadata_fetch, mock_in_silico_data_fetch, mock_qc_data_fetch, mock_make_symlink
     ):
@@ -1230,7 +1308,7 @@ class MonocleSampleDataTest(TestCase):
         mock_make_symlink.return_value = None
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institutions[0], "sequencing", "successful"
+            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         self.assertEqual(self.expected_metadata_download_error_response, metadata_download)
@@ -1248,11 +1326,10 @@ class MonocleSampleDataTest(TestCase):
 
     @patch.dict(environ, mock_environment, clear=True)
     def test_make_download_symlink(self):
-        test_inst_name = self.mock_institutions[0]
-        test_inst_key = self.monocle_sample_tracking.institution_db_key_to_dict[test_inst_name]
+        test_inst_key = self.mock_institution_keys[0]
         self._symlink_test_setup(test_inst_key)
 
-        symlink_url_path = self.monocle_data.make_download_symlink(test_inst_name)
+        symlink_url_path = self.monocle_data.make_download_symlink(test_inst_key)
 
         symlink_disk_path = symlink_url_path.replace(self.mock_url_path, self.mock_web_dir, 1)
 
