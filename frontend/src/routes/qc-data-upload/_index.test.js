@@ -1,32 +1,32 @@
 import { fireEvent, render } from "@testing-library/svelte";
-import MetadataUploadPage from "./index.svelte";
+import QCDataUploadPage from "./index.svelte";
 import { writable } from "svelte/store";
 
 const UPLOAD_URL = "some/upload/url";
 const PROJECT = {
-  project: { upload_links: [{ label: "metadata", url: UPLOAD_URL }] },
+  project: { upload_links: [{ label: "qc data", url: UPLOAD_URL }] },
 };
 const ROLE_FORM = "form";
 
 it("has the expected text", async () => {
-  const { getByLabelText, getByRole, getByText } = render(MetadataUploadPage, {
+  const { getByLabelText, getByRole, getByText } = render(QCDataUploadPage, {
     session: writable(PROJECT),
   });
 
   await fireEvent.submit(getByRole(ROLE_FORM));
 
-  expect(getByText("Metadata upload")).toBeDefined();
+  expect(getByText("QC data upload")).toBeDefined();
   expect(
     getByLabelText(
-      "Select or drag and drop your CSV files (saved as UTF-8) with sample metadata:"
+      "Select or drag and drop your CSV files (saved as UTF-8) with sample QC data:"
     )
   ).toBeDefined();
-  expect(getByText("All metadata were successfully uploaded.")).toBeDefined();
+  expect(getByText("All QC data were successfully uploaded.")).toBeDefined();
 });
 
 it("has the expected upload URL", async () => {
   global.fetch = jest.fn(() => Promise.resolve());
-  const { container, getByRole } = render(MetadataUploadPage, {
+  const { container, getByRole } = render(QCDataUploadPage, {
     session: writable(PROJECT),
   });
   fireEvent.change(container.querySelector("input[type=file]"), {
