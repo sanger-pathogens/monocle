@@ -40,6 +40,8 @@ def create_download_view_for_sample_data(project, db, institution_keys, data_dir
                             if not lane_ids:
                                 logging.debug(f'Creating empty directory "{public_name}" for {institution_key}.')
                                 _mkdir(public_name)
+                else:
+                    logging.debug(f"Not creating output dir for {institution_key} because there are no samples")
 
 
 def _get_data_file_lookup_by_lane_id(data_dir):
@@ -92,6 +94,11 @@ def _get_public_names_with_lane_ids(project, institution_key, db):
             )
         )
         raise final_exception
+    logging.debug(
+        "dash.api.service.DataSources.sample_metadata.SampleMetadata.get_samples({}, institution_keys=[{}]) returned {} results".format(
+            project, institution_key, len(samples_list)
+        )
+    )
 
     public_names_to_sanger_sample_id = {sample["public_name"]: sample["sanger_sample_id"] for sample in samples_list}
 
