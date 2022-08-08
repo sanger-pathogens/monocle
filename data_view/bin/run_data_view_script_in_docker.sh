@@ -15,6 +15,7 @@
 # - the s3 bucket (source data) directory as SAMPLE_DATA_PATH
 # - the output ("insttitution view") directory as `/app/${INST_VIEW_SUBDIR}`
 # - the db config file as `/app/my.cnf`
+# - the OpenLDAP config file as `/app/openldap-env.yaml`
 # - the MLWH API config file as `/app/mlwh-api.yml`
 # - the script itself, in `/app`
 # 
@@ -56,6 +57,7 @@ if ! docker run  -u `id -u`:`id -g` \
             --volume ${SAMPLE_DATA_PATH}:${SAMPLE_DATA_PATH}  \
             --volume ${INST_VIEW_PATH}:/app/${INST_VIEW_SUBDIR}  \
             --volume `pwd`/my.cnf:/app/my.cnf \
+            --volume `pwd`/openldap-env.yaml:/app/openldap-env.yaml \
             --volume `pwd`/mlwh-api.yml:/app/mlwh-api.yml \
             --volume `pwd`/create_download_view_for_sample_data.py:/app/create_download_view_for_sample_data.py \
             --env "MONOCLE_DATA=${SAMPLE_DATA_PATH}" \
