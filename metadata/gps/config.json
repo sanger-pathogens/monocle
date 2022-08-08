@@ -1896,5 +1896,6 @@
             "url": "/metadata/gps/qc-data-upload"
          }
       ]
-   }
+   },
+   "project_key": "gps"
 }

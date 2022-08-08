@@ -1,17 +1,14 @@
 import unittest
-from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 import metadata.api.routes as mar
-from metadata.api.model.qc_data import QCData
-from metadata.api.routes import update_in_silico_data_route, update_sample_metadata_route
-from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_LANE_QC_DATA_1_DICT, TEST_SAMPLE_1
+from metadata.api.routes import update_in_silico_data_route, update_qc_data_route, update_sample_metadata_route
+from metadata.tests.test_data import TEST_LANE_IN_SILICO_1, TEST_LANE_QC_DATA_1, TEST_SAMPLE_1
 
 
 class TestRoutes(unittest.TestCase):
     """Test class for the routes module"""
 
-    # FIXME this upload test is inadequate
     @patch("metadata.api.routes.os")
     @patch("connexion.request")
     @patch("metadata.api.upload_handlers.UploadMetadataHandler")
@@ -19,7 +16,40 @@ class TestRoutes(unittest.TestCase):
         http_status = update_sample_metadata_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
-    # FIXME this upload test is inadequate
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_sample_metadata_route_reject_missing_file(
+        self, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_connexion_request.files = {}
+        http_status = update_sample_metadata_route([], mock_upload_handler)
+        self.assertEqual(http_status, ("Missing spreadsheet file", 400))
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_sample_metadata_route_reject_bad_file_extension(
+        self, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.is_valid_file_type.return_value = False
+        http_status = update_sample_metadata_route([], mock_upload_handler)
+        self.assertIn("must be one of the following formats", http_status[0])
+        self.assertEqual(http_status[1], 400)
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_update_sample_metadata_route_reject_invalid(
+        self, mock_jsonify, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.load.return_value = ["any non empty list"]
+        mock_jsonify.return_value = '["mock error message", "another mock error message"]'
+        http_status = update_sample_metadata_route([], mock_upload_handler)
+        self.assertIsInstance(http_status[0], str)
+        self.assertEqual(http_status[1], 400)
+
     @patch("metadata.api.routes.os")
     @patch("connexion.request")
     @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
@@ -27,61 +57,73 @@ class TestRoutes(unittest.TestCase):
         http_status = update_in_silico_data_route([], mock_upload_handler)
         self.assertEqual(http_status, 200)
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route(self, db_update_mock):
-        mock_qc_data = TEST_LANE_QC_DATA_1
-        mock_update = TEST_LANE_QC_DATA_1_DICT
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
-        db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
-        self.assertEqual(http_status, 200)
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_in_silico_route_reject_missing_file(self, mock_upload_handler, mock_connexion_request, mock_os):
+        mock_connexion_request.files = {}
+        http_status = update_in_silico_data_route([], mock_upload_handler)
+        self.assertEqual(http_status, ("Missing spreadsheet file", 400))
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_no_updates_ok(self, db_update_mock):
-        under_test = mar.update_qc_data_route([], db_update_mock)
-        self.assertEqual(db_update_mock.update_lane_qc_data.call_count, 0)
-        self.assertEqual(under_test, 200)
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_qc_values_undefined(self, db_update_mock):
-        mock_qc_data = QCData(
-            lane_id=TEST_LANE_QC_DATA_1.lane_id,
-            status=None,
-            rel_abundance_status=None,
-            contig_no_status=None,
-            gc_content_status=None,
-            genome_len_status=None,
-            cov_depth_status=None,
-            cov_breadth_status=None,
-            HET_SNPs_status=None,
-            QC_pipeline_version=None,
-        )
-        mock_update = {
-            "lane_id": mock_qc_data.lane_id,
-            "status": None,
-            "rel_abundance_status": None,
-            "contig_no_status": None,
-            "gc_content_status": None,
-            "genome_len_status": None,
-            "cov_depth_status": None,
-            "cov_breadth_status": None,
-            "HET_SNPs_status": None,
-            "QC_pipeline_version": None,
-        }
-        mar.update_qc_data_route([mock_update], db_update_mock)
-
-        db_update_mock.update_lane_qc_data.assert_called_once_with([mock_qc_data])
-
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_missing_lane_id_rejected(self, db_update_mock):
-        mock_update = deepcopy(TEST_LANE_QC_DATA_1_DICT)
-        mock_update.pop("lane_id")
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_in_silico_route_reject_bad_file_extension(
+        self, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.is_valid_file_type.return_value = False
+        http_status = update_in_silico_data_route([], mock_upload_handler)
+        self.assertIn("must be one of the following formats", http_status[0])
         self.assertEqual(http_status[1], 400)
 
-    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
-    def test_update_qc_data_route_not_valid_rejected(self, db_update_mock):
-        mock_update = {}
-        http_status = mar.update_qc_data_route([mock_update], db_update_mock)
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_update_in_silico_route_reject_invalid(
+        self, mock_jsonify, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.load.return_value = ["any non empty list"]
+        mock_jsonify.return_value = '["mock error message", "another mock error message"]'
+        http_status = update_in_silico_data_route([], mock_upload_handler)
+        self.assertIsInstance(http_status[0], str)
+        self.assertEqual(http_status[1], 400)
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadInSilicoHandler")
+    def test_update_qc_data_route(self, mock_upload_handler, mock_connexion_request, mock_os):
+        http_status = update_qc_data_route([], mock_upload_handler)
+        self.assertEqual(http_status, 200)
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_qc_data_route_reject_missing_file(self, mock_upload_handler, mock_connexion_request, mock_os):
+        mock_connexion_request.files = {}
+        http_status = update_qc_data_route([], mock_upload_handler)
+        self.assertEqual(http_status, ("Missing spreadsheet file", 400))
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    def test_update_qc_data_route_reject_bad_file_extension(self, mock_upload_handler, mock_connexion_request, mock_os):
+        mock_upload_handler.is_valid_file_type.return_value = False
+        http_status = update_qc_data_route([], mock_upload_handler)
+        self.assertIn("must be one of the following formats", http_status[0])
+        self.assertEqual(http_status[1], 400)
+
+    @patch("metadata.api.routes.os")
+    @patch("connexion.request")
+    @patch("metadata.api.upload_handlers.UploadMetadataHandler")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_update_qc_data_route_reject_invalid(
+        self, mock_jsonify, mock_upload_handler, mock_connexion_request, mock_os
+    ):
+        mock_upload_handler.load.return_value = ["any non empty list"]
+        mock_jsonify.return_value = '["mock error message", "another mock error message"]'
+        http_status = update_qc_data_route([], mock_upload_handler)
+        self.assertIsInstance(http_status[0], str)
         self.assertEqual(http_status[1], 400)
 
     @patch("metadata.api.download_handlers.DownloadMetadataHandler")
