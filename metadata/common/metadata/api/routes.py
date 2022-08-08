@@ -47,10 +47,15 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
 
     spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+    # Validate; if it passes, store it
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
+        if len(validation_errors) > 0:
+            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+        else:
+            upload_handler.store()
+    finally:
+        os.remove(spreadsheet_file)
 
     return HTTP_SUCCEEDED_STATUS
 
@@ -73,10 +78,15 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
 
     spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+    # Validate; if it passes, store it
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
+        if len(validation_errors) > 0:
+            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+        else:
+            upload_handler.store()
+    finally:
+        os.remove(spreadsheet_file)
 
     return HTTP_SUCCEEDED_STATUS
 
@@ -99,10 +109,15 @@ def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
 
     spreadsheet_file = _save_spreadsheet(uploaded_file)
 
-    # Validate and (if passed) store
-    stored_ok, validation_errors = _store_spreadsheet(upload_handler, spreadsheet_file)
-    if not stored_ok:
-        return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+    # Validate; if it passes, store it
+    try:
+        validation_errors = upload_handler.load(spreadsheet_file, connexion.request)
+        if len(validation_errors) > 0:
+            return convert_to_json({"errors": validation_errors}), HTTP_BAD_REQUEST_STATUS
+        else:
+            upload_handler.store()
+    finally:
+        os.remove(spreadsheet_file)
 
     return HTTP_SUCCEEDED_STATUS
 
@@ -314,27 +329,6 @@ def _save_spreadsheet(uploaded_file):
     logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
     return spreadsheet_file
-
-
-def _store_spreadsheet(upload_handler, spreadsheet_file):
-    # validate spreadsheet and (if it passes) store it
-    # return tuple: flag indicating if the file was stored, and return value of the upload handler's load() method
-    try:
-        validation_errors = upload_handler.load(spreadsheet_file)
-        if len(validation_errors) > 0:
-            stored_ok = False
-        else:
-            stored_ok = True
-            # valid => store
-            upload_handler.store()
-    except Exception as e:
-        # don't add this message to validation_errors, because those
-        # messages are presented to the user
-        logger.error("Failed to load uploaded spreadsheet: {}".format(e))
-        stored_ok = False
-    finally:
-        os.remove(spreadsheet_file)
-    return (stored_ok, validation_errors)
 
 
 def _get_distinct_values_common(field_type, fields, institutions, dao):
