@@ -62,8 +62,8 @@ npm run lint:fix
 Icon components live in `src/lib/components/icon/`.
 
 If you need to add a new icon, for consistency search for it in
-[Octicons](https://primer.style/octicons/) and only look elsewhere (or make your own!) if no
-suitable icons are found.
+[Octicons](https://primer.style/octicons/) and only look elsewhere (e.g. on [Material Design Icons](https://materialdesignicons.com/), or make your own!) if no
+suitable icons are found. Also note that all icons should use `$lib/components/icons/_Icon.svelte` as an ancestor component.
 
 ### Previewing production build
 

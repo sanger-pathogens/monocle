@@ -82,6 +82,18 @@
     max-width: 100%;
   }
 
+  :global(.dropdown-menu-trigger:not(:hover):not(:focus)
+      + .dropdown-menu-items:not(:hover):not(:focus-within)) {
+    /* Hide visually only while still show the menu to assistive technology like screen readers: */
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 1px;
+    /* END hide visually only */
+  }
+
   :global(.frappe-chart .title) {
     font-size: 1rem;
   }

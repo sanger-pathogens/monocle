@@ -5,11 +5,10 @@
     getInstitutionStatus,
     getProjectProgress,
   } from "$lib/dataLoading.js";
+  import DataUploadLinks from "./_dashboard/_DataUploadLinks.svelte";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import InsilicoUploadLink from "./_dashboard/_InsilicoUploadLink.svelte";
-  import MetadataUploadLink from "./_dashboard/_MetadataUploadLink.svelte";
   import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
 
   export let session = appSession;
@@ -28,9 +27,8 @@
   <LoadingIndicator midscreen={true} />
 {:then [institutions = [], projectProgress = { }]}
   <nav>
-    <MetadataUploadLink {session} />
-    <InsilicoUploadLink {session} style="margin-top: .3rem" />
     <SampleDataLink />
+    <DataUploadLinks {session} />
   </nav>
 
   <article>
@@ -72,7 +70,7 @@
     display: flex;
     flex-direction: column;
     align-self: flex-end;
-    margin-right: -0.8rem;
+    margin-right: -1rem;
 
     position: sticky;
     top: 1rem;
