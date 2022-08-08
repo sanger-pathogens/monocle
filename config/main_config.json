@@ -2638,8 +2638,8 @@
                         "var_type": "float",
                         "mandatory": false,
                         "max_length": 6,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
                         }
                     },
                   {  "name"               : "longitude",
@@ -2654,8 +2654,8 @@
                         "var_type": "float",
                         "mandatory": false,
                         "max_length": 6,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,6})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to decimal places"
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
                        }
                     },
                    {  "name"               : "resolution",
@@ -3772,7 +3772,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
-                        "regex": "^ERR(\\d{6}|\\d{7})$",
+                        "regex": "^ERR\\d{6,7}$",
                         "regex_validation_message": "must be a ERR accession number (ERR# format)"
                      }
                   },
@@ -3786,7 +3786,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
-                        "regex": "^ERS(\\d{6}|\\d{7})$",
+                        "regex": "^ERS\\d{6,7}$",
                         "regex_validation_message": "must be a ERS accession number (ERS# format)"
                      }
                   },
