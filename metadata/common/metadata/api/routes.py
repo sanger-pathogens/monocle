@@ -17,56 +17,38 @@ HTTP_BAD_REQUEST_STATUS = 400
 HTTP_NOT_FOUND_STATUS = 404
 HTTP_SUCCEEDED_STATUS = 200
 
+UPLOAD_EXTENSION = ".xlsx"
+
 # regex for names allowed for filters; interpolated into SQL, so must prevent injection
 # (this is easy in practice, as it only has to match column names we choose to sue the the db schema)
 FIELD_NAME_REGEX = "^[a-zA-Z0-9_]+$"
-
-UPLOAD_PARAMS = {
-    "juno": {
-        "metadata": {"check_file_extension": False, "file_delimiter": ","},
-        "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
-        "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
-    },
-    "gps": {
-        "metadata": {"check_file_extension": False, "file_delimiter": ","},
-        "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
-        "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
-    },
-}
 
 
 def convert_to_json(samples):
     return jsonify(samples)
 
 
-def get_current_app():
-    return application
-
-
 @inject
 def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """Upload a spreadsheet to the database"""
-    project = get_project_id()
-    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["metadata"]["check_file_extension"]
-    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["metadata"]["file_delimiter"]
+    upload_handler.check_file_extension = False
+    upload_handler.file_delimiter = ","
     return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
     """Upload a in silico data to the database"""
-    project = get_project_id()
-    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["in silico"]["check_file_extension"]
-    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["in silico"]["file_delimiter"]
+    upload_handler.check_file_extension = True
+    upload_handler.file_delimiter = "\t"
     return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
     """Upload a QC data to the database"""
-    project = get_project_id()
-    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["qc data"]["check_file_extension"]
-    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["qc data"]["file_delimiter"]
+    upload_handler.check_file_extension = True
+    upload_handler.file_delimiter = "\t"
     return _spreadsheet_upload_process(upload_handler)
 
 
@@ -226,20 +208,9 @@ def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
 
 @inject
 def get_project_information(dao: MonocleDatabaseService):
-    project_links = get_current_app().config["project_links"]
+    project_links = application.config["project_links"]
     result = convert_to_json({"project": project_links})
     return result, HTTP_SUCCEEDED_STATUS
-
-
-def get_project_id():
-    try:
-        project_id = get_current_app().config["project_key"]
-        if project_id not in UPLOAD_PARAMS:
-            raise ValueError('config provided unrecognized project key "{}"'.format(project_id))
-        return project_id
-    except KeyError:
-        logger.error('cannot find "project_key" in the metadata API config file')
-        raise
 
 
 def _spreadsheet_upload_process(upload_handler):
