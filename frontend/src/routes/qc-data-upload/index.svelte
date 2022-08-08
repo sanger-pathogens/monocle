@@ -5,15 +5,14 @@
   export let session = getStores().session;
 </script>
 
-<DataUploadPage dataType="metadata" {session}>
-  <svelte:fragment slot="upload-title">Metadata upload</svelte:fragment>
+<DataUploadPage dataType="qc data" {session}>
+  <svelte:fragment slot="upload-title">QC data upload</svelte:fragment>
 
   <svelte:fragment slot="upload-description">
-    Select or drag and drop your CSV files (saved as UTF-8) with sample
-    metadata:
+    Select or drag and drop your CSV files (saved as UTF-8) with sample QC data:
   </svelte:fragment>
 
   <svelte:fragment slot="success-message">
-    All metadata were successfully uploaded.
+    All QC data were successfully uploaded.
   </svelte:fragment>
 </DataUploadPage>
