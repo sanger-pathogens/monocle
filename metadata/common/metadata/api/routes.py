@@ -21,6 +21,19 @@ HTTP_SUCCEEDED_STATUS = 200
 # (this is easy in practice, as it only has to match column names we choose to sue the the db schema)
 FIELD_NAME_REGEX = "^[a-zA-Z0-9_]+$"
 
+UPLOAD_PARAMS = {
+    "juno": {
+        "metadata": {"check_file_extension": False, "file_delimiter": ","},
+        "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
+        "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
+    },
+    "gps": {
+        "metadata": {"check_file_extension": False, "file_delimiter": ","},
+        "in silico": {"check_file_extension": True, "file_delimiter": "\t"},
+        "qc data": {"check_file_extension": True, "file_delimiter": "\t"},
+    },
+}
+
 
 def convert_to_json(samples):
     return jsonify(samples)
@@ -33,27 +46,27 @@ def get_current_app():
 @inject
 def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandler):
     """Upload a spreadsheet to the database"""
-    upload_params = get_project_upload_params("metadata")
-    upload_handler.check_file_extension = upload_params["check_file_extension"]
-    upload_handler.file_delimiter = upload_params["file_delimiter"]
+    project = get_project_id()
+    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["metadata"]["check_file_extension"]
+    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["metadata"]["file_delimiter"]
     return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
     """Upload a in silico data to the database"""
-    upload_params = get_project_upload_params("in silico")
-    upload_handler.check_file_extension = upload_params["check_file_extension"]
-    upload_handler.file_delimiter = upload_params["file_delimiter"]
+    project = get_project_id()
+    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["in silico"]["check_file_extension"]
+    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["in silico"]["file_delimiter"]
     return _spreadsheet_upload_process(upload_handler)
 
 
 @inject
 def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
     """Upload a QC data to the database"""
-    upload_params = get_project_upload_params("qc data")
-    upload_handler.check_file_extension = upload_params["check_file_extension"]
-    upload_handler.file_delimiter = upload_params["file_delimiter"]
+    project = get_project_id()
+    upload_handler.check_file_extension = UPLOAD_PARAMS[project]["qc data"]["check_file_extension"]
+    upload_handler.file_delimiter = UPLOAD_PARAMS[project]["qc data"]["file_delimiter"]
     return _spreadsheet_upload_process(upload_handler)
 
 
@@ -218,24 +231,12 @@ def get_project_information(dao: MonocleDatabaseService):
     return result, HTTP_SUCCEEDED_STATUS
 
 
-def get_project_upload_params(upload_type):
-    """
-    Return upload params for given type (metadata, in silico etc.) of upload
-    Raises ValueError if unknown type asked for
-    """
-    try:
-        upload_params = get_current_app().config["project_links"]["upload_params"]
-        if upload_type not in upload_params:
-            raise ValueError('upload type "{}" is not configured in the metadata API config file'.format(upload_type))
-        return upload_params[upload_type]
-    except KeyError:
-        logger.error('cannot find "project_links.upload_params" in the metadata API config file')
-        raise
-
-
 def get_project_id():
     try:
-        return get_current_app().config["project_key"]
+        project_id = get_current_app().config["project_key"]
+        if project_id not in UPLOAD_PARAMS:
+            raise ValueError('config provided unrecognized project key "{}"'.format(project_id))
+        return project_id
     except KeyError:
         logger.error('cannot find "project_key" in the metadata API config file')
         raise

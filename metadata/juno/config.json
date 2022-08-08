@@ -1380,21 +1380,7 @@
             "label": "qc data",
             "url": "/metadata/juno/qc-data-upload"
          }
-      ],
-      "upload_params": {
-         "metadata": {
-            "check_file_extension": false,
-            "file_delimiter": ","
-         },
-         "in silico": {
-            "check_file_extension": true,
-            "file_delimiter": "\t"
-         },
-         "qc data": {
-            "check_file_extension": true,
-            "file_delimiter": "\t"
-         }
-      }
+      ]
    },
    "project_key": "juno"
 }

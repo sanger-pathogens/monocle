@@ -21,12 +21,7 @@
                   {"label": "metadata", "url": "/metadata/juno/metadata-upload"},
                   {"label": "in silico", "url": "/metadata/juno/in-silico-upload"},
                   {"label": "qc data", "url": "/metadata/juno/qc-data-upload"}
-               ],
-               "upload_params": {
-                  "metadata": {"check_file_extension": false, "file_delimiter" : ","},
-                  "in silico": {"check_file_extension": true, "file_delimiter" : "\t"},
-                  "qc data": {"check_file_extension": true, "file_delimiter" : "\t"}
-               }
+               ]
             } ,
             "files": {
                "config_file": "metadata/juno/config.json",
@@ -113,12 +108,7 @@
                   {"label": "metadata", "url": "/metadata/gps/metadata-upload"},
                   {"label": "in silico", "url": "/metadata/gps/in-silico-upload"},
                   {"label": "qc data", "url": "/metadata/gps/qc-data-upload"}
-               ],
-               "upload_params": {
-                  "metadata": {"check_file_extension": false, "file_delimiter" : ","},
-                  "in silico": {"check_file_extension": true, "file_delimiter" : "\t"},
-                  "qc data": {"check_file_extension": true, "file_delimiter" : "\t"}
-               }
+               ]               
             },
             "files": {
                "config_file": "metadata/gps/config.json",
