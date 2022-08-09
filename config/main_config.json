@@ -2637,7 +2637,7 @@
                         "mysql_type": "DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 6,
+                        "max_length": 12,
                         "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
                         "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
                         }
@@ -2653,7 +2653,7 @@
                         "mysql_type": "DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 6,
+                        "max_length": 12,
                         "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
                         "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
                        }
@@ -3773,7 +3773,7 @@
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
                         "regex": "^ERR\\d{6,7}$",
-                        "regex_validation_message": "must be a ERR accession number (ERR# format)"
+                        "regex_validation_message": "must be a valid ERR accession number (ERR# format)"
                      }
                   },
                   {  "name"               : "ERS",
@@ -3787,7 +3787,7 @@
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
                         "regex": "^ERS\\d{6,7}$",
-                        "regex_validation_message": "must be a ERS accession number (ERS# format)"
+                        "regex_validation_message": "must be a valid ERS accession number (ERS# format)"
                      }
                   },
                   {  "name"               : "no_of_genome",
@@ -4896,8 +4896,8 @@
                      "display name": "Cot",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(256)",
-                        "max_length": 30
+                        "mysql_type": "VARCHAR(100)",
+                        "max_length": 100
                      }
                   },
                   {
