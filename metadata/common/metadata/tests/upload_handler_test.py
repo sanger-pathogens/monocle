@@ -18,9 +18,7 @@ from metadata.tests.test_data import (
     TEST_UPLOAD_SAMPLE_5,
 )
 
-RESPONSE_STRING_USER_DETAILS = (
-    b'{"user_details": {"memberOf": [{"inst_id": "TesInsA", "country_names": ["TestCountryA", "TestCountryB"]}]}}'
-)
+RESPONSE_STRING_USER_DETAILS = b'{"user_details": {"memberOf": [{"inst_id": "TesInsA", "country_names": ["TestCountryA", "TestCountryB"]}, {"inst_id": "TesInsB", "country_names": ["TestCountryB", "TestCountryC"]}]}}'
 
 
 class TestUploadHandler(unittest.TestCase):

@@ -120,8 +120,11 @@ class UploadHandler:
             if column == "submitting_institution":
                 validators.append(InListValidation([institution["inst_id"] for institution in self.__institutions]))
             if column == "country":
+                valid_countries = set()
                 for institution in self.__institutions:
-                    validators.append(InListValidation([country for country in institution["country_names"]]))
+                    for country in institution["country_names"]:
+                        valid_countries.add(country)
+                validators.append(InListValidation(sorted(valid_countries)))
             else:
                 # Regex validation
                 if self.__spreadsheet_def.get_regex(column):
