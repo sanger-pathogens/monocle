@@ -149,7 +149,7 @@ PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Update the database version
-CALL update_database_version('0.7.2', 'Update v 3.4 GPS schema');
+CALL update_database_version('0.7.3', 'Update v 3.4 GPS schema');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
