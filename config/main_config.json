@@ -5779,10 +5779,10 @@
                      "spreadsheet heading": "Total_length",
                      "display name": "Total length",
                      "db": {
-                        "mysql_type": "DECIMAL(5,2) CHECK (total_length>=0 AND total_length<=100)",
-                        "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "mysql_type": "INT(10)",
+                        "max_length": 10,
+                        "regex": "^\\d{1,10}$$",
+                        "regex_validation_message": "must be an 1-10 digits number (integer)"
                      }
                   },
                   {
