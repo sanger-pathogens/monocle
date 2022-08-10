@@ -71,7 +71,7 @@
             "regex_validation_message": "contains illegal characters"
          },
          "submitting_institution": {
-            "title": "Submitting_Institution",
+            "title": "Submitting_institution",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256

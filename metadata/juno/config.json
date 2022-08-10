@@ -85,7 +85,7 @@
             "regex_validation_message": "must be a comma-separated list of study references, e.g. PMID: 1234567, PMID: 23456789"
          },
          "submitting_institution": {
-            "title": "Submitting_institution",
+            "title": "Submitting_Institution",
             "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256

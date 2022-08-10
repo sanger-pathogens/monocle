@@ -317,7 +317,7 @@
                      "display": true,
                      "default": true,
                      "order": 11,
-                     "spreadsheet heading": "Submitting_institution",
+                     "spreadsheet heading": "Submitting_Institution",
                      "display name": "Submitting Institution",
                      "filter type": "discrete",
                      "db": {
@@ -1516,7 +1516,7 @@
                      "display"            : true,
                      "default"            : true,
                      "order"              : 11,
-                     "spreadsheet heading": "Submitting_Institution",
+                     "spreadsheet heading": "Submitting_institution",
                      "display name"       : "Submitting Institution",
                      "filter type"        :  "discrete",
                      "db": {
