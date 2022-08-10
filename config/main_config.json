@@ -3758,7 +3758,7 @@
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\.\/]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },
