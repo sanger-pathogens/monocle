@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class QCData:
     lane_id: str  # mandatory; contains illegal characters
     Streptococcus_pneumoniae: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
-    total_length: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
+    total_length: str  # optional; must be an 1-10 digits number (integer)
     No_contigs: str  # optional; must be a 1-5 digits number (integer)
     genome_covered: str  # optional; must be a number between 0-100 (1 or 2 decimal places are needed)
     depth_of_coverage: str  # optional; must be a number between 0-2000 (1 or 2 decimal places are needed)
