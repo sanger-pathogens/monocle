@@ -8,8 +8,8 @@ class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
     sample: str  # mandatory; must not contain illegal characters
     public_name: str  # mandatory; contains illegal characters
-    ERR: str  # optional; must be a ERR accession number (ERR# format)
-    ERS: str  # optional; must be a ERS accession number (ERS# format)
+    ERR: str  # optional; must be a valid ERR accession number (ERR# format)
+    ERS: str  # optional; must be a valid ERS accession number (ERS# format)
     no_of_genome: str  # optional
     duplicate: str  # optional
     Paper_1: str  # optional
@@ -26,9 +26,9 @@ class InSilicoData:
     Manifest_type: str  # optional
     children_under_5yrs: str  # optional
     GPSC: str  # optional; must be an integer (1-4 digits)
-    GPSC__colour: str  # optional; should be an hex colour code (format #000000), '#NA', or 'transparent'
+    GPSC__colour: str  # optional; should be an hex colour code (format #000000), '#NA', or 'TRANSPARENT'
     In_silico_serotype: str  # optional
-    In_silico_serotype__colour: str  # optional; should be an hex colour code (format #000000), '#NA', 'transparent'
+    In_silico_serotype__colour: str  # optional; should be an hex colour code (format #000000), '#NA', 'TRANSPARENT'
     pbp1a: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'
     pbp2b: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW' or 'NF'
     pbp2x: str  # optional; should be a valid 1 to 3 digit number; can be 'NEW', 'ERROR' or 'NF'
@@ -76,35 +76,35 @@ class InSilicoData:
     FQ__autocolour: str  # optional
     Other: str  # optional
     PBP1A_2B_2X__autocolour: str  # optional
-    WGS_PEN_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_PEN_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', 'transparent'
-    WGS_AMO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_MER_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_TAX_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_TAX_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_CFT_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_CFT_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_CFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_ERY_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_CLI_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_SYN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_LZO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_COT_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_TET_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_DOX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_LFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_CHL_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_RIF_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
-    WGS_VAN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
+    WGS_PEN_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_PEN_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA', 'TRANSPARENT'
+    WGS_AMO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_MER_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_TAX_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_TAX_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_CFT_SIR_Meningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_CFT_SIR_Nonmeningitis__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_CFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_ERY_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_CLI_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_SYN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_LZO_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_COT_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_TET_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_DOX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_LFX_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_CHL_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_RIF_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
+    WGS_VAN_SIR__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
     ermB: str  # optional
-    ermB__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
+    ermB__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
     mefA: str  # optional
-    mefA__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
+    mefA__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
     folA_I100L: str  # optional
-    folA_I100L__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
+    folA_I100L__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
     folP__autocolour: str  # optional
     cat: str  # optional
-    cat__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'transparent'
+    cat__colour: str  # optional; should be an hex colour code (format #000000), '#NA' or 'TRANSPARENT'
     PCV7: str  # optional
     PCV10: str  # optional
     PCV13: str  # optional
