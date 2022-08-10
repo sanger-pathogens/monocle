@@ -1,5 +1,5 @@
 {
-   "MAX_CONTENT_LENGTH": 1048576,
+   "MAX_CONTENT_LENGTH": 20971520,
    "logging_config": {
       "version": 1,
       "formatters": {
