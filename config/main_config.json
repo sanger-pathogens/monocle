@@ -1508,7 +1508,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(600)",
                           "max_length": 600,
-                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
+                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, \\+]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
