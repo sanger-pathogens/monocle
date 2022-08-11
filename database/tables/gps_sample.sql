@@ -43,7 +43,7 @@ CREATE TABLE `gps_sample` (
   `gki` SMALLINT(3),
   `recP` SMALLINT(3),
   `spi` VARCHAR(30),
-  `xpt` SMALLINT(3),
+  `xpt` SMALLINT(4),
   `ddl` SMALLINT(3),
   `AST_method_penicillin` VARCHAR(60),
   `penicillin` VARCHAR(30),

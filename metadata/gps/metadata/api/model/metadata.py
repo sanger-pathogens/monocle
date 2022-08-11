@@ -34,7 +34,7 @@ class Metadata:
     gki: str  # optional; must be an integer (max 3 digits)
     recP: str  # optional; must be an integer (max 3 digits)
     spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN'
-    xpt: str  # optional; must be an integer (max 3 digits)
+    xpt: str  # optional; must be an integer (max 4 digits)
     ddl: str  # optional; must be an integer (max 3 digits)
     AST_method_penicillin: str  # optional
     penicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS

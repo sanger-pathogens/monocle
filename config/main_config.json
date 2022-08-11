@@ -1490,7 +1490,7 @@
                           "mysql_type": "VARCHAR(256) NOT NULL",
                           "mandatory": true,
                           "max_length": 256,
-                          "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                          "regex": "^(?:[0-9a-zA-Z\\-_\\. \\/]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     }
@@ -1988,10 +1988,10 @@
                      "display name"       : "xpt",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "SMALLINT(3)",
+                        "mysql_type": "SMALLINT(4)",
                         "max_length": 3,
-                        "regex": "^\\d{1,3}$",
-                        "regex_validation_message": "must be an integer (max 3 digits)"
+                        "regex": "^\\d{1,4}$",
+                        "regex_validation_message": "must be an integer (max 4 digits)"
                      }
                   },
                   {  "name"               : "ddl",
@@ -2638,7 +2638,7 @@
                         "var_type": "float",
                         "mandatory": false,
                         "max_length": 12,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,9})?$",
                         "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
                         }
                     },
@@ -2654,8 +2654,8 @@
                         "var_type": "float",
                         "mandatory": false,
                         "max_length": 12,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,9})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 9 decimal places"
                        }
                     },
                    {  "name"               : "resolution",
@@ -3758,7 +3758,7 @@
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.\/]+)$",
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \/]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },
@@ -4883,8 +4883,8 @@
                      "display name": "EC",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "mysql_type": "VARCHAR(60)",
+                        "max_length": 60
                      }
                   },
                   {
@@ -5869,7 +5869,7 @@
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()]+)$",
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },

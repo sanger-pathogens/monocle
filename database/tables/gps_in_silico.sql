@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `gps_in_silico` (
   `WGS_RIF_SIR` VARCHAR(30),
   `WGS_VAN` VARCHAR(30),
   `WGS_VAN_SIR` VARCHAR(30),
-  `EC` VARCHAR(30),
+  `EC` VARCHAR(60),
   `Cot` VARCHAR(100),
   `Tet__autocolour` VARCHAR(30),
   `FQ__autocolour` VARCHAR(400),
