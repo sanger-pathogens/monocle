@@ -2639,7 +2639,7 @@
                         "mandatory": false,
                         "max_length": 12,
                         "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,9})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 9 decimal places"
                         }
                     },
                   {  "name"               : "longitude",
