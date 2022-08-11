@@ -163,10 +163,10 @@
          },
          "age_months": {
             "title": "Age_months",
-            "mysql_type": "DECIMAL(5,2)",
-            "max_length": 6,
-            "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$",
-            "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals)"
+            "mysql_type": "SMALLINT(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d+?)?$",
+            "regex_validation_message": "should be an integer"
          },
          "age_days": {
             "title": "Age_days",

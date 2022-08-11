@@ -20,7 +20,7 @@ class Metadata:
     year_collection: str  # optional; must be a YYYY format year
     gender: str  # optional
     age_years: str  # optional; should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols
-    age_months: str  # optional; should be an integer; can be a decimal (max 2 decimals)
+    age_months: str  # optional; should be an integer
     age_days: str  # optional; should be an integer
     clinical_manifestation: str  # optional
     source: str  # optional
