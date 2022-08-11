@@ -23,7 +23,7 @@ CREATE TABLE `qc_data` (
   `cov_depth_status` VARCHAR(4),
   `cov_breadth_status` VARCHAR(4),
   `HET_SNPs_status` VARCHAR(4),
-  `QC_pipeline_version` VARCHAR(256) NOT NULL,
+  `QC_pipeline_version` VARCHAR(4) NOT NULL,
   # END OF AUTO_GENERATED SECTION
   PRIMARY KEY (`lane_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
