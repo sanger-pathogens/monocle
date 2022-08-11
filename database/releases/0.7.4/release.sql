@@ -212,7 +212,6 @@ CREATE TABLE `gps_sample` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 -- Update the database version
 CALL update_database_version('0.7.4', 'Fix v 3.4 GPS tables');
 
