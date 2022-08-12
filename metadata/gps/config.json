@@ -727,19 +727,19 @@
          },
          "latitude": {
             "title": "Latitude",
-            "mysql_type": "DECIMAL(14,10) CHECK (latitude>=-180 AND latitude<=180)",
+            "mysql_type": "DECIMAL(13,10) CHECK (latitude>=-180 AND latitude<=180)",
             "var_type": "float",
             "mandatory": false,
-            "max_length": 14,
+            "max_length": 15,
             "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
             "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
          },
          "longitude": {
             "title": "Longitude",
-            "mysql_type": "DECIMAL(14,10) CHECK (longitude>=-180 AND longitude<=180)",
+            "mysql_type": "DECIMAL(13,10) CHECK (longitude>=-180 AND longitude<=180)",
             "var_type": "float",
             "mandatory": false,
-            "max_length": 14,
+            "max_length": 15,
             "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
             "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
          },
