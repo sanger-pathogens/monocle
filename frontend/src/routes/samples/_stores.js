@@ -21,7 +21,8 @@ const FILTER_TYPE_NONE = "none";
     }, {
       ...
     }],
-    "in silico": [...]
+    "in silico": [...],
+    "qc data": [...]
   }
 ```
 */
@@ -37,7 +38,7 @@ function createColumnsStore() {
     setToDefault: () =>
       update((columnsState) => {
         DATA_TYPES.forEach((dataType) =>
-          columnsState[dataType].forEach((category) =>
+          columnsState[dataType]?.forEach((category) =>
             category.columns.forEach(
               (column) => (column.selected = column.default)
             )
@@ -55,7 +56,8 @@ export const columnsStore = createColumnsStore();
   ```
   {
     metadata: ["column_name_1", "column_name_2"],
-    "in silico": [...]
+    "in silico": [...],
+    "qc data": [...]
   }
   ```
 */
@@ -91,7 +93,8 @@ function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
         columnName1: ["val1", "val2"],
         columnName2: ["val1", "val2"]
       },
-      "in silico": {...}
+      "in silico": {...},
+      "qc data": {...}
     }
   ```
 */
@@ -99,6 +102,7 @@ function createDistinctColumnValuesStore() {
   const { update, set, subscribe } = writable({
     metadata: {},
     "in silico": {},
+    "qc data": {},
   });
 
   return {
@@ -121,7 +125,7 @@ function createDistinctColumnValuesStore() {
 
         return storedDistinctValues;
       }),
-    reset: () => set({ metadata: {}, "in silico": {} }),
+    reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} }),
   };
 }
 
@@ -135,15 +139,20 @@ export const distinctColumnValuesStore = createDistinctColumnValuesStore();
         columnName1: { values: ["val1", "val2"], exclude?: true },
         columnName2: {...},
       },
-      "in silico": {...}
+      "in silico": {...},
+      "qc data": {...}
     }
   ```
 */
 function createFilterStore() {
-  const filterCustomStore = writable({ metadata: {}, "in silico": {} });
+  const filterCustomStore = writable({
+    metadata: {},
+    "in silico": {},
+    "qc data": {},
+  });
 
   filterCustomStore.removeAllFilters = () =>
-    filterCustomStore.set({ metadata: {}, "in silico": {} });
+    filterCustomStore.set({ metadata: {}, "in silico": {}, "qc data": {} });
 
   filterCustomStore.removeFilter = (column) =>
     filterCustomStore.update((stotedFilters) => {

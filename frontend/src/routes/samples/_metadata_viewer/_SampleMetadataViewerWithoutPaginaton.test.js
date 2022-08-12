@@ -1,6 +1,10 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
-import { DATA_TYPE_IN_SILICO, DATA_TYPE_METADATA } from "$lib/constants.js";
+import {
+  DATA_TYPE_IN_SILICO,
+  DATA_TYPE_METADATA,
+  DATA_TYPE_QC,
+} from "$lib/constants.js";
 import {
   // The following import is needed for the mock to work.
   // eslint-disable-next-line no-unused-vars
@@ -47,6 +51,7 @@ describe("on metadata resolved", () => {
         dataType: DATA_TYPE_METADATA,
       },
       { title: "ST", name: "st", value: "v1", dataType: DATA_TYPE_IN_SILICO },
+      { title: "E", name: "e", value: 9, dataType: DATA_TYPE_QC },
     ],
     [
       {
@@ -56,6 +61,7 @@ describe("on metadata resolved", () => {
         dataType: DATA_TYPE_METADATA,
       },
       { title: "ST", name: "st", value: null, dataType: DATA_TYPE_IN_SILICO },
+      { title: "E", name: "e", value: 42, dataType: DATA_TYPE_QC },
     ],
   ];
 
@@ -136,6 +142,7 @@ describe("on metadata resolved", () => {
     expect(get(distinctColumnValuesStore)).toEqual({
       metadata: {},
       "in silico": {},
+      "qc data": {},
     });
   });
 
