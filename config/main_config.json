@@ -1508,7 +1508,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(600)",
                           "max_length": 600,
-                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>ÔøΩ\\+]+)$",
+                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>\\+]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
@@ -3855,7 +3855,7 @@
                      "display name": "In Silico St",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
                         "regex": "^\\d{1,5}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
                         "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"

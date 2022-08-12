@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `gps_in_silico` (
   `no_of_genome` SMALLINT(6) DEFAULT NULL,
   `duplicate` VARCHAR(30),
   `Paper_1` VARCHAR(30),
-  `In_Silico_St` VARCHAR(20) NOT NULL,
+  `In_Silico_St` VARCHAR(20),
   `aroE` VARCHAR(30),
   `gdh` VARCHAR(30),
   `gki` VARCHAR(30),

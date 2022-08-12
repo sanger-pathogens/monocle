@@ -67,7 +67,7 @@
             "title": "Study_name",
             "mysql_type": "VARCHAR(600)",
             "max_length": 600,
-            "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>\u00d4\u00f8\u03a9\\+]+)$",
+            "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>\\+]+)$",
             "regex_validation_message": "contains illegal characters"
          },
          "submitting_institution": {
@@ -845,7 +845,7 @@
          },
          "In_Silico_St": {
             "title": "In_silico_ST",
-            "mysql_type": "VARCHAR(20) NOT NULL",
+            "mysql_type": "VARCHAR(20)",
             "max_length": 20,
             "regex": "^\\d{1,5}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
             "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
