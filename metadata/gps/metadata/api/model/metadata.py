@@ -20,7 +20,7 @@ class Metadata:
     year_collection: str  # optional; must be a YYYY format year
     gender: str  # optional
     age_years: str  # optional; should be an integer; can be a decimal number; can include spaces; can include '>','<', '=', '&' symbols
-    age_months: str  # optional; should be an integer
+    age_months: str  # optional; should be an integer; can be a decimal (max 2 decimals)
     age_days: str  # optional; should be an integer
     clinical_manifestation: str  # optional
     source: str  # optional
@@ -71,8 +71,8 @@ class Metadata:
     AST_method_rifampin: str  # optional
     rifampin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     comments: str  # optional
-    latitude: float  # optional; must be a number between -180 and 180, with up to 9 decimal places
-    longitude: float  # optional; must be a number between -180 and 180, with up to 9 decimal places
+    latitude: float  # optional; must be a number between -180 and 180, with up to 10 decimal places
+    longitude: float  # optional; must be a number between -180 and 180, with up to 10 decimal places
     resolution: str  # optional; must be an integer (range 0-2)
     vaccine_period: str  # optional; should be 'PREPCV', 'POSTPCV#-#YR'
     intro_year: str  # optional; must be a YYYY format year
