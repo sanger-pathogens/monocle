@@ -2634,10 +2634,10 @@
                       "display name"       : "Latitude",
                       "filter type"        : "numeric",
                       "db": {
-                        "mysql_type": "DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180)",
+                        "mysql_type": "DECIMAL(14,10) CHECK (latitude>=-180 AND latitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 12,
+                        "max_length": 14,
                         "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
                         "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
                         }
@@ -2650,10 +2650,10 @@
                       "display name"       : "Longitude",
                       "filter type"        : "numeric",
                       "db": {
-                        "mysql_type": "DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180)",
+                        "mysql_type": "DECIMAL(14,10) CHECK (longitude>=-180 AND longitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 12,
+                        "max_length": 14,
                         "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
                         "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
                        }
@@ -5767,7 +5767,7 @@
                      "display name": "Streptococcus pneumoniae",
                      "db": {
                         "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
-                        "regex": "^(?:[1]?[0-9]?[0-9](\\.[0-9]?[0-9])?)$",
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
                         "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
@@ -5808,7 +5808,7 @@
                      "db": {
                         "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
                         "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9](\\.[0-9]?[0-9])?)$",
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
                         "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
@@ -5822,7 +5822,7 @@
                      "display name": "Depth of coverage",
                      "db": {
                         "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
-                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](\\.[0-9]?[0-9])?)$",
+                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
                         "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
                      }
                   },
@@ -5836,7 +5836,7 @@
                      "db": {                     
                         "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
                         "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9](\\.[0-9]?[0-9])?)$",
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
                         "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
