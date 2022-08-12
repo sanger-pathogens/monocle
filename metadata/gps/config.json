@@ -67,7 +67,7 @@
             "title": "Study_name",
             "mysql_type": "VARCHAR(600)",
             "max_length": 600,
-            "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, \\+]+)$",
+            "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>\u00d4\u00f8\u03a9\\+]+)$",
             "regex_validation_message": "contains illegal characters"
          },
          "submitting_institution": {
@@ -722,8 +722,8 @@
          },
          "comments": {
             "title": "Comments",
-            "mysql_type": "VARCHAR(256)",
-            "max_length": 256
+            "mysql_type": "VARCHAR(600)",
+            "max_length": 600
          },
          "latitude": {
             "title": "Latitude",

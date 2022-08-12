@@ -79,7 +79,7 @@ CREATE TABLE `gps_sample` (
   `synercid` VARCHAR(30),
   `AST_method_rifampin` VARCHAR(60),
   `rifampin` VARCHAR(30),
-  `comments` VARCHAR(256),
+  `comments` VARCHAR(600),
   `latitude` DECIMAL(13,10) CHECK (latitude>=-180 AND latitude<=180),
   `longitude` DECIMAL(13,10) CHECK (longitude>=-180 AND longitude<=180),
   `resolution` SMALLINT(1),
