@@ -270,7 +270,10 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         # Use a transaction...
         with self.connector.get_transactional_connection() as con:
             for metadata in metadata_list:
-                params = {k: metadata.__dict__[k] for k in self.config["metadata"]["spreadsheet_definition"]}
+                params = {
+                    k: self.convert_string(metadata.__dict__[k])
+                    for k in self.config["metadata"]["spreadsheet_definition"]
+                }
                 con.execute(self.INSERT_OR_UPDATE_SAMPLE_SQL, **params)
 
         logger.info("update_sample_metadata completed")

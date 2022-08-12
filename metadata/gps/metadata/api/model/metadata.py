@@ -34,7 +34,7 @@ class Metadata:
     gki: str  # optional; must be an integer (max 3 digits)
     recP: str  # optional; must be an integer (max 3 digits)
     spi: str  # optional; must be an integer (max 3 digits), 'UNKNOWN'
-    xpt: str  # optional; must be an integer (max 3 digits)
+    xpt: str  # optional; must be an integer (max 4 digits)
     ddl: str  # optional; must be an integer (max 3 digits)
     AST_method_penicillin: str  # optional
     penicillin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
@@ -71,8 +71,8 @@ class Metadata:
     AST_method_rifampin: str  # optional
     rifampin: str  # optional; should be a valid floating point number; can start with '>','<', '>=' or '<=' and optionally end with units "mm" or "µg/ml" ('u' permitted in place of 'µ'); or alternatively S, I, R or NS
     comments: str  # optional
-    latitude: float  # optional; must be a number between -180 and 180, with up to 8 decimal places
-    longitude: float  # optional; must be a number between -180 and 180, with up to 8 decimal places
+    latitude: float  # optional; must be a number between -180 and 180, with up to 10 decimal places
+    longitude: float  # optional; must be a number between -180 and 180, with up to 10 decimal places
     resolution: str  # optional; must be an integer (range 0-2)
     vaccine_period: str  # optional; should be 'PREPCV', 'POSTPCV#-#YR'
     intro_year: str  # optional; must be a YYYY format year
