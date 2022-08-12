@@ -47,6 +47,7 @@ const FILTER_STATE = {
     country: { values: ["AU"] },
   },
   "in silico": { adhP: { values: ["x", "y"] } },
+  "qc data": { ctrl: { values: ["x", "y"] } },
 };
 const MIME_TYPE_JSON = HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE];
 const HEADERS_JSON = { get: () => MIME_TYPE_JSON };
@@ -222,6 +223,7 @@ describe.each([
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { adhP: ["x", "y"] },
+          "qc data": { ctrl: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -256,6 +258,7 @@ describe.each([
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { adhP: ["x", "y"] },
+          "qc data": { ctrl: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -312,6 +315,7 @@ describe.each([
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { adhP: ["x", "y"] },
+          "qc data": { ctrl: ["x", "y"] },
         },
         fields: [
           {
@@ -424,11 +428,13 @@ describe.each([
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { adhP: ["x", "y"] },
+          "qc data": { ctrl: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,
         "metadata columns": ["some column"],
         "in silico columns": ["a column", "another column"],
+        "qc data": false,
       }),
     },
     expectedEndpoints: ["get_metadata"],
@@ -458,6 +464,7 @@ describe.each([
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
           "in silico": { adhP: ["x", "y"] },
+          "qc data": { ctrl: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,
@@ -510,7 +517,7 @@ describe.each([
         const fetchArgs = fetch.mock.calls[i];
         expect(fetchArgs[0]).toBe(`${DASHBOARD_API_URL}/${expectedEndpoint}`);
         const actualFetchOpts = fetchArgs[1];
-        expect([undefined, expectedFetchOpts]).toContainEqual(actualFetchOpts);
+        expect([undefined, actualFetchOpts]).toContainEqual(expectedFetchOpts);
       });
     });
 

@@ -7,7 +7,7 @@
 
 {#if columnsData?.length}
   <details open={open || null}>
-    <summary><slot></slot></summary>
+    <summary><slot /></summary>
     {#each columnsData as { name, columns } (name)}
       <CheckboxGroup
         groupName={name}

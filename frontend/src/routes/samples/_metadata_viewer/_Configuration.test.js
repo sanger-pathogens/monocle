@@ -1,9 +1,6 @@
 import { fireEvent, render } from "@testing-library/svelte";
 import { get } from "svelte/store";
-import {
-  DATA_TYPES,
-  SESSION_STORAGE_KEY_COLUMNS_STATE,
-} from "$lib/constants.js";
+import { SESSION_STORAGE_KEY_COLUMNS_STATE } from "$lib/constants.js";
 import { columnsStore, filterStore } from "../_stores.js";
 import Configuration from "./_Configuration.svelte";
 
@@ -12,6 +9,7 @@ const KEY_SELECTED = "selected";
 const LABEL_APPLY_AND_CLOSE = "Apply and close";
 const LABEL_CLOSE = "Close";
 const LABEL_DIALOG = "Select displayed columns";
+const LABEL_METADATA_COLUMNS = "Metadata";
 const LABEL_RESTORE = "Restore default columns";
 const LABEL_SETTINGS = /^Select columns/;
 const ROLE_BUTTON = "button";
@@ -50,6 +48,17 @@ beforeEach(() => {
         ],
       },
     ],
+    "qc data": [
+      {
+        name: "Category D",
+        columns: [
+          {
+            name: "columnY",
+            displayName: "Column Y",
+          },
+        ],
+      },
+    ],
   });
 });
 
@@ -63,31 +72,28 @@ it("opens on settings button click", async () => {
   expect(getByLabelText(LABEL_DIALOG)).toBeDefined();
 });
 
-it("metadata and in silico section are open by default", async () => {
+it("displays the expected column selection sections", async () => {
+  const { getByText, getByRole } = render(Configuration);
+
+  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
+
+  expect(getByText(LABEL_METADATA_COLUMNS)).toBeDefined();
+  expect(getByText("In silico")).toBeDefined();
+  expect(getByText("QC")).toBeDefined();
+});
+
+it("has only metadata and in silico sections open by default", async () => {
   const { container, getByRole } = render(Configuration);
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-  const dataTypeSections = container.getElementsByTagName("details");
-  expect(dataTypeSections.length).toBe(2);
-  for (const dataTypeSection of dataTypeSections) {
-    expect(dataTypeSection.open).toBeTruthy();
-  }
-});
-
-it("correctly displays a column state", async () => {
-  const { getByLabelText, getByRole } = render(Configuration);
-
-  await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
-
-  const columnsState = get(columnsStore);
-  DATA_TYPES.forEach((dataType) =>
-    columnsState[dataType].forEach((category) => {
-      expect(getByLabelText(new RegExp(`${category.name} `))).toBeDefined();
-      category.columns.forEach((column) =>
-        expect(getByLabelText(column.displayName)).toBeDefined()
-      );
-    })
+  const openColumnSections = container.querySelectorAll("details[open]");
+  expect(openColumnSections).toHaveLength(2);
+  expect(openColumnSections[0].querySelector("summary").textContent).toBe(
+    LABEL_METADATA_COLUMNS
+  );
+  expect(openColumnSections[1].querySelector("summary").textContent).toBe(
+    "In silico analysis"
   );
 });
 

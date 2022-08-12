@@ -5,11 +5,11 @@
     SESSION_STORAGE_KEY_COLUMNS_STATE,
   } from "$lib/constants.js";
   import { deepCopy } from "$lib/utils/copy.js";
-  import CheckboxGroup from "$lib/components/CheckboxGroup.svelte";
   import Dialog from "$lib/components/Dialog.svelte";
   import SettingsIcon from "$lib/components/icons/SettingsIcon.svelte";
   import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
   import { columnsStore, filterStore } from "../_stores.js";
+  import ColumnSelection from "./_ColumnSelection.svelte";
 
   const KEY_DISABLED = "disabled";
   const KEY_SELECTED = "selected";
@@ -105,37 +105,20 @@
   {#if Object.keys(columnsPerDatatype || {}).length}
     <form>
       <fieldset class="all-data-types-container">
-        {#if columnsPerDatatype.metadata?.length}
-          <details open>
-            <summary>Metadata</summary>
-            {#each columnsPerDatatype.metadata as { name, columns } (name)}
-              <CheckboxGroup
-                groupName={name}
-                items={columns}
-                itemsName="columns"
-                checkedKey="selected"
-                disabledTooltip="* To de-select this column, first remove the column's filter."
-                disabledSuffix="*"
-              />
-            {/each}
-          </details>
-        {/if}
+        <ColumnSelection columnsData={columnsPerDatatype.metadata}>
+          Metadata
+        </ColumnSelection>
 
-        {#if columnsPerDatatype["in silico"]?.length}
-          <details open>
-            <summary><i>In silico</i> analysis</summary>
-            {#each columnsPerDatatype["in silico"] as { name, columns } (name)}
-              <CheckboxGroup
-                groupName={name}
-                items={columns}
-                itemsName="columns"
-                checkedKey="selected"
-                disabledTooltip="* To de-select this column, first remove the column's filter."
-                disabledSuffix="*"
-              />
-            {/each}
-          </details>
-        {/if}
+        <ColumnSelection columnsData={columnsPerDatatype["in silico"]}>
+          <i>In silico</i> analysis
+        </ColumnSelection>
+
+        <ColumnSelection
+          columnsData={columnsPerDatatype["qc data"]}
+          open={false}
+        >
+          QC
+        </ColumnSelection>
 
         {#if hasDisabledItems}
           <p class="disabled-info">
@@ -200,15 +183,6 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0 0 2.3rem;
-  }
-
-  details {
-    padding-right: 1rem;
-    width: 20rem;
-  }
-  summary {
-    padding-left: 2rem;
-    text-align: left;
   }
 
   .end-btns {
