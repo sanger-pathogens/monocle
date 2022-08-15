@@ -2754,9 +2754,10 @@
                      "display name": "cps type",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(20)",
+                        "max_length": 20,
+                        "regex": "^(?:[XVI]*?[a-z]?)$|^NT$",
+                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single small case letter; can be 'NT' "
                      }
                   }
                ]
@@ -2773,8 +2774,7 @@
                      "display name": "ST",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
+                        "mysql_type": "VARCHAR(20)",
                         "max_length": 20
                      }
                   },
