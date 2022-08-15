@@ -1490,7 +1490,7 @@
                           "mysql_type": "VARCHAR(256) NOT NULL",
                           "mandatory": true,
                           "max_length": 256,
-                          "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                          "regex": "^(?:[0-9a-zA-Z\\-_\\. \\/]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     }
@@ -1508,7 +1508,7 @@
                      "db": {
                           "mysql_type": "VARCHAR(600)",
                           "max_length": 600,
-                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, ]+)$",
+                          "regex": "^(?:[\\w\\-_:#\\.%\\(\\)\\[\\]/, <>\\+]+)$",
                           "regex_validation_message": "contains illegal characters"
                        }
                     },
@@ -1697,10 +1697,10 @@
                      "display name"       : "Age months",
                      "filter type"        : "discrete",
                      "db": {
-                          "mysql_type": "DECIMAL(5,2)",
-                          "max_length": 6,
-                          "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$",
-                          "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals)"
+                        "mysql_type": "DECIMAL(5,2)",
+                        "max_length": 6,
+                        "regex": "^(?:\\d+(?:\\.\\d{1,2})?)?$",
+                        "regex_validation_message": "should be an integer; can be a decimal (max 2 decimals)"
                        }
                     },
                   {  "name"               : "age_days",
@@ -1711,9 +1711,9 @@
                      "display name"       : "Age days",
                      "filter type"        : "discrete",
                      "db": {
-                          "mysql_type": "SMALLINT(10)",
-                          "max_length": 10,
-                          "regex": "^(?:\\d+?)?$",
+                          "mysql_type": "SMALLINT(4)",
+                          "max_length": 4,
+                          "regex": "^(?:\\d+)?$",
                           "regex_validation_message": "should be an integer"
                        }
                     },
@@ -1988,10 +1988,10 @@
                      "display name"       : "xpt",
                      "filter type"        :  "discrete",
                      "db": {
-                        "mysql_type": "SMALLINT(3)",
-                        "max_length": 3,
-                        "regex": "^\\d{1,3}$",
-                        "regex_validation_message": "must be an integer (max 3 digits)"
+                        "mysql_type": "SMALLINT(4)",
+                        "max_length": 4,
+                        "regex": "^\\d{1,4}$",
+                        "regex_validation_message": "must be an integer (max 4 digits)"
                      }
                   },
                   {  "name"               : "ddl",
@@ -2622,8 +2622,8 @@
                       "display name"       : "Comments",
                       "filter type"        :  "discrete",
                       "db": {
-                          "mysql_type": "VARCHAR(256)",
-                          "max_length": 256
+                          "mysql_type": "VARCHAR(600)",
+                          "max_length": 600
                        }
                     },                    
                   {  "name"               : "latitude",
@@ -2634,12 +2634,12 @@
                       "display name"       : "Latitude",
                       "filter type"        : "numeric",
                       "db": {
-                        "mysql_type": "DECIMAL(9,6) CHECK (latitude>=-180 AND latitude<=180)",
+                        "mysql_type": "DECIMAL(13,10) CHECK (latitude>=-180 AND latitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 12,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
+                        "max_length": 15,
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
                         }
                     },
                   {  "name"               : "longitude",
@@ -2650,12 +2650,12 @@
                       "display name"       : "Longitude",
                       "filter type"        : "numeric",
                       "db": {
-                        "mysql_type": "DECIMAL(9,6) CHECK (longitude>=-180 AND longitude<=180)",
+                        "mysql_type": "DECIMAL(13,10) CHECK (longitude>=-180 AND longitude<=180)",
                         "var_type": "float",
                         "mandatory": false,
-                        "max_length": 12,
-                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,8})?$",
-                        "regex_validation_message": "must be a number between -180 and 180, with up to 8 decimal places"
+                        "max_length": 15,
+                        "regex": "^(?:\\-?1?[0-9]{1,2}?)(?:\\.[0-9]{1,10})?$",
+                        "regex_validation_message": "must be a number between -180 and 180, with up to 10 decimal places"
                        }
                     },
                    {  "name"               : "resolution",
@@ -3758,7 +3758,7 @@
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\.]+)$",
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\/]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },
@@ -3855,7 +3855,7 @@
                      "display name": "In Silico St",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
+                        "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
                         "regex": "^\\d{1,5}$|^UNDETERMINABLE$|^NEW$|^FAILED$",
                         "regex_validation_message": "must be an integer (1-5 digits), 'UNDETERMINABLE', 'NEW', 'FAILED'"
@@ -4883,8 +4883,8 @@
                      "display name": "EC",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30
+                        "mysql_type": "VARCHAR(60)",
+                        "max_length": 60
                      }
                   },
                   {
@@ -5767,8 +5767,8 @@
                      "display name": "Streptococcus pneumoniae",
                      "db": {
                         "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
                   {
@@ -5781,7 +5781,7 @@
                      "db": {
                         "mysql_type": "INT(10)",
                         "max_length": 10,
-                        "regex": "^\\d{1,10}$$",
+                        "regex": "^\\d{1,10}$",
                         "regex_validation_message": "must be an 1-10 digits number (integer)"
                      }
                   },
@@ -5808,8 +5808,8 @@
                      "db": {
                         "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
                         "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
                   {
@@ -5822,8 +5822,8 @@
                      "display name": "Depth of coverage",
                      "db": {
                         "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
-                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are needed)"
+                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
                      }
                   },
                   {
@@ -5836,8 +5836,8 @@
                      "db": {                     
                         "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
                         "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9]\\.[0-9][0-9]?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are needed)"
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
                      }
                   },
                   {
@@ -5869,7 +5869,7 @@
                         "mysql_type": "VARCHAR(256) NOT NULL",
                         "mandatory": true,
                         "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\. ]+)$",
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
                         "regex_validation_message": "contains illegal characters"
                      }
                   },
