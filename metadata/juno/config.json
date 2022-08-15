@@ -1323,7 +1323,7 @@
          },
          "QC_pipeline_version": {
             "title": "QC_pipeline_version",
-            "mysql_type": "VARCHAR(4) NOT NULL",
+            "mysql_type": "VARCHAR(256) NOT NULL",
             "mandatory": true,
             "max_length": 256,
             "regex": "^(?:v\\d+\\.\\d+\\.\\d+)$",

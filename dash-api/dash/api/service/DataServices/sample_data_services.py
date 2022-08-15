@@ -1242,6 +1242,8 @@ class MonocleSampleData:
                 del qc_data_df
                 # add QC data columns to the list
                 metadata_col_order = metadata_col_order + qc_data_col_order
+            else:
+                logging.info("There are no QC data to be merged")
 
         # list of columns in `metadata_col_order` defines the CSV output
         # remove Sample_id -- this is a duplicate of Lane_ID
