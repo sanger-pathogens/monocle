@@ -21,3 +21,5 @@ ARG      CACHE_BUST
 RUN      echo "$CACHE_BUST" > /dev/null
 
 RUN   echo "$ADDITIONAL_CONFIG" >> "$PHPLDAPADMIN_CONFIG_FILE"
+
+CMD /container/tool/run
