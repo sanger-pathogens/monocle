@@ -51,10 +51,14 @@ metadata_download_gps:
    in_silico_merge_field   : 'lane_id'
    qc_data_merge_field     : 'lane_id'
 metadata_download_juno:
+   sanger_sample_id_field  : 'Sanger_Sample_ID'
+   public_name_field       : 'Public_Name'
    in_silico_merge_field   : 'Sample_id'
    qc_data_merge_field     : 'lane_id'
    merge_qc_data           : false
 metadata_download_gps:
+   sanger_sample_id_field  : 'Sanger_Sample_ID'
+   public_name_field       : 'Public_name'
    in_silico_merge_field   : 'lane_id'
    qc_data_merge_field     : 'lane_id'
    merge_qc_data           : true

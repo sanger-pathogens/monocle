@@ -60,11 +60,15 @@ data_download:
    max_samples_per_zip_with_reads : 40
 metadata_download_common:
 metadata_download_juno:
+   sanger_sample_id_field  : 'Sanger_Sample_ID'
+   public_name_field       : 'Public_Name'
    metadata_merge_field    : 'Lane_ID'
    in_silico_merge_field   : 'Sample_id'
    qc_data_merge_field     : 'lane_id'
    merge_qc_data           : true
 metadata_download_gps:
+   sanger_sample_id_field  : 'Sanger_sample_id'
+   public_name_field       : 'Public_name'
    metadata_merge_field    : 'Lane_ID'
    in_silico_merge_field   : 'lane_id'
    qc_data_merge_field     : 'lane_id'

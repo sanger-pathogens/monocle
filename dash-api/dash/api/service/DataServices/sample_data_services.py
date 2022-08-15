@@ -1142,6 +1142,9 @@ class MonocleSampleData:
         )
         metadata_df = pandas.DataFrame(metadata)
 
+        # we need to get the names of various identifier fields used for these data in the dataframe
+        sanger_sample_id_field, public_name_field = self._get_sample_id_fields()
+
         # IMPORTANT
         # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
         # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
@@ -1153,7 +1156,7 @@ class MonocleSampleData:
         metadata_df = metadata_df.assign(
             Lane_ID=[
                 " ".join(samples_for_download[this_sanger_sample_id])
-                for this_sanger_sample_id in metadata_df["Sanger_Sample_ID"].tolist()
+                for this_sanger_sample_id in metadata_df[sanger_sample_id_field].tolist()
             ]
         )
 
@@ -1161,7 +1164,8 @@ class MonocleSampleData:
         if download_base_url is not None:
             metadata_df = metadata_df.assign(
                 Download_Link=[
-                    "/".join([download_base_url, urllib.parse.quote(pn)]) for pn in metadata_df["Public_Name"].tolist()
+                    "/".join([download_base_url, urllib.parse.quote(pn)])
+                    for pn in metadata_df[public_name_field].tolist()
                 ]
             )
             logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
@@ -1262,6 +1266,17 @@ class MonocleSampleData:
             metadata_col_order.append("Download_Link")
 
         return (metadata_df, metadata_col_order)
+
+    def _get_sample_id_fields(self):
+        data_source_config = self._get_data_source_config()
+        project_specific_sections = {"juno": "metadata_download_juno", "gps": "metadata_download_gps"}
+        section_wanted = project_specific_sections[self.current_project]
+        try:
+            sanger_sample_id_field = data_source_config[section_wanted]["sanger_sample_id_field"]
+            public_name_field = data_source_config[section_wanted]["public_name_field"]
+        except KeyError as err:
+            self._download_config_error(err)
+        return sanger_sample_id_field, public_name_field
 
     def _get_metadata_merge_fields(self):
         data_source_config = self._get_data_source_config()
