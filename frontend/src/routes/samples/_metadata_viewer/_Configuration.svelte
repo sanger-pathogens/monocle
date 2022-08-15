@@ -161,6 +161,7 @@
   form {
     display: flex;
     flex-direction: column;
+    overflow-x: auto;
   }
 
   fieldset {
@@ -168,15 +169,10 @@
   }
 
   .all-data-types-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 0.2rem;
     min-height: 10rem;
-  }
-  @media (min-width: 900px) {
-    .all-data-types-container {
-      width: 47rem;
-    }
   }
 
   .disabled-info {
@@ -192,6 +188,8 @@
     .end-btns {
       display: flex;
       flex-direction: column;
+      position: sticky;
+      left: 14vw;
     }
   }
   .end-btns button {
