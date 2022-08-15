@@ -2775,7 +2775,9 @@
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(20)",
-                        "max_length": 20
+                        "max_length": 20,
+                        "regex": "^(?:\\d{1,4}?[?:*]?)$|^(?:NF?\\*?)$",
+                        "regex_validation_message": "must be an integer (max 4 digits) or `NF`; can be followed by a '*' symbol"
                      }
                   },
                   {
