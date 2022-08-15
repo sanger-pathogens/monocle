@@ -3772,8 +3772,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(256)",
                         "max_length": 256,
-                        "regex": "^ERR\\d{6,7}$",
-                        "regex_validation_message": "must be a valid ERR accession number (ERR# format)"
+                        "regex": "^ERR\\d{6,7}$|^NOTFOUND$",
+                        "regex_validation_message": "must be a valid ERR accession number (ERR# format); can be 'NOTFOUND'"
                      }
                   },
                   {  "name"               : "ERS",
