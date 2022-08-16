@@ -5760,7 +5760,7 @@
                   {
                      "name": "Streptococcus_pneumoniae",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 2,
                      "filter type": "numeric",
                      "spreadsheet heading": "Streptococcus_pneumoniae",
@@ -5774,7 +5774,7 @@
                   {
                      "name": "total_length",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 3,
                      "spreadsheet heading": "Total_length",
                      "display name": "Total length",
@@ -5788,7 +5788,7 @@
                   {
                      "name": "No_contigs",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 4,
                      "spreadsheet heading": "No_of_contigs",
                      "display name": "Number of contigs",
@@ -5801,7 +5801,7 @@
                   {
                      "name": "genome_covered",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 5,
                      "spreadsheet heading": "Genome_covered",
                      "display name": "Genome covered",
@@ -5815,7 +5815,7 @@
                   {
                      "name": "depth_of_coverage",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 6,
                      "filter type": "numeric",
                      "spreadsheet heading": "Depth_of_coverage",
@@ -5829,7 +5829,7 @@
                   {
                      "name": "Proportion_of_Het_SNPs",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 7,
                      "spreadsheet heading": "Proportion_of_Het_SNPs",
                      "display name": "Proportion of Het SNPs",
@@ -5876,7 +5876,7 @@
                   {
                      "name": "Hetsites_50bp",
                      "display": true,
-                     "default": true,
+                     "default": false,
                      "order": 10,
                      "spreadsheet heading": "Hetsites_50bp",
                      "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
