@@ -10,31 +10,34 @@
   const FAIL_MESSAGES_TITLE = "Sequencing Failures";
 
   const {
-    received,
-    success: succeeded,
-    failed,
-    completed,
+    samples_received: samplesReceived,
+    lanes_successful: lanesSuccessful,
+    lanes_failed: lanesFailed,
+    samples_completed: samplesCompleted,
     fail_messages: failures,
   } = sequencingStatus;
-  const pending = received - completed;
+  const pending = samplesReceived - samplesCompleted;
 </script>
 
 <StatusPane grow>
   <h3>
     {#if pending}
-      <code>{completed}</code> of <code>{received}</code> Samples Sequenced
+      <code>{samplesCompleted}</code> of <code>{samplesReceived}</code> Samples Sequenced
     {:else}
-      All <code>{completed}</code> Samples Sequenced
+      All <code>{samplesCompleted}</code> Samples Sequenced
     {/if}
   </h3>
 
-  <StatusChart labels={CHART_LABELS} values={[pending, succeeded, failed]} />
+  <StatusChart
+    labels={CHART_LABELS}
+    values={[pending, lanesSuccessful, lanesFailed]}
+  />
 
-  <DownloadButtons {succeeded} />
+  <DownloadButtons succeeded={lanesSuccessful} />
 
-  {#if failed > 0}
+  {#if lanesFailed > 0}
     <FailMessages {failures} title={FAIL_MESSAGES_TITLE}>
-      <DownloadButtons {failed} style="float: right" />
+      <DownloadButtons failed={lanesFailed} style="float: right" />
     </FailMessages>
   {:else}
     <FailMessages {failures} title={FAIL_MESSAGES_TITLE} />
