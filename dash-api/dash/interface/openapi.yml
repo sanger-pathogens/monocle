@@ -1179,26 +1179,6 @@ components:
         - fail_messages
       description: "Sequencing status summary information for an institution."
       properties:
-        received:
-          description: "DEPRECATED: please use samples_received"
-          example: 400
-          type: integer
-          readOnly: true
-        completed:
-          description: "DEPRECATED: please use samples_completed"
-          example: 300
-          type: integer
-          readOnly: true
-        success:
-          description: "DEPRECATED: please use lanes_successful"
-          example: 300
-          type: integer
-          readOnly: true
-        failed:
-          description: "DEPRECATED: please use lanes_failed"
-          example: 300
-          type: integer
-          readOnly: true
         samples_received:
           description: "The number of SAMPLES received."
           example: 400
