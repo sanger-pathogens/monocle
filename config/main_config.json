@@ -2757,7 +2757,7 @@
                         "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
                         "regex": "^(?:[XVI]*?[a-z]?)$|^NT$",
-                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single small case letter; can be 'NT'"
+                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be 'NT'"
                      }
                   }
                ]
