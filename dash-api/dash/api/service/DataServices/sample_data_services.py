@@ -1142,6 +1142,16 @@ class MonocleSampleData:
         )
         metadata_df = pandas.DataFrame(metadata)
 
+        # we need to get the names of various fields with sample identifiers used
+        # to colelct and merge metadta, in silico data and QC data for the download
+        (
+            sanger_sample_id_field,
+            public_name_field,
+            metadata_merge_field,
+            in_silico_merge_field,
+            qc_data_merge_field,
+        ) = self._get_download_id_and_merge_fields()
+
         # IMPORTANT
         # the metadata returned from the metadata API will (probably) contain lane IDs, for historical reasons:  THESE MUST BE IGNORED
         # instead we use the lane IDs that MLWH told us are associated with each sample, as stored in the samples_for_download dict (just above)
@@ -1153,7 +1163,7 @@ class MonocleSampleData:
         metadata_df = metadata_df.assign(
             Lane_ID=[
                 " ".join(samples_for_download[this_sanger_sample_id])
-                for this_sanger_sample_id in metadata_df["Sanger_Sample_ID"].tolist()
+                for this_sanger_sample_id in metadata_df[sanger_sample_id_field].tolist()
             ]
         )
 
@@ -1161,7 +1171,8 @@ class MonocleSampleData:
         if download_base_url is not None:
             metadata_df = metadata_df.assign(
                 Download_Link=[
-                    "/".join([download_base_url, urllib.parse.quote(pn)]) for pn in metadata_df["Public_Name"].tolist()
+                    "/".join([download_base_url, urllib.parse.quote(pn)])
+                    for pn in metadata_df[public_name_field].tolist()
                 ]
             )
             logging.info("metadata plus download links DataFrame.head:\n{}".format(metadata_df.head()))
@@ -1175,7 +1186,6 @@ class MonocleSampleData:
             self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
         )
         if len(in_silico_data) > 0:
-            metadata_merge_field, in_silico_merge_field, qc_data_merge_field = self._get_metadata_merge_fields()
             logging.info(
                 "merging using metadata field {} and in silico data field {}".format(
                     metadata_merge_field, in_silico_merge_field
@@ -1213,7 +1223,6 @@ class MonocleSampleData:
                 self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
             )
             if len(qc_data) > 0:
-                metadata_merge_field, in_silico_merge_field, qc_data_merge_field = self._get_metadata_merge_fields()
                 logging.info(
                     "merging using metadata field {} and QC data field {}".format(
                         metadata_merge_field, qc_data_merge_field
@@ -1246,34 +1255,46 @@ class MonocleSampleData:
                 logging.info("There are no QC data to be merged")
 
         # list of columns in `metadata_col_order` defines the CSV output
-        # remove Sample_id -- this is a duplicate of Lane_ID
-        # (lane IDs are called Sample_ID in the in silico data, for the lolz I guess)
-        # and also lane_id (from QC data)
-        while "Sample_id" in metadata_col_order:
-            metadata_col_order.remove("Sample_id")
-        while "lane_id" in metadata_col_order:
-            metadata_col_order.remove("lane_id")
+        # remove the fields used for merging the in silico and QC data into the metadata
+        # (because these are duplicated in the metadata)
+        while in_silico_merge_field in metadata_col_order:
+            metadata_col_order.remove(in_silico_merge_field)
+        while qc_data_merge_field in metadata_col_order:
+            metadata_col_order.remove(qc_data_merge_field)
+        # removing the merge fields from in silico and QC data may have removed the
+        # field from the metadta, if it has the same field name in both; so
+        # check and reinset if required
+        if metadata_merge_field not in metadata_col_order:
+            metadata_col_order.insert(2, metadata_merge_field)
         # move public name to first column
-        while "Public_Name" in metadata_col_order:
-            metadata_col_order.remove("Public_Name")
-        metadata_col_order.insert(0, "Public_Name")
+        while public_name_field in metadata_col_order:
+            metadata_col_order.remove(public_name_field)
+        metadata_col_order.insert(0, public_name_field)
         # if download links are included, put them in last column
         if download_base_url is not None:
             metadata_col_order.append("Download_Link")
 
         return (metadata_df, metadata_col_order)
 
-    def _get_metadata_merge_fields(self):
+    def _get_download_id_and_merge_fields(self):
         data_source_config = self._get_data_source_config()
         project_specific_sections = {"juno": "metadata_download_juno", "gps": "metadata_download_gps"}
         section_wanted = project_specific_sections[self.current_project]
         try:
+            sanger_sample_id_field = data_source_config[section_wanted]["sanger_sample_id_field"]
+            public_name_field = data_source_config[section_wanted]["public_name_field"]
             metadata_merge_field = data_source_config[section_wanted]["metadata_merge_field"]
             in_silico_merge_field = data_source_config[section_wanted]["in_silico_merge_field"]
             qc_data_merge_field = data_source_config[section_wanted]["qc_data_merge_field"]
         except KeyError as err:
             self._download_config_error(err)
-        return metadata_merge_field, in_silico_merge_field, qc_data_merge_field
+        return (
+            sanger_sample_id_field,
+            public_name_field,
+            metadata_merge_field,
+            in_silico_merge_field,
+            qc_data_merge_field,
+        )
 
     def _get_merge_qc_data_flag(self):
         data_source_config = self._get_data_source_config()
