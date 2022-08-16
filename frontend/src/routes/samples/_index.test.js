@@ -104,7 +104,7 @@ describe("once batches are fetched", () => {
 
   it("removes all filters on clicking the filter removal button", async () => {
     const { findByRole, getByRole } = render(DataViewerPage);
-    filterStore.set({ metadata: { someColumn: {} }, "in silico": {} });
+    filterStore.set({ metadata: { someColumn: {} } });
     const selectAllBtn = await findByRole(ROLE_BUTTON, {
       name: LABEL_SELECT_ALL,
     });
@@ -114,7 +114,11 @@ describe("once batches are fetched", () => {
 
     await fireEvent.click(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }));
 
-    expect(get(filterStore)).toEqual({ metadata: {}, "in silico": {} });
+    expect(get(filterStore)).toEqual({
+      metadata: {},
+      "in silico": {},
+      "qc data": {},
+    });
     expect(
       getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
     ).toBeTruthy();
