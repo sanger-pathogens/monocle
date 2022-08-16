@@ -2757,7 +2757,7 @@
                         "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
                         "regex": "^(?:[XVI]*?[a-z]?)$|^NT$",
-                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single small case letter; can be 'NT' "
+                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single small case letter; can be 'NT'"
                      }
                   }
                ]
@@ -2774,10 +2774,10 @@
                      "display name": "ST",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20)",
-                        "max_length": 20,
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
                         "regex": "^(?:\\d{1,4}?[?:*]?)$|^(?:NF?\\*?)$",
-                        "regex_validation_message": "must be an integer (max 4 digits) or `NF`; can be followed by a '*' symbol"
+                        "regex_validation_message": "must be an integer (max 4 digits) or `NF`; both can be followed by '*'"
                      }
                   },
                   {
@@ -2789,9 +2789,10 @@
                      "display name": "adhP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2803,9 +2804,10 @@
                      "display name": "pheS",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2817,9 +2819,10 @@
                      "display name": "atr",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2831,9 +2834,10 @@
                      "display name": "glnA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2845,9 +2849,10 @@
                      "display name": "sdhA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2859,9 +2864,10 @@
                      "display name": "glcK",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   },
                   {
@@ -2873,43 +2879,10 @@
                      "display name": "tkt",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20
-                     }
-                  },
-                  {
-                     "name": "23S1",
-                     "display": true,
-                     "default": false,
-                     "order": 10,
-                     "spreadsheet heading": "23S1",
-                     "display name": "23S1",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "id": "twenty_three_S1",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "23S3",
-                     "display": true,
-                     "default": false,
-                     "order": 11,
-                     "spreadsheet heading": "23S3",
-                     "display name": "23S3",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "id": "twenty_three_S3",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-'"
                      }
                   }
                ]
@@ -2921,480 +2894,560 @@
                      "name": "AAC6APH2",
                      "display": true,
                      "default": false,
-                     "order": 12,
+                     "order": 10,
                      "spreadsheet heading": "AAC6APH2",
                      "display name": "AAC6APH2",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
-                     "name": "AADECC",
+                     "name": "ANT6IA",
                      "display": true,
                      "default": false,
-                     "order": 13,
-                     "spreadsheet heading": "AADECC",
-                     "display name": "AADECC",
+                     "order": 11,
+                     "spreadsheet heading": "ANT6IA",
+                     "display name": "ANT6IA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "ANT6",
-                     "display": true,
-                     "default": false,
-                     "order": 14,
-                     "spreadsheet heading": "ANT6",
-                     "display name": "ANT6",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "APH3III",
                      "display": true,
                      "default": false,
-                     "order": 15,
+                     "order": 12,
                      "spreadsheet heading": "APH3III",
                      "display name": "APH3III",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
-                     "name": "APH3OTHER",
+                     "name": "AADE",
                      "display": true,
                      "default": false,
-                     "order": 16,
-                     "spreadsheet heading": "APH3OTHER",
-                     "display name": "APH3OTHER",
+                     "order": 13,
+                     "spreadsheet heading": "AADE",
+                     "display name": "AADE",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "CATPC194",
                      "display": true,
                      "default": false,
-                     "order": 17,
+                     "order": 14,
                      "spreadsheet heading": "CATPC194",
                      "display name": "CATPC194",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "CATQ",
                      "display": true,
                      "default": false,
-                     "order": 18,
+                     "order": 15,
                      "spreadsheet heading": "CATQ",
                      "display name": "CATQ",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "ERMA",
                      "display": true,
                      "default": false,
-                     "order": 19,
+                     "order": 16,
                      "spreadsheet heading": "ERMA",
                      "display name": "ERMA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "ERMB",
                      "display": true,
                      "default": false,
-                     "order": 20,
+                     "order": 17,
                      "spreadsheet heading": "ERMB",
                      "display name": "ERMB",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "ERMT",
                      "display": true,
                      "default": false,
-                     "order": 21,
+                     "order": 18,
                      "spreadsheet heading": "ERMT",
                      "display name": "ERMT",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "LNUB",
                      "display": true,
                      "default": false,
-                     "order": 22,
+                     "order": 19,
                      "spreadsheet heading": "LNUB",
                      "display name": "LNUB",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "LNUC",
                      "display": true,
                      "default": false,
-                     "order": 23,
+                     "order": 20,
                      "spreadsheet heading": "LNUC",
                      "display name": "LNUC",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "LSAC",
                      "display": true,
                      "default": false,
-                     "order": 24,
+                     "order": 21,
                      "spreadsheet heading": "LSAC",
                      "display name": "LSAC",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "LSAE",
+                     "display": true,
+                     "default": false,
+                     "order": 22,
+                     "spreadsheet heading": "LSAE",
+                     "display name": "LSAE",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "MEFA",
                      "display": true,
                      "default": false,
-                     "order": 25,
+                     "order": 23,
                      "spreadsheet heading": "MEFA",
                      "display name": "MEFA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "MPHC",
-                     "display": true,
-                     "default": false,
-                     "order": 26,
-                     "spreadsheet heading": "MPHC",
-                     "display name": "MPHC",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "MSRA",
-                     "display": true,
-                     "default": false,
-                     "order": 27,
-                     "spreadsheet heading": "MSRA",
-                     "display name": "MSRA",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "MSRD",
                      "display": true,
                      "default": false,
-                     "order": 28,
+                     "order": 24,
                      "spreadsheet heading": "MSRD",
                      "display name": "MSRD",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "FOSA",
-                     "display": true,
-                     "default": false,
-                     "order": 29,
-                     "spreadsheet heading": "FOSA",
-                     "display name": "FOSA",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "GYRA",
-                     "display": true,
-                     "default": false,
-                     "order": 30,
-                     "spreadsheet heading": "GYRA",
-                     "display name": "GYRA",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "PARC",
-                     "display": true,
-                     "default": false,
-                     "order": 31,
-                     "spreadsheet heading": "PARC",
-                     "display name": "PARC",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_1",
-                     "display": true,
-                     "default": false,
-                     "order": 32,
-                     "spreadsheet heading": "RPOBGBS-1",
-                     "display name": "RPOBGBS-1",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_2",
-                     "display": true,
-                     "default": false,
-                     "order": 33,
-                     "spreadsheet heading": "RPOBGBS-2",
-                     "display name": "RPOBGBS-2",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_3",
-                     "display": true,
-                     "default": false,
-                     "order": 34,
-                     "spreadsheet heading": "RPOBGBS-3",
-                     "display name": "RPOBGBS-3",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_4",
-                     "display": true,
-                     "default": false,
-                     "order": 35,
-                     "spreadsheet heading": "RPOBGBS-4",
-                     "display name": "RPOBGBS-4",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
-                     }
-                  },
-                  {
-                     "name": "SUL2",
-                     "display": true,
-                     "default": false,
-                     "order": 36,
-                     "spreadsheet heading": "SUL2",
-                     "display name": "SUL2",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "TETB",
                      "display": true,
                      "default": false,
-                     "order": 37,
+                     "order": 25,
                      "spreadsheet heading": "TETB",
                      "display name": "TETB",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "TETL",
                      "display": true,
                      "default": false,
-                     "order": 38,
+                     "order": 26,
                      "spreadsheet heading": "TETL",
                      "display name": "TETL",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "TETM",
                      "display": true,
                      "default": false,
-                     "order": 39,
+                     "order": 27,
                      "spreadsheet heading": "TETM",
                      "display name": "TETM",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETW",
+                     "display": true,
+                     "default": false,
+                     "order": 28,
+                     "spreadsheet heading": "TETW",
+                     "display name": "TETW",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "TETO",
                      "display": true,
                      "default": false,
-                     "order": 40,
+                     "order": 29,
                      "spreadsheet heading": "TETO",
                      "display name": "TETO",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "TETS",
                      "display": true,
                      "default": false,
-                     "order": 41,
+                     "order": 30,
                      "spreadsheet heading": "TETS",
                      "display name": "TETS",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETO32O",
+                     "display": true,
+                     "default": false,
+                     "order": 31,
+                     "spreadsheet heading": "TETO32O",
+                     "display name": "TETO32O",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETOW",
+                     "display": true,
+                     "default": false,
+                     "order": 32,
+                     "spreadsheet heading": "TETOW",
+                     "display name": "TETOW",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETOW32O",
+                     "display": true,
+                     "default": false,
+                     "order": 33,
+                     "spreadsheet heading": "TETOW32O",
+                     "display name": "TETOW32O",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETOW32OWO",
+                     "display": true,
+                     "default": false,
+                     "order": 34,
+                     "spreadsheet heading": "TETOW32OWO",
+                     "display name": "TETOW32OWO",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETOWO",
+                     "display": true,
+                     "default": false,
+                     "order": 35,
+                     "spreadsheet heading": "TETOWO",
+                     "display name": "TETOWO",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETSM",
+                     "display": true,
+                     "default": false,
+                     "order": 36,
+                     "spreadsheet heading": "TETSM",
+                     "display name": "TETSM",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
+                     }
+                  },
+                  {
+                     "name": "TETW32O",
+                     "display": true,
+                     "default": false,
+                     "order": 37,
+                     "spreadsheet heading": "TETW32O",
+                     "display name": "TETW32O",
+                     "filter type": "discrete",
+                     "db": {
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   }
                ]
@@ -3406,176 +3459,220 @@
                      "name": "ALP1",
                      "display": true,
                      "default": false,
-                     "order": 42,
+                     "order": 38,
                      "spreadsheet heading": "ALP1",
                      "display name": "ALP1",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "ALP23",
                      "display": true,
                      "default": false,
-                     "order": 43,
+                     "order": 39,
                      "spreadsheet heading": "ALP23",
                      "display name": "ALP23",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "ALPHA",
                      "display": true,
                      "default": false,
-                     "order": 44,
+                     "order": 40,
                      "spreadsheet heading": "ALPHA",
                      "display name": "ALPHA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "HVGA",
                      "display": true,
                      "default": false,
-                     "order": 45,
+                     "order": 41,
                      "spreadsheet heading": "HVGA",
                      "display name": "HVGA",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "PI1",
                      "display": true,
                      "default": false,
-                     "order": 46,
+                     "order": 42,
                      "spreadsheet heading": "PI1",
                      "display name": "PI1",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "PI2A1",
                      "display": true,
                      "default": false,
-                     "order": 47,
+                     "order": 43,
                      "spreadsheet heading": "PI2A1",
                      "display name": "PI2A1",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "PI2A2",
                      "display": true,
                      "default": false,
-                     "order": 48,
+                     "order": 44,
                      "spreadsheet heading": "PI2A2",
                      "display name": "PI2A2",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "PI2B",
                      "display": true,
                      "default": false,
-                     "order": 49,
+                     "order": 45,
                      "spreadsheet heading": "PI2B",
                      "display name": "PI2B",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "RIB",
                      "display": true,
                      "default": false,
-                     "order": 50,
+                     "order": 46,
                      "spreadsheet heading": "RIB",
                      "display name": "RIB",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "SRR1",
                      "display": true,
                      "default": false,
-                     "order": 51,
+                     "order": 47,
                      "spreadsheet heading": "SRR1",
                      "display name": "SRR1",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   },
                   {
                      "name": "SRR2",
                      "display": true,
                      "default": false,
-                     "order": 52,
+                     "order": 48,
                      "spreadsheet heading": "SRR2",
                      "display name": "SRR2",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(20) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 20,
-                        "regex": "^(?:^$|pos|neg)+$",
-                        "regex_validation_message": "must be pos, neg or empty"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "allowed_values": [
+                           "pos",
+                           "neg"
+                        ],
+                        "convert_case": {
+                           "case": "lower"
+                        }
                      }
                   }
                ]
@@ -3587,128 +3684,76 @@
                      "name": "twenty_three_S1_variant",
                      "display": true,
                      "default": false,
-                     "order": 53,
+                     "order": 49,
                      "spreadsheet heading": "23S1_SNP",
                      "display name": "23S1 SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
                      }
                   },
                   {
                      "name": "twenty_three_S3_variant",
                      "display": true,
                      "default": false,
-                     "order": 54,
+                     "order": 50,
                      "spreadsheet heading": "23S3_SNP",
                      "display name": "23S3 SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
                      }
                   },
                   {
                      "name": "GYRA_variant",
                      "display": true,
                      "default": false,
-                     "order": 55,
+                     "order": 51,
                      "spreadsheet heading": "GYRA_SNP",
                      "display name": "GYRA SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
                      }
                   },
                   {
                      "name": "PARC_variant",
                      "display": true,
                      "default": false,
-                     "order": 56,
+                     "order": 52,
                      "spreadsheet heading": "PARC_SNP",
                      "display name": "PARC SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+                        "mysql_type": "VARCHAR(10)",
+                        "max_length": 10,
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
                      }
                   },
                   {
-                     "name": "RPOBGBS_1_variant",
+                     "name": "TYPER_PIPELINE_VERSION",
                      "display": true,
                      "default": false,
-                     "order": 57,
-                     "spreadsheet heading": "RPOBGBS-1_SNP",
-                     "display name": "RPOBGBS-1 SNP",
+                     "order": 53,
+                     "spreadsheet heading": "TYPER_PIPELINE_VERSION",
+                     "display name": "Typer Pipeline Version",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
+                        "mysql_type": "VARCHAR(10) NOT NULL",
                         "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_2_variant",
-                     "display": true,
-                     "default": false,
-                     "order": 58,
-                     "spreadsheet heading": "RPOBGBS-2_SNP",
-                     "display name": "RPOBGBS-2 SNP",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_3_variant",
-                     "display": true,
-                     "default": false,
-                     "order": 59,
-                     "spreadsheet heading": "RPOBGBS-3_SNP",
-                     "display name": "RPOBGBS-3 SNP",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-                     }
-                  },
-                  {
-                     "name": "RPOBGBS_4_variant",
-                     "display": true,
-                     "default": false,
-                     "order": 60,
-                     "spreadsheet heading": "RPOBGBS-4_SNP",
-                     "display name": "RPOBGBS-4 SNP",
-                     "filter type": "discrete",
-                     "db": {
-                        "mysql_type": "VARCHAR(100) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 100,
-                        "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-                        "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+                        "max_length": 10,
+                        "regex": "^(?:[a-z][0-9].[0-9].[0-9])$",
+                        "regex_validation_message": "must follow a valid format (e.g. v1.0.0)"
                      }
                   }
                ]
