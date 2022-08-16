@@ -67,7 +67,7 @@ metadata_download_juno:
    merge_qc_data           : false
 metadata_download_gps:
    sanger_sample_id_field  : 'Sanger_sample_id'
-   public_name_field       : 'Public_Name'
+   public_name_field       : 'Public_name'
    metadata_merge_field    : 'Lane_ID'
    in_silico_merge_field   : 'lane_id'
    qc_data_merge_field     : 'lane_id'
