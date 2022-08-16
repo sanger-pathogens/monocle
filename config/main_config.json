@@ -5758,6 +5758,26 @@
                "name": "Pipeline QC",
                "fields": [
                   {
+                     "name": "qc",
+                     "display": true,
+                     "default": true,
+                     "order": 1,
+                     "spreadsheet heading": "QC",
+                     "display name": "QC",
+                     "db": {
+                        "mysql_type": "VARCHAR(30)",
+                        "max_length": 30,
+                        "allowed_values": [
+                           "PASSPLUS",
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
+                     }
+                  },
+                  {
                      "name": "Streptococcus_pneumoniae",
                      "display": true,
                      "default": false,
@@ -5841,29 +5861,9 @@
                      }
                   },
                   {
-                     "name": "qc",
-                     "display": true,
-                     "default": true,
-                     "order": 8,
-                     "spreadsheet heading": "QC",
-                     "display name": "QC",
-                     "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "allowed_values": [
-                           "PASSPLUS",
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "convert_case": {
-                           "case": "upper"
-                        }
-                     }
-                  },
-                  {
                      "name": "supplier_name",
                      "display": false,
-                     "order": 9,
+                     "order": 8,
                      "spreadsheet heading": "Supplier_name",
                      "db": {
                         "mysql_type": "VARCHAR(256) NOT NULL",
@@ -5877,7 +5877,7 @@
                      "name": "Hetsites_50bp",
                      "display": true,
                      "default": false,
-                     "order": 10,
+                     "order": 9,
                      "spreadsheet heading": "Hetsites_50bp",
                      "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
                      "db": {

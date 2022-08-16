@@ -1678,6 +1678,14 @@
             "name": "Pipeline QC",
             "fields": [
                {
+                  "name": "qc",
+                  "display": true,
+                  "default": true,
+                  "order": 1,
+                  "spreadsheet heading": "QC",
+                  "display name": "QC"
+               },
+               {
                   "name": "Streptococcus_pneumoniae",
                   "display": true,
                   "default": false,
@@ -1728,24 +1736,16 @@
                   "display name": "Proportion of Het SNPs"
                },
                {
-                  "name": "qc",
-                  "display": true,
-                  "default": true,
-                  "order": 8,
-                  "spreadsheet heading": "QC",
-                  "display name": "QC"
-               },
-               {
                   "name": "supplier_name",
                   "display": false,
-                  "order": 9,
+                  "order": 8,
                   "spreadsheet heading": "Supplier_name"
                },
                {
                   "name": "Hetsites_50bp",
                   "display": true,
                   "default": false,
-                  "order": 10,
+                  "order": 9,
                   "spreadsheet heading": "Hetsites_50bp",
                   "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)"
                }
