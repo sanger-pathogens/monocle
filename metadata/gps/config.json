@@ -1777,6 +1777,19 @@
             "regex": "^(?:\\d+_\\d+#\\d+)$",
             "regex_validation_message": "contains illegal characters"
          },
+         "qc": {
+            "title": "QC",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "allowed_values": [
+               "PASSPLUS",
+               "PASS",
+               "FAIL"
+            ],
+            "convert_case": {
+               "case": "upper"
+            }
+         },
          "Streptococcus_pneumoniae": {
             "title": "Streptococcus_pneumoniae",
             "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
@@ -1815,19 +1828,6 @@
             "max_length": 6,
             "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
             "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-         },
-         "qc": {
-            "title": "QC",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "allowed_values": [
-               "PASSPLUS",
-               "PASS",
-               "FAIL"
-            ],
-            "convert_case": {
-               "case": "upper"
-            }
          },
          "supplier_name": {
             "title": "Supplier_name",
