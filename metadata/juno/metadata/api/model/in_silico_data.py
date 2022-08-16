@@ -6,7 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
-    cps_type: str  # optional; must be a roman number (1-39); can be followed by a single small case letter; can be 'NT'
+    cps_type: str  # optional; must be a roman number (1-39); can be followed by a single lower case letter; can be 'NT'
     ST: str  # optional; must be an integer (max 4 digits) or `NF`; both can be followed by '*'
     adhP: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
     pheS: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
