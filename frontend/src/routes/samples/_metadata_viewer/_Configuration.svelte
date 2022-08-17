@@ -113,10 +113,7 @@
           <i>In silico</i> analysis
         </ColumnSelection>
 
-        <ColumnSelection
-          columnsData={columnsPerDatatype["qc data"]}
-          open={false}
-        >
+        <ColumnSelection columnsData={columnsPerDatatype["qc data"]}>
           QC
         </ColumnSelection>
 
