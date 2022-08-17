@@ -11,8 +11,8 @@
   const SEGMENT_COLORS = ["light-grey", "light-green", "red"];
 
   function calcPercentCompleted(valuesParam) {
-    const [pending, succeeded, failed] = valuesParam;
-    const completed = succeeded + failed;
+    const [pending, lanesSuccessful, lanesFailed] = valuesParam;
+    const completed = lanesSuccessful + lanesFailed;
     const received = completed + pending;
     return received ? completed / received : 0;
   }
