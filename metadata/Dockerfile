@@ -34,4 +34,4 @@ ENV      GUNICORN_PORT=80
 ENV      GUNICORN_WORKERS=2
 ENV      GUNICORN_TIMEOUT=60
 EXPOSE   "$GUNICORN_PORT"
-CMD      gunicorn -w "${GUNICORN_WORKERS}" -t "${GUNICORN_TIMEOUT}" -b ":${GUNICORN_PORT}" metadata.wsgi
+CMD      exec gunicorn -w "${GUNICORN_WORKERS}" -t "${GUNICORN_TIMEOUT}" -b ":${GUNICORN_PORT}" metadata.wsgi

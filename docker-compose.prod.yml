@@ -147,8 +147,6 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    depends_on:
-      - dash-api
   monocle-ldap:
     # temporarily use default image; should create out own (https://github.com/osixia/docker-openldap#advanced-user-guide)
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/osixia/openldap:1.5.0"
@@ -198,8 +196,6 @@ services:
     volumes:
       # this next directory isn't mentioned in the documentation, but the container won't start without it
       - ./phpldapadmin-data/var/lock:/var/lock
-    depends_on:
-      - monocle-ldap
     environment:
       - PHPLDAPADMIN_HTTPS=false
       # make sure the host name matches the name of the openldap service (above)
@@ -217,8 +213,6 @@ services:
     tmpfs:
       - "/run:rw,noexec,nosuid"
       - "/tmp:rw,noexec,nosuid"
-    depends_on:
-      - monocle-ldap
 
 # Volume needs driver, since it's a mounted S3 bucket
 volumes:
