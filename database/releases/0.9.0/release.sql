@@ -74,7 +74,7 @@ CREATE TABLE `in_silico` (
 
 
 -- Update the database version
-CALL update_database_version('0.8.0', 'Update JUNO in_silico table');
+CALL update_database_version('0.9.0', 'Update JUNO in_silico table');
 
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
