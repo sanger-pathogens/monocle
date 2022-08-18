@@ -3691,8 +3691,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
                      }
                   },
                   {
@@ -3706,8 +3706,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
                      }
                   },
                   {
@@ -3721,8 +3721,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
                      }
                   },
                   {
@@ -3736,8 +3736,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
                      }
                   },
                   {

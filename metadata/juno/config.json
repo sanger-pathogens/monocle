@@ -1308,29 +1308,29 @@
             "title": "23S1_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+            "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
          },
          "twenty_three_S3_variant": {
             "title": "23S3_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+            "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
          },
          "GYRA_variant": {
             "title": "GYRA_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+            "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
          },
          "PARC_variant": {
             "title": "PARC_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
+            "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
          },
          "TYPER_PIPELINE_VERSION": {
             "title": "TYPER_PIPELINE_VERSION",

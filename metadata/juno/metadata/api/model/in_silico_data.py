@@ -54,8 +54,8 @@ class InSilicoData:
     RIB: str  # optional
     SRR1: str  # optional
     SRR2: str  # optional
-    twenty_three_S1_variant: str  # optional; must follow a valid variant format (e.g. L55A or G8A); can be empty
-    twenty_three_S3_variant: str  # optional; must follow a valid variant format (e.g. L55A or G8A); can be empty
-    GYRA_variant: str  # optional; must follow a valid variant format (e.g. L55A or G8A); can be empty
-    PARC_variant: str  # optional; must follow a valid variant format (e.g. L55A or G8A); can be empty
+    twenty_three_S1_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
+    twenty_three_S3_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
+    GYRA_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
+    PARC_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
     TYPER_PIPELINE_VERSION: str  # mandatory; must follow a valid format (e.g. v1.0.0)

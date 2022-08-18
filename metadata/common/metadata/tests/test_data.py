@@ -694,6 +694,6 @@ EXPECTED_VALIDATION_ERRORS2 = [
     '{row: 2, column: "RIB"}: "\'\'" is not in the list of legal options (pos, neg)',
     '{row: 3, column: "SRR1"}: "\'\'" is not in the list of legal options (pos, neg)',
     '{row: 2, column: "SRR2"}: "\'\'" is not in the list of legal options (pos, neg)',
-    '{row: 3, column: "23S1_SNP"}: "\'\'" must follow a valid variant format (e.g. L55A or G8A); can be empty',
-    '{row: 3, column: "23S3_SNP"}: "\'\'" must follow a valid variant format (e.g. L55A or G8A); can be empty',
+    "{row: 3, column: \"23S1_SNP\"}: \"''\" must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty",
+    "{row: 3, column: \"23S3_SNP\"}: \"''\" must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty",
 ]
