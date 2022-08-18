@@ -3692,7 +3692,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
                      }
                   },
                   {
@@ -3707,7 +3707,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
                      }
                   },
                   {
@@ -3722,7 +3722,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
                      }
                   },
                   {
@@ -3737,7 +3737,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. L55A or G8A); can be empty"
                      }
                   },
                   {
