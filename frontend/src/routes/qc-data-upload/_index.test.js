@@ -18,10 +18,21 @@ it("has the expected text", async () => {
   expect(getByText("QC data upload")).toBeDefined();
   expect(
     getByLabelText(
-      "Select or drag and drop your CSV files (saved as UTF-8) with sample QC data:"
+      "Select or drag and drop your files with tab-separated QC data:"
     )
   ).toBeDefined();
   expect(getByText("All QC data were successfully uploaded.")).toBeDefined();
+});
+
+it("accepts the expected file types", () => {
+  const { container } = render(QCDataUploadPage, {
+    session: writable(PROJECT),
+  });
+
+  const fileInput = container.querySelector("form input");
+  expect(fileInput.getAttribute("accept")).toBe(
+    "text/plain,.txt,text/tab-separated-values,.tsv,.tab"
+  );
 });
 
 it("has the expected upload URL", async () => {
