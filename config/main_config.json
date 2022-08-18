@@ -2756,7 +2756,7 @@
                      "db": {
                         "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
-                        "regex": "^(?:[XVI]*?[a-z]?|NT)$",
+                        "regex": "^(?:[XVI]{1,7}?[a-z]?|NT)$",
                         "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be \"NT\" or empty"
                      }
                   }
@@ -2776,8 +2776,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex": "^(?:\\d{1,4}?[?:*]?|NF?\\*?)$",
-                        "regex_validation_message": "must be an integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
+                        "regex": "^(?:\\d{1,4}?[*]?|NF?\\*?)$",
+                        "regex_validation_message": "must be a positive integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
                      }
                   },
                   {
@@ -2791,8 +2791,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2806,8 +2806,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2821,8 +2821,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2836,8 +2836,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2851,8 +2851,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2866,8 +2866,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2881,8 +2881,8 @@
                      "db": {
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
-                        "regex":"^(?:\\d{1,3}?[?:*]?|-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+                        "regex":"^(?:\\d{1,3}?[*]?|-)$",
+                        "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   }
                ]

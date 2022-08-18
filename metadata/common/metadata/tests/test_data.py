@@ -672,8 +672,8 @@ EXPECTED_VALIDATION_ERRORS = [
 
 EXPECTED_VALIDATION_ERRORS2 = [
     '{row: 2, column: "Sample_id"}: "ZZZ;;{}{}{[[STUDY" contains illegal characters',
-    '{row: 2, column: "atr"}: "@" must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty',
-    '{row: 2, column: "sdhA"}: "1.2" must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty',
+    '{row: 2, column: "atr"}: "@" must be a positive integer (max 3 digits), which can be followed by"*"; can be "-" or empty',
+    '{row: 2, column: "sdhA"}: "1.2" must be a positive integer (max 3 digits), which can be followed by"*"; can be "-" or empty',
     '{row: 2, column: "ANT6IA"}: "[neg]" is not in the list of legal options (pos, neg)',
     '{row: 2, column: "CATQ"}: "!" is not in the list of legal options (pos, neg)',
     '{row: 2, column: "ERMT"}: "0" is not in the list of legal options (pos, neg)',
@@ -690,7 +690,7 @@ EXPECTED_VALIDATION_ERRORS2 = [
     '{row: 2, column: "23S3_SNP"}: "#" must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty',
     '{row: 2, column: "TYPER_PIPELINE_VERSION"}: "v1.0.3!" must follow a valid format (e.g. v1.0.0)',
     '{row: 3, column: "cps_type"}: "III-ST" must be a roman number (1-39); can be followed by a single lower case letter; can be "NT" or empty',
-    '{row: 3, column: "pheS"}: "-1" must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty',
+    '{row: 3, column: "pheS"}: "-1" must be a positive integer (max 3 digits), which can be followed by"*"; can be "-" or empty',
     '{row: 3, column: "ERMB"}: "_" is not in the list of legal options (pos, neg)',
     '{row: 3, column: "LNUB"}: "\'\'" is not in the list of legal options (pos, neg)',
     '{row: 3, column: "MEFA"}: "\'\'" is not in the list of legal options (pos, neg)',
