@@ -687,8 +687,7 @@ EXPECTED_VALIDATION_ERRORS2 = [
     '{row: 2, column: "PI2A2"}: "\'\'" is not in the list of legal options (pos, neg)',
     '{row: 2, column: "RIB"}: "\'\'" is not in the list of legal options (pos, neg)',
     '{row: 2, column: "SRR2"}: "\'\'" is not in the list of legal options (pos, neg)',
-    "{row: 2, column: \"23S3_SNP\"}: \"#\" must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be "
-    * " or empty",
+    "{row: 2, column: \"23S3_SNP\"}: \"#\" must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty",
     '{row: 2, column: "TYPER_PIPELINE_VERSION"}: "v1.0.3!" must follow a valid format (e.g. v1.0.0)',
     '{row: 3, column: "cps_type"}: "III-ST" must be a roman number (1-39); can be followed by a single lower case letter; can be \'NT\'',
     "{row: 3, column: \"pheS\"}: \"-1\" must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty",
