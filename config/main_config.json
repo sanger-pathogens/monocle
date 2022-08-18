@@ -2757,7 +2757,7 @@
                         "mysql_type": "VARCHAR(20)",
                         "max_length": 20,
                         "regex": "^(?:[XVI]*?[a-z]?)$|^NT$",
-                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be 'NT' or empty"
+                        "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be \"NT\" or empty"
                      }
                   }
                ]
@@ -2777,7 +2777,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:\\d{1,4}?[?:*]?)$|^(?:NF?\\*?)$",
-                        "regex_validation_message": "must be an integer (max 4 digits) or `NF`; both can be followed by '*'; can be empty"
+                        "regex_validation_message": "must be an integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
                      }
                   },
                   {
@@ -2792,7 +2792,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2807,7 +2807,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2822,7 +2822,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2837,7 +2837,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2852,7 +2852,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2867,7 +2867,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   },
                   {
@@ -2882,7 +2882,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex":"^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
-                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by '*'; can be '-' or empty"
+                        "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
                      }
                   }
                ]
@@ -3692,7 +3692,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
                      }
                   },
                   {
@@ -3707,7 +3707,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
                      }
                   },
                   {
@@ -3722,7 +3722,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
                      }
                   },
                   {
@@ -3737,7 +3737,7 @@
                         "mysql_type": "VARCHAR(10)",
                         "max_length": 10,
                         "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|\\*)$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty"
+                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
                      }
                   },
                   {

@@ -6,15 +6,15 @@ from dataclasses import dataclass
 @dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
-    cps_type: str  # optional; must be a roman number (1-39); can be followed by a single lower case letter; can be 'NT'
-    ST: str  # optional; must be an integer (max 4 digits) or `NF`; both can be followed by '*'
-    adhP: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    pheS: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    atr: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    glnA: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    sdhA: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    glcK: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
-    tkt: str  # optional; must be an integer (max 3 digits), which can be followed by '*'; can be '-'
+    cps_type: str  # optional; must be a roman number (1-39); can be followed by a single lower case letter; can be "NT" or empty
+    ST: str  # optional; must be an integer (max 4 digits) or "NF"; both can be followed by "*"; can be empty
+    adhP: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    pheS: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    atr: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    glnA: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    sdhA: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    glcK: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    tkt: str  # optional; must be an integer (max 3 digits), which can be followed by "*"; can be "-" or empty
     AAC6APH2: str  # optional
     ANT6IA: str  # optional
     APH3III: str  # optional
@@ -54,8 +54,8 @@ class InSilicoData:
     RIB: str  # optional
     SRR1: str  # optional
     SRR2: str  # optional
-    twenty_three_S1_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
-    twenty_three_S3_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
-    GYRA_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
-    PARC_variant: str  # optional; must follow a valid variant format (e.g. 'L55A' or 'G8A'); can be '*' or empty
+    twenty_three_S1_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    twenty_three_S3_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    GYRA_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    PARC_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
     TYPER_PIPELINE_VERSION: str  # mandatory; must follow a valid format (e.g. v1.0.0)
