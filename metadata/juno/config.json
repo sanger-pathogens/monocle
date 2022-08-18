@@ -777,63 +777,63 @@
             "title": "cps_type",
             "mysql_type": "VARCHAR(20)",
             "max_length": 20,
-            "regex": "^(?:[XVI]*?[a-z]?)$|^NT$",
+            "regex": "^(?:[XVI]*?[a-z]?|NT)$",
             "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be \"NT\" or empty"
          },
          "ST": {
             "title": "ST",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,4}?[?:*]?)$|^(?:NF?\\*?)$",
+            "regex": "^(?:\\d{1,4}?[?:*]?|NF?\\*?)$",
             "regex_validation_message": "must be an integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
          },
          "adhP": {
             "title": "adhP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "pheS": {
             "title": "pheS",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "atr": {
             "title": "atr",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "glnA": {
             "title": "glnA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "sdhA": {
             "title": "sdhA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "glcK": {
             "title": "glcK",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "tkt": {
             "title": "tkt",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}?[?:*]?)$|^(?:-)$",
+            "regex": "^(?:\\d{1,3}?[?:*]?|-)$",
             "regex_validation_message": "must be an integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "AAC6APH2": {
