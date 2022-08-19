@@ -775,465 +775,570 @@
          },
          "cps_type": {
             "title": "cps_type",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(20)",
+            "max_length": 20,
+            "regex": "^(?:[XVI]{1,7}[a-z]?|NT)$",
+            "regex_validation_message": "must be a roman number (1-39); can be followed by a single lower case letter; can be \"NT\" or empty"
          },
          "ST": {
             "title": "ST",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,4}[*]?|NF[*]?)$",
+            "regex_validation_message": "must be a positive integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
          },
          "adhP": {
             "title": "adhP",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "pheS": {
             "title": "pheS",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "atr": {
             "title": "atr",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "glnA": {
             "title": "glnA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "sdhA": {
             "title": "sdhA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "glcK": {
             "title": "glcK",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "tkt": {
             "title": "tkt",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20
-         },
-         "twenty_three_S1": {
-            "title": "23S1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "twenty_three_S3": {
-            "title": "23S3",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:\\d{1,3}[*]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "AAC6APH2": {
             "title": "AAC6APH2",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
-         "AADECC": {
-            "title": "AADECC",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "ANT6": {
-            "title": "ANT6",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+         "ANT6IA": {
+            "title": "ANT6IA",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "APH3III": {
             "title": "APH3III",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
-         "APH3OTHER": {
-            "title": "APH3OTHER",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+         "AADE": {
+            "title": "AADE",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "CATPC194": {
             "title": "CATPC194",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "CATQ": {
             "title": "CATQ",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ERMA": {
             "title": "ERMA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ERMB": {
             "title": "ERMB",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ERMT": {
             "title": "ERMT",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "LNUB": {
             "title": "LNUB",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "LNUC": {
             "title": "LNUC",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "LSAC": {
             "title": "LSAC",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "LSAE": {
+            "title": "LSAE",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "MEFA": {
             "title": "MEFA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "MPHC": {
-            "title": "MPHC",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "MSRA": {
-            "title": "MSRA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "MSRD": {
             "title": "MSRD",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "FOSA": {
-            "title": "FOSA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "GYRA": {
-            "title": "GYRA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "PARC": {
-            "title": "PARC",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "RPOBGBS_1": {
-            "title": "RPOBGBS-1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "RPOBGBS_2": {
-            "title": "RPOBGBS-2",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "RPOBGBS_3": {
-            "title": "RPOBGBS-3",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "RPOBGBS_4": {
-            "title": "RPOBGBS-4",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
-         },
-         "SUL2": {
-            "title": "SUL2",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "TETB": {
             "title": "TETB",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "TETL": {
             "title": "TETL",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "TETM": {
             "title": "TETM",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETW": {
+            "title": "TETW",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "TETO": {
             "title": "TETO",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "TETS": {
             "title": "TETS",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETO32O": {
+            "title": "TETO32O",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETOW": {
+            "title": "TETOW",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETOW32O": {
+            "title": "TETOW32O",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETOW32OWO": {
+            "title": "TETOW32OWO",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETOWO": {
+            "title": "TETOWO",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETSM": {
+            "title": "TETSM",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
+         },
+         "TETW32O": {
+            "title": "TETW32O",
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ALP1": {
             "title": "ALP1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ALP23": {
             "title": "ALP23",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "ALPHA": {
             "title": "ALPHA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "HVGA": {
             "title": "HVGA",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "PI1": {
             "title": "PI1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "PI2A1": {
             "title": "PI2A1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "PI2A2": {
             "title": "PI2A2",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "PI2B": {
             "title": "PI2B",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "RIB": {
             "title": "RIB",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "SRR1": {
             "title": "SRR1",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "SRR2": {
             "title": "SRR2",
-            "mysql_type": "VARCHAR(20) NOT NULL",
-            "mandatory": true,
-            "max_length": 20,
-            "regex": "^(?:^$|pos|neg)+$",
-            "regex_validation_message": "must be pos, neg or empty"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "allowed_values": [
+               "pos",
+               "neg"
+            ],
+            "convert_case": {
+               "case": "lower"
+            }
          },
          "twenty_three_S1_variant": {
             "title": "23S1_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
+            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "twenty_three_S3_variant": {
             "title": "23S3_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
+            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "GYRA_variant": {
             "title": "GYRA_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
+            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "PARC_variant": {
             "title": "PARC_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+            "mysql_type": "VARCHAR(10)",
+            "max_length": 10,
+            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
+            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
-         "RPOBGBS_1_variant": {
-            "title": "RPOBGBS-1_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
+         "TYPER_PIPELINE_VERSION": {
+            "title": "TYPER_PIPELINE_VERSION",
+            "mysql_type": "VARCHAR(10) NOT NULL",
             "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-         },
-         "RPOBGBS_2_variant": {
-            "title": "RPOBGBS-2_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-         },
-         "RPOBGBS_3_variant": {
-            "title": "RPOBGBS-3_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
-         },
-         "RPOBGBS_4_variant": {
-            "title": "RPOBGBS-4_SNP",
-            "mysql_type": "VARCHAR(100) NOT NULL",
-            "mandatory": true,
-            "max_length": 100,
-            "regex": "^(?:^$|[0-9a-zA-Z_\\-\\,])+$",
-            "regex_validation_message": "must contain comma-separated variants (e.g. T78Q,L55A) or empty value"
+            "max_length": 10,
+            "regex": "^(?:[a-z][0-9].[0-9].[0-9])$",
+            "regex_validation_message": "must follow a valid format (e.g. v1.0.0)"
          }
       }
    },

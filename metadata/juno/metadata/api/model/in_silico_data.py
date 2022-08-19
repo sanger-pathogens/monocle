@@ -6,63 +6,56 @@ from dataclasses import dataclass
 @dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
-    cps_type: str  # mandatory
-    ST: str  # mandatory
-    adhP: str  # mandatory
-    pheS: str  # mandatory
-    atr: str  # mandatory
-    glnA: str  # mandatory
-    sdhA: str  # mandatory
-    glcK: str  # mandatory
-    tkt: str  # mandatory
-    twenty_three_S1: str  # mandatory; must be pos, neg or empty
-    twenty_three_S3: str  # mandatory; must be pos, neg or empty
-    AAC6APH2: str  # mandatory; must be pos, neg or empty
-    AADECC: str  # mandatory; must be pos, neg or empty
-    ANT6: str  # mandatory; must be pos, neg or empty
-    APH3III: str  # mandatory; must be pos, neg or empty
-    APH3OTHER: str  # mandatory; must be pos, neg or empty
-    CATPC194: str  # mandatory; must be pos, neg or empty
-    CATQ: str  # mandatory; must be pos, neg or empty
-    ERMA: str  # mandatory; must be pos, neg or empty
-    ERMB: str  # mandatory; must be pos, neg or empty
-    ERMT: str  # mandatory; must be pos, neg or empty
-    LNUB: str  # mandatory; must be pos, neg or empty
-    LNUC: str  # mandatory; must be pos, neg or empty
-    LSAC: str  # mandatory; must be pos, neg or empty
-    MEFA: str  # mandatory; must be pos, neg or empty
-    MPHC: str  # mandatory; must be pos, neg or empty
-    MSRA: str  # mandatory; must be pos, neg or empty
-    MSRD: str  # mandatory; must be pos, neg or empty
-    FOSA: str  # mandatory; must be pos, neg or empty
-    GYRA: str  # mandatory; must be pos, neg or empty
-    PARC: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_1: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_2: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_3: str  # mandatory; must be pos, neg or empty
-    RPOBGBS_4: str  # mandatory; must be pos, neg or empty
-    SUL2: str  # mandatory; must be pos, neg or empty
-    TETB: str  # mandatory; must be pos, neg or empty
-    TETL: str  # mandatory; must be pos, neg or empty
-    TETM: str  # mandatory; must be pos, neg or empty
-    TETO: str  # mandatory; must be pos, neg or empty
-    TETS: str  # mandatory; must be pos, neg or empty
-    ALP1: str  # mandatory; must be pos, neg or empty
-    ALP23: str  # mandatory; must be pos, neg or empty
-    ALPHA: str  # mandatory; must be pos, neg or empty
-    HVGA: str  # mandatory; must be pos, neg or empty
-    PI1: str  # mandatory; must be pos, neg or empty
-    PI2A1: str  # mandatory; must be pos, neg or empty
-    PI2A2: str  # mandatory; must be pos, neg or empty
-    PI2B: str  # mandatory; must be pos, neg or empty
-    RIB: str  # mandatory; must be pos, neg or empty
-    SRR1: str  # mandatory; must be pos, neg or empty
-    SRR2: str  # mandatory; must be pos, neg or empty
-    twenty_three_S1_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    twenty_three_S3_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    GYRA_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    PARC_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_1_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_2_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_3_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
-    RPOBGBS_4_variant: str  # mandatory; must contain comma-separated variants (e.g. T78Q,L55A) or empty value
+    cps_type: str  # optional; must be a roman number (1-39); can be followed by a single lower case letter; can be "NT" or empty
+    ST: str  # optional; must be a positive integer (max 4 digits) or "NF"; both can be followed by "*"; can be empty
+    adhP: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    pheS: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    atr: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    glnA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    sdhA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    glcK: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    tkt: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    AAC6APH2: str  # optional
+    ANT6IA: str  # optional
+    APH3III: str  # optional
+    AADE: str  # optional
+    CATPC194: str  # optional
+    CATQ: str  # optional
+    ERMA: str  # optional
+    ERMB: str  # optional
+    ERMT: str  # optional
+    LNUB: str  # optional
+    LNUC: str  # optional
+    LSAC: str  # optional
+    LSAE: str  # optional
+    MEFA: str  # optional
+    MSRD: str  # optional
+    TETB: str  # optional
+    TETL: str  # optional
+    TETM: str  # optional
+    TETW: str  # optional
+    TETO: str  # optional
+    TETS: str  # optional
+    TETO32O: str  # optional
+    TETOW: str  # optional
+    TETOW32O: str  # optional
+    TETOW32OWO: str  # optional
+    TETOWO: str  # optional
+    TETSM: str  # optional
+    TETW32O: str  # optional
+    ALP1: str  # optional
+    ALP23: str  # optional
+    ALPHA: str  # optional
+    HVGA: str  # optional
+    PI1: str  # optional
+    PI2A1: str  # optional
+    PI2A2: str  # optional
+    PI2B: str  # optional
+    RIB: str  # optional
+    SRR1: str  # optional
+    SRR2: str  # optional
+    twenty_three_S1_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    twenty_three_S3_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    GYRA_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    PARC_variant: str  # optional; must follow a valid variant format (e.g. "L55A" or "G8A"); can be "*" or empty
+    TYPER_PIPELINE_VERSION: str  # mandatory; must follow a valid format (e.g. v1.0.0)

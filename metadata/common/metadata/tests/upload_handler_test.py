@@ -311,7 +311,7 @@ class TestInSilicoUploadHandler(unittest.TestCase):
 
     def __check_validation_errors(self, validation_errors: List[str]):
         """Assert validation errors are correct"""
-        self.assertEqual(len(validation_errors), 37)
+        self.assertEqual(len(validation_errors), len(EXPECTED_VALIDATION_ERRORS2))
 
         for expected in EXPECTED_VALIDATION_ERRORS2:
             self.assertIn(expected, validation_errors)
