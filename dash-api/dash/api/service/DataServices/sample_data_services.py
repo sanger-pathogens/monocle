@@ -1179,7 +1179,7 @@ class MonocleSampleData:
 
         # if there are any in silico data, these are merged into the metadata DataFrame
         lanes_for_download = []
-        for this_sample in samples_for_download.keys():
+        for this_sample in samples_for_download:
             lanes_for_download.extend(samples_for_download[this_sample])
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
