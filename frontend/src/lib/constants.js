@@ -32,7 +32,7 @@ export const SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE = [
   "columnsState_5",
   "columnsState_6",
   "columnsState_7",
-  "columnState_8",
+  "columnsState_8",
 ];
 
 export const MIME_TYPE_HTML = "text/html";
