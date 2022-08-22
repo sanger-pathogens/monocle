@@ -33,16 +33,16 @@
                      "SQL file name": "database/tables/api_sample.sql"
                   },
                   {
-                     "data key":"in_silico_data",
-                     "class name": "InSilicoData",
-                     "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
-                     "SQL file name": "database/tables/in_silico.sql"
-                  },
-                  {
                      "data key":"qc_data",
                      "class name": "QCData",
                      "model file name": "metadata/juno/metadata/api/model/qc_data.py",
                      "SQL file name": "database/tables/qc_data.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/in_silico.sql"
                   }
                ],
                "test directory": "metadata/common/metadata/tests",
@@ -62,16 +62,6 @@
                   "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "JUNOInSilicoData",
-                  "Schema name dash": "JUNOInSilicoFieldName",
-                  "Schema name metadata": "InSilicoFieldName",
-                  "Data key metadata": "InSilicoData",
-                  "Property name": "in_silico_data",
-                  "API config section":"insilicodata",
-                  "field pattern dash": "in_silico_data",
-                  "field pattern metadata": "in_silico_data"
-               },
-               {
                   "Schema name": "JUNOQCData",
                   "Schema name dash": "JUNOQCDataFieldName",
                   "Schema name metadata": "QCDataFieldName",
@@ -80,12 +70,22 @@
                   "API config section":"qcdata",
                   "field pattern dash": "qc_data",
                   "field pattern metadata": "qc_data"
+               },
+               {
+                  "Schema name": "JUNOInSilicoData",
+                  "Schema name dash": "JUNOInSilicoFieldName",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                }
             ],
             "map_config_dict": {
                "metadata": "metadata",
-               "in_silico_data": "in silico",
-               "qc_data": "qc data"
+               "qc_data": "qc data",
+               "in_silico_data": "in silico"
             }
          },
          "gps": {
@@ -120,16 +120,16 @@
                      "SQL file name": "database/tables/gps_sample.sql"
                   },
                   {
-                     "data key":"in_silico_data",
-                     "class name": "InSilicoData",
-                     "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
-                     "SQL file name": "database/tables/gps_in_silico.sql"
-                  },
-                  {
                      "data key":"qc_data",
                      "class name": "QCData",
                      "model file name": "metadata/gps/metadata/api/model/qc_data.py",
                      "SQL file name": "database/tables/gps_qc_data.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/gps_in_silico.sql"
                   }
                ],
                "test directory": "metadata/common/metadata/tests",
@@ -149,16 +149,6 @@
                   "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "GPSInSilicoData",
-                  "Schema name dash": "GPSInSilicoFieldName",
-                  "Schema name metadata": "InSilicoFieldName",
-                  "Data key metadata": "InSilicoData",
-                  "Property name": "in_silico_data",
-                  "API config section":"insilicodata",
-                  "field pattern dash": "in_silico_data",
-                  "field pattern metadata": "in_silico_data"
-               },
-               {
                   "Schema name": "GPSQCData",
                   "Schema name dash": "GPSQCDataFieldName",
                   "Schema name metadata": "QCDataFieldName",
@@ -167,12 +157,22 @@
                   "API config section":"qcdata",
                   "field pattern dash": "qc_data",
                   "field pattern metadata": "qc_data"
+               },
+               {
+                  "Schema name": "GPSInSilicoData",
+                  "Schema name dash": "GPSInSilicoFieldName",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                }
             ],
             "map_config_dict": {
                "metadata": "metadata",
-               "in_silico_data": "in silico",
-               "qc_data": "qc data"
+               "qc_data": "qc data",
+               "in_silico_data": "in silico"
             }
          }
       },
@@ -193,13 +193,13 @@
             "TEST_UPLOAD_SAMPLE_4_DICT",
             "TEST_UPLOAD_SAMPLE_5_DICT"
          ],
-         "in_silico_data": [
-            "TEST_LANE_IN_SILICO_1_DICT",
-            "TEST_LANE_IN_SILICO_2_DICT"
-         ],
          "qc_data": [
             "TEST_LANE_QC_DATA_1_DICT",
             "TEST_LANE_QC_DATA_2_DICT"
+         ],
+         "in_silico_data": [
+            "TEST_LANE_IN_SILICO_1_DICT",
+            "TEST_LANE_IN_SILICO_2_DICT"
          ]
       },
       "var_heuristics_type_mapping": {
