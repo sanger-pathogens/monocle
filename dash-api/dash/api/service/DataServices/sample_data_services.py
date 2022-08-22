@@ -227,10 +227,10 @@ class MonocleSampleData:
 
         # combined_metadata is the structure to be returned
         combined_metadata = [{"metadata": m} for m in metadata]
-        if include_in_silico:
-            combined_metadata = self._merge_in_silico_data_into_combined_metadata(filtered_samples, combined_metadata)
         if include_qc_data:
             combined_metadata = self._merge_qc_data_into_combined_metadata(filtered_samples, combined_metadata)
+        if include_in_silico:
+            combined_metadata = self._merge_in_silico_data_into_combined_metadata(filtered_samples, combined_metadata)
 
         # filtering metadata columns is done last, because some columns are needed in the processes above
         if metadata_columns is not None or in_silico_columns is not None or qc_data_columns is not None:
@@ -1181,6 +1181,45 @@ class MonocleSampleData:
         lanes_for_download = []
         for this_sample in samples_for_download:
             lanes_for_download.extend(samples_for_download[this_sample])
+
+        if include_qc_data:
+            # if there are any QC data, these are merged into the metadata DataFrame
+            logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
+            qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
+                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
+            )
+            if len(qc_data) > 0:
+                logging.info(
+                    "merging using metadata field {} and QC data field {}".format(
+                        metadata_merge_field, qc_data_merge_field
+                    )
+                )
+                qc_data_df = pandas.DataFrame(qc_data)
+                for this_qc_data_column in qc_data_df:
+                    if this_qc_data_column != qc_data_merge_field and this_qc_data_column in metadata_df:
+                        qc_data_df.pop(this_qc_data_column)
+                        logging.debug(
+                            "QC column {} will not be included in merged data because it already exists in the metadata".format(
+                                this_qc_data_column
+                            )
+                        )
+
+                logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
+                # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
+                # validate to ensure lane ID is unique in both dataframes
+                metadata_df = metadata_df.merge(
+                    qc_data_df,
+                    left_on=metadata_merge_field,
+                    right_on=qc_data_merge_field,
+                    how="left",
+                    validate="one_to_one",
+                )
+                del qc_data_df
+                # add QC data columns to the list
+                metadata_col_order = metadata_col_order + qc_data_col_order
+            else:
+                logging.info("There are no QC data to be merged")
+
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
             self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
@@ -1216,54 +1255,16 @@ class MonocleSampleData:
             # add silico data columns to the list
             metadata_col_order = metadata_col_order + in_silico_data_col_order
 
-        if include_qc_data:
-            # if there are any QC data, these are merged into the metadata DataFrame
-            logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
-            qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
-                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
-            )
-            if len(qc_data) > 0:
-                logging.info(
-                    "merging using metadata field {} and QC data field {}".format(
-                        metadata_merge_field, qc_data_merge_field
-                    )
-                )
-                qc_data_df = pandas.DataFrame(qc_data)
-                for this_qc_data_column in qc_data_df:
-                    if this_qc_data_column != qc_data_merge_field and this_qc_data_column in metadata_df:
-                        qc_data_df.pop(this_qc_data_column)
-                        logging.debug(
-                            "In silico column {} will not be included in merged data because it already exists in the metadata".format(
-                                this_qc_data_column
-                            )
-                        )
-
-                logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
-                # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
-                # validate to ensure lane ID is unique in both dataframes
-                metadata_df = metadata_df.merge(
-                    qc_data_df,
-                    left_on=metadata_merge_field,
-                    right_on=qc_data_merge_field,
-                    how="left",
-                    validate="one_to_one",
-                )
-                del qc_data_df
-                # add QC data columns to the list
-                metadata_col_order = metadata_col_order + qc_data_col_order
-            else:
-                logging.info("There are no QC data to be merged")
-
         # list of columns in `metadata_col_order` defines the CSV output
-        # remove the fields used for merging the in silico and QC data into the metadata
+        # remove the fields used for merging the QC and in silico data into the metadata
         # (because these are duplicated in the metadata)
         while in_silico_merge_field in metadata_col_order:
             metadata_col_order.remove(in_silico_merge_field)
         while qc_data_merge_field in metadata_col_order:
             metadata_col_order.remove(qc_data_merge_field)
-        # removing the merge fields from in silico and QC data may have removed the
+        # removing the merge fields from QC and in silico data may have removed the
         # field from the metadta, if it has the same field name in both; so
-        # check and reinset if required
+        # check and reinsert if required
         if metadata_merge_field not in metadata_col_order:
             metadata_col_order.insert(2, metadata_merge_field)
         # move public name to first column
