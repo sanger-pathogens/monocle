@@ -23,6 +23,18 @@ from utils.file import format_file_size
 INSTITUTION_KEY = "GenWel"
 PUBLIC_NAME = "SCN9A"
 
+MOCK_DOWNLOAD_HOST = "mock.host"
+MOCK_DOWNLOAD_PATH = "path/incl/mock/download/symlink"
+MOCK_DOWNLOAD_URL = "https://" + MOCK_DOWNLOAD_HOST + "/" + MOCK_DOWNLOAD_PATH
+EXPECTED_METADATA_PLUS_QC_AND_IN_SILICO_DATA = (
+    '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","QC_Thing","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"\n"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2 fake_lane_id_3","","","","'''
+    + MOCK_DOWNLOAD_URL
+    + '''/fake_public_name_1"\n"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_4","","","","'''
+    + MOCK_DOWNLOAD_URL
+    + """/fake%20public%20name%202"
+"""
+)
+
 
 class MonocleSampleDataTest(TestCase):
 
@@ -420,10 +432,6 @@ class MonocleSampleDataTest(TestCase):
     mock_invalid_in_silico_data = [mock_in_silico_data[0], mock_in_silico_data[0]]
     mock_invalid_qc_data = [mock_qc_data[0], mock_qc_data[0]]
 
-    mock_download_host = "mock.host"
-    mock_download_path = "path/incl/mock/download/symlink"
-    mock_download_url = "https://" + mock_download_host + "/" + mock_download_path
-
     mock_metadata2 = [
         {
             "sanger_sample_id": {"order": 1, "title": "Sanger_Sample_ID", "value": "fake_sample_id_1"},
@@ -515,43 +523,10 @@ class MonocleSampleDataTest(TestCase):
         },
     ]
 
-    expected_metadata = (
-        '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2 fake_lane_id_3","","","'''
-        + mock_download_url
-        + '''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_4","","","'''
-        + mock_download_url
-        + """/fake%20public%20name%202"
-"""
-    )
-
-    expected_metadata_plus_qc_data = (
-        '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","In_Silico_Thing","Another_In_Silico_Thing","QC_Thing","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","","","","'''
-        + mock_download_url
-        + '''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_4","","","","'''
-        + mock_download_url
-        + """/fake%20public%20name%202"
-"""
-    )
-
-    expected_metadata_when_no_in_silico_or_qc_data = (
-        '''"Public_Name","Sanger_Sample_ID","Something_Made_Up","Also_Made_Up","Lane_ID","Download_Link"
-"fake_public_name_1","fake_sample_id_1","","","fake_lane_id_1 fake_lane_id_2","'''
-        + mock_download_url
-        + '''/fake_public_name_1"
-"fake public name 2","fake_sample_id_2","","whatevs","fake_lane_id_4","'''
-        + mock_download_url
-        + """/fake%20public%20name%202"
-"""
-    )
-
     expected_metadata_download = {
         "success": True,
         "filename": "FakOne_sequencing_successful.csv",
-        "content": expected_metadata,
+        "content": EXPECTED_METADATA_PLUS_QC_AND_IN_SILICO_DATA,
     }
 
     expected_metadata_download_not_found = {
@@ -1257,10 +1232,10 @@ class MonocleSampleDataTest(TestCase):
         mock_metadata_fetch.return_value = self.mock_metadata
         mock_in_silico_data_fetch.return_value = self.mock_in_silico_data
         mock_qc_data_fetch.return_value = self.mock_qc_data
-        mock_make_symlink.return_value = self.mock_download_path
+        mock_make_symlink.return_value = MOCK_DOWNLOAD_PATH
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
+            MOCK_DOWNLOAD_HOST, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download, metadata_download))
@@ -1270,10 +1245,10 @@ class MonocleSampleDataTest(TestCase):
     @patch.object(MonocleSampleData, "_metadata_as_csv")
     def test_get_metadata_for_download_not_found_ok(self, mock_metadata_as_csv, mock_make_symlink):
         mock_metadata_as_csv.return_value = None
-        mock_make_symlink.return_value = self.mock_download_path
+        mock_make_symlink.return_value = MOCK_DOWNLOAD_PATH
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
+            MOCK_DOWNLOAD_HOST, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_metadata_download_not_found, metadata_download))
@@ -1290,7 +1265,7 @@ class MonocleSampleDataTest(TestCase):
         mock_qc_data_fetch.return_value = self.mock_qc_data
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_bad_institution_key, "sequencing", "successful"
+            MOCK_DOWNLOAD_HOST, self.mock_bad_institution_key, "sequencing", "successful"
         )
 
         self.assertEqual(self.expected_metadata_download_reject_missing, metadata_download)
@@ -1308,7 +1283,7 @@ class MonocleSampleDataTest(TestCase):
         mock_make_symlink.return_value = None
 
         metadata_download = self.monocle_data.get_metadata_for_download(
-            self.mock_download_host, self.mock_institution_keys[0], "sequencing", "successful"
+            MOCK_DOWNLOAD_HOST, self.mock_institution_keys[0], "sequencing", "successful"
         )
 
         self.assertEqual(self.expected_metadata_download_error_response, metadata_download)

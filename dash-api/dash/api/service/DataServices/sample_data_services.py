@@ -1131,10 +1131,6 @@ class MonocleSampleData:
         if 1 > len(samples_for_download):
             return (None, None)
 
-        # this flag indicates if QC data should be included in the CSV download
-        # it is set in the configuration file, separately for each project
-        include_qc_data = self._get_merge_qc_data_flag()
-
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
@@ -1182,6 +1178,9 @@ class MonocleSampleData:
         for this_sample in samples_for_download:
             lanes_for_download.extend(samples_for_download[this_sample])
 
+        # this flag indicates if QC data should be included in the CSV download
+        # it is set in the configuration file, separately for each project
+        include_qc_data = self._get_merge_qc_data_flag()
         if include_qc_data:
             # if there are any QC data, these are merged into the metadata DataFrame
             logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
