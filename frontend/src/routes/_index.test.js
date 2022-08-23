@@ -96,16 +96,16 @@ describe("after data fetching", () => {
       { name: "Upload metadata" }
     );
     expect(metadataUploadLink).toBeDefined();
-    const insilicoUploadLink = await within(linksContainer).findByRole(
-      ROLE_LINK,
-      { name: "Upload in-silico data" }
-    );
-    expect(insilicoUploadLink).toBeDefined();
     const qcDataUploadLink = await within(linksContainer).findByRole(
       ROLE_LINK,
       { name: "Upload QC data" }
     );
     expect(qcDataUploadLink).toBeDefined();
+    const insilicoUploadLink = await within(linksContainer).findByRole(
+      ROLE_LINK,
+      { name: "Upload in-silico data" }
+    );
+    expect(insilicoUploadLink).toBeDefined();
   });
 
   it("displays status for each institution", async () => {
