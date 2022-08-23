@@ -708,7 +708,7 @@ components:
        type: string
        minLength: 1
        maxLength: 20
-       pattern: ^metadata|in silico|qc data$
+       pattern: ^metadata|qc data|in silico$
        
     DataFieldName:
        description: "The name of a data field, in either JUNO or GPS"
@@ -738,12 +738,12 @@ components:
           maxLength: 256
           default: "monocle.csv"
           example: "monocle.csv"
-        in silico:
-          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
-          type: boolean
-          default: true
         qc data:
           description: "Set this flag to true to include in QC data with the metadata (ignored when 'as csv' is true)"
+          type: boolean
+          default: true
+        in silico:
+          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
           type: boolean
           default: true
         start row:
@@ -783,16 +783,6 @@ components:
             - "host_species"
             - "isolation_source"
             - "serotype"
-        in silico columns:
-          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
-          type: array
-          items:
-            type: string
-            pattern: ^[a-zA-Z0-9_]*$
-          default:
-            - "ST"
-          example:
-            - "ST"
         qc data columns:
           description: "List of QC data columns that should be returned (as defined by the QCData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
           type: array
@@ -803,6 +793,16 @@ components:
             - "status"
           example:
             - "status"
+        in silico columns:
+          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
+          type: array
+          items:
+            type: string
+            pattern: ^[a-zA-Z0-9_]*$
+          default:
+            - "ST"
+          example:
+            - "ST"
 
     GetMetadataOutput:
       type: object
@@ -895,14 +895,14 @@ components:
           anyOf:
             - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOMetadata"
             - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSMetadata"
-        in silico:
-          anyOf:
-            - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOInSilicoData"
-            - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSInSilicoData"
         qc data:
           anyOf:
             - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOQCData"
             - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSQCData"
+        in silico:
+          anyOf:
+            - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOInSilicoData"
+            - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSInSilicoData"
 
     FieldAttributes:
       type: object
@@ -915,14 +915,14 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/FieldCategory"
-        in silico:
+        qc data:
           type: object
           properties:
             categories:
               type: array
               items:
                 $ref: "#/components/schemas/FieldCategory"
-        qc data:
+        in silico:
           type: object
           properties:
             categories:
