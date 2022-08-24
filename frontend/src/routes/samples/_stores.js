@@ -21,8 +21,8 @@ const FILTER_TYPE_NONE = "none";
     }, {
       ...
     }],
+    "qc data": [...],
     "in silico": [...],
-    "qc data": [...]
   }
 ```
 */
@@ -56,8 +56,8 @@ export const columnsStore = createColumnsStore();
   ```
   {
     metadata: ["column_name_1", "column_name_2"],
+    "qc data": [...],
     "in silico": [...],
-    "qc data": [...]
   }
   ```
 */
@@ -93,16 +93,16 @@ function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
         columnName1: ["val1", "val2"],
         columnName2: ["val1", "val2"]
       },
+      "qc data": {...},
       "in silico": {...},
-      "qc data": {...}
     }
   ```
 */
 function createDistinctColumnValuesStore() {
   const { update, set, subscribe } = writable({
     metadata: {},
-    "in silico": {},
     "qc data": {},
+    "in silico": {},
   });
 
   return {
@@ -125,7 +125,7 @@ function createDistinctColumnValuesStore() {
 
         return storedDistinctValues;
       }),
-    reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} }),
+    reset: () => set({ metadata: {}, "qc data": {}, "in silico": {} }),
   };
 }
 
@@ -139,20 +139,20 @@ export const distinctColumnValuesStore = createDistinctColumnValuesStore();
         columnName1: { values: ["val1", "val2"], exclude?: true },
         columnName2: {...},
       },
+      "qc data": {...},
       "in silico": {...},
-      "qc data": {...}
     }
   ```
 */
 function createFilterStore() {
   const filterCustomStore = writable({
     metadata: {},
-    "in silico": {},
     "qc data": {},
+    "in silico": {},
   });
 
   filterCustomStore.removeAllFilters = () =>
-    filterCustomStore.set({ metadata: {}, "in silico": {}, "qc data": {} });
+    filterCustomStore.set({ metadata: {}, "qc data": {}, "in silico": {} });
 
   filterCustomStore.removeFilter = (column) =>
     filterCustomStore.update((stotedFilters) => {

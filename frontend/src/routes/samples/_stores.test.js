@@ -6,7 +6,7 @@ import {
   filterStore,
 } from "./_stores.js";
 
-const INITIAL_STATE = { metadata: {}, "in silico": {}, "qc data": {} };
+const INITIAL_STATE = { metadata: {}, "qc data": {}, "in silico": {} };
 const VALUES = ["some value", "another value"];
 
 it("has the expected default value for each store", () => {
@@ -27,24 +27,24 @@ it("has a derived store w/ an array of columns per data type to display", () => 
         ],
       },
     ],
-    "in silico": [
-      {
-        name: "Category B",
-        columns: [{ displayName: "ST", name: "st", selected: true }],
-      },
-    ],
     "qc data": [
       {
         name: "Category C",
         columns: [{ displayName: "E", name: "e", selected: true }],
       },
     ],
+    "in silico": [
+      {
+        name: "Category B",
+        columns: [{ displayName: "ST", name: "st", selected: true }],
+      },
+    ],
   });
 
   expect(get(columnsToDisplayStore)).toEqual({
     metadata: ["country"],
-    "in silico": ["st"],
     "qc data": ["e"],
+    "in silico": ["st"],
   });
 });
 
@@ -71,6 +71,22 @@ describe("columns store", () => {
           },
         ],
       },
+      "qc data": {
+        categories: [
+          {
+            name: "Category D",
+            fields: [
+              {
+                "display name": "X",
+                name: "x",
+                display: true,
+                default: false,
+                "filter type": "discrete",
+              },
+            ],
+          },
+        ],
+      },
       "in silico": {
         categories: [
           {
@@ -91,22 +107,6 @@ describe("columns store", () => {
           },
         ],
       },
-      "qc data": {
-        categories: [
-          {
-            name: "Category D",
-            fields: [
-              {
-                "display name": "X",
-                name: "x",
-                display: true,
-                default: false,
-                "filter type": "discrete",
-              },
-            ],
-          },
-        ],
-      },
     });
 
     expect(get(columnsStore)).toEqual({
@@ -123,16 +123,16 @@ describe("columns store", () => {
           ],
         },
       ],
-      "in silico": [
-        {
-          name: "Category B",
-          columns: [{ displayName: "C", name: "c", type: "discrete" }],
-        },
-      ],
       "qc data": [
         {
           name: "Category D",
           columns: [{ displayName: "X", name: "x", type: "discrete" }],
+        },
+      ],
+      "in silico": [
+        {
+          name: "Category B",
+          columns: [{ displayName: "C", name: "c", type: "discrete" }],
         },
       ],
     });
@@ -230,8 +230,8 @@ describe("distinct column values store", () => {
 
     expect(get(distinctColumnValuesStore)).toEqual({
       metadata: { country: [VALUES[1]], serotype: [] },
-      "in silico": {},
       "qc data": {},
+      "in silico": {},
     });
   });
 
