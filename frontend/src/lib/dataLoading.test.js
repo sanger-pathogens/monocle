@@ -46,8 +46,8 @@ const FILTER_STATE = {
     serotype: { values: ["1a", "1b"], exclude: true },
     country: { values: ["AU"] },
   },
-  "in silico": { adhP: { values: ["x", "y"] } },
   "qc data": { ctrl: { values: ["x", "y"] } },
+  "in silico": { adhP: { values: ["x", "y"] } },
 };
 const MIME_TYPE_JSON = HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE];
 const HEADERS_JSON = { get: () => MIME_TYPE_JSON };
@@ -222,8 +222,8 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { adhP: ["x", "y"] },
           "qc data": { ctrl: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -257,8 +257,8 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { adhP: ["x", "y"] },
           "qc data": { ctrl: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         assemblies: true,
         annotations: false,
@@ -314,8 +314,8 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { adhP: ["x", "y"] },
           "qc data": { ctrl: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         fields: [
           {
@@ -427,14 +427,14 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { adhP: ["x", "y"] },
           "qc data": { ctrl: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,
         "metadata columns": ["some column"],
-        "in silico columns": ["a column", "another column"],
         "qc data": false,
+        "in silico columns": ["a column", "another column"],
       }),
     },
     expectedEndpoints: ["get_metadata"],
@@ -463,8 +463,8 @@ describe.each([
         "sample filters": {
           batches: INST_KEY_BATCH_DATE_OBJECTS,
           metadata: { serotype: ["NT"], country: ["AU"] },
-          "in silico": { adhP: ["x", "y"] },
           "qc data": { ctrl: ["x", "y"] },
+          "in silico": { adhP: ["x", "y"] },
         },
         "num rows": 14,
         "start row": 2,

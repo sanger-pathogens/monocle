@@ -9,10 +9,12 @@ const KEY_SELECTED = "selected";
 const LABEL_APPLY_AND_CLOSE = "Apply and close";
 const LABEL_CLOSE = "Close";
 const LABEL_DIALOG = "Select displayed columns";
-const LABEL_METADATA_COLUMNS = "Metadata";
 const LABEL_RESTORE = "Restore default columns";
 const LABEL_SETTINGS = /^Select columns/;
 const ROLE_BUTTON = "button";
+const LABEL_METADATA_COLUMNS = "Metadata";
+const LABEL_QC_COLUMNS = "QC";
+const LABEL_IN_SILICO = "In silico";
 
 beforeEach(() => {
   columnsStore.set({
@@ -78,23 +80,29 @@ it("displays the expected column selection sections", async () => {
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
   expect(getByText(LABEL_METADATA_COLUMNS)).toBeDefined();
-  expect(getByText("In silico")).toBeDefined();
-  expect(getByText("QC")).toBeDefined();
+  expect(getByText(LABEL_QC_COLUMNS)).toBeDefined();
+  expect(getByText(LABEL_IN_SILICO)).toBeDefined();
 });
 
-it("has only metadata and in silico sections open by default", async () => {
-  const { container, getByRole } = render(Configuration);
+it("has all data sections open by default", async () => {
+  const ATTRIBUTE_NAME_OPEN = "open";
+  const { getByRole, getByText } = render(Configuration);
 
   await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_SETTINGS }));
 
-  const openColumnSections = container.querySelectorAll("details[open]");
-  expect(openColumnSections).toHaveLength(2);
-  expect(openColumnSections[0].querySelector("summary").textContent).toBe(
-    LABEL_METADATA_COLUMNS
-  );
-  expect(openColumnSections[1].querySelector("summary").textContent).toBe(
-    "In silico analysis"
-  );
+  expect(
+    getByText(LABEL_METADATA_COLUMNS).parentNode.getAttribute(
+      ATTRIBUTE_NAME_OPEN
+    )
+  ).toBe("");
+  expect(
+    getByText(LABEL_QC_COLUMNS).parentNode.getAttribute(ATTRIBUTE_NAME_OPEN)
+  ).toBe("");
+  expect(
+    getByText(LABEL_IN_SILICO).parentNode.parentNode.getAttribute(
+      ATTRIBUTE_NAME_OPEN
+    )
+  ).toBe("");
 });
 
 it("saves a columns state to the session storage on apply", async () => {

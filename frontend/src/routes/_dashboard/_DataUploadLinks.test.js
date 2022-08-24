@@ -15,11 +15,11 @@ it("renders the links w/ the expected labels and URLs", () => {
   expect(getByRole(ROLE_LINK, { name: "Upload metadata" }).href).toMatch(
     new RegExp(`${DOMAIN_NAME}/metadata-upload`)
   );
-  expect(getByRole(ROLE_LINK, { name: "Upload in-silico data" }).href).toMatch(
-    new RegExp(`${DOMAIN_NAME}/in-silico-upload`)
-  );
   expect(getByRole(ROLE_LINK, { name: "Upload QC data" }).href).toMatch(
     new RegExp(`${DOMAIN_NAME}/qc-data-upload`)
+  );
+  expect(getByRole(ROLE_LINK, { name: "Upload in-silico data" }).href).toMatch(
+    new RegExp(`${DOMAIN_NAME}/in-silico-upload`)
   );
 });
 

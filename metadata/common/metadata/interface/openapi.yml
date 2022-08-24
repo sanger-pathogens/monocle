@@ -33,25 +33,6 @@ paths:
                   errors:
                     $ref: "#/components/schemas/ValidationErrors"
 
-  /in-silico-upload:
-    post:
-      operationId: metadata.api.routes.update_in_silico_data_route
-      summary: "Upload a new tab-delimited file of in silico data"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/Spreadsheet"
-      responses:
-        "200":
-          description: "The upload succeeded"
-        "400":
-          description: "The file has not passed validation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationErrors"
-                
   /qc-data-upload:
     post:
       operationId: metadata.api.routes.update_qc_data_route
@@ -70,7 +51,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationErrors"
-          
+
+  /in-silico-upload:
+    post:
+      operationId: metadata.api.routes.update_in_silico_data_route
+      summary: "Upload a new tab-delimited file of in silico data"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Spreadsheet"
+      responses:
+        "200":
+          description: "The upload succeeded"
+        "400":
+          description: "The file has not passed validation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrors"         
+     
   /download:
     post:
       operationId: metadata.api.routes.get_download_metadata_route
@@ -94,29 +94,6 @@ paths:
         "404":
           description: "No data could be found for the given download key"
 
-  /download_in_silico_data:
-    post:
-      operationId: metadata.api.routes.get_download_in_silico_data_route
-      summary: "Download the in silico data for the given download keys"
-      requestBody:
-        description: "A list of lane IDs"
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DownloadLaneKeys"
-      responses:
-        "200":
-          description: "The download result set"
-          content:
-            application/json:
-              schema:
-                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoData"
-        "400":
-          description: "Invalid arguments provided"
-        "404":
-          description: "No data could be found for the given download key"
-
   /download_qc_data:
     post:
       operationId: metadata.api.routes.get_download_qc_data_route
@@ -135,6 +112,29 @@ paths:
             application/json:
               schema:
                 $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCData"
+        "400":
+          description: "Invalid arguments provided"
+        "404":
+          description: "No data could be found for the given download key"
+
+  /download_in_silico_data:
+    post:
+      operationId: metadata.api.routes.get_download_in_silico_data_route
+      summary: "Download the in silico data for the given download keys"
+      requestBody:
+        description: "A list of lane IDs"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DownloadLaneKeys"
+      responses:
+        "200":
+          description: "The download result set"
+          content:
+            application/json:
+              schema:
+                $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoData"
         "400":
           description: "Invalid arguments provided"
         "404":
@@ -255,45 +255,6 @@ paths:
         "404":
           description: "A non-existent field was included in the request"
 
-  /distinct_in_silico_values:
-    post:
-      operationId: metadata.api.routes.get_distinct_in_silico_values_route
-      summary: "Gather distinct in silico data values for certain fields"
-      requestBody:
-        description: "A list of in silico fields for which distinct values are required"
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - fields
-                - institutions
-              properties:
-                fields:
-                  type: array
-                  items:
-                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
-                  minItems: 1
-                institutions:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/FieldValueFilter"
-            examples:
-              JUNO:
-                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
-              GPS:
-                value: { "fields": ["ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
-      responses:
-        "200":
-          description: "A dictionary of fields, each providing a list of distinct in silico values found."
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DistinctValues"
-        "404":
-          description: "A non-existent field was included in the request"
-
   /distinct_qc_data_values:
     post:
       operationId: metadata.api.routes.get_distinct_qc_data_values_route
@@ -326,6 +287,45 @@ paths:
       responses:
         "200":
           description: "A dictionary of fields, each providing a list of distinct QC data values found."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DistinctValues"
+        "404":
+          description: "A non-existent field was included in the request"
+
+  /distinct_in_silico_values:
+    post:
+      operationId: metadata.api.routes.get_distinct_in_silico_values_route
+      summary: "Gather distinct in silico data values for certain fields"
+      requestBody:
+        description: "A list of in silico fields for which distinct values are required"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fields
+                - institutions
+              properties:
+                fields:
+                  type: array
+                  items:
+                     $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/InSilicoFieldName"
+                  minItems: 1
+                institutions:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/FieldValueFilter"
+            examples:
+              JUNO:
+                value: { "fields": ["cps_type","ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+              GPS:
+                value: { "fields": ["ST"], "institutions": ["Ministry of Health, Central Laboratories"] }
+      responses:
+        "200":
+          description: "A dictionary of fields, each providing a list of distinct in silico values found."
           content:
             application/json:
               schema:

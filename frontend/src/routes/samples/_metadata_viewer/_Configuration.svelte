@@ -109,15 +109,12 @@
           Metadata
         </ColumnSelection>
 
-        <ColumnSelection columnsData={columnsPerDatatype["in silico"]}>
-          <i>In silico</i> analysis
+        <ColumnSelection columnsData={columnsPerDatatype["qc data"]}>
+          QC
         </ColumnSelection>
 
-        <ColumnSelection
-          columnsData={columnsPerDatatype["qc data"]}
-          open={false}
-        >
-          QC
+        <ColumnSelection columnsData={columnsPerDatatype["in silico"]}>
+          <i>In silico</i> analysis
         </ColumnSelection>
 
         {#if hasDisabledItems}

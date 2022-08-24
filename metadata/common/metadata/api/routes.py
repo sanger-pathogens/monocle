@@ -61,8 +61,8 @@ def update_sample_metadata_route(body: list, upload_handler: UploadMetadataHandl
 
 
 @inject
-def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
-    """Upload a in silico data to the database"""
+def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
+    """Upload a QC data to the database"""
     uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
     if uploaded_file is None:
         return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
@@ -92,8 +92,8 @@ def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandle
 
 
 @inject
-def update_qc_data_route(body: list, upload_handler: UploadQCDataHandler):
-    """Upload a QC data to the database"""
+def update_in_silico_data_route(body: list, upload_handler: UploadInSilicoHandler):
+    """Upload a in silico data to the database"""
     uploaded_file = _get_uploaded_spreadsheet("spreadsheet")
     if uploaded_file is None:
         return "Missing spreadsheet file", HTTP_BAD_REQUEST_STATUS
@@ -147,24 +147,6 @@ def get_download_metadata_route(body: list, download_handler: DownloadMetadataHa
 
 
 @inject
-def get_download_in_silico_data_route(body: list, download_handler: DownloadInSilicoHandler):
-    """Download in silico data from the database"""
-    keys = body
-    try:
-        in_silico_data_list = download_handler.read_download_in_silico_data(keys)
-    except ValueError as ve:
-        logger.error(str(ve))
-        return "Invalid arguments provided", HTTP_BAD_REQUEST_STATUS
-
-    result = convert_to_json({"download": download_handler.create_download_response(in_silico_data_list)})
-
-    if len(in_silico_data_list) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-
-
-@inject
 def get_download_qc_data_route(body: list, download_handler: DownloadQCDataHandler):
     """Download QC data from the database"""
     keys = body
@@ -177,6 +159,24 @@ def get_download_qc_data_route(body: list, download_handler: DownloadQCDataHandl
     result = convert_to_json({"download": download_handler.create_download_response(qc_data_list)})
 
     if len(qc_data_list) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
+
+@inject
+def get_download_in_silico_data_route(body: list, download_handler: DownloadInSilicoHandler):
+    """Download in silico data from the database"""
+    keys = body
+    try:
+        in_silico_data_list = download_handler.read_download_in_silico_data(keys)
+    except ValueError as ve:
+        logger.error(str(ve))
+        return "Invalid arguments provided", HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json({"download": download_handler.create_download_response(in_silico_data_list)})
+
+    if len(in_silico_data_list) > 0:
         return result, HTTP_SUCCEEDED_STATUS
     else:
         return result, HTTP_NOT_FOUND_STATUS
@@ -259,20 +259,20 @@ def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
 
 
 @inject
-def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
-    """Download distinct values present in the database for certain fields"""
-    fields = body["fields"]
-    institutions = body["institutions"]
-    result = _get_distinct_values_common("in silico", fields, institutions, dao)
-    return result
-
-
-@inject
 def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
     """Download distinct values present in the database for certain fields"""
     fields = body["fields"]
     institutions = body["institutions"]
     result = _get_distinct_values_common("qc data", fields, institutions, dao)
+    return result
+
+
+@inject
+def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
+    """Download distinct values present in the database for certain fields"""
+    fields = body["fields"]
+    institutions = body["institutions"]
+    result = _get_distinct_values_common("in silico", fields, institutions, dao)
     return result
 
 

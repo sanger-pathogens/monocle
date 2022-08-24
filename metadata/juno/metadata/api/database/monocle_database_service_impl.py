@@ -353,23 +353,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
         return results
 
-    def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
-        """Get download in silico data for given list of lane keys"""
-
-        if len(keys) == 0:
-            return []
-
-        results = []
-        lane_ids = tuple(keys)
-        with self.connector.get_connection() as con:
-            rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
-
-        for row in rs:
-            params = {k: row[k] for k in self.config["in_silico_data"]["spreadsheet_definition"]}
-            results.append(InSilicoData(**params))
-
-        return results
-
     def get_download_qc_data(self, keys: List[str]) -> List[QCData]:
         """Get download QC data for given list of lane keys"""
 
@@ -384,5 +367,22 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
         for row in rs:
             params = {k: row[k] for k in self.config["qc_data"]["spreadsheet_definition"]}
             results.append(QCData(**params))
+
+        return results
+
+    def get_download_in_silico_data(self, keys: List[str]) -> List[InSilicoData]:
+        """Get download in silico data for given list of lane keys"""
+
+        if len(keys) == 0:
+            return []
+
+        results = []
+        lane_ids = tuple(keys)
+        with self.connector.get_connection() as con:
+            rs = con.execute(self.SELECT_LANES_IN_SILICO_SQL, lanes=lane_ids)
+
+        for row in rs:
+            params = {k: row[k] for k in self.config["in_silico_data"]["spreadsheet_definition"]}
+            results.append(InSilicoData(**params))
 
         return results

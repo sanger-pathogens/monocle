@@ -141,8 +141,8 @@ def get_metadata_route(body):
     return_as_csv = body.get("as csv", defaults["as csv"])
     csv_filename = body.get("csv filename", defaults["csv filename"])
     metadata_columns = body.get("metadata columns", defaults["metadata columns"])
-    in_silico_columns = body.get("in silico columns", defaults["in silico columns"])
     qc_data_columns = body.get("qc data columns", defaults["qc data columns"])
+    in_silico_columns = body.get("in silico columns", defaults["in silico columns"])
 
     try:
         if return_as_csv:
@@ -158,19 +158,19 @@ def get_metadata_route(body):
             # setting column filter params to '_ALL' means all columns should be returned
             if "_ALL" == metadata_columns[0]:
                 metadata_columns = None
-            if "_ALL" == in_silico_columns[0]:
-                in_silico_columns = None
             if "_ALL" == qc_data_columns[0]:
                 qc_data_columns = None
+            if "_ALL" == in_silico_columns[0]:
+                in_silico_columns = None
             metadata = ServiceFactory.sample_data_service(get_authenticated_username()).get_metadata(
                 sample_filters,
                 start_row=body.get("start row", None),
                 num_rows=body.get("num rows", defaults["num rows"]),
-                include_in_silico=body.get("in silico", defaults["in silico"]),
                 include_qc_data=body.get("qc data", defaults["qc data"]),
+                include_in_silico=body.get("in silico", defaults["in silico"]),
                 metadata_columns=metadata_columns,
-                in_silico_columns=in_silico_columns,
                 qc_data_columns=qc_data_columns,
+                in_silico_columns=in_silico_columns,
             )
             if metadata is None:
                 return Response(
