@@ -777,7 +777,7 @@
                   "default": false,
                   "order": 9,
                   "spreadsheet heading": "Hetsites_50bp",
-                  "display name": "Hetsites 50bp CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)"
+                  "display name": "Hetsites 50bp"
                }
             ]
          }

@@ -1478,12 +1478,12 @@
             "url": "/metadata/juno/metadata-upload"
          },
          {
-            "label": "in silico",
-            "url": "/metadata/juno/in-silico-upload"
-         },
-         {
             "label": "qc data",
             "url": "/metadata/juno/qc-data-upload"
+         },
+         {
+            "label": "in silico",
+            "url": "/metadata/juno/in-silico-upload"
          }
       ]
    },
