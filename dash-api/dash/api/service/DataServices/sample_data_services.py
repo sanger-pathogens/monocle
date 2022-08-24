@@ -129,19 +129,19 @@ class MonocleSampleData:
         num_rows=None,
         metadata_columns=None,
         in_silico_columns=None,
-        include_in_silico=False,
         qc_data_columns=None,
+        include_in_silico=False,
         include_qc_data=False,
     ):
         """
         Pass sample filters dict (describes the filters applied in the front end)
         If pagination is wanted, pass the number of the starting row (first row is 1) *and* number of rows wanted;
         num_rows is ignored unless start_rows is defined. Passing start_row without num_rows is an error.
-        Optionally pass lists of metadata_columns, in_silico_columns and QC data columns to specify which metadata,
-        in silico, and QC data (respectively) columns are returned.
+        Optionally pass lists of metadata_columns, qc_data_columns and in_silico_columns to specify which metadata,
+        QC data and in silico (respectively) columns are returned.
         Optional flags:
-        'include_in_silico' if in silico data should be retrieved and merged into the metadata.
         'include_qc_data' if QC data should be retrieved and merged into the metadata.
+        'include_in_silico' if in silico data should be retrieved and merged into the metadata.
 
         Returns array of samples that match the filter(s); each sample is a dict containing the metadata
         and (if requested) in silico & QC data.  Metadata, in silico and QC data are represented with the same format:
@@ -152,15 +152,15 @@ class MonocleSampleData:
                          'metadata_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
                           ...
                           },
-            'in silico' :{   'in_silico_field_1' : {'title': 'field name', order: 1, value: 'the value'},
-                             'in_silico_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
-                          ...
-                          },
             'qc data'   :{   'qc_data_field_1' : {'title': 'field name', order: 1, value: 'the value'},
                              'qc_data_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
                           ...
                           }
            },
+            'in silico' :{   'in_silico_field_1' : {'title': 'field name', order: 1, value: 'the value'},
+                             'in_silico_field_2' : {'title': 'another field name', order: 2, value: 'another value'},
+                          ...
+                          },
            ...
         ]
 
@@ -227,15 +227,15 @@ class MonocleSampleData:
 
         # combined_metadata is the structure to be returned
         combined_metadata = [{"metadata": m} for m in metadata]
-        if include_in_silico:
-            combined_metadata = self._merge_in_silico_data_into_combined_metadata(filtered_samples, combined_metadata)
         if include_qc_data:
             combined_metadata = self._merge_qc_data_into_combined_metadata(filtered_samples, combined_metadata)
+        if include_in_silico:
+            combined_metadata = self._merge_in_silico_data_into_combined_metadata(filtered_samples, combined_metadata)
 
         # filtering metadata columns is done last, because some columns are needed in the processes above
         if metadata_columns is not None or in_silico_columns is not None or qc_data_columns is not None:
             combined_metadata = self._filter_combined_metadata_columns(
-                combined_metadata, metadata_columns, in_silico_columns, qc_data_columns
+                combined_metadata, metadata_columns, qc_data_columns, in_silico_columns
             )
 
         logging.info("{}.get_metadata returning {} samples".format(__class__.__name__, len(combined_metadata)))
@@ -244,6 +244,73 @@ class MonocleSampleData:
             "total rows": total_num_matching_samples,
             "last row": last_sample_row_returned,
         }
+
+    def _merge_qc_data_into_combined_metadata(self, filtered_samples, combined_metadata):
+        """
+        Pass
+        - filtered samples structure (as constructed by `get_filtered_samples()`)
+        - combined metadata structure (of the type `get_metadata()` creates and returns) but which contains
+        only a `metadata` key for each sample
+
+        Retrieves QC data from the metadata API, and inserts it into the combined metadata structure
+
+        Returns the combined metadata structure
+        """
+        # QC data must be retrieved using lane IDs
+        lane_id_list = []
+        # also need to track which lane(s) are associated with each sample
+        sample_to_lanes_lookup = {}
+        for this_sample in filtered_samples:
+            sample_to_lanes_lookup[this_sample["sanger_sample_id"]] = []
+            try:
+                # remember, some samples may legitimately have no lanes
+                for this_lane_id in this_sample["lanes"]:
+                    if this_lane_id is not None:
+                        lane_id_list.append(this_lane_id)
+                        sample_to_lanes_lookup[this_sample["sanger_sample_id"]].append(this_lane_id)
+            except KeyError:
+                logging.error(
+                    "{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(
+                        __class__.__name__
+                    )
+                )
+                raise
+        qc_data = self.metadata_download_source.get_qc_data(self.current_project, lane_id_list)
+        logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
+        lane_to_qc_data_lookup = {}
+        for this_qc_data in qc_data:
+            try:
+                lane_to_qc_data_lookup[this_qc_data["lane_id"]["value"]] = this_qc_data
+            except KeyError:
+                logging.error(
+                    "{}.metadata_download_source.get_qc_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(
+                        __class__.__name__
+                    )
+                )
+                raise
+
+        for combined_metadata_item in combined_metadata:
+            this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
+            # now get QC data for this sample's lane(s)
+            # some samples may legitimately have no lanes
+            multiple_qc_data_lanes = False
+            for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
+                # some lanes may legitimately have no QC data
+                this_lane_qc_data = lane_to_qc_data_lookup.get(this_lane_id, None)
+                if this_lane_qc_data is not None:
+                    if "qc data" in combined_metadata_item:
+                        multiple_qc_data_lanes = True
+                    else:
+                        combined_metadata_item["qc data"] = this_lane_qc_data
+            if multiple_qc_data_lanes:
+                logging.warning(
+                    "sample {} has more than one lane with QC data, which is not supported: no QC data will be provided for this sample".format(
+                        this_sanger_sample_id
+                    )
+                )
+                combined_metadata_item.pop("qc data")
+
+        return combined_metadata
 
     def _merge_in_silico_data_into_combined_metadata(self, filtered_samples, combined_metadata):
         """
@@ -313,82 +380,15 @@ class MonocleSampleData:
                 combined_metadata_item.pop("in silico")
         return combined_metadata
 
-    def _merge_qc_data_into_combined_metadata(self, filtered_samples, combined_metadata):
-        """
-        Pass
-        - filtered samples structure (as constructed by `get_filtered_samples()`)
-        - combined metadata structure (of the type `get_metadata()` creates and returns) but which contains
-        only a `metadata` key for each sample
-
-        Retrieves QC data from the metadata API, and inserts it into the combined metadata structure
-
-        Returns the combined metadata structure
-        """
-        # QC data must be retrieved using lane IDs
-        lane_id_list = []
-        # also need to track which lane(s) are associated with each sample
-        sample_to_lanes_lookup = {}
-        for this_sample in filtered_samples:
-            sample_to_lanes_lookup[this_sample["sanger_sample_id"]] = []
-            try:
-                # remember, some samples may legitimately have no lanes
-                for this_lane_id in this_sample["lanes"]:
-                    if this_lane_id is not None:
-                        lane_id_list.append(this_lane_id)
-                        sample_to_lanes_lookup[this_sample["sanger_sample_id"]].append(this_lane_id)
-            except KeyError:
-                logging.error(
-                    "{}.get_filtered_samples returned one or more samples without lanes data (expected 'lanes' key)".format(
-                        __class__.__name__
-                    )
-                )
-                raise
-        qc_data = self.metadata_download_source.get_qc_data(self.current_project, lane_id_list)
-        logging.debug("{}.metadata_download_source.get_qc_data returned {}".format(__class__.__name__, qc_data))
-        lane_to_qc_data_lookup = {}
-        for this_qc_data in qc_data:
-            try:
-                lane_to_qc_data_lookup[this_qc_data["lane_id"]["value"]] = this_qc_data
-            except KeyError:
-                logging.error(
-                    "{}.metadata_download_source.get_qc_data returned an item with no lane ID (expected 'lane_id'/'value' keys)".format(
-                        __class__.__name__
-                    )
-                )
-                raise
-
-        for combined_metadata_item in combined_metadata:
-            this_sanger_sample_id = combined_metadata_item["metadata"]["sanger_sample_id"]["value"]
-            # now get QC data for this sample's lane(s)
-            # some samples may legitimately have no lanes
-            multiple_qc_data_lanes = False
-            for this_lane_id in sample_to_lanes_lookup.get(this_sanger_sample_id, []):
-                # some lanes may legitimately have no QC data
-                this_lane_qc_data = lane_to_qc_data_lookup.get(this_lane_id, None)
-                if this_lane_qc_data is not None:
-                    if "qc data" in combined_metadata_item:
-                        multiple_qc_data_lanes = True
-                    else:
-                        combined_metadata_item["qc data"] = this_lane_qc_data
-            if multiple_qc_data_lanes:
-                logging.warning(
-                    "sample {} has more than one lane with QC data, which is not supported: no QC data will be provided for this sample".format(
-                        this_sanger_sample_id
-                    )
-                )
-                combined_metadata_item.pop("qc data")
-
-        return combined_metadata
-
     def _filter_combined_metadata_columns(
-        self, combined_metadata, metadata_columns, in_silico_columns, qc_data_columns
+        self, combined_metadata, metadata_columns, qc_data_columns, in_silico_columns
     ):
         """
         Pass
         - combined metadata structure (of the type `get_metadata()` creates and returns)
         - a list of metadata columns
-        - a list of in silico data columns
         - a list of QC data columns
+        - a list of in silico data columns
         All columns that are _not_ in the column lists will be removed from the combined metadata.
         (Pass `None` in place of a list if metadata and/or in silico columns should *not* be filtered).
 
@@ -1131,10 +1131,6 @@ class MonocleSampleData:
         if 1 > len(samples_for_download):
             return (None, None)
 
-        # this flag indicates if QC data should be included in the CSV download
-        # it is set in the configuration file, separately for each project
-        include_qc_data = self._get_merge_qc_data_flag()
-
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
@@ -1179,8 +1175,50 @@ class MonocleSampleData:
 
         # if there are any in silico data, these are merged into the metadata DataFrame
         lanes_for_download = []
-        for this_sample in samples_for_download.keys():
+        for this_sample in samples_for_download:
             lanes_for_download.extend(samples_for_download[this_sample])
+
+        # this flag indicates if QC data should be included in the CSV download
+        # it is set in the configuration file, separately for each project
+        include_qc_data = self._get_merge_qc_data_flag()
+        if include_qc_data:
+            # if there are any QC data, these are merged into the metadata DataFrame
+            logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
+            qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
+                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
+            )
+            if len(qc_data) > 0:
+                logging.info(
+                    "merging using metadata field {} and QC data field {}".format(
+                        metadata_merge_field, qc_data_merge_field
+                    )
+                )
+                qc_data_df = pandas.DataFrame(qc_data)
+                for this_qc_data_column in qc_data_df:
+                    if this_qc_data_column != qc_data_merge_field and this_qc_data_column in metadata_df:
+                        qc_data_df.pop(this_qc_data_column)
+                        logging.debug(
+                            "QC column {} will not be included in merged data because it already exists in the metadata".format(
+                                this_qc_data_column
+                            )
+                        )
+
+                logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
+                # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
+                # validate to ensure lane ID is unique in both dataframes
+                metadata_df = metadata_df.merge(
+                    qc_data_df,
+                    left_on=metadata_merge_field,
+                    right_on=qc_data_merge_field,
+                    how="left",
+                    validate="one_to_one",
+                )
+                del qc_data_df
+                # add QC data columns to the list
+                metadata_col_order = metadata_col_order + qc_data_col_order
+            else:
+                logging.info("There are no QC data to be merged")
+
         logging.debug("Requesting in silico data for lanes: {}".format(lanes_for_download))
         in_silico_data, in_silico_data_col_order = self._metadata_download_to_pandas_data(
             self.metadata_download_source.get_in_silico_data(self.current_project, lanes_for_download)
@@ -1216,54 +1254,16 @@ class MonocleSampleData:
             # add silico data columns to the list
             metadata_col_order = metadata_col_order + in_silico_data_col_order
 
-        if include_qc_data:
-            # if there are any QC data, these are merged into the metadata DataFrame
-            logging.debug("Requesting QC data for lanes: {}".format(lanes_for_download))
-            qc_data, qc_data_col_order = self._metadata_download_to_pandas_data(
-                self.metadata_download_source.get_qc_data(self.current_project, lanes_for_download)
-            )
-            if len(qc_data) > 0:
-                logging.info(
-                    "merging using metadata field {} and QC data field {}".format(
-                        metadata_merge_field, qc_data_merge_field
-                    )
-                )
-                qc_data_df = pandas.DataFrame(qc_data)
-                for this_qc_data_column in qc_data_df:
-                    if this_qc_data_column != qc_data_merge_field and this_qc_data_column in metadata_df:
-                        qc_data_df.pop(this_qc_data_column)
-                        logging.debug(
-                            "In silico column {} will not be included in merged data because it already exists in the metadata".format(
-                                this_qc_data_column
-                            )
-                        )
-
-                logging.debug("QC data DataFrame.head:\n{}".format(qc_data_df.head()))
-                # merge with left join on Lane ID: incl. all metadata rows, only QC data rows where they match a metadata row
-                # validate to ensure lane ID is unique in both dataframes
-                metadata_df = metadata_df.merge(
-                    qc_data_df,
-                    left_on=metadata_merge_field,
-                    right_on=qc_data_merge_field,
-                    how="left",
-                    validate="one_to_one",
-                )
-                del qc_data_df
-                # add QC data columns to the list
-                metadata_col_order = metadata_col_order + qc_data_col_order
-            else:
-                logging.info("There are no QC data to be merged")
-
         # list of columns in `metadata_col_order` defines the CSV output
-        # remove the fields used for merging the in silico and QC data into the metadata
+        # remove the fields used for merging the QC and in silico data into the metadata
         # (because these are duplicated in the metadata)
         while in_silico_merge_field in metadata_col_order:
             metadata_col_order.remove(in_silico_merge_field)
         while qc_data_merge_field in metadata_col_order:
             metadata_col_order.remove(qc_data_merge_field)
-        # removing the merge fields from in silico and QC data may have removed the
+        # removing the merge fields from QC and in silico data may have removed the
         # field from the metadta, if it has the same field name in both; so
-        # check and reinset if required
+        # check and reinsert if required
         if metadata_merge_field not in metadata_col_order:
             metadata_col_order.insert(2, metadata_merge_field)
         # move public name to first column

@@ -38,17 +38,6 @@ class MetadataDownload:
         logging.info("{}.get_metadata() got {} result(s)".format(__class__.__name__, len(results_list)))
         return self._in_place_replace_submitting_institution_keys_with_names(results_list)
 
-    def get_in_silico_data(self, project, lane_id_list):
-        logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__, lane_id_list))
-        results_list = self.download_client.in_silico_data(project, lane_id_list)
-        assert isinstance(
-            results_list, list
-        ), "MonocleDownloadClient.in_silico_data() was expected to return a list, not {}".format(type(results_list))
-        if len(results_list) > 0:
-            logging.debug("{}.get_in_silico_data() result 1: {}".format(__class__.__name__, results_list[0]))
-        logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__, len(results_list)))
-        return results_list
-
     def get_qc_data(self, project, lane_id_list):
         logging.debug("{}.get_qc_data() called with {}".format(__class__.__name__, lane_id_list))
         results_list = self.download_client.qc_data(project, lane_id_list)
@@ -58,6 +47,17 @@ class MetadataDownload:
         if len(results_list) > 0:
             logging.debug("{}.get_qc_data() result 1: {}".format(__class__.__name__, results_list[0]))
         logging.info("{}.get_iqc_data() got {} result(s)".format(__class__.__name__, len(results_list)))
+        return results_list
+
+    def get_in_silico_data(self, project, lane_id_list):
+        logging.debug("{}.get_in_silico_data() called with {}".format(__class__.__name__, lane_id_list))
+        results_list = self.download_client.in_silico_data(project, lane_id_list)
+        assert isinstance(
+            results_list, list
+        ), "MonocleDownloadClient.in_silico_data() was expected to return a list, not {}".format(type(results_list))
+        if len(results_list) > 0:
+            logging.debug("{}.get_in_silico_data() result 1: {}".format(__class__.__name__, results_list[0]))
+        logging.info("{}.get_in_silico_data() got {} result(s)".format(__class__.__name__, len(results_list)))
         return results_list
 
     def _in_place_replace_submitting_institution_keys_with_names(self, metadata):
@@ -147,6 +147,28 @@ class MonocleDownloadClient:
         results = self.parse_response(endpoint_url, response, required_keys=[this_config["metadata_key"]])
         return results[this_config["metadata_key"]]
 
+    def qc_data(self, project, lane_id_list):
+        this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["download_qc_data"]
+        logging.debug(
+            "{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(
+                __class__.__name__, endpoint_url, len(lane_id_list)
+            )
+        )
+        # this request will return a 404 if there are no QC data results for these samples
+        # this is not an error, so a 404 must be caught, and an empty results set returned
+        try:
+            response = self.make_request(endpoint_url, post_data=lane_id_list)
+        except urllib.error.HTTPError as e:
+            if 404 == e.code:
+                logging.debug("status {}: no QC data results currently available for these samples".format(e.code))
+                return []
+            else:
+                raise
+        logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
+        results = self.parse_response(endpoint_url, response, required_keys=[this_config["qc_data_key"]])
+        return results[this_config["qc_data_key"]]
+
     def in_silico_data(self, project, lane_id_list):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["download_in_silico_data"]
@@ -170,28 +192,6 @@ class MonocleDownloadClient:
         )
         results = self.parse_response(endpoint_url, response, required_keys=[this_config["in_silico_data_key"]])
         return results[this_config["in_silico_data_key"]]
-
-    def qc_data(self, project, lane_id_list):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["download_qc_data"]
-        logging.debug(
-            "{}.qc_data() using endpoint {}, passing list of {} sample IDs".format(
-                __class__.__name__, endpoint_url, len(lane_id_list)
-            )
-        )
-        # this request will return a 404 if there are no QC data results for these samples
-        # this is not an error, so a 404 must be caught, and an empty results set returned
-        try:
-            response = self.make_request(endpoint_url, post_data=lane_id_list)
-        except urllib.error.HTTPError as e:
-            if 404 == e.code:
-                logging.debug("status {}: no QC data results currently available for these samples".format(e.code))
-                return []
-            else:
-                raise
-        logging.debug("{}.qc_data([{}]) returned {}".format(__class__.__name__, ",".join(lane_id_list), response))
-        results = self.parse_response(endpoint_url, response, required_keys=[this_config["qc_data_key"]])
-        return results[this_config["qc_data_key"]]
 
     def make_request(self, request_url, post_data=None):
         request_data = None

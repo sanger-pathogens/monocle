@@ -19,8 +19,8 @@
                ],
                "upload_links": [
                   {"label": "metadata", "url": "/metadata/juno/metadata-upload"},
-                  {"label": "in silico", "url": "/metadata/juno/in-silico-upload"},
-                  {"label": "qc data", "url": "/metadata/juno/qc-data-upload"}
+                  {"label": "qc data", "url": "/metadata/juno/qc-data-upload"},
+                  {"label": "in silico", "url": "/metadata/juno/in-silico-upload"}
                ]
             },
             "files": {
@@ -33,16 +33,16 @@
                      "SQL file name": "database/tables/api_sample.sql"
                   },
                   {
-                     "data key":"in_silico_data",
-                     "class name": "InSilicoData",
-                     "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
-                     "SQL file name": "database/tables/in_silico.sql"
-                  },
-                  {
                      "data key":"qc_data",
                      "class name": "QCData",
                      "model file name": "metadata/juno/metadata/api/model/qc_data.py",
                      "SQL file name": "database/tables/qc_data.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/juno/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/in_silico.sql"
                   }
                ],
                "test directory": "metadata/common/metadata/tests",
@@ -62,16 +62,6 @@
                   "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "JUNOInSilicoData",
-                  "Schema name dash": "JUNOInSilicoFieldName",
-                  "Schema name metadata": "InSilicoFieldName",
-                  "Data key metadata": "InSilicoData",
-                  "Property name": "in_silico_data",
-                  "API config section":"insilicodata",
-                  "field pattern dash": "in_silico_data",
-                  "field pattern metadata": "in_silico_data"
-               },
-               {
                   "Schema name": "JUNOQCData",
                   "Schema name dash": "JUNOQCDataFieldName",
                   "Schema name metadata": "QCDataFieldName",
@@ -80,12 +70,22 @@
                   "API config section":"qcdata",
                   "field pattern dash": "qc_data",
                   "field pattern metadata": "qc_data"
+               },
+               {
+                  "Schema name": "JUNOInSilicoData",
+                  "Schema name dash": "JUNOInSilicoFieldName",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                }
             ],
             "map_config_dict": {
                "metadata": "metadata",
-               "in_silico_data": "in silico",
-               "qc_data": "qc data"
+               "qc_data": "qc data",
+               "in_silico_data": "in silico"
             }
          },
          "gps": {
@@ -106,8 +106,8 @@
                ],
                "upload_links": [
                   {"label": "metadata", "url": "/metadata/gps/metadata-upload"},
-                  {"label": "in silico", "url": "/metadata/gps/in-silico-upload"},
-                  {"label": "qc data", "url": "/metadata/gps/qc-data-upload"}
+                  {"label": "qc data", "url": "/metadata/gps/qc-data-upload"},
+                  {"label": "in silico", "url": "/metadata/gps/in-silico-upload"}
                ]               
             },
             "files": {
@@ -120,16 +120,16 @@
                      "SQL file name": "database/tables/gps_sample.sql"
                   },
                   {
-                     "data key":"in_silico_data",
-                     "class name": "InSilicoData",
-                     "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
-                     "SQL file name": "database/tables/gps_in_silico.sql"
-                  },
-                  {
                      "data key":"qc_data",
                      "class name": "QCData",
                      "model file name": "metadata/gps/metadata/api/model/qc_data.py",
                      "SQL file name": "database/tables/gps_qc_data.sql"
+                  },
+                  {
+                     "data key":"in_silico_data",
+                     "class name": "InSilicoData",
+                     "model file name": "metadata/gps/metadata/api/model/in_silico_data.py",
+                     "SQL file name": "database/tables/gps_in_silico.sql"
                   }
                ],
                "test directory": "metadata/common/metadata/tests",
@@ -149,16 +149,6 @@
                   "field pattern metadata": "metadata"
                },
                {
-                  "Schema name": "GPSInSilicoData",
-                  "Schema name dash": "GPSInSilicoFieldName",
-                  "Schema name metadata": "InSilicoFieldName",
-                  "Data key metadata": "InSilicoData",
-                  "Property name": "in_silico_data",
-                  "API config section":"insilicodata",
-                  "field pattern dash": "in_silico_data",
-                  "field pattern metadata": "in_silico_data"
-               },
-               {
                   "Schema name": "GPSQCData",
                   "Schema name dash": "GPSQCDataFieldName",
                   "Schema name metadata": "QCDataFieldName",
@@ -167,12 +157,22 @@
                   "API config section":"qcdata",
                   "field pattern dash": "qc_data",
                   "field pattern metadata": "qc_data"
+               },
+               {
+                  "Schema name": "GPSInSilicoData",
+                  "Schema name dash": "GPSInSilicoFieldName",
+                  "Schema name metadata": "InSilicoFieldName",
+                  "Data key metadata": "InSilicoData",
+                  "Property name": "in_silico_data",
+                  "API config section":"insilicodata",
+                  "field pattern dash": "in_silico_data",
+                  "field pattern metadata": "in_silico_data"
                }
             ],
             "map_config_dict": {
                "metadata": "metadata",
-               "in_silico_data": "in silico",
-               "qc_data": "qc data"
+               "qc_data": "qc data",
+               "in_silico_data": "in silico"
             }
          }
       },
@@ -193,13 +193,13 @@
             "TEST_UPLOAD_SAMPLE_4_DICT",
             "TEST_UPLOAD_SAMPLE_5_DICT"
          ],
-         "in_silico_data": [
-            "TEST_LANE_IN_SILICO_1_DICT",
-            "TEST_LANE_IN_SILICO_2_DICT"
-         ],
          "qc_data": [
             "TEST_LANE_QC_DATA_1_DICT",
             "TEST_LANE_QC_DATA_2_DICT"
+         ],
+         "in_silico_data": [
+            "TEST_LANE_IN_SILICO_1_DICT",
+            "TEST_LANE_IN_SILICO_2_DICT"
          ]
       },
       "var_heuristics_type_mapping": {
@@ -2719,6 +2719,338 @@
           ]
       }
   },
+   "qc data": {
+      "juno": {
+         "spreadsheet_header_row_position": 0,
+         "upload_validation_enabled": true,
+         "categories": [
+            {
+               "name": "Sample Identifiers",
+               "fields": [
+                  {
+                     "name": "lane_id",
+                     "display": false,
+                     "order": 1,
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:\\d+_\\d+#\\d+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+               ]
+            },
+            {
+               "name": "Pipeline QC",
+               "fields": [
+                  {
+                     "name": "status",
+                     "display": true,
+                     "default": true,
+                     "order": 2,
+                     "filter type": "discrete",
+                     "display name": "Overall QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "rel_abundance_status",
+                     "display": true,
+                     "default": false,
+                     "order": 3,
+                     "filter type": "discrete",
+                     "display name": "Relative abundance QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "contig_no_status",
+                     "display": true,
+                     "default": false,
+                     "order": 4,
+                     "filter type": "discrete",
+                     "display name": "Contig number QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "gc_content_status",
+                     "display": true,
+                     "default": false,
+                     "order": 5,
+                     "filter type": "discrete",
+                     "display name": "GC content QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "genome_len_status",
+                     "display": true,
+                     "default": false,
+                     "order": 6,
+                     "filter type": "discrete",
+                     "display name": "Genome length QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "cov_depth_status",
+                     "display": true,
+                     "default": false,
+                     "order": 7,
+                     "filter type": "discrete",
+                     "display name": "Coverage depth QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "cov_breadth_status",
+                     "display": true,
+                     "default": false,
+                     "order": 8,
+                     "filter type": "discrete",
+                     "display name": "Coverage breadth QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "HET_SNPs_status",
+                     "display": true,
+                     "default": false,
+                     "order": 9,
+                     "filter type": "discrete",
+                     "display name": "HET SNPs QC status",
+                     "db": {
+                        "mysql_type": "VARCHAR(4)",
+                        "allowed_values": [
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "mandatory": false
+                     }
+                  },
+                  {
+                     "name": "QC_pipeline_version",
+                     "display": true,
+                     "default": false,
+                     "order": 10,
+                     "filter type": "discrete",
+                     "display name": "QC pipeline version",
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:v\\d+\\.\\d+\\.\\d+)$",
+                        "regex_validation_message": "Must be of the form v<major>.<minor>.<patch> (where <major>, <minor> and <patch> are positive integers)"
+                     }
+                  }                  
+               ]
+            }
+         ]
+      },
+      "gps": {
+         "spreadsheet_header_row_position": 0,
+         "upload_validation_enabled": true,
+         "categories": [
+            {
+               "name": "Sample Identifiers",
+               "fields": [
+                  {
+                     "name": "lane_id",
+                     "display": false,
+                     "order": 1,
+                     "spreadsheet heading": "Lane_id",
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:\\d+_\\d+#\\d+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  }
+               ]
+            },
+            {
+               "name": "Pipeline QC",
+               "fields": [
+                  {
+                     "name": "qc",
+                     "display": true,
+                     "default": true,
+                     "order": 1,
+                     "spreadsheet heading": "QC",
+                     "display name": "QC",
+                     "db": {
+                        "mysql_type": "VARCHAR(30)",
+                        "max_length": 30,
+                        "allowed_values": [
+                           "PASSPLUS",
+                           "PASS",
+                           "FAIL"
+                        ],
+                        "convert_case": {
+                           "case": "upper"
+                        }
+                     }
+                  },
+                  {
+                     "name": "Streptococcus_pneumoniae",
+                     "display": true,
+                     "default": false,
+                     "order": 2,
+                     "filter type": "numeric",
+                     "spreadsheet heading": "Streptococcus_pneumoniae",
+                     "display name": "Streptococcus pneumoniae",
+                     "db": {
+                        "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+                     }
+                  },
+                  {
+                     "name": "total_length",
+                     "display": true,
+                     "default": false,
+                     "order": 3,
+                     "spreadsheet heading": "Total_length",
+                     "display name": "Total length",
+                     "db": {
+                        "mysql_type": "INT(10)",
+                        "max_length": 10,
+                        "regex": "^\\d{1,10}$",
+                        "regex_validation_message": "must be an 1-10 digits number (integer)"
+                     }
+                  },
+                  {
+                     "name": "No_contigs",
+                     "display": true,
+                     "default": false,
+                     "order": 4,
+                     "spreadsheet heading": "No_of_contigs",
+                     "display name": "Number of contigs",
+                     "db": {
+                        "mysql_type": "SMALLINT(5)",
+                        "regex": "^\\d{1,5}$",
+                        "regex_validation_message": "must be a 1-5 digits number (integer)"
+                     }
+                  },
+                  {
+                     "name": "genome_covered",
+                     "display": true,
+                     "default": false,
+                     "order": 5,
+                     "spreadsheet heading": "Genome_covered",
+                     "display name": "Genome covered",
+                     "db": {
+                        "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
+                        "max_length": 6,
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+                     }
+                  },
+                  {
+                     "name": "depth_of_coverage",
+                     "display": true,
+                     "default": false,
+                     "order": 6,
+                     "filter type": "numeric",
+                     "spreadsheet heading": "Depth_of_coverage",
+                     "display name": "Depth of coverage",
+                     "db": {
+                        "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
+                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
+                     }
+                  },
+                  {
+                     "name": "Proportion_of_Het_SNPs",
+                     "display": true,
+                     "default": false,
+                     "order": 7,
+                     "spreadsheet heading": "Proportion_of_Het_SNPs",
+                     "display name": "Proportion of Het SNPs",
+                     "db": {                     
+                        "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
+                        "max_length": 6,
+                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+                     }
+                  },
+                  {
+                     "name": "supplier_name",
+                     "display": false,
+                     "order": 8,
+                     "spreadsheet heading": "Supplier_name",
+                     "db": {
+                        "mysql_type": "VARCHAR(256) NOT NULL",
+                        "mandatory": true,
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
+                        "regex_validation_message": "contains illegal characters"
+                     }
+                  },
+                  {
+                     "name": "Hetsites_50bp",
+                     "display": true,
+                     "default": false,
+                     "order": 9,
+                     "spreadsheet heading": "Hetsites_50bp",
+                     "display name": "Hetsites 50bp",
+                     "db": {
+                        "mysql_type": "SMALLINT(4) CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
+                        "max_length": 4,
+                        "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$",
+                        "regex_validation_message": "must be an integer between 0-5000"
+                     }
+                  }
+               ]
+            }
+         ]
+      }
+   },
    "in silico": {
       "juno": {
          "spreadsheet_header_row_position": 0,
@@ -5600,338 +5932,6 @@
                         "convert_case": {
                            "case": "upper"
                         }
-                     }
-                  }
-               ]
-            }
-         ]
-      }
-   },     
-   "qc data": {
-      "juno": {
-         "spreadsheet_header_row_position": 0,
-         "upload_validation_enabled": true,
-         "categories": [
-            {
-               "name": "Sample Identifiers",
-               "fields": [
-                  {
-                     "name": "lane_id",
-                     "display": false,
-                     "order": 1,
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:\\d+_\\d+#\\d+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  }
-               ]
-            },
-            {
-               "name": "Pipeline QC",
-               "fields": [
-                  {
-                     "name": "status",
-                     "display": true,
-                     "default": true,
-                     "order": 2,
-                     "filter type": "discrete",
-                     "display name": "Overall QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "rel_abundance_status",
-                     "display": true,
-                     "default": false,
-                     "order": 3,
-                     "filter type": "discrete",
-                     "display name": "Relative abundance QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "contig_no_status",
-                     "display": true,
-                     "default": false,
-                     "order": 4,
-                     "filter type": "discrete",
-                     "display name": "Contig number QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "gc_content_status",
-                     "display": true,
-                     "default": false,
-                     "order": 5,
-                     "filter type": "discrete",
-                     "display name": "GC content QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "genome_len_status",
-                     "display": true,
-                     "default": false,
-                     "order": 6,
-                     "filter type": "discrete",
-                     "display name": "Genome length QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "cov_depth_status",
-                     "display": true,
-                     "default": false,
-                     "order": 7,
-                     "filter type": "discrete",
-                     "display name": "Coverage depth QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "cov_breadth_status",
-                     "display": true,
-                     "default": false,
-                     "order": 8,
-                     "filter type": "discrete",
-                     "display name": "Coverage breadth QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "HET_SNPs_status",
-                     "display": true,
-                     "default": false,
-                     "order": 9,
-                     "filter type": "discrete",
-                     "display name": "HET SNPs QC status",
-                     "db": {
-                        "mysql_type": "VARCHAR(4)",
-                        "allowed_values": [
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "mandatory": false
-                     }
-                  },
-                  {
-                     "name": "QC_pipeline_version",
-                     "display": true,
-                     "default": false,
-                     "order": 10,
-                     "filter type": "discrete",
-                     "display name": "QC pipeline version",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:v\\d+\\.\\d+\\.\\d+)$",
-                        "regex_validation_message": "Must be of the form v<major>.<minor>.<patch> (where <major>, <minor> and <patch> are positive integers)"
-                     }
-                  }                  
-               ]
-            }
-         ]
-      },
-      "gps": {
-         "spreadsheet_header_row_position": 0,
-         "upload_validation_enabled": true,
-         "categories": [
-            {
-               "name": "Sample Identifiers",
-               "fields": [
-                  {
-                     "name": "lane_id",
-                     "display": false,
-                     "order": 1,
-                     "spreadsheet heading": "Lane_id",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:\\d+_\\d+#\\d+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  }
-               ]
-            },
-            {
-               "name": "Pipeline QC",
-               "fields": [
-                  {
-                     "name": "qc",
-                     "display": true,
-                     "default": true,
-                     "order": 1,
-                     "spreadsheet heading": "QC",
-                     "display name": "QC",
-                     "db": {
-                        "mysql_type": "VARCHAR(30)",
-                        "max_length": 30,
-                        "allowed_values": [
-                           "PASSPLUS",
-                           "PASS",
-                           "FAIL"
-                        ],
-                        "convert_case": {
-                           "case": "upper"
-                        }
-                     }
-                  },
-                  {
-                     "name": "Streptococcus_pneumoniae",
-                     "display": true,
-                     "default": false,
-                     "order": 2,
-                     "filter type": "numeric",
-                     "spreadsheet heading": "Streptococcus_pneumoniae",
-                     "display name": "Streptococcus pneumoniae",
-                     "db": {
-                        "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
-                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-                     }
-                  },
-                  {
-                     "name": "total_length",
-                     "display": true,
-                     "default": false,
-                     "order": 3,
-                     "spreadsheet heading": "Total_length",
-                     "display name": "Total length",
-                     "db": {
-                        "mysql_type": "INT(10)",
-                        "max_length": 10,
-                        "regex": "^\\d{1,10}$",
-                        "regex_validation_message": "must be an 1-10 digits number (integer)"
-                     }
-                  },
-                  {
-                     "name": "No_contigs",
-                     "display": true,
-                     "default": false,
-                     "order": 4,
-                     "spreadsheet heading": "No_of_contigs",
-                     "display name": "Number of contigs",
-                     "db": {
-                        "mysql_type": "SMALLINT(5)",
-                        "regex": "^\\d{1,5}$",
-                        "regex_validation_message": "must be a 1-5 digits number (integer)"
-                     }
-                  },
-                  {
-                     "name": "genome_covered",
-                     "display": true,
-                     "default": false,
-                     "order": 5,
-                     "spreadsheet heading": "Genome_covered",
-                     "display name": "Genome covered",
-                     "db": {
-                        "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
-                        "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-                     }
-                  },
-                  {
-                     "name": "depth_of_coverage",
-                     "display": true,
-                     "default": false,
-                     "order": 6,
-                     "filter type": "numeric",
-                     "spreadsheet heading": "Depth_of_coverage",
-                     "display name": "Depth of coverage",
-                     "db": {
-                        "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
-                        "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-                        "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
-                     }
-                  },
-                  {
-                     "name": "Proportion_of_Het_SNPs",
-                     "display": true,
-                     "default": false,
-                     "order": 7,
-                     "spreadsheet heading": "Proportion_of_Het_SNPs",
-                     "display name": "Proportion of Het SNPs",
-                     "db": {                     
-                        "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
-                        "max_length": 6,
-                        "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-                        "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-                     }
-                  },
-                  {
-                     "name": "supplier_name",
-                     "display": false,
-                     "order": 8,
-                     "spreadsheet heading": "Supplier_name",
-                     "db": {
-                        "mysql_type": "VARCHAR(256) NOT NULL",
-                        "mandatory": true,
-                        "max_length": 256,
-                        "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
-                        "regex_validation_message": "contains illegal characters"
-                     }
-                  },
-                  {
-                     "name": "Hetsites_50bp",
-                     "display": true,
-                     "default": false,
-                     "order": 9,
-                     "spreadsheet heading": "Hetsites_50bp",
-                     "display name": "Hetsites 50bp",
-                     "db": {
-                        "mysql_type": "SMALLINT(4) CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
-                        "max_length": 4,
-                        "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$",
-                        "regex_validation_message": "must be an integer between 0-5000"
                      }
                   }
                ]

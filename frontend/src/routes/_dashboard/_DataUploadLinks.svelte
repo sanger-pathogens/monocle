@@ -1,7 +1,7 @@
 <script context="module">
   const LINK_TITLE_METADATA_UPLOAD = "Upload metadata";
-  const LINK_TITLE_IN_SILICO_UPLOAD = "Upload in-silico data";
   const LINK_TITLE_QC_DATA_UPLOAD = "Upload QC data";
+  const LINK_TITLE_IN_SILICO_UPLOAD = "Upload in-silico data";
 </script>
 
 <script>
@@ -30,18 +30,18 @@
       Metadata
     </a>
     <a
-      aria-label={LINK_TITLE_IN_SILICO_UPLOAD}
-      title={LINK_TITLE_IN_SILICO_UPLOAD}
-      href="/in-silico-upload"
-    >
-      <i>In silico</i> data
-    </a>
-    <a
       aria-label={LINK_TITLE_QC_DATA_UPLOAD}
       title={LINK_TITLE_QC_DATA_UPLOAD}
       href="/qc-data-upload"
     >
       QC data
+    </a>
+    <a
+      aria-label={LINK_TITLE_IN_SILICO_UPLOAD}
+      title={LINK_TITLE_IN_SILICO_UPLOAD}
+      href="/in-silico-upload"
+    >
+      <i>In silico</i> data
     </a>
   </nav>
 {/if}

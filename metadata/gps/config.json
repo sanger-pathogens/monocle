@@ -773,6 +773,87 @@
          }
       }
    },
+   "qc_data": {
+      "spreadsheet_header_row_position": 0,
+      "upload_validation_enabled": true,
+      "spreadsheet_definition": {
+         "lane_id": {
+            "title": "Lane_id",
+            "mysql_type": "VARCHAR(256) NOT NULL",
+            "mandatory": true,
+            "max_length": 256,
+            "regex": "^(?:\\d+_\\d+#\\d+)$",
+            "regex_validation_message": "contains illegal characters"
+         },
+         "qc": {
+            "title": "QC",
+            "mysql_type": "VARCHAR(30)",
+            "max_length": 30,
+            "allowed_values": [
+               "PASSPLUS",
+               "PASS",
+               "FAIL"
+            ],
+            "convert_case": {
+               "case": "upper"
+            }
+         },
+         "Streptococcus_pneumoniae": {
+            "title": "Streptococcus_pneumoniae",
+            "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
+            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+         },
+         "total_length": {
+            "title": "Total_length",
+            "mysql_type": "INT(10)",
+            "max_length": 10,
+            "regex": "^\\d{1,10}$",
+            "regex_validation_message": "must be an 1-10 digits number (integer)"
+         },
+         "No_contigs": {
+            "title": "No_of_contigs",
+            "mysql_type": "SMALLINT(5)",
+            "regex": "^\\d{1,5}$",
+            "regex_validation_message": "must be a 1-5 digits number (integer)"
+         },
+         "genome_covered": {
+            "title": "Genome_covered",
+            "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
+            "max_length": 6,
+            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+         },
+         "depth_of_coverage": {
+            "title": "Depth_of_coverage",
+            "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
+            "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+            "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
+         },
+         "Proportion_of_Het_SNPs": {
+            "title": "Proportion_of_Het_SNPs",
+            "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
+            "max_length": 6,
+            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
+            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
+         },
+         "supplier_name": {
+            "title": "Supplier_name",
+            "mysql_type": "VARCHAR(256) NOT NULL",
+            "mandatory": true,
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
+            "regex_validation_message": "contains illegal characters"
+         },
+         "Hetsites_50bp": {
+            "title": "Hetsites_50bp",
+            "mysql_type": "SMALLINT(4) CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
+            "max_length": 4,
+            "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$",
+            "regex_validation_message": "must be an integer between 0-5000"
+         }
+      }
+   },
    "in_silico_data": {
       "spreadsheet_header_row_position": 0,
       "upload_validation_enabled": true,
@@ -1765,87 +1846,6 @@
          }
       }
    },
-   "qc_data": {
-      "spreadsheet_header_row_position": 0,
-      "upload_validation_enabled": true,
-      "spreadsheet_definition": {
-         "lane_id": {
-            "title": "Lane_id",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:\\d+_\\d+#\\d+)$",
-            "regex_validation_message": "contains illegal characters"
-         },
-         "qc": {
-            "title": "QC",
-            "mysql_type": "VARCHAR(30)",
-            "max_length": 30,
-            "allowed_values": [
-               "PASSPLUS",
-               "PASS",
-               "FAIL"
-            ],
-            "convert_case": {
-               "case": "upper"
-            }
-         },
-         "Streptococcus_pneumoniae": {
-            "title": "Streptococcus_pneumoniae",
-            "mysql_type": "DECIMAL(5,2) CHECK (Streptococcus_pneumoniae>=0 AND Streptococcus_pneumoniae<=100)",
-            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-         },
-         "total_length": {
-            "title": "Total_length",
-            "mysql_type": "INT(10)",
-            "max_length": 10,
-            "regex": "^\\d{1,10}$",
-            "regex_validation_message": "must be an 1-10 digits number (integer)"
-         },
-         "No_contigs": {
-            "title": "No_of_contigs",
-            "mysql_type": "SMALLINT(5)",
-            "regex": "^\\d{1,5}$",
-            "regex_validation_message": "must be a 1-5 digits number (integer)"
-         },
-         "genome_covered": {
-            "title": "Genome_covered",
-            "mysql_type": "DECIMAL(5,2) CHECK (genome_covered>=0 AND genome_covered<=100)",
-            "max_length": 6,
-            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-         },
-         "depth_of_coverage": {
-            "title": "Depth_of_coverage",
-            "mysql_type": "DECIMAL(6,2) CHECK (depth_of_coverage>=0 AND depth_of_coverage<=2000)",
-            "regex": "^(?:[1-2]?[0-9]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-            "regex_validation_message": "must be a number between 0-2000 (1 or 2 decimal places are allowed)"
-         },
-         "Proportion_of_Het_SNPs": {
-            "title": "Proportion_of_Het_SNPs",
-            "mysql_type": "DECIMAL(5,2) CHECK (Proportion_of_Het_SNPs>=0 AND Proportion_of_Het_SNPs<=100)",
-            "max_length": 6,
-            "regex": "^(?:[1]?[0-9]?[0-9](?:\\.[0-9]?[0-9])?)$",
-            "regex_validation_message": "must be a number between 0-100 (1 or 2 decimal places are allowed)"
-         },
-         "supplier_name": {
-            "title": "Supplier_name",
-            "mysql_type": "VARCHAR(256) NOT NULL",
-            "mandatory": true,
-            "max_length": 256,
-            "regex": "^(?:[0-9a-zA-Z\\-_\\. \\()\\/]+)$",
-            "regex_validation_message": "contains illegal characters"
-         },
-         "Hetsites_50bp": {
-            "title": "Hetsites_50bp",
-            "mysql_type": "SMALLINT(4) CHECK (Hetsites_50bp>=0 AND Hetsites_50bp<=5000)",
-            "max_length": 4,
-            "regex": "^(?:[1-5]?[0-9]?[0-9]?[0-9]?)$",
-            "regex_validation_message": "must be an integer between 0-5000"
-         }
-      }
-   },
    "project_links": {
       "name": "GPS Project",
       "logo_url": "/imgs/gps_banner.png",
@@ -1888,12 +1888,12 @@
             "url": "/metadata/gps/metadata-upload"
          },
          {
-            "label": "in silico",
-            "url": "/metadata/gps/in-silico-upload"
-         },
-         {
             "label": "qc data",
             "url": "/metadata/gps/qc-data-upload"
+         },
+         {
+            "label": "in silico",
+            "url": "/metadata/gps/in-silico-upload"
          }
       ]
    },
