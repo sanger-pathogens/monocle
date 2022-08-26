@@ -21,8 +21,8 @@ const FILTER_TYPE_NONE = "none";
     }, {
       ...
     }],
+    "qc data": [...],
     "in silico": [...],
-    "qc data": [...]
   }
 ```
 */
@@ -52,16 +52,52 @@ function createColumnsStore() {
 export const columnsStore = createColumnsStore();
 
 /*
-  `columnsToDisplayStore` has the following shape:
+  `displayedColumnsStore` has the following shape:
   ```
   {
-    metadata: ["column_name_1", "column_name_2"],
+    metadata: [{
+      displayName: "Column Name",
+      name: "column_name",
+      type?: "numeric"
+    },
+    {...}],
+    "qc data": [...],
     "in silico": [...],
-    "qc data": [...]
   }
   ```
 */
-export const columnsToDisplayStore = derived(columnsStore, (columnsState) =>
+export const displayedColumnsStore = derived(columnsStore, (columnsState) =>
+  columnsState
+    ? Object.keys(columnsState).reduce((accumDataTypeToColumns, dataType) => {
+        accumDataTypeToColumns[dataType] = columnsState[dataType].reduce(
+          columnCategoryToColumnsReducer,
+          []
+        );
+        return accumDataTypeToColumns;
+      }, {})
+    : undefined
+);
+
+function columnCategoryToColumnsReducer(accumColumns, category) {
+  category.columns.forEach((column) => {
+    if (column.selected) {
+      accumColumns.push(column);
+    }
+  });
+  return accumColumns;
+}
+
+/*
+  `displayedColumnNamesStore` has the following shape:
+  ```
+  {
+    metadata: ["column_name_1", "column_name_2"],
+    "qc data": [...],
+    "in silico": [...],
+  }
+  ```
+*/
+export const displayedColumnNamesStore = derived(columnsStore, (columnsState) =>
   columnsState
     ? Object.keys(columnsState).reduce(
         (accumDataTypeToColumnNames, dataType) => {
@@ -93,16 +129,16 @@ function columnCategoryToColumnNamesReducer(accumColumnNames, category) {
         columnName1: ["val1", "val2"],
         columnName2: ["val1", "val2"]
       },
+      "qc data": {...},
       "in silico": {...},
-      "qc data": {...}
     }
   ```
 */
 function createDistinctColumnValuesStore() {
   const { update, set, subscribe } = writable({
     metadata: {},
-    "in silico": {},
     "qc data": {},
+    "in silico": {},
   });
 
   return {
@@ -125,7 +161,7 @@ function createDistinctColumnValuesStore() {
 
         return storedDistinctValues;
       }),
-    reset: () => set({ metadata: {}, "in silico": {}, "qc data": {} }),
+    reset: () => set({ metadata: {}, "qc data": {}, "in silico": {} }),
   };
 }
 
@@ -139,20 +175,20 @@ export const distinctColumnValuesStore = createDistinctColumnValuesStore();
         columnName1: { values: ["val1", "val2"], exclude?: true },
         columnName2: {...},
       },
+      "qc data": {...},
       "in silico": {...},
-      "qc data": {...}
     }
   ```
 */
 function createFilterStore() {
   const filterCustomStore = writable({
     metadata: {},
-    "in silico": {},
     "qc data": {},
+    "in silico": {},
   });
 
   filterCustomStore.removeAllFilters = () =>
-    filterCustomStore.set({ metadata: {}, "in silico": {}, "qc data": {} });
+    filterCustomStore.set({ metadata: {}, "qc data": {}, "in silico": {} });
 
   filterCustomStore.removeFilter = (column) =>
     filterCustomStore.update((stotedFilters) => {

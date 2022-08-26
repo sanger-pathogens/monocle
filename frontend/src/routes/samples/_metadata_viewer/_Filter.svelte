@@ -112,7 +112,7 @@
     aria-labelledby="filter-menu-heading"
     bind:this={filterContainerElement}
   >
-    <h4 id="filter-menu-heading">Filter samples by {column.title}</h4>
+    <h4 id="filter-menu-heading">Filter samples by {column.displayName}</h4>
 
     <label>
       <input
@@ -153,7 +153,7 @@
     <button class="compact" on:click={closeFilter}> Close </button>
     <button
       title="Remove this filter"
-      aria-label={`Remove the filter for column ${column.title}`}
+      aria-label={`Remove the filter for column ${column.displayName}`}
       on:click={() => filterStore.removeFilter(column)}
       class="remove-filter-btn icon-btn"
       disabled={!$filterStore[columnDataType][columnName]}

@@ -1,23 +1,31 @@
 <script>
-  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import { DATA_TYPES, EMAIL_MONOCLE_HELP } from "$lib/constants.js";
   import FilterIcon from "$lib/components/icons/FilterIcon.svelte";
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import Filter from "./_Filter.svelte";
-  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
+  import {
+    displayedColumnsStore,
+    distinctColumnValuesStore,
+    filterStore,
+  } from "../_stores.js";
 
   export let batches;
   export let metadataPromise = undefined;
 
   const COLOR_INACTIVE_FILTER = "silver";
+  const EMPTY_STRING = "";
   const NARROW_SCREEN_BREAKPOINT = 880;
 
   let columnOfOpenFilter;
   let isError;
   let isLoading;
   let metadata;
-  let columns = [];
   let screenWidth = window?.innerWidth || NARROW_SCREEN_BREAKPOINT + 1;
+
+  $: columnHeaders = getColumnHeadersFromDisplayedColumnsState(
+    $displayedColumnsStore
+  );
 
   $: {
     distinctColumnValuesStore.reset(batches);
@@ -29,11 +37,7 @@
       isLoading = true;
       metadataPromise
         .then((sortedMetadata) => {
-          metadata = sortedMetadata;
-          // Only uodate columns if there are data in the response.
-          if (sortedMetadata.length) {
-            columns = sortedMetadata[0];
-          }
+          metadata = sortedMetadata.map(fillSampleWithMissingTrailingFields);
         })
         .catch((err) => {
           console.error(err);
@@ -43,10 +47,29 @@
     }
   }
 
-  $: {
-    if (columns.length === 0) {
-      closeFilter();
+  function getColumnHeadersFromDisplayedColumnsState(
+    displayedColumnsState = {}
+  ) {
+    return DATA_TYPES.reduce((columnAccumulator, dataType) => {
+      const storedColumns = displayedColumnsState[dataType];
+      if (storedColumns?.length) {
+        for (const column of storedColumns) {
+          columnAccumulator.push({ ...column, dataType });
+        }
+      }
+      return columnAccumulator;
+    }, []);
+  }
+
+  function fillSampleWithMissingTrailingFields(sample) {
+    const numColumns = columnHeaders.length;
+    const numMissingFields = numColumns - sample.length;
+    if (numMissingFields > 0) {
+      while (sample.length < numColumns) {
+        sample.push(columnHeaders[sample.length]);
+      }
     }
+    return sample;
   }
 
   function toggleFilterMenu(clickedColumn) {
@@ -78,25 +101,25 @@
 {#if metadataPromise}
   <table
     class={`dense ${
-      screenWidth > NARROW_SCREEN_BREAKPOINT && columns.length < 6
+      screenWidth > NARROW_SCREEN_BREAKPOINT && columnHeaders.length < 6
         ? "few-columns"
-        : ""
+        : EMPTY_STRING
     }`}
   >
     <tr>
       <!-- `(<unique key>)` is a key for Svelte to identify cells to avoid unnecessary re-rendering (see
        https://svelte.dev/docs#template-syntax-each). -->
-      {#each columns as column (`${column.name}:${column.dataType}`)}
-        {@const { title: columnTitle } = column}
+      {#each columnHeaders as column (`${column.name}:${column.dataType}`)}
+        {@const { displayName: columnDisplayName } = column}
         <th>
-          {columnTitle}
+          {columnDisplayName}
           <button
-            aria-label="Toggle the filter menu for column {columnTitle}"
+            aria-label="Toggle the filter menu for column {columnDisplayName}"
             title="Toggle filter menu"
             on:click={() => toggleFilterMenu(column)}
             class="filter-btn"
           >
-            {#if columnOfOpenFilter?.title !== columnTitle}
+            {#if columnOfOpenFilter?.displayName !== columnDisplayName}
               <FilterIcon
                 width="17"
                 height="17"
@@ -114,7 +137,7 @@
               />
             {/if}
           </button>
-          {#if columnOfOpenFilter && columnOfOpenFilter.title === columnTitle}
+          {#if columnOfOpenFilter && columnOfOpenFilter.displayName === columnDisplayName}
             <Filter {batches} bind:column={columnOfOpenFilter} />
           {/if}
         </th>
@@ -123,7 +146,7 @@
 
     {#if isError}
       <tr>
-        <td colspan={columns.length || 1} class="error-msg">
+        <td colspan={columnHeaders.length || 1} class="error-msg">
           An error occured while fetching metadata. Please <a
             href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a
           > if the error persists.
@@ -137,13 +160,19 @@
              https://svelte.dev/docs#template-syntax-each). -->
             {#each sample as column (`${column.name}:${column.dataType}`)}
               <!-- The inner <div /> is needed to impose a maximum height on a table cell. -->
-              <td><div>{column.value === null ? "" : column.value}</div></td>
+              <td
+                ><div>
+                  {column.value === undefined || column.value === null
+                    ? EMPTY_STRING
+                    : column.value}
+                </div></td
+              >
             {/each}
           </tr>
         {/each}
       {:else if !isLoading}
         <tr>
-          <td class="no-data" colspan={columns.length || 1}>
+          <td class="no-data" colspan={columnHeaders.length || 1}>
             No samples found. Try different batches or filters.
           </td>
         </tr>
@@ -154,7 +183,7 @@
           class="loading-indicator-row"
           class:no-metadata={!metadata || metadata.length === 0}
         >
-          <td colspan={columns.length || 1}>
+          <td colspan={columnHeaders.length || 1}>
             <LoadingIndicator />
           </td>
         </tr>
@@ -205,7 +234,7 @@
     left: 42%;
   }
   .loading-indicator-row.no-metadata {
-    bottom: 50%;
+    bottom: 36%;
   }
 
   .data-row.loading {

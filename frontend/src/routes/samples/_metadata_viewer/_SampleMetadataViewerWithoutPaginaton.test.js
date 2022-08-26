@@ -11,7 +11,11 @@ import {
   getDistinctColumnValues,
 } from "$lib/dataLoading.js";
 import SimpleSampleMetadataViewer from "./_SampleMetadataViewerWithoutPaginaton.svelte";
-import { distinctColumnValuesStore, filterStore } from "../_stores.js";
+import {
+  columnsStore,
+  distinctColumnValuesStore,
+  filterStore,
+} from "../_stores.js";
 
 jest.mock("$lib/dataLoading.js", () => ({
   getDistinctColumnValues: jest.fn(() => Promise.resolve([])),
@@ -64,6 +68,30 @@ describe("on metadata resolved", () => {
       { title: "ST", name: "st", value: null, dataType: DATA_TYPE_IN_SILICO },
     ],
   ];
+
+  columnsStore.set({
+    metadata: [
+      {
+        name: "Category A",
+        columns: [
+          { displayName: "Sample ID", name: "sample_id", selected: true },
+          { displayName: "This one isn't selected", name: "xyz" },
+        ],
+      },
+    ],
+    "qc data": [
+      {
+        name: "Category B",
+        columns: [{ displayName: "E", name: "e", selected: true }],
+      },
+    ],
+    "in silico": [
+      {
+        name: "Category C",
+        columns: [{ displayName: "ST", name: "st", selected: true }],
+      },
+    ],
+  });
 
   it("hides the loading indicator", async () => {
     const { queryByLabelText } = render(SimpleSampleMetadataViewer, {

@@ -28,7 +28,7 @@ const BATCHES = [];
 const CLASS_NAME_VALUE_SELECTOR = "selectContainer";
 const DATA_TYPE_METADATA = "metadata";
 const COLUMN = {
-  title: "Serotype",
+  displayName: "Serotype",
   name: "serotype",
   dataType: DATA_TYPE_METADATA,
 };
@@ -46,7 +46,7 @@ it("has a column name in the heading", () => {
   const { getByRole } = render(Filter, { batches: BATCHES, column: COLUMN });
 
   expect(
-    getByRole("heading", { name: `Filter samples by ${COLUMN.title}` })
+    getByRole("heading", { name: `Filter samples by ${COLUMN.displayName}` })
   ).toBeDefined();
 });
 
@@ -270,7 +270,7 @@ it("closes the filter if the close button is clicked", async () => {
 });
 
 it("removes an active filter on clicking the removal button and disables the button", async () => {
-  const labelFilterRemovalButton = `Remove the filter for column ${COLUMN.title}`;
+  const labelFilterRemovalButton = `Remove the filter for column ${COLUMN.displayName}`;
   setActiveFilter();
   const { getByLabelText } = render(Filter, {
     batches: BATCHES,

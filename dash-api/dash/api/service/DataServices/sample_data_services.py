@@ -397,20 +397,20 @@ class MonocleSampleData:
         for this_sample in combined_metadata:
             if metadata_columns is not None:
                 metadata = this_sample["metadata"]
-                for this_column in list(metadata.keys()):
+                for this_column in list(metadata):
                     if this_column not in metadata_columns:
                         logging.debug("removing unwanted metadata column {}".format(this_column))
                         del metadata[this_column]
             # some samples will legitimately have no in silico data
             if in_silico_columns is not None and "in silico" in this_sample:
                 in_silico = this_sample["in silico"]
-                for this_column in list(in_silico.keys()):
+                for this_column in list(in_silico):
                     if this_column not in in_silico_columns:
                         del in_silico[this_column]
             # some samples will legitimately have no QC data
             if qc_data_columns is not None and "qc data" in this_sample:
                 qc_data = this_sample["qc data"]
-                for this_column in list(qc_data.keys()):
+                for this_column in list(qc_data):
                     if this_column not in qc_data_columns:
                         del qc_data[this_column]
         return combined_metadata
@@ -424,7 +424,7 @@ class MonocleSampleData:
         This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
         except that 404 are caught and result in returning `None`
         """
-        institution_keys = list(self.get_sample_tracking_service().get_institutions().keys())
+        institution_keys = list(self.get_sample_tracking_service().get_institutions())
         try:
             distinct_values = self.sample_metadata_source.get_distinct_values(
                 self.current_project, fields, institution_keys
@@ -639,7 +639,7 @@ class MonocleSampleData:
                     lane_data[sanger_sample_id] = sample.get("lanes", [])
                     # `sample` contains all sequencing status data (because it was copy from the dict returned by
                     # get_sequencing_status()) but we only want a subset, so strip it down to what's needed:
-                    for this_key in list(sample.keys()):
+                    for this_key in list(sample):
                         if "lanes" == this_key:
                             sample[this_key] = [lane["id"] for lane in sample[this_key]]
                         elif this_key not in ["creation_datetime", "inst_key", "public_name", "sanger_sample_id"]:
@@ -1134,7 +1134,7 @@ class MonocleSampleData:
         # retrieve the sample metadata and load into DataFrame
         logging.debug("Requesting metadata for samples: {}".format(samples_for_download))
         metadata, metadata_col_order = self._metadata_download_to_pandas_data(
-            self.metadata_download_source.get_metadata(self.current_project, list(samples_for_download.keys()))
+            self.metadata_download_source.get_metadata(self.current_project, list(samples_for_download))
         )
         metadata_df = pandas.DataFrame(metadata)
 
