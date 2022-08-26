@@ -4,7 +4,7 @@ import debounce from "$lib/utils/debounce.js";
 import { getSampleMetadata } from "$lib/dataLoading.js";
 import {
   columnsStore,
-  columnsToDisplayStore,
+  displayedColumnNamesStore,
   distinctColumnValuesStore,
   filterStore,
 } from "../_stores.js";
@@ -66,6 +66,30 @@ it("isn't displayed if no batches are passed", () => {
 });
 
 it("displays resolved metadata w/ each row sorted by order", async () => {
+  columnsStore.set({
+    metadata: [
+      {
+        name: "Category A",
+        columns: [
+          { displayName: "Host species", name: "host_species", selected: true },
+        ],
+      },
+    ],
+    "qc data": [
+      {
+        name: "Category B",
+        columns: [
+          { displayName: "QC", name: "qualityControl", selected: true },
+        ],
+      },
+    ],
+    "in silico": [
+      {
+        name: "Category C",
+        columns: [{ displayName: "adhP", name: "adhP", selected: true }],
+      },
+    ],
+  });
   const { getAllByRole } = render(SampleMetadataViewer, { batches: BATCHES });
 
   const expectedColumnHeaders = ["Host species", "QC", "adhP"];
@@ -100,6 +124,7 @@ it("requests metadata w/ the correct arguments", async () => {
           filterState: get(filterStore),
           distinctColumnValuesState: get(distinctColumnValuesStore),
         },
+        columns: get(displayedColumnNamesStore),
         numRows: 17,
         startRow: 1,
       },
@@ -128,7 +153,7 @@ it("requests metadata if selected columns change", async () => {
           filterState: get(filterStore),
           distinctColumnValuesState: get(distinctColumnValuesStore),
         },
-        columns: get(columnsToDisplayStore),
+        columns: get(displayedColumnNamesStore),
         numRows: 17,
         startRow: 1,
       },

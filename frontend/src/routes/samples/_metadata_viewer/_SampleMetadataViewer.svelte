@@ -3,7 +3,7 @@
   import debounce from "$lib/utils/debounce.js";
   import { getSampleMetadata } from "$lib/dataLoading.js";
   import {
-    columnsToDisplayStore,
+    displayedColumnNamesStore,
     distinctColumnValuesStore,
     filterStore,
   } from "../_stores.js";
@@ -24,10 +24,10 @@
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when one of the arguments has changed.
-  $: resetPageNum(batches, $columnsToDisplayStore, $filterStore);
+  $: resetPageNum(batches, $displayedColumnNamesStore, $filterStore);
   $: updateMetadata(
     batches,
-    $columnsToDisplayStore,
+    $displayedColumnNamesStore,
     $filterStore,
     requestedPageNum
   );
@@ -55,7 +55,7 @@
           filterState: $filterStore,
           distinctColumnValuesState: $distinctColumnValuesStore,
         },
-        columns: $columnsToDisplayStore,
+        columns: $displayedColumnNamesStore,
         numRows: NUM_METADATA_ROWS_PER_PAGE,
         startRow: NUM_METADATA_ROWS_PER_PAGE * (requestedPageNum - 1) + 1,
       },
