@@ -52,7 +52,43 @@ function createColumnsStore() {
 export const columnsStore = createColumnsStore();
 
 /*
-  `columnsToDisplayStore` has the following shape:
+  `displayedColumnsStore` has the following shape:
+  ```
+  {
+    metadata: [{
+      displayName: "Column Name",
+      name: "column_name",
+      type?: "numeric"
+    },
+    {...}],
+    "qc data": [...],
+    "in silico": [...],
+  }
+  ```
+*/
+export const displayedColumnsStore = derived(columnsStore, (columnsState) =>
+  columnsState
+    ? Object.keys(columnsState).reduce((accumDataTypeToColumns, dataType) => {
+        accumDataTypeToColumns[dataType] = columnsState[dataType].reduce(
+          columnCategoryToColumnsReducer,
+          []
+        );
+        return accumDataTypeToColumns;
+      }, {})
+    : undefined
+);
+
+function columnCategoryToColumnsReducer(accumColumns, category) {
+  category.columns.forEach((column) => {
+    if (column.selected) {
+      accumColumns.push(column);
+    }
+  });
+  return accumColumns;
+}
+
+/*
+  `displayedColumnNamesStore` has the following shape:
   ```
   {
     metadata: ["column_name_1", "column_name_2"],
@@ -61,7 +97,7 @@ export const columnsStore = createColumnsStore();
   }
   ```
 */
-export const columnsToDisplayStore = derived(columnsStore, (columnsState) =>
+export const displayedColumnNamesStore = derived(columnsStore, (columnsState) =>
   columnsState
     ? Object.keys(columnsState).reduce(
         (accumDataTypeToColumnNames, dataType) => {

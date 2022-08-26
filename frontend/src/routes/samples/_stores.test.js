@@ -1,50 +1,63 @@
 import { get } from "svelte/store";
 import {
   columnsStore,
-  columnsToDisplayStore,
+  displayedColumnNamesStore,
+  displayedColumnsStore,
   distinctColumnValuesStore,
   filterStore,
 } from "./_stores.js";
 
+const COLUMNS_STATE = {
+  metadata: [
+    {
+      name: "Category A",
+      columns: [
+        { displayName: "Country", name: "country", selected: true },
+        { displayName: "Study Reference", name: "study_ref" },
+      ],
+    },
+  ],
+  "qc data": [
+    {
+      name: "Category C",
+      columns: [{ displayName: "E", name: "e", selected: true }],
+    },
+  ],
+  "in silico": [
+    {
+      name: "Category B",
+      columns: [{ displayName: "ST", name: "st", selected: true }],
+    },
+  ],
+};
 const INITIAL_STATE = { metadata: {}, "qc data": {}, "in silico": {} };
 const VALUES = ["some value", "another value"];
 
 it("has the expected default value for each store", () => {
   expect(get(columnsStore)).toBeUndefined();
-  expect(get(columnsToDisplayStore)).toBeUndefined();
+  expect(get(displayedColumnNamesStore)).toBeUndefined();
+  expect(get(displayedColumnsStore)).toBeUndefined();
   expect(get(distinctColumnValuesStore)).toEqual(INITIAL_STATE);
   expect(get(filterStore)).toEqual(INITIAL_STATE);
 });
 
-it("has a derived store w/ an array of columns per data type to display", () => {
-  columnsStore.set({
-    metadata: [
-      {
-        name: "Category A",
-        columns: [
-          { displayName: "Country", name: "country", selected: true },
-          { displayName: "Study Reference", name: "study_ref" },
-        ],
-      },
-    ],
-    "qc data": [
-      {
-        name: "Category C",
-        columns: [{ displayName: "E", name: "e", selected: true }],
-      },
-    ],
-    "in silico": [
-      {
-        name: "Category B",
-        columns: [{ displayName: "ST", name: "st", selected: true }],
-      },
-    ],
-  });
+it("has a derived store w/ an array of column names per data type to display", () => {
+  columnsStore.set(COLUMNS_STATE);
 
-  expect(get(columnsToDisplayStore)).toEqual({
+  expect(get(displayedColumnNamesStore)).toEqual({
     metadata: ["country"],
     "qc data": ["e"],
     "in silico": ["st"],
+  });
+});
+
+it("has a derived store w/ an array of columns per data type to display", () => {
+  columnsStore.set(COLUMNS_STATE);
+
+  expect(get(displayedColumnsStore)).toEqual({
+    metadata: [{ displayName: "Country", name: "country", selected: true }],
+    "qc data": [{ displayName: "E", name: "e", selected: true }],
+    "in silico": [{ displayName: "ST", name: "st", selected: true }],
   });
 });
 
