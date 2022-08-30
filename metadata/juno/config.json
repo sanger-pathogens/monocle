@@ -931,7 +931,7 @@
             "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
          },
          "AAC6APH2": {
-            "title": "AAC6APH2",
+            "title": "aac(6')-aph(2'')",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -943,7 +943,7 @@
             }
          },
          "ANT6IA": {
-            "title": "ANT6IA",
+            "title": "ant(6-Ia)",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -955,7 +955,7 @@
             }
          },
          "APH3III": {
-            "title": "APH3III",
+            "title": "aph(3'-III)",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -967,7 +967,7 @@
             }
          },
          "AADE": {
-            "title": "AADE",
+            "title": "aadE",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -979,7 +979,7 @@
             }
          },
          "CATPC194": {
-            "title": "CATPC194",
+            "title": "cat(pc194)",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -991,7 +991,7 @@
             }
          },
          "CATQ": {
-            "title": "CATQ",
+            "title": "catQ",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1003,7 +1003,7 @@
             }
          },
          "ERMA": {
-            "title": "ERMA",
+            "title": "ermA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1015,7 +1015,7 @@
             }
          },
          "ERMB": {
-            "title": "ERMB",
+            "title": "ermB",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1027,7 +1027,7 @@
             }
          },
          "ERMT": {
-            "title": "ERMT",
+            "title": "ermT",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1039,7 +1039,7 @@
             }
          },
          "LNUB": {
-            "title": "LNUB",
+            "title": "lnuB",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1051,7 +1051,7 @@
             }
          },
          "LNUC": {
-            "title": "LNUC",
+            "title": "lnuC",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1063,7 +1063,7 @@
             }
          },
          "LSAC": {
-            "title": "LSAC",
+            "title": "lsaC",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1075,7 +1075,7 @@
             }
          },
          "LSAE": {
-            "title": "LSAE",
+            "title": "lsaE",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1087,7 +1087,7 @@
             }
          },
          "MEFA": {
-            "title": "MEFA",
+            "title": "mefA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1099,7 +1099,7 @@
             }
          },
          "MSRD": {
-            "title": "MSRD",
+            "title": "msrD",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1111,7 +1111,7 @@
             }
          },
          "TETB": {
-            "title": "TETB",
+            "title": "tetB",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1123,7 +1123,7 @@
             }
          },
          "TETL": {
-            "title": "TETL",
+            "title": "tetL",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1135,7 +1135,7 @@
             }
          },
          "TETM": {
-            "title": "TETM",
+            "title": "tetM",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1147,7 +1147,7 @@
             }
          },
          "TETW": {
-            "title": "TETW",
+            "title": "tetW",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1159,7 +1159,7 @@
             }
          },
          "TETO": {
-            "title": "TETO",
+            "title": "tetO",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1171,7 +1171,7 @@
             }
          },
          "TETS": {
-            "title": "TETS",
+            "title": "tetS",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1183,7 +1183,7 @@
             }
          },
          "TETO32O": {
-            "title": "TETO32O",
+            "title": "tetO32O",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1195,7 +1195,7 @@
             }
          },
          "TETOW": {
-            "title": "TETOW",
+            "title": "tetOW",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1207,7 +1207,7 @@
             }
          },
          "TETOW32O": {
-            "title": "TETOW32O",
+            "title": "tetOW32O",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1219,7 +1219,7 @@
             }
          },
          "TETOW32OWO": {
-            "title": "TETOW32OWO",
+            "title": "tetOW32OWO",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1231,7 +1231,7 @@
             }
          },
          "TETOWO": {
-            "title": "TETOWO",
+            "title": "tetOWO",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1243,7 +1243,7 @@
             }
          },
          "TETSM": {
-            "title": "TETSM",
+            "title": "tetSM",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1255,7 +1255,7 @@
             }
          },
          "TETW32O": {
-            "title": "TETW32O",
+            "title": "tetW32O",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1267,7 +1267,7 @@
             }
          },
          "ALP1": {
-            "title": "ALP1",
+            "title": "alp1",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1279,7 +1279,7 @@
             }
          },
          "ALP23": {
-            "title": "ALP23",
+            "title": "alp2/3",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1291,7 +1291,7 @@
             }
          },
          "ALPHA": {
-            "title": "ALPHA",
+            "title": "alpha",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1303,7 +1303,7 @@
             }
          },
          "HVGA": {
-            "title": "HVGA",
+            "title": "hvgA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1363,7 +1363,7 @@
             }
          },
          "RIB": {
-            "title": "RIB",
+            "title": "rib",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1375,7 +1375,7 @@
             }
          },
          "SRR1": {
-            "title": "SRR1",
+            "title": "srr1",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1387,7 +1387,7 @@
             }
          },
          "SRR2": {
-            "title": "SRR2",
+            "title": "srr2",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -1413,21 +1413,21 @@
             "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "GYRA_variant": {
-            "title": "GYRA_SNP",
+            "title": "gyrA_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
             "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "PARC_variant": {
-            "title": "PARC_SNP",
+            "title": "parC_SNP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
             "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
          },
          "TYPER_PIPELINE_VERSION": {
-            "title": "TYPER_PIPELINE_VERSION",
+            "title": "typer_pipeline_version",
             "mysql_type": "VARCHAR(10) NOT NULL",
             "mandatory": true,
             "max_length": 10,

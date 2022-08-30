@@ -776,7 +776,7 @@
                   "display": true,
                   "default": false,
                   "order": 10,
-                  "spreadsheet heading": "AAC6APH2",
+                  "spreadsheet heading": "aac(6')-aph(2'')",
                   "display name": "AAC6APH2",
                   "filter type": "discrete"
                },
@@ -785,7 +785,7 @@
                   "display": true,
                   "default": false,
                   "order": 11,
-                  "spreadsheet heading": "ANT6IA",
+                  "spreadsheet heading": "ant(6-Ia)",
                   "display name": "ANT6IA",
                   "filter type": "discrete"
                },
@@ -794,7 +794,7 @@
                   "display": true,
                   "default": false,
                   "order": 12,
-                  "spreadsheet heading": "APH3III",
+                  "spreadsheet heading": "aph(3'-III)",
                   "display name": "APH3III",
                   "filter type": "discrete"
                },
@@ -803,7 +803,7 @@
                   "display": true,
                   "default": false,
                   "order": 13,
-                  "spreadsheet heading": "AADE",
+                  "spreadsheet heading": "aadE",
                   "display name": "AADE",
                   "filter type": "discrete"
                },
@@ -812,7 +812,7 @@
                   "display": true,
                   "default": false,
                   "order": 14,
-                  "spreadsheet heading": "CATPC194",
+                  "spreadsheet heading": "cat(pc194)",
                   "display name": "CATPC194",
                   "filter type": "discrete"
                },
@@ -821,7 +821,7 @@
                   "display": true,
                   "default": false,
                   "order": 15,
-                  "spreadsheet heading": "CATQ",
+                  "spreadsheet heading": "catQ",
                   "display name": "CATQ",
                   "filter type": "discrete"
                },
@@ -830,7 +830,7 @@
                   "display": true,
                   "default": false,
                   "order": 16,
-                  "spreadsheet heading": "ERMA",
+                  "spreadsheet heading": "ermA",
                   "display name": "ERMA",
                   "filter type": "discrete"
                },
@@ -839,7 +839,7 @@
                   "display": true,
                   "default": false,
                   "order": 17,
-                  "spreadsheet heading": "ERMB",
+                  "spreadsheet heading": "ermB",
                   "display name": "ERMB",
                   "filter type": "discrete"
                },
@@ -848,7 +848,7 @@
                   "display": true,
                   "default": false,
                   "order": 18,
-                  "spreadsheet heading": "ERMT",
+                  "spreadsheet heading": "ermT",
                   "display name": "ERMT",
                   "filter type": "discrete"
                },
@@ -857,7 +857,7 @@
                   "display": true,
                   "default": false,
                   "order": 19,
-                  "spreadsheet heading": "LNUB",
+                  "spreadsheet heading": "lnuB",
                   "display name": "LNUB",
                   "filter type": "discrete"
                },
@@ -866,7 +866,7 @@
                   "display": true,
                   "default": false,
                   "order": 20,
-                  "spreadsheet heading": "LNUC",
+                  "spreadsheet heading": "lnuC",
                   "display name": "LNUC",
                   "filter type": "discrete"
                },
@@ -875,7 +875,7 @@
                   "display": true,
                   "default": false,
                   "order": 21,
-                  "spreadsheet heading": "LSAC",
+                  "spreadsheet heading": "lsaC",
                   "display name": "LSAC",
                   "filter type": "discrete"
                },
@@ -884,7 +884,7 @@
                   "display": true,
                   "default": false,
                   "order": 22,
-                  "spreadsheet heading": "LSAE",
+                  "spreadsheet heading": "lsaE",
                   "display name": "LSAE",
                   "filter type": "discrete"
                },
@@ -893,7 +893,7 @@
                   "display": true,
                   "default": false,
                   "order": 23,
-                  "spreadsheet heading": "MEFA",
+                  "spreadsheet heading": "mefA",
                   "display name": "MEFA",
                   "filter type": "discrete"
                },
@@ -902,7 +902,7 @@
                   "display": true,
                   "default": false,
                   "order": 24,
-                  "spreadsheet heading": "MSRD",
+                  "spreadsheet heading": "msrD",
                   "display name": "MSRD",
                   "filter type": "discrete"
                },
@@ -911,7 +911,7 @@
                   "display": true,
                   "default": false,
                   "order": 25,
-                  "spreadsheet heading": "TETB",
+                  "spreadsheet heading": "tetB",
                   "display name": "TETB",
                   "filter type": "discrete"
                },
@@ -920,7 +920,7 @@
                   "display": true,
                   "default": false,
                   "order": 26,
-                  "spreadsheet heading": "TETL",
+                  "spreadsheet heading": "tetL",
                   "display name": "TETL",
                   "filter type": "discrete"
                },
@@ -929,7 +929,7 @@
                   "display": true,
                   "default": false,
                   "order": 27,
-                  "spreadsheet heading": "TETM",
+                  "spreadsheet heading": "tetM",
                   "display name": "TETM",
                   "filter type": "discrete"
                },
@@ -938,7 +938,7 @@
                   "display": true,
                   "default": false,
                   "order": 28,
-                  "spreadsheet heading": "TETW",
+                  "spreadsheet heading": "tetW",
                   "display name": "TETW",
                   "filter type": "discrete"
                },
@@ -947,7 +947,7 @@
                   "display": true,
                   "default": false,
                   "order": 29,
-                  "spreadsheet heading": "TETO",
+                  "spreadsheet heading": "tetO",
                   "display name": "TETO",
                   "filter type": "discrete"
                },
@@ -956,7 +956,7 @@
                   "display": true,
                   "default": false,
                   "order": 30,
-                  "spreadsheet heading": "TETS",
+                  "spreadsheet heading": "tetS",
                   "display name": "TETS",
                   "filter type": "discrete"
                },
@@ -965,7 +965,7 @@
                   "display": true,
                   "default": false,
                   "order": 31,
-                  "spreadsheet heading": "TETO32O",
+                  "spreadsheet heading": "tetO32O",
                   "display name": "TETO32O",
                   "filter type": "discrete"
                },
@@ -974,7 +974,7 @@
                   "display": true,
                   "default": false,
                   "order": 32,
-                  "spreadsheet heading": "TETOW",
+                  "spreadsheet heading": "tetOW",
                   "display name": "TETOW",
                   "filter type": "discrete"
                },
@@ -983,7 +983,7 @@
                   "display": true,
                   "default": false,
                   "order": 33,
-                  "spreadsheet heading": "TETOW32O",
+                  "spreadsheet heading": "tetOW32O",
                   "display name": "TETOW32O",
                   "filter type": "discrete"
                },
@@ -992,7 +992,7 @@
                   "display": true,
                   "default": false,
                   "order": 34,
-                  "spreadsheet heading": "TETOW32OWO",
+                  "spreadsheet heading": "tetOW32OWO",
                   "display name": "TETOW32OWO",
                   "filter type": "discrete"
                },
@@ -1001,7 +1001,7 @@
                   "display": true,
                   "default": false,
                   "order": 35,
-                  "spreadsheet heading": "TETOWO",
+                  "spreadsheet heading": "tetOWO",
                   "display name": "TETOWO",
                   "filter type": "discrete"
                },
@@ -1010,7 +1010,7 @@
                   "display": true,
                   "default": false,
                   "order": 36,
-                  "spreadsheet heading": "TETSM",
+                  "spreadsheet heading": "tetSM",
                   "display name": "TETSM",
                   "filter type": "discrete"
                },
@@ -1019,7 +1019,7 @@
                   "display": true,
                   "default": false,
                   "order": 37,
-                  "spreadsheet heading": "TETW32O",
+                  "spreadsheet heading": "tetW32O",
                   "display name": "TETW32O",
                   "filter type": "discrete"
                }
@@ -1033,7 +1033,7 @@
                   "display": true,
                   "default": false,
                   "order": 38,
-                  "spreadsheet heading": "ALP1",
+                  "spreadsheet heading": "alp1",
                   "display name": "ALP1",
                   "filter type": "discrete"
                },
@@ -1042,7 +1042,7 @@
                   "display": true,
                   "default": false,
                   "order": 39,
-                  "spreadsheet heading": "ALP23",
+                  "spreadsheet heading": "alp2/3",
                   "display name": "ALP23",
                   "filter type": "discrete"
                },
@@ -1051,7 +1051,7 @@
                   "display": true,
                   "default": false,
                   "order": 40,
-                  "spreadsheet heading": "ALPHA",
+                  "spreadsheet heading": "alpha",
                   "display name": "ALPHA",
                   "filter type": "discrete"
                },
@@ -1060,7 +1060,7 @@
                   "display": true,
                   "default": false,
                   "order": 41,
-                  "spreadsheet heading": "HVGA",
+                  "spreadsheet heading": "hvgA",
                   "display name": "HVGA",
                   "filter type": "discrete"
                },
@@ -1105,7 +1105,7 @@
                   "display": true,
                   "default": false,
                   "order": 46,
-                  "spreadsheet heading": "RIB",
+                  "spreadsheet heading": "rib",
                   "display name": "RIB",
                   "filter type": "discrete"
                },
@@ -1114,7 +1114,7 @@
                   "display": true,
                   "default": false,
                   "order": 47,
-                  "spreadsheet heading": "SRR1",
+                  "spreadsheet heading": "srr1",
                   "display name": "SRR1",
                   "filter type": "discrete"
                },
@@ -1123,7 +1123,7 @@
                   "display": true,
                   "default": false,
                   "order": 48,
-                  "spreadsheet heading": "SRR2",
+                  "spreadsheet heading": "srr2",
                   "display name": "SRR2",
                   "filter type": "discrete"
                }
@@ -1155,7 +1155,7 @@
                   "display": true,
                   "default": false,
                   "order": 51,
-                  "spreadsheet heading": "GYRA_SNP",
+                  "spreadsheet heading": "gyrA_SNP",
                   "display name": "GYRA SNP",
                   "filter type": "discrete"
                },
@@ -1164,7 +1164,7 @@
                   "display": true,
                   "default": false,
                   "order": 52,
-                  "spreadsheet heading": "PARC_SNP",
+                  "spreadsheet heading": "parC_SNP",
                   "display name": "PARC SNP",
                   "filter type": "discrete"
                },
@@ -1173,7 +1173,7 @@
                   "display": true,
                   "default": false,
                   "order": 53,
-                  "spreadsheet heading": "TYPER_PIPELINE_VERSION",
+                  "spreadsheet heading": "typer_pipeline_version",
                   "display name": "Typer Pipeline Version",
                   "filter type": "discrete"
                }
