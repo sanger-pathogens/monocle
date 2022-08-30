@@ -3407,8 +3407,8 @@
                      "display": true,
                      "default": false,
                      "order": 19,
-                     "spreadsheet heading": "LNUB",
-                     "display name": "lnuB",
+                     "spreadsheet heading": "lnuB",
+                     "display name": "LNUB",
                      "filter type": "discrete",
                      "db": {
                         "mysql_type": "VARCHAR(10)",

@@ -1039,7 +1039,7 @@
             }
          },
          "LNUB": {
-            "title": "LNUB",
+            "title": "lnuB",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
