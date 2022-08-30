@@ -785,8 +785,8 @@
                   "display": true,
                   "default": false,
                   "order": 11,
-                  "spreadsheet heading": "ANT6IA",
-                  "display name": "ant(6-Ia)",
+                  "spreadsheet heading": "ant(6-Ia)",
+                  "display name": "ANT6IA",
                   "filter type": "discrete"
                },
                {
@@ -794,8 +794,8 @@
                   "display": true,
                   "default": false,
                   "order": 12,
-                  "spreadsheet heading": "APH3III",
-                  "display name": "aph(3'-III)",
+                  "spreadsheet heading": "aph(3'-III)",
+                  "display name": "APH3III",
                   "filter type": "discrete"
                },
                {

@@ -943,7 +943,7 @@
             }
          },
          "ANT6IA": {
-            "title": "ANT6IA",
+            "title": "ant(6-Ia)",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
@@ -955,7 +955,7 @@
             }
          },
          "APH3III": {
-            "title": "APH3III",
+            "title": "aph(3'-III)",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
             "allowed_values": [
