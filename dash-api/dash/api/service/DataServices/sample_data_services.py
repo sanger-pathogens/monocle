@@ -803,15 +803,7 @@ class MonocleSampleData:
         return filtered_samples
 
     def _apply_qc_data_filters(self, filtered_samples, qc_data_filters):
-        ##################### TODO we do not currently have a requirement for QC data filters in the FE, but for consistency the
-        #####################      API requests include them in the request structure.  This warning should alert us if we start
-        #####################      trying to use QC data filters in the FE and forget they're not actually implemented.
-        ####################logging.warning("FILTERING BY QC DATA IS NOT IMPLEMENTED")
-        ####################logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
-        ####################return filtered_samples
-
-        # TODO INFO
-        logging.critical(
+        logging.info(
             "{}._apply_qc_data_filters filtering initial list of {} samples".format(
                 __class__.__name__, len(filtered_samples)
             )
@@ -821,8 +813,7 @@ class MonocleSampleData:
                 self.current_project, qc_data_filters
             )
         )
-        # TODO INFO
-        logging.critical(
+        logging.info(
             "{}.sample_tracking.sample_metadata.get_lanes_matching_qc_data_filters returned {} lanes".format(
                 __class__.__name__, len(matching_lanes_ids_set)
             )
@@ -835,9 +826,9 @@ class MonocleSampleData:
         ]
 
         filtered_samples = intersection
-        # TODO INFO
-        logging.critical("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
+        logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
         return filtered_samples
+
 
     def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}

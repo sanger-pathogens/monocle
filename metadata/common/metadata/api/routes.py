@@ -248,6 +248,30 @@ def get_lanes_filtered_by_in_silico_data_route(body: dict, dao: MonocleDatabaseS
     else:
         return result, HTTP_NOT_FOUND_STATUS
 
+@inject
+def get_lanes_filtered_by_qc_data_route(body: dict, dao: MonocleDatabaseService):
+    """Download lane ids from the database for lanes matching the QC data filters passed"""
+    filters = {}
+    for this_filter in body:
+        this_field = this_filter["name"]
+        these_values = this_filter["values"]
+        if not _validate_field_names([this_field]):
+            return 'name "{}" is not a valid QC data field name'.format(this_field), HTTP_BAD_REQUEST_STATUS
+        filters[this_field] = these_values
+
+    lanes = dao.get_lanes_filtered_by_qc_data(filters)
+    logging.debug("DAO returned lanes IDs: {}".format(lanes))
+    # get_lanes_filtered_by_qc_data() will return None if it is passed a non-existent field name
+    if lanes is None:
+        return "Invalid field name provided", HTTP_BAD_REQUEST_STATUS
+
+    result = convert_to_json(lanes)
+
+    if len(lanes) > 0:
+        return result, HTTP_SUCCEEDED_STATUS
+    else:
+        return result, HTTP_NOT_FOUND_STATUS
+
 
 @inject
 def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):

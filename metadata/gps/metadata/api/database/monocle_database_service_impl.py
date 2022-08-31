@@ -56,6 +56,12 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
             SELECT lane_id FROM gps_in_silico WHERE {} IN :values OR {} IS NULL"""
+            
+    QC_DATA_FILTER_LANES_IN_SQL = """ \
+            SELECT lane_id FROM gps_qc_data WHERE {} IN :values"""
+
+    QC_DATA_FILTER_LANES_IN_SQL_INCL_NULL = """ \
+            SELECT lane_id FROM gps_qc_data WHERE {} IN :values OR {} IS NULL"""
 
     DISTINCT_FIELD_VALUES_SQL = """ \
             SELECT DISTINCT {} FROM gps_sample WHERE submitting_institution IN :institutions"""
@@ -193,6 +199,41 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 lane_ids = [row["lane_id"] for row in rs]
 
         return lane_ids
+    
+    def get_lanes_filtered_by_qc_data(self, filters: dict) -> List:
+        """Get lane ids from QC data that match the specified filters"""
+        # TODO: Also consider other filters such as greater than/less than...
+
+        lane_ids = []
+        with self.connector.get_connection() as con:
+            if len(filters) > 0:
+                for filter, values in filters.items():
+                    logging.info("filtering on {} for values {}".format(filter, values))
+                    new_lane_ids = []
+                    try:
+                        if None in values:
+                            this_sql_template = self.QC_DATA_FILTER_LANES_IN_SQL_INCL_NULL.format(filter, filter)
+                        else:
+                            this_sql_template = self.QC_DATA_FILTER_LANES_IN_SQL.format(filter)
+                        rs = con.execute(text(this_sql_template), values=tuple(values))
+                        new_lane_ids.extend([row["lane_id"] for row in rs])
+                        if len(lane_ids) > 0:
+                            tmp_ids = [id for id in new_lane_ids if id in lane_ids]
+                            lane_ids = tmp_ids
+                        else:
+                            lane_ids = new_lane_ids
+                    except OperationalError as e:
+                        if "Unknown column" in str(e):
+                            logging.error('attempted to apply filter to unknown field "{}"'.format(filter))
+                            return None
+                        else:
+                            raise e
+            else:
+                rs = con.execute(self.SELECT_ALL_QC_DATA_SQL)
+                lane_ids = [row["lane_id"] for row in rs]
+
+        return lane_ids
+
 
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """

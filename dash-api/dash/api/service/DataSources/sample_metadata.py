@@ -106,7 +106,7 @@ class SampleMetadata:
             "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
         return results
-
+    
     def get_lanes_matching_qc_data_filters(self, project, qc_data_filters):
         """
         Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
@@ -122,21 +122,15 @@ class SampleMetadata:
                 __class__.__name__, type(these_values)
             )
             filters_payload.append({"name": this_field, "values": these_values})
-        # TODO DEBUG
-        logging.critical(
+        logging.debug(
             "{}.get_lanes_matching_qc_data_filters() created filters payload {}".format(
                 __class__.__name__, filters_payload
             )
         )
 
         results = self.monocle_client.filters_qc_data(project, filters_payload)
-        # TODO delete
-        logging.critical(
-            "************************** returned from filters_qc_data() ************************************"
-        )
 
-        # TODO INFO
-        logging.critical(
+        logging.info(
             "{}.get_lanes_matching_qc_data_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
         return results
@@ -268,15 +262,13 @@ class MonocleClient:
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
-
+    
     def filters_qc_data(self, project, filters):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["filter_by_qc_data"]
-        # TODO DEBUG
-        logging.critical("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
+        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
         response = self.make_request(endpoint_url, post_data=filters)
-        # TODO DEBUG
-        logging.critical("{}.filters() returned {}".format(__class__.__name__, response))
+        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 
