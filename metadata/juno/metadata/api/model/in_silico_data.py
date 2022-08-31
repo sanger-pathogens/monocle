@@ -7,14 +7,14 @@ from dataclasses import dataclass
 class InSilicoData:
     lane_id: str  # mandatory; contains illegal characters
     cps_type: str  # optional; must be a roman number (1-39); can be followed by a single lower case letter; can be "NT" or empty
-    ST: str  # optional; must be a positive integer (max 4 digits) or "NF"; both can be followed by "*"; can be empty
-    adhP: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    pheS: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    atr: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    glnA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    sdhA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    glcK: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
-    tkt: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*"; can be "-" or empty
+    ST: str  # optional; must be a positive integer (max 4 digits) or "NF"; can be followed by "*", "?" or both; can be empty
+    adhP: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    pheS: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    atr: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    glnA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    sdhA: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    glcK: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
+    tkt: str  # optional; must be a positive integer (max 3 digits), which can be followed by "*", "?" or both; can be "-" or empty
     AAC6APH2: str  # optional
     ANT6IA: str  # optional
     APH3III: str  # optional
