@@ -423,3 +423,11 @@ components:
       minLength: 1
       pattern: ^lane_id|status|rel_abundance_status|contig_no_status|gc_content_status|genome_len_status|cov_depth_status|cov_breadth_status|HET_SNPs_status|QC_pipeline_version$
       type: string
+    QCDataFieldValueFilter:
+      description: "A valid QC data field value"
+      type: string
+      nullable: true
+      minLength: 4
+      maxLength: 4
+      # only "PASS" or "FAIL" allowed
+      pattern: ^PASS|FAIL$

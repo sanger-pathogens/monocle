@@ -215,6 +215,32 @@ paths:
                 $ref: "#/components/schemas/Lanes"
         "404":
           description: "No data could be found for the given filters"
+          
+  /lane_ids_matching_qc_data:
+    post:
+      operationId: metadata.api.routes.get_lanes_filtered_by_qc_data_route
+      summary: "Filter lanes according to QC data values, and return matching lane IDs"
+      requestBody:
+        description: "An array of QC data filters"
+        required: true
+        content:
+          application/json:
+            schema:
+               $ref: "#/components/schemas/FiltersQCDataInput"
+            examples:
+               JUNO:
+                  value: { "name": "status",  "values": ["PASS"] }
+               GPS:
+                  value: { "name": "qc",  "values": ["PASSPLUS", "PASS"] }
+      responses:
+        "200":
+          description: "List of lane ids"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lanes"
+        "404":
+          description: "No data could be found for the given filters"
 
   /distinct_values:
     post:
@@ -422,6 +448,12 @@ components:
       items:
         $ref: "#/components/schemas/InSilicoFilters"
       minItems: 1
+      
+    FiltersQCDataInput:
+      type: array
+      items:
+        $ref: "#/components/schemas/QCDataFilters"
+      minItems: 1
 
     InSilicoFilters:
       type: object
@@ -435,6 +467,19 @@ components:
                description: "List of desired values of the in silico field"
                $ref: "#/components/schemas/InSilicoFieldValueFilter"
             minItems: 1
+            
+    QCDataFilters:
+      type: object
+      properties:
+         name:
+            description: "The name of the QC data field"
+            $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldName"
+         values:
+            type: array
+            items:
+               description: "List of desired values of the QC data field"
+               $ref: "file:///app/metadata/interface/project_objects.yml#/components/schemas/QCDataFieldValueFilter"
+            minItems: 1
 
     FieldValueFilter:
       description: "A valid metadata field value (multiple consecutive whitespaces and hyphens not allowed)"
@@ -447,14 +492,14 @@ components:
       pattern: ^(([a-zA-Z0-9à-úÀ-Ú\_',;:/\.\(\)\[\]]+)\-?\ ?)+$
       
     InSilicoFieldValueFilter:
-      description: "A valid in silico field value (multiple consecutive whitespaces and hyphens not allowed)"
+      description: "A valid in silico field value"
       type: string
       nullable: true
       minLength: 1
       maxLength: 256
       # only alphanumerics, '*',  '?', '-' and '/'
       pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
-
+      
     DistinctValues:
       description: "Object containing an array of fields, and the distinct values from the db for each"
       type: object

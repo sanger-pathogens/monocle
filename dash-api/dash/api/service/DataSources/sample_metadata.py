@@ -107,6 +107,40 @@ class SampleMetadata:
         )
         return results
 
+    def get_lanes_matching_qc_data_filters(self, project, qc_data_filters):
+        """
+        Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
+        Returns a list of lane IDs matching the filter conditions.
+        (N.B. in silico data are identifier only by lane ID, not by sample ID)
+        """
+        filters_payload = []
+        for this_field in qc_data_filters:
+            these_values = qc_data_filters[this_field]
+            assert isinstance(
+                these_values, list
+            ), "{}.get_lanes_matching_qc_data_filters() expects metadata filter value to be a list, not {}".format(
+                __class__.__name__, type(these_values)
+            )
+            filters_payload.append({"name": this_field, "values": these_values})
+        # TODO DEBUG
+        logging.critical(
+            "{}.get_lanes_matching_qc_data_filters() created filters payload {}".format(
+                __class__.__name__, filters_payload
+            )
+        )
+
+        results = self.monocle_client.filters_qc_data(project, filters_payload)
+        # TODO delete
+        logging.critical(
+            "************************** returned from filters_qc_data() ************************************"
+        )
+
+        # TODO INFO
+        logging.critical(
+            "{}.get_lanes_matching_qc_data_filters() got {} results(s)".format(__class__.__name__, len(results))
+        )
+        return results
+
     def get_distinct_values(self, project, fields, institution_keys):
         """
         Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
@@ -232,6 +266,17 @@ class MonocleClient:
         logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
         response = self.make_request(endpoint_url, post_data=filters)
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
+        results = json.loads(response)
+        return results
+
+    def filters_qc_data(self, project, filters):
+        this_config = self.config[project]
+        endpoint_url = this_config["base_url"] + this_config["filter_by_qc_data"]
+        # TODO DEBUG
+        logging.critical("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
+        response = self.make_request(endpoint_url, post_data=filters)
+        # TODO DEBUG
+        logging.critical("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
 

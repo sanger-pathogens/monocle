@@ -646,6 +646,8 @@ components:
           $ref: "#/components/schemas/MetadataFilters"
         in silico:
           $ref: "#/components/schemas/InSilicoFilters"
+        qc data:
+          $ref: "#/components/schemas/QCDataFilters"
 
     SequencingFilters:
       type: object
@@ -702,6 +704,20 @@ components:
       minItems: 0
       example:
         ST: ["1", "12", "14"]
+
+    QCDataFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        status: ["PASS"]
 
     DataFieldType:
        description: "The type of data field:  metadata, in silico, or QC data"
