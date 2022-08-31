@@ -4021,10 +4021,10 @@
                      "display name": "23S1 SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(10)",
-                        "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+                        "mysql_type": "VARCHAR(256)",
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+                        "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
                      }
                   },
                   {
@@ -4036,10 +4036,10 @@
                      "display name": "23S3 SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(10)",
-                        "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+                        "mysql_type": "VARCHAR(256)",
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+                        "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
                      }
                   },
                   {
@@ -4051,10 +4051,10 @@
                      "display name": "GYRA SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(10)",
-                        "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+                        "mysql_type": "VARCHAR(256)",
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+                        "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
                      }
                   },
                   {
@@ -4066,10 +4066,10 @@
                      "display name": "PARC SNP",
                      "filter type": "discrete",
                      "db": {
-                        "mysql_type": "VARCHAR(10)",
-                        "max_length": 10,
-                        "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-                        "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+                        "mysql_type": "VARCHAR(256)",
+                        "max_length": 256,
+                        "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+                        "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
                      }
                   },
                   {

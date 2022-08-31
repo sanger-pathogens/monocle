@@ -63,10 +63,10 @@ CREATE TABLE `in_silico` (
   `RIB` VARCHAR(10),
   `SRR1` VARCHAR(10),
   `SRR2` VARCHAR(10),
-  `twenty_three_S1_variant` VARCHAR(10),
-  `twenty_three_S3_variant` VARCHAR(10),
-  `GYRA_variant` VARCHAR(10),
-  `PARC_variant` VARCHAR(10),
+  `twenty_three_S1_variant` VARCHAR(256),
+  `twenty_three_S3_variant` VARCHAR(256),
+  `GYRA_variant` VARCHAR(256),
+  `PARC_variant` VARCHAR(256),
   `TYPER_PIPELINE_VERSION` VARCHAR(10) NOT NULL,
   # END OF AUTO_GENERATED SECTION
   PRIMARY KEY (`lane_id`)

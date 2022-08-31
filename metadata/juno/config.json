@@ -1400,31 +1400,31 @@
          },
          "twenty_three_S1_variant": {
             "title": "23S1_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "twenty_three_S3_variant": {
             "title": "23S3_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "GYRA_variant": {
             "title": "gyrA_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "PARC_variant": {
             "title": "parC_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "TYPER_PIPELINE_VERSION": {
             "title": "typer_pipeline_version",
