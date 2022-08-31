@@ -56,7 +56,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
             SELECT lane_id FROM in_silico WHERE {} IN :values OR {} IS NULL"""
-            
+
     QC_DATA_FILTER_LANES_IN_SQL = """ \
             SELECT lane_id FROM qc_data WHERE {} IN :values"""
 

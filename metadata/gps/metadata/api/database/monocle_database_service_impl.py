@@ -56,7 +56,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     IN_SILICO_FILTER_LANES_IN_SQL_INCL_NULL = """ \
             SELECT lane_id FROM gps_in_silico WHERE {} IN :values OR {} IS NULL"""
-            
+
     QC_DATA_FILTER_LANES_IN_SQL = """ \
             SELECT lane_id FROM gps_qc_data WHERE {} IN :values"""
 
@@ -199,7 +199,7 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 lane_ids = [row["lane_id"] for row in rs]
 
         return lane_ids
-    
+
     def get_lanes_filtered_by_qc_data(self, filters: dict) -> List:
         """Get lane ids from QC data that match the specified filters"""
         # TODO: Also consider other filters such as greater than/less than...
@@ -233,7 +233,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 lane_ids = [row["lane_id"] for row in rs]
 
         return lane_ids
-
 
     def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
         """

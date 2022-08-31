@@ -106,7 +106,7 @@ class SampleMetadata:
             "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results))
         )
         return results
-    
+
     def get_lanes_matching_qc_data_filters(self, project, qc_data_filters):
         """
         Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
@@ -262,7 +262,7 @@ class MonocleClient:
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
-    
+
     def filters_qc_data(self, project, filters):
         this_config = self.config[project]
         endpoint_url = this_config["base_url"] + this_config["filter_by_qc_data"]

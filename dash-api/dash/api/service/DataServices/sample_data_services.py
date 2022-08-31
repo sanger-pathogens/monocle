@@ -829,7 +829,6 @@ class MonocleSampleData:
         logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
         return filtered_samples
 
-
     def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}
         for sample in self.get_sample_tracking_service().sample_metadata.get_samples(

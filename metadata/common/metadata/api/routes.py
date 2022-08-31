@@ -248,6 +248,7 @@ def get_lanes_filtered_by_in_silico_data_route(body: dict, dao: MonocleDatabaseS
     else:
         return result, HTTP_NOT_FOUND_STATUS
 
+
 @inject
 def get_lanes_filtered_by_qc_data_route(body: dict, dao: MonocleDatabaseService):
     """Download lane ids from the database for lanes matching the QC data filters passed"""
