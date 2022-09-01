@@ -497,7 +497,7 @@ components:
       nullable: true
       minLength: 1
       maxLength: 256
-      # only alphanumerics, '*',  '?', '-' and '/'
+      # only alphanumerics, '*',  '?', '_', '-' and '/'
       pattern: ^([a-zA-Z0-9_\*\?\-/]+)$
       
     DistinctValues:

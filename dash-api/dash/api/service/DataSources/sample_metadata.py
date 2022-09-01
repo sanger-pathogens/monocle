@@ -91,7 +91,7 @@ class SampleMetadata:
             these_values = in_silico_filters[this_field]
             assert isinstance(
                 these_values, list
-            ), "{}.get_lanes_matching_in_silico_filters() expects metadata filter value to be a list, not {}".format(
+            ), "{}.get_lanes_matching_in_silico_filters() expects in silico filter value to be a list, not {}".format(
                 __class__.__name__, type(these_values)
             )
             filters_payload.append({"name": this_field, "values": these_values})
@@ -109,7 +109,7 @@ class SampleMetadata:
 
     def get_lanes_matching_qc_data_filters(self, project, qc_data_filters):
         """
-        Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
+        Pass a list of filters, as defined by the metadata API /lane_ids_matching_qc_data endpoint.
         Returns a list of lane IDs matching the filter conditions.
         (N.B. in silico data are identifier only by lane ID, not by sample ID)
         """
@@ -118,7 +118,7 @@ class SampleMetadata:
             these_values = qc_data_filters[this_field]
             assert isinstance(
                 these_values, list
-            ), "{}.get_lanes_matching_qc_data_filters() expects metadata filter value to be a list, not {}".format(
+            ), "{}.get_lanes_matching_qc_data_filters() expects QC data filter value to be a list, not {}".format(
                 __class__.__name__, type(these_values)
             )
             filters_payload.append({"name": this_field, "values": these_values})
