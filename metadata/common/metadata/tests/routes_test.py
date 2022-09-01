@@ -327,6 +327,61 @@ class TestRoutes(unittest.TestCase):
             )
             self.assertEqual(under_test[1], 400)
 
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_qc_data")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_get_lanes_filtered_by_qc_data_route_jsonified(self, mocked_jsoncall, mocked_query):
+        mocked_query.return_value = ["lane1", "lane2"]
+        mocked_jsoncall.return_value = "expected"
+        fakeDB = MagicMock()
+        fakeDB.get_lanes_filtered_by_qc_data = MagicMock(return_value=["lane1", "lane2"])
+        under_test = mar.get_lanes_filtered_by_qc_data_route([{"name": "status", "values": ["PASS"]}], fakeDB)
+        mocked_jsoncall.assert_called_once()
+        self.assertEqual(under_test, ("expected", 200))
+
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_qc_data")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_get_lanes_filtered_by_qc_data_route_no_return(self, mocked_jsoncall, mocked_query):
+        mocked_query.return_value = []
+        mocked_jsoncall.return_value = ""
+        fakeDB = MagicMock()
+        fakeDB.get_lanes_filtered_by_qc_data = MagicMock(return_value=[])
+        under_test = mar.get_lanes_filtered_by_qc_data_route([{"name": "status", "values": ["None"]}], fakeDB)
+        mocked_jsoncall.assert_called_once()
+        self.assertEqual(under_test, ("", 404))
+
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_get_lanes_filtered_by_qc_data_route_bad_field_name(self, mocked_jsoncall, dao_mock):
+        mock_field_name = "bad_field_name"
+        mock_values = ["anything"]
+        mock_json = ""
+        mocked_jsoncall.return_value = mock_json
+        dao_mock.get_lanes_filtered_by_qc_data.return_value = None
+        filtered_samples, http_status = mar.get_lanes_filtered_by_qc_data_route(
+            [{"name": mock_field_name, "values": mock_values}], dao_mock
+        )
+        dao_mock.get_lanes_filtered_by_qc_data.assert_called_once_with({mock_field_name: mock_values})
+        self.assertEqual(filtered_samples, "Invalid field name provided")
+        self.assertEqual(http_status, 400)
+
+    @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService.get_lanes_filtered_by_qc_data")
+    @patch("metadata.api.routes.convert_to_json")
+    def test_get_lanes_filtered_by_qc_data_route_stop_injection(self, mocked_jsoncall, mocked_query):
+        mocked_query.return_value = ["lane1", "lane2"]
+        mocked_jsoncall.return_value = ""
+        fakeDB = MagicMock()
+        fakeDB.get_lanes_filtered_by_qc_data = MagicMock(return_value=[])
+        for looks_iffy_to_me_guv in [
+            'status="PASS"; DO something NASTY; --',
+            "actually anything with -- in it",
+            "no semi; colons either",
+            "wildcards % are right out",
+        ]:
+            under_test = mar.get_lanes_filtered_by_qc_data_route(
+                [{"name": looks_iffy_to_me_guv, "values": ["any search term"]}], fakeDB
+            )
+            self.assertEqual(under_test[1], 400)
+
     @patch("metadata.api.database.monocle_database_service.MonocleDatabaseService")
     @patch("metadata.api.routes.convert_to_json")
     def test_get_distinct_values_route(self, mocked_jsoncall, dao_mock):
