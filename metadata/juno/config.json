@@ -878,57 +878,57 @@
             "title": "ST",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,4}[*]?|NF[*]?)$",
-            "regex_validation_message": "must be a positive integer (max 4 digits) or \"NF\"; both can be followed by \"*\"; can be empty"
+            "regex": "^(?:\\d{1,4}[*]?[?]?|NF[*]?[?]?)$",
+            "regex_validation_message": "must be a positive integer (max 4 digits) or \"NF\"; can be followed by \"*\", \"?\" or both; can be empty"
          },
          "adhP": {
             "title": "adhP",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "pheS": {
             "title": "pheS",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "atr": {
             "title": "atr",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "glnA": {
             "title": "glnA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "sdhA": {
             "title": "sdhA",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "glcK": {
             "title": "glcK",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "tkt": {
             "title": "tkt",
             "mysql_type": "VARCHAR(10)",
             "max_length": 10,
-            "regex": "^(?:\\d{1,3}[*]?|-)$",
-            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\"; can be \"-\" or empty"
+            "regex": "^(?:\\d{1,3}[*]?[?]?|-)$",
+            "regex_validation_message": "must be a positive integer (max 3 digits), which can be followed by \"*\", \"?\" or both; can be \"-\" or empty"
          },
          "AAC6APH2": {
             "title": "aac(6')-aph(2'')",
@@ -1400,31 +1400,31 @@
          },
          "twenty_three_S1_variant": {
             "title": "23S1_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "twenty_three_S3_variant": {
             "title": "23S3_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "GYRA_variant": {
             "title": "gyrA_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "PARC_variant": {
             "title": "parC_SNP",
-            "mysql_type": "VARCHAR(10)",
-            "max_length": 10,
-            "regex": "^(?:[A-Z]\\d{1,2}[A-Z]|[*])$",
-            "regex_validation_message": "must follow a valid variant format (e.g. \"L55A\" or \"G8A\"); can be \"*\" or empty"
+            "mysql_type": "VARCHAR(256)",
+            "max_length": 256,
+            "regex": "^(?:[0-9a-zA-Z(*),])+|[*]$",
+            "regex_validation_message": "must contain one or multiple comma-separated variants (e.g. T78Q or T78Q,L55A), which can be followed by \"*\"; can be \"*\" or empty"
          },
          "TYPER_PIPELINE_VERSION": {
             "title": "typer_pipeline_version",
