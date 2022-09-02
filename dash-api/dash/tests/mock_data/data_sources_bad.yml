@@ -2,6 +2,7 @@ metadata_api_common:
    swagger           : '/ui/'
    metadata_key      : 'download'
    filter_by_in_silico     : '/lane_ids_matching_in_silico_data'
+   filter_by_qc_data       : '/lane_ids_matching_qc_data'
    samples_key       : 'samples'
    download_in_silico_data : '/download_in_silico_data'
    in_silico_data_key      : 'download'

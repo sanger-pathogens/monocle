@@ -215,6 +215,71 @@ class TestMonocleDatabaseServiceImpl(unittest.TestCase):
         self.assertEqual(self.connection.execute.call_count, 1)
         self.assertEqual(samples_ids, expected)
 
+    def test_get_lanes_filtered_by_qc_data(self) -> None:
+        self.connection.execute.return_value = [{"lane_id": "2000_2#10"}]
+        # passing `None` in values list should result in SQL query that includes records with NULL status
+        lanes_ids = self.under_test.get_lanes_filtered_by_qc_data({"status": [None, "PASS"]})
+        execute_args = list(self.connection.execute.call_args)
+        execute_sql = str(execute_args[0][0])
+        execute_values = execute_args[1]
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(
+            1,
+            len(execute_args[0]),
+            "expected 1 SQL query to be passed as first positional argument to self.connection.execute",
+        )
+        self.assertEqual(
+            execute_sql,
+            MonocleDatabaseServiceImpl.QC_DATA_FILTER_LANES_IN_SQL_INCL_NULL.format("status", "status"),
+            "not the expected SQL query",
+        )
+        self.assertEqual(
+            execute_values,
+            {"values": (None, "PASS")},
+            "not what was expected for :values in {}".format(
+                MonocleDatabaseServiceImpl.QC_DATA_FILTER_LANES_IN_SQL_INCL_NULL
+            ),
+        )
+        self.assertEqual(lanes_ids, ["2000_2#10"])
+
+    def test_get_lanes_filtered_by_qc_data_incl_null(self) -> None:
+        self.connection.execute.return_value = [{"lane_id": "2000_2#10"}]
+        lanes_ids = self.under_test.get_lanes_filtered_by_qc_data({"status": ["PASS"]})
+        execute_args = list(self.connection.execute.call_args)
+        execute_sql = str(execute_args[0][0])
+        execute_values = execute_args[1]
+        self.assertEqual(2, len(execute_args), "expected 2 arguments to be passed to self.connection.execute")
+        self.assertEqual(
+            1,
+            len(execute_args[0]),
+            "expected 1 SQL query to be passed as first positional argument to self.connection.execute",
+        )
+        self.assertEqual(
+            execute_sql,
+            MonocleDatabaseServiceImpl.QC_DATA_FILTER_LANES_IN_SQL.format("status"),
+            "not the expected SQL query",
+        )
+        self.assertEqual(
+            execute_values,
+            {"values": ("PASS",)},
+            "not what was expected for :values in {}".format(MonocleDatabaseServiceImpl.QC_DATA_FILTER_LANES_IN_SQL),
+        )
+        self.assertEqual(lanes_ids, ["2000_2#10"])
+
+    def test_get_lanes_filtered_by_qc_data_noresults(self) -> None:
+        self.connection.execute.return_value = []
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({"status": ["None"]})
+        self.assertEqual(samples_ids, [])
+
+    def test_get_lanes_filtered_by_qc_data_reject_request_if_bad_field_name(self) -> None:
+        self.connection.execute.side_effect = OperationalError(
+            "mock params", "mock orig", "mock message including the substring Unknown column"
+        )
+        expected = None
+        samples_ids = self.under_test.get_samples_filtered_by_metadata({"bad_field_name": ["anything"]})
+        self.assertEqual(self.connection.execute.call_count, 1)
+        self.assertEqual(samples_ids, expected)
+
     def test_get_samples_filtered_by_metadata_nofilters(self) -> None:
         self.connection.execute.return_value = [
             dict(sanger_sample_id="9999STDY8113123"),
