@@ -42,6 +42,7 @@ class MonocleSampleTracking:
         self.institutions_data = None
         self.samples_data = None
         self.sequencing_status_data = None
+        self.pipeline_status_instance = None
         self.all_institutions_data_irrespective_of_user_membership = None
         # set_up flag causes data objects to be loaded on instantiation
         # only set to False if you know what you're doing
@@ -456,7 +457,9 @@ class MonocleSampleTracking:
         return self.sample_metadata.get_project_information(self.current_project)
 
     def get_pipeline_status(self):
-        return DataSources.pipeline_status.PipelineStatus(self.current_project)
+        if self.pipeline_status_instance is None:
+            self.pipeline_status_instance = DataSources.pipeline_status.PipelineStatus(self.current_project)
+        return self.pipeline_status_instance
 
     def pipeline_status_summary(self):
         """
