@@ -1,4 +1,5 @@
 <script>
+  import { session as appSession } from "$app/stores";
   import {
     SESSION_STORAGE_KEY_COLUMNS_STATE,
     SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
@@ -16,6 +17,7 @@
     getColumns,
     getInstitutions,
   } from "$lib/dataLoading.js";
+  import AppMenu from "../_app-menu/_index.svelte";
   import BatchSelector from "./_BatchSelector.svelte";
   import BulkDownload from "./_BulkDownload.svelte";
   import Configuration from "./_metadata_viewer/_Configuration.svelte";
@@ -29,6 +31,8 @@
 
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
+
+  export let session = appSession;
 
   const dataPromise = Promise.allSettled([
     getBatches(fetch),
@@ -220,6 +224,8 @@
     }
   }
 </script>
+
+<AppMenu sampleDataLink={false} {session} />
 
 <h2>Sample data viewer</h2>
 
