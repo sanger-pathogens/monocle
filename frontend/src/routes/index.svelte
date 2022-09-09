@@ -5,11 +5,10 @@
     getInstitutionStatus,
     getProjectProgress,
   } from "$lib/dataLoading.js";
-  import DataUploadLinks from "./_dashboard/_DataUploadLinks.svelte";
+  import AppMenu from "./_app-menu/_index.svelte";
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import SampleDataLink from "./_dashboard/_SampleDataLink.svelte";
 
   export let session = appSession;
 
@@ -26,10 +25,7 @@
 {#await dashboardDataPromise}
   <LoadingIndicator midscreen={true} />
 {:then [institutions = [], projectProgress = { }]}
-  <nav>
-    <SampleDataLink />
-    <DataUploadLinks {session} />
-  </nav>
+  <AppMenu {session} />
 
   <article>
     <h2>Project Progress</h2>
