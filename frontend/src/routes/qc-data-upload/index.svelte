@@ -1,9 +1,12 @@
 <script>
   import { getStores } from "$app/stores";
   import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
+  import AppMenu from "../_app-menu/_index.svelte";
 
   export let session = getStores().session;
 </script>
+
+<AppMenu qcDataUploadLink={false} {session} />
 
 <DataUploadPage
   dataType="qc data"
