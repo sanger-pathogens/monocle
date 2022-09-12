@@ -10,8 +10,6 @@ export const DATA_TYPES = [
   DATA_TYPE_IN_SILICO,
 ];
 
-export const EMAIL_MONOCLE_HELP = "monocle-help@sanger.ac.uk";
-
 export const HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 
 export const HTTP_HEADERS_JSON = { "Content-Type": "application/json" };
@@ -19,6 +17,10 @@ export const HTTP_HEADERS_JSON = { "Content-Type": "application/json" };
 export const HTTP_POST = "POST";
 
 export const HTTP_STATUS_CODE_UNAUTHORIZED = 401;
+
+export const MONOCLE_HELP_EMAIL = "monocle-help@sanger.ac.uk";
+export const MONOCLE_HELP_URL =
+  "https://docs.google.com/document/d/1KVLie4qa5OmOyA1U90FJWUjHur4QicQM6zQEZ9si_Nc";
 
 // IMPORTANT: when incrementing this key, put the old one to `SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE`. This is
 // needed to clear `sessionStorage` from old data (otherwise it's cleared only on closing the browser tab/window).

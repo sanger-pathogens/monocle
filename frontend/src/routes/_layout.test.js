@@ -21,7 +21,7 @@ it("loads a script w/ simple-cookie library", () => {
 
   render(Layout, { session: writable({}) });
 
-  const actualScriptElement = document.head.appendChild.mock.calls[3][0];
+  const actualScriptElement = document.head.appendChild.mock.calls[4][0];
   expect(actualScriptElement.src).toBe(
     `${global.location.origin}/files/simplecookie.min.js`
   );

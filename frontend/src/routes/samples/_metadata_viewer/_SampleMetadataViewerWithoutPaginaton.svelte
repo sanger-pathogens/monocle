@@ -1,5 +1,5 @@
 <script>
-  import { DATA_TYPES, EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import { DATA_TYPES, MONOCLE_HELP_EMAIL } from "$lib/constants.js";
   import FilterIcon from "$lib/components/icons/FilterIcon.svelte";
   import FilterMenuIcon from "$lib/components/icons/FilterMenuIcon.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
@@ -148,7 +148,7 @@
       <tr>
         <td colspan={columnHeaders.length || 1} class="error-msg">
           An error occured while fetching metadata. Please <a
-            href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a
+            href={`mailto:${MONOCLE_HELP_EMAIL}`}>contact us</a
           > if the error persists.
         </td>
       </tr>

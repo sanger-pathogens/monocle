@@ -6,7 +6,7 @@
 </script>
 
 <script>
-  import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+  import { MONOCLE_HELP_EMAIL } from "$lib/constants.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
 
   export let downloadToken;
@@ -35,7 +35,7 @@
         } catch (err) {
           console.error(`Cannot parse JSON response: ${err}`);
           reject(
-            `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`
+            `Server error. Please try again and <a href="mailto:${MONOCLE_HELP_EMAIL}">contact us</a> if the problem persists.`
           );
         }
         window.location.assign(zipFileUrl);
