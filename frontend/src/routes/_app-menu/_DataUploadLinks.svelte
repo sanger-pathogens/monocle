@@ -2,18 +2,23 @@
   const LINK_TITLE_METADATA_UPLOAD = "Upload metadata";
   const LINK_TITLE_QC_DATA_UPLOAD = "Upload QC data";
   const LINK_TITLE_IN_SILICO_UPLOAD = "Upload in-silico data";
+  const TOP_OFFSET_DEFAULT = "4rem";
 </script>
 
 <script>
   import { USER_ROLE_ADMIN } from "$lib/constants.js";
   import UploadMenuIcon from "$lib/components/icons/UploadMenuIcon.svelte";
 
+  export let metadataUploadLink = true;
+  export let qcDataUploadLink = true;
+  export let inSilicoDataUploadLink = true;
+  export let topOffset = TOP_OFFSET_DEFAULT;
   export let session;
 
   $: isAdmin = $session?.user?.role === USER_ROLE_ADMIN;
 </script>
 
-{#if isAdmin}
+{#if isAdmin && (metadataUploadLink || qcDataUploadLink || inSilicoDataUploadLink)}
   <UploadMenuIcon
     color="rgba(0,0,0,.35)"
     focusable={true}
@@ -21,28 +26,36 @@
     cssClass="dropdown-menu-trigger"
   />
 
-  <nav class="dropdown-menu-items">
-    <a
-      aria-label={LINK_TITLE_METADATA_UPLOAD}
-      title={LINK_TITLE_METADATA_UPLOAD}
-      href="/metadata-upload"
-    >
-      Metadata
-    </a>
-    <a
-      aria-label={LINK_TITLE_QC_DATA_UPLOAD}
-      title={LINK_TITLE_QC_DATA_UPLOAD}
-      href="/qc-data-upload"
-    >
-      QC data
-    </a>
-    <a
-      aria-label={LINK_TITLE_IN_SILICO_UPLOAD}
-      title={LINK_TITLE_IN_SILICO_UPLOAD}
-      href="/in-silico-upload"
-    >
-      <i>In silico</i> data
-    </a>
+  <nav class="dropdown-menu-items" style={`top:${topOffset}`}>
+    {#if metadataUploadLink}
+      <a
+        aria-label={LINK_TITLE_METADATA_UPLOAD}
+        title={LINK_TITLE_METADATA_UPLOAD}
+        href="/metadata-upload"
+      >
+        Metadata
+      </a>
+    {/if}
+
+    {#if qcDataUploadLink}
+      <a
+        aria-label={LINK_TITLE_QC_DATA_UPLOAD}
+        title={LINK_TITLE_QC_DATA_UPLOAD}
+        href="/qc-data-upload"
+      >
+        QC data
+      </a>
+    {/if}
+
+    {#if inSilicoDataUploadLink}
+      <a
+        aria-label={LINK_TITLE_IN_SILICO_UPLOAD}
+        title={LINK_TITLE_IN_SILICO_UPLOAD}
+        href="/in-silico-upload"
+      >
+        <i>In silico</i> data
+      </a>
+    {/if}
   </nav>
 {/if}
 
@@ -50,7 +63,6 @@
   .dropdown-menu-items {
     position: absolute;
     right: 0;
-    top: 4rem;
     background: var(--background-body);
     border: 1px solid var(--color-border);
     border-radius: 2px;

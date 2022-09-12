@@ -1,9 +1,12 @@
 <script>
   import { getStores } from "$app/stores";
   import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
+  import AppMenu from "../_app-menu/_index.svelte";
 
   export let session = getStores().session;
 </script>
+
+<AppMenu metadataUploadLink={false} {session} />
 
 <DataUploadPage dataType="metadata" {session}>
   <svelte:fragment slot="upload-title">Metadata upload</svelte:fragment>
