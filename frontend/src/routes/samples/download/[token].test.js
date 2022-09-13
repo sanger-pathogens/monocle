@@ -1,5 +1,5 @@
 import { render, waitFor } from "@testing-library/svelte";
-import { EMAIL_MONOCLE_HELP } from "$lib/constants.js";
+import { MONOCLE_HELP_EMAIL } from "$lib/constants.js";
 import InterstitialPage from "./[token].svelte";
 
 const DOWNLOAD_TOKEN = "some42token";
@@ -179,7 +179,7 @@ describe("on", () => {
 
       await waitFor(() => {
         expect(container.querySelector("p").innerHTML).toBe(
-          `Server error. Please try again and <a href="mailto:${EMAIL_MONOCLE_HELP}">contact us</a> if the problem persists.`
+          `Server error. Please try again and <a href="mailto:${MONOCLE_HELP_EMAIL}">contact us</a> if the problem persists.`
         );
       });
     });

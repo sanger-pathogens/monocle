@@ -4,7 +4,6 @@
 
 <script>
   import DataUploadLinks from "./_DataUploadLinks.svelte";
-  // import HelpLink from "./_HelpLink.svelte";
   import SampleDataLink from "./_SampleDataLink.svelte";
 
   export let sampleDataLink = true;
@@ -25,8 +24,6 @@
     topOffset={sampleDataLink ? undefined : TOP_OFFSET_REDUCED}
     {session}
   />
-  <!-- FIXME make the help link specific for JUNO?
-  <HelpLink />  -->
 </nav>
 
 <style>

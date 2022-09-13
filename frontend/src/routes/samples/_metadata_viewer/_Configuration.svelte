@@ -1,7 +1,7 @@
 <script>
   import {
     DATA_TYPES,
-    EMAIL_MONOCLE_HELP,
+    MONOCLE_HELP_EMAIL,
     SESSION_STORAGE_KEY_COLUMNS_STATE,
   } from "$lib/constants.js";
   import { deepCopy } from "$lib/utils/copy.js";
@@ -145,7 +145,7 @@
   {:else}
     <p>
       Something went wrong. Please try to reload the page and <a
-        href={`mailto:${EMAIL_MONOCLE_HELP}`}>contact us</a
+        href={`mailto:${MONOCLE_HELP_EMAIL}`}>contact us</a
       > if the problem persists.
     </p>
     <button class="compact close-err-btn" on:click={() => (isOpen = false)}>

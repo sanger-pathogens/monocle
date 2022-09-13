@@ -1,9 +1,25 @@
 <script>
+  import { MONOCLE_HELP_URL } from "$lib/constants.js";
+  import HelpIcon from "$lib/components/icons/HelpIcon.svelte";
+
   export let session;
 </script>
 
 <footer>
   <div class="max-inner-width">
+    <a
+      aria-label="Help page"
+      title="Help page"
+      href={MONOCLE_HELP_URL}
+      target="_blank"
+      class="help-link"
+    >
+      <HelpIcon
+        color="rgba(255,255,255,0.8)"
+        colorHover="rgba(255,255,255,0.9)"
+      />
+    </a>
+
     <address>
       <div>Contacts</div>
       {#if $session?.project?.contacts}
@@ -42,7 +58,8 @@
   .max-inner-width {
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
+    justify-content: space-between;
+    flex-wrap: wrap;
     max-width: var(--bp-xl);
     width: 100%;
   }
@@ -51,9 +68,12 @@
     color: white;
   }
 
+  .help-link {
+    padding: 0 0.4rem;
+  }
+
   .sanger-link {
     order: -1;
-    margin-right: auto;
     padding-right: 0.6rem;
   }
   .sanger-link img {
