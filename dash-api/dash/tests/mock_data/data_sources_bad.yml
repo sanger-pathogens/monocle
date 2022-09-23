@@ -41,6 +41,7 @@ monocle_ldap:
 data_download:
    web_dir              : 'monocle_web_root/downloads'
    url_path             : 'files/downloads'
+   max_samples_per_download : 0
    max_samples_per_zip  : -3
    max_samples_per_zip_with_reads : 'foo'
 metadata_download_juno:

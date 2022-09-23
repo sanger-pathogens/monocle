@@ -688,6 +688,44 @@ class MonocleSampleDataTest(TestCase):
                 "size_per_zip_options": [
                     {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
                 ],
+                "num_samples_restricted_to": None,
+            },
+            bulk_download_info,
+        )
+
+    @patch.object(Path, "exists", return_value=True)
+    @patch.object(MonocleSampleData, "_get_file_size")
+    @patch.object(MonocleSampleData, "get_bulk_download_max_samples_per_download")
+    @patch.object(SampleMetadata, "get_samples")
+    @patch.dict(environ, mock_environment, clear=True)
+    def test_get_bulk_download_info_restricted_num_samples(
+        self, get_sample_metadata_mock, get_max_samples_mock, get_file_size_mock, _path_exists_mock
+    ):
+        get_sample_metadata_mock.return_value = self.mock_samples
+        file_size = 420024
+        get_file_size_mock.return_value = file_size
+        # just for this test, reduce to less than the number of mock samples MAXIMUM_NUM_SAMPLES_IN_BULK_DOWNLOAD to 1
+        # (but this assumes there are at least 2 mock samples, so check this first!)
+        if len(self.mock_samples) < 2:
+            raise RuntimeError("Test {} requires that at least 2 mock samples are provided".format(__class__.__name__))
+        get_max_samples_mock.return_value = 1
+
+        bulk_download_info = self.monocle_data.get_bulk_download_info(
+            {"batches": self.inst_key_batch_date_pairs}, assemblies=True, annotations=False
+        )
+
+        expected_num_samples = self.monocle_data.get_bulk_download_max_samples_per_download()
+        num_lanes = 3
+        expected_byte_size = file_size * num_lanes
+        self.assertEqual(
+            {
+                "num_samples": expected_num_samples,
+                "size": format_file_size(expected_byte_size),
+                "size_zipped": format_file_size(expected_byte_size / ZIP_COMPRESSION_FACTOR_ASSEMBLIES_ANNOTATIONS),
+                "size_per_zip_options": [
+                    {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
+                ],
+                "num_samples_restricted_to": self.monocle_data.get_bulk_download_max_samples_per_download(),
             },
             bulk_download_info,
         )
@@ -716,6 +754,7 @@ class MonocleSampleDataTest(TestCase):
                 "size_per_zip_options": [
                     {"max_samples_per_zip": expected_num_samples, "size_per_zip": format_file_size(expected_byte_size)}
                 ],
+                "num_samples_restricted_to": None,
             },
             bulk_download_info,
         )

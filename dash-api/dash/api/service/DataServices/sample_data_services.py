@@ -551,6 +551,17 @@ class MonocleSampleData:
                 raise e
             return None
 
+        max_samples = self.get_bulk_download_max_samples_per_download()
+        num_samples_restricted_to = None
+        if len(filtered_samples) > max_samples:
+            logging.warning(
+                "bulk download requested for {} samples, will be restricted to {}".format(
+                    len(filtered_samples), max_samples
+                )
+            )
+            filtered_samples = filtered_samples[0:max_samples]
+            num_samples_restricted_to = max_samples
+
         include_reads = kwargs.get("reads", False)
         public_name_to_lane_files = self.get_public_name_to_lane_files_dict(
             filtered_samples,
@@ -572,6 +583,7 @@ class MonocleSampleData:
             "size_per_zip_options": self._calculate_zip_size_options(
                 num_samples, total_lane_files_size_zipped, include_reads
             ),
+            "num_samples_restricted_to": num_samples_restricted_to,
         }
 
     def get_filtered_samples(self, sample_filters, disable_public_name_fetch=False):
@@ -848,6 +860,13 @@ class MonocleSampleData:
         max_samples_per_zip = min(
             self.get_bulk_download_max_samples_per_zip(including_reads=include_reads), num_samples
         )
+        if 1 == num_samples:
+            return [
+                {
+                    "max_samples_per_zip": 1,
+                    "size_per_zip": format_file_size(total_zip_size),
+                }
+            ]
         sample_size = total_zip_size / num_samples
         zip_size = sample_size * max_samples_per_zip
         min_zip_num_samples_capacity, zip_size_overestimate_factor = (
@@ -873,6 +892,9 @@ class MonocleSampleData:
                     "size_per_zip": format_file_size(zip_size_with_weight),
                 }
             )
+            # without this condition, if loop continues iterating if max_samples_per_zip is reduced to 1
+            if 1 == max_samples_per_zip:
+                break
             max_samples_per_zip = ceil(max_samples_per_zip / factor)
             zip_size = zip_size / factor
             factor = factor * 1.2
@@ -948,6 +970,20 @@ class MonocleSampleData:
             return data_source_config["data_download"]["download_route"]
         except KeyError as err:
             self._download_config_error(err)
+
+    def get_bulk_download_max_samples_per_download(self):
+        data_source_config = self._get_data_source_config()
+        try:
+            max_samples_per_download = int(data_source_config["data_download"]["max_samples_per_download"])
+        except (KeyError, ValueError) as err:
+            self._download_config_error(err)
+        if not max_samples_per_download > 0:
+            self._download_config_error(
+                'data source config data_download.max_samples_per_download must be a positive integer, not "{}"'.format(
+                    max_samples_per_download
+                )
+            )
+        return max_samples_per_download
 
     def get_bulk_download_max_samples_per_zip(self, including_reads=False):
         data_source_config = self._get_data_source_config()

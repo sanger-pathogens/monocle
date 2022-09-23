@@ -269,6 +269,15 @@ def bulk_download_urls_route(body):
             return "Bad request", HTTPStatus.BAD_REQUEST
         raise e
 
+    max_samples = monocle_data.get_bulk_download_max_samples_per_download()
+    num_samples_restricted_to = None
+    if len(samples) > max_samples:
+        logging.warning(
+            "bulk download requested for {} samples, will be restricted to {}".format(len(samples), max_samples)
+        )
+        samples = samples[0:max_samples]
+        num_samples_restricted_to = max_samples
+
     public_name_to_lane_files = monocle_data.get_public_name_to_lane_files_dict(
         samples, assemblies=assemblies, annotations=annotations, reads=reads
     )
@@ -300,7 +309,11 @@ def bulk_download_urls_route(body):
     download_url_list = []
     start = 0
     total = len(public_name_to_lane_files)
-    num_downloads = ceil(total / max_samples_per_zip)
+    # in case there are no data files, this avoids division by zero downstream
+    if 0 == total:
+        num_downloads = 1
+    else:
+        num_downloads = ceil(total / max_samples_per_zip)
     logging.debug(
         "total = {}, max_samples_per_zip = {}, num_downloads = {}".format(total, max_samples_per_zip, num_downloads)
     )
@@ -320,7 +333,10 @@ def bulk_download_urls_route(body):
         download_url_list.append("/".join([monocle_data.get_bulk_download_route(), download_token]))
         start += samples_in_each
 
-    return call_jsonify({"download_urls": download_url_list}), HTTPStatus.OK
+    return (
+        call_jsonify({"download_urls": download_url_list, "num_samples_restricted_to": num_samples_restricted_to}),
+        HTTPStatus.OK,
+    )
 
 
 def data_download_route(token: str):
