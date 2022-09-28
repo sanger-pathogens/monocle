@@ -1089,6 +1089,7 @@ components:
               num_samples_restricted_to:
                 type: integer
                 minimum: 0
+                nullable: true
                 readOnly: true
           readOnly: true
 
@@ -1105,6 +1106,7 @@ components:
         num_samples_restricted_to:
           type: integer
           minimum: 0
+          nullable: true
           readOnly: true
 
     ProjectProgress:
