@@ -1086,6 +1086,11 @@ components:
               size_per_zip:
                 type: string
                 minLength: 1
+              num_samples_restricted_to:
+                type: integer
+                minimum: 0
+                nullable: true
+                readOnly: true
           readOnly: true
 
     DownloadURLs:
@@ -1098,6 +1103,11 @@ components:
           items:
             type: string
             format: uri
+        num_samples_restricted_to:
+          type: integer
+          minimum: 0
+          nullable: true
+          readOnly: true
 
     ProjectProgress:
       type: object
