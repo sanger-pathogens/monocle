@@ -20,6 +20,8 @@
   let downloadDistinctColumnValuesState;
   let sizeSelectorElement;
 
+  $: numSamplesDownloadLimit = estimate?.numSamplesDownloadLimit;
+
   $: shouldFreezeDownloadEstimate = _shouldFreezeDownloadEstimate(
     batches,
     $filterStore
@@ -60,23 +62,31 @@
       },
       fetch
     )
-      .then((downloadLinks = []) => {
-        // If the form has been reset meanwhile, do nothing.
-        if (!downloadLinksRequested) {
-          return;
-        }
+      .then(
+        (
+          { download_urls: downloadLinks, num_samples_restricted_to } = {
+            download_urls: [],
+          }
+        ) => {
+          // If the form has been reset meanwhile, do nothing.
+          if (!downloadLinksRequested) {
+            return;
+          }
 
-        if (downloadLinks.length === 0) {
-          console.error(
-            "The list of download URLs returned from the server is empty."
+          numSamplesDownloadLimit = num_samples_restricted_to;
+
+          if (downloadLinks.length === 0) {
+            console.error(
+              "The list of download URLs returned from the server is empty."
+            );
+            return Promise.reject();
+          }
+          const urlSeparator = "/";
+          downloadTokens = downloadLinks.map((downloadLink) =>
+            downloadLink.split(urlSeparator).pop()
           );
-          return Promise.reject();
         }
-        const urlSeparator = "/";
-        downloadTokens = downloadLinks.map((downloadLink) =>
-          downloadLink.split(urlSeparator).pop()
-        );
-      })
+      )
       .catch(() => {
         resetForm();
         alert("Error while generating a download link. Please try again.");
@@ -174,6 +184,13 @@
     </fieldset>
   </fieldset>
 
+  {#if !downloadLinksRequested && numSamplesDownloadLimit}
+    <p aria-live="polite" class="download-limit-warning-before-submit">
+      ⚠️ Cannot download more than <code>{numSamplesDownloadLimit}</code> samples.
+      Add more filters to go below the limit.
+    </p>
+  {/if}
+
   <button
     type="submit"
     class="primary"
@@ -188,9 +205,21 @@
 </form>
 
 {#if downloadLinksRequested}
+  {@const numDownloadTokens = downloadTokens.length}
+
   <div class="links-section">
-    {#if downloadTokens.length > 1}
+    {#if numDownloadTokens > 1}
       <h3>Download links</h3>
+    {/if}
+
+    {#if numSamplesDownloadLimit}
+      <p aria-live="polite">
+        ⚠️ Only <code>{numSamplesDownloadLimit}</code> samples will be downloaded.
+        Press the reset button and add more filters to go below the limit.
+      </p>
+    {/if}
+
+    {#if numDownloadTokens > 1}
       <ol>
         {#each downloadTokens as downloadToken, i (downloadToken)}
           <li>
@@ -199,12 +228,12 @@
               target="_blank"
               class="download-link"
             >
-              ZIP archive {i + 1} of {downloadTokens.length}
+              ZIP archive {i + 1} of {numDownloadTokens}
             </a>
           </li>
         {/each}
       </ol>
-    {:else if downloadTokens.length}
+    {:else if numDownloadTokens}
       <a
         href="/samples/download/{downloadTokens[0]}"
         target="_blank"
@@ -222,7 +251,7 @@
       style="display: block; margin-bottom: 1.2rem"
     />
 
-    {#if !downloadTokens.length}
+    {#if !numDownloadTokens}
       <LoadingIndicator
         message="Please wait: generating ZIP download links can take a while if thousands of samples are involved."
         simple={true}
@@ -257,6 +286,10 @@
   }
   dt {
     font-weight: 200;
+  }
+
+  .download-limit-warning-before-submit {
+    margin: 0;
   }
 
   .disabled select:disabled {
