@@ -29,6 +29,7 @@
     filterStore,
   } from "./_stores.js";
 
+  const EMPTY_STRING = "";
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
 
@@ -153,21 +154,32 @@
       },
       fetch
     )
-      .then(({ num_samples, size_zipped, size_per_zip_options = [] }) => {
-        // Ignore stale estimates (ie estimates from requests made before the latest request for an estimate):
-        if (thisRequestId === latestDownloadEstimateRequestId) {
-          bulkDownloadEstimate = {
-            numSamples: num_samples,
-            sizeZipped: size_zipped,
-            sizePerZipOptions: size_per_zip_options.map(
-              ({ size_per_zip, max_samples_per_zip }) => ({
-                sizePerZip: size_per_zip,
-                maxSamplesPerZip: max_samples_per_zip,
-              })
-            ),
-          };
+      .then(
+        ({
+          num_samples,
+          num_samples_restricted_to,
+          size_zipped,
+          size_per_zip_options = [],
+        }) => {
+          // Ignore stale estimates (ie estimates from requests made before the latest request for an estimate):
+          if (thisRequestId === latestDownloadEstimateRequestId) {
+            bulkDownloadEstimate = {
+              numSamples: num_samples,
+              sizeZipped: size_zipped,
+              sizePerZipOptions: size_per_zip_options.map(
+                ({ size_per_zip, max_samples_per_zip }) => ({
+                  sizePerZip: size_per_zip,
+                  maxSamplesPerZip: max_samples_per_zip,
+                })
+              ),
+            };
+            if (Number.isInteger(num_samples_restricted_to)) {
+              bulkDownloadEstimate.numSamplesDownloadLimit =
+                num_samples_restricted_to;
+            }
+          }
         }
-      })
+      )
       .catch(unsetDownloadEstimate);
   }
 
@@ -209,8 +221,8 @@
   ) {
     const numSamplesText =
       numSamples >= 0
-        ? ` (${numSamples} sample${numSamples > 1 ? "s" : ""})`
-        : "";
+        ? ` (${numSamples} sample${numSamples > 1 ? "s" : EMPTY_STRING})`
+        : EMPTY_STRING;
     return {
       label: `${date}: ${name}${numSamplesText}`,
       value: [institutionKey, date],
@@ -238,11 +250,13 @@
   </section>
 
   {#if selectedBatches?.length}
+    {@const exceededSampleDownloadLimit =
+      bulkDownloadEstimate?.numSamplesDownloadLimit >= 0}
     <div class="btn-group">
       <button
         aria-label="Download samples{bulkDownloadEstimate
           ? ` of size ${bulkDownloadEstimate.sizeZipped}`
-          : ''}"
+          : ''}{`${exceededSampleDownloadLimit ? ' ⚠️' : EMPTY_STRING}`}"
         on:click={() => (shouldDisplayBulkDownload = true)}
         class="compact"
         type="button"
@@ -253,6 +267,9 @@
           Samples&nbsp;&nbsp;<LoadingIcon style={STYLE_LOADING_ICON} />&nbsp;
         {/if}
         <DownloadIcon />
+        {#if exceededSampleDownloadLimit}
+          ⚠️
+        {/if}
       </button>
 
       <MetadataDownloadButton batches={selectedInstKeyBatchDatePairs} />

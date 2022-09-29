@@ -87,6 +87,7 @@ describe("once batches are fetched", () => {
     FioRon: { deliveries: [BATCHES[0], BATCHES[1]] },
     UlmUni: { deliveries: [BATCHES[2]] },
   };
+  const LABEL_DESELECT_ALL = "Clear";
   const LABEL_SELECT_ALL = "Select all";
   const ROLE_BUTTON = "button";
 
@@ -161,7 +162,7 @@ describe("once batches are fetched", () => {
       ).toBeFalsy();
     });
 
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: "Clear" }));
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_DESELECT_ALL }));
     await fireEvent.click(selectAllBtn);
 
     expect(
@@ -305,7 +306,9 @@ describe("once batches are fetched", () => {
         });
       });
 
-      const deselectAllBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
+      const deselectAllBtn = await findByRole(ROLE_BUTTON, {
+        name: LABEL_DESELECT_ALL,
+      });
       await fireEvent.click(deselectAllBtn);
 
       expectNoBatchesSelected(batchNamesWithData, queryByText);
@@ -343,6 +346,35 @@ describe("once batches are fetched", () => {
       ).not.toBeNull();
     });
 
+    it("displays a warning symbol if the download estimate includes a sample download limit number", async () => {
+      const { findByRole, getByRole } = render(DataViewerPage, {
+        session: writable(),
+      });
+      const selectAllBtn = await findByRole(ROLE_BUTTON, {
+        name: LABEL_SELECT_ALL,
+      });
+      fireEvent.click(selectAllBtn);
+
+      let downloadButton = await findByRole(ROLE_BUTTON, {
+        name: "Download samples of size 7 TB",
+      });
+      expect(downloadButton).toBeDefined();
+
+      getBulkDownloadInfo.mockResolvedValueOnce({
+        ...ESTIMATE_LATEST,
+        num_samples_restricted_to: 99,
+      });
+      await fireEvent.click(
+        getByRole(ROLE_BUTTON, { name: LABEL_DESELECT_ALL })
+      );
+      fireEvent.click(selectAllBtn);
+
+      downloadButton = await findByRole(ROLE_BUTTON, {
+        name: `Download samples of size ${ESTIMATE_LATEST.size_zipped} ⚠️`,
+      });
+      expect(downloadButton).toBeDefined();
+    });
+
     it("updates the download estimate if selected batches change", async () => {
       const { findByRole, getByRole } = render(DataViewerPage, {
         session: writable(),
@@ -362,7 +394,9 @@ describe("once batches are fetched", () => {
         { timeout: 1500 }
       );
 
-      const clearBtn = await findByRole(ROLE_BUTTON, { name: "Clear" });
+      const clearBtn = await findByRole(ROLE_BUTTON, {
+        name: LABEL_DESELECT_ALL,
+      });
       await fireEvent.click(clearBtn);
       getBulkDownloadInfo.mockResolvedValueOnce({
         size: "42 TB",
