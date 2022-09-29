@@ -68,16 +68,11 @@ export function getBulkDownloadInfo(params, fetch) {
 }
 
 export function getBulkDownloadUrls(params, fetch) {
-  return fetchDashboardApiResource(
-    "bulk_download_urls",
-    "download_urls",
-    fetch,
-    {
-      method: HTTP_POST,
-      headers: HTTP_HEADERS_JSON,
-      body: JSON.stringify(prepareBulkDownloadPayload(params)),
-    }
-  );
+  return fetchDashboardApiResource("bulk_download_urls", null, fetch, {
+    method: HTTP_POST,
+    headers: HTTP_HEADERS_JSON,
+    body: JSON.stringify(prepareBulkDownloadPayload(params)),
+  });
 }
 
 export function getColumns(fetch) {
