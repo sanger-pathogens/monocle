@@ -1,5 +1,3 @@
-# Fail on the first failure.
-fail_fast: true
 default_language_version:
   # Keep this version in sync w/ the one from the code formatting check stage in `./.gitlab-ci.yml`.
   python: python3.8
