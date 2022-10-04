@@ -267,10 +267,8 @@ describe.each([
       }),
     },
     expectedEndpoints: ["bulk_download_urls"],
-    responsePayload: {
-      download_urls: ["fake_url"],
-    },
-    expectedResult: ["fake_url"],
+    responsePayload: "as is",
+    expectedResult: "as is",
   },
   {
     fnName: "getColumns",

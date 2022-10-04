@@ -10,13 +10,15 @@ import {
 
 jest.mock("$lib/dataLoading.js", () => ({
   getBulkDownloadUrls: jest.fn(() =>
-    Promise.resolve([
-      "/data/938479879",
-      "/data/asdsd8f90fg",
-      "/data/sdfasdf987",
-      "/data/sdfsd0909",
-      "/data/sdfsdfg98b98s09fd8",
-    ])
+    Promise.resolve({
+      download_urls: [
+        "/data/938479879",
+        "/data/asdsd8f90fg",
+        "/data/sdfasdf987",
+        "/data/sdfsd0909",
+        "/data/sdfsdfg98b98s09fd8",
+      ],
+    })
   ),
 }));
 
@@ -31,6 +33,9 @@ const DOWNLOAD_ESTIMATE = {
 const FAKE_HEADER_ID = "section-header";
 const LABEL_ASSEMBLIES = "Assemblies";
 const LABEL_CONFIRM_BUTTON = "Confirm";
+const NUM_SAMPLES_DOWNLOAD_LIMIT = 99;
+const RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_BEFORE_SUBMIT =
+  /^⚠️ Cannot download more than/;
 const ROLE_BUTTON = "button";
 const ROLE_CHECKBOX = "checkbox";
 const ROLE_OPTION = "option";
@@ -134,14 +139,41 @@ it("disables the size selector if there are no options", () => {
   expect(sizeSelector.textContent).toBe("");
 });
 
+it("shows the warning if the estimate includes the sample download limit", async () => {
+  const { component, getByText, queryByText } = render(BulkDownload, {
+    batches: BATCHES,
+    downloadEstimate: DOWNLOAD_ESTIMATE,
+    formValues: FORM_VALUES,
+    ariaLabelledby: FAKE_HEADER_ID,
+  });
+
+  expect(
+    queryByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_BEFORE_SUBMIT)
+  ).toBeNull();
+
+  await component.$set({
+    downloadEstimate: {
+      ...DOWNLOAD_ESTIMATE,
+      numSamplesDownloadLimit: NUM_SAMPLES_DOWNLOAD_LIMIT,
+    },
+  });
+
+  expect(getByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_BEFORE_SUBMIT).textContent)
+    .toBe(`⚠️ Cannot download more than ${NUM_SAMPLES_DOWNLOAD_LIMIT} samples.
+      Add more filters to go below the limit.`);
+});
+
 describe("on form submit", () => {
   const DOWNLOAD_SIZE_ESTIMATE_TEXT = `${DOWNLOAD_ESTIMATE.sizeZipped} (${
     DOWNLOAD_ESTIMATE.numSamples
   } sample${DOWNLOAD_ESTIMATE.numSamples === 1 ? "" : "s"}) `;
+  const DOWNLOAD_URL = "/data/some42token";
   const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LABEL_DOWNLOAD_LINKS_HEADER = "Download links";
+  const LABEL_RESET_BUTTON = "Reset";
   const LOADING_MESSAGE =
     "Please wait: generating ZIP download links can take a while if thousands of samples are involved.";
+  const RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT = /^⚠️ Only /;
   const ROLE_HEADING = "heading";
   const SELECTOR_DOWNLOAD_ESTIMATE = "dd";
   const SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";
@@ -194,6 +226,26 @@ describe("on form submit", () => {
     ).toBeTruthy();
   });
 
+  it("hides the download limit warning above the submit button", async () => {
+    const { getByRole, queryByText } = render(BulkDownload, {
+      batches: BATCHES,
+      downloadEstimate: {
+        ...DOWNLOAD_ESTIMATE,
+        numSamplesDownloadLimit: NUM_SAMPLES_DOWNLOAD_LIMIT,
+      },
+      formValues: FORM_VALUES,
+      ariaLabelledby: FAKE_HEADER_ID,
+    });
+
+    await fireEvent.click(
+      getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON })
+    );
+
+    expect(
+      queryByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_BEFORE_SUBMIT)
+    ).toBeNull();
+  });
+
   it("shows the loading indicator", async () => {
     const { getByLabelText, getByRole } = render(BulkDownload, {
       batches: BATCHES,
@@ -207,6 +259,35 @@ describe("on form submit", () => {
     );
 
     expect(getByLabelText(LOADING_MESSAGE)).toBeDefined();
+  });
+
+  it("shows the post-submit warning if the download URL response include the sample download limit", async () => {
+    const { getByRole, getByText, queryByText } = render(BulkDownload, {
+      batches: BATCHES,
+      formValues: FORM_VALUES,
+      ariaLabelledby: FAKE_HEADER_ID,
+    });
+
+    await fireEvent.click(
+      getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON })
+    );
+
+    expect(
+      queryByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT)
+    ).toBeNull();
+
+    getBulkDownloadUrls.mockResolvedValueOnce({
+      download_urls: [DOWNLOAD_URL],
+      num_samples_restricted_to: NUM_SAMPLES_DOWNLOAD_LIMIT,
+    });
+    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_RESET_BUTTON }));
+    await fireEvent.click(
+      getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON })
+    );
+
+    expect(getByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT).textContent)
+      .toBe(`⚠️ Only 99 samples will be downloaded.
+        Press the reset button and add more filters to go below the limit.`);
   });
 
   it("freezes the download estimate if batches change", async () => {
@@ -393,8 +474,9 @@ describe("on form submit", () => {
   });
 
   it("requests and displays a download link when only one link is returned", async () => {
-    const downloadUrl = "/data/some42token";
-    getBulkDownloadUrls.mockResolvedValueOnce([downloadUrl]);
+    getBulkDownloadUrls.mockResolvedValueOnce({
+      download_urls: [DOWNLOAD_URL],
+    });
     const { getByRole } = render(BulkDownload, {
       batches: BATCHES,
       formValues: FORM_VALUES,
@@ -418,7 +500,7 @@ describe("on form submit", () => {
       fetch
     );
     await waitFor(() => {
-      const downloadToken = downloadUrl.split(URL_SEPARATOR).pop();
+      const downloadToken = DOWNLOAD_URL.split(URL_SEPARATOR).pop();
       const downloadLink = getByRole("link", { name: "Download ZIP archive" });
       expect(downloadLink.href).toBe(
         `${global.location.origin}${INTERSTITIAL_PAGE_ENDPOINT}${downloadToken}`
@@ -443,8 +525,6 @@ describe("on form submit", () => {
   });
 
   describe("reset button", () => {
-    const LABEL_RESET_BUTTON = "Reset";
-
     it("is displayed only after submit", async () => {
       const { queryByRole, getByRole } = render(BulkDownload, {
         batches: BATCHES,
@@ -570,11 +650,19 @@ describe("on form submit", () => {
       );
     });
 
-    function expectFormToBeReset({ container, queryByRole, getByRole }) {
+    function expectFormToBeReset({
+      container,
+      queryByRole,
+      queryByText,
+      getByRole,
+    }) {
       expect(
         queryByRole(ROLE_HEADING, { name: LABEL_DOWNLOAD_LINKS_HEADER })
       ).toBeNull();
       expect(queryByRole(ROLE_BUTTON, { name: LABEL_RESET_BUTTON })).toBeNull();
+      expect(
+        queryByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT)
+      ).toBeNull();
       expect(
         container.querySelector(SELECTOR_MAIN_FORM_FIELDSET).disabled
       ).toBeFalsy();
