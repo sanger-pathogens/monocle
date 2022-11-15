@@ -94,11 +94,11 @@
                "logo_url": "/imgs/gps_banner.png",
                "project_url": "https://www.pneumogen.net/gps",
                "header_links": [
-                  {"label": "About", "url": "https://www.gbsgen.net/#about"},
-                  {"label": "Team", "url": "https://www.gbsgen.net/#team"},
-                  {"label": "Partners", "url": "https://www.gbsgen.net/#partners"},
-                  {"label": "News", "url": "https://www.gbsgen.net/#twitterFeed"},
-                  {"label": "Funders", "url": "https://www.gbsgen.net/#funders"}
+                  {"label": "About", "url": "https://www.pneumogen.net/gps/project_outline.html"},
+                  {"label": "Team", "url": "https://www.pneumogen.net/gps/the_team.html"},
+                  {"label": "Partners", "url": "https://www.pneumogen.net/gps/partners.html"},
+                  {"label": "News", "url": "https://twitter.com/pneumowatch"},
+                  {"label": "Funders", "url": "https://www.pneumogen.net/gps/index.html"}
                ],
                "contacts": [
                   {"label": "Monocle Help", "url": "mailto:monocle-help@sanger.ac.uk"},

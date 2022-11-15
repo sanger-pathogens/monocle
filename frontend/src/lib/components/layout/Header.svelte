@@ -6,7 +6,18 @@
 </script>
 
 <header>
-  <h1><a href="/">Monocle</a></h1>
+  <h1>
+    <a href="/">
+      <!-- svelte-ignore a11y-unknown-role -->
+      <img
+        role="monocle-logo"
+        class="monocle-logo"
+        src="/imgs/monocleSM_logo.svg"
+        alt="Monocle Status Monitor"
+        title="Monocle Status Monitor"
+      />
+    </a>
+  </h1>
   <nav>
     {#if $session?.project?.name}
       <a href={$session.project.project_url} target="_blank" class="juno-link">
