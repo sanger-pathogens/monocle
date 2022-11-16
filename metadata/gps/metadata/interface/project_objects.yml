@@ -619,10 +619,9 @@ components:
       pattern: ^lane_id|qc|Streptococcus_pneumoniae|total_length|No_contigs|genome_covered|depth_of_coverage|Proportion_of_Het_SNPs|supplier_name|Hetsites_50bp$
       type: string
     QCDataFieldValueFilter:
-      description: "A valid QC data field value"
-      type: string
-      nullable: true
-      minLength: 1
+      description: A valid QC data field value
       maxLength: 256
-      # only alphanumerics, '.', '*',  '?', '_', '-' and '/'
+      minLength: 1
+      nullable: true
       pattern: ^([a-zA-Z0-9\._\*\?\-/]+)$
+      type: string

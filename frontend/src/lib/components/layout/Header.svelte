@@ -6,10 +6,23 @@
 </script>
 
 <header>
-  <h1><a href="/">Monocle</a></h1>
+  <h1>
+    <a href="/">
+      <img
+        class="monocle-logo"
+        src="/imgs/monocleSM_logo.svg"
+        alt="Monocle Status Monitor"
+        title="Monocle Status Monitor"
+      />
+    </a>
+  </h1>
   <nav>
     {#if $session?.project?.name}
-      <a href={$session.project.project_url} target="_blank" class="juno-link">
+      <a
+        href={$session.project.project_url}
+        target="_blank"
+        class="project-link"
+      >
         {#if $session.project.logo_url}
           <img
             alt={$session.project.name}
@@ -34,21 +47,23 @@
   header {
     background: var(--juno-purple);
     overflow-y: auto;
-    padding: 1rem 1.2rem;
+    padding: 0.5rem 1rem;
     position: relative;
     max-width: 100%;
   }
 
   h1 {
-    font-size: 2.6rem;
-    font-weight: 600;
-    margin-top: 0;
+    margin-top: 1.2rem;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
   }
   h1 a:hover {
     text-decoration: none;
+  }
+
+  .monocle-logo {
+    max-width: 11rem;
   }
 
   a {
@@ -60,7 +75,7 @@
     align-items: center;
     flex-wrap: wrap;
     margin: auto;
-    min-height: 4.2rem;
+    min-height: 5.3rem;
     max-width: var(--bp-xl);
     min-width: 65rem;
   }
@@ -78,30 +93,34 @@
   }
 
   nav a {
-    padding: 0.6rem;
+    padding: 0.5rem;
   }
 
-  .juno-link {
+  .project-link {
     margin-right: auto;
     max-width: 11vw;
   }
-  .juno-link img {
+  .project-link img {
     width: 4rem;
   }
 
-  @media (max-width: 890px) {
+  @media (max-width: 1000px) {
     header {
       padding: 0.9rem 0;
     }
 
     h1 {
-      font-size: 1.9rem;
       left: 30%;
       margin-top: 0.4rem;
     }
 
+    .monocle-logo {
+      transform: scale(0.7);
+      padding: 0.5rem;
+    }
+
     nav {
-      min-width: 43rem;
+      min-width: 44rem;
     }
     nav a {
       font-size: 0.95rem;
@@ -114,7 +133,7 @@
     }
 
     nav {
-      min-width: 37rem;
+      min-width: 38rem;
       min-height: 3.8rem;
     }
     nav a {
