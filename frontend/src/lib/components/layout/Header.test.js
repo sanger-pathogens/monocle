@@ -8,22 +8,22 @@ const LABEL_PROJECT_NAME = "GPS";
 const ROLE_LINK = "link";
 
 it("doesn't display a project logo if the session has no project", () => {
-  const { queryByLabelText } = render(Header, { session: writable({}) });
+  const { queryByAltText } = render(Header, { session: writable({}) });
 
-  expect(queryByLabelText(LABEL_PROJECT_NAME)).toBeNull();
+  expect(queryByAltText(LABEL_PROJECT_NAME)).toBeNull();
 });
 
 it("doesn't display a project logo if the project in the session has no logo URL", () => {
-  const { queryByLabelText } = render(Header, {
+  const { queryByAltText } = render(Header, {
     session: writable({ project: {} }),
   });
 
-  expect(queryByLabelText(LABEL_PROJECT_NAME)).toBeNull();
+  expect(queryByAltText(LABEL_PROJECT_NAME)).toBeNull();
 });
 
 it("displays project information from the session", () => {
   const project = {
-    name: "JUNO",
+    name: LABEL_PROJECT_NAME,
     project_url: "project/url",
     logo_url: `${BASE_URL}/img/url.svg`,
     header_links: [
@@ -31,11 +31,11 @@ it("displays project information from the session", () => {
       { url: `${BASE_URL}/a/url`, label: "Team" },
     ],
   };
-  const { container, getByText, getByLabelText } = render(Header, {
+  const { container, getByText, getByAltText } = render(Header, {
     session: writable({ project }),
   });
 
-  const logoImg = getByLabelText(project.name);
+  const logoImg = getByAltText(project.name);
   expect(logoImg.alt).toBe(project.name);
   expect(logoImg.src).toBe(project.logo_url);
   expect(
