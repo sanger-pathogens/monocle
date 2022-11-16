@@ -55,7 +55,9 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   const { getByRole } = render(Layout, { session: writable({}) });
 
   await waitFor(() => {
-    expect(getByRole("heading", { name: "Monocle" })).toBeDefined();
+    expect(
+      getByRole("heading", { name: "Monocle Status Monitor" })
+    ).toBeDefined();
     expect(console.error).toHaveBeenCalledWith(errorMessage);
   });
 });

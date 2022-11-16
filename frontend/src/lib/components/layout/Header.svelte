@@ -10,11 +10,11 @@
     <a href="/">
       <!-- svelte-ignore a11y-unknown-role -->
       <img
-        role="monocle-logo"
         class="monocle-logo"
         src="/imgs/monocleSM_logo.svg"
         alt="Monocle Status Monitor"
         title="Monocle Status Monitor"
+        aria-label="Monocle Status Monitor"
       />
     </a>
   </h1>
@@ -30,6 +30,7 @@
             alt={$session.project.name}
             src={$session.project.logo_url}
             title={$session.project.name}
+            aria-label={$session.project.name}
           />
         {:else}
           {$session.project.name}

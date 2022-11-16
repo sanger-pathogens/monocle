@@ -4,24 +4,24 @@ import Header from "$lib/components/layout/Header.svelte";
 
 const BASE_URL = location.origin;
 const LABEL_LOG_OUT = "Log out";
-const ROLE_IMAGE = "img";
+const LABEL_PROJECT_NAME = "GPS";
 const ROLE_LINK = "link";
 
-it("doesn't display a logo if the session has no project", () => {
-  const { queryByRole } = render(Header, { session: writable({}) });
+it("doesn't display a project logo if the session has no project", () => {
+  const { queryByLabelText } = render(Header, { session: writable({}) });
 
-  expect(queryByRole(ROLE_IMAGE)).toBeNull();
+  expect(queryByLabelText(LABEL_PROJECT_NAME)).toBeNull();
 });
 
-it("doesn't display a logo if the project in the session has no logo URL", () => {
-  const { queryByRole } = render(Header, {
+it("doesn't display a project logo if the project in the session has no logo URL", () => {
+  const { queryByLabelText } = render(Header, {
     session: writable({ project: {} }),
   });
 
-  expect(queryByRole(ROLE_IMAGE)).toBeNull();
+  expect(queryByLabelText(LABEL_PROJECT_NAME)).toBeNull();
 });
 
-it("displays project information form the session", () => {
+it("displays project information from the session", () => {
   const project = {
     name: "JUNO",
     project_url: "project/url",
@@ -31,11 +31,11 @@ it("displays project information form the session", () => {
       { url: `${BASE_URL}/a/url`, label: "Team" },
     ],
   };
-  const { container, getByText, getByRole } = render(Header, {
+  const { container, getByText, getByLabelText } = render(Header, {
     session: writable({ project }),
   });
 
-  const logoImg = getByRole(ROLE_IMAGE);
+  const logoImg = getByLabelText(project.name);
   expect(logoImg.alt).toBe(project.name);
   expect(logoImg.src).toBe(project.logo_url);
   expect(
