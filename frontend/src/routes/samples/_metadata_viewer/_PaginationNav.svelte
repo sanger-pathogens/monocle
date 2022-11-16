@@ -78,12 +78,17 @@
 <style>
   ul {
     display: flex;
+    /* NB: removing wrapping was creating horizontal overflow for the whole page on narrow screens. */
+    flex-wrap: wrap;
     justify-content: center;
     list-style: none;
     padding-left: 0;
-    padding-right: 3rem;
   }
-
+  @media (min-width: 590px) {
+    ul {
+      padding-right: 3rem;
+    }
+  }
   li {
     margin-left: 1rem;
   }
