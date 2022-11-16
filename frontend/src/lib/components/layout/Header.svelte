@@ -55,7 +55,7 @@
   }
 
   h1 {
-    margin-top: 1rem;
+    margin-top: 1.2rem;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -77,7 +77,7 @@
     align-items: center;
     flex-wrap: wrap;
     margin: auto;
-    min-height: 4.2rem;
+    min-height: 5.3rem;
     max-width: var(--bp-xl);
     min-width: 65rem;
   }
