@@ -45,7 +45,7 @@
     ],
     "moduleNameMapper": {
       "^\\$lib(.*)$": "<rootDir>/src/lib$1",
-      "^\\$app(.*)$": "<rootDir>/.svelte-kit/runtime/app$1",
+      "^\\$app(.*)$": "<rootDir>/__mocks__/sveltekit/app$1",
       "\\.css$": "<rootDir>/__mocks__/style.js"
     },
     "moduleFileExtensions": [
