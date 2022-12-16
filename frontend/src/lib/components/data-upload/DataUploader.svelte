@@ -3,7 +3,7 @@
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import ValidationErrorList from "./ValidationErrorList.svelte";
 
-  export let session;
+  export let uploadLinks;
   export let ariaLabelledby = undefined;
   export let files = [];
   export let accept = undefined;
@@ -11,7 +11,7 @@
 
   const dispatch = createEventDispatcher();
   let uploading = false;
-  $: uploadUrl = $session.project?.upload_links.find(
+  $: uploadUrl = uploadLinks?.find(
     (uploadLink) => uploadLink.label === dataType
   )?.url;
   let validationErrors = [];

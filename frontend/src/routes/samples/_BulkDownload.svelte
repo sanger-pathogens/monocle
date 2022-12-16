@@ -4,7 +4,7 @@
   import { deepCopy } from "$lib/utils/copy.js";
   import { getBulkDownloadUrls } from "$lib/dataLoading.js";
   import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
-  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
   let _downloadEstimate = undefined;
   export let ariaLabelledby;

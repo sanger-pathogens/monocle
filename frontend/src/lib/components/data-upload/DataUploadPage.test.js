@@ -1,18 +1,15 @@
 import { fireEvent, render } from "@testing-library/svelte";
-import { writable } from "svelte/store";
 import DataUploadPage from "./TestDataUploadPage.svelte";
 
 const DATA_TYPE = "data";
 const UPLOAD_URL = "some/upload/url";
-const PROJECT = {
-  project: { upload_links: [{ label: DATA_TYPE, url: UPLOAD_URL }] },
-};
+const UPLOAD_LINKS = [{ label: DATA_TYPE, url: UPLOAD_URL }];
 const ROLE_FORM = "form";
 
 it("renders the expected slots", async () => {
   const { getByLabelText, getByRole, getByText } = render(DataUploadPage, {
     dataType: DATA_TYPE,
-    session: writable(PROJECT),
+    uploadLinks: UPLOAD_LINKS,
   });
 
   await fireEvent.submit(getByRole(ROLE_FORM));
@@ -28,7 +25,7 @@ it("can accept only specified file extensions", () => {
   const { container } = render(DataUploadPage, {
     dataType: DATA_TYPE,
     fileTypes,
-    session: writable(PROJECT),
+    uploadLinks: UPLOAD_LINKS,
   });
 
   const fileInput = container.querySelector("form input");
@@ -41,7 +38,7 @@ it("shows the dialog on the upload success event", async () => {
 
   const { getByRole, queryByRole } = render(DataUploadPage, {
     dataType: DATA_TYPE,
-    session: writable(PROJECT),
+    uploadLinks: UPLOAD_LINKS,
   });
 
   expect(queryByRole(ROLE_DIALOG, { name: DIALOG_TITLE })).toBeNull();

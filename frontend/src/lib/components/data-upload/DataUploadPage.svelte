@@ -8,7 +8,7 @@
 
   export let dataType;
   export let fileTypes = undefined;
-  export let session;
+  export let uploadLinks;
 
   let uploadSuccessDialogOpen;
 
@@ -27,7 +27,7 @@
   ariaLabelledby={DESCRIPTION_ELEMENT_ID}
   accept={fileTypes}
   {dataType}
-  {session}
+  {uploadLinks}
   on:uploadSuccess={openDialog}
 />
 

@@ -1,5 +1,5 @@
 import { render } from "@testing-library/svelte";
-import { writable } from "svelte/store";
+import { userStore } from "../_stores.js";
 import DataUploadLinks from "./_DataUploadLinks.svelte";
 
 const LABEL_METADATA_UPLOAD = "Upload metadata";
@@ -8,12 +8,12 @@ const LABEL_IN_SILICO_DATA_UPLOAD = "Upload in-silico data";
 const EMPTY_HTML = "<div></div>";
 const USER_ROLE_ADMIN = "admin";
 
+userStore.setRole(USER_ROLE_ADMIN);
+
 it("renders the links w/ the expected labels and URLs", () => {
   const DOMAIN_NAME = window.location.host;
 
-  const { getByLabelText } = render(DataUploadLinks, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
-  });
+  const { getByLabelText } = render(DataUploadLinks);
 
   expect(getByLabelText(LABEL_METADATA_UPLOAD).href).toMatch(
     new RegExp(`${DOMAIN_NAME}/metadata-upload`)
@@ -27,21 +27,18 @@ it("renders the links w/ the expected labels and URLs", () => {
 });
 
 it("is shown only to the admin", async () => {
-  const sessionStore = writable({});
-  const { container, getByLabelText } = render(DataUploadLinks, {
-    session: sessionStore,
-  });
+  userStore.setRole(undefined);
+  const { container, getByLabelText } = render(DataUploadLinks);
 
   expect(container.innerHTML).toBe(EMPTY_HTML);
 
-  await sessionStore.set({ user: { role: USER_ROLE_ADMIN } });
+  await userStore.setRole(USER_ROLE_ADMIN);
 
   expect(getByLabelText(LABEL_METADATA_UPLOAD)).toBeDefined();
 });
 
 it("can hide links", () => {
   const { queryByLabelText } = render(DataUploadLinks, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
     metadataUploadLink: false,
   });
 
@@ -52,7 +49,6 @@ it("can hide links", () => {
 
 it("isn't rendered if all links are hidden", () => {
   const { container } = render(DataUploadLinks, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
     metadataUploadLink: false,
     qcDataUploadLink: false,
     inSilicoDataUploadLink: false,

@@ -1,13 +1,11 @@
 import { render } from "@testing-library/svelte";
-import { writable } from "svelte/store";
+import { userStore } from "../_stores.js";
 import AppMenu from "./_index.svelte";
 
-const USER_ROLE_ADMIN = "admin";
+userStore.setRole("admin");
 
 it("displays all links by default", () => {
-  const { getByLabelText } = render(AppMenu, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
-  });
+  const { getByLabelText } = render(AppMenu);
 
   expect(getByLabelText("View and download sample data")).toBeDefined();
   expect(getByLabelText("Upload metadata")).toBeDefined();
@@ -17,7 +15,6 @@ it("displays all links by default", () => {
 
 it("can hide the links", () => {
   const { queryByRole } = render(AppMenu, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
     sampleDataLink: false,
     metadataUploadLink: false,
     qcDataUploadLink: false,
@@ -29,9 +26,7 @@ it("can hide the links", () => {
 
 it("displays the upload links menu at the expected hight when the data viewer link isn't shown", async () => {
   const uploadLinksMenuSelector = "nav nav";
-  const { component, container } = render(AppMenu, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
-  });
+  const { component, container } = render(AppMenu);
 
   expect(container.querySelector(uploadLinksMenuSelector).style.top).toBe(
     "4rem"

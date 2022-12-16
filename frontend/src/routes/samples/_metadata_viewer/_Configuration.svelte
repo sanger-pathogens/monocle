@@ -8,7 +8,7 @@
   import Dialog from "$lib/components/Dialog.svelte";
   import SettingsIcon from "$lib/components/icons/SettingsIcon.svelte";
   import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
-  import { columnsStore, filterStore } from "../_stores.js";
+  import { columnsStore, filterStore } from "../../_stores.js";
   import ColumnSelection from "./_ColumnSelection.svelte";
 
   const KEY_DISABLED = "disabled";

@@ -1,11 +1,11 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { get, writable } from "svelte/store";
+import { get } from "svelte/store";
 import {
   SESSION_STORAGE_KEY_COLUMNS_STATE,
   SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
 } from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
-import { filterStore } from "./_stores.js";
+import { filterStore, userStore } from "../_stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -14,7 +14,7 @@ import {
   // eslint-disable-next-line no-unused-vars
   getSampleMetadata,
 } from "$lib/dataLoading.js";
-import DataViewerPage from "./index.svelte";
+import DataViewerPage from "./+page.svelte";
 
 // Spy on `debounce` w/o changing its implementation. (`jest.spyOn` couldn't be used, as it works only w/ objects.)
 jest.mock("$lib/utils/debounce.js", () => {
@@ -36,15 +36,15 @@ jest.mock("$lib/dataLoading.js", () => ({
 }));
 
 it("shows the loading indicator", () => {
-  const { getByLabelText } = render(DataViewerPage, { session: writable() });
+  const { getByLabelText } = render(DataViewerPage);
 
   expect(getByLabelText("please wait")).toBeDefined();
 });
 
 it("shows the app menu w/ the expected links", () => {
-  const { getByLabelText, queryByLabelText } = render(DataViewerPage, {
-    session: writable({ user: { role: "admin" } }),
-  });
+  userStore.setRole("admin");
+
+  const { getByLabelText, queryByLabelText } = render(DataViewerPage);
 
   expect(queryByLabelText("View and download sample data")).toBeNull();
   expect(getByLabelText("Upload metadata")).toBeDefined();
@@ -55,7 +55,7 @@ it("shows the app menu w/ the expected links", () => {
 it("shows an error message if fetching batches rejects", async () => {
   getBatches.mockRejectedValueOnce();
 
-  const { getByText } = render(DataViewerPage, { session: writable() });
+  const { getByText } = render(DataViewerPage);
 
   await waitFor(() => {
     expect(
@@ -96,9 +96,7 @@ describe("once batches are fetched", () => {
   });
 
   it("hides the loading indicator", async () => {
-    const { queryByLabelText } = render(DataViewerPage, {
-      session: writable(),
-    });
+    const { queryByLabelText } = render(DataViewerPage);
 
     await waitFor(() => {
       expect(queryByLabelText("please wait")).toBeNull();
@@ -106,9 +104,7 @@ describe("once batches are fetched", () => {
   });
 
   it("displays the metadata download button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage, {
-      session: writable(),
-    });
+    const { findByRole, getByRole } = render(DataViewerPage);
     const selectAllBtn = await findByRole(ROLE_BUTTON, {
       name: LABEL_SELECT_ALL,
     });
@@ -119,9 +115,7 @@ describe("once batches are fetched", () => {
   });
 
   it("removes all filters on clicking the filter removal button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage, {
-      session: writable(),
-    });
+    const { findByRole, getByRole } = render(DataViewerPage);
     filterStore.set({ metadata: { someColumn: {} } });
     const selectAllBtn = await findByRole(ROLE_BUTTON, {
       name: LABEL_SELECT_ALL,
@@ -144,9 +138,7 @@ describe("once batches are fetched", () => {
 
   it("disables the filter removal button on batches change", async () => {
     const filterRemovalLabel = /^Remove all filters/;
-    const { findByRole, getByRole } = render(DataViewerPage, {
-      session: writable(),
-    });
+    const { findByRole, getByRole } = render(DataViewerPage);
     const selectAllBtn = await findByRole(ROLE_BUTTON, {
       name: LABEL_SELECT_ALL,
     });
@@ -171,9 +163,7 @@ describe("once batches are fetched", () => {
   });
 
   it("displays the settings button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage, {
-      session: writable(),
-    });
+    const { findByRole, getByRole } = render(DataViewerPage);
     const selectAllBtn = await findByRole(ROLE_BUTTON, {
       name: LABEL_SELECT_ALL,
     });
@@ -191,7 +181,7 @@ describe("once batches are fetched", () => {
     it("doesn't fetch columns", async () => {
       getColumns.mockClear();
 
-      await render(DataViewerPage, { session: writable() });
+      await render(DataViewerPage);
 
       expect(getColumns).not.toHaveBeenCalled();
     });
@@ -199,7 +189,7 @@ describe("once batches are fetched", () => {
     it("clears the session storage from old columns state", () => {
       Storage.prototype.removeItem = jest.fn();
 
-      render(DataViewerPage, { session: writable() });
+      render(DataViewerPage);
 
       // `+ 1` to account for calling `removeItem` by `sessionStorageAvailable()`
       const expectedNumCalls =
@@ -223,9 +213,7 @@ describe("once batches are fetched", () => {
         {}
       );
       getInstitutions.mockResolvedValueOnce(institutionsPayload);
-      const { findByRole, getByText } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByText } = render(DataViewerPage);
 
       const selector = await findByRole("textbox");
       await fireEvent.click(selector);
@@ -246,9 +234,7 @@ describe("once batches are fetched", () => {
 
     it("displays institution keys if full names aren't available", async () => {
       getInstitutions.mockRejectedValueOnce();
-      const { findByRole, getByText } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByText } = render(DataViewerPage);
 
       const selector = await findByRole("textbox");
       await fireEvent.click(selector);
@@ -265,9 +251,7 @@ describe("once batches are fetched", () => {
         [institutionWithoutBatches]: { _ERROR: "no batches" },
       };
       getBatches.mockResolvedValueOnce(batchesPayload);
-      const { findByRole, getByText, queryByText } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByText, queryByText } = render(DataViewerPage);
 
       const selector = await findByRole("textbox");
       await fireEvent.click(selector);
@@ -289,9 +273,7 @@ describe("once batches are fetched", () => {
         }
       );
 
-      const { queryByText, findByRole, getByText } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { queryByText, findByRole, getByText } = render(DataViewerPage);
 
       expectNoBatchesSelected(batchNamesWithData, queryByText);
 
@@ -330,9 +312,7 @@ describe("once batches are fetched", () => {
     const ESTIMATE_STALE = { size: "12 GB", size_zipped: "2 GB" };
 
     it("displays a loading indicator as part of its label while download estimate is being fetched", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
 
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
@@ -347,9 +327,7 @@ describe("once batches are fetched", () => {
     });
 
     it("displays a warning symbol if the download estimate includes a sample download limit number", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });
@@ -376,9 +354,7 @@ describe("once batches are fetched", () => {
     });
 
     it("updates the download estimate if selected batches change", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
 
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
@@ -414,9 +390,7 @@ describe("once batches are fetched", () => {
     });
 
     it("updates the download estimate if selected data types change", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });
@@ -450,9 +424,7 @@ describe("once batches are fetched", () => {
     });
 
     it("debounces the download estimate request", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });
@@ -472,9 +444,7 @@ describe("once batches are fetched", () => {
     });
 
     it("doesn't request download estimate if the form isn't complete", async () => {
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });
@@ -496,9 +466,7 @@ describe("once batches are fetched", () => {
 
     it("doesn't display a stale estimate and waits for the latest one", async () => {
       const requestWaitTimeMS = 2000;
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });
@@ -547,9 +515,7 @@ describe("once batches are fetched", () => {
 
     it("waits for and displayes the latest estimate even if a stale one arrives after the latest requested", async () => {
       const requestWaitTimeMS = 6000;
-      const { findByRole, getByRole } = render(DataViewerPage, {
-        session: writable(),
-      });
+      const { findByRole, getByRole } = render(DataViewerPage);
       const selectAllBtn = await findByRole(ROLE_BUTTON, {
         name: LABEL_SELECT_ALL,
       });

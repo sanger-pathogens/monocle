@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import { session as appSession } from "$app/stores";
   import {
     getInstitutionStatus,
     getProjectProgress,
@@ -9,8 +8,6 @@
   import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-
-  export let session = appSession;
 
   let dashboardDataPromise = new Promise(() => {});
 
@@ -25,7 +22,7 @@
 {#await dashboardDataPromise}
   <LoadingIndicator midscreen={true} />
 {:then [institutions = [], projectProgress = { }]}
-  <AppMenu {session} />
+  <AppMenu />
 
   <article>
     <h2>Project Progress</h2>
@@ -60,23 +57,6 @@
 <style>
   p {
     text-align: center;
-  }
-
-  nav {
-    display: flex;
-    flex-direction: column;
-    align-self: flex-end;
-    margin-right: -1rem;
-
-    position: sticky;
-    top: 1rem;
-    z-index: 9;
-  }
-  @media (min-width: 2000px) {
-    /* This pushes the menu w/ the upload buttoms further to the right for larger screens. */
-    nav {
-      margin-right: -8rem;
-    }
   }
 
   article {

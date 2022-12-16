@@ -9,7 +9,7 @@
   import Select from "svelte-select/src/Select.svelte";
   import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import { getDistinctColumnValues } from "$lib/dataLoading.js";
-  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../../_stores.js";
 
   export let batches;
   export let column;

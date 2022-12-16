@@ -1,6 +1,6 @@
 import { render, waitFor } from "@testing-library/svelte";
 import { MONOCLE_HELP_EMAIL } from "$lib/constants.js";
-import InterstitialPage from "./[token].svelte";
+import InterstitialPage from "./+page.svelte";
 
 const DOWNLOAD_TOKEN = "some42token";
 const LABEL_LOADING_INDICATOR =
@@ -17,7 +17,7 @@ global.XMLHttpRequest = jest.fn(() => xmlHttpRequestMock);
 
 it("shows the loading indicator", () => {
   const { getByLabelText } = render(InterstitialPage, {
-    downloadToken: DOWNLOAD_TOKEN,
+    data: { downloadToken: DOWNLOAD_TOKEN },
   });
 
   expect(getByLabelText(LABEL_LOADING_INDICATOR)).toBeDefined();
@@ -26,7 +26,7 @@ it("shows the loading indicator", () => {
 it("sends the request to prepare download", () => {
   xmlHttpRequestMock.open.mockClear();
   xmlHttpRequestMock.send.mockClear();
-  render(InterstitialPage, { downloadToken: DOWNLOAD_TOKEN });
+  render(InterstitialPage, { data: { downloadToken: DOWNLOAD_TOKEN } });
 
   expect(xmlHttpRequestMock.open).toHaveBeenCalledTimes(1);
   expect(xmlHttpRequestMock.open).toHaveBeenCalledWith(
@@ -50,7 +50,7 @@ describe("on", () => {
   describe("download prepared", () => {
     it("hides the loading indicator", async () => {
       const { queryByLabelText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
@@ -65,7 +65,7 @@ describe("on", () => {
 
     it("shows the download instructions and the download link resolved", async () => {
       const { container, getByRole } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
@@ -92,7 +92,7 @@ describe("on", () => {
 
     it("hides the loading indicator", async () => {
       const { queryByLabelText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
@@ -107,7 +107,7 @@ describe("on", () => {
 
     it("shows the timeout error on server timeout", async () => {
       const { getByText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
@@ -127,7 +127,7 @@ describe("on", () => {
 
     it("shows a distinct error on any HTTP client error", async () => {
       const { getByText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
@@ -147,7 +147,7 @@ describe("on", () => {
 
     it('detects an error as part of the "success" event and shows the generic error', async () => {
       const { getByText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const loadCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
@@ -167,7 +167,7 @@ describe("on", () => {
 
     it("shows an error on failing to parse the success response", async () => {
       const { container } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_LOAD
@@ -186,7 +186,7 @@ describe("on", () => {
 
     it("shows the generic error on any other error", async () => {
       const { getByText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const errorCallback = xmlHttpRequestMock.addEventListener.mock.calls.find(
         (args) => args[0] === EVENT_NAME_ERROR
@@ -210,7 +210,7 @@ describe("on", () => {
 
     it("hides the loading indicator", async () => {
       const { queryByLabelText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const cancelCallback =
         xmlHttpRequestMock.addEventListener.mock.calls.find(
@@ -226,7 +226,7 @@ describe("on", () => {
 
     it("shows the cancellation text", async () => {
       const { getByText } = render(InterstitialPage, {
-        downloadToken: DOWNLOAD_TOKEN,
+        data: { downloadToken: DOWNLOAD_TOKEN },
       });
       const cancelCallback =
         xmlHttpRequestMock.addEventListener.mock.calls.find(

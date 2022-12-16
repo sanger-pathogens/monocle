@@ -1,13 +1,13 @@
 <script>
   import { onMount } from "svelte";
-  import { getStores } from "$app/stores";
   import { getUserDetails, getProjectInformation } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
+  import { projectStore, userStore } from "./_stores.js";
   import "../base.css";
   import "../simplecookie.css";
 
-  export let session = getStores().session;
+  export const ssr = false;
 
   onMount(() => {
     appendScriptToHead("/files/simplecookie.min.js", { async: true });
@@ -15,10 +15,7 @@
     getUserDetails(fetch)
       .then(({ type: userRole } = {}) => {
         if (userRole) {
-          session.update((currentSession) => {
-            currentSession.user = { role: userRole };
-            return currentSession;
-          });
+          userStore.setRole(userRole);
         }
       })
       .catch((err) => {
@@ -26,10 +23,7 @@
       });
 
     getProjectInformation(fetch).then((project) =>
-      session.update((currentSession) => {
-        currentSession.project = project;
-        return currentSession;
-      })
+      projectStore.setFromResponse(project)
     );
   });
 
@@ -43,13 +37,13 @@
   }
 </script>
 
-<Header {session} />
+<Header projectState={$projectStore} />
 
 <main>
   <slot />
 </main>
 
-<Footer {session} />
+<Footer contacts={$projectStore?.contacts} />
 
 <style>
   :root {

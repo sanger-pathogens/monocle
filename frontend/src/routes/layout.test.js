@@ -1,25 +1,19 @@
 import { render, waitFor } from "@testing-library/svelte";
-import { get, writable } from "svelte/store";
 import { HTTP_HEADER_CONTENT_TYPE, HTTP_HEADERS_JSON } from "$lib/constants.js";
-import Layout from "./__layout.svelte";
-
-const USER_ROLE = "support";
+import Layout from "./+layout.svelte";
 
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     headers: { get: () => HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE] },
-    json: () =>
-      Promise.resolve({
-        user_details: { type: USER_ROLE },
-      }),
+    json: () => Promise.resolve(),
   })
 );
 
 it("loads a script w/ simple-cookie library", () => {
   document.head.appendChild = jest.fn();
 
-  render(Layout, { session: writable({}) });
+  render(Layout);
 
   const actualScriptElement = document.head.appendChild.mock.calls[4][0];
   expect(actualScriptElement.src).toBe(
@@ -28,23 +22,14 @@ it("loads a script w/ simple-cookie library", () => {
   expect(actualScriptElement.async).toBeTruthy();
 });
 
-it("stores a fetched user role in the session", async () => {
-  const sessionStore = writable({});
-  jest.spyOn(sessionStore, "update");
+it("fetches a user role", async () => {
   fetch.mockClear();
 
-  render(Layout, { session: sessionStore });
+  render(Layout);
 
   // Called two times because there's another fetch call for project information.
   expect(fetch).toHaveBeenCalledTimes(2);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/get_user_details");
-  await waitFor(() => {
-    // The session is updated two times because we also set project information once it's
-    // fetched elsewhere.
-    expect(sessionStore.update).toHaveBeenCalledTimes(2);
-
-    expect(get(sessionStore).user).toStrictEqual({ role: USER_ROLE });
-  });
 });
 
 it("doesn't crash and logs an error when saving a user role fails", async () => {
@@ -52,7 +37,7 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   fetch.mockRejectedValueOnce(errorMessage);
   global.console.error = jest.fn();
 
-  const { getByRole } = render(Layout, { session: writable({}) });
+  const { getByRole } = render(Layout);
 
   await waitFor(() => {
     expect(
@@ -62,26 +47,12 @@ it("doesn't crash and logs an error when saving a user role fails", async () => 
   });
 });
 
-it("stores fetched project information in the session", async () => {
-  const project = "some project data";
-  const sessionStore = writable({});
-  jest.spyOn(sessionStore, "update");
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      headers: { get: () => HTTP_HEADERS_JSON[HTTP_HEADER_CONTENT_TYPE] },
-      json: () => Promise.resolve({ project }),
-    })
-  );
+it("fetches project information", async () => {
+  global.fetch.mockClear();
 
-  render(Layout, { session: sessionStore });
+  render(Layout);
 
   // Called two times because there's another fetch call for a user role.
   expect(fetch).toHaveBeenCalledTimes(2);
   expect(fetch).toHaveBeenCalledWith("/dashboard-api/project");
-  await waitFor(() => {
-    expect(sessionStore.update).toHaveBeenCalledTimes(1);
-
-    expect(get(sessionStore).project).toBe(project);
-  });
 });

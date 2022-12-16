@@ -6,7 +6,7 @@
     displayedColumnNamesStore,
     distinctColumnValuesStore,
     filterStore,
-  } from "../_stores.js";
+  } from "../../_stores.js";
   import PaginationNav from "./_PaginationNav.svelte";
   import SampleMetadataViewerWithoutPaginaton from "./_SampleMetadataViewerWithoutPaginaton.svelte";
 

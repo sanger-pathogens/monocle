@@ -1,18 +1,15 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { writable } from "svelte/store";
 import DataUploader from "./DataUploader.svelte";
 
 const FILE = "file";
 const FORM_TAG_NAME = "form";
 const DATA_TYPE = "metadata";
 const UPLOAD_URL = "/metadata/juno/metadata-upload";
-const PROJECT = {
-  project: { upload_links: [{ label: DATA_TYPE, url: UPLOAD_URL }] },
-};
+const UPLOAD_LINKS = [{ label: DATA_TYPE, url: UPLOAD_URL }];
 
 it("enables the upload button only when the input has a file", async () => {
   const { component, getByText } = render(DataUploader, {
-    session: writable(PROJECT),
+    uploadLinks: UPLOAD_LINKS,
     dataType: DATA_TYPE,
   });
   const button = getByText("Upload");
@@ -26,7 +23,7 @@ it("enables the upload button only when the input has a file", async () => {
 
 it("enables the upload button only when the upload URL is found inside the project", async () => {
   const { component, getByText } = render(DataUploader, {
-    session: writable({}),
+    uploadLinks: undefined,
     dataType: DATA_TYPE,
     files: [FILE],
   });
@@ -34,14 +31,14 @@ it("enables the upload button only when the upload URL is found inside the proje
 
   expect(button.disabled).toBeTruthy();
 
-  await component.$set({ session: writable(PROJECT) });
+  await component.$set({ uploadLinks: UPLOAD_LINKS });
 
   expect(button.disabled).toBeFalsy();
 });
 
 it("disables the upload button if no upload URLs are found for a given data type", async () => {
   const { component, getByText } = render(DataUploader, {
-    session: writable(PROJECT),
+    uploadLinks: UPLOAD_LINKS,
     dataType: DATA_TYPE,
     files: [FILE],
   });
@@ -60,7 +57,7 @@ describe("file uploading", () => {
   it("the upload button and the file input are disabled", async () => {
     const { container } = render(DataUploader, {
       files: FILES,
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     const inputContainer = container.querySelector("fieldset");
@@ -78,7 +75,7 @@ describe("file uploading", () => {
   it("makes the correct API call for each file", async () => {
     const { container } = render(DataUploader, {
       files: FILES,
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     global.fetch = jest.fn(() => Promise.resolve({ ok: true }));
@@ -100,7 +97,7 @@ describe("file uploading", () => {
   it("emits the success event on successful upload", async () => {
     const { component, container } = render(DataUploader, {
       files: FILES,
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     const onUploadSuccess = jest.fn();
@@ -118,7 +115,7 @@ describe("file uploading", () => {
   it("displays an error on fetch error", async () => {
     const { container } = render(DataUploader, {
       files: FILES,
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     const error = new Error("some error");
@@ -139,7 +136,7 @@ describe("file uploading", () => {
   it("displays a server error", async () => {
     const { container } = render(DataUploader, {
       files: FILES,
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     const serverError = { detail: "error description" };
@@ -179,7 +176,7 @@ describe("file uploading", () => {
       let validationErrorElements;
       const { container, queryAllByText } = render(DataUploader, {
         files: FILES,
-        session: writable(PROJECT),
+        uploadLinks: UPLOAD_LINKS,
         dataType: DATA_TYPE,
       });
 
@@ -199,7 +196,7 @@ describe("file uploading", () => {
       let validationErrorElements;
       const { container, queryAllByText } = render(DataUploader, {
         files: FILES,
-        session: writable(PROJECT),
+        uploadLinks: UPLOAD_LINKS,
         dataType: DATA_TYPE,
       });
 
@@ -223,7 +220,7 @@ describe("file uploading", () => {
       let validationErrorElements;
       const { component, container, queryAllByText } = render(DataUploader, {
         files: FILES,
-        session: writable(PROJECT),
+        uploadLinks: UPLOAD_LINKS,
         dataType: DATA_TYPE,
       });
 
@@ -253,7 +250,7 @@ describe("the loading indicator", () => {
   it("shown when uploading is in progress", async () => {
     const { container, getByLabelText, queryByLabelText } = render(
       DataUploader,
-      { session: writable(PROJECT), dataType: DATA_TYPE }
+      { uploadLinks: UPLOAD_LINKS, dataType: DATA_TYPE }
     );
 
     expect(queryByLabelText(LOADING_LABEL_TEXT)).toBeNull();
@@ -265,7 +262,7 @@ describe("the loading indicator", () => {
 
   it("is hidden after uploading resolves", async () => {
     const { container, queryByLabelText } = render(DataUploader, {
-      session: writable(PROJECT),
+      uploadLinks: UPLOAD_LINKS,
       dataType: DATA_TYPE,
     });
     const loadingIndicator = queryByLabelText(LOADING_LABEL_TEXT);

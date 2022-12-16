@@ -8,7 +8,7 @@
     displayedColumnsStore,
     distinctColumnValuesStore,
     filterStore,
-  } from "../_stores.js";
+  } from "../../_stores.js";
 
   export let batches;
   export let metadataPromise = undefined;

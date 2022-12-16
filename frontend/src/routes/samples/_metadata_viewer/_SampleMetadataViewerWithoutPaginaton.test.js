@@ -15,7 +15,7 @@ import {
   columnsStore,
   distinctColumnValuesStore,
   filterStore,
-} from "../_stores.js";
+} from "../../_stores.js";
 
 jest.mock("$lib/dataLoading.js", () => ({
   getDistinctColumnValues: jest.fn(() => Promise.resolve([])),

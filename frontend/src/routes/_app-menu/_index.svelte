@@ -10,7 +10,6 @@
   export let metadataUploadLink = true;
   export let qcDataUploadLink = true;
   export let inSilicoDataUploadLink = true;
-  export let session;
 </script>
 
 <nav>
@@ -22,7 +21,6 @@
     {qcDataUploadLink}
     {inSilicoDataUploadLink}
     topOffset={sampleDataLink ? undefined : TOP_OFFSET_REDUCED}
-    {session}
   />
 </nav>
 

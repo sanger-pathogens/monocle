@@ -201,6 +201,55 @@ function createFilterStore() {
 
 export const filterStore = createFilterStore();
 
+/*
+  `projectStore` has the following shape:
+```
+  {
+    name: "str",
+    logoUrl: "str",
+    projectUrl: "str",
+    headerLinks: [{ label: "str", url: "str" }, ...],
+    contacts: [{ label: "str", url: "str" }, ...],
+    uploadLinks: [{ label: "str", url: "str" }, ...],
+  }
+```
+*/
+function createProjectStore() {
+  const { set, subscribe } = writable();
+  return {
+    setFromResponse: (project = {}) =>
+      set({
+        name: project.name,
+        logoUrl: project.logo_url,
+        projectUrl: project.project_url,
+        headerLinks: project.header_links,
+        contacts: project.contacts,
+        uploadLinks: project.upload_links,
+      }),
+    subscribe,
+  };
+}
+
+export const projectStore = createProjectStore();
+
+/*
+  `userStore` has the following shape:
+```
+  {
+    role: "str",
+  }
+```
+*/
+function createUserStore() {
+  const { update, subscribe } = writable();
+  return {
+    setRole: (role) => update((user) => ({ ...(user || {}), role })),
+    subscribe,
+  };
+}
+
+export const userStore = createUserStore();
+
 function convertColumnsResponseToState(columnsResponse) {
   return Object.keys(columnsResponse).reduce((accumColumnsState, dataType) => {
     accumColumnsState[dataType] = transformCategoriesFromResponse(

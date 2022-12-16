@@ -1,20 +1,13 @@
-<script context="module">
-  // Extract `token` from the URL path and pass it to the page component as a prop.
-  export function load({ params }) {
-    return { props: { downloadToken: params.token } };
-  }
-</script>
-
 <script>
   import { MONOCLE_HELP_EMAIL } from "$lib/constants.js";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
 
-  export let downloadToken;
+  export let data;
 
   const HTTP_TIMEOUT_STATUS_CODE = 504;
 
   const prepareDownloadPromise = new Promise((resolve, reject) => {
-    const downloadUrl = `/data_download/${downloadToken}?redirect=false`;
+    const downloadUrl = `/data_download/${data.downloadToken}?redirect=false`;
     // We don't use `fetch` here to avoid browser-specific timeouts.
     const ajaxRequest = new XMLHttpRequest();
 
@@ -86,7 +79,7 @@
     Your download is ready. You can close this tab once the download starts. (If
     you don't see a prompt to save the file, follow this <a
       href={resolvedDownloadUrl}
-      download="{downloadToken}.zip">download link</a
+      download="{data.downloadToken}.zip">download link</a
     >.)
   </p>
 {:catch error}

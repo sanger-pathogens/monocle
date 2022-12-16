@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import { getSampleMetadata } from "$lib/dataLoading.js";
-import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
 
 const BATCHES = ["fake batches"];

@@ -2,7 +2,7 @@
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import { getSampleMetadata } from "$lib/dataLoading.js";
-  import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 
   export let batches;
   export let fileNameWithoutExtension = "monocle-metadata";

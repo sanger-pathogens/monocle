@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@testing-library/svelte";
 import { get } from "svelte/store";
 import { SESSION_STORAGE_KEY_COLUMNS_STATE } from "$lib/constants.js";
-import { columnsStore, filterStore } from "../_stores.js";
+import { columnsStore, filterStore } from "../../_stores.js";
 import Configuration from "./_Configuration.svelte";
 
 const KEY_DISABLED = "disabled";

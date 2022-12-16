@@ -1,17 +1,15 @@
 <script>
-  import { getStores } from "$app/stores";
   import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
+  import { projectStore } from "../_stores.js";
   import AppMenu from "../_app-menu/_index.svelte";
-
-  export let session = getStores().session;
 </script>
 
-<AppMenu qcDataUploadLink={false} {session} />
+<AppMenu qcDataUploadLink={false} />
 
 <DataUploadPage
   dataType="qc data"
   fileTypes="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
-  {session}
+  uploadLinks={$projectStore?.uploadLinks}
 >
   <svelte:fragment slot="upload-title">QC data upload</svelte:fragment>
 

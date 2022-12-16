@@ -1,4 +1,4 @@
-import { browser } from "$app/env";
+import { browser } from "$app/environment";
 import {
   DATA_TYPES,
   HTTP_HEADER_CONTENT_TYPE,

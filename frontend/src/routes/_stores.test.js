@@ -5,6 +5,8 @@ import {
   displayedColumnsStore,
   distinctColumnValuesStore,
   filterStore,
+  projectStore,
+  userStore,
 } from "./_stores.js";
 
 const COLUMNS_STATE = {
@@ -39,6 +41,8 @@ it("has the expected default value for each store", () => {
   expect(get(displayedColumnsStore)).toBeUndefined();
   expect(get(distinctColumnValuesStore)).toEqual(INITIAL_STATE);
   expect(get(filterStore)).toEqual(INITIAL_STATE);
+  expect(get(projectStore)).toBeUndefined();
+  expect(get(userStore)).toBeUndefined();
 });
 
 it("has a derived store w/ an array of column names per data type to display", () => {
@@ -59,6 +63,36 @@ it("has a derived store w/ an array of columns per data type to display", () => 
     "qc data": [{ displayName: "E", name: "e", selected: true }],
     "in silico": [{ displayName: "ST", name: "st", selected: true }],
   });
+});
+
+it("can set a project in the project store from a project response", () => {
+  const projectResponse = {
+    name: "some name",
+    logo_url: "some logo URL",
+    project_url: "some project URL",
+    header_links: [{ label: "some header", url: "some header URL" }],
+    contacts: [{ label: "some contact", url: "some contact URL" }],
+    upload_links: [{ label: "some upload label", url: "some upload URL" }],
+  };
+
+  projectStore.setFromResponse(projectResponse);
+
+  expect(get(projectStore)).toEqual({
+    name: projectResponse.name,
+    logoUrl: projectResponse.logo_url,
+    projectUrl: projectResponse.project_url,
+    headerLinks: projectResponse.header_links,
+    contacts: projectResponse.contacts,
+    uploadLinks: projectResponse.upload_links,
+  });
+});
+
+it("can set a user role in the user store", () => {
+  const expectedRole = "support";
+
+  userStore.setRole(expectedRole);
+
+  expect(get(userStore)).toEqual({ role: expectedRole });
 });
 
 describe("columns store", () => {

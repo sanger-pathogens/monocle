@@ -7,7 +7,7 @@ import {
   displayedColumnNamesStore,
   distinctColumnValuesStore,
   filterStore,
-} from "../_stores.js";
+} from "../../_stores.js";
 import SampleMetadataViewer from "./_SampleMetadataViewer.svelte";
 
 const BATCHES = ["some batches"];

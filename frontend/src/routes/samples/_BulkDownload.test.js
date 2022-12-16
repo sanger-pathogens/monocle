@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { get } from "svelte/store";
-import { distinctColumnValuesStore, filterStore } from "./_stores.js";
+import { distinctColumnValuesStore, filterStore } from "../_stores.js";
 import BulkDownload from "./_BulkDownload.svelte";
 import {
   // The following import is needed for the mock to work.

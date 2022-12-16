@@ -1,18 +1,16 @@
 import { fireEvent, render } from "@testing-library/svelte";
-import QCDataUploadPage from "./index.svelte";
-import { writable } from "svelte/store";
+import { projectStore, userStore } from "../_stores.js";
+import QCDataUploadPage from "./+page.svelte";
 
 const UPLOAD_URL = "some/upload/url";
-const SESSION_STATE = {
-  project: { upload_links: [{ label: "qc data", url: UPLOAD_URL }] },
-  user: { role: "admin" },
-};
 const ROLE_FORM = "form";
 
+projectStore.setFromResponse({
+  upload_links: [{ label: "qc data", url: UPLOAD_URL }],
+});
+
 it("has the expected text", async () => {
-  const { getByLabelText, getByRole, getByText } = render(QCDataUploadPage, {
-    session: writable(SESSION_STATE),
-  });
+  const { getByLabelText, getByRole, getByText } = render(QCDataUploadPage);
 
   await fireEvent.submit(getByRole(ROLE_FORM));
 
@@ -26,9 +24,7 @@ it("has the expected text", async () => {
 });
 
 it("accepts the expected file types", () => {
-  const { container } = render(QCDataUploadPage, {
-    session: writable(SESSION_STATE),
-  });
+  const { container } = render(QCDataUploadPage);
 
   const fileInput = container.querySelector("form input");
   expect(fileInput.getAttribute("accept")).toBe(
@@ -38,9 +34,7 @@ it("accepts the expected file types", () => {
 
 it("has the expected upload URL", async () => {
   global.fetch = jest.fn(() => Promise.resolve());
-  const { container, getByRole } = render(QCDataUploadPage, {
-    session: writable(SESSION_STATE),
-  });
+  const { container, getByRole } = render(QCDataUploadPage);
   fireEvent.change(container.querySelector("input[type=file]"), {
     target: { files: ["some.file"] },
   });
@@ -52,9 +46,9 @@ it("has the expected upload URL", async () => {
 });
 
 it("shows the app menu w/ the expected links", () => {
-  const { getByLabelText, queryByLabelText } = render(QCDataUploadPage, {
-    session: writable(SESSION_STATE),
-  });
+  userStore.setRole("admin");
+
+  const { getByLabelText, queryByLabelText } = render(QCDataUploadPage);
 
   expect(getByLabelText("View and download sample data")).toBeDefined();
   expect(getByLabelText("Upload metadata")).toBeDefined();

@@ -1,17 +1,15 @@
 <script>
-  import { getStores } from "$app/stores";
   import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
+  import { projectStore } from "../_stores.js";
   import AppMenu from "../_app-menu/_index.svelte";
-
-  export let session = getStores().session;
 </script>
 
-<AppMenu inSilicoDataUploadLink={false} {session} />
+<AppMenu inSilicoDataUploadLink={false} />
 
 <DataUploadPage
   dataType="in silico"
   fileTypes="text/plain,.txt,text/tab-separated-values,.tsv,.tab"
-  {session}
+  uploadLinks={$projectStore?.uploadLinks}
 >
   <svelte:fragment slot="upload-title">
     <i>In silico</i> data upload

@@ -8,14 +8,14 @@
 <script>
   import { USER_ROLE_ADMIN } from "$lib/constants.js";
   import UploadMenuIcon from "$lib/components/icons/UploadMenuIcon.svelte";
+  import { userStore } from "../_stores.js";
 
   export let metadataUploadLink = true;
   export let qcDataUploadLink = true;
   export let inSilicoDataUploadLink = true;
   export let topOffset = TOP_OFFSET_DEFAULT;
-  export let session;
 
-  $: isAdmin = $session?.user?.role === USER_ROLE_ADMIN;
+  $: isAdmin = $userStore?.role === USER_ROLE_ADMIN;
 </script>
 
 {#if isAdmin && (metadataUploadLink || qcDataUploadLink || inSilicoDataUploadLink)}

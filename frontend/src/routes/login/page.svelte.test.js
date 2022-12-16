@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
 import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js";
-import LoginPage from "./index.svelte";
+import LoginPage from "./+page.svelte";
 
 const LABEL_LOG_IN = "Log in";
 const LABEL_PASSWORD = "Password";

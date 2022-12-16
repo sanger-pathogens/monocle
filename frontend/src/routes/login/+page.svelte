@@ -1,7 +1,3 @@
-<script context="module">
-  export const prerender = true;
-</script>
-
 <script>
   import { HTTP_POST, HTTP_HEADERS_JSON } from "$lib/constants.js";
   import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";

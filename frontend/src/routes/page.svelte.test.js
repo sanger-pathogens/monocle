@@ -1,12 +1,10 @@
 import { render, waitFor, within } from "@testing-library/svelte";
-import { writable } from "svelte/store";
 import {
   getInstitutionStatus,
   // eslint-disable-next-line no-unused-vars
   getProjectProgress,
 } from "$lib/dataLoading.js";
-import { USER_ROLE_ADMIN } from "$lib/constants.js";
-import DashboardPage from "./index.svelte";
+import DashboardPage from "./+page.svelte";
 
 const INSTITUTIONS = [
   {
@@ -31,9 +29,7 @@ jest.mock("$lib/dataLoading.js", () => ({
 }));
 
 it("shows the loading indicator", () => {
-  const { getByLabelText } = render(DashboardPage, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
-  });
+  const { getByLabelText } = render(DashboardPage);
 
   expect(getByLabelText("please wait")).toBeDefined();
 });
@@ -41,9 +37,7 @@ it("shows the loading indicator", () => {
 it("shows an error message if data fetching rejects", async () => {
   getInstitutionStatus.mockRejectedValueOnce();
 
-  const { getByText } = render(DashboardPage, {
-    session: writable({ user: { role: USER_ROLE_ADMIN } }),
-  });
+  const { getByText } = render(DashboardPage);
 
   await waitFor(() => {
     expect(
@@ -56,9 +50,7 @@ it("shows an error message if data fetching rejects", async () => {
 
 describe("after data fetching", () => {
   it("hides the loading indicator", async () => {
-    const { queryByLabelText } = render(DashboardPage, {
-      session: writable({ user: { role: USER_ROLE_ADMIN } }),
-    });
+    const { queryByLabelText } = render(DashboardPage);
 
     await waitFor(() => {
       expect(queryByLabelText("please wait")).toBeNull();
@@ -66,9 +58,7 @@ describe("after data fetching", () => {
   });
 
   it("displays the project progress chart w/ a Y-axis label", async () => {
-    const { getByText } = render(DashboardPage, {
-      session: writable({ user: { role: USER_ROLE_ADMIN } }),
-    });
+    const { getByText } = render(DashboardPage);
 
     await waitFor(() => {
       expect(getByText("Project Progress")).toBeDefined();
@@ -76,42 +66,21 @@ describe("after data fetching", () => {
     });
   });
 
-  it("displays the menu w/ the upload and data viewer links", async () => {
-    const ROLE_LINK = "link";
-    const { findAllByRole } = render(DashboardPage, {
-      session: writable({ user: { role: USER_ROLE_ADMIN } }),
-    });
+  it("displays the menu w/ the data viewer link", async () => {
+    const { findAllByRole } = render(DashboardPage);
 
     const linksContainer = (await findAllByRole("navigation"))[0];
 
-    const dataViewerLink = await within(linksContainer).findByRole(ROLE_LINK, {
-      name: "View and download sample data",
-    });
-    expect(dataViewerLink).toBeDefined();
+    const dataViewerLink = await within(linksContainer).findByLabelText(
+      "View and download sample data"
+    );
     expect(dataViewerLink.href).toMatch(
       new RegExp(`${window.location.host}/samples`)
     );
-    const metadataUploadLink = await within(linksContainer).findByRole(
-      ROLE_LINK,
-      { name: "Upload metadata" }
-    );
-    expect(metadataUploadLink).toBeDefined();
-    const qcDataUploadLink = await within(linksContainer).findByRole(
-      ROLE_LINK,
-      { name: "Upload QC data" }
-    );
-    expect(qcDataUploadLink).toBeDefined();
-    const insilicoUploadLink = await within(linksContainer).findByRole(
-      ROLE_LINK,
-      { name: "Upload in-silico data" }
-    );
-    expect(insilicoUploadLink).toBeDefined();
   });
 
   it("displays status for each institution", async () => {
-    const { getByText } = render(DashboardPage, {
-      session: writable({ user: { role: USER_ROLE_ADMIN } }),
-    });
+    const { getByText } = render(DashboardPage);
 
     await waitFor(() => {
       INSTITUTIONS.forEach(({ name }) => {
@@ -128,9 +97,7 @@ describe("after data fetching", () => {
   it("displays a message when the list of institutions is empty", async () => {
     getInstitutionStatus.mockResolvedValueOnce([]);
 
-    const { getByText } = render(DashboardPage, {
-      session: writable({ user: { role: USER_ROLE_ADMIN } }),
-    });
+    const { getByText } = render(DashboardPage);
 
     await waitFor(() => {
       expect(

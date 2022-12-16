@@ -1,5 +1,4 @@
 <script>
-  import { session as appSession } from "$app/stores";
   import {
     SESSION_STORAGE_KEY_COLUMNS_STATE,
     SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
@@ -27,13 +26,11 @@
     columnsStore,
     distinctColumnValuesStore,
     filterStore,
-  } from "./_stores.js";
+  } from "../_stores.js";
 
   const EMPTY_STRING = "";
   const PROMISE_STATUS_REJECTED = "rejected";
   const STYLE_LOADING_ICON = "fill: lightgray";
-
-  export let session = appSession;
 
   const dataPromise = Promise.allSettled([
     getBatches(fetch),
@@ -237,7 +234,7 @@
   }
 </script>
 
-<AppMenu sampleDataLink={false} {session} />
+<AppMenu sampleDataLink={false} />
 
 <h2>Sample data viewer</h2>
 
