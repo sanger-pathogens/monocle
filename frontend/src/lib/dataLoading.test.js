@@ -1,4 +1,4 @@
-import env from "$app/env";
+import environment from "$app/environment";
 import {
   HTTP_HEADER_CONTENT_TYPE,
   HTTP_HEADERS_JSON,
@@ -55,7 +55,7 @@ const PATHNAME_NOT_LOGIN = "/samples";
 
 const fetch = jest.fn();
 
-jest.mock("$app/env", () => ({
+jest.mock("$app/environment", () => ({
   get browser() {
     return true;
   },
@@ -171,7 +171,7 @@ describe("login page", () => {
   });
 
   it("makes a fetch request if the environment is not the browser", async () => {
-    const browserSpy = jest.spyOn(env, "browser", "get");
+    const browserSpy = jest.spyOn(environment, "browser", "get");
     const expectedPayload = "batches";
     browserSpy.mockReturnValueOnce(false);
     fetch.mockResolvedValueOnce({

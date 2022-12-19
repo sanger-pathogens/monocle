@@ -2,7 +2,7 @@
   import { MONOCLE_HELP_URL } from "$lib/constants.js";
   import HelpIcon from "$lib/components/icons/HelpIcon.svelte";
 
-  export let session;
+  export let contacts;
 </script>
 
 <footer>
@@ -22,8 +22,8 @@
 
     <address>
       <div>Contacts</div>
-      {#if $session?.project?.contacts}
-        {#each $session.project.contacts as { label, url } (`${label}${url}`)}
+      {#if contacts}
+        {#each contacts as { label, url } (`${label}${url}`)}
           <a class="contact" href={url}>{label}</a>
         {/each}
       {/if}

@@ -1,8 +1,8 @@
 <script>
-  import { browser } from "$app/env";
+  import { browser } from "$app/environment";
   import { PATHNAME_LOGIN } from "$lib/constants.js";
 
-  export let session;
+  export let projectState;
 </script>
 
 <header>
@@ -17,23 +17,19 @@
     </a>
   </h1>
   <nav>
-    {#if $session?.project?.name}
-      <a
-        href={$session.project.project_url}
-        target="_blank"
-        class="project-link"
-      >
-        {#if $session.project.logo_url}
+    {#if projectState?.name}
+      <a href={projectState.projectUrl} target="_blank" class="project-link">
+        {#if projectState.logoUrl}
           <img
-            alt={$session.project.name}
-            src={$session.project.logo_url}
-            title={$session.project.name}
+            alt={projectState.name}
+            src={projectState.logoUrl}
+            title={projectState.name}
           />
         {:else}
-          {$session.project.name}
+          {projectState.name}
         {/if}
       </a>
-      {#each $session.project.header_links as { label, url } (`${label}${url}`)}
+      {#each projectState.headerLinks as { label, url } (`${label}${url}`)}
         <a href={url} target="_blank">{label}</a>
       {/each}
     {/if}
