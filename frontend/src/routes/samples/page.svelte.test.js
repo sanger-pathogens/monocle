@@ -5,7 +5,7 @@ import {
   SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
 } from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
-import { filterStore, userStore } from "../_stores.js";
+import { filterStore, userStore } from "../stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,

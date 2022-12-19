@@ -4,10 +4,10 @@
     getInstitutionStatus,
     getProjectProgress,
   } from "$lib/dataLoading.js";
-  import AppMenu from "./_app-menu/_index.svelte";
-  import InstitutionStatus from "./_dashboard/_InstitutionStatus.svelte";
   import LineChart from "$lib/components/LineChart.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
+  import AppMenu from "./_app-menu/index.svelte";
+  import InstitutionStatus from "./_dashboard/InstitutionStatus.svelte";
 
   let dashboardDataPromise = new Promise(() => {});
 

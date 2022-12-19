@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/svelte";
-import { projectStore, userStore } from "../_stores.js";
+import { projectStore, userStore } from "../stores.js";
 import QCDataUploadPage from "./+page.svelte";
 
 const UPLOAD_URL = "some/upload/url";

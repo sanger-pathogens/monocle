@@ -3,7 +3,7 @@
   import { getUserDetails, getProjectInformation } from "$lib/dataLoading.js";
   import Header from "$lib/components/layout/Header.svelte";
   import Footer from "$lib/components/layout/Footer.svelte";
-  import { projectStore, userStore } from "./_stores.js";
+  import { projectStore, userStore } from "./stores.js";
   import "../base.css";
   import "../simplecookie.css";
 

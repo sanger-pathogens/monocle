@@ -16,17 +16,17 @@
     getColumns,
     getInstitutions,
   } from "$lib/dataLoading.js";
-  import AppMenu from "../_app-menu/_index.svelte";
-  import BatchSelector from "./_BatchSelector.svelte";
-  import BulkDownload from "./_BulkDownload.svelte";
-  import Configuration from "./_metadata_viewer/_Configuration.svelte";
-  import MetadataDownloadButton from "./_MetadataDownloadButton.svelte";
-  import SampleMetadataViewer from "./_metadata_viewer/_SampleMetadataViewer.svelte";
+  import AppMenu from "../_app-menu/index.svelte";
+  import BatchSelector from "./BatchSelector.svelte";
+  import BulkDownload from "./BulkDownload.svelte";
+  import Configuration from "./_metadata_viewer/Configuration.svelte";
+  import MetadataDownloadButton from "./MetadataDownloadButton.svelte";
+  import SampleMetadataViewer from "./_metadata_viewer/SampleMetadataViewer.svelte";
   import {
     columnsStore,
     distinctColumnValuesStore,
     filterStore,
-  } from "../_stores.js";
+  } from "../stores.js";
 
   const EMPTY_STRING = "";
   const PROMISE_STATUS_REJECTED = "rejected";

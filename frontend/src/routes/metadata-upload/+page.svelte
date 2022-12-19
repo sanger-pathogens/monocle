@@ -1,7 +1,7 @@
 <script>
   import DataUploadPage from "$lib/components/data-upload/DataUploadPage.svelte";
-  import { projectStore } from "../_stores.js";
-  import AppMenu from "../_app-menu/_index.svelte";
+  import { projectStore } from "../stores.js";
+  import AppMenu from "../_app-menu/index.svelte";
 </script>
 
 <AppMenu metadataUploadLink={false} />
