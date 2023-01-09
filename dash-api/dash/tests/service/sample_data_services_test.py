@@ -4,7 +4,6 @@ from os import environ
 from pathlib import Path, PurePath
 from unittest import TestCase
 from unittest.mock import patch
-from urllib.error import HTTPError
 
 import yaml
 from DataServices.sample_data_services import (
@@ -478,51 +477,6 @@ class MonocleSampleDataTest(TestCase):
         },
     ]
 
-    mock_distinct_values_query = {"metadata": ["field1", "field2"], "in silico": ["field3"]}
-    bad_distinct_values_query = {"metadata": ["field1", "field2"], "NO SUCH TYPE": ["field3"]}
-    mock_distinct_values = [{"name": "field1", "values": ["a", "b"]}, {"name": "field2", "values": ["d", "e"]}]
-    mock_distinct_values_with_submitting_institutions = [
-        {"name": "submitting_institution", "values": [mock_institution_keys[0], mock_institution_keys[1]]}
-    ]
-    mock_distinct_in_silico_values = [{"name": "field3", "values": ["f", "g", "h"]}]
-
-    expected_distinct_values = [
-        {
-            "field type": "metadata",
-            "fields": [{"name": "field1", "values": ["a", "b"]}, {"name": "field2", "values": ["d", "e"]}],
-        },
-        {"field type": "in silico", "fields": [{"name": "field3", "values": ["f", "g", "h"]}]},
-    ]
-
-    mock_distinct_value_num_matching = 42
-    expected_distinct_values_filtered = [
-        {
-            "field type": "metadata",
-            "fields": [
-                {
-                    "name": "field1",
-                    "values": ["a", "b"],
-                    "matches": [{"value": "a", "number": 1}, {"value": "b", "number": 1}],
-                },
-                {
-                    "name": "field2",
-                    "values": ["d", "e"],
-                    "matches": [{"value": "d", "number": 1}, {"value": "e", "number": 1}],
-                },
-            ],
-        },
-        {
-            "field type": "in silico",
-            "fields": [
-                {
-                    "name": "field3",
-                    "values": ["f", "g", "h"],
-                    "matches": [{"value": "f", "number": 1}, {"value": "g", "number": 0}, {"value": "h", "number": 0}],
-                }
-            ],
-        },
-    ]
-
     expected_metadata_download = {
         "success": True,
         "filename": "FakOne_sequencing_successful.csv",
@@ -775,142 +729,6 @@ class MonocleSampleDataTest(TestCase):
         filtered_samples_metadata = self.monocle_data.get_metadata({"batches": self.inst_key_batch_date_pairs})
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.mock_combined_metadata, filtered_samples_metadata))
         self.assertEqual(self.mock_combined_metadata, filtered_samples_metadata)
-
-    @patch.object(MonocleClient, "distinct_values")
-    @patch.object(MonocleClient, "distinct_in_silico_values")
-    def test_get_distinct_values(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-        mock_distinct_values_fetch.return_value = self.mock_distinct_values
-        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
-        distinct_values = self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
-        mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institution_keys
-        )
-        mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institution_keys
-        )
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values, distinct_values))
-        self.assertEqual(self.expected_distinct_values, distinct_values)
-
-    @patch.object(MonocleClient, "distinct_values")
-    @patch.object(MonocleClient, "distinct_in_silico_values")
-    @patch.object(MonocleSampleData, "get_filtered_samples")
-    @patch.object(MonocleDownloadClient, "qc_data")
-    @patch.object(MonocleDownloadClient, "in_silico_data")
-    @patch.object(MonocleDownloadClient, "metadata")
-    def test_get_distinct_values_with_sample_filters(
-        self,
-        mock_metadata_fetch,
-        mock_in_silico_data_fetch,
-        mock_qc_data_fetch,
-        mock_get_filtered_samples,
-        mock_distinct_in_silico_values_fetch,
-        mock_distinct_values_fetch,
-    ):
-        mock_metadata_fetch.return_value = self.mock_metadata2
-        mock_in_silico_data_fetch.return_value = self.mock_in_silico_data2
-        mock_qc_data_fetch.return_value = self.mock_qc_data
-        mock_get_filtered_samples.return_value = self.mock_filtered_samples
-        mock_distinct_values_fetch.return_value = self.mock_distinct_values
-        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
-        distinct_values_filtered = self.monocle_data.get_distinct_values(
-            self.mock_distinct_values_query,
-            sample_filters={"batches": self.inst_key_batch_date_pairs, "metadata": {"field2": ["x"]}},
-        )
-        mock_distinct_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["metadata"], self.mock_institution_keys
-        )
-        mock_distinct_in_silico_values_fetch.assert_called_once_with(
-            self.mock_project_id, self.mock_distinct_values_query["in silico"], self.mock_institution_keys
-        )
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_distinct_values_filtered, distinct_values_filtered))
-        self.assertEqual(self.expected_distinct_values_filtered, distinct_values_filtered)
-
-    @patch.object(MonocleClient, "distinct_values")
-    @patch.object(MonocleClient, "distinct_in_silico_values")
-    @patch.object(MonocleSampleData, "get_filtered_samples")
-    @patch.object(MonocleDownloadClient, "qc_data")
-    @patch.object(MonocleDownloadClient, "in_silico_data")
-    @patch.object(MonocleDownloadClient, "metadata")
-    def test_get_distinct_values_counts_submitting_institution_matches(
-        self,
-        mock_metadata_fetch,
-        mock_in_silico_data_fetch,
-        mock_qc_data_fetch,
-        mock_get_filtered_samples,
-        mock_distinct_in_silico_values_fetch,
-        mock_distinct_values_fetch,
-    ):
-        mock_metadata_fetch.return_value = self.mock_metadata_with_submitting_institutions
-        mock_in_silico_data_fetch.return_value = self.mock_in_silico_data2
-        mock_qc_data_fetch.return_value = self.mock_qc_data
-        mock_get_filtered_samples.return_value = self.mock_filtered_samples
-        mock_distinct_values_fetch.return_value = self.mock_distinct_values_with_submitting_institutions
-        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
-        self.monocle_data.metadata_download_source._institutions = {
-            submitting_institution["key"]: {"name": submitting_institution["name"]}
-            for submitting_institution in self.mock_institution_data
-        }
-
-        actual_distinct_values = self.monocle_data.get_distinct_values(
-            self.mock_distinct_values_query,
-            sample_filters={
-                "batches": self.inst_key_batch_date_pairs,
-                "metadata": {"submitting_institution": [self.mock_institution_keys[0]]},
-            },
-        )
-
-        expected_distinct_values_metadata = {
-            "field type": "metadata",
-            "fields": [
-                {
-                    "name": "submitting_institution",
-                    "values": self.mock_institution_keys,
-                    "matches": [
-                        {"value": self.mock_institution_keys[0], "number": 1},
-                        {"value": self.mock_institution_keys[1], "number": 1},
-                    ],
-                }
-            ],
-        }
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_distinct_values_metadata))
-        self.assertEqual(expected_distinct_values_metadata, actual_distinct_values[0])
-
-        self.monocle_data.metadata_download_source._institutions = {}
-
-    @patch.object(MonocleClient, "distinct_values")
-    @patch.object(MonocleClient, "distinct_in_silico_values")
-    @patch.object(MonocleDownloadClient, "metadata")
-    def test_get_distinct_values_with_sample_filters_catch_error(
-        self, mock_metadata_fetch, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch
-    ):
-        mock_metadata_fetch.side_effect = HTTPError("/nowhere", "400", "any other 4xx response", "yes", "no")
-        mock_distinct_values_fetch.return_value = self.mock_distinct_values
-        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
-        with self.assertRaises(HTTPError):
-            self.monocle_data.get_distinct_values(
-                self.mock_distinct_values_query, sample_filters={"batches": self.inst_key_batch_date_pairs}
-            )
-
-    @patch.object(MonocleClient, "distinct_values")
-    @patch.object(MonocleClient, "distinct_in_silico_values")
-    def test_get_distinct_values_bad_field_type(self, mock_distinct_in_silico_values_fetch, mock_distinct_values_fetch):
-        mock_distinct_values_fetch.return_value = self.mock_distinct_values
-        mock_distinct_in_silico_values_fetch.return_value = self.mock_distinct_in_silico_values
-        with self.assertRaises(ValueError):
-            self.monocle_data.get_distinct_values(self.bad_distinct_values_query)
-
-    @patch.object(MonocleClient, "make_request")
-    def test_get_distinct_values_return_None_on_client_HTTPError_404(self, mock_request):
-        mock_request.side_effect = HTTPError(
-            "/nowhere", "404", "message including the words Invalid field", "yes", "no"
-        )
-        self.assertIsNone(self.monocle_data.get_distinct_values(self.mock_distinct_values_query))
-
-    @patch.object(MonocleClient, "make_request")
-    def test_get_distinct_values_reraise_HTTPError_if_not_404(self, mock_request):
-        mock_request.side_effect = HTTPError("/nowhere", "400", "any other 4xx response", "yes", "no")
-        with self.assertRaises(HTTPError):
-            self.monocle_data.get_distinct_values(self.mock_distinct_values_query)
 
     @patch.object(MonocleDownloadClient, "in_silico_data")
     @patch.object(MonocleDownloadClient, "metadata")

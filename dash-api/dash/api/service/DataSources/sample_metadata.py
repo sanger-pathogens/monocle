@@ -135,33 +135,6 @@ class SampleMetadata:
         )
         return results
 
-    def get_distinct_values(self, project, fields, institution_keys):
-        """
-        Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
-        as keys; values are arrays of field names.
-        Returns array of GetDistinctValuesOutput objects (as defined in OpenAPI spec.)
-        """
-        results = []
-        for this_field_type in fields:
-            field_list = fields[this_field_type]
-            if "metadata" == this_field_type:
-                this_field_list = self.monocle_client.distinct_values(project, field_list, institution_keys)
-            elif "in silico" == this_field_type:
-                this_field_list = self.monocle_client.distinct_in_silico_values(project, field_list, institution_keys)
-            elif "qc data" == this_field_type:
-                this_field_list = self.monocle_client.distinct_qc_data_values(project, field_list, institution_keys)
-            else:
-                logging.error(
-                    "{}.get_distinct_values() was passed field type {}: should be one of 'metadata', 'in silico' or 'qc data' ".format(
-                        __class__.__name__, this_field_type
-                    )
-                )
-                raise ValueError("{} is not a recognised field type".format(this_field_type))
-            results.append({"field type": this_field_type, "fields": this_field_list})
-
-        logging.debug("{}.get_distinct_values() got {}".format(__class__.__name__, results))
-        return results
-
 
 class ProtocolError(Exception):
     pass
@@ -179,10 +152,6 @@ class MonocleClient:
         "filter_by_metadata",
         "filter_by_in_silico",
         "samples_key",
-        "distinct_values",
-        "distinct_in_silico_values",
-        "distinct_qc_data_values",
-        "distinct_values_key",
     ]
 
     def __init__(self, set_up=True):
@@ -271,31 +240,6 @@ class MonocleClient:
         logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
         results = json.loads(response)
         return results
-
-    def distinct_values(self, project, fields, institution_keys):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["distinct_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
-
-    def distinct_in_silico_values(self, project, fields, institution_keys):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["distinct_in_silico_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
-
-    def distinct_qc_data_values(self, project, fields, institution_keys):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["distinct_qc_data_values"]
-        return self._distinct_values_common(this_config, endpoint_url, fields, institution_keys)
-
-    def _distinct_values_common(self, this_config, endpoint_url, fields, institution_keys):
-        query = {"fields": fields, "institutions": institution_keys}
-        logging.debug(
-            "{}.distinct_values() using endpoint {}, query: {}".format(__class__.__name__, endpoint_url, query)
-        )
-        response = self.make_request(endpoint_url, post_data=query)
-        logging.debug("{}.distinct_values() returned {}".format(__class__.__name__, response))
-        results = self.parse_response(endpoint_url, response, required_keys=[this_config["distinct_values_key"]])
-        return results[this_config["distinct_values_key"]]
 
     def make_request(self, request_url, post_data=None):
         request_data = None
