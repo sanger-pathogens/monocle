@@ -409,9 +409,6 @@ paths:
         "200":
           description: "The operation was successful. The following data format will be returned..."
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetMetadataOutput"
             text/csv:
               schema:
                 type: string
@@ -743,10 +740,6 @@ components:
       properties:
         sample filters:
           $ref: "#/components/schemas/SampleFilters"
-        as csv:
-          description: "Set this flag to true when a text/csv response is required"
-          type: boolean
-          default: false
         csv filename:
           description: "For text/csv responses: the filename to use in the Content-Disposition header"
           type: string
@@ -754,92 +747,6 @@ components:
           maxLength: 256
           default: "monocle.csv"
           example: "monocle.csv"
-        qc data:
-          description: "Set this flag to true to include in QC data with the metadata (ignored when 'as csv' is true)"
-          type: boolean
-          default: true
-        in silico:
-          description: "Set this flag to true to include in silico data with the metadata (ignored when 'as csv' is true)"
-          type: boolean
-          default: true
-        start row:
-          description: "For pagination: the first row of metadata (starting at 1) to be returned (ignored when 'as csv' is true)"
-          type: integer
-          minimum: 1
-          example: 1
-        num rows:
-          description: "For pagination: number of rows of metadata to be returned (ignored when 'as csv' is true)"
-          type: integer
-          minimum: 1
-          default: 20
-          example: 20
-        metadata columns:
-          description: "List of metadata columns that should be returned (as defined by the Metadata object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
-          type: array
-          items:
-            type: string
-            pattern: ^[a-zA-Z0-9_]*$
-          default:
-            - "submitting_institution"
-            - "public_name"
-            - "host_status"
-            - "selection_random"
-            - "country"
-            - "collection_year"
-            - "host_species"
-            - "isolation_source"
-            - "serotype"
-          example:
-            - "submitting_institution"
-            - "public_name"
-            - "host_status"
-            - "selection_random"
-            - "country"
-            - "collection_year"
-            - "host_species"
-            - "isolation_source"
-            - "serotype"
-        qc data columns:
-          description: "List of QC data columns that should be returned (as defined by the QCData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
-          type: array
-          items:
-            type: string
-            pattern: ^[a-zA-Z0-9_]*$
-          default:
-            - "status"
-          example:
-            - "status"
-        in silico columns:
-          description: "List of in silico data columns that should be returned (as defined by the InSilicoData object). Pass ['_ALL'] to get all columns. Ignored when 'as csv' is true: all columns are always returned."
-          type: array
-          items:
-            type: string
-            pattern: ^[a-zA-Z0-9_]*$
-          default:
-            - "ST"
-          example:
-            - "ST"
-
-    GetMetadataOutput:
-      type: object
-      readOnly: true
-      required:
-        - samples
-        - total rows
-        - last row
-      properties:
-        last row:
-          description: "Number of the last row in this response.  If start row + num rows exceeds the total number of rows, this will be the last available row."
-          type: integer
-          minimum: 1
-        total rows:
-          description: "Total number of rows that match the sample filters passed."
-          type: integer
-          minimum: 0
-        samples:
-          type: array
-          items:
-            $ref: "#/components/schemas/CombinedSampleMetadata"
 
     GetDistinctValuesInput:
       type: object
@@ -900,25 +807,6 @@ components:
                       number:
                         description: "The number of filtered samples in which this value occurs"
                         type: integer
-
-    CombinedSampleMetadata:
-      type: object
-      description: "Sample manifest metadata plus in silico and QC data"
-      required:
-        - metadata
-      properties:
-        metadata:
-          anyOf:
-            - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOMetadata"
-            - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSMetadata"
-        qc data:
-          anyOf:
-            - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOQCData"
-            - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSQCData"
-        in silico:
-          anyOf:
-            - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOInSilicoData"
-            - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSInSilicoData"
 
     FieldAttributes:
       type: object
