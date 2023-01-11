@@ -1,4 +1,3 @@
-import json
 from copy import deepcopy
 from os import environ
 from pathlib import Path, PurePath
@@ -37,9 +36,6 @@ EXPECTED_METADATA_PLUS_QC_AND_IN_SILICO_DATA = (
 
 
 class MonocleSampleDataTest(TestCase):
-
-    test_field_attributes = "dash/tests/mock_data/juno_field_attributes.json"
-    test_field_attributes_bad = "dash/tests/mock_data/juno_field_attributes_bad.json"
 
     test_config = "dash/tests/mock_data/data_sources.yml"
     test_config_bad = "dash/tests/mock_data/data_sources_bad.yml"
@@ -550,7 +546,6 @@ class MonocleSampleDataTest(TestCase):
     monocle_sample_tracking = MonocleSampleTracking(set_up=False)
     monocle_data = MonocleSampleData(
         data_source_config=test_config,
-        metadata_field_configs={mock_project_id: test_field_attributes},
         MonocleSampleTracking_ref=monocle_sample_tracking,
     )
 
@@ -583,13 +578,6 @@ class MonocleSampleDataTest(TestCase):
         with self.assertRaises(DataSourceConfigError):
             MonocleSampleData(
                 data_source_config="no/such/file",
-                metadata_field_configs={"any_key_only_values_should_be_checked": self.test_field_attributes},
-                MonocleSampleTracking_ref=self.monocle_sample_tracking,
-            )
-        with self.assertRaises(DataSourceConfigError):
-            MonocleSampleData(
-                data_source_config=self.test_config,
-                metadata_field_configs={"any_key_only_values_should_be_checked": "no/such/file"},
                 MonocleSampleTracking_ref=self.monocle_sample_tracking,
             )
 
@@ -628,41 +616,6 @@ class MonocleSampleDataTest(TestCase):
         self.monocle_sample_tracking.get_institutions()
         self.monocle_sample_tracking.get_samples()
         self.monocle_sample_tracking.get_sequencing_status()
-
-    def test_get_field_attributes(self):
-        json_returned = self.monocle_data.get_field_attributes()
-        json_test_file = json.load(open(self.test_field_attributes, "r"))
-        self.assertEqual(json_test_file, json_returned)
-
-    def test_get_field_attributes_reject_no_project(self):
-        doomed = MonocleSampleData(
-            data_source_config=self.test_config,
-            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
-            MonocleSampleTracking_ref=self.monocle_sample_tracking,
-        )
-        # note that no doomed.current_project has been set
-        with self.assertRaises(ValueError):
-            doomed.get_field_attributes()
-
-    def test_get_field_attributes_reject_unknown_project(self):
-        doomed = MonocleSampleData(
-            data_source_config=self.test_config,
-            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
-            MonocleSampleTracking_ref=self.monocle_sample_tracking,
-        )
-        doomed.current_project = "unknown_project_id"
-        with self.assertRaises(ValueError):
-            doomed.get_field_attributes()
-
-    def test_get_field_attributes_reject_bad_json(self):
-        doomed = MonocleSampleData(
-            data_source_config=self.test_config,
-            metadata_field_configs={"doomed_project": self.test_field_attributes_bad},
-            MonocleSampleTracking_ref=self.monocle_sample_tracking,
-        )
-        doomed.current_project = "doomed_project"
-        with self.assertRaises(json.decoder.JSONDecodeError):
-            doomed.get_field_attributes()
 
     @patch.object(Path, "exists", return_value=True)
     @patch.object(MonocleSampleData, "_get_file_size")

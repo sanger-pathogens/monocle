@@ -1,4 +1,3 @@
-import json
 import logging
 import urllib.error
 import urllib.parse
@@ -47,10 +46,6 @@ class MonocleSampleData:
     """
 
     default_data_source_config = "data_sources.yml"
-    default_metadata_field_configs = {
-        "juno": "juno_field_attributes.json",
-        "gps": "gps_field_attributes.json",
-    }
 
     # date from which progress is counted
     day_zero = datetime(2019, 9, 17)
@@ -58,7 +53,6 @@ class MonocleSampleData:
     def __init__(
         self,
         data_source_config=default_data_source_config,
-        metadata_field_configs=default_metadata_field_configs,
         MonocleSampleTracking_ref=None,
         set_up=True,
     ):
@@ -71,15 +65,6 @@ class MonocleSampleData:
         if not Path(self.data_source_config_name).is_file():
             return self._download_config_error(
                 "data source config file {} is missing".format(self.data_source_config_name)
-            )
-        self.metadata_field_config_files = metadata_field_configs
-        missing_metadata_config = []
-        for this_file in self.metadata_field_config_files.values():
-            if not Path(this_file).is_file():
-                missing_metadata_config.append(this_file)
-        if len(missing_metadata_config) > 0:
-            return self._download_config_error(
-                "metadata field config file(s) {} are missing".format(missing_metadata_config)
             )
 
         # DataServices.sample_tracking_services.MonocleSampleTracking object can be passed
@@ -107,20 +92,6 @@ class MonocleSampleData:
         self.sample_tracking.user_record = self.user_record
         self.sample_tracking.current_project = self.current_project
         return self.sample_tracking
-
-    def get_field_attributes(self):
-        """
-        Return field attributes JSON object
-        """
-        metadata_attribute_file = self.metadata_field_config_files.get(self.current_project)
-        if metadata_attribute_file is None:
-            raise ValueError(
-                'The current project "{}" does not have a metadata field attributes file'.format(self.current_project)
-            )
-        with open(metadata_attribute_file, "r") as json_file:
-            field_attributes = json.load(json_file)
-
-        return field_attributes
 
     def get_metadata(
         self,
