@@ -52,7 +52,7 @@ it("shows the app menu w/ the expected links", () => {
 
   const { getByLabelText, queryByLabelText } = render(InSilicoUploadPage);
 
-  expect(getByLabelText("View and download sample data")).toBeDefined();
+  expect(getByLabelText("Download sample data")).toBeDefined();
   expect(getByLabelText("Upload metadata")).toBeDefined();
   expect(getByLabelText("Upload QC data")).toBeDefined();
   expect(queryByLabelText("Upload in-silico data")).toBeNull();

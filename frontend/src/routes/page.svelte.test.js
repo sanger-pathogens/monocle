@@ -72,7 +72,7 @@ describe("after data fetching", () => {
     const linksContainer = (await findAllByRole("navigation"))[0];
 
     const dataViewerLink = await within(linksContainer).findByLabelText(
-      "View and download sample data"
+      "Download sample data"
     );
     expect(dataViewerLink.href).toMatch(
       new RegExp(`${window.location.host}/samples`)

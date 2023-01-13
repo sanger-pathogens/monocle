@@ -50,7 +50,7 @@ it("shows the app menu w/ the expected links", () => {
 
   const { getByLabelText, queryByLabelText } = render(QCDataUploadPage);
 
-  expect(getByLabelText("View and download sample data")).toBeDefined();
+  expect(getByLabelText("Download sample data")).toBeDefined();
   expect(getByLabelText("Upload metadata")).toBeDefined();
   expect(queryByLabelText("Upload QC data")).toBeNull();
   expect(getByLabelText("Upload in-silico data")).toBeDefined();

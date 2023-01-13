@@ -7,7 +7,7 @@ userStore.setRole("admin");
 it("displays all links by default", () => {
   const { getByLabelText } = render(AppMenu);
 
-  expect(getByLabelText("View and download sample data")).toBeDefined();
+  expect(getByLabelText("Download sample data")).toBeDefined();
   expect(getByLabelText("Upload metadata")).toBeDefined();
   expect(getByLabelText("Upload QC data")).toBeDefined();
   expect(getByLabelText("Upload in-silico data")).toBeDefined();
