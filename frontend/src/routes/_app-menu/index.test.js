@@ -24,7 +24,7 @@ it("can hide the links", () => {
   expect(queryByRole("link")).toBeNull();
 });
 
-it("displays the upload links menu at the expected hight when the data viewer link isn't shown", async () => {
+it("displays the upload links menu at the expected hight when the bulk download page link isn't shown", async () => {
   const uploadLinksMenuSelector = "nav nav";
   const { component, container } = render(AppMenu);
 
