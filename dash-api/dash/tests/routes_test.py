@@ -22,86 +22,6 @@ class TestRoutes(unittest.TestCase):
 
     MOCK_PROJECT_ID = "juno"
 
-    MOCK_FIELD_ATTRIBUTES = {
-        "metadata": {
-            "categories": [
-                {
-                    "name": "category_101",
-                    "fields": [
-                        {
-                            "name": "field1_name",
-                            "display": True,
-                            "default": False,
-                            "order": 1,
-                            "spreadsheet heading": "field1_heading",
-                            "display name": "Field1 Display Name",
-                            "filter type": "none",
-                        },
-                        {
-                            "name": "field2_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field2_heading",
-                            "display name": "Field2 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                },
-                {
-                    "name": "category_102",
-                    "fields": [
-                        {
-                            "name": "field3_name",
-                            "display": True,
-                            "default": True,
-                            "order": 2,
-                            "spreadsheet heading": "field3_heading",
-                            "display name": "Field3 Display Name",
-                            "filter type": "none",
-                        }
-                    ],
-                },
-            ]
-        },
-        "in silico": {
-            "categories": [
-                {
-                    "name": "category_201",
-                    "fields": [
-                        {
-                            "name": "field10_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field10_heading",
-                            "display name": "Field10 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                }
-            ]
-        },
-        "qc data": {
-            "categories": [
-                {
-                    "name": "category_301",
-                    "fields": [
-                        {
-                            "name": "field20_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field20_heading",
-                            "display name": "Field20 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                }
-            ]
-        },
-    }
-
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
     SERVICE_CALL_RETURN_DATA = {"field1": "value1"}
@@ -287,23 +207,6 @@ class TestRoutes(unittest.TestCase):
 
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_field_attributes_route(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_field_attributes_route()
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
-        resp_mock.assert_called_once_with({"field_attributes": self.MOCK_FIELD_ATTRIBUTES})
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
     @patch("dash.api.routes.get_authenticated_project")
     @patch.object(ServiceFactory, "sample_data_service")
     def test_get_bulk_download_info_route(self, sample_data_service_mock, project_mock, username_mock, resp_mock):
@@ -337,7 +240,6 @@ class TestRoutes(unittest.TestCase):
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_bulk_download_info.return_value = None
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.bulk_download_info_route({"sample filters": sample_filters})
         # Then
@@ -373,7 +275,6 @@ class TestRoutes(unittest.TestCase):
         sample_data_service_mock.return_value.get_bulk_download_info.side_effect = urllib.error.HTTPError(
             "/nowhere", "400", "blah blah Invalid field blah blah", "yes", "no"
         )
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.bulk_download_info_route({"sample filters": sample_filters})
         # Then
@@ -1086,7 +987,6 @@ class TestRoutes(unittest.TestCase):
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.get_metadata_route(
             {"sample filters": sample_filters, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}
@@ -1110,7 +1010,6 @@ class TestRoutes(unittest.TestCase):
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.get_metadata_route(
             {"sample filters": sample_filters, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}

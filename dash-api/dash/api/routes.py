@@ -127,12 +127,6 @@ def pipeline_status_summary_route():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_field_attributes_route():
-    data = ServiceFactory.sample_data_service(get_authenticated_username()).get_field_attributes()
-    response_dict = {"field_attributes": data}
-    return call_jsonify(response_dict), HTTPStatus.OK
-
-
 def get_metadata_route(body):
     """Get sample metadata based on standard sample filter"""
     logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
@@ -528,7 +522,7 @@ def get_authenticated_project():
         raise RuntimeError("User accounts must have a projects attribute (user record: {})".format(user_details))
     elif len(project_list) > 1:
         raise RuntimeError(
-            "Multiple project membership for users is not currently supported (user record: {})".format(user_details)
+            "Multiple project membership for users is no t currently supported (user record: {})".format(user_details)
         )
     return project_list[0]
 

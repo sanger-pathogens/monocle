@@ -197,31 +197,6 @@ paths:
                       $ref: "#/components/schemas/InstitutionPipelineStatus"
         "403":
           description: "Authorization information is missing or invalid."
-          
-  /get_field_attributes:
-    get:
-      operationId: dash.api.routes.get_field_attributes_route
-      summary: "Return attrubutes of metadata, in silico and QC data fields."
-      parameters:
-        - name: X-Remote-User
-          in: header
-          description: "Username."
-          required: false
-          schema:
-            $ref: "#/components/schemas/UserName"
-      responses:
-        "200":
-          description: "The operation was successful. Returned data is a JSON obnject describing metadata, in silico and QC data fields."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  field_attributes:
-                    type: object
-                    $ref: "#/components/schemas/FieldAttributes"
-        "403":
-          description: "Authorization information is missing or invalid."
 
   /bulk_download_info:
     post:
