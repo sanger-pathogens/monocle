@@ -21,7 +21,6 @@
   import BulkDownload from "./BulkDownload.svelte";
   import Configuration from "./_metadata_viewer/Configuration.svelte";
   import MetadataDownloadButton from "./MetadataDownloadButton.svelte";
-  import SampleMetadataViewer from "./_metadata_viewer/SampleMetadataViewer.svelte";
   import {
     columnsStore,
     distinctColumnValuesStore,
@@ -302,8 +301,6 @@
       bind:formValues={bulkDownloadFormValues}
     />
   </Dialog>
-
-  <SampleMetadataViewer batches={selectedInstKeyBatchDatePairs} />
 {:catch}
   <p>
     An unexpected error occured during page loading. Please try again by
