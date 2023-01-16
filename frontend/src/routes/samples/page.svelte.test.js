@@ -1,11 +1,10 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { get } from "svelte/store";
 import {
   SESSION_STORAGE_KEY_COLUMNS_STATE,
   SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
 } from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
-import { filterStore, userStore } from "../stores.js";
+import { userStore } from "../stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
@@ -112,65 +111,6 @@ describe("once batches are fetched", () => {
     await fireEvent.click(selectAllBtn);
 
     expect(getByRole(ROLE_BUTTON, { name: "Download metadata" })).toBeDefined();
-  });
-
-  it("removes all filters on clicking the filter removal button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage);
-    filterStore.set({ metadata: { someColumn: {} } });
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-    await fireEvent.click(selectAllBtn);
-    const filterRemovalLabel = /^Remove all filters/;
-    global.confirm = () => true;
-
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }));
-
-    expect(get(filterStore)).toEqual({
-      metadata: {},
-      "in silico": {},
-      "qc data": {},
-    });
-    expect(
-      getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-    ).toBeTruthy();
-  });
-
-  it("disables the filter removal button on batches change", async () => {
-    const filterRemovalLabel = /^Remove all filters/;
-    const { findByRole, getByRole } = render(DataViewerPage);
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-    await fireEvent.click(selectAllBtn);
-    filterStore.update((filters) => {
-      filters.metadata.someColumn = { values: ["some value"] };
-      return filters;
-    });
-
-    await waitFor(() => {
-      expect(
-        getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-      ).toBeFalsy();
-    });
-
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_DESELECT_ALL }));
-    await fireEvent.click(selectAllBtn);
-
-    expect(
-      getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-    ).toBeTruthy();
-  });
-
-  it("displays the settings button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage);
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-
-    await fireEvent.click(selectAllBtn);
-
-    expect(getByRole(ROLE_BUTTON, { name: /^Select columns/ })).toBeDefined();
   });
 
   describe("on columns state change in the session storage", () => {

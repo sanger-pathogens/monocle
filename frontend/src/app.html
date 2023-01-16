@@ -7,8 +7,12 @@
       name="simplecookie_policy"
       content="https://www.sanger.ac.uk/policies/cookies/"
     />
-    <meta name="simplecookie_types" content="e1" />
+    <!-- "e1" for Sanger's own essential cookies. "t1" for Sanger's own tracking ones.
+    For more options see https://github.com/drbaggy-wordpress/Wordpress-simple-cookie-plugin#configuration-via-header. -->
+    <meta name="simplecookie_types" content="e1 t1" />
     %sveltekit.head%
+    <!-- Sanger's analytics as documented here: https://ssg-confluence.internal.sanger.ac.uk/display/WEB/Matomo+website+analytics. -->
+    <script async src="/zxtm/piwik2.js"></script>
   </head>
   <body>
     %sveltekit.body%

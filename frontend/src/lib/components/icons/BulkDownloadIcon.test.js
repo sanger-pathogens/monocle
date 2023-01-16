@@ -1,8 +1,8 @@
 import { render } from "@testing-library/svelte";
-import FilterIcon from "./FilterIcon.svelte";
+import BulkDownloadIcon from "./BulkDownloadIcon.svelte";
 
 it("renders the icon", () => {
-  const { container } = render(FilterIcon);
+  const { container } = render(BulkDownloadIcon);
 
   expect(container.querySelector("path")).toBeDefined();
 });
