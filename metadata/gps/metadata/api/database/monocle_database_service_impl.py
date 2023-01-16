@@ -8,7 +8,7 @@
 # The table names (as well as the list of columns in each table) should be read from the config.json file
 
 import logging
-from typing import Dict, List
+from typing import List
 
 from flask import current_app as application
 from metadata.api.database.monocle_database_service import MonocleDatabaseService
@@ -62,15 +62,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
 
     QC_DATA_FILTER_LANES_IN_SQL_INCL_NULL = """ \
             SELECT lane_id FROM gps_qc_data WHERE {} IN :values OR {} IS NULL"""
-
-    DISTINCT_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM gps_sample WHERE submitting_institution IN :institutions"""
-
-    DISTINCT_IN_SILICO_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM gps_in_silico"""
-
-    DISTINCT_QC_DATA_FIELD_VALUES_SQL = """ \
-            SELECT DISTINCT {} FROM gps_qc_data"""
 
     def __init__(self, connector: Connector) -> None:
         self.connector = connector
@@ -233,58 +224,6 @@ class MonocleDatabaseServiceImpl(MonocleDatabaseService):
                 lane_ids = [row["lane_id"] for row in rs]
 
         return lane_ids
-
-    def get_distinct_values(self, field_type: str, fields: list, institutions: list) -> Dict:
-        """
-        Return distinct values found in db for each field name passed,
-        from samples from certain institutions.
-        Pass the field type ('metadata', 'in silico' or 'qc data');
-        a list of names of the fields of interest; and a list of institution
-        names.
-        If any of the field names passed are non-existent, returns None
-        """
-        sql_query = {
-            "metadata": self.DISTINCT_FIELD_VALUES_SQL,
-            "in silico": self.DISTINCT_IN_SILICO_FIELD_VALUES_SQL,
-            "qc data": self.DISTINCT_QC_DATA_FIELD_VALUES_SQL,
-        }
-        if field_type not in sql_query.keys():
-            raise ValueError(
-                "{} must be passed one of {}, not {}".format(
-                    __class__.__name__, ", ".join(sql_query.keys()), field_type
-                )
-            )
-        distinct_values = []
-        with self.connector.get_connection() as con:
-            for this_field in fields:
-                try:
-                    rs = con.execute(
-                        text(sql_query[field_type].format(this_field)),
-                        institutions=tuple(institutions),
-                    )
-                    these_distinct_values = []
-                    includes_none = False
-                    for row in rs:
-                        if row[this_field] is None:
-                            includes_none = True
-                        else:
-                            these_distinct_values.append(str(row[this_field]))
-                    # can't sort if the list contains None, so sort...
-                    these_distinct_values = sorted(these_distinct_values)
-                    # ...and then add a None if there should be one in the list
-                    if includes_none:
-                        these_distinct_values.append(None)
-                    if len(these_distinct_values) > 0:
-                        distinct_values.append({"name": this_field, "values": these_distinct_values})
-
-                except OperationalError as e:
-                    if "Unknown column" in str(e):
-                        logging.error('attempted to get distinct values from unknown field "{}"'.format(this_field))
-                        return None
-                    else:
-                        raise e
-        logging.info("distinct {} values: {}".format(field_type, distinct_values))
-        return distinct_values
 
     def get_samples(self) -> List[Metadata]:
         """Retrieve all sample records"""
