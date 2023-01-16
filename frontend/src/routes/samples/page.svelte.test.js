@@ -45,7 +45,7 @@ it("shows the app menu w/ the expected links", () => {
 
   const { getByLabelText, queryByLabelText } = render(DataViewerPage);
 
-  expect(queryByLabelText("View and download sample data")).toBeNull();
+  expect(queryByLabelText("Download sample data")).toBeNull();
   expect(getByLabelText("Upload metadata")).toBeDefined();
   expect(getByLabelText("Upload QC data")).toBeDefined();
   expect(getByLabelText("Upload in-silico data")).toBeDefined();
