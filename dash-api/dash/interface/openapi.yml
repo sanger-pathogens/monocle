@@ -416,7 +416,112 @@ paths:
           description: "Authorization information is missing or invalid."
         "404":
           description: "No samples were found that matched the request criteria."
-  
+ 
+  /get_distinct_values:
+    post:
+      operationId: dash.api.routes.get_distinct_values_route
+      summary: "Return distinct values found in metadata, in silico or QC data fields"
+      parameters:
+        - name: X-Remote-User
+          in: header
+          description: "Username."
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserName"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetDistinctValuesInput"
+            example:
+              { "fields":
+                  [  {  "field type":    "metadata",
+                        "field names":   ["serotype", "age_group"]
+                        },
+                     {  "field type":    "in silico",
+                        "field names":   ["ST", "cps_type"]
+                        }
+                     ],
+                "sample filters":
+                  {  "batches": [
+                        {
+                        "institution key": "MinHeaCenLab",
+                        "batch date": "2019-11-15"
+                        }
+                     ],
+                     "metadata": {
+                        "age_group": [
+                        "adult"
+                        ]
+                     },
+                     "in silico": {
+                        "ST": [
+                        "1",
+                        "12",
+                        "14"
+                        ]
+                     }
+                  }
+                }
+                
+      responses:
+        "200":
+          description: "The operation was successful."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distinct values:
+                    $ref: "#/components/schemas/GetDistinctValuesOutput"
+              example:
+                { "distinct values": [
+                     {  "field type": "metadata",
+                        "fields":     [   {  "name":     "serotype",
+                                             "values":   ["Ia", "Ib", "III"],
+                                             "matches":  [  {"value": "Ia",  "number": 0 },
+                                                            {"value": "Ib",  "number": 7 },
+                                                            {"value": "III", "number": 4 }
+                                                            ]
+
+                                             },
+                                          {  "name":     "age_group",
+                                             "values":   ["adult", "adolescent", "infant"],
+                                             "matches":  [  {"value": "adult",      "number": 15 },
+                                                            {"value": "adolescent", "number": 7 },
+                                                            {"value": "infant",     "number": 0 }
+                                                            ]
+                                             }
+                                       ]
+                        },
+                     {  "field type": "in silico",
+                        "fields":      [  {  "name": "ST",
+                                             "values": ["1", "1*", "10", "103", "103*?"],
+                                             "matches":  [  {"value": "1",     "number": 4 },
+                                                            {"value": "1*",    "number": 3 },
+                                                            {"value": "103",   "number": 0 },
+                                                            {"value": "103*?", "number": 0 }
+                                                            ]
+                                             },
+                                          {  "name": "cps_type",
+                                             "values": ["II", "III", "III/V", "Ia/II"],
+                                             "matches":  [  {"value": "II",    "number": 4 },
+                                                            {"value": "III",   "number": 3 },
+                                                            {"value": "III/V", "number": 11 },
+                                                            {"value": "Ia/II", "number": 6 }
+                                                            ]
+                                             }
+                                          ]
+                        }
+                  ]}
+                                
+                    
+        "403":
+          description: "Authorization information is missing or invalid."
+        "404":
+          description: "One or more of the requested fields not recognised."
+ 
   /get_metadata_for_download/{institution_key}/{category}/{status}:
     get:
       operationId: dash.api.routes.get_metadata_for_download_route
@@ -534,6 +639,12 @@ components:
           $ref: "#/components/schemas/SequencingFilters"
         pipeline:
           $ref: "#/components/schemas/PipelineFilters"
+        metadata:
+          $ref: "#/components/schemas/MetadataFilters"
+        in silico:
+          $ref: "#/components/schemas/InSilicoFilters"
+        qc data:
+          $ref: "#/components/schemas/QCDataFilters"
 
     SequencingFilters:
       type: object
@@ -562,7 +673,66 @@ components:
           default: false
       example:
         success: true
+
+    MetadataFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        age_group: ["adult"]
+
+    InSilicoFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        ST: ["1", "12", "14"]
+
+    QCDataFilters:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        minItems: 1
+      minItems: 0
+      example:
+        status: ["PASS"]
+
+    DataFieldType:
+       description: "The type of data field:  metadata, in silico, or QC data"
+       type: string
+       minLength: 1
+       maxLength: 20
+       pattern: ^metadata|qc data|in silico$
        
+    DataFieldName:
+       description: "The name of a data field, in either JUNO or GPS"
+       anyOf:
+         - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOMetadataFieldName"
+         - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOInSilicoFieldName"
+         - $ref: "file:///app/dash/interface/juno_objects.yml#/components/schemas/JUNOQCDataFieldName"
+         - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSMetadataFieldName"
+         - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSInSilicoFieldName"
+         - $ref: "file:///app/dash/interface/gps_objects.yml#/components/schemas/GPSQCDataFieldName"
+
     GetMetadataInput:
       type: object
       required:

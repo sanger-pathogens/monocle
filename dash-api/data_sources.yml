@@ -15,6 +15,10 @@ metadata_api_common:
    qc_data_upload          : '/qc-data-upload'
    qc_data_delete_all      : '/delete_all_qc_data'
    qc_data_key             : 'download'
+   distinct_values               : '/distinct_values'
+   distinct_in_silico_values     : '/distinct_in_silico_values'
+   distinct_qc_data_values       : '/distinct_qc_data_values'
+   distinct_values_key           : 'distinct values'
 metadata_api_juno:
    base_url                : 'http://metadata-api-juno/metadata/juno'
 metadata_api_gps:
