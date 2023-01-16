@@ -236,7 +236,7 @@
 
 <AppMenu sampleDataLink={false} />
 
-<h2>Sample data viewer</h2>
+<h2>Bulk Download</h2>
 
 {#await dataPromise}
   <LoadingIndicator />
