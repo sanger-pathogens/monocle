@@ -5,7 +5,6 @@
   } from "$lib/constants.js";
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
-  import RemoveFilterIcon from "$lib/components/icons/RemoveFilterIcon.svelte";
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
@@ -224,12 +223,6 @@
       group: institutionName || institutionKey,
     };
   }
-
-  function removeAllFilters() {
-    if (confirm("Remove all filters?")) {
-      filterStore.removeAllFilters();
-    }
-  }
 </script>
 
 <AppMenu sampleDataLink={false} />
@@ -268,15 +261,6 @@
       </button>
 
       <MetadataDownloadButton batches={selectedInstKeyBatchDatePairs} />
-
-      <button
-        on:click={removeAllFilters}
-        class="compact remove-filters-btn"
-        disabled={!filterActive ? true : null}
-        type="button"
-      >
-        Remove all filters <RemoveFilterIcon width="24" height="17" />
-      </button>
     </div>
   {/if}
 
@@ -316,11 +300,6 @@
   }
   .btn-group button {
     margin-right: 1rem;
-  }
-
-  .remove-filters-btn {
-    display: inline-flex;
-    margin-left: 4rem;
   }
 
   em {
