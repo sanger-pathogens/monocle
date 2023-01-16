@@ -19,7 +19,6 @@
   import AppMenu from "../_app-menu/index.svelte";
   import BatchSelector from "./BatchSelector.svelte";
   import BulkDownload from "./BulkDownload.svelte";
-  import Configuration from "./_metadata_viewer/Configuration.svelte";
   import MetadataDownloadButton from "./MetadataDownloadButton.svelte";
   import {
     columnsStore,
@@ -278,8 +277,6 @@
       >
         Remove all filters <RemoveFilterIcon width="24" height="17" />
       </button>
-
-      <Configuration />
     </div>
   {/if}
 

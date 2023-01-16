@@ -162,17 +162,6 @@ describe("once batches are fetched", () => {
     ).toBeTruthy();
   });
 
-  it("displays the settings button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage);
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-
-    await fireEvent.click(selectAllBtn);
-
-    expect(getByRole(ROLE_BUTTON, { name: /^Select columns/ })).toBeDefined();
-  });
-
   describe("on columns state change in the session storage", () => {
     beforeAll(() => {
       sessionStorage.setItem(SESSION_STORAGE_KEY_COLUMNS_STATE, "{}");
