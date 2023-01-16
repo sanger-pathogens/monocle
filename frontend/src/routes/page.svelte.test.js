@@ -66,7 +66,7 @@ describe("after data fetching", () => {
     });
   });
 
-  it("displays the menu w/ the data viewer link", async () => {
+  it("displays the menu w/ the bulk download page link", async () => {
     const { findAllByRole } = render(DashboardPage);
 
     const linksContainer = (await findAllByRole("navigation"))[0];
