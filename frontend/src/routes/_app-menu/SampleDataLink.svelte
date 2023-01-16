@@ -1,5 +1,5 @@
 <script>
-  import SampleDataViewerIcon from "$lib/components/icons/SampleDataViewerIcon.svelte";
+  import SampleDataViewerIcon from "$lib/components/icons/BulkDownloadIcon.svelte";
 </script>
 
 <a
