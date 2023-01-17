@@ -465,8 +465,8 @@ class MonocleSampleData:
         Supports `batches` filter:
            "batches": [{"institution key": "MinHeaCenLab", "batch date": "2019-11-15"}, ... ]
 
-        Also metadata, in silico and QC data filters, e.g.
-           "metadata": {"serotype": ["I", "IV"], ...}
+        Also filters based on sequencing/pipeline status, e.g.
+           "sequencing": {"success": True}
 
         Return format:
 
@@ -537,14 +537,6 @@ class MonocleSampleData:
             filtered_samples = self._apply_sequencing_filters(filtered_samples, sample_filters["sequencing"], lane_data)
         if "pipeline" in sample_filters:
             filtered_samples = self._apply_pipeline_filters(filtered_samples, sample_filters["pipeline"], lane_data)
-
-        # if filters based on metadata, in silico or QC data were passed, filter the results
-        if "metadata" in sample_filters:
-            filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters["metadata"])
-        if "in silico" in sample_filters:
-            filtered_samples = self._apply_in_silico_filters(filtered_samples, sample_filters["in silico"])
-        if "qc data" in sample_filters:
-            filtered_samples = self._apply_qc_data_filters(filtered_samples, sample_filters["qc data"])
 
         logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
         return filtered_samples
@@ -628,85 +620,6 @@ class MonocleSampleData:
         if this_lane_pipeline_status["SUCCESS"]:
             this_lane_success = True
         return (this_lane_complete, this_lane_success)
-
-    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-        logging.info(
-            "{}._apply_metadata_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_samples_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_samples_matching_metadata_filters(
-                self.current_project, metadata_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(
-                __class__.__name__, len(matching_samples_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            if this_sample["sanger_sample_id"] in matching_samples_ids_set
-        ]
-        filtered_samples = intersection
-        logging.info("sample list filtered by metadata contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
-
-    def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
-        logging.info(
-            "{}._apply_in_silico_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_lanes_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_lanes_matching_in_silico_filters(
-                self.current_project, in_silico_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(
-                __class__.__name__, len(matching_lanes_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            # if any values in of this_sample['lanes'] occurs in matching_lanes_ids_set
-            if any(map(lambda v: v in this_sample["lanes"], matching_lanes_ids_set))
-        ]
-
-        filtered_samples = intersection
-        logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
-
-    def _apply_qc_data_filters(self, filtered_samples, qc_data_filters):
-        logging.info(
-            "{}._apply_qc_data_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_lanes_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_lanes_matching_qc_data_filters(
-                self.current_project, qc_data_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_lanes_matching_qc_data_filters returned {} lanes".format(
-                __class__.__name__, len(matching_lanes_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            # if any values in of this_sample['lanes'] occurs in matching_lanes_ids_set
-            if any(map(lambda v: v in this_sample["lanes"], matching_lanes_ids_set))
-        ]
-
-        filtered_samples = intersection
-        logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
 
     def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}
