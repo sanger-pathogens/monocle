@@ -386,122 +386,6 @@ class MonocleSampleData:
                         del qc_data[this_column]
         return combined_metadata
 
-    def get_distinct_values(self, fields, sample_filters=None):
-        """
-        Pass a dict with one or more of 'metadata', 'in silico' or 'qc data'
-        as keys; values are arrays of field names.
-        Returns array of GetDistinctValuesOutput objects (as defined in OpenAPI spec.)
-        or None in event of a non-existent field being named in the request
-        This is pretty a proxy for DataSources.sample_metadata.SampleMetadata.get_distinct_values,
-        except that 404 are caught and result in returning `None`
-        """
-        institution_keys = list(self.get_sample_tracking_service().get_institutions())
-        try:
-            distinct_values = self.sample_metadata_source.get_distinct_values(
-                self.current_project, fields, institution_keys
-            )
-        except urllib.error.HTTPError as e:
-            if "404" not in str(e):
-                raise e
-            return None
-
-        # if sample filters were passed, insert a 'matches' dict into each field in the
-        # response, listing each value and the number of hits
-        if sample_filters is not None:
-            # we would need to call get_metadata for every field in the loop below
-            # but many of the calls would be identical => use a cache
-            metadata_cache = {}
-
-            logging.info("starting gathering of number of matches for each distinct value")
-            for this_field_type_obj in distinct_values:
-                this_field_type = this_field_type_obj["field type"]
-                for this_field_obj in this_field_type_obj["fields"]:
-                    this_field_obj["matches"] = []
-                    this_field = this_field_obj["name"]
-                    # get sample metadata so we can search it for matching samples for each distinct value for the current field
-                    # *BUT* the sample filters need to be changed each time, to make sure the current field is not
-                    # in the sample filters used by get_metadata()
-                    temp_filters = self._get_sample_filters_excluding_field(sample_filters, this_field_type, this_field)
-                    cache_key = repr(sorted(temp_filters.items()))
-                    if cache_key in metadata_cache:
-                        logging.debug("retrieving metadata for field {} from the cache".format(this_field))
-                        matching_sample_metadata = metadata_cache[cache_key]
-                    else:
-                        matching_sample_metadata = self.get_metadata(
-                            temp_filters, include_in_silico=True, include_qc_data=True
-                        )
-                        metadata_cache[cache_key] = matching_sample_metadata
-                    # Converting submitting institution keys to names is needed, as samples returned by
-                    # MetadataDownload.get_metadata() have institution names instead of keys (for display purposes).
-                    these_field_values_to_count_matches = (
-                        self._convert_instituion_keys_to_names(this_field_obj["values"])
-                        if this_field == FIELD_NAME_SUBMITTING_INSTITUTION
-                        else this_field_obj["values"]
-                    )
-                    for i, this_value in enumerate(this_field_obj["values"]):
-                        this_field_obj["matches"].append(
-                            {
-                                "value": this_value,
-                                "number": self._get_number_samples_matching_this_field_value(
-                                    matching_sample_metadata,
-                                    this_field_type,
-                                    this_field,
-                                    these_field_values_to_count_matches[i],
-                                ),
-                            }
-                        )
-            logging.info("finished gathering of number of matches for each distinct value")
-
-        return distinct_values
-
-    def _convert_instituion_keys_to_names(self, institution_keys):
-        if self._institutions is None:
-            self._institutions = self._get_institutions()
-        return list(map(self._convert_instituion_key_to_name, institution_keys))
-
-    def _convert_instituion_key_to_name(self, institution_key):
-        try:
-            return self._institutions[institution_key]["name"]
-        except KeyError:
-            logging.error(
-                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution."
-            )
-            raise
-
-    def _get_institutions(self):
-        return self.get_sample_tracking_service().get_institutions()
-
-    def _get_sample_filters_excluding_field(self, sample_filters, field_type, field):
-        """
-        Pass sample filters and a specific field.
-        Returns a copy of the sample filters which do NOT include the specified field.
-        We need this if we want to find out which samples have a specific value of field
-        "foo": if foo occurs in the sample filters, then we'll only see a subset of all of
-        its values.
-        """
-        modified_filters = deepcopy(sample_filters)
-        if field_type in modified_filters:
-            modified_filters[field_type].pop(field, None)
-            # if the field removed was the only field of its type,
-            # the field type also needs to be removed from the filters dict
-            if not modified_filters[field_type]:
-                modified_filters.pop(field_type)
-        return modified_filters
-
-    def _get_number_samples_matching_this_field_value(self, matching_sample_metadata, field_type, field, value):
-        """
-        Pass sample metadata , and a value for a specific field.
-        Returns the number of samples that match the field value that is passed.
-        """
-        num_matches = 0
-        for this_sample in matching_sample_metadata.get("samples", []):
-            if field_type in this_sample:
-                if this_sample[field_type][field]["value"] == value:
-                    num_matches += 1
-        logging.debug("found {} instances of {} field {} with value {}".format(num_matches, field_type, field, value))
-
-        return num_matches
-
     def get_bulk_download_info(self, sample_filters, **kwargs):
         """
         Pass sample filters dict (describes the filters applied in the front end)
@@ -569,8 +453,8 @@ class MonocleSampleData:
         Supports `batches` filter:
            "batches": [{"institution key": "MinHeaCenLab", "batch date": "2019-11-15"}, ... ]
 
-        Also metadata, in silico and QC data filters, e.g.
-           "metadata": {"serotype": ["I", "IV"], ...}
+        Also filters based on sequencing/pipeline status, e.g.
+           "sequencing": {"success": True}
 
         Return format:
 
@@ -641,14 +525,6 @@ class MonocleSampleData:
             filtered_samples = self._apply_sequencing_filters(filtered_samples, sample_filters["sequencing"], lane_data)
         if "pipeline" in sample_filters:
             filtered_samples = self._apply_pipeline_filters(filtered_samples, sample_filters["pipeline"], lane_data)
-
-        # if filters based on metadata, in silico or QC data were passed, filter the results
-        if "metadata" in sample_filters:
-            filtered_samples = self._apply_metadata_filters(filtered_samples, sample_filters["metadata"])
-        if "in silico" in sample_filters:
-            filtered_samples = self._apply_in_silico_filters(filtered_samples, sample_filters["in silico"])
-        if "qc data" in sample_filters:
-            filtered_samples = self._apply_qc_data_filters(filtered_samples, sample_filters["qc data"])
 
         logging.info("fully filtered sample list contains {} samples".format(len(filtered_samples)))
         return filtered_samples
@@ -732,85 +608,6 @@ class MonocleSampleData:
         if this_lane_pipeline_status["SUCCESS"]:
             this_lane_success = True
         return (this_lane_complete, this_lane_success)
-
-    def _apply_metadata_filters(self, filtered_samples, metadata_filters):
-        logging.info(
-            "{}._apply_metadata_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_samples_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_samples_matching_metadata_filters(
-                self.current_project, metadata_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_samples_matching_metadata_filters returned {} samples".format(
-                __class__.__name__, len(matching_samples_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            if this_sample["sanger_sample_id"] in matching_samples_ids_set
-        ]
-        filtered_samples = intersection
-        logging.info("sample list filtered by metadata contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
-
-    def _apply_in_silico_filters(self, filtered_samples, in_silico_filters):
-        logging.info(
-            "{}._apply_in_silico_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_lanes_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_lanes_matching_in_silico_filters(
-                self.current_project, in_silico_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_lanes_matching_in_silico_filters returned {} lanes".format(
-                __class__.__name__, len(matching_lanes_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            # if any values in of this_sample['lanes'] occurs in matching_lanes_ids_set
-            if any(map(lambda v: v in this_sample["lanes"], matching_lanes_ids_set))
-        ]
-
-        filtered_samples = intersection
-        logging.info("sample list filtered by in silico data contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
-
-    def _apply_qc_data_filters(self, filtered_samples, qc_data_filters):
-        logging.info(
-            "{}._apply_qc_data_filters filtering initial list of {} samples".format(
-                __class__.__name__, len(filtered_samples)
-            )
-        )
-        matching_lanes_ids_set = set(
-            self.get_sample_tracking_service().sample_metadata.get_lanes_matching_qc_data_filters(
-                self.current_project, qc_data_filters
-            )
-        )
-        logging.info(
-            "{}.sample_tracking.sample_metadata.get_lanes_matching_qc_data_filters returned {} lanes".format(
-                __class__.__name__, len(matching_lanes_ids_set)
-            )
-        )
-        intersection = [
-            this_sample
-            for this_sample in filtered_samples
-            # if any values in of this_sample['lanes'] occurs in matching_lanes_ids_set
-            if any(map(lambda v: v in this_sample["lanes"], matching_lanes_ids_set))
-        ]
-
-        filtered_samples = intersection
-        logging.info("sample list filtered by QC data contains {} samples".format(len(filtered_samples)))
-        return filtered_samples
 
     def _get_sanger_sample_id_to_public_name_dict(self, institution_keys):
         sanger_sample_id_to_public_name = {}
