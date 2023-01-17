@@ -386,18 +386,6 @@ class MonocleSampleData:
                         del qc_data[this_column]
         return combined_metadata
 
-    def _convert_instituion_key_to_name(self, institution_key):
-        try:
-            return self._institutions[institution_key]["name"]
-        except KeyError:
-            logging.error(
-                f"No institution found for key {institution_key}: the key may be wrong, or the user may not be a member of this institution."
-            )
-            raise
-
-    def _get_institutions(self):
-        return self.get_sample_tracking_service().get_institutions()
-
     def get_bulk_download_info(self, sample_filters, **kwargs):
         """
         Pass sample filters dict (describes the filters applied in the front end)
