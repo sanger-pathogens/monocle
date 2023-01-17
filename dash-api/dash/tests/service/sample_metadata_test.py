@@ -36,8 +36,6 @@ class SampleMetadataTest(TestCase):
                                              ]
                               }"""
 
-    mock_get_samples_matching_metadata_filters = """[  "fake_sample_id_1", "fake_sample_id_2", "fake_sample_id_3" ]"""
-
     mock_project_information = """{
                                 "name": "JUNO Project",
                                 "logo_url": "/imgs/junologo.svg",
@@ -119,44 +117,6 @@ class SampleMetadataTest(TestCase):
                 self.assertIsInstance(
                     this_sample[required], str, msg="sample item {} should be a string".format(required)
                 )
-
-    @patch("DataSources.sample_metadata.MonocleClient.filters")
-    def test_get_samples_matching_metadata_filters(self, mock_filters):
-        mock_filters.return_value = []
-        self.sample_metadata.get_samples_matching_metadata_filters(
-            self.mock_project, {self.mock_metadata_field: self.mock_metadata_values}
-        )
-        mock_filters.assert_called_once_with(
-            self.mock_project, [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
-        )
-
-    @patch("DataSources.sample_metadata.MonocleClient.filters_in_silico")
-    def test_get_lanes_matching_in_silico_filters(self, mock_filters_in_silico):
-        mock_filters_in_silico.return_value = []
-        self.sample_metadata.get_lanes_matching_in_silico_filters(
-            self.mock_project, {self.mock_in_silico_field: self.mock_in_silico_values}
-        )
-        mock_filters_in_silico.assert_called_once_with(
-            self.mock_project, [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
-        )
-
-    @patch("DataSources.sample_metadata.MonocleClient.make_request")
-    def test_filters(self, mock_query):
-        mock_query.return_value = "[]"
-        mock_payload = [{"name": self.mock_metadata_field, "values": self.mock_metadata_values}]
-        self.sample_metadata.monocle_client.filters(self.mock_project, mock_payload)
-        mock_query.assert_called_once_with(
-            "http://fake-container/metadata/juno/sample_ids_matching_metadata", post_data=mock_payload
-        )
-
-    @patch("DataSources.sample_metadata.MonocleClient.make_request")
-    def test_filters_in_silico(self, mock_query):
-        mock_query.return_value = "[]"
-        mock_payload = [{"name": self.mock_in_silico_field, "values": self.mock_in_silico_values}]
-        self.sample_metadata.monocle_client.filters_in_silico(self.mock_project, mock_payload)
-        mock_query.assert_called_once_with(
-            "http://fake-container/metadata/juno/lane_ids_matching_in_silico_data", post_data=mock_payload
-        )
 
     @patch.object(MonocleClient, "make_request")
     def test_reject_bad_get_sample_response(self, mock_request):

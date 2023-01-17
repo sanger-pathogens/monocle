@@ -54,87 +54,6 @@ class SampleMetadata:
                 samples.append(this_sample)
         return samples
 
-    def get_samples_matching_metadata_filters(self, project, metadata_filters):
-        """
-        Pass a list of filters, as defined by the metadata API /sample_ids_matching_metadata endpoint.
-        Returns a list of sample IDs matching the filter conditions
-        """
-        filters_payload = []
-        for this_field in metadata_filters:
-            these_values = metadata_filters[this_field]
-            assert isinstance(
-                these_values, list
-            ), "{}.get_samples_matching_metadata_filters() expects metadata filter value to be a list, not {}".format(
-                __class__.__name__, type(these_values)
-            )
-            filters_payload.append({"name": this_field, "values": these_values})
-        logging.debug(
-            "{}.get_samples_matching_metadata_filters() created filters payload {}".format(
-                __class__.__name__, filters_payload
-            )
-        )
-
-        results = self.monocle_client.filters(project, filters_payload)
-        logging.info(
-            "{}.get_samples_matching_metadata_filters() got {} results(s)".format(__class__.__name__, len(results))
-        )
-        return results
-
-    def get_lanes_matching_in_silico_filters(self, project, in_silico_filters):
-        """
-        Pass a list of filters, as defined by the metadata API /lane_ids_matching_in_silico_data endpoint.
-        Returns a list of lane IDs matching the filter conditions.
-        (N.B. in silico data are identifier only by lane ID, not by sample ID)
-        """
-        filters_payload = []
-        for this_field in in_silico_filters:
-            these_values = in_silico_filters[this_field]
-            assert isinstance(
-                these_values, list
-            ), "{}.get_lanes_matching_in_silico_filters() expects in silico filter value to be a list, not {}".format(
-                __class__.__name__, type(these_values)
-            )
-            filters_payload.append({"name": this_field, "values": these_values})
-        logging.debug(
-            "{}.get_lanes_matching_in_silico_filters() created filters payload {}".format(
-                __class__.__name__, filters_payload
-            )
-        )
-
-        results = self.monocle_client.filters_in_silico(project, filters_payload)
-        logging.info(
-            "{}.get_lanes_matching_in_silico_filters() got {} results(s)".format(__class__.__name__, len(results))
-        )
-        return results
-
-    def get_lanes_matching_qc_data_filters(self, project, qc_data_filters):
-        """
-        Pass a list of filters, as defined by the metadata API /lane_ids_matching_qc_data endpoint.
-        Returns a list of lane IDs matching the filter conditions.
-        (N.B. in silico data are identifier only by lane ID, not by sample ID)
-        """
-        filters_payload = []
-        for this_field in qc_data_filters:
-            these_values = qc_data_filters[this_field]
-            assert isinstance(
-                these_values, list
-            ), "{}.get_lanes_matching_qc_data_filters() expects QC data filter value to be a list, not {}".format(
-                __class__.__name__, type(these_values)
-            )
-            filters_payload.append({"name": this_field, "values": these_values})
-        logging.debug(
-            "{}.get_lanes_matching_qc_data_filters() created filters payload {}".format(
-                __class__.__name__, filters_payload
-            )
-        )
-
-        results = self.monocle_client.filters_qc_data(project, filters_payload)
-
-        logging.info(
-            "{}.get_lanes_matching_qc_data_filters() got {} results(s)".format(__class__.__name__, len(results))
-        )
-        return results
-
 
 class ProtocolError(Exception):
     pass
@@ -149,8 +68,6 @@ class MonocleClient:
         "project_information",
         "project_information_key",
         "samples",
-        "filter_by_metadata",
-        "filter_by_in_silico",
         "samples_key",
     ]
 
@@ -213,33 +130,6 @@ class MonocleClient:
         logging.debug("{}.samples() returned {}".format(__class__.__name__, response))
         results = self.parse_response(endpoint_url, response, required_keys=[this_config["samples_key"]])
         return results[this_config["samples_key"]]
-
-    def filters(self, project, filters):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["filter_by_metadata"]
-        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
-        response = self.make_request(endpoint_url, post_data=filters)
-        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        results = json.loads(response)
-        return results
-
-    def filters_in_silico(self, project, filters):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["filter_by_in_silico"]
-        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
-        response = self.make_request(endpoint_url, post_data=filters)
-        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        results = json.loads(response)
-        return results
-
-    def filters_qc_data(self, project, filters):
-        this_config = self.config[project]
-        endpoint_url = this_config["base_url"] + this_config["filter_by_qc_data"]
-        logging.debug("{}.filters() using endpoint {}, query = {}".format(__class__.__name__, endpoint_url, filters))
-        response = self.make_request(endpoint_url, post_data=filters)
-        logging.debug("{}.filters() returned {}".format(__class__.__name__, response))
-        results = json.loads(response)
-        return results
 
     def make_request(self, request_url, post_data=None):
         request_data = None

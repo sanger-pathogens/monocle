@@ -831,21 +831,6 @@ class MonocleSampleDataTest(TestCase):
         self.assertEqual(expected_samples, actual_samples)
 
     @patch.object(SampleMetadata, "get_samples")
-    @patch.object(SampleMetadata, "get_samples_matching_metadata_filters")
-    def test_get_filtered_samples_with_metadata_filter(
-        self, get_samples_matching_metadata_filters_mock, get_sample_metadata_mock
-    ):
-        get_sample_metadata_mock.return_value = self.mock_samples
-        get_samples_matching_metadata_filters_mock.return_value = self.mock_sample_id_list
-        actual_samples = self.monocle_data.get_filtered_samples(
-            {"batches": self.inst_key_batch_date_pairs, "metadata": {"serotype": ["Ia", "Ib"]}}
-        )
-
-        expected_samples = self.mock_filtered_samples
-        # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(expected_samples, actual_samples))
-        self.assertEqual(expected_samples, actual_samples)
-
-    @patch.object(SampleMetadata, "get_samples")
     def test_get_filtered_samples_with_sequencing_success_filter(self, get_sample_metadata_mock):
         self.get_mock_data2()
 
