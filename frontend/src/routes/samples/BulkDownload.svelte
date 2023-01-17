@@ -104,29 +104,32 @@
   }
 </script>
 
-<form aria-labelledby={ariaLabelledby} on:submit|preventDefault={onSubmit}>
-  <fieldset
-    disabled={downloadLinksRequested}
-    class:disabled={downloadLinksRequested}
-  >
-    <fieldset class="data-type-section">
-      <legend>Data type</legend>
+<form
+  aria-labelledby={ariaLabelledby}
+  class:submitted={downloadLinksRequested}
+  on:submit|preventDefault={onSubmit}
+>
+  <fieldset disabled={downloadLinksRequested}>
+    {#if !downloadLinksRequested}
+      <fieldset class="data-type-section">
+        <legend>Data type</legend>
 
-      <label>
-        <input type="checkbox" bind:checked={formValues.assemblies} />
-        Assemblies
-      </label>
+        <label>
+          <input type="checkbox" bind:checked={formValues.assemblies} />
+          Assemblies
+        </label>
 
-      <label>
-        <input type="checkbox" bind:checked={formValues.annotations} />
-        Annotations
-      </label>
+        <label>
+          <input type="checkbox" bind:checked={formValues.annotations} />
+          Annotations
+        </label>
 
-      <label>
-        <input type="checkbox" bind:checked={formValues.reads} />
-        Reads ( ⚠️ may increase the total size drastically)
-      </label>
-    </fieldset>
+        <label>
+          <input type="checkbox" bind:checked={formValues.reads} />
+          Reads ( ⚠️ may increase the total size drastically)
+        </label>
+      </fieldset>
+    {/if}
 
     <fieldset>
       <dl>
@@ -146,40 +149,43 @@
           {/if}
         </dd>
 
-        <dt
-          aria-label="Choose a maximum size per ZIP archive (defaults to the maximum size per archive)"
-        >
-          Maximum size per ZIP archive:
-        </dt>
-        <dd>
-          {#if formComplete}
-            {#if estimate}
-              <select
-                bind:this={sizeSelectorElement}
-                disabled={estimate.sizePerZipOptions?.length <= 1}
-              >
-                {#each estimate.sizePerZipOptions || [] as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
-                  {@const numZips = Math.ceil(
-                    estimate.numSamples / maxSamplesPerZip
-                  )}
-                  <option value={maxSamplesPerZip} selected={i === 0}>
-                    {sizePerZip} ({numZips} ZIP archive{numZips === 1
-                      ? ""
-                      : "s"})
-                  </option>
-                {/each}
-              </select>
+        {#if !downloadLinksRequested}
+          <dt
+            aria-label="Download split (keep the default unless your connection is unstable)"
+          >
+            Download split (keep the default unless your connection is
+            unstable):
+          </dt>
+          <dd>
+            {#if formComplete}
+              {#if estimate}
+                <select
+                  bind:this={sizeSelectorElement}
+                  disabled={estimate.sizePerZipOptions?.length <= 1}
+                >
+                  {#each estimate.sizePerZipOptions || [] as { sizePerZip, maxSamplesPerZip }, i (`${sizePerZip}${maxSamplesPerZip}`)}
+                    {@const numZips = Math.ceil(
+                      estimate.numSamples / maxSamplesPerZip
+                    )}
+                    <option value={maxSamplesPerZip} selected={i === 0}>
+                      {numZips} ZIP archive{numZips === 1
+                        ? ""
+                        : `s (${sizePerZip} each)`}
+                    </option>
+                  {/each}
+                </select>
+              {:else}
+                <LoadingIcon
+                  label="Estimating the size options for the download. Please wait"
+                />
+              {/if}
             {:else}
-              <LoadingIcon
-                label="Estimating the size options for the download. Please wait"
-              />
+              <select disabled>
+                <option>0</option>
+              </select>
             {/if}
-          {:else}
-            <select disabled>
-              <option>0</option>
-            </select>
-          {/if}
-        </dd>
+          </dd>
+        {/if}
       </dl>
     </fieldset>
   </fieldset>
@@ -292,8 +298,17 @@
     margin: 0;
   }
 
-  .disabled select:disabled {
-    opacity: 1;
+  .submitted,
+  .submitted dl {
+    margin-bottom: 0;
+  }
+  .submitted dl,
+  .submitted button[type="submit"] {
+    margin-top: 0;
+  }
+
+  fieldset[disabled] {
+    opacity: 0.65;
   }
 
   button[type="submit"] {
@@ -308,6 +323,7 @@
     flex-wrap: wrap;
     margin-bottom: 0;
     padding-left: 1rem;
+    margin-top: 0;
   }
   ol li {
     margin-right: 2rem;
