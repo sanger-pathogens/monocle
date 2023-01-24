@@ -37,8 +37,10 @@ class MonocleSampleTrackingTest(TestCase):
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
     mock_inst_view_dir = "dash/tests/mock_data/monocle_juno_institution_view"
 
+    mock_unwanted_lanes_file = "dash/tests/mock_data/unwanted-lanes.txt"
+
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"JUNO_DATA": mock_monocle_data_dir}
+    mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "UNWANTED_LANES_FILE": mock_unwanted_lanes_file}
 
     # this is the mock date for the instantiation of MonocleSampleTracking; it must match the latest month used in `expected_progress_data`
     # (because get_progeress() always returns date values up to "now")
@@ -367,11 +369,13 @@ class MonocleSampleTrackingTest(TestCase):
         finally:
             self.monocle_sample_tracking.samples_data = mem_samples
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_get_sequencing_status(self):
         seq_status_data = self.monocle_sample_tracking.get_sequencing_status()
 
         self.assertEqual(self.expected_seq_status, seq_status_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SequencingStatus, "get_multiple_samples")
     def test_get_sequencing_status_droppout(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
@@ -388,6 +392,7 @@ class MonocleSampleTrackingTest(TestCase):
 
         self.assertEqual(self.expected_batches, batches_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SequencingStatus, "get_multiple_samples")
     def test_get_batches_dropouts(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
@@ -400,12 +405,14 @@ class MonocleSampleTrackingTest(TestCase):
 
         self.assertEqual(self.expected_dropout_data, batches_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_sequencing_status_summary(self):
         seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
         self.assertEqual(self.expected_seq_summary, seq_status_summary)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_sequencing_status_summary_dropout(self):
         self.monocle_sample_tracking.sequencing_status_data = self.expected_dropout_data
 
