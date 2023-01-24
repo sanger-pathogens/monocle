@@ -117,6 +117,8 @@ services:
       - ./my.cnf:/app/my.cnf
       - ./mlwh-api.yml:/app/mlwh-api.yml
       - ./openldap-env.yaml:/app/openldap-env.yaml
+      # unwanted-lanes.txt must have the a path in the container that matches environment variable UNWANTED_LANES_FILE
+      - ./unwanted-lanes.txt:/app/unwanted-lanes.txt
     environment:
       # if ENABLE_SWAGGER_UI is true the UI should be available at /dashboard-api/ui/ (see nginx.prod.proxy.conf)
       - ENABLE_SWAGGER_UI=true
@@ -132,6 +134,8 @@ services:
       - GUNICORN_PORT=5000
       - GUNICORN_WORKERS=16
       - GUNICORN_TIMEOUT=120
+      # UNWANTED_LANES_FILE must be the path in the container of the unwanted lanes file
+      - UNWANTED_LANES_FILE=/app/unwanted-lanes.txt
   frontend:
     image: "gitlab-registry.internal.sanger.ac.uk/sanger-pathogens/monocle/monocle-frontend:<DOCKERTAG>"
     user: <USER_UID>:<USER_GID>

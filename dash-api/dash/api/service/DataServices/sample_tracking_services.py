@@ -4,6 +4,7 @@ import urllib.request
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
+from os import environ
 
 import DataSources.institution_data
 import DataSources.metadata_download
@@ -22,6 +23,8 @@ FORMAT_DATE = "%Y-%m-%d"
 # format of timestamp returned in MLWH queries
 FORMAT_MLWH_DATETIME = f"{FORMAT_DATE}T%H:%M:%S%z"
 SAMPLE_TABLE_INST_KEY_COLUMN_NAME = "submitting_institution"
+
+UNWANTED_LANES_FILE_ENVIRON = "UNWANTED_LANES_FILE"
 
 
 class MonocleSampleTracking:
@@ -267,6 +270,7 @@ class MonocleSampleTracking:
                     ] = "Server Error: Records cannot be collected at this time. Please try again later."
             if API_ERROR_KEY not in sequencing_status[this_institution]:
                 sequencing_status[this_institution][API_ERROR_KEY] = None
+        self._remove_unwanted_lanes(sequencing_status)
         self.sequencing_status_data = sequencing_status
         return self.sequencing_status_data
 
@@ -573,3 +577,45 @@ class MonocleSampleTracking:
                     sequenced_date = self.convert_mlwh_datetime_stamp_to_date_stamp(this_lane["complete_datetime"])
                     num_lanes_sequenced_by_date[sequenced_date] += 1
         return num_lanes_sequenced_by_date
+
+    def _remove_unwanted_lanes(self, sequencing_status):
+        # get uwanted lanes' ID from file specified by environment variable
+        try:
+            unwanted_lanes_file_path = environ[UNWANTED_LANES_FILE_ENVIRON]
+            with open(unwanted_lanes_file_path, "r") as unwanted_lanes_file:
+                unwanted_lanes_list = [this_line.rstrip() for this_line in unwanted_lanes_file]
+        except KeyError as e:
+            raise KeyError("required environment variable {} is not set".format(UNWANTED_LANES_FILE_ENVIRON)) from e
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                "file of unwanted lane IDs not found (if no unwanted lanes, provide an empty file)"
+            ) from e
+        logging.info("Found {} unwanted lane IDs from {}".format(len(unwanted_lanes_list), unwanted_lanes_file_path))
+
+        for this_institution in sequencing_status:
+            for this_sample in sequencing_status[this_institution]:
+                if this_sample != API_ERROR_KEY:
+                    # some samples legitimately have no sequency status data => this will be None
+                    if sequencing_status[this_institution][this_sample] is not None:
+                        this_sample_lanes_list = sequencing_status[this_institution][this_sample].get("lanes", [])
+                        # this will be the list of lanes that are wanted
+                        filtered_lanes_list = []
+                        for this_lane in this_sample_lanes_list:
+                            if this_lane["id"] in unwanted_lanes_list:
+                                logging.debug(
+                                    "removing lane {} ({} sample {})".format(
+                                        this_lane["id"], this_institution, this_sample
+                                    )
+                                )
+                            else:
+                                filtered_lanes_list.append(this_lane)
+                        # reset `this_sample` lanes list to the new list of wanted lanes
+                        if len(this_sample_lanes_list) != len(filtered_lanes_list):
+                            logging.info(
+                                "{} sample {} had {} lanes, reduced to {}".format(
+                                    this_institution, this_sample, len(this_sample_lanes_list), len(filtered_lanes_list)
+                                )
+                            )
+                        sequencing_status[this_institution][this_sample]["lanes"] = filtered_lanes_list
+
+        return sequencing_status
