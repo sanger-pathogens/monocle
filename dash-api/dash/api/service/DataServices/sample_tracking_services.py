@@ -592,6 +592,10 @@ class MonocleSampleTracking:
             ) from e
         logging.info("Found {} unwanted lane IDs from {}".format(len(unwanted_lanes_list), unwanted_lanes_file_path))
 
+        # return now if there are no unwanted lanes
+        if 0 == len(unwanted_lanes_list):
+            return sequencing_status
+
         for this_institution in sequencing_status:
             for this_sample in sequencing_status[this_institution]:
                 if this_sample != API_ERROR_KEY:
@@ -616,6 +620,8 @@ class MonocleSampleTracking:
                                     this_institution, this_sample, len(this_sample_lanes_list), len(filtered_lanes_list)
                                 )
                             )
-                        sequencing_status[this_institution][this_sample]["lanes"] = filtered_lanes_list
+                            sequencing_status[this_institution][this_sample]["lanes"] = filtered_lanes_list
+                        else:
+                            logging.debug("{} sample {} lanes unnaffected".format(this_institution, this_sample))
 
         return sequencing_status

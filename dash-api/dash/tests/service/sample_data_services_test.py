@@ -66,7 +66,7 @@ class MonocleSampleDataTest(TestCase):
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
     mock_inst_view_dir = "dash/tests/mock_data/monocle_juno_institution_view"
 
-    mock_unwanted_lanes_file = "dash/tests/mock_data/unwanted-lanes.txt"
+    mock_unwanted_lanes_file = "dash/tests/mock_data/unwanted-lanes-empty.txt"
 
     # this is the route used to download data
     mock_download_route = "/data_route_via_nginx"
