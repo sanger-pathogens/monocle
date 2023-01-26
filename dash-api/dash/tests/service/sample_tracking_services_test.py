@@ -1,5 +1,6 @@
 import urllib.error
 import urllib.request
+from copy import deepcopy
 from datetime import datetime
 from os import environ
 from unittest import TestCase
@@ -37,8 +38,10 @@ class MonocleSampleTrackingTest(TestCase):
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
     mock_inst_view_dir = "dash/tests/mock_data/monocle_juno_institution_view"
 
+    mock_unwanted_lanes_file = "dash/tests/mock_data/unwanted-lanes.txt"
+
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"JUNO_DATA": mock_monocle_data_dir}
+    mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "UNWANTED_LANES_FILE": mock_unwanted_lanes_file}
 
     # this is the mock date for the instantiation of MonocleSampleTracking; it must match the latest month used in `expected_progress_data`
     # (because get_progeress() always returns date values up to "now")
@@ -71,7 +74,7 @@ class MonocleSampleTrackingTest(TestCase):
             "public_name": f"{PUBLIC_NAME}_4",
         },
     ]
-    mock_seq_status = {
+    mock_seq_data = {
         "_ERROR": None,
         "fake_sample_id_1": {
             "mock data": "anything",
@@ -204,7 +207,21 @@ class MonocleSampleTrackingTest(TestCase):
             {"sanger_sample_id": "fake_sample_id_4", "public_name": f"{PUBLIC_NAME}_4"},
         ],
     }
-    expected_seq_status = {"FakOne": mock_seq_status, "FakTwo": mock_seq_status}
+    # expected sequencing data are same as mock sequencing data except unwanted lane(s) are removed
+    expected_seq_data = mock_seq_data
+    expected_seq_data["fake_sample_id_1"]["lanes"] = [
+        {
+            "id": "fake_lane_id_2",
+            "qc_lib": 1,
+            "qc_seq": 1,
+            "qc_success": 1,
+            "qc_status_text": "Success",
+            "run_status": "qc complete",
+            "qc_started": 1,
+            "qc_complete_datetime": "any string will do",
+        },
+    ]
+    expected_seq_status = {"FakOne": expected_seq_data, "FakTwo": expected_seq_data}
     expected_batches = {
         "FakOne": {
             "_ERROR": None,
@@ -233,37 +250,25 @@ class MonocleSampleTrackingTest(TestCase):
             "samples_received": 4,
             "samples_completed": 4,
             "samples_successful": 4,
-            "lanes_completed": 6,
-            "lanes_successful": 5,
-            "lanes_failed": 1,
-            "fail_messages": [
-                {
-                    "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "Sequencing QC failed",
-                    "issue": "sorry, failure messages cannot currently be seen here",
-                }
-            ],
+            "lanes_completed": 4,
+            "lanes_successful": 4,
+            "lanes_failed": 0,
+            "fail_messages": [],
         },
         "FakTwo": {
             "_ERROR": None,
             "samples_received": 4,
             "samples_completed": 4,
             "samples_successful": 4,
-            "lanes_completed": 6,
-            "lanes_successful": 5,
-            "lanes_failed": 1,
-            "fail_messages": [
-                {
-                    "lane": "fake_lane_id_3 (sample fake_sample_id_1)",
-                    "stage": "Sequencing QC failed",
-                    "issue": "sorry, failure messages cannot currently be seen here",
-                }
-            ],
+            "lanes_completed": 4,
+            "lanes_successful": 4,
+            "lanes_failed": 0,
+            "fail_messages": [],
         },
     }
     expected_pipeline_summary = {
-        "FakOne": {"_ERROR": None, "running": 6, "completed": 0, "success": 0, "failed": 0, "fail_messages": []},
-        "FakTwo": {"_ERROR": None, "running": 6, "completed": 0, "success": 0, "failed": 0, "fail_messages": []},
+        "FakOne": {"_ERROR": None, "running": 4, "completed": 0, "success": 0, "failed": 0, "fail_messages": []},
+        "FakTwo": {"_ERROR": None, "running": 4, "completed": 0, "success": 0, "failed": 0, "fail_messages": []},
     }
 
     # create MonocleSampleTracking object outside setUp() to avoid creating multipe instances
@@ -289,9 +294,6 @@ class MonocleSampleTrackingTest(TestCase):
         # load mock data
         self.get_mock_data()
 
-    def test_init(self):
-        self.assertIsInstance(self.monocle_sample_tracking, MonocleSampleTracking)
-
     @patch.object(InstitutionData, "get_all_institutions_regardless_of_user_membership")
     @patch.object(SampleMetadata, "get_samples")
     @patch.object(SequencingStatus, "get_multiple_samples")
@@ -299,10 +301,15 @@ class MonocleSampleTrackingTest(TestCase):
         mock_institutions_query.return_value = self.mock_institution_data
         self.monocle_sample_tracking.sequencing_status_data = None
         mock_db_sample_query.return_value = self.mock_samples
-        mock_seq_samples_query.return_value = self.mock_seq_status
+        # sequencing status data are modified (unwanted lanes removed) so
+        # use a copy of the mock data for the return value here:
+        mock_seq_samples_query.return_value = deepcopy(self.mock_seq_data)
         self.monocle_sample_tracking.get_institutions()
         self.monocle_sample_tracking.get_samples()
         self.monocle_sample_tracking.get_sequencing_status()
+
+    def test_init(self):
+        self.assertIsInstance(self.monocle_sample_tracking, MonocleSampleTracking)
 
     def test_get_progress(self):
         progress_data = self.monocle_sample_tracking.get_progress()
@@ -367,11 +374,13 @@ class MonocleSampleTrackingTest(TestCase):
         finally:
             self.monocle_sample_tracking.samples_data = mem_samples
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_get_sequencing_status(self):
         seq_status_data = self.monocle_sample_tracking.get_sequencing_status()
 
         self.assertEqual(self.expected_seq_status, seq_status_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SequencingStatus, "get_multiple_samples")
     def test_get_sequencing_status_droppout(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
@@ -388,6 +397,7 @@ class MonocleSampleTrackingTest(TestCase):
 
         self.assertEqual(self.expected_batches, batches_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SequencingStatus, "get_multiple_samples")
     def test_get_batches_dropouts(self, get_multiple_samples_mock):
         get_multiple_samples_mock.side_effect = urllib.error.HTTPError(
@@ -400,12 +410,14 @@ class MonocleSampleTrackingTest(TestCase):
 
         self.assertEqual(self.expected_dropout_data, batches_data)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_sequencing_status_summary(self):
         seq_status_summary = self.monocle_sample_tracking.sequencing_status_summary()
 
         # logging.critical("\nEXPECTED:\n{}\nGOT:\n{}".format(self.expected_seq_summary, seq_status_summary))
         self.assertEqual(self.expected_seq_summary, seq_status_summary)
 
+    @patch.dict(environ, mock_environment, clear=True)
     def test_sequencing_status_summary_dropout(self):
         self.monocle_sample_tracking.sequencing_status_data = self.expected_dropout_data
 
