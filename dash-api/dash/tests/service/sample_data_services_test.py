@@ -836,6 +836,7 @@ class MonocleSampleDataTest(TestCase):
         expected_samples = self.mock_filtered_samples
         self.assertEqual(expected_samples, actual_samples)
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SampleMetadata, "get_samples")
     def test_get_filtered_samples_with_sequencing_success_filter(self, get_sample_metadata_mock):
         self.get_mock_data2()
