@@ -61,6 +61,8 @@ class MonocleSampleDataTest(TestCase):
     # this is the path to the actual data directory, i.e. the target of the data download symlinks
     mock_inst_view_dir = "dash/tests/mock_data/monocle_juno_institution_view"
 
+    mock_unwanted_lanes_file = "dash/tests/mock_data/unwanted-lanes-empty.txt"
+
     # this is the route used to download data
     mock_download_route = "/data_route_via_nginx"
 
@@ -69,7 +71,11 @@ class MonocleSampleDataTest(TestCase):
     mock_download_max_samples_per_zip_with_reads = 10
 
     # this has mock values for the environment variables set by docker-compose
-    mock_environment = {"JUNO_DATA": mock_monocle_data_dir, "JUNO_DATA_INSTITUTION_VIEW": mock_inst_view_dir}
+    mock_environment = {
+        "JUNO_DATA": mock_monocle_data_dir,
+        "JUNO_DATA_INSTITUTION_VIEW": mock_inst_view_dir,
+        "UNWANTED_LANES_FILE": mock_unwanted_lanes_file,
+    }
 
     # mock values for patching queries in DataSources modules
     mock_institution_keys = ["FakOne", "FakTwo"]
@@ -847,6 +853,7 @@ class MonocleSampleDataTest(TestCase):
         self.assertEqual(expected_samples, actual_samples)
         self.get_mock_data()
 
+    @patch.dict(environ, mock_environment, clear=True)
     @patch.object(SampleMetadata, "get_samples")
     def test_get_filtered_samples_with_sequencing_complete_filter(self, get_sample_metadata_mock):
         self.get_mock_data3()

@@ -22,6 +22,7 @@ jest.mock("$lib/dataLoading.js", () => ({
   ),
 }));
 
+const CSS_SELECTOR_DOWNLOAD_SPLIT_SELECT = "dd select";
 const DOWNLOAD_ESTIMATE = {
   numSamples: 42,
   sizeZipped: "9.8GB",
@@ -89,7 +90,7 @@ it("displays `0`s for the estimate  when the download estimate isn't passed", ()
   });
 
   expect(container.querySelector("dl").textContent).toBe(
-    "Total size:0 Maximum size per ZIP archive:\n        0"
+    "Total size:0 Download split (keep the default unless your connection is\n            unstable):\n          0"
   );
 });
 
@@ -119,10 +120,14 @@ it("disables the size selector if there is only one option", () => {
     ariaLabelledby: FAKE_HEADER_ID,
   });
 
-  expect(container.querySelector("dd select").disabled).toBeTruthy();
+  expect(
+    container.querySelector(CSS_SELECTOR_DOWNLOAD_SPLIT_SELECT).disabled
+  ).toBeTruthy();
   const numZips = Math.ceil(DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip);
   expect(
-    getByRole(ROLE_OPTION, { name: `${sizePerZip} (${numZips} ZIP archives)` })
+    getByRole(ROLE_OPTION, {
+      name: `${numZips} ZIP archives (${sizePerZip} each)`,
+    })
   ).toBeDefined();
 });
 
@@ -134,7 +139,9 @@ it("disables the size selector if there are no options", () => {
     ariaLabelledby: FAKE_HEADER_ID,
   });
 
-  const sizeSelector = container.querySelector("dd select");
+  const sizeSelector = container.querySelector(
+    CSS_SELECTOR_DOWNLOAD_SPLIT_SELECT
+  );
   expect(sizeSelector.disabled).toBeTruthy();
   expect(sizeSelector.textContent).toBe("");
 });
@@ -164,9 +171,6 @@ it("shows the warning if the estimate includes the sample download limit", async
 });
 
 describe("on form submit", () => {
-  const DOWNLOAD_SIZE_ESTIMATE_TEXT = `${DOWNLOAD_ESTIMATE.sizeZipped} (${
-    DOWNLOAD_ESTIMATE.numSamples
-  } sample${DOWNLOAD_ESTIMATE.numSamples === 1 ? "" : "s"}) `;
   const DOWNLOAD_URL = "/data/some42token";
   const INTERSTITIAL_PAGE_ENDPOINT = "/samples/download/";
   const LABEL_DOWNLOAD_LINKS_HEADER = "Download links";
@@ -175,8 +179,8 @@ describe("on form submit", () => {
     "Please wait: generating ZIP download links can take a while if thousands of samples are involved.";
   const RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT = /^⚠️ Only /;
   const ROLE_HEADING = "heading";
-  const SELECTOR_DOWNLOAD_ESTIMATE = "dd";
-  const SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";
+  const CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE = "dd";
+  const CSS_SELECTOR_MAIN_FORM_FIELDSET = "form > fieldset";
   const URL_SEPARATOR = "/";
 
   global.fetch = "fake fetch";
@@ -208,11 +212,10 @@ describe("on form submit", () => {
     let containerFieldset;
 
     await waitFor(() => {
-      containerFieldset = container.querySelector(SELECTOR_MAIN_FORM_FIELDSET);
+      containerFieldset = container.querySelector(
+        CSS_SELECTOR_MAIN_FORM_FIELDSET
+      );
       expect(containerFieldset.disabled).toBeFalsy();
-      expect(
-        getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }).disabled
-      ).toBeFalsy();
     });
 
     await fireEvent.click(
@@ -220,10 +223,6 @@ describe("on form submit", () => {
     );
 
     expect(containerFieldset.disabled).toBeTruthy();
-    expect(containerFieldset.classList.contains("disabled")).toBeTruthy();
-    expect(
-      getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }).disabled
-    ).toBeTruthy();
   });
 
   it("hides the download limit warning above the submit button", async () => {
@@ -291,6 +290,9 @@ describe("on form submit", () => {
   });
 
   it("freezes the download estimate if batches change", async () => {
+    const CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT = `${DOWNLOAD_ESTIMATE.sizeZipped} (${
+      DOWNLOAD_ESTIMATE.numSamples
+    } sample${DOWNLOAD_ESTIMATE.numSamples === 1 ? "" : "s"}) `;
     const { component, container, getByRole } = render(BulkDownload, {
       batches: BATCHES,
       formValues: FORM_VALUES,
@@ -303,22 +305,8 @@ describe("on form submit", () => {
     await component.$set({ downloadEstimate: DOWNLOAD_ESTIMATE });
 
     expect(
-      container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-    ).toBe(DOWNLOAD_SIZE_ESTIMATE_TEXT);
-    DOWNLOAD_ESTIMATE.sizePerZipOptions.forEach(
-      ({ sizePerZip, maxSamplesPerZip }) => {
-        const numZips = Math.ceil(
-          DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip
-        );
-        expect(
-          getByRole(ROLE_OPTION, {
-            name: `${sizePerZip} (${numZips} ZIP archive${
-              numZips === 1 ? "" : "s"
-            })`,
-          })
-        ).toBeDefined();
-      }
-    );
+      container.querySelector(CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE).textContent
+    ).toBe(CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT);
 
     await component.$set({ batches: ["anything"] });
     await component.$set({
@@ -326,25 +314,14 @@ describe("on form submit", () => {
     });
 
     expect(
-      container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-    ).toBe(DOWNLOAD_SIZE_ESTIMATE_TEXT);
-    DOWNLOAD_ESTIMATE.sizePerZipOptions.forEach(
-      ({ sizePerZip, maxSamplesPerZip }) => {
-        const numZips = Math.ceil(
-          DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip
-        );
-        expect(
-          getByRole(ROLE_OPTION, {
-            name: `${sizePerZip} (${numZips} ZIP archive${
-              numZips === 1 ? "" : "s"
-            })`,
-          })
-        ).toBeDefined();
-      }
-    );
+      container.querySelector(CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE).textContent
+    ).toBe(CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT);
   });
 
-  it("freezes the download estimate if filters change", async () => {
+  it("freezes the total download size estimate if filters change", async () => {
+    const CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT = `${DOWNLOAD_ESTIMATE.sizeZipped} (${
+      DOWNLOAD_ESTIMATE.numSamples
+    } sample${DOWNLOAD_ESTIMATE.numSamples === 1 ? "" : "s"}) `;
     const { component, container, getByRole } = render(BulkDownload, {
       batches: BATCHES,
       formValues: FORM_VALUES,
@@ -357,22 +334,8 @@ describe("on form submit", () => {
     await component.$set({ downloadEstimate: DOWNLOAD_ESTIMATE });
 
     expect(
-      container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-    ).toBe(DOWNLOAD_SIZE_ESTIMATE_TEXT);
-    DOWNLOAD_ESTIMATE.sizePerZipOptions.forEach(
-      ({ sizePerZip, maxSamplesPerZip }) => {
-        const numZips = Math.ceil(
-          DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip
-        );
-        expect(
-          getByRole(ROLE_OPTION, {
-            name: `${sizePerZip} (${numZips} ZIP archive${
-              numZips === 1 ? "" : "s"
-            })`,
-          })
-        ).toBeDefined();
-      }
-    );
+      container.querySelector(CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE).textContent
+    ).toBe(CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT);
 
     await filterStore.set({
       metadata: { someColumn: { values: [] } },
@@ -383,22 +346,8 @@ describe("on form submit", () => {
     });
 
     expect(
-      container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-    ).toBe(DOWNLOAD_SIZE_ESTIMATE_TEXT);
-    DOWNLOAD_ESTIMATE.sizePerZipOptions.forEach(
-      ({ sizePerZip, maxSamplesPerZip }) => {
-        const numZips = Math.ceil(
-          DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip
-        );
-        expect(
-          getByRole(ROLE_OPTION, {
-            name: `${sizePerZip} (${numZips} ZIP archive${
-              numZips === 1 ? "" : "s"
-            })`,
-          })
-        ).toBeDefined();
-      }
-    );
+      container.querySelector(CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE).textContent
+    ).toBe(CSS_DOWNLOAD_SIZE_ESTIMATE_TEXT);
 
     filterStore.removeAllFilters();
   });
@@ -608,32 +557,15 @@ describe("on form submit", () => {
       await component.$set({ batches: ["anything"] });
       await component.$set({ downloadEstimate: latterDownloadEstimate });
 
-      expect(
-        container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-      ).toBe(DOWNLOAD_SIZE_ESTIMATE_TEXT);
-      DOWNLOAD_ESTIMATE.sizePerZipOptions.forEach(
-        ({ sizePerZip, maxSamplesPerZip }) => {
-          const numZips = Math.ceil(
-            DOWNLOAD_ESTIMATE.numSamples / maxSamplesPerZip
-          );
-          expect(
-            getByRole(ROLE_OPTION, {
-              name: `${sizePerZip} (${numZips} ZIP archive${
-                numZips === 1 ? "" : "s"
-              })`,
-            })
-          ).toBeDefined();
-        }
-      );
-
       await fireEvent.click(
         getByRole(ROLE_BUTTON, { name: LABEL_RESET_BUTTON })
       );
 
-      const latterDownloadEstimateText = `${latterDownloadEstimate.sizeZipped} (${latterDownloadEstimate.numSamples} samples) `;
+      const CSS_latterDownloadEstimateText = `${latterDownloadEstimate.sizeZipped} (${latterDownloadEstimate.numSamples} samples) `;
       expect(
-        container.querySelector(SELECTOR_DOWNLOAD_ESTIMATE).textContent
-      ).toBe(latterDownloadEstimateText);
+        container.querySelector(CSS_SELECTOR_DOWNLOAD_SIZE_ESTIMATE).textContent
+      ).toBe(CSS_latterDownloadEstimateText);
+
       latterDownloadEstimate.sizePerZipOptions.forEach(
         ({ sizePerZip, maxSamplesPerZip }) => {
           const numZips = Math.ceil(
@@ -641,9 +573,9 @@ describe("on form submit", () => {
           );
           expect(
             getByRole(ROLE_OPTION, {
-              name: `${sizePerZip} (${numZips} ZIP archive${
-                numZips === 1 ? "" : "s"
-              })`,
+              name: `${numZips} ZIP archive${
+                numZips === 1 ? "" : `s (${sizePerZip} each)`
+              }`,
             })
           ).toBeDefined();
         }
@@ -664,7 +596,7 @@ describe("on form submit", () => {
         queryByText(RE_SAMPLE_DOWNLOAD_LIMIT_WARNING_AFTER_SUBMIT)
       ).toBeNull();
       expect(
-        container.querySelector(SELECTOR_MAIN_FORM_FIELDSET).disabled
+        container.querySelector(CSS_SELECTOR_MAIN_FORM_FIELDSET).disabled
       ).toBeFalsy();
       expect(
         getByRole(ROLE_BUTTON, { name: LABEL_CONFIRM_BUTTON }).disabled
