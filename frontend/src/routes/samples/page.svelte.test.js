@@ -1,17 +1,11 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import {
-  SESSION_STORAGE_KEY_COLUMNS_STATE,
-  SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
-} from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
 import { userStore } from "../stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
-  getColumns,
   getInstitutions,
   // eslint-disable-next-line no-unused-vars
-  getSampleMetadata,
 } from "$lib/dataLoading.js";
 import DataViewerPage from "./+page.svelte";
 
@@ -111,36 +105,6 @@ describe("once batches are fetched", () => {
     await fireEvent.click(selectAllBtn);
 
     expect(getByRole(ROLE_BUTTON, { name: "Download metadata" })).toBeDefined();
-  });
-
-  describe("on columns state change in the session storage", () => {
-    beforeAll(() => {
-      sessionStorage.setItem(SESSION_STORAGE_KEY_COLUMNS_STATE, "{}");
-    });
-
-    it("doesn't fetch columns", async () => {
-      getColumns.mockClear();
-
-      await render(DataViewerPage);
-
-      expect(getColumns).not.toHaveBeenCalled();
-    });
-
-    it("clears the session storage from old columns state", () => {
-      Storage.prototype.removeItem = jest.fn();
-
-      render(DataViewerPage);
-
-      // `+ 1` to account for calling `removeItem` by `sessionStorageAvailable()`
-      const expectedNumCalls =
-        SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.length + 1;
-      expect(sessionStorage.removeItem).toHaveBeenCalledTimes(expectedNumCalls);
-      SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
-        expect(sessionStorage.removeItem).toHaveBeenCalledWith(
-          columnsStateOldKey
-        )
-      );
-    });
   });
 
   describe("batch selector", () => {

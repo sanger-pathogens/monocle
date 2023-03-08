@@ -1,29 +1,19 @@
 <script>
-  import {
-    SESSION_STORAGE_KEY_COLUMNS_STATE,
-    SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
-  } from "$lib/constants.js";
   import Dialog from "$lib/components/Dialog.svelte";
   import LoadingIndicator from "$lib/components/LoadingIndicator.svelte";
   import DownloadIcon from "$lib/components/icons/DownloadIcon.svelte";
   import LoadingIcon from "$lib/components/icons/LoadingIcon.svelte";
   import debounce from "$lib/utils/debounce.js";
-  import { sessionStorageAvailable } from "$lib/utils/featureDetection.js";
   import {
     getBatches,
     getBulkDownloadInfo,
-    getColumns,
     getInstitutions,
   } from "$lib/dataLoading.js";
   import AppMenu from "../_app-menu/index.svelte";
   import BatchSelector from "./BatchSelector.svelte";
   import BulkDownload from "./BulkDownload.svelte";
   import MetadataDownloadButton from "./MetadataDownloadButton.svelte";
-  import {
-    columnsStore,
-    distinctColumnValuesStore,
-    filterStore,
-  } from "../stores.js";
+  import { distinctColumnValuesStore, filterStore } from "../stores.js";
 
   const EMPTY_STRING = "";
   const PROMISE_STATUS_REJECTED = "rejected";
@@ -32,32 +22,17 @@
   const dataPromise = Promise.allSettled([
     getBatches(fetch),
     getInstitutions(fetch),
-    loadColumnsIntoStore(),
   ])
-    .then(
-      ([
-        batchesSettledPromise,
-        institutionsSettledPromise,
-        loadColumnsIntoStorePromise,
-      ]) => {
-        if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
-          console.error(
-            `/get_batches rejected: ${batchesSettledPromise.reason}`
-          );
-          return Promise.reject(batchesSettledPromise.reason);
-        }
-        if (loadColumnsIntoStorePromise.status === PROMISE_STATUS_REJECTED) {
-          console.error(
-            `failed to load columns: ${loadColumnsIntoStorePromise.reason}.`
-          );
-          return Promise.reject(loadColumnsIntoStorePromise.reason);
-        }
-        return makeListOfBatches(
-          batchesSettledPromise.value,
-          institutionsSettledPromise.value
-        );
+    .then(([batchesSettledPromise, institutionsSettledPromise]) => {
+      if (batchesSettledPromise.status === PROMISE_STATUS_REJECTED) {
+        console.error(`/get_batches rejected: ${batchesSettledPromise.reason}`);
+        return Promise.reject(batchesSettledPromise.reason);
       }
-    )
+      return makeListOfBatches(
+        batchesSettledPromise.value,
+        institutionsSettledPromise.value
+      );
+    })
     .catch((err) => {
       console.error(`Error while fetching batches and institutions: ${err}`);
       return Promise.reject(err);
@@ -89,33 +64,6 @@
     $filterStore,
     bulkDownloadFormValues
   );
-
-  function loadColumnsIntoStore() {
-    const isLocalStorageAvailable = sessionStorageAvailable();
-    let locallySavedColumnsState;
-    if (isLocalStorageAvailable) {
-      SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
-        sessionStorage.removeItem(columnsStateOldKey)
-      );
-      locallySavedColumnsState = JSON.parse(
-        sessionStorage.getItem(SESSION_STORAGE_KEY_COLUMNS_STATE)
-      );
-    }
-    if (locallySavedColumnsState) {
-      columnsStore.set(locallySavedColumnsState);
-      return Promise.resolve();
-    } else {
-      return getColumns(fetch).then((columnsResponse) => {
-        columnsStore.setFromColumnsResponse(columnsResponse);
-        if (isLocalStorageAvailable) {
-          sessionStorage.setItem(
-            SESSION_STORAGE_KEY_COLUMNS_STATE,
-            JSON.stringify($columnsStore)
-          );
-        }
-      });
-    }
-  }
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
