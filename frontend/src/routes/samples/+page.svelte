@@ -13,7 +13,6 @@
   import BatchSelector from "./BatchSelector.svelte";
   import BulkDownload from "./BulkDownload.svelte";
   import MetadataDownloadButton from "./MetadataDownloadButton.svelte";
-  import { distinctColumnValuesStore, filterStore } from "../stores.js";
 
   const EMPTY_STRING = "";
   const PROMISE_STATUS_REJECTED = "rejected";
@@ -49,21 +48,11 @@
   let selectedBatches = null;
   let updateDownloadEstimateTimeoutId;
 
-  $: filterStore.removeAllFilters(selectedBatches);
-
-  $: filterActive = Object.keys($filterStore).some(
-    (dataType) => Object.keys($filterStore[dataType] || []).length
-  );
-
   $: selectedInstKeyBatchDatePairs = selectedBatches?.map(({ value }) => value);
 
   // These arguments are passed just to indicate to Svelte that this reactive statement
   // should re-run only when some of the arguments have changed.
-  $: updateDownloadEstimate(
-    selectedBatches,
-    $filterStore,
-    bulkDownloadFormValues
-  );
+  $: updateDownloadEstimate(selectedBatches, bulkDownloadFormValues);
 
   function updateDownloadEstimate() {
     unsetDownloadEstimate();
@@ -88,10 +77,6 @@
     getBulkDownloadInfo(
       {
         instKeyBatchDatePairs: selectedInstKeyBatchDatePairs,
-        filter: {
-          filterState: $filterStore,
-          distinctColumnValuesState: $distinctColumnValuesStore,
-        },
         ...bulkDownloadFormValues,
       },
       fetch
@@ -217,12 +202,7 @@
     ariaLabelledby="sample-bulk-download-label"
     persistState={true}
   >
-    <h3 id="sample-bulk-download-label">
-      Download samples
-      {#if filterActive}
-        <em>(filters apply)</em>
-      {/if}
-    </h3>
+    <h3 id="sample-bulk-download-label">Download samples</h3>
     <BulkDownload
       ariaLabelledby="sample-bulk-download-label"
       batches={selectedInstKeyBatchDatePairs}
@@ -248,9 +228,5 @@
   }
   .btn-group button {
     margin-right: 1rem;
-  }
-
-  em {
-    font-weight: 300;
   }
 </style>
