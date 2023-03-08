@@ -75,14 +75,6 @@ export function getBulkDownloadUrls(params, fetch) {
   });
 }
 
-export function getColumns(fetch) {
-  return fetchDashboardApiResource(
-    "get_field_attributes",
-    "field_attributes",
-    fetch
-  );
-}
-
 export function getDistinctColumnValues(
   { instKeyBatchDatePairs, columns, filter },
   fetch
