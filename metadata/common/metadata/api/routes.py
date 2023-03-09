@@ -200,108 +200,6 @@ def get_samples_route(dao: MonocleDatabaseService):
 
 
 @inject
-def get_samples_filtered_by_metadata_route(body: dict, dao: MonocleDatabaseService):
-    """Download sample ids from the database for samples matching the metadata filters passed"""
-    filters = {}
-    for this_filter in body:
-        this_field = this_filter["name"]
-        these_values = this_filter["values"]
-        if not _validate_field_names([this_field]):
-            return 'name "{}" is not a valid metadata field name'.format(this_field), HTTP_BAD_REQUEST_STATUS
-        filters[this_field] = these_values
-
-    samples = dao.get_samples_filtered_by_metadata(filters)
-    logging.debug("DAO returned sample IDs: {}".format(samples))
-    # get_samples_filtered_by_metadata() will return None if it is passed a non-existent field name
-    if samples is None:
-        return "Invalid field name provided", HTTP_BAD_REQUEST_STATUS
-
-    result = convert_to_json(samples)
-
-    if len(samples) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-
-
-@inject
-def get_lanes_filtered_by_in_silico_data_route(body: dict, dao: MonocleDatabaseService):
-    """Download lane ids from the database for lanes matching the in silico filters passed"""
-    filters = {}
-    for this_filter in body:
-        this_field = this_filter["name"]
-        these_values = this_filter["values"]
-        if not _validate_field_names([this_field]):
-            return 'name "{}" is not a valid in silico field name'.format(this_field), HTTP_BAD_REQUEST_STATUS
-        filters[this_field] = these_values
-
-    lanes = dao.get_lanes_filtered_by_in_silico_data(filters)
-    logging.debug("DAO returned lanes IDs: {}".format(lanes))
-    # get_lanes_filtered_by_in_silico_data() will return None if it is passed a non-existent field name
-    if lanes is None:
-        return "Invalid field name provided", HTTP_BAD_REQUEST_STATUS
-
-    result = convert_to_json(lanes)
-
-    if len(lanes) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-
-
-@inject
-def get_lanes_filtered_by_qc_data_route(body: dict, dao: MonocleDatabaseService):
-    """Download lane ids from the database for lanes matching the QC data filters passed"""
-    filters = {}
-    for this_filter in body:
-        this_field = this_filter["name"]
-        these_values = this_filter["values"]
-        if not _validate_field_names([this_field]):
-            return 'name "{}" is not a valid QC data field name'.format(this_field), HTTP_BAD_REQUEST_STATUS
-        filters[this_field] = these_values
-
-    lanes = dao.get_lanes_filtered_by_qc_data(filters)
-    logging.debug("DAO returned lanes IDs: {}".format(lanes))
-    # get_lanes_filtered_by_qc_data() will return None if it is passed a non-existent field name
-    if lanes is None:
-        return "Invalid field name provided", HTTP_BAD_REQUEST_STATUS
-
-    result = convert_to_json(lanes)
-
-    if len(lanes) > 0:
-        return result, HTTP_SUCCEEDED_STATUS
-    else:
-        return result, HTTP_NOT_FOUND_STATUS
-
-
-@inject
-def get_distinct_values_route(body: dict, dao: MonocleDatabaseService):
-    """Download distinct values present in the database for certain fields"""
-    fields = body["fields"]
-    institutions = body["institutions"]
-    result = _get_distinct_values_common("metadata", fields, institutions, dao)
-    return result
-
-
-@inject
-def get_distinct_qc_data_values_route(body: dict, dao: MonocleDatabaseService):
-    """Download distinct values present in the database for certain fields"""
-    fields = body["fields"]
-    institutions = body["institutions"]
-    result = _get_distinct_values_common("qc data", fields, institutions, dao)
-    return result
-
-
-@inject
-def get_distinct_in_silico_values_route(body: dict, dao: MonocleDatabaseService):
-    """Download distinct values present in the database for certain fields"""
-    fields = body["fields"]
-    institutions = body["institutions"]
-    result = _get_distinct_values_common("in silico", fields, institutions, dao)
-    return result
-
-
-@inject
 def get_project_information(dao: MonocleDatabaseService):
     project_links = application.config["project_links"]
     result = convert_to_json({"project": project_links})
@@ -354,22 +252,6 @@ def _save_spreadsheet(uploaded_file):
     logger.info("Saving spreadsheet as {}...".format(spreadsheet_file))
     uploaded_file.save(spreadsheet_file)
     return spreadsheet_file
-
-
-def _get_distinct_values_common(field_type, fields, institutions, dao):
-    """Download distinct values present in the database for certain fields"""
-    if not _validate_field_names(fields):
-        return "Invalid arguments provided", HTTP_BAD_REQUEST_STATUS
-
-    distinct_values = dao.get_distinct_values(field_type, fields, institutions)
-    logging.debug("DAO returned distinct values: {}".format(distinct_values))
-    # get_distinct_values() will return None if it is passed a non-existent field name
-    if distinct_values is None:
-        return "Invalid field name provided", HTTP_NOT_FOUND_STATUS
-
-    result = convert_to_json({"distinct values": distinct_values})
-
-    return result, HTTP_SUCCEEDED_STATUS
 
 
 def _validate_field_names(names):

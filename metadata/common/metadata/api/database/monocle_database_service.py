@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import List
 
 from metadata.api.model.in_silico_data import InSilicoData
 from metadata.api.model.metadata import Metadata
@@ -12,26 +12,6 @@ class MonocleDatabaseService(ABC):
     @abstractmethod
     def get_samples(self) -> List[Metadata]:
         """Return a list of samples"""
-        pass
-
-    @abstractmethod
-    def get_samples_filtered_by_metadata(self, filters: dict) -> List:
-        """Return a list of samples ids"""
-        pass
-
-    @abstractmethod
-    def get_lanes_filtered_by_in_silico_data(self, filters: dict) -> List:
-        """Return a list of lane ids"""
-        pass
-
-    @abstractmethod
-    def get_lanes_filtered_by_qc_data(self, filters: dict) -> List:
-        """Return a list of lane ids"""
-        pass
-
-    @abstractmethod
-    def get_distinct_values(self, fields: list) -> Dict:
-        """Return a distinct values found in db for each field name passed"""
         pass
 
     @abstractmethod

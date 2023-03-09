@@ -7,7 +7,7 @@ import json
 import logging
 import os
 import re
-from sys import argv
+from sys import argv, exit
 
 import yaml
 
@@ -462,6 +462,9 @@ class UpdateMetadataFiles:
 
 
 if __name__ == "__main__":
+
+    exit("this script is broken by PIJ-786")
+
     parser = argparse.ArgumentParser(description="Update all config files from  main config")
     parser.add_argument(
         "-L",

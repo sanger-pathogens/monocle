@@ -1,18 +1,11 @@
 import { fireEvent, render, waitFor } from "@testing-library/svelte";
-import { get } from "svelte/store";
-import {
-  SESSION_STORAGE_KEY_COLUMNS_STATE,
-  SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE,
-} from "$lib/constants.js";
 import debounce from "$lib/utils/debounce.js";
-import { filterStore, userStore } from "../stores.js";
+import { userStore } from "../stores.js";
 import {
   getBatches,
   getBulkDownloadInfo,
-  getColumns,
   getInstitutions,
   // eslint-disable-next-line no-unused-vars
-  getSampleMetadata,
 } from "$lib/dataLoading.js";
 import DataViewerPage from "./+page.svelte";
 
@@ -46,7 +39,7 @@ it("shows the app menu w/ the expected links", () => {
 
   const { getByLabelText, queryByLabelText } = render(DataViewerPage);
 
-  expect(queryByLabelText("View and download sample data")).toBeNull();
+  expect(queryByLabelText("Download sample data")).toBeNull();
   expect(getByLabelText("Upload metadata")).toBeDefined();
   expect(getByLabelText("Upload QC data")).toBeDefined();
   expect(getByLabelText("Upload in-silico data")).toBeDefined();
@@ -112,95 +105,6 @@ describe("once batches are fetched", () => {
     await fireEvent.click(selectAllBtn);
 
     expect(getByRole(ROLE_BUTTON, { name: "Download metadata" })).toBeDefined();
-  });
-
-  it("removes all filters on clicking the filter removal button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage);
-    filterStore.set({ metadata: { someColumn: {} } });
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-    await fireEvent.click(selectAllBtn);
-    const filterRemovalLabel = /^Remove all filters/;
-    global.confirm = () => true;
-
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: filterRemovalLabel }));
-
-    expect(get(filterStore)).toEqual({
-      metadata: {},
-      "in silico": {},
-      "qc data": {},
-    });
-    expect(
-      getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-    ).toBeTruthy();
-  });
-
-  it("disables the filter removal button on batches change", async () => {
-    const filterRemovalLabel = /^Remove all filters/;
-    const { findByRole, getByRole } = render(DataViewerPage);
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-    await fireEvent.click(selectAllBtn);
-    filterStore.update((filters) => {
-      filters.metadata.someColumn = { values: ["some value"] };
-      return filters;
-    });
-
-    await waitFor(() => {
-      expect(
-        getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-      ).toBeFalsy();
-    });
-
-    await fireEvent.click(getByRole(ROLE_BUTTON, { name: LABEL_DESELECT_ALL }));
-    await fireEvent.click(selectAllBtn);
-
-    expect(
-      getByRole(ROLE_BUTTON, { name: filterRemovalLabel }).disabled
-    ).toBeTruthy();
-  });
-
-  it("displays the settings button", async () => {
-    const { findByRole, getByRole } = render(DataViewerPage);
-    const selectAllBtn = await findByRole(ROLE_BUTTON, {
-      name: LABEL_SELECT_ALL,
-    });
-
-    await fireEvent.click(selectAllBtn);
-
-    expect(getByRole(ROLE_BUTTON, { name: /^Select columns/ })).toBeDefined();
-  });
-
-  describe("on columns state change in the session storage", () => {
-    beforeAll(() => {
-      sessionStorage.setItem(SESSION_STORAGE_KEY_COLUMNS_STATE, "{}");
-    });
-
-    it("doesn't fetch columns", async () => {
-      getColumns.mockClear();
-
-      await render(DataViewerPage);
-
-      expect(getColumns).not.toHaveBeenCalled();
-    });
-
-    it("clears the session storage from old columns state", () => {
-      Storage.prototype.removeItem = jest.fn();
-
-      render(DataViewerPage);
-
-      // `+ 1` to account for calling `removeItem` by `sessionStorageAvailable()`
-      const expectedNumCalls =
-        SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.length + 1;
-      expect(sessionStorage.removeItem).toHaveBeenCalledTimes(expectedNumCalls);
-      SESSION_STORAGE_KEYS_OLD_COLUMNS_STATE.forEach((columnsStateOldKey) =>
-        expect(sessionStorage.removeItem).toHaveBeenCalledWith(
-          columnsStateOldKey
-        )
-      );
-    });
   });
 
   describe("batch selector", () => {

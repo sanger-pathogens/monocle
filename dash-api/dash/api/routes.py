@@ -127,109 +127,26 @@ def pipeline_status_summary_route():
     return call_jsonify(response_dict), HTTPStatus.OK
 
 
-def get_field_attributes_route():
-    data = ServiceFactory.sample_data_service(get_authenticated_username()).get_field_attributes()
-    response_dict = {"field_attributes": data}
-    return call_jsonify(response_dict), HTTPStatus.OK
-
-
 def get_metadata_route(body):
     """Get sample metadata based on standard sample filter"""
     logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
     sample_filters = body["sample filters"]
     defaults = get_metadata_input_default()
-    return_as_csv = body.get("as csv", defaults["as csv"])
     csv_filename = body.get("csv filename", defaults["csv filename"])
-    metadata_columns = body.get("metadata columns", defaults["metadata columns"])
-    qc_data_columns = body.get("qc data columns", defaults["qc data columns"])
-    in_silico_columns = body.get("in silico columns", defaults["in silico columns"])
 
     try:
-        if return_as_csv:
-            # note the metadata CSV here does not include data download URLs
-            # this is because the sample filters could match samples from multiple institutions, and download
-            # links for multiple institutions are not currently supported with CSV metadata downloads
-            return _metadata_as_csv_response(
-                ServiceFactory.sample_data_service(get_authenticated_username()).get_csv_download(
-                    csv_filename, sample_filters
-                )
+        # note the metadata CSV here does not include data download URLs
+        # this is because the sample filters could match samples from multiple institutions, and download
+        # links for multiple institutions are not currently supported with CSV metadata downloads
+        return _metadata_as_csv_response(
+            ServiceFactory.sample_data_service(get_authenticated_username()).get_csv_download(
+                csv_filename, sample_filters
             )
-        else:
-            # setting column filter params to '_ALL' means all columns should be returned
-            if "_ALL" == metadata_columns[0]:
-                metadata_columns = None
-            if "_ALL" == qc_data_columns[0]:
-                qc_data_columns = None
-            if "_ALL" == in_silico_columns[0]:
-                in_silico_columns = None
-            metadata = ServiceFactory.sample_data_service(get_authenticated_username()).get_metadata(
-                sample_filters,
-                start_row=body.get("start row", None),
-                num_rows=body.get("num rows", defaults["num rows"]),
-                include_qc_data=body.get("qc data", defaults["qc data"]),
-                include_in_silico=body.get("in silico", defaults["in silico"]),
-                metadata_columns=metadata_columns,
-                qc_data_columns=qc_data_columns,
-                in_silico_columns=in_silico_columns,
-            )
-            if metadata is None:
-                return Response(
-                    "No matching samples were found",
-                    content_type="text/plain; charset=UTF-8",
-                    status=HTTPStatus.NOT_FOUND,
-                )
-            return call_jsonify(metadata), HTTPStatus.OK
+        )
     except HTTPError as e:
         if "400" in str(e):
             return "Bad request", HTTPStatus.BAD_REQUEST
         raise e
-
-
-def get_distinct_values_route(body):
-    """Return distinct values found in metadata, in silico or QC data fields"""
-    logging.info("endpoint handler {} was passed body = {}".format(__name__, body))
-    monocle_data = ServiceFactory.sample_data_service(get_authenticated_username())
-    field_types = ["metadata", "in silico", "qc data"]
-
-    fields_list = body["fields"]
-    sample_filters = body.get("sample filters", None)
-
-    # validate *types* of field named in request
-    fields_types_found = []
-    distinct_values_request = {}
-    for this_obj in fields_list:
-        this_field_type = this_obj["field type"]
-        if this_field_type in fields_types_found:
-            logging.info(
-                "{}.get_distinct_values_route() was passed field type {} more than once".format(
-                    __name__, this_field_type
-                )
-            )
-            return (
-                "Field type {} was included in the request more than once".format(this_field_type),
-                HTTPStatus.BAD_REQUEST,
-            )
-        if this_field_type not in field_types:
-            logging.info(
-                "{}.get_distinct_values_route() was passed field type {}: should be one of {}".format(
-                    __name__, this_field_type, field_types
-                )
-            )
-            return (
-                "Invalid field type {}: should be one of {}".format(this_field_type, field_types),
-                HTTPStatus.BAD_REQUEST,
-            )
-        fields_types_found.append(this_field_type)
-        distinct_values_request[this_field_type] = this_obj["field names"]
-
-    distinct_values = monocle_data.get_distinct_values(distinct_values_request, sample_filters=sample_filters)
-
-    if distinct_values is None:
-        # this means a non-existent field was asked for => customized 404
-        return "One or more of the requested fields could not be found", HTTPStatus.NOT_FOUND
-
-    response_dict = {"distinct values": distinct_values}
-    return call_jsonify(response_dict), HTTPStatus.OK
 
 
 def bulk_download_info_route(body):
@@ -558,7 +475,7 @@ def get_authenticated_project():
         raise RuntimeError("User accounts must have a projects attribute (user record: {})".format(user_details))
     elif len(project_list) > 1:
         raise RuntimeError(
-            "Multiple project membership for users is not currently supported (user record: {})".format(user_details)
+            "Multiple project membership for users is no t currently supported (user record: {})".format(user_details)
         )
     return project_list[0]
 
@@ -572,16 +489,9 @@ def get_metadata_input_default(property_name=None):
     # get the defaults from the OpenAPI spec.
     default_values = _get_defaults_from_spec(OPENAPI_SPEC_FILE, GET_METADATA_INPUT_SCHEMA)
 
-    # default columns must be retrieved from sample_data_service.get_field_attributes()
-    # but this is only necessary if the property asked for was a list of default columns
-    # (incl. when nothing specific is asked for and the whole dict is returned)
-    if property_name is None or property_name in ["metadata columns", "in silico columns", "qc data columns"]:
-        default_columns = _get_default_columns()
-        for default_column_type in default_columns:
-            default_values[default_column_type] = default_columns[default_column_type]
-
     if property_name is None:
         return default_values
+
     return default_values.get(property_name, None)
 
 
@@ -600,21 +510,6 @@ def _get_defaults_from_spec(openapi_file_name, schema_name):
             default_values[this_prop] = this_default
 
     return default_values
-
-
-def _get_default_columns():
-    field_attributes = ServiceFactory.sample_data_service(get_authenticated_username()).get_field_attributes()
-    default_columns = {}
-    for this_field_type in field_attributes:
-        # FIXME this is a really ugly way to get the name of a default columns property from a field type:-/
-        default_key = "{} columns".format(this_field_type)
-        default_columns[default_key] = []
-        for this_category in field_attributes[this_field_type]["categories"]:
-            for this_field in this_category.get("fields", []):
-                if this_field.get("default", False):
-                    default_columns[default_key].append(this_field["name"])
-        logging.info("{} default columns: {}".format(default_key, default_columns[default_key]))
-    return default_columns
 
 
 def _parse_BulkDownloadInput(BulkDownloadInput):

@@ -1,13 +1,13 @@
 <script>
-  import SampleDataViewerIcon from "$lib/components/icons/SampleDataViewerIcon.svelte";
+  import BulkDownloadIcon from "$lib/components/icons/BulkDownloadIcon.svelte";
 </script>
 
 <a
-  aria-label="View and download sample data"
-  title="View and download sample data"
+  aria-label="Download sample data"
+  title="Download sample data"
   href="/samples"
 >
-  <SampleDataViewerIcon
+  <BulkDownloadIcon
     color="rgba(0,0,0,.35)"
     colorHover="black"
     height={23}

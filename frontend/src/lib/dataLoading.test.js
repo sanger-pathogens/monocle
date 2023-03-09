@@ -10,7 +10,6 @@ import {
   getBatches,
   getBulkDownloadInfo,
   getBulkDownloadUrls,
-  getColumns,
   getDistinctColumnValues,
   getInstitutionStatus,
   getProjectInformation,
@@ -269,15 +268,6 @@ describe.each([
     expectedEndpoints: ["bulk_download_urls"],
     responsePayload: "as is",
     expectedResult: "as is",
-  },
-  {
-    fnName: "getColumns",
-    getResource: getColumns,
-    expectedEndpoints: ["get_field_attributes"],
-    responsePayload: {
-      field_attributes: "inner response payload",
-    },
-    expectedResult: "inner response payload",
   },
   {
     fnName: "getDistinctColumnValues",

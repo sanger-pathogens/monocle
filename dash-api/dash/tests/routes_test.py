@@ -22,86 +22,6 @@ class TestRoutes(unittest.TestCase):
 
     MOCK_PROJECT_ID = "juno"
 
-    MOCK_FIELD_ATTRIBUTES = {
-        "metadata": {
-            "categories": [
-                {
-                    "name": "category_101",
-                    "fields": [
-                        {
-                            "name": "field1_name",
-                            "display": True,
-                            "default": False,
-                            "order": 1,
-                            "spreadsheet heading": "field1_heading",
-                            "display name": "Field1 Display Name",
-                            "filter type": "none",
-                        },
-                        {
-                            "name": "field2_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field2_heading",
-                            "display name": "Field2 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                },
-                {
-                    "name": "category_102",
-                    "fields": [
-                        {
-                            "name": "field3_name",
-                            "display": True,
-                            "default": True,
-                            "order": 2,
-                            "spreadsheet heading": "field3_heading",
-                            "display name": "Field3 Display Name",
-                            "filter type": "none",
-                        }
-                    ],
-                },
-            ]
-        },
-        "in silico": {
-            "categories": [
-                {
-                    "name": "category_201",
-                    "fields": [
-                        {
-                            "name": "field10_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field10_heading",
-                            "display name": "Field10 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                }
-            ]
-        },
-        "qc data": {
-            "categories": [
-                {
-                    "name": "category_301",
-                    "fields": [
-                        {
-                            "name": "field20_name",
-                            "display": True,
-                            "default": True,
-                            "order": 3,
-                            "spreadsheet heading": "field20_heading",
-                            "display name": "Field20 Display Name",
-                            "filter type": "none",
-                        },
-                    ],
-                }
-            ]
-        },
-    }
-
     # For the purposes of testing it doesn't matter what the service call return dictionary looks like
     # so we'll make the contents abstract and simple
     SERVICE_CALL_RETURN_DATA = {"field1": "value1"}
@@ -287,78 +207,6 @@ class TestRoutes(unittest.TestCase):
 
     @patch("dash.api.routes.call_jsonify")
     @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_field_attributes_route(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_field_attributes_route()
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
-        resp_mock.assert_called_once_with({"field_attributes": self.MOCK_FIELD_ATTRIBUTES})
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_input_default_get_all(self, sample_data_service_mock, username_mock):
-        # Given
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        expected_defaults = {
-            "as csv": False,
-            "csv filename": "monocle.csv",
-            "in silico": True,
-            "qc data": True,
-            "num rows": 20,
-            "metadata columns": ["field2_name", "field3_name"],
-            "in silico columns": ["field10_name"],
-            "qc data columns": ["field20_name"],
-        }
-        result = routes.get_metadata_input_default()
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
-        self.assertIsNotNone(result)
-        self.assertEqual(result, expected_defaults)
-
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_input_default_single_columns_property(self, sample_data_service_mock, username_mock):
-        # Given
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        expected_default = ["field2_name", "field3_name"]
-        result = routes.get_metadata_input_default("metadata columns")
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_field_attributes.assert_called_once()
-        self.assertIsNotNone(result)
-        self.assertEqual(result, expected_default)
-
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_input_default_single_property_not_column(self, sample_data_service_mock):
-        # Given
-        expected_default = "monocle.csv"
-        result = routes.get_metadata_input_default("csv filename")
-        # Then
-        self.assertEqual(sample_data_service_mock.call_count, 0)
-        self.assertIsNotNone(result)
-        self.assertEqual(result, expected_default)
-
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_input_default_single_property_not_exist_should_return_none(self, sample_data_service_mock):
-        # Given
-        result = routes.get_metadata_input_default("there is no such property")
-        # Then
-        self.assertEqual(sample_data_service_mock.call_count, 0)
-        self.assertEqual(result, None)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
     @patch("dash.api.routes.get_authenticated_project")
     @patch.object(ServiceFactory, "sample_data_service")
     def test_get_bulk_download_info_route(self, sample_data_service_mock, project_mock, username_mock, resp_mock):
@@ -391,10 +239,9 @@ class TestRoutes(unittest.TestCase):
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
-        sample_data_service_mock.return_value.get_metadata.return_value = None
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
+        sample_data_service_mock.return_value.get_bulk_download_info.return_value = None
         # When
-        result = routes.get_metadata_route({"sample filters": sample_filters})
+        result = routes.bulk_download_info_route({"sample filters": sample_filters})
         # Then
         sample_data_service_mock.assert_called_with(self.TEST_USER)
         self.assertIsInstance(result, Response)
@@ -425,12 +272,11 @@ class TestRoutes(unittest.TestCase):
         batches = self.SERVICE_CALL_RETURN_DATA
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
-        sample_data_service_mock.return_value.get_metadata.side_effect = urllib.error.HTTPError(
+        sample_data_service_mock.return_value.get_bulk_download_info.side_effect = urllib.error.HTTPError(
             "/nowhere", "400", "blah blah Invalid field blah blah", "yes", "no"
         )
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
-        result = routes.get_metadata_route({"sample filters": sample_filters})
+        result = routes.bulk_download_info_route({"sample filters": sample_filters})
         # Then
         self.assertIsNotNone(result)
         self.assertTrue(len(result), 2)
@@ -1014,332 +860,6 @@ class TestRoutes(unittest.TestCase):
         self.assertIsInstance(result, Response)
         self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
 
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_route_with_default_params(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        sample_filters = {"batches": batches}
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        defaults = routes.get_metadata_input_default()
-        # When
-        result = routes.get_metadata_route({"sample filters": sample_filters})
-        # Then
-        sample_data_service_mock.assert_called_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(
-            sample_filters,
-            start_row=None,
-            num_rows=defaults["num rows"],
-            include_in_silico=defaults["in silico"],
-            include_qc_data=defaults["qc data"],
-            metadata_columns=defaults["metadata columns"],
-            in_silico_columns=defaults["in silico columns"],
-            qc_data_columns=defaults["qc data columns"],
-        )
-        resp_mock.assert_called_once_with(expected_payload)
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_route_all_columns(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        sample_filters = {"batches": batches}
-        metadata_columns = ["_ALL"]
-        in_silico_columns = ["_ALL"]
-        qc_data_columns = ["_ALL"]
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        defaults = routes.get_metadata_input_default()
-        # When
-        result = routes.get_metadata_route(
-            {
-                "sample filters": sample_filters,
-                "metadata columns": metadata_columns,
-                "in silico columns": in_silico_columns,
-                "qc data columns": qc_data_columns,
-            }
-        )
-        # Then
-        sample_data_service_mock.assert_called_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(
-            sample_filters,
-            start_row=None,
-            num_rows=defaults["num rows"],
-            include_in_silico=defaults["in silico"],
-            include_qc_data=defaults["qc data"],
-            metadata_columns=None,
-            in_silico_columns=None,
-            qc_data_columns=None,
-        )
-        resp_mock.assert_called_once_with(expected_payload)
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_route_with_optional_params(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        sample_filters = {"batches": batches}
-        start_row = 21
-        num_rows = 20
-        include_in_silico = True
-        include_qc_data = True
-        return_as_csv = routes.get_metadata_input_default("as csv")
-        metadata_columns = ["submitting_institution", "public_name"]
-        in_silico_columns = ["ST"]
-        qc_data_columns = ["status"]
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_metadata.return_value = expected_payload
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_metadata_route(
-            {
-                "sample filters": sample_filters,
-                "start row": start_row,
-                "num rows": num_rows,
-                "in silico": include_in_silico,
-                "qc data": include_qc_data,
-                "as csv": return_as_csv,
-                "metadata columns": metadata_columns,
-                "in silico columns": in_silico_columns,
-                "qc data columns": qc_data_columns,
-            }
-        )
-        # Then
-        sample_data_service_mock.assert_called_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(
-            sample_filters,
-            start_row=start_row,
-            num_rows=num_rows,
-            include_in_silico=include_in_silico,
-            include_qc_data=include_qc_data,
-            metadata_columns=metadata_columns,
-            in_silico_columns=in_silico_columns,
-            qc_data_columns=qc_data_columns,
-        )
-        resp_mock.assert_called_once_with(expected_payload)
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_route_bad_request(self, sample_data_service_mock, username_mock, resp_mock):
-        batches = self.SERVICE_CALL_RETURN_DATA
-        sample_filters = {"batches": batches}
-        start_row = 21
-        num_rows = 20
-        include_in_silico = True
-        include_qc_data = True
-        return_as_csv = routes.get_metadata_input_default("as csv")
-        metadata_columns = ["submitting_institution", "public_name"]
-        in_silico_columns = ["ST"]
-        qc_data_columns = ["status"]
-        username_mock.return_value = self.TEST_USER
-        sample_data_service_mock.return_value.get_metadata.side_effect = urllib.error.HTTPError(
-            "/nowhere", "400", "blah blah Invalid field blah blah", "yes", "no"
-        )
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-
-        result = routes.get_metadata_route(
-            {
-                "sample filters": sample_filters,
-                "start row": start_row,
-                "num rows": num_rows,
-                "in silico": include_in_silico,
-                "qc data": include_qc_data,
-                "as csv": return_as_csv,
-                "metadata columns": metadata_columns,
-                "in silico columns": in_silico_columns,
-                "qc data columns": qc_data_columns,
-            }
-        )
-
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
-
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_metadata_route_no_return(self, sample_data_service_mock, username_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        sample_filters = {"batches": batches}
-        start_row = 21
-        num_rows = 20
-        include_in_silico = True
-        include_qc_data = True
-        return_as_csv = routes.get_metadata_input_default("as csv")
-        metadata_columns = ["submitting_institution", "public_name"]
-        in_silico_columns = ["ST"]
-        qc_data_columns = ["status"]
-        sample_data_service_mock.return_value.get_metadata.return_value = None
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_metadata_route(
-            {
-                "sample filters": sample_filters,
-                "start row": start_row,
-                "num rows": num_rows,
-                "in silico": include_in_silico,
-                "qc data": include_qc_data,
-                "as csv": return_as_csv,
-                "metadata columns": metadata_columns,
-                "in silico columns": in_silico_columns,
-                "qc data columns": qc_data_columns,
-            }
-        )
-        # Then
-        sample_data_service_mock.assert_called_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_metadata.assert_called_once_with(
-            sample_filters,
-            start_row=start_row,
-            num_rows=num_rows,
-            include_in_silico=include_in_silico,
-            include_qc_data=include_qc_data,
-            metadata_columns=metadata_columns,
-            in_silico_columns=in_silico_columns,
-            qc_data_columns=qc_data_columns,
-        )
-        self.assertIsNotNone(result)
-        self.assertIsInstance(result, Response)
-        self.assertIn(str(HTTPStatus.NOT_FOUND.value), result.status)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_distinct_values_route(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        mock_request = {
-            "fields": [
-                {"field type": "metadata", "field names": ["serotype", "age_group"]},
-                {"field type": "in silico", "field names": ["ST"]},
-                {"field type": "qc data", "field names": ["status"]},
-            ],
-            "sample filters": {"batches": batches},
-        }
-        expected_data_service_request = {
-            "metadata": ["serotype", "age_group"],
-            "in silico": ["ST"],
-            "qc data": ["status"],
-        }
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_distinct_values_route(mock_request)
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_distinct_values.assert_has_calls(
-            [call(expected_data_service_request, sample_filters={"batches": batches})]
-        )
-
-        resp_mock.assert_called_once_with({"distinct values": expected_payload})
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_distinct_values_route_no_filters(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        mock_request = {
-            "fields": [
-                {"field type": "metadata", "field names": ["serotype", "age_group"]},
-                {"field type": "in silico", "field names": ["ST"]},
-                {"field type": "qc data", "field names": ["status"]},
-            ]
-        }
-        expected_data_service_request = {
-            "metadata": ["serotype", "age_group"],
-            "in silico": ["ST"],
-            "qc data": ["status"],
-        }
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_distinct_values_route(mock_request)
-        # Then
-        sample_data_service_mock.assert_called_once_with(self.TEST_USER)
-        sample_data_service_mock.return_value.get_distinct_values.assert_has_calls(
-            [call(expected_data_service_request, sample_filters=None)]
-        )
-
-        resp_mock.assert_called_once_with({"distinct values": expected_payload})
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result), 2)
-        self.assertEqual(result[1], HTTPStatus.OK)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_distinct_values_route_bad_field_type(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        batches = self.SERVICE_CALL_RETURN_DATA
-        bad_request = {
-            "fields": [
-                {
-                    "field type": "metadata",
-                    "field names": ["doesn't matter what is here, the bad key should be caught before it is looked at"],
-                },
-                {"field type": "bad field type", "field names": ["doesn't matter either"]},
-                {"field type": "qc data", "field names": ["still doesn't matter"]},
-            ],
-            "sample filters": {"batches": batches},
-        }
-        expected_payload = "payload"
-        sample_data_service_mock.return_value.get_distinct_values.return_value = expected_payload
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_distinct_values_route(bad_request)
-        # Then
-        self.assertEqual(resp_mock.call_count, 0)
-        self.assertIsNotNone(result)
-        self.assertIsInstance(result[0], str)
-        self.assertEqual(result[1], HTTPStatus.BAD_REQUEST)
-
-    @patch("dash.api.routes.call_jsonify")
-    @patch("dash.api.routes.get_authenticated_username")
-    @patch.object(ServiceFactory, "sample_data_service")
-    def test_get_distinct_values_route_bad_field_name(self, sample_data_service_mock, username_mock, resp_mock):
-        # Given
-        bad_request = {
-            "fields": [
-                {
-                    "field type": "metadata",
-                    "field names": ["doesn't matter what's here, the metadata API barf is mocked"],
-                }
-            ]
-        }
-        sample_data_service_mock.return_value.get_distinct_values.return_value = None
-        username_mock.return_value = self.TEST_USER
-        # When
-        result = routes.get_distinct_values_route(bad_request)
-        # Then
-        self.assertEqual(resp_mock.call_count, 0)
-        self.assertIsNotNone(result)
-        self.assertIsInstance(result[0], str)
-        self.assertEqual(result[1], HTTPStatus.NOT_FOUND)
-
     @patch("dash.api.routes.get_authenticated_username")
     @patch.object(ServiceFactory, "sample_data_service")
     def test_get_metadata_route_return_csv(self, sample_data_service_mock, username_mock):
@@ -1348,10 +868,9 @@ class TestRoutes(unittest.TestCase):
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_DATA
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.get_metadata_route(
-            {"sample filters": sample_filters, "as csv": True, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}
+            {"sample filters": sample_filters, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}
         )
         # Then
         sample_data_service_mock.assert_called_with(self.TEST_USER)
@@ -1372,10 +891,9 @@ class TestRoutes(unittest.TestCase):
         sample_filters = {"batches": batches}
         username_mock.return_value = self.TEST_USER
         sample_data_service_mock.return_value.get_csv_download.return_value = self.SERVICE_CALL_RETURN_CSV_NOT_FOUND
-        sample_data_service_mock.return_value.get_field_attributes.return_value = self.MOCK_FIELD_ATTRIBUTES
         # When
         result = routes.get_metadata_route(
-            {"sample filters": sample_filters, "as csv": True, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}
+            {"sample filters": sample_filters, "csv filename": self.SERVICE_CALL_RETURN_CSV_FILENAME}
         )
         # Then
         sample_data_service_mock.assert_called_with(self.TEST_USER)
